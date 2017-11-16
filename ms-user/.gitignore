@@ -1,0 +1,19 @@
+/target/
+.settings
+.classpath
+.springBeans
+/target/
+/.settings/
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+# PDT-specific (PHP Development Tools)
+.buildpath
+/build/
+.project
+.idea
+*.iml
+.DS_Store
