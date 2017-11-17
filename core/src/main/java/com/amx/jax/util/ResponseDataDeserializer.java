@@ -7,10 +7,8 @@ import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.ResponseData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {

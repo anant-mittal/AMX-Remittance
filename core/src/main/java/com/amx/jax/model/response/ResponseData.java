@@ -3,7 +3,6 @@ package com.amx.jax.model.response;
 import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 //@JsonDeserialize(using = ResponseDataDeserializer.class)
 public class ResponseData extends AbstractResponeData {

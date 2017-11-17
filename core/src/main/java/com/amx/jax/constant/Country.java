@@ -2,15 +2,16 @@ package com.amx.jax.constant;
 
 public enum Country {
 
-	KUWAIT(91L);
+	KUWAIT("KW"), BARAIN("BH"), OMAN("OM");
 
-	public final Long countryId;
+	public final String countryCode;
 
-	Country(Long countryId) {
-		this.countryId = countryId;
+	Country(String countryCode) {
+		this.countryCode = countryCode;
 	}
 
-	public Long getCountryId() {
-		return countryId;
+	public String getCountryCode() {
+		return countryCode;
 	}
+
 }
