@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.userservice.model.AbstractUserModel;
-import com.amx.jax.userservice.service.AbstractUserService;
+import com.amx.jax.userservice.model.UserModel;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
 @RestController
@@ -23,12 +23,14 @@ public class UserController {
 
 	@Autowired
 	private ConverterUtil converterUtil;
+	
+	@Autowired
+	private UserService userService;
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse registerUser(@RequestBody String json) {
 
-		AbstractUserService userService = (AbstractUserService) metaData.getServiceFactory().getUserService();
-		AbstractUserModel userModel = (AbstractUserModel) converterUtil.unmarshall(json, userService.getModelClass());
+		UserModel userModel = (UserModel) converterUtil.unmarshall(json, userService.getModelClass());
 		ApiResponse response = userService.registerUser(userModel);
 
 		return response;

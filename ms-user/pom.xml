@@ -1,28 +1,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <artifactId>ms-user</artifactId>
-  <packaging>jar</packaging>
+	<artifactId>ms-user</artifactId>
+	<packaging>jar</packaging>
 
-  <name>ms-user</name>
-  <url>http://maven.apache.org</url>
+	<name>ms-user</name>
+	<url>http://maven.apache.org</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <dependencies>
- 
-  <dependency>
-  	<groupId>com.amx.jax</groupId>
-  	<artifactId>core</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
-  </dependency>
-  </dependencies>
-  <parent>
-  	<groupId>com.amx.jax</groupId>
-  	<artifactId>jax</artifactId>
-  	<version>0.0.1-SNAPSHOT</version>
-  </parent>
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		
+		<dependency>
+
+			<groupId>com.amx.jax</groupId>
+			<artifactId>core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>jax</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 </project>

@@ -9,7 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 import com.amx.jax.services.CustomerService;
 import com.amx.jax.services.KwServiceFactory;
-import com.amx.jax.userservice.service.KwUserService;
+import com.amx.jax.userservice.service.UserService;
 
 @SpringBootApplication
 /*@ComponentScan(excludeFilters = @ComponentScan.Filter(type = FilterType.REGEX, pattern = "com.amx.spservice.client.*"))
@@ -22,7 +22,7 @@ public class JaxServiceApplication {
 	}
 	
 	@Autowired
-	KwUserService kwUserService;
+	UserService userService;
 	
 	@Autowired
 	CustomerService custService;
@@ -35,7 +35,7 @@ public class JaxServiceApplication {
 		System.out.println("JaxServiceApplication init method calling");
 		
 		kwserviceFactory.setCustService(custService);
-		kwserviceFactory.setUserService(kwUserService);
+		kwserviceFactory.setUserService(userService);
 		
 		System.out.println("JaxServiceApplication init method called");
 	}

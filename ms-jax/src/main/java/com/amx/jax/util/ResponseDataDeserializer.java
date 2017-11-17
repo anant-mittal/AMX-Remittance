@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.ResponseData;
-import com.amx.jax.userservice.model.KwUserModel;
+import com.amx.jax.userservice.model.UserModel;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,7 +40,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		responseData.setType(type);
 		List<AbstractModel> models = null;
 		if ("user".equals(type)) {
-			models = new ObjectMapper().readValue(values, new TypeReference<List<KwUserModel>>() {
+			models = new ObjectMapper().readValue(values, new TypeReference<List<UserModel>>() {
 			});
 		}
 		responseData.setValues(models);

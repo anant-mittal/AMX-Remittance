@@ -38,7 +38,5 @@ public abstract class AbstractUserService extends AbstractService {
 	public String getModelType() {
 		return "user";
 	}
-	
-	public abstract boolean validateCivilId(String civilId);
 
 }

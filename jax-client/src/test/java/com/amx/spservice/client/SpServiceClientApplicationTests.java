@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.model.response.ApiResponse;
 import com.amx.jax.userservice.model.AbstractUserModel;
-import com.amx.jax.userservice.model.KwUserModel;
+import com.amx.jax.userservice.model.UserModel;
 import com.amx.spservice.client.config.Config;
 import com.amx.spservice.client.util.ConverterUtility;
 
@@ -49,7 +49,7 @@ public class SpServiceClientApplicationTests {
 	private AbstractUserModel[] getTestUsers() throws IOException {
 		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("users.json");
 		String json = IOUtils.toString(stream);
-		AbstractUserModel[] users = (KwUserModel[]) util.unmarshall(json, KwUserModel[].class);
+		AbstractUserModel[] users = (UserModel[]) util.unmarshall(json, UserModel[].class);
 		return users;
 
 	}

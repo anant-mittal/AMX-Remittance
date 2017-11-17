@@ -2,7 +2,7 @@ package com.amx.jax.userservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.jax.userservice.service.KwUserService;
+import com.amx.jax.userservice.service.UserService;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -37,14 +37,14 @@ public class AppTest extends TestCase {
 	}
 
 	@Autowired
-	KwUserService kwUserService;
+	UserService kwUserService;
 
 	public void civilIdCheck() {
-		assertTrue(kwUserService.validateCivilId("288122507112"));
-		assertFalse(kwUserService.validateCivilId("1234"));
+//		assertTrue(kwUserService.validateCivilId("288122507112", "KW"));
+//		assertFalse(kwUserService.validateCivilId("1234", "BH"));
 	}
-	
+
 	public static void main(String[] args) {
-		
+
 	}
 }
