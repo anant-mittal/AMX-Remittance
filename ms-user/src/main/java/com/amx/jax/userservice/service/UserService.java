@@ -64,6 +64,7 @@ public class UserService extends AbstractUserService {
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
+		return null;
 	}
 	
 }
