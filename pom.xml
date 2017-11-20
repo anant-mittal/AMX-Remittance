@@ -55,5 +55,6 @@
 		<module>ms-user</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
+		<module>ms-meta</module>
 	</modules>
 </project>
