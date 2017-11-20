@@ -2,8 +2,6 @@ package com.amx.jax.model.response;
 
 import java.util.List;
 
-import com.amx.jax.model.AbstractModel;
-
 //@JsonDeserialize(using = ResponseDataDeserializer.class)
 public class ResponseData extends AbstractResponeData {
 

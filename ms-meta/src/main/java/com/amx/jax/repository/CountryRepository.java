@@ -1,0 +1,31 @@
+package com.amx.jax.repository;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+
+import com.amx.jax.model.CountryMasterView;
+
+
+/**
+ * 
+ * @author Rabil
+ *
+ */
+public interface CountryRepository extends JpaRepository<CountryMasterView, BigDecimal>{
+	
+	@Query("Select c from CountryMasterView c where  languageId=?")
+	List<CountryMasterView> findByLanguageId(BigDecimal languageId);
+	
+	@Query("Select c from CountryMasterView c where  languageId=?1 and countryId=?2")
+	List<CountryMasterView> findByLanguageIdAndCountryId(BigDecimal languageId,BigDecimal countryId);
+	
+	@Query("Select c from CountryMasterView c where  languageId=?1 and businessCountry='Y'")
+	List<CountryMasterView> getBusinessCountry(BigDecimal languageId);
+	
+	
+
+}

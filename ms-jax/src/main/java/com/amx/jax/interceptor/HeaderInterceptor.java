@@ -32,7 +32,7 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 					typeRef);
 			if (!StringUtils.isEmpty(metaInfoMap.get("country-id"))) {
 				Integer countryId = (Integer) metaInfoMap.get("country-id");
-				metaData.setCountryId(countryId.longValue());
+				metaData.setCountryId(countryId);
 			}
 		}
 

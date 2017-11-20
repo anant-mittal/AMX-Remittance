@@ -22,12 +22,12 @@ import com.amx.jax.multitenant.MultiTenantJaxProperties.DataSourceProperties;
 public class MultiTenantJpaConfiguration {
 	
 	@Autowired
-	MultiTenantJaxProperties multiTenantDvdRentalProperties;
+	MultiTenantJaxProperties multiTenantJaxProperties;
 	
 	@Bean(name = "dataSourcesJax" )
 	public Map<String, DataSource> dataSourcesDvdRental() {
 	     Map<String, DataSource> result = new HashMap<>();
-	     for (DataSourceProperties dsProperties : this.multiTenantDvdRentalProperties.getDataSourcesProps()) {
+	     for (DataSourceProperties dsProperties : this.multiTenantJaxProperties.getDataSourcesProps()) {
 	       DataSourceBuilder factory = DataSourceBuilder
 	         .create()
 	         .url(dsProperties.getUrl())

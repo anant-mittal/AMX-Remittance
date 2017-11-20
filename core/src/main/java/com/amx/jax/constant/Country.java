@@ -1,17 +1,34 @@
 package com.amx.jax.constant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Country {
 
-	KUWAIT("KW"), BARAIN("BH"), OMAN("OM");
+	KUWAIT("KW", 91), BARAIN("BH", 104), OMAN("OM", 82);
 
 	public final String countryCode;
 
-	Country(String countryCode) {
+	public final Integer countryId;
+
+	Country(String countryCode, Integer countryId) {
 		this.countryCode = countryCode;
+		this.countryId = countryId;
 	}
 
 	public String getCountryCode() {
 		return countryCode;
 	}
 
+	public Integer getCountryId() {
+		return countryId;
+	}
+
+	public static Map<Integer, Country> countryIdToCountryMap = new HashMap<>();
+	static {
+
+		for (Country c : Country.values()) {
+			countryIdToCountryMap.put(c.getCountryId(), c);
+		}
+	}
 }

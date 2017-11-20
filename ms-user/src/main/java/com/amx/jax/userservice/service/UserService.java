@@ -10,8 +10,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.response.ApiResponse;
 import com.amx.jax.model.response.ResponseStatus;
-import com.amx.jax.userservice.dal.AbstractUserDao;
-import com.amx.jax.userservice.dal.KwUserDao;
+import com.amx.jax.userservice.dao.AbstractUserDao;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.dao.KwUserDao;
+import com.amx.jax.userservice.exception.UserNotFoundException;
 import com.amx.jax.userservice.model.AbstractUserModel;
 import com.amx.jax.userservice.model.UserModel;
 
@@ -21,6 +23,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private KwUserDao dao;
+	
+	@Autowired
+	private CustomerDao custDao;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -53,4 +58,12 @@ public class UserService extends AbstractUserService {
 		return UserModel.class;
 	}
 
+	public ApiResponse verifyCivilId(String civilId) {
+		
+		Customer cust = custDao.getCustomerByCivilId(civilId);
+		if (cust == null) {
+			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
+		}
+	}
+	
 }
