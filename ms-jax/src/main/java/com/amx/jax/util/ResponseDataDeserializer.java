@@ -38,7 +38,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		ResponseData responseData = new ResponseData();
 		responseData.setMetaInfo(0);
 		responseData.setType(type);
-		List<AbstractModel> models = null;
+		List<Object> models = null;
 		if ("user".equals(type)) {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserModel>>() {
 			});
