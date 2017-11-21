@@ -57,7 +57,7 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.amx.spservice</groupId>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-service-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
