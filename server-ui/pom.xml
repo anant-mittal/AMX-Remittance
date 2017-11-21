@@ -9,13 +9,13 @@
 	<packaging>jar</packaging>
 
 	<name>server-ui</name>
-	<description>Demo project for Spring Boot</description>
+	<description>UI Server for online application</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>1.5.8.RELEASE</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+		<relativePath></relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -44,23 +44,21 @@
 			<scope>test</scope>
 		</dependency>
 
-
-		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<!-- <dependency> <groupId>com.amx.jax</groupId> <artifactId>jax-service-client</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> -->
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
 		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>jax-service-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>1.9.21</version><!--$NO-MVN-MAN-VER$ -->
 		</dependency>
+
 	</dependencies>
 
 	<build>
