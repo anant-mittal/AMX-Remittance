@@ -1,7 +1,6 @@
 package com.amx.jax.model;
 
 import java.math.BigDecimal;
-import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;

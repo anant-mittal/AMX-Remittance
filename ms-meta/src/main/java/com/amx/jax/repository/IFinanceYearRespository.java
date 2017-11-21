@@ -1,7 +1,6 @@
 package com.amx.jax.repository;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;

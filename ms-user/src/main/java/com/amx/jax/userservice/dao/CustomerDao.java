@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import com.amx.amxcore.model.CustomerModel;
-import com.amx.amxcore.model.SecurityQuestionModel;
+import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.meta.MetaData;

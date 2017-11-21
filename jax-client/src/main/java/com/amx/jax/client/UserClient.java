@@ -1,6 +1,6 @@
 package com.amx.jax.client;
 
-import static com.amx.amxcore.constant.ApiEndpoint.USER_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
 import org.apache.log4j.Logger;
 import org.springframework.http.HttpEntity;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.amx.amxcore.model.AbstractUserModel;
-import com.amx.amxcore.model.response.ApiResponse;
+import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.response.ApiResponse;
 
 @Component
 public class UserClient extends AbstractSPServiceClient {

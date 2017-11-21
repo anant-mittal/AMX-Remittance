@@ -1,8 +1,8 @@
 package com.amx.jax.userservice.service;
 
-import com.amx.amxcore.model.AbstractModel;
-import com.amx.amxcore.model.response.ApiResponse;
-import com.amx.amxcore.model.response.ResponseStatus;
+import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
@@ -20,7 +20,7 @@ public abstract class AbstractUserService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-	
+
 	public ApiResponse editUser(AbstractUserModel userModel) {
 		Customer cust = getDao().saveOrUpdateUser(userModel);
 		ApiResponse response = getBlackApiResponse();
@@ -28,7 +28,6 @@ public abstract class AbstractUserService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-
 
 	public abstract AbstractUserDao getDao();
 

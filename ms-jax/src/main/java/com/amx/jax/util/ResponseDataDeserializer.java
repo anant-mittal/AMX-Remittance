@@ -3,7 +3,7 @@ package com.amx.jax.util;
 import java.io.IOException;
 import java.util.List;
 
-import com.amx.amxcore.model.response.ResponseData;
+import com.amx.amxlib.model.response.ResponseData;
 import com.amx.jax.userservice.model.UserModel;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

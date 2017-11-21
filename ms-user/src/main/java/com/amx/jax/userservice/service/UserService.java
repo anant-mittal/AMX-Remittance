@@ -10,12 +10,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxcore.model.AbstractModel;
-import com.amx.amxcore.model.CivilIdOtpModel;
-import com.amx.amxcore.model.CustomerModel;
-import com.amx.amxcore.model.SecurityQuestionModel;
-import com.amx.amxcore.model.response.ApiResponse;
-import com.amx.amxcore.model.response.ResponseStatus;
+import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.meta.MetaData;

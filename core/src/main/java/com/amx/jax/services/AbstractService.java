@@ -3,8 +3,8 @@ package com.amx.jax.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amx.amxcore.model.response.ApiResponse;
-import com.amx.amxcore.model.response.ResponseData;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseData;
 
 public abstract class AbstractService {
 
