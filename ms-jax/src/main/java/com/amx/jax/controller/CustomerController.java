@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.dbmodel.OracleCustomer;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.CustomerModel;
 import com.amx.jax.model.response.ApiResponse;
 import com.amx.jax.services.OracleCustomerService;
 import com.amx.jax.userservice.service.UserService;
@@ -30,7 +31,7 @@ public class CustomerController {
 
 	@Autowired
 	private OracleCustomerService service;
-	
+
 	@Autowired
 	private UserService userSerivce;
 
@@ -49,16 +50,16 @@ public class CustomerController {
 		return response;
 	}
 
-	@RequestMapping(value = "/savecustomer", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody String json) {
-		OracleCustomer userModel = (OracleCustomer) converterUtil.unmarshall(json, service.getModelClass());
-		ApiResponse response = service.saveCust(userModel);
+		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, userSerivce.getModelClass());
+		ApiResponse response = userSerivce.saveCustomer(model);
 		return response;
 	}
 
-	@RequestMapping(value = "/verify/{civil-id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse verifyCivilId(@PathVariable("civil-id") String civilId) {
-		ApiResponse response = userSerivce.verifyCivilId(civilId);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
 		return response;
 	}
 }

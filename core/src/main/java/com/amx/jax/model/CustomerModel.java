@@ -1,9 +1,12 @@
 package com.amx.jax.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CustomerModel extends AbstractModel {
 
+	private String identityId;
+	
 	private String email;
 
 	private String mobile;
@@ -63,4 +66,14 @@ public class CustomerModel extends AbstractModel {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getIdentityId() {
+		return identityId;
+	}
+
+	public void setIdentityId(String identityId) {
+		this.identityId = identityId;
+	}
+
+	
 }

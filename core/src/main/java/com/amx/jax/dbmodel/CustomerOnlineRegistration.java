@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import com.amx.jax.constant.UserType;
+
 
 @Entity
 @Table(name="FS_CUSTOMER_LOGIN")
@@ -67,6 +69,15 @@ public class CustomerOnlineRegistration {
 	private String mobileNumber;
 	private Date tokenDate;
 	
+	/** added by Prashant */
+	public CustomerOnlineRegistration(Customer cust) {
+		this.email = cust.getEmail();
+		this.mobileNumber = cust.getMobile();
+		this.countryId = cust.getCountryId();
+		this.userName = cust.getIdentityInt();
+		this.userType = UserType.USER.getType();
+	}
+
 	@Id
 	@GeneratedValue(generator="fs_customer_login_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="fs_customer_login_seq" ,sequenceName="FS_CUSTOMER_LOGIN_SEQ",allocationSize=1)		

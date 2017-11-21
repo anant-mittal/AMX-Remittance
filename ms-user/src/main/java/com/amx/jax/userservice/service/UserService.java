@@ -11,7 +11,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.CivilIdOtpModel;
 import com.amx.jax.model.CustomerModel;
 import com.amx.jax.model.SecurityQuestionModel;
 import com.amx.jax.model.response.ApiResponse;
@@ -19,9 +21,13 @@ import com.amx.jax.model.response.ResponseStatus;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.KwUserDao;
+import com.amx.jax.userservice.exception.InvalidCivilIdException;
 import com.amx.jax.userservice.exception.UserNotFoundException;
 import com.amx.jax.userservice.model.AbstractUserModel;
 import com.amx.jax.userservice.model.UserModel;
+import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.Util;
+import com.amx.jax.util.validation.CustomerValidation;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -32,6 +38,18 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private CustomerDao custDao;
+
+	@Autowired
+	private CustomerValidation custValidation;
+
+	@Autowired
+	private MetaData meta;
+
+	@Autowired
+	private CryptoUtil cryptoUtil;
+
+	@Autowired
+	private Util util;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -52,15 +70,13 @@ public class UserService extends AbstractUserService {
 	@Override
 	public AbstractModel convert(Customer cust) {
 		UserModel model = new UserModel();
-		// model.setFirstName(cust.getFirstName());
-		// model.setLastName(cust.getLastName());
-		// model.setMiddleName(cust.getMiddleName());
-		// model.setTitle(cust.getTitle());
 		return model;
 	}
 
-	public AbstractModel convert(CustomerOnlineRegistration cust) {
+
+	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
+		model.setIdentityId(cust.getUserName());
 		model.setCaption(cust.getCaption());
 		model.setEmail(cust.getEmail());
 		model.setImageUrl(cust.getImageUrl());
@@ -74,12 +90,21 @@ public class UserService extends AbstractUserService {
 		return model;
 	}
 
+	public ApiResponse saveCustomer(CustomerModel model) {
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(model.getIdentityId());
+		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(convert(onlineCust));
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
+
 	@Override
 	public Class<UserModel> getModelClass() {
 		return UserModel.class;
 	}
 
-	public ApiResponse verifyCivilId(String civilId) {
+	public CustomerOnlineRegistration verifyCivilId(String civilId) {
 
 		Customer cust = custDao.getCustomerByCivilId(civilId);
 		if (cust == null) {
@@ -87,12 +112,37 @@ public class UserService extends AbstractUserService {
 		}
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustById(cust.getCustomerId());
 		if (onlineCust == null) {
-			// TODO create new online cust
+			onlineCust = new CustomerOnlineRegistration(cust);
 		}
+		return onlineCust;
+	}
+
+	public ApiResponse sendOtpForCivilId(String civilId) {
+		validateCivilId(civilId);
+		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId);
+		CivilIdOtpModel model = new CivilIdOtpModel();
+		generateToken(civilId, model);
+		onlineCust.setEmailToken(model.getHashedOtp());
+		onlineCust.setMobileNumber(model.getHashedOtp());
+		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().add(convert(onlineCust));
+		response.getData().getValues().add(model);
 		response.setResponseStatus(ResponseStatus.OK);
-		return null;
+		return response;
+	}
+
+	public void validateCivilId(String civilId) {
+		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getCountryCode());
+		if (!isValid) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid.");
+		}
+	}
+
+	private void generateToken(String userId, CivilIdOtpModel model) {
+		String randOtp = util.createRandomPassword(6);
+		String hashedOtp = cryptoUtil.getHash(userId, randOtp);
+		model.setHashedOtp(hashedOtp);
+		model.setOtp(randOtp);
 	}
 
 }
