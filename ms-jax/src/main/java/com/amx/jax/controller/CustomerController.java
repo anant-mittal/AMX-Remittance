@@ -55,7 +55,7 @@ public class CustomerController {
 		ApiResponse response = service.saveCust(userModel);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/verify/{civil-id}", method = RequestMethod.GET)
 	public ApiResponse verifyCivilId(@PathVariable("civil-id") String civilId) {
 		ApiResponse response = userSerivce.verifyCivilId(civilId);
