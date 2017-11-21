@@ -18,11 +18,11 @@
 
 ## MAVEN
 1. Download Maven [link](https://maven.apache.org/download.cgi)
-2. Extract files [ref](https://maven.apache.org/install.html) and rename folder to apache-maven and put it in your Projects folder
+2. Extract files and rename folder to apache-maven and put it in your Projects folder
     ```
      /Users/lalittanwar/Projects/apache-maven
     ```
-3. Add the *bin* directory of the created directory apache-maven to the *PATH* environment variable
+3. Add the *bin* directory of the created directory apache-maven to the *PATH* environment variable [reference](https://maven.apache.org/install.html)
     *  Mac
     ```
         $ nano ~/.profile
