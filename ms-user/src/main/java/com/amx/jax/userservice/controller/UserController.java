@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxcore.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.response.ApiResponse;
 import com.amx.jax.userservice.model.UserModel;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;

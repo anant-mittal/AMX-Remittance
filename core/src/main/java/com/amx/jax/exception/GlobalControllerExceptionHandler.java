@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amx.jax.model.response.ApiError;
-import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.model.response.ResponseStatus;
+import com.amx.amxcore.model.response.ApiError;
+import com.amx.amxcore.model.response.ApiResponse;
+import com.amx.amxcore.model.response.ResponseStatus;
+
 
 
 @ControllerAdvice

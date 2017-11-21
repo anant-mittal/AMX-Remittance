@@ -10,15 +10,15 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxcore.model.AbstractModel;
+import com.amx.amxcore.model.CivilIdOtpModel;
+import com.amx.amxcore.model.CustomerModel;
+import com.amx.amxcore.model.SecurityQuestionModel;
+import com.amx.amxcore.model.response.ApiResponse;
+import com.amx.amxcore.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.CivilIdOtpModel;
-import com.amx.jax.model.CustomerModel;
-import com.amx.jax.model.SecurityQuestionModel;
-import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.model.response.ResponseStatus;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.KwUserDao;
@@ -147,5 +147,7 @@ public class UserService extends AbstractUserService {
 		model.setOtp(randOtp);
 		logger.info("Generated otp for civilid- " + userId + " is " + randOtp);
 	}
+	
+	public void validagteOtp() {}
 
 }

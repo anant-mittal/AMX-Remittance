@@ -9,12 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.amx.amxcore.model.CustomerModel;
+import com.amx.amxcore.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.CivilIdOtpModel;
-import com.amx.jax.model.CustomerModel;
-import com.amx.jax.model.SecurityQuestionModel;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.util.CryptoUtil;

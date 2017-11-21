@@ -1,4 +1,4 @@
-package com.amx.jax;
+package com.amx.metaservice.jax;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

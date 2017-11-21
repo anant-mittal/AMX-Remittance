@@ -1,9 +1,9 @@
 package com.amx.jax.userservice.service;
 
+import com.amx.amxcore.model.AbstractModel;
+import com.amx.amxcore.model.response.ApiResponse;
+import com.amx.amxcore.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.model.AbstractModel;
-import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.model.response.ResponseStatus;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.model.AbstractUserModel;

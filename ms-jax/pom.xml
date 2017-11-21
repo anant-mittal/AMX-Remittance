@@ -64,6 +64,12 @@
 			<artifactId>ms-meta</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>ms-jax</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<type>war</type>
+		</dependency>
 	</dependencies>
 
 	<build>

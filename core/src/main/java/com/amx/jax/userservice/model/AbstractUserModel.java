@@ -1,6 +1,6 @@
 package com.amx.jax.userservice.model;
 
-import com.amx.jax.model.AbstractModel;
+import com.amx.amxcore.model.AbstractModel;
 
 public class AbstractUserModel extends AbstractModel {
 

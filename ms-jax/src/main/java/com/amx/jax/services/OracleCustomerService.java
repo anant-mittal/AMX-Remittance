@@ -5,9 +5,8 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxcore.model.response.ApiResponse;
 import com.amx.jax.dbmodel.OracleCustomer;
-import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.model.response.ResponseData;
 import com.amx.jax.repository.OracleCustomerRespository;
 
 @Service

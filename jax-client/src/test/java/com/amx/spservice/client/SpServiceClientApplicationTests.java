@@ -13,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.amxcore.model.AbstractUserModel;
+import com.amx.amxcore.model.UserModel;
+import com.amx.amxcore.model.response.ApiResponse;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.config.Config;
 import com.amx.jax.client.util.ConverterUtility;
-import com.amx.jax.model.response.ApiResponse;
-import com.amx.jax.userservice.model.AbstractUserModel;
-import com.amx.jax.userservice.model.UserModel;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

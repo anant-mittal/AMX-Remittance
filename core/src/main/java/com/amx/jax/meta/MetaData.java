@@ -1,8 +1,5 @@
 package com.amx.jax.meta;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
