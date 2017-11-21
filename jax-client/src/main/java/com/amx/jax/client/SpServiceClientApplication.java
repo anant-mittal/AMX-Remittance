@@ -1,4 +1,4 @@
-package com.amx.spservice.client;
+package com.amx.jax.client;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -10,7 +10,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
-import com.amx.spservice.client.config.Config;
+import com.amx.jax.client.config.Config;
 
 @SpringBootApplication
 public class SpServiceClientApplication {
