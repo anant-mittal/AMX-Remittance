@@ -37,7 +37,7 @@
     ```
 4. Run setup.sh first before importing project
     ```
-    $ bash .setup.sh
+    $ bash ./setup.sh
     ```
 
 ## BUILD
