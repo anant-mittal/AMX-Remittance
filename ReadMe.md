@@ -39,6 +39,9 @@
     ```
     $ bash ./setup.sh
     ```
+5. import project in Eclipse,STS or Idea as maven spring boot  project.
 
 ## BUILD
 http://www.codetab.org/apache-maven-tutorial/maven-multi-module-project/
+
+
