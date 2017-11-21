@@ -3,6 +3,7 @@ package com.amx.jax.userservice.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -32,6 +33,8 @@ import com.amx.jax.util.validation.CustomerValidation;
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserService extends AbstractUserService {
+
+	Logger logger = Logger.getLogger(UserService.class);
 
 	@Autowired
 	private KwUserDao dao;
@@ -72,7 +75,6 @@ public class UserService extends AbstractUserService {
 		UserModel model = new UserModel();
 		return model;
 	}
-
 
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
@@ -143,6 +145,7 @@ public class UserService extends AbstractUserService {
 		String hashedOtp = cryptoUtil.getHash(userId, randOtp);
 		model.setHashedOtp(hashedOtp);
 		model.setOtp(randOtp);
+		logger.info("Generated otp for civilid- " + userId + " is " + randOtp);
 	}
 
 }
