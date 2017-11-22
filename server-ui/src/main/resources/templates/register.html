@@ -20,13 +20,15 @@
     return json;
   }
   window.CONST = {
-    dummyApi: false,
+    remoteServerUrl: '',
     remoteJsUrl: '',
+    dummyApi: false
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
     window.CONST.dummyApi = config.dummyApi || false;
-    window.CONST.remoteJsUrl = config.remoteJsUrl;
+    window.CONST.remoteServerUrl = config.remoteServerUrl || '';
+    window.CONST.remoteJsUrl = config.remoteJsUrl || '';
   }
 
   // add css and js
