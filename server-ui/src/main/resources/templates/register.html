@@ -25,7 +25,6 @@
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
-    window.CONST.debug = config.debug || false;
     window.CONST.dummyApi = config.dummyApi || false;
     window.CONST.remoteJsUrl = config.remoteJsUrl || false;
   }
