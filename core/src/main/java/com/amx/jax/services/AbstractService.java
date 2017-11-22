@@ -13,7 +13,7 @@ public abstract class AbstractService {
 		ApiResponse response = new ApiResponse();
 		ResponseData data = new ResponseData();
 		data.setType(getModelType());
-		List<AbstractModel> values = new ArrayList<AbstractModel>();
+		List<Object> values = new ArrayList<Object>();
 		data.setValues(values);
 		response.setData(data);
 		return response;

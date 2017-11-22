@@ -2,12 +2,11 @@ package com.amx.amxlib.model.response;
 
 import java.util.List;
 
-import com.amx.amxlib.model.AbstractModel;
 
 //@JsonDeserialize(using = ResponseDataDeserializer.class)
 public class ResponseData extends AbstractResponeData {
 
-	private List<AbstractModel> values;
+	private List<Object> values;
 
 	private int metaInfo;
 
@@ -19,11 +18,11 @@ public class ResponseData extends AbstractResponeData {
 		this.metaInfo = metaInfo;
 	}
 
-	public List<AbstractModel> getValues() {
+	public List<Object> getValues() {
 		return values;
 	}
 
-	public void setValues(List<AbstractModel> values) {
+	public void setValues(List<Object> values) {
 		this.values = values;
 	}
 
