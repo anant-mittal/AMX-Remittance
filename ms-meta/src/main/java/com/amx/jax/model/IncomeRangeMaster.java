@@ -55,7 +55,7 @@ public class IncomeRangeMaster implements java.io.Serializable {
 	}
 
 	public IncomeRangeMaster(BigDecimal incomeRangeId, ArticleDetails articleDetail, CountryMaster fsCountryMaster, String monthlyIncome, String createdBy, Date createdDate, String modifiedBy, Date modifiedDate, String approvedBy, Date approvedDate, String remarks, String isActive,
-			BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo, List<Customer> fsCustomers) {
+			BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo, List<Customer1> fsCustomers) {
 		this.incomeRangeId = incomeRangeId;
 		this.articleDetail = articleDetail;
 		this.fsCountryMaster = fsCountryMaster;

@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="FS_CUSTOMER_LOGIN")
-public class CustomerOnlineRegistration {
+public class CustomerOnlineRegistration1 {
 	
 	private static final long serialVersionUID = 1L;
 	private BigDecimal custLoginId;

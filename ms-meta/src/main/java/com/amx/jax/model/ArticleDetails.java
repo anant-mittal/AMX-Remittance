@@ -64,7 +64,7 @@ public class ArticleDetails implements java.io.Serializable {
 			String articleDetailCode, String createdBy, Date createdDate,
 			String modifiedBy, Date modifiedDate, String approvedBy,
 			Date approvedDate, String remarks, String isActive,
-			List<Customer> fsCustomers) {
+			List<Customer1> fsCustomers) {
 		super();
 		this.articleDetailId = articleDetailId;
 		this.fsArticleMaster = fsArticleMaster;

@@ -14,5 +14,5 @@ import com.amx.jax.dbmodel.Customer;
 public interface CustomerRepository extends CrudRepository<Customer, Long> {
 
 	@Query("select c from Customer c where countryId=?1 and  identityInt =?2 and isActive='Y'")
-	public List<Customer> getCustomer(BigDecimal countryId, String userId);
+	public List<Customer> getCustomerbyuser(BigDecimal countryId, String userId);
 }

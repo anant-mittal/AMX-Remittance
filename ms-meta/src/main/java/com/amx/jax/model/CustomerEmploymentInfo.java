@@ -44,7 +44,7 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal custEmpInfoId;
-	private Customer fsCustomer;
+	private Customer1 fsCustomer;
 	private CountryMaster fsCountryMaster;
 	private CompanyMaster fsCompanyMaster;
 	private LanguageType fsLanguageType;
@@ -73,7 +73,7 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
 		this.custEmpInfoId = custEmpInfoId;
 	}
 	public CustomerEmploymentInfo(BigDecimal custEmpInfoId,
-			Customer fsCustomer, CountryMaster fsCountryMaster,
+			Customer1 fsCustomer, CountryMaster fsCountryMaster,
 			CompanyMaster fsCompanyMaster, LanguageType fsLanguageType,
 			BizComponentData fsBizComponentDataByEmploymentTypeId,
 			BizComponentData fsBizComponentDataByOccupationId,
@@ -125,11 +125,11 @@ public class CustomerEmploymentInfo implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
-	public Customer getFsCustomer() {
+	public Customer1 getFsCustomer() {
 		return this.fsCustomer;
 	}
 
-	public void setFsCustomer(Customer fsCustomer) {
+	public void setFsCustomer(Customer1 fsCustomer) {
 		this.fsCustomer = fsCustomer;
 	}
 

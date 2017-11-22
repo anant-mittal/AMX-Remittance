@@ -27,7 +27,7 @@ public class ContactDetail implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal contactDetailId;
-	private Customer fsCustomer;
+	private Customer1 fsCustomer;
 	private LanguageType fsLanguageType;
 	private BizComponentData fsBizComponentDataByContactTypeId;
 	private CountryMaster fsCountryMaster;
@@ -58,7 +58,7 @@ public class ContactDetail implements java.io.Serializable {
 	}
 
 
-	public ContactDetail(BigDecimal contactDetailId, Customer fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
+	public ContactDetail(BigDecimal contactDetailId, Customer1 fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
 			String buildingNo,String telephoneCode) {
 		this.contactDetailId = contactDetailId;
 		this.fsCustomer = fsCustomer;
@@ -102,11 +102,11 @@ public class ContactDetail implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
-	public Customer getFsCustomer() {
+	public Customer1 getFsCustomer() {
 		return this.fsCustomer;
 	}
 
-	public void setFsCustomer(Customer fsCustomer) {
+	public void setFsCustomer(Customer1 fsCustomer) {
 		this.fsCustomer = fsCustomer;
 	}
 

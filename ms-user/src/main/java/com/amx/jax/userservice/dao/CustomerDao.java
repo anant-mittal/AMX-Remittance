@@ -20,7 +20,6 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.Util;
 
 @Component
-@Transactional
 public class CustomerDao {
 
 	@Autowired
@@ -38,20 +37,33 @@ public class CustomerDao {
 	@Autowired
 	private Util util;
 
+	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
 		BigDecimal countryId = new BigDecimal(meta.getCountryId());
-		List<Customer> customers = repo.getCustomer(countryId, civilId);
+		List<Customer> customers = repo.getCustomerbyuser(countryId, civilId);
 		if (customers != null && !customers.isEmpty()) {
 			cust = customers.get(0);
 		}
 		return cust;
 	}
 
+	@Transactional
 	public CustomerOnlineRegistration getOnlineCustById(BigDecimal id) {
 		return onlineCustRepo.findOne(id);
 	}
 
+	@Transactional
+	public CustomerOnlineRegistration getOnlineCustByCustomerId(BigDecimal customerId) {
+		CustomerOnlineRegistration onlineCust = null;
+		List<CustomerOnlineRegistration> list = onlineCustRepo.getOnlineCustomersById(customerId);
+		if (!CollectionUtils.isEmpty(list) && list.size() >= 1) {
+			onlineCust = list.get(0);
+		}
+		return onlineCust;
+	}
+
+	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByUserId(String userName) {
 		BigDecimal countryId = new BigDecimal(meta.getCountryId());
 		CustomerOnlineRegistration customer = null;
@@ -62,11 +74,12 @@ public class CustomerDao {
 		return customer;
 	}
 
+	@Transactional
 	public CustomerOnlineRegistration saveOrUpdateOnlineCustomer(CustomerOnlineRegistration onlineCust,
 			CustomerModel model) {
 		BigDecimal countryId = new BigDecimal(meta.getCountryId());
 		String userId = model.getIdentityId();
-		repo.getCustomer(countryId, userId);
+		repo.getCustomerbyuser(countryId, userId);
 
 		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
 		if (!CollectionUtils.isEmpty(secQuestions)) {
@@ -104,6 +117,7 @@ public class CustomerDao {
 		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(4).getAnswer()));
 	}
 
+	@Transactional
 	public void saveOnlineCustomer(CustomerOnlineRegistration onlineCust) {
 		onlineCustRepo.save(onlineCust);
 	}

@@ -112,7 +112,7 @@ public class UserService extends AbstractUserService {
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustById(cust.getCustomerId());
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
 		if (onlineCust == null) {
 			onlineCust = new CustomerOnlineRegistration(cust);
 		}
@@ -124,8 +124,10 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		generateToken(civilId, model);
+		model.setEmail(onlineCust.getEmail());
+		model.setMobile(onlineCust.getMobileNumber());
 		onlineCust.setEmailToken(model.getHashedOtp());
-		onlineCust.setMobileNumber(model.getHashedOtp());
+		onlineCust.setSmsToken(model.getHashedOtp());
 		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);

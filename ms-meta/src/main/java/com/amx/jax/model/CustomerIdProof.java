@@ -44,7 +44,7 @@ public class CustomerIdProof implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal custProofId;
-	private Customer fsCustomer;
+	private Customer1 fsCustomer;
 	private LanguageType fsLanguageType;
 	//private DocumentImg fsDocumentImg;
 	private String name;
@@ -77,7 +77,7 @@ public class CustomerIdProof implements java.io.Serializable {
 
 	
 
-	public CustomerIdProof(BigDecimal custProofId, Customer fsCustomer,
+	public CustomerIdProof(BigDecimal custProofId, Customer1 fsCustomer,
 			LanguageType fsLanguageType,
 			String name, String identityInt, Date identityExpiryDate,
 			Date identityEffDate, Date identityEndDate, String approvedBy,
@@ -130,11 +130,11 @@ public class CustomerIdProof implements java.io.Serializable {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
-	public Customer getFsCustomer() {
+	public Customer1 getFsCustomer() {
 		return this.fsCustomer;
 	}
 
-	public void setFsCustomer(Customer fsCustomer) {
+	public void setFsCustomer(Customer1 fsCustomer) {
 		this.fsCustomer = fsCustomer;
 	}
 

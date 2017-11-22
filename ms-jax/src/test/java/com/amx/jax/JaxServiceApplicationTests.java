@@ -6,10 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dal.CryptoDao;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
 
 @RunWith(SpringRunner.class)
@@ -40,8 +42,10 @@ public class JaxServiceApplicationTests {
 		assertTrue(apiResp.getError() == null);
 	}
 	
-//	@Bean
-//	public MetaData meta() {
-//		;
-//	}
+	@Bean
+	public MetaData meta() {
+		MetaData metad =new MetaData();
+		metad.setCountryId(91);
+		return metad;
+	}
 }

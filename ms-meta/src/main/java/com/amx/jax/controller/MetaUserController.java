@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.model.Customer;
-import com.amx.jax.model.CustomerOnlineRegistration;
+import com.amx.jax.model.Customer1;
+import com.amx.jax.model.CustomerOnlineRegistration1;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.OnlineCustomerService;
 
@@ -45,31 +45,31 @@ public class MetaUserController implements Serializable{
 	
 	
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Customer>> getCustomerDetails(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		List<Customer> customerDetailList = customerService.getCustomer(countryId, userId);
+	public ResponseEntity<List<Customer1>> getCustomerDetails(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
+		List<Customer1> customerDetailList = customerService.getCustomer(countryId, userId);
 		if (customerDetailList.isEmpty()) {
 			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<Customer>>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<Customer1>>(HttpStatus.NO_CONTENT);
 		}
 		logger.debug("Found " + customerDetailList.size() + " Employees 1");
 		logger.debug(customerDetailList);
 		logger.debug(Arrays.toString(customerDetailList.toArray()));
-		return new ResponseEntity<List<Customer>>(customerDetailList, HttpStatus.OK);
+		return new ResponseEntity<List<Customer1>>(customerDetailList, HttpStatus.OK);
 		
 	}
 	
 	
 	@RequestMapping(value = "/online/{countryId}/{userId}", method = RequestMethod.GET)
-	public ResponseEntity<List<CustomerOnlineRegistration>> getOnlineCustomer(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		List<CustomerOnlineRegistration> onlinecustomerDetailList = onlineCustomerService.getOnlineCustomerList(countryId, userId);
+	public ResponseEntity<List<CustomerOnlineRegistration1>> getOnlineCustomer(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
+		List<CustomerOnlineRegistration1> onlinecustomerDetailList = onlineCustomerService.getOnlineCustomerList(countryId, userId);
 		if (onlinecustomerDetailList.isEmpty()) {
 			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<CustomerOnlineRegistration>>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<List<CustomerOnlineRegistration1>>(HttpStatus.NO_CONTENT);
 		}
 		logger.debug("Found " + onlinecustomerDetailList.size() + " Employees 1");
 		logger.debug(onlinecustomerDetailList);
 		logger.debug(Arrays.toString(onlinecustomerDetailList.toArray()));
-		return new ResponseEntity<List<CustomerOnlineRegistration>>(onlinecustomerDetailList, HttpStatus.OK);
+		return new ResponseEntity<List<CustomerOnlineRegistration1>>(onlinecustomerDetailList, HttpStatus.OK);
 		
 	}
 

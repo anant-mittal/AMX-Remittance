@@ -52,7 +52,7 @@ import com.amg.exchange.treasury.model.ArticleDetails;*/
 @Table(name = "FS_CUSTOMER" )
 @JsonIgnoreProperties(ignoreUnknown = false)
 @Proxy(lazy = false)
-public class Customer implements java.io.Serializable {
+public class Customer1 implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
@@ -166,10 +166,10 @@ public class Customer implements java.io.Serializable {
 	//private IncomeRangeMaster fsIncomeRangeMaster;
 	
 
-	public Customer() {
+	public Customer1() {
 	}
 
-	public Customer(BigDecimal customerId) {
+	public Customer1(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
 

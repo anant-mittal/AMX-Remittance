@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.Customer;
+import com.amx.jax.model.Customer1;
 import com.amx.jax.repository.ICustomerRepository;
 
 @Service
@@ -15,7 +15,7 @@ public class CustomerService {
 	@Autowired
 	ICustomerRepository customerRepository;
 	
-	public List<Customer> getCustomer(BigDecimal countryId,String userId){
+	public List<Customer1> getCustomer(BigDecimal countryId,String userId){
 		return customerRepository.getCustomer(countryId, userId);
 	}
 	
