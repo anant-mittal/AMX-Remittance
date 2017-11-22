@@ -1,4 +1,4 @@
-package com.amx.spservice.client;
+package com.amx.jax.client;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -39,7 +39,7 @@ public class SpServiceClientApplicationTests {
 	@Autowired
 	protected Config conf;
 
-	@Test
+	//@Test
 	public void testUserApi() throws IOException {
 		AbstractUserModel[] users = getTestUsers();
 		ApiResponse response = client.registerUser(users[0]);
@@ -52,6 +52,12 @@ public class SpServiceClientApplicationTests {
 		String json = IOUtils.toString(stream);
 		AbstractUserModel[] users = (UserModel[]) util.unmarshall(json, UserModel[].class);
 		return users;
-
+	}
+	
+	@Test
+	public void testSendotpapi() throws IOException {
+		ApiResponse response = client.sendOtpForCivilId("284052306594");
+		logger.info("response of testSendotpapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
 	}
 }

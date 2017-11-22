@@ -12,7 +12,7 @@ public class CivilIdOtpModel extends AbstractModel {
 	private String email;
 
 	private String mobile;
-	
+
 	private Boolean isActiveCustomer;
 
 	public String getOtp() {
@@ -53,6 +53,11 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void setIsActiveCustomer(Boolean isActiveCustomer) {
 		this.isActiveCustomer = isActiveCustomer;
+	}
+
+	@Override
+	public String getModelType() {
+		return "otp";
 	}
 
 }

@@ -157,6 +157,7 @@ public class UserService extends AbstractUserService {
 		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);
+		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
@@ -193,6 +194,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
+		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		logger.debug("end of validateopt for civilid: " + civilId);
 		return response;

@@ -2,8 +2,10 @@ package com.amx.amxlib.model.response;
 
 import java.util.List;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-//@JsonDeserialize(using = ResponseDataDeserializer.class)
+
+@JsonDeserialize(using = ResponseDataDeserializer.class)
 public class ResponseData extends AbstractResponeData {
 
 	private List<Object> values;

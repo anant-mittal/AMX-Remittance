@@ -6,7 +6,7 @@ import java.util.List;
 public class CustomerModel extends AbstractModel {
 
 	private String identityId;
-	
+
 	private String email;
 
 	private String mobile;
@@ -75,5 +75,9 @@ public class CustomerModel extends AbstractModel {
 		this.identityId = identityId;
 	}
 
-	
+	@Override
+	public String getModelType() {
+		return "customer";
+	}
+
 }

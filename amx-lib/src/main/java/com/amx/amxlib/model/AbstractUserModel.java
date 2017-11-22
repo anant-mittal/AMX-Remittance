@@ -53,4 +53,9 @@ public class AbstractUserModel extends AbstractModel {
 	public void setId(Long id) {
 		this.id = id;
 	}
+
+	@Override
+	public String getModelType() {
+		return "user";
+	}
 }
