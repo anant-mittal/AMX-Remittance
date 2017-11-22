@@ -1,6 +1,7 @@
 package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
+import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -13,6 +14,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 
@@ -33,6 +38,11 @@ import javax.persistence.Table;
  						Date	: 6-March-2015
  						By		: Nazish Ehsan Hashmi
 		 				Revision:
+		 Last Change:
+ 						Date	: 20-Nov-2017
+ 						By		: Rabil
+		 				Revision:
+				
 
 		 Description: TODO 
 
@@ -40,12 +50,13 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "FS_CUSTOMER_ID_PROOF" )
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CustomerIdProof implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal custProofId;
 	private Customer fsCustomer;
-	private LanguageType fsLanguageType;
+	//private LanguageType fsLanguageType;
 	//private DocumentImg fsDocumentImg;
 	private String name;
 	private String identityInt;
@@ -59,14 +70,54 @@ public class CustomerIdProof implements java.io.Serializable {
 	private Date creationDate;
 	private Date lastUpdatedDate;
 	private String identityStatus;
-	private BizComponentData fsBizComponentDataByIdentityTypeId;
-	private BizComponentData fsBizComponentDataByCustomerTypeId;
-	private BizComponentData fsBizComponentDataByIdentityFor;
+	//private BizComponentData fsBizComponentDataByIdentityTypeId;
+	//private BizComponentData fsBizComponentDataByCustomerTypeId;
+	//private BizComponentData fsBizComponentDataByIdentityFor;
 	private String scanReq;
 	//private Clob scanImage;
 	private String scanSystem;
-	//private Customer fsCustomerByRefCustomerId;
+	private Customer fsCustomerByRefCustomerId;
 	//private Date imgUploadDate;
+	
+	@Column(name="IDENTITY_FOR")
+	private BigDecimal identityFor;
+	
+	
+	@Column(name="LANGUAGE_ID")
+	private BigDecimal languageId;
+	
+	
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
+	@Column(name="IDENTITY_TYPE_ID")
+	private BigDecimal identityTypeId;
+	
+	
+	
+	
+	
+
+	public BigDecimal getIdentityFor() {
+		return identityFor;
+	}
+
+	public void setIdentityFor(BigDecimal identityFor) {
+		this.identityFor = identityFor;
+	}
 
 	public CustomerIdProof() {
 	}
@@ -89,7 +140,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		
 		this.custProofId = custProofId;
 		this.fsCustomer = fsCustomer;
-		this.fsLanguageType = fsLanguageType;
+		//this.fsLanguageType = fsLanguageType;
 		//this.fsDocumentImg = fsDocumentImg;
 		this.name = name;
 		this.identityInt = identityInt;
@@ -103,10 +154,10 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.creationDate = creationDate;
 		this.lastUpdatedDate = lastUpdatedDate;
 		this.identityStatus = identityStatus;
-		this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
-		this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
-		this.fsBizComponentDataByIdentityFor = fsBizComponentDataByIdentityFor;
-		//this.fsCustomerByRefCustomerId = fsCustomerByRefCustomerId;
+	//	this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
+	//	this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
+	//	this.fsBizComponentDataByIdentityFor = fsBizComponentDataByIdentityFor;
+	//	this.fsCustomerByRefCustomerId = fsCustomerByRefCustomerId;
 		//this.imgUploadDate = imgUploadDate;
 		this.scanReq=scanReq;
 		//this.scanImage=scanImage;
@@ -114,9 +165,6 @@ public class CustomerIdProof implements java.io.Serializable {
 	}
 
 	@Id
-	/*@TableGenerator(name="custproofid",table="fs_custproofidpk",pkColumnName="custproofidkey",pkColumnValue="custproofidvalue",allocationSize=1)
-	@GeneratedValue(strategy=GenerationType.TABLE,generator="custproofid")
-	*/
 	@GeneratedValue(generator="fs_customer_Id_proof_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="fs_customer_Id_proof_seq" ,sequenceName="FS_CUSTOMER_ID_PROOF_SEQ",allocationSize=1)	
 	@Column(name = "CUST_PROOF_ID", unique = true, nullable = false, precision = 22, scale = 0)
@@ -124,7 +172,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		return this.custProofId;
 	}
 
-	public void setCustProofId(BigDecimal custProofId) {
+	public void setCustProofId(BigDecimal custProofId) {	
 		this.custProofId = custProofId;
 	}
 
@@ -138,7 +186,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.fsCustomer = fsCustomer;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LANGUAGE_ID")
 	public LanguageType getFsLanguageType() {
 		return this.fsLanguageType;
@@ -147,7 +195,7 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setFsLanguageType(LanguageType fsLanguageType) {
 		this.fsLanguageType = fsLanguageType;
 	}
-
+*/
 	@Column(name = "NAME", length = 50)
 	public String getName() {
 		return this.name;
@@ -166,6 +214,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.identityInt = identityInt;
 	}
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "IDENTITY_EXPIRY_DATE")
 	public Date getIdentityExpiryDate() {
 		return this.identityExpiryDate;
@@ -175,6 +224,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.identityExpiryDate = identityExpiryDate;
 	}
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "IDENTITY_EFF_DATE")
 	public Date getIdentityEffDate() {
 		return this.identityEffDate;
@@ -184,6 +234,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.identityEffDate = identityEffDate;
 	}
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "IDENTITY_END_DATE")
 	public Date getIdentityEndDate() {
 		return this.identityEndDate;
@@ -229,6 +280,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.updatedBy = updatedBy;
 	}
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "CREATION_DATE")
 	public Date getCreationDate() {
 		return this.creationDate;
@@ -265,7 +317,7 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setIdentityStatus(String identityStatus) {
 		this.identityStatus = identityStatus;
 	}
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "IDENTITY_TYPE_ID")
 	public BizComponentData getFsBizComponentDataByIdentityTypeId() {
 		return fsBizComponentDataByIdentityTypeId;
@@ -284,8 +336,8 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setFsBizComponentDataByCustomerTypeId(BizComponentData fsBizComponentDataByCustomerTypeId) {
 		this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
 	}
-
-	@ManyToOne(fetch = FetchType.LAZY)
+*/
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "IDENTITY_FOR")
 	public BizComponentData getFsBizComponentDataByIdentityFor() {
 		return fsBizComponentDataByIdentityFor;
@@ -321,7 +373,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.scanType = scanType;
 	}*/
 
-	/*@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "REF_CUSTOMER_ID")
 	public Customer getFsCustomerByRefCustomerId() {
 		return fsCustomerByRefCustomerId;
@@ -331,6 +383,7 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.fsCustomerByRefCustomerId = fsCustomerByRefCustomerId;
 	}
 
+	/*
 	@Column(name = "IMG_UPLOAD_DATE")
 	public Date getImgUploadDate() {
 		return imgUploadDate;

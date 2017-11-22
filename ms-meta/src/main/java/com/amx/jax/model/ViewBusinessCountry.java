@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.CollectionId;
+
 @Entity
 @Table(name="VIEW_EX_BUSINESS_COUNTRY")
 public class ViewBusinessCountry {

@@ -2,9 +2,11 @@ package com.amx.jax.model;
 
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -64,7 +67,7 @@ public class ArticleDetails implements java.io.Serializable {
 			String articleDetailCode, String createdBy, Date createdDate,
 			String modifiedBy, Date modifiedDate, String approvedBy,
 			Date approvedDate, String remarks, String isActive,
-			List<Customer1> fsCustomers) {
+			List<Customer> fsCustomers) {
 		super();
 		this.articleDetailId = articleDetailId;
 		this.fsArticleMaster = fsArticleMaster;

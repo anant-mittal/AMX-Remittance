@@ -2,7 +2,9 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,15 +41,15 @@ public class LanguageType implements java.io.Serializable {
 	private String languageName;
 	private String direction;
 	//private List<Customer> fsCustomers = new ArrayList<Customer>();
-	private List<CustomerIdProof> fsCustomerIdProofs = new ArrayList<CustomerIdProof>();
-	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
+	//private List<CustomerIdProof> fsCustomerIdProofs = new ArrayList<CustomerIdProof>();
+	/*private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
 	private List<StateMasterDesc> fsStateMasterDescs = new ArrayList<StateMasterDesc>();
 	private List<DistrictMasterDesc> fsDistrictMasterDescs = new ArrayList<DistrictMasterDesc>();
 	private List<CustomerEmploymentInfo> fsCustomerEmploymentInfos = new ArrayList<CustomerEmploymentInfo>();
 	private List<ContactDetail> fsContactDetails = new ArrayList<ContactDetail>();
 	private List<CityMasterDesc> fsCityMasterDescs = new ArrayList<CityMasterDesc>();
 	private List<CompanyMasterDesc> fsCompanyMasterDescs = new ArrayList<CompanyMasterDesc>();
-	private List<BizComponentDataDesc> fsBizComponentDataDescs = new ArrayList<BizComponentDataDesc>();
+	private List<BizComponentDataDesc> fsBizComponentDataDescs = new ArrayList<BizComponentDataDesc>();*/
 	
 
 	public LanguageType() {
@@ -117,7 +119,7 @@ public class LanguageType implements java.io.Serializable {
 	public void setFsCustomers(List<Customer> fsCustomers) {
 		this.fsCustomers = fsCustomers;
 	}
-*/
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
 	public List<CustomerIdProof> getFsCustomerIdProofs() {
 		return this.fsCustomerIdProofs;
@@ -136,7 +138,7 @@ public class LanguageType implements java.io.Serializable {
 		this.fsCustomerLogins = fsCustomerLogins;
 	}
 */
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
+	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
 	public List<CountryMasterDesc> getFsCountryMasterDescs() {
 		return this.fsCountryMasterDescs;
 	}
@@ -202,7 +204,7 @@ public class LanguageType implements java.io.Serializable {
 			List<CompanyMasterDesc> fsCompanyMasterDescs) {
 		this.fsCompanyMasterDescs = fsCompanyMasterDescs;
 	}
-
+*/
 	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
 	public List<CustCorporateAddlDetail> getFsCustCorporateAddlDetails() {
 		return this.fsCustCorporateAddlDetails;
@@ -213,7 +215,7 @@ public class LanguageType implements java.io.Serializable {
 		this.fsCustCorporateAddlDetails = fsCustCorporateAddlDetails;
 	}*/
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
+	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
 	public List<BizComponentDataDesc> getFsBizComponentDataDescs() {
 		return fsBizComponentDataDescs;
 	}
@@ -221,7 +223,7 @@ public class LanguageType implements java.io.Serializable {
 	public void setFsBizComponentDataDescs(
 			List<BizComponentDataDesc> fsBizComponentDataDescs) {
 		this.fsBizComponentDataDescs = fsBizComponentDataDescs;
-	}
+	}*/
 	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsLanguageType")
 	public Set<SupplierDetails> getExSupplierDetailses() {
 		return this.exSupplierDetailses;

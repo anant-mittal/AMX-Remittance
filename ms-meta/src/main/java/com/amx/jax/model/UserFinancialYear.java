@@ -2,15 +2,26 @@ package com.amx.jax.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+
+import java.util.ArrayList;
 import java.util.Date;
+//import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /*import com.amg.exchange.remittance.model.AdditionalInstructionData;
 import com.amg.exchange.remittance.model.Remittance;
@@ -146,6 +157,7 @@ public class UserFinancialYear implements Serializable {
 		this.financialYear = financialYear;
 	}
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "FINANCIAL_YEAR_BEGIN")
 	public Date getFinancialYearBegin() {
 		return financialYearBegin;
@@ -154,6 +166,7 @@ public class UserFinancialYear implements Serializable {
 		this.financialYearBegin = financialYearBegin;
 	}
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "FINANCIAL_YEAR_END")
 	public Date getFinancialYearEnd() {
 		return financialYearEnd;

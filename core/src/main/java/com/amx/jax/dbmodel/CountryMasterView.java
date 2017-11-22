@@ -1,12 +1,12 @@
 package com.amx.jax.dbmodel;
 
 	import java.math.BigDecimal;
-import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+	import java.util.Date;
+	import javax.persistence.Column;
+	import javax.persistence.Entity;
+	import javax.persistence.Id;
+	import javax.persistence.Table;
 	
 	/**
 	 * 

@@ -27,13 +27,13 @@ public class ContactDetail implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal contactDetailId;
-	private Customer fsCustomer;
-	private LanguageType fsLanguageType;
+	//private Customer fsCustomer;
+	/*private LanguageType fsLanguageType;
 	private BizComponentData fsBizComponentDataByContactTypeId;
 	private CountryMaster fsCountryMaster;
 	private DistrictMaster fsDistrictMaster;
 	private StateMaster fsStateMaster;
-	private CityMaster fsCityMaster;
+	private CityMaster fsCityMaster;*/
 	private String alterEmailId;
 	private String area;
 	private String block;
@@ -49,6 +49,8 @@ public class ContactDetail implements java.io.Serializable {
 	private String activeStatus;
 	private String buildingNo;
 	private String telephoneCode;
+	private BigDecimal customerId;
+	private BigDecimal contactTypeId;
 
 	public ContactDetail() {
 	}
@@ -61,13 +63,13 @@ public class ContactDetail implements java.io.Serializable {
 	public ContactDetail(BigDecimal contactDetailId, Customer fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
 			String buildingNo,String telephoneCode) {
 		this.contactDetailId = contactDetailId;
-		this.fsCustomer = fsCustomer;
-		this.fsLanguageType = fsLanguageType;
+		//this.fsCustomer = fsCustomer;
+		/*this.fsLanguageType = fsLanguageType;
 		this.fsBizComponentDataByContactTypeId = fsBizComponentDataByContactTypeId;
 		this.fsCountryMaster = fsCountryMaster;
 		this.fsDistrictMaster = fsDistrictMaster;
 		this.fsStateMaster = fsStateMaster;
-		this.fsCityMaster = fsCityMaster;
+		this.fsCityMaster = fsCityMaster;*/
 		this.alterEmailId = alterEmailId;
 		this.area = area;
 		this.block = block;
@@ -85,10 +87,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.telephoneCode = telephoneCode;
 	}
 
-	@Id/*
-	@TableGenerator(name="contactdetailid",table="fs_contactdetailidpk",pkColumnName="contactdetailidkey",pkColumnValue="contactdetailidvalue",allocationSize=1)
-	@GeneratedValue(strategy=GenerationType.TABLE,generator="contactdetailid")
-	*/
+	@Id
 	@GeneratedValue(generator="fs_contact_detail_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="fs_contact_detail_seq" ,sequenceName="FS_CONTACT_DETAIL_SEQ",allocationSize=1)
 	@Column(name = "CONTACT_DETAIL_ID", unique = true, nullable = false, precision = 22, scale = 0)
@@ -100,7 +99,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.contactDetailId = contactDetailId;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
 	public Customer getFsCustomer() {
 		return this.fsCustomer;
@@ -108,8 +107,8 @@ public class ContactDetail implements java.io.Serializable {
 
 	public void setFsCustomer(Customer fsCustomer) {
 		this.fsCustomer = fsCustomer;
-	}
-
+	}*/
+/*
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LANGUAGE_ID")
 	public LanguageType getFsLanguageType() {
@@ -141,7 +140,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsDistrictMaster(DistrictMaster fsDistrictMaster) {
 		this.fsDistrictMaster = fsDistrictMaster;
 	}
-
+*/
 	@Column(name = "ALTER_EMAIL_ID", length = 200)
 	public String getAlterEmailId() {
 		return this.alterEmailId;
@@ -253,7 +252,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.lastUpdated = lastUpdated;
 	}
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STATE_ID")
 	public StateMaster getFsStateMaster() {
 		return this.fsStateMaster;
@@ -282,7 +281,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsCityMaster(CityMaster fsCityMaster) {
 		this.fsCityMaster = fsCityMaster;
 	}
-	
+	*/
 	@Column(name = "ISACTIVE", nullable = false, length = 1)
 	public String getActiveStatus() {
 		return this.activeStatus;
@@ -308,6 +307,24 @@ public class ContactDetail implements java.io.Serializable {
 
 	public void setTelephoneCode(String telephoneCode) {
 		this.telephoneCode = telephoneCode;
+	}
+
+	@Column(name="CUSTOMER_ID")
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+
+	@Column(name="CONTACT_TYPE_ID")
+	public BigDecimal getContactTypeId() {
+		return contactTypeId;
+	}
+
+	public void setContactTypeId(BigDecimal contactTypeId) {
+		this.contactTypeId = contactTypeId;
 	}
 
 	

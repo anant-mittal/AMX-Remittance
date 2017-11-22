@@ -1,9 +1,11 @@
 package com.amx.jax.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,8 +14,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 
 
@@ -55,7 +61,7 @@ public class IncomeRangeMaster implements java.io.Serializable {
 	}
 
 	public IncomeRangeMaster(BigDecimal incomeRangeId, ArticleDetails articleDetail, CountryMaster fsCountryMaster, String monthlyIncome, String createdBy, Date createdDate, String modifiedBy, Date modifiedDate, String approvedBy, Date approvedDate, String remarks, String isActive,
-			BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo, List<Customer1> fsCustomers) {
+			BigDecimal incomeRangeFrom, BigDecimal incomeRangeTo, List<Customer> fsCustomers) {
 		this.incomeRangeId = incomeRangeId;
 		this.articleDetail = articleDetail;
 		this.fsCountryMaster = fsCountryMaster;
