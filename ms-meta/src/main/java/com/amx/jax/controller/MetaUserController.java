@@ -40,13 +40,13 @@ import com.amx.jax.service.OnlineCustomerService;
 
 @RestController
 @RequestMapping("/user")
-public class UserController implements Serializable{
+public class MetaUserController implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 7446679687593857144L;
-	final static Logger logger = Logger.getLogger(UserController.class);
+	final static Logger logger = Logger.getLogger(MetaUserController.class);
 	
 	@Autowired
 	CustomerService customerService;
