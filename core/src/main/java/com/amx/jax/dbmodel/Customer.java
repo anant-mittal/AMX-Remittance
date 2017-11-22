@@ -24,6 +24,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Proxy;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /*import com.amg.exchange.common.model.BizComponentData;
@@ -52,6 +54,11 @@ import com.amg.exchange.treasury.model.ArticleDetails;*/
  						Date	: 29-JAN-2015 
  						By		: Nazish Ehsan Hashmi
 		 				Revision:
+		 				
+		 Last Change:
+ 						Date	: 22 Nov 2017
+ 						By		: Rabil
+		 				Revision: 				
 
 		 Description: TODO 
 
@@ -59,7 +66,7 @@ import com.amg.exchange.treasury.model.ArticleDetails;*/
 
 @Entity
 @Table(name = "FS_CUSTOMER" )
-@JsonIgnoreProperties(ignoreUnknown = false)
+
 @Proxy(lazy = false)
 public class Customer implements java.io.Serializable {
 
@@ -71,13 +78,6 @@ public class Customer implements java.io.Serializable {
 	private BigDecimal languageId;
 	
 
-	//private LanguageType fsLanguageType;
-
-	
-	
-	
-	
-	
 	private String shortName;
 	private String shortNameLocal;
 	private String amlStatus;
@@ -127,6 +127,8 @@ public class Customer implements java.io.Serializable {
 	private Date auditStatementDate;
 	private BigDecimal auditGrossIncome;
 	//private Clob signatureSpecimenClob;
+	
+	private String signatureSpecimenClob;
 	private String remarks; 
 	
 	//private ArticleDetails fsArticleDetails;
@@ -778,14 +780,14 @@ public class Customer implements java.io.Serializable {
 		this.auditGrossIncome = auditGrossIncome;
 	}
 
-	/*@Column(name = "SIGNATURE_SPECIMEN_CLOB")
-	public Clob getSignatureSpecimenClob() {
+	@Column(name = "SIGNATURE_SPECIMEN_CLOB")
+	public String getSignatureSpecimenClob() {
 		return signatureSpecimenClob;
 	}
 
-	public void setSignatureSpecimenClob(Clob signatureSpecimenClob) {
+	public void setSignatureSpecimenClob(String signatureSpecimenClob) {
 		this.signatureSpecimenClob = signatureSpecimenClob;
-	}*/
+	}
 	
 	@Column(name="REMARKS")
 	public String getRemarks() {

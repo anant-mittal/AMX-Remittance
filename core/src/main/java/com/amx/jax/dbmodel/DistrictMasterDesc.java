@@ -21,25 +21,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 		 File		: DistrictMasterDesc.java
  
-		 Project	: AlmullaExchange
 
-		 Package	: com.amg.exchange.model
- 
-		 Created	:	
- 						Date	: 29-May-2014 5:13:12 pm
-		 				By		: Justin Vincent
- 						Revision:
- 
- 		 Last Change:
- 						Date	: 29-May-2014 5:13:12 pm
- 						By		: Justin Vincent
-		 				Revision:
+		  Last Change:
+ 						Date	: 22 Nov 2017 5:13:12 pm
+ 						By		: Rabil
+		 				Revision				
 
 		 Description: TODO 
 
 ********************************************************************************************************************/
-//@Cacheable  
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+
 @Entity
 @Table(name = "FS_DISTRICT_MASTER_DESC" )
 public class DistrictMasterDesc implements java.io.Serializable {
@@ -66,10 +57,7 @@ public class DistrictMasterDesc implements java.io.Serializable {
 		this.district = district;
 	}
 
-	/*@Id
-	@TableGenerator(name="districtdescid",table="fs_districtdescidpk",pkColumnName="districtdescidkey",pkColumnValue="districtdescidvalue",allocationSize=1)
-	@GeneratedValue(strategy=GenerationType.TABLE,generator="districtdescid")*/
-	
+
 	@Id
 	@GeneratedValue(generator="fs_district_master_desc_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="fs_district_master_desc_seq",sequenceName="FS_DISTRICT_MASTER_DESC_SEQ",allocationSize=1)

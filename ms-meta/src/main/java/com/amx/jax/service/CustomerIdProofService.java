@@ -20,5 +20,10 @@ public class CustomerIdProofService {
 	public List<CustomerIdProof> getCustomerIdProofByCustomerId(BigDecimal customerId){
 		return customerIdProofRepository.getCustomerIdProofByCustomerId(customerId);
 	}
+	
+	
+	public List<CustomerIdProof> getCustomerImageValidation(BigDecimal customerId,BigDecimal identityTypeId){
+		return customerIdProofRepository.getCustomerImageVAlidation(customerId,identityTypeId);
+	}
 
 }

@@ -21,7 +21,7 @@ public class LoginLogoutHistory implements java.io.Serializable {
 	private Timestamp logoutTime;
 	private String userName;
 	private String visitedPage;
-	private String remarks;
+	private String remarks;	
 	
 	public LoginLogoutHistory() {
 	}

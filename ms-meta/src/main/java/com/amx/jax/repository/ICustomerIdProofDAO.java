@@ -17,4 +17,9 @@ public interface ICustomerIdProofDAO extends JpaRepository<CustomerIdProof, Seri
 	public List<CustomerIdProof> getCustomerIdProofByCustomerId(BigDecimal customerId);
 	
 	
+	
+	@Query(value="select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and IDENTITY_TYPE_ID =?2 and NVL(ISACTIVE,'') <>'D' and  TRUNC(IDENTITY_EXPIRY_DATE) >=TRUNC(SYSDATE)"
+			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC",nativeQuery=true)
+	public List<CustomerIdProof> getCustomerImageVAlidation(BigDecimal customerId,BigDecimal identityTypeId);
+	
 }

@@ -166,6 +166,19 @@ public class MetaUserController implements Serializable{
 	}
 	
 	
+	@RequestMapping(value = "/imageVal/{customerId}/{identityTypeId}", method = RequestMethod.GET)
+	public ResponseEntity<List<CustomerIdProof>> getImageVAlidation(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
+		List<CustomerIdProof> customerIdProofList = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
+		if (customerIdProofList.isEmpty()) {
+			logger.debug("Employees does not exists");
+			return new ResponseEntity<List<CustomerIdProof>>(HttpStatus.NO_CONTENT);
+		}
+		logger.debug("Found " + customerIdProofList.size() + " Employees 1");
+		logger.debug(customerIdProofList);
+		logger.debug(Arrays.toString(customerIdProofList.toArray()));
+		return new ResponseEntity<List<CustomerIdProof>>(customerIdProofList, HttpStatus.OK);
+		
+	}
 	
 	
 	
@@ -224,9 +237,6 @@ public class MetaUserController implements Serializable{
 		return new ResponseEntity<List<BlackListModel>>(blackList, HttpStatus.OK);
 		
 	}
-	
-	
-	
 	@RequestMapping(value = "/loyaltyPoint/{cusref}/{fYear}", method = RequestMethod.GET)
 	public ResponseEntity<List<LoyaltyPointModel>> getLoyaltyFromOldTable(@PathVariable("cusref") BigDecimal cusref,@PathVariable("fYear") BigDecimal fYear){
 		logger.info("getLoyaltyFromOldTable name :"+cusref+"\t Year :"+fYear);

@@ -19,6 +19,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.dbmodel.TermsAndCondition;
 import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.dbmodel.WhyDoAskInformation;
 import com.amx.jax.service.ApplicationCountryService;
@@ -27,6 +28,7 @@ import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
+import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.WhyDoAskService;
 
 /**
@@ -67,6 +69,9 @@ public class MetaController implements Serializable{
 
 	@Autowired
 	FinancialService financialService;
+	
+	@Autowired
+	ViewDistrictService districtServcie;
 
 	
 	
@@ -265,6 +270,22 @@ public class MetaController implements Serializable{
 		
 		return new ResponseEntity<List<UserFinancialYear>>(userFinancialYearList, HttpStatus.OK);
 	}
+	
+	
+	@RequestMapping(value="/district/{stateId}/{districtId}/{languageId}",headers = "Accept=application/json")
+	public ResponseEntity<List<ViewDistrict>> getDistrictDesc(@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId,@PathVariable("languageId") BigDecimal languageId){
+		List<ViewDistrict> viewOnlineEmailMobileChecList = districtServcie.getDistrict(stateId, districtId, languageId);
+		if (viewOnlineEmailMobileChecList.isEmpty()) {
+			logger.debug("Mobile does not exists");
+			return new ResponseEntity<List<ViewDistrict>>(HttpStatus.NO_CONTENT);
+		}
+		logger.debug("Found " + viewOnlineEmailMobileChecList.size());
+		logger.debug(viewOnlineEmailMobileChecList);
+		logger.debug(Arrays.toString(viewOnlineEmailMobileChecList.toArray()));
+		
+		return new ResponseEntity<List<ViewDistrict>>(viewOnlineEmailMobileChecList, HttpStatus.OK);
+	}
+	
 	
 	
 }
