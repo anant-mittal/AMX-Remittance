@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,9 +12,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.amx.jax.constant.UserType;
-
-
-
 
 
 @Entity
@@ -75,11 +71,27 @@ public class CustomerOnlineRegistration {
 	
 	/** added by Prashant */
 	public CustomerOnlineRegistration(Customer cust) {
+		this.customerId = cust.getCustomerId();
+		this.countryId = cust.getCountryId();
+		this.countryId = cust.getCountryId();
+		this.companyId = cust.getCompanyId();
+		this.languageId = cust.getLanguageId();
+		this.userName = cust.getIdentityInt();
+		this.createdBy = cust.getIdentityInt();
+		this.setCreationDate(new Date());
+		this.userType = UserType.USER.getType();
+		this.loginType = UserType.USER.getType();
 		this.email = cust.getEmail();
 		this.mobileNumber = cust.getMobile();
-		this.countryId = cust.getCountryId();
-		this.userName = cust.getIdentityInt();
-		this.userType = UserType.USER.getType();
+		this.setStatus("N");
+		this.setResetBy(cust.getIdentityInt());
+		this.setResetDt(new Date());
+
+	}
+
+	public CustomerOnlineRegistration() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	@Id
