@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.CustomerIdProof;
+import com.amx.jax.dbmodel.CustomerIdProof;
 
 public interface ICustomerIdProofDAO extends JpaRepository<CustomerIdProof, Serializable>{
 

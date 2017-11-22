@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 
 public interface IOnlineCustomerRepository extends JpaRepository<CustomerOnlineRegistration, Serializable>{
 

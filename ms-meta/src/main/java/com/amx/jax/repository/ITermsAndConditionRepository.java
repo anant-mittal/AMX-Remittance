@@ -6,8 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-
-import com.amx.jax.model.TermsAndCondition;
+import com.amx.jax.dbmodel.TermsAndCondition;
 
 public interface ITermsAndConditionRepository<T> extends JpaRepository<TermsAndCondition,BigDecimal>{
 	

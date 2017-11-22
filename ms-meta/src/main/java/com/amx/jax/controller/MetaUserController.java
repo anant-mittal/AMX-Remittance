@@ -5,8 +5,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.model.BlackListModel;
-import com.amx.jax.model.ContactDetail;
-import com.amx.jax.model.Customer;
-import com.amx.jax.model.CustomerIdProof;
-import com.amx.jax.model.CustomerOnlineRegistration;
-import com.amx.jax.model.LoyaltyPointModel;
-import com.amx.jax.model.ViewOnlineCustomerCheck;
+import com.amx.jax.dbmodel.BlackListModel;
+import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.LoyaltyPointModel;
+import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.service.BlackMasterService;
 import com.amx.jax.service.ContactDetailService;
 import com.amx.jax.service.CustomerIdProofService;

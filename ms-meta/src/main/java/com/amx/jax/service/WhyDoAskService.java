@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.WhyDoAskInformation;
+import com.amx.jax.dbmodel.WhyDoAskInformation;
 import com.amx.jax.repository.IWhyDoAskInformationRepository;
 
 @Service

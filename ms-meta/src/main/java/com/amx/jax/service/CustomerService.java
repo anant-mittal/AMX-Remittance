@@ -3,15 +3,10 @@ package com.amx.jax.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.Customer;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.repository.ICustomerRepository;
 
 @Service

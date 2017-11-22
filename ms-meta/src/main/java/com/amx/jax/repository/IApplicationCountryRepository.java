@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.ApplicationSetup;
+import com.amx.jax.dbmodel.ApplicationSetup;
 
 
 public interface IApplicationCountryRepository extends JpaRepository<ApplicationSetup, BigDecimal>{

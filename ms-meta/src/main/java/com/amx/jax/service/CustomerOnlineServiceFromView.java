@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.ViewOnlineCustomerCheck;
+import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.repository.IViewOnlineCustomerCheck;
 
 @Service

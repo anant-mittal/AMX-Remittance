@@ -1,13 +1,12 @@
 package com.amx.jax.repository;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.UserFinancialYear;
+import com.amx.jax.dbmodel.UserFinancialYear;
 
 public interface IFinanceYearRespository extends JpaRepository<UserFinancialYear, Serializable>{
 	

@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.LoyaltyPointModel;
+import com.amx.jax.dbmodel.LoyaltyPointModel;
 
 public interface ILoyaltyPointDAO extends JpaRepository<LoyaltyPointModel, Serializable> {
 

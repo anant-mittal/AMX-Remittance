@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.BlackListModel;
+import com.amx.jax.dbmodel.BlackListModel;
 
 public interface IBlackMasterRepository extends JpaRepository<BlackListModel, Serializable>{
 	

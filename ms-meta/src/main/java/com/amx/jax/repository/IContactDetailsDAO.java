@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.model.ContactDetail;
+import com.amx.jax.dbmodel.ContactDetail;
 
 public interface IContactDetailsDAO  extends JpaRepository<ContactDetail, Serializable>{
 	

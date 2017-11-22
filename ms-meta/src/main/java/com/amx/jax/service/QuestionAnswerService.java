@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.OnlineQuestModel;
+import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 
 @Service

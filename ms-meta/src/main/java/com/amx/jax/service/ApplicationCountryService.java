@@ -6,8 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.model.ApplicationSetup;
-import com.amx.jax.model.CountryMasterView;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.repository.IApplicationCountryRepository;
 
 @Service
