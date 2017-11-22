@@ -13,10 +13,10 @@ import org.springframework.web.client.RestTemplate;
 import com.amx.jax.client.config.Config;
 
 @SpringBootApplication
-public class SpServiceClientApplication {
+public class JaxServiceClientApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SpServiceClientApplication.class, args);
+		SpringApplication.run(JaxServiceClientApplication.class, args);
 	}
 
 	@Autowired

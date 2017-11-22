@@ -3,6 +3,7 @@ package com.amx.jax.util;
 import java.io.IOException;
 import java.util.List;
 
+import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.response.ResponseData;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,7 +35,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		ResponseData responseData = new ResponseData();
 		responseData.setMetaInfo(0);
 		responseData.setType(type);
-		List<Object> models = null;
+		List<AbstractModel> models = null;
 //		if ("user".equals(type)) {
 //			models = new ObjectMapper().readValue(values, new TypeReference<List<KwUserModel>>() {
 //			});
