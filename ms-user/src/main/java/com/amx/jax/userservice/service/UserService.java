@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -8,26 +9,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.exception.InvalidCivilIdException;
+import com.amx.jax.exception.InvalidJsonInputException;
+import com.amx.jax.exception.InvalidOtpException;
+import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.KwUserDao;
-import com.amx.jax.userservice.exception.InvalidCivilIdException;
-import com.amx.jax.userservice.exception.UserNotFoundException;
-import com.amx.jax.userservice.model.AbstractUserModel;
-import com.amx.jax.userservice.model.UserModel;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.Util;
+import com.amx.jax.util.WebUtils;
 import com.amx.jax.util.validation.CustomerValidation;
 
 @Service
@@ -53,6 +58,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private Util util;
+
+	@Autowired
+	private WebUtils webutil;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -82,6 +90,7 @@ public class UserService extends AbstractUserService {
 		model.setCaption(cust.getCaption());
 		model.setEmail(cust.getEmail());
 		model.setImageUrl(cust.getImageUrl());
+		model.setMobile(cust.getMobileNumber());
 		List<SecurityQuestionModel> securityquestions = new ArrayList<>();
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion1(), cust.getSecurityAnswer1()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion2(), cust.getSecurityAnswer2()));
@@ -106,28 +115,45 @@ public class UserService extends AbstractUserService {
 		return UserModel.class;
 	}
 
-	public CustomerOnlineRegistration verifyCivilId(String civilId) {
+	public CustomerOnlineRegistration verifyCivilId(String civilId, CivilIdOtpModel model) {
+		Customer cust = validateCustomerForOnlineFlow(civilId);
 
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
+		if (onlineCust == null) {
+			onlineCust = new CustomerOnlineRegistration(cust);
+			onlineCust.setHresetBy(cust.getIdentityInt());
+			onlineCust.setHresetIp(webutil.getClientIp());
+			onlineCust.setHresetkDt(new Date());
+		}
+		model.setEmail(cust.getEmail());
+		model.setMobile(cust.getMobile());
+		model.setIsActiveCustomer("Y".equals(cust.getActivatedInd()) ? true : false);
+		return onlineCust;
+	}
+
+	private Customer validateCustomerForOnlineFlow(String civilId) {
 		Customer cust = custDao.getCustomerByCivilId(civilId);
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
-		if (onlineCust == null) {
-			onlineCust = new CustomerOnlineRegistration(cust);
+		if (cust.getMobile() == null) {
+			throw new InvalidCivilIdException("Mobile number is empty. Contact branch to update the same.");
 		}
-		return onlineCust;
+		if (cust.getEmail() == null) {
+			throw new InvalidCivilIdException("Email is empty. Contact branch to update the same.");
+		}
+		return cust;
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
 		validateCivilId(civilId);
-		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
+		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
+
 		generateToken(civilId, model);
-		model.setEmail(onlineCust.getEmail());
-		model.setMobile(onlineCust.getMobileNumber());
 		onlineCust.setEmailToken(model.getHashedOtp());
 		onlineCust.setSmsToken(model.getHashedOtp());
+		onlineCust.setTokenDate(new Date());
 		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);
@@ -149,7 +175,27 @@ public class UserService extends AbstractUserService {
 		model.setOtp(randOtp);
 		logger.info("Generated otp for civilid- " + userId + " is " + randOtp);
 	}
-	
-	public void validagteOtp() {}
+
+	public ApiResponse validateOtp(String civilId, String otp) {
+		logger.debug("in validateopt of civilid: " + civilId);
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(civilId);
+		if (onlineCust == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		if (StringUtils.isEmpty(otp)) {
+			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
+		}
+		String emailTokenHash = onlineCust.getEmailToken();
+		String otpHash = cryptoUtil.getHash(civilId, otp);
+		if (!otpHash.equals(emailTokenHash)) {
+			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
+		}
+		ApiResponse response = getBlackApiResponse();
+		CustomerModel customerModel = convert(onlineCust);
+		response.getData().getValues().add(customerModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		logger.debug("end of validateopt for civilid: " + civilId);
+		return response;
+	}
 
 }

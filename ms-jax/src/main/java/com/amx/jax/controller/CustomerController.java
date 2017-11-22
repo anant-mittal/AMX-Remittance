@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerModel;
@@ -29,25 +30,7 @@ public class CustomerController {
 	private ConverterUtil converterUtil;
 
 	@Autowired
-	private OracleCustomerService service;
-
-	@Autowired
 	private UserService userSerivce;
-
-	@RequestMapping(value = "/nationality-id/{nationality-id}/validate", method = RequestMethod.GET)
-	public ApiResponse getUser(@PathVariable("nationality-id") String nationalityId) {
-
-		ApiResponse response = null;// metaData.getServiceFactory().getCustomerService()
-		// .validateNationalityId(nationalityId);
-		return response;
-	}
-
-	@RequestMapping(value = "/customer/{cust-id}", method = RequestMethod.GET)
-	public ApiResponse getCust(@PathVariable("cust-id") BigDecimal custId) {
-
-		ApiResponse response = service.getOracleCust(custId);
-		return response;
-	}
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody String json) {
@@ -59,6 +42,12 @@ public class CustomerController {
 	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse verifyCivilId(@PathVariable("civil-id") String civilId) {
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
+		return response;
+	}
+
+	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
+	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("otp") String otp) {
+		ApiResponse response = userSerivce.validateOtp(civilId, otp);
 		return response;
 	}
 }

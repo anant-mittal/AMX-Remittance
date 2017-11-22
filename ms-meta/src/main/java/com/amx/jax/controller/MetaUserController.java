@@ -104,14 +104,14 @@ public class MetaUserController implements Serializable{
 	}
 	
 	
-	
+	/*
 	@RequestMapping(value = "/lylpointU/{loyaltyPoint}/{countryId}/{companyId}/{customerId}", method = RequestMethod.GET)
 	public void  updateCustomerLoyaltyPoint(@PathVariable("loyaltyPoint") BigDecimal loyaltyPoint,@PathVariable("countryId") BigDecimal countryId
 			,@PathVariable("companyId") BigDecimal companyId,@PathVariable("customerId") BigDecimal customerId){
 		logger.info("loyaltyPoint :"+loyaltyPoint+"\t countryId :"+countryId+"\t companyId :"+companyId+"\t customerId :"+customerId);
 		customerService.updateLoyaltyPoint(loyaltyPoint, countryId, companyId, customerId);
 		
-	}
+	}*/
 	
 	
 	

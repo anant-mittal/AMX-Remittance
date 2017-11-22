@@ -25,9 +25,9 @@ public class CustomerService {
 	}
 	
 	
-	public void updateLoyaltyPoint(BigDecimal loyaltyPoint,BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
+	/*public void updateLoyaltyPoint(BigDecimal loyaltyPoint,BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
 		customerRepository.updateLoyaltyPoints(loyaltyPoint, companyId, countryId, customerId);
-	}
+	}*/
 	
 	/*@Transactional
 	public  ResponseEntity<List<Customer>> convert(BigDecimal countryId,String userId){

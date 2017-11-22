@@ -12,6 +12,8 @@ public class CivilIdOtpModel extends AbstractModel {
 	private String email;
 
 	private String mobile;
+	
+	private Boolean isActiveCustomer;
 
 	public String getOtp() {
 		return otp;
@@ -43,6 +45,14 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void setHashedOtp(String hashedOtp) {
 		this.hashedOtp = hashedOtp;
+	}
+
+	public Boolean getIsActiveCustomer() {
+		return isActiveCustomer;
+	}
+
+	public void setIsActiveCustomer(Boolean isActiveCustomer) {
+		this.isActiveCustomer = isActiveCustomer;
 	}
 
 }

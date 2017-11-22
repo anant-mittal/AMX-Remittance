@@ -104,17 +104,17 @@ public class CustomerDao {
 		onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
 		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(0).getAnswer()));
 
-		onlineCust.setSecurityQuestion1(secQuestions.get(1).getQuestionSrNo());
-		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(1).getAnswer()));
+		onlineCust.setSecurityQuestion2(secQuestions.get(1).getQuestionSrNo());
+		onlineCust.setSecurityAnswer2(cryptoUtil.getHash(userId, secQuestions.get(1).getAnswer()));
 
-		onlineCust.setSecurityQuestion1(secQuestions.get(2).getQuestionSrNo());
-		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(2).getAnswer()));
+		onlineCust.setSecurityQuestion3(secQuestions.get(2).getQuestionSrNo());
+		onlineCust.setSecurityAnswer3(cryptoUtil.getHash(userId, secQuestions.get(2).getAnswer()));
 
-		onlineCust.setSecurityQuestion1(secQuestions.get(3).getQuestionSrNo());
-		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(3).getAnswer()));
+		onlineCust.setSecurityQuestion4(secQuestions.get(3).getQuestionSrNo());
+		onlineCust.setSecurityAnswer4(cryptoUtil.getHash(userId, secQuestions.get(3).getAnswer()));
 
-		onlineCust.setSecurityQuestion1(secQuestions.get(4).getQuestionSrNo());
-		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(4).getAnswer()));
+		onlineCust.setSecurityQuestion5(secQuestions.get(4).getQuestionSrNo());
+		onlineCust.setSecurityAnswer5(cryptoUtil.getHash(userId, secQuestions.get(4).getAnswer()));
 	}
 
 	@Transactional

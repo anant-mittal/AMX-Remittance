@@ -21,8 +21,8 @@ public interface ICustomerRepository extends JpaRepository<Customer, Serializabl
 	public List<Customer> getCustomerByCustomerId(BigDecimal countryId,BigDecimal companyId,BigDecimal customerId);
 	
 	
-	@Modifying
+	/*@Modifying
 	@Query("update Customer c set c.loyaltyPoints = ?1 where c.companyId =?2 and c.countryId=?3 and c.customerId = ?4")
 	public void updateLoyaltyPoints(BigDecimal loyaltyPoint,BigDecimal companyId,BigDecimal countryId, BigDecimal customerId);
-	
+	*/
 }

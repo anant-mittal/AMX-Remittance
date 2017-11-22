@@ -19,19 +19,9 @@ public class GlobalControllerExceptionHandler {
 
 	private Logger logger = Logger.getLogger(GlobalControllerExceptionHandler.class);
 
-/*	@ExceptionHandler(UserNotFoundException.class)
+	@ExceptionHandler(AbstractException.class)
 	@ResponseBody
-	public ApiResponse handleUserNotFound(UserNotFoundException ex) {
-
-		ApiResponse response = getApiResponse(ex);
-		response.setResponseStatus(ResponseStatus.NOT_FOUND);
-		logger.info(ex.getErrorMessage());
-		return response;
-	}*/
-
-	@ExceptionHandler(InvalidJsonInputException.class)
-	@ResponseBody
-	public ApiResponse handleInvalidInputException(InvalidJsonInputException ex) {
+	public ApiResponse handleInvalidInputException(AbstractException ex) {
 
 		ApiResponse response = getApiResponse(ex);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);

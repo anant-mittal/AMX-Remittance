@@ -15,6 +15,7 @@ public class MetaData implements IMetaData {
 	private Integer countryId;
 	
 	private Integer languageId;
+	
 
 	public Integer getLanguageId() {
 		return languageId;

@@ -3,11 +3,11 @@ package com.amx.jax.userservice.dao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.UserModel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.userservice.exception.UserNotFoundException;
-import com.amx.jax.userservice.model.AbstractUserModel;
-import com.amx.jax.userservice.model.UserModel;
 import com.amx.jax.userservice.repository.CustomerRepository;
 
 @Component
