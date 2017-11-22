@@ -17,8 +17,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/register/**").permitAll().antMatchers("/app/**").authenticated().and()
-				.formLogin().loginPage("/login").failureUrl("/login?error").permitAll().and().logout()
+		//http.headers().frameOptions().disable();
+		http.headers().disable();
+		http.csrf().disable();
+		http.authorizeRequests().antMatchers("/register/**").permitAll();
+		http.authorizeRequests().antMatchers("/app/**").authenticated();
+		http.formLogin().loginPage("/login").failureUrl("/login?error").permitAll().and().logout()
 				.logoutSuccessUrl("/login?logout").permitAll().and().exceptionHandling().accessDeniedPage("/403");
 	}
 
