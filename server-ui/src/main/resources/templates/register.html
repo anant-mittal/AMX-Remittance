@@ -3,13 +3,51 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-<title>Spring Security Example</title>
+  <meta charset="UTF-8">
+  <title>Almulla Online</title>
 </head>
 <body>
-	<h1>Welcome!</h1>
+<div id="app"></div>
+<script>
+  function getJson(str) {
+    let json;
+    try {
+      json = JSON.parse(str);
+    } catch (e) {
+      console.error('Error in config: ', e);
+      return false;
+    }
+    return json;
+  }
+  window.CONST = {
+    dummyApi: false,
+    remoteJsUrl: '',
+  };
+  var config = getJson(window.localStorage.getItem('debugConfig'));
+  if (config) {
+    window.CONST.debug = config.debug || false;
+    window.CONST.dummyApi = config.dummyApi || false;
+    window.CONST.remoteJsUrl = config.remoteJsUrl || false;
+  }
 
-	<p>
-		Click <a th:href="@{/hello}">here</a> to see a greeting.
-	</p>
+  // add css and js
+  var head = document.getElementsByTagName('head')[0];
+  var js = document.createElement('script');
+  js.type = 'text/javascript';
+  js.src = window.CONST.remoteJsUrl + '/dist/app.bundle.js';
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = window.CONST.remoteJsUrl + '/dist/style.css';
+  head.appendChild(css);
+  head.appendChild(js);
+
+  // add favicon
+  var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+  link.type = 'image/x-icon';
+  link.rel = 'shortcut icon';
+  link.href = window.CONST.remoteJsUrl + '/dist/favicon.ico';
+  document.getElementsByTagName('head')[0].appendChild(link);
+
+</script>
 </body>
 </html>
