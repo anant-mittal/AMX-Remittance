@@ -70,6 +70,13 @@ public class CustomerOnlineRegistration {
 	private Date tokenDate;
 	private String loginId;
 	
+	private String deviceId;
+	private String deviceType;
+	
+
+
+
+	
 	
 	/** added by Prashant */
 	public CustomerOnlineRegistration(Customer cust) {
@@ -499,6 +506,24 @@ public class CustomerOnlineRegistration {
 
 	public void setLoginId(String loginId) {
 		this.loginId = loginId;
+	}
+
+	@Column(name="DEVICE_ID")
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	@Column(name="DEVICE_TYPE")
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 	
 }
