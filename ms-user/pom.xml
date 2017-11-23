@@ -19,15 +19,14 @@
 		</dependency>
 
 		<dependency>
-
 			<groupId>com.amx.jax</groupId>
 			<artifactId>core</artifactId>
-			<version>${jax.version}</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>jax</artifactId>
-		<version>${jax.version}</version>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 </project>

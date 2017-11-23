@@ -9,12 +9,11 @@
 	<name>core</name>
 	<url>http://maven.apache.org</url>
 
-
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>jax</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>

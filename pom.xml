@@ -1,24 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.amx.jax</groupId>
-	<artifactId>jax</artifactId>
-	<version>${jax.version}</version>
-	<packaging>pom</packaging>
-
 	<name>jax-system</name>
 	<url>http://maven.apache.org</url>
+	<groupId>com.amx.jax</groupId>
+	<artifactId>jax</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
-		<jax.lib.amx.version>0.0.1-SNAPSHOT</jax.lib.amx.version>
-		<jax.core.version>0.0.1-SNAPSHOT</jax.core.version>
-		<jax.ms.user.version>0.0.1-SNAPSHOT</jax.ms.user.version>
-		<jax.ms.meta.version>0.0.1-SNAPSHOT</jax.ms.meta.version>
-		<jax.client.version>0.0.1-SNAPSHOT</jax.client.version>
 	</properties>
 
 	<dependencies>
@@ -37,6 +31,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

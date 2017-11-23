@@ -12,7 +12,7 @@
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>jax</artifactId>
-		<version>${jax.version}</version>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
