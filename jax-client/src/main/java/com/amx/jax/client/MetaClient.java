@@ -175,4 +175,33 @@ public class MetaClient extends AbstractJaxServiceClient{
 		return response;
 	}
 	
+	
+	public ApiResponse getClienContactUsTime() {
+		ApiResponse response = null;
+		try {
+			log.info("Contact Us time");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdtime/";
+			response = restTemplate.getForObject(url, ApiResponse.class);
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response;
+	}
+	
+	public ApiResponse getClienHelpDeskNo() {
+		ApiResponse response = null;
+		try {
+			log.info("Contact Us time");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdno/";
+			response = restTemplate.getForObject(url, ApiResponse.class);
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response;
+	}
+	
+	
+	
 }

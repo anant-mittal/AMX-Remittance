@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
+import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
@@ -75,6 +76,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			
 		case "fyear":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserFinancialYearDTO>>(){});
+			break;	
+			
+		case "parameter":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<AuthenticationLimitCheckDTO>>(){});
 			break;		
 				
 			

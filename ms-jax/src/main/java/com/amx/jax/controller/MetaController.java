@@ -15,6 +15,7 @@ import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
@@ -61,6 +62,10 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	ViewDistrictService districtServcie;
+	
+	
+	@Autowired
+	ParameterService parameterService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -155,9 +160,18 @@ public class MetaController implements Serializable{
 	}
 	
 	
-	@RequestMapping(value = "/district/{stateId}/{districtId}/{languageId}", method = RequestMethod.GET)
-	public ApiResponse getDistrictDescResponse(@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId,@PathVariable("languageId") BigDecimal languageId){
-		ApiResponse response = districtServcie.getDistrict(stateId, districtId, languageId);
+	@RequestMapping(value = "/contacttime", method = RequestMethod.GET)
+	public ApiResponse getContactTimeResponse(){
+		ApiResponse response = parameterService.getContactUsTime();
 		return response;
 	}
+	
+	@RequestMapping(value = "/contactnumber", method = RequestMethod.GET)
+	public ApiResponse getContactNumberResponse(){
+		ApiResponse response = parameterService.getContactPhoneNo();
+		return response;
+	}
+	
+	
+	
 }
