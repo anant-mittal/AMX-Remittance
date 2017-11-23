@@ -2,7 +2,7 @@ package com.amx.amxlib.model.response;
 
 public enum ResponseStatus {
 
-	OK("200"), NOT_FOUND("404"), INTERNAL_ERROR("500"), BAD_REQUEST("400");
+	OK("200"), NOT_FOUND("404"), INTERNAL_ERROR("500"), BAD_REQUEST("400"),DUPLICATE("409");
 
 	private final String code;
 

@@ -2,7 +2,9 @@ package com.amx.jax.constant;
 
 public enum UserType {
 
-	USER("U"), ADMIN("A"), D("D");
+	USER("U"), 
+	ADMIN("A"),
+	D("D");
 
 	private String type;
 

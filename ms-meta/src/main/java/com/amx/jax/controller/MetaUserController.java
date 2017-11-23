@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
@@ -70,38 +71,20 @@ public class MetaUserController implements Serializable{
 	
 	
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Customer>> getCustomerDetails(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		List<Customer> customerDetailList = customerService.getCustomer(countryId, userId);
-		if (customerDetailList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<Customer>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + customerDetailList.size() + " Employees 1");
-		logger.debug(customerDetailList);
-		logger.debug(Arrays.toString(customerDetailList.toArray()));
-		return new ResponseEntity<List<Customer>>(customerDetailList, HttpStatus.OK);
-		
+	public ApiResponse getCustomerDetailsResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
+		ApiResponse response = customerService.getCustomer(countryId, userId);
+		return response;
 	}
 	
+	@RequestMapping(value = "/{countryId}/{companyId}/{customerId}", method = RequestMethod.GET)
+	public ApiResponse getCustomerDetailsByCustomerIdResponse(@PathVariable("countryId") BigDecimal countryId
+			,@PathVariable("companyId") BigDecimal companyId,@PathVariable("customerId") BigDecimal customerId){
+		ApiResponse response = customerService.getCustomerByCustomerId(countryId, companyId, customerId);
+		return response;
+	}
 	
 	
 
-	
-	
-	@RequestMapping(value = "/{countryId}/{companyId}/{customerId}", method = RequestMethod.GET)
-	public ResponseEntity<List<Customer>> getCustomerDetailsByCustomerId(@PathVariable("countryId") BigDecimal countryId
-			,@PathVariable("companyId") BigDecimal companyId,@PathVariable("customerId") BigDecimal customerId){
-		List<Customer> customerDetailList = customerService.getCustomerByCustomerId(countryId, companyId, customerId);
-		if (customerDetailList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<Customer>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + customerDetailList.size() + " Employees 1");
-		logger.debug(customerDetailList);
-		logger.debug(Arrays.toString(customerDetailList.toArray()));
-		return new ResponseEntity<List<Customer>>(customerDetailList, HttpStatus.OK);
-		
-	}
 	
 	
 	/*
@@ -116,38 +99,22 @@ public class MetaUserController implements Serializable{
 	
 	
 	
-	
-	
 	@RequestMapping(value = "/online/{countryId}/{userId}", method = RequestMethod.GET)
-	public ResponseEntity<List<CustomerOnlineRegistration>> getOnlineCustomer(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		List<CustomerOnlineRegistration> onlinecustomerDetailList = onlineCustomerService.getOnlineCustomerList(countryId, userId);
-		if (onlinecustomerDetailList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<CustomerOnlineRegistration>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + onlinecustomerDetailList.size() + " Employees 1");
-		logger.debug(onlinecustomerDetailList);
-		logger.debug(Arrays.toString(onlinecustomerDetailList.toArray()));
-		return new ResponseEntity<List<CustomerOnlineRegistration>>(onlinecustomerDetailList, HttpStatus.OK);
-		
+	public ApiResponse getOnlineCustomerResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
+		ApiResponse response = onlineCustomerService.getOnlineCustomerList(countryId, userId);
+		return response;
 	}
-	
 	
 	
 	@RequestMapping(value = "/onlinecheck/{companyId}/{countryId}/{civilid}", method = RequestMethod.GET)
-	public ResponseEntity<List<ViewOnlineCustomerCheck>> civilIdStatusForOnlineFromView(@PathVariable("companyId") BigDecimal companyId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("civilid") String civilid){
-		List<ViewOnlineCustomerCheck> onlinecustomerDetailList = customerOnlineServiceFromView.civilIdCheckForOnlineUser(companyId, countryId, civilid);
-		if (onlinecustomerDetailList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<ViewOnlineCustomerCheck>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + onlinecustomerDetailList.size() + " Employees 1");
-		logger.debug(onlinecustomerDetailList);
-		logger.debug(Arrays.toString(onlinecustomerDetailList.toArray()));
-		return new ResponseEntity<List<ViewOnlineCustomerCheck>>(onlinecustomerDetailList, HttpStatus.OK);
-		
+	public ApiResponse civilIdStatusForOnlineFromViewResponse(@PathVariable("companyId") BigDecimal companyId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("civilid") String civilid){
+		ApiResponse response = customerOnlineServiceFromView.civilIdCheckForOnlineUser(companyId, countryId, civilid);
+		return response;
 	}
 	
+	
+	
+
 	
 	
 	
