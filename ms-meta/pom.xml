@@ -3,14 +3,16 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
+	<artifactId>ms-meta</artifactId>
+	<name>ms-meta</name>
+	<description>meta service of jax system</description>
 	<packaging>jar</packaging>
-
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>jax</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -61,8 +63,4 @@
 		</plugins>
 	</build>
 
-
-	<artifactId>ms-meta</artifactId>
-	<name>ms-meta</name>
-	<description>meta service of jax system</description>
 </project>
