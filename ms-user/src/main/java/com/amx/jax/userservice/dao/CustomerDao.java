@@ -13,11 +13,12 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.validation.PatternValidator;
 
 @Component
 public class CustomerDao {
@@ -35,7 +36,7 @@ public class CustomerDao {
 	private CryptoUtil cryptoUtil;
 
 	@Autowired
-	private Util util;
+	private PatternValidator patternValidator;
 
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
@@ -77,9 +78,7 @@ public class CustomerDao {
 	@Transactional
 	public CustomerOnlineRegistration saveOrUpdateOnlineCustomer(CustomerOnlineRegistration onlineCust,
 			CustomerModel model) {
-		BigDecimal countryId = new BigDecimal(meta.getCountryId());
 		String userId = model.getIdentityId();
-		repo.getCustomerbyuser(countryId, userId);
 
 		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
 		if (!CollectionUtils.isEmpty(secQuestions)) {
@@ -90,6 +89,14 @@ public class CustomerDao {
 		}
 		if (model.getImageUrl() != null) {
 			onlineCust.setImageUrl(model.getImageUrl());
+		}
+
+		if (model.getLoginId() != null) {
+			boolean userNameValid = patternValidator.validateUserName(model.getLoginId());
+			if (!userNameValid) {
+				throw new GlobalException("Username is not valid", "INVALID_USERNAME");
+			}
+			onlineCust.setLoginId(model.getLoginId());
 		}
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));

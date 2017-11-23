@@ -2,15 +2,16 @@ package com.amx.jax.exception;
 
 public class GlobalException extends AbstractException {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public GlobalException(String errorMessage) {
 		super(errorMessage);
-		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public String getErrorCode() {
-		// TODO Auto-generated method stub
-		return null;
+	public GlobalException(String errorMessage, String errorCode) {
+		super(errorMessage, errorCode);
 	}
-
 }

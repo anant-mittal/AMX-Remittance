@@ -36,21 +36,4 @@ public class UserController {
 		return response;
 	}
 
-	/*@RequestMapping(value = "/{user-id}", method = RequestMethod.GET)
-	public ApiResponse getUser(@PathVariable("user-id") Long userId) {
-
-		ApiResponse response = metaData.getServiceFactory().getUserService().getUser(userId);
-		return response;
-	}
-*/
-	/*@RequestMapping(value = "/{user-id}", method = RequestMethod.PUT)
-	public ApiResponse editUser(@PathVariable("user-id") Long userId, @RequestBody String json) {
-
-		AbstractUserService userService = (AbstractUserService) metaData.getServiceFactory().getUserService();
-		AbstractUserModel userModel = (AbstractUserModel) converterUtil.unmarshall(json, userService.getModelClass());
-		userModel.setId(userId);
-		ApiResponse response = metaData.getServiceFactory().getUserService().editUser(userModel);
-		return response;
-	}*/
-
 }

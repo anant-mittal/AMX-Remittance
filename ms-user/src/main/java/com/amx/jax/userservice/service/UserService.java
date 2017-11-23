@@ -22,6 +22,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
@@ -34,6 +35,7 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
 import com.amx.jax.util.validation.CustomerValidation;
+import com.amx.jax.util.validation.PatternValidator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -61,6 +63,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private WebUtils webutil;
+
+	@Autowired
+	private PatternValidator patternValidator;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -203,5 +208,4 @@ public class UserService extends AbstractUserService {
 		logger.debug("end of validateopt for civilid: " + civilId);
 		return response;
 	}
-
 }

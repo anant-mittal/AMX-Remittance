@@ -1,7 +1,7 @@
 package com.amx.amxlib.model;
 
-import java.math.BigDecimal;
 import java.util.List;
+
 
 public class CustomerModel extends AbstractModel {
 
@@ -10,6 +10,8 @@ public class CustomerModel extends AbstractModel {
 	private String email;
 
 	private String mobile;
+
+	private String loginId;
 
 	private String password;
 
@@ -78,6 +80,14 @@ public class CustomerModel extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "customer";
+	}
+
+	public String getLoginId() {
+		return loginId;
+	}
+
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
 	}
 
 }
