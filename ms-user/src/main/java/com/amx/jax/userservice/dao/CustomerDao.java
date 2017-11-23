@@ -101,20 +101,28 @@ public class CustomerDao {
 	private void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
 		String userId = onlineCust.getUserName();
 
-		onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
-		onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(0).getAnswer()));
+		if (secQuestions.get(0).getAnswer() != null) {
+			onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
+			onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(0).getAnswer()));
+		}
 
-		onlineCust.setSecurityQuestion2(secQuestions.get(1).getQuestionSrNo());
-		onlineCust.setSecurityAnswer2(cryptoUtil.getHash(userId, secQuestions.get(1).getAnswer()));
+		if (secQuestions.get(1).getAnswer() != null) {
+			onlineCust.setSecurityQuestion2(secQuestions.get(1).getQuestionSrNo());
+			onlineCust.setSecurityAnswer2(cryptoUtil.getHash(userId, secQuestions.get(1).getAnswer()));
+		}
 
-		onlineCust.setSecurityQuestion3(secQuestions.get(2).getQuestionSrNo());
-		onlineCust.setSecurityAnswer3(cryptoUtil.getHash(userId, secQuestions.get(2).getAnswer()));
-
-		onlineCust.setSecurityQuestion4(secQuestions.get(3).getQuestionSrNo());
-		onlineCust.setSecurityAnswer4(cryptoUtil.getHash(userId, secQuestions.get(3).getAnswer()));
-
-		onlineCust.setSecurityQuestion5(secQuestions.get(4).getQuestionSrNo());
-		onlineCust.setSecurityAnswer5(cryptoUtil.getHash(userId, secQuestions.get(4).getAnswer()));
+		if (secQuestions.get(2).getAnswer() != null) {
+			onlineCust.setSecurityQuestion3(secQuestions.get(2).getQuestionSrNo());
+			onlineCust.setSecurityAnswer3(cryptoUtil.getHash(userId, secQuestions.get(2).getAnswer()));
+		}
+		if (secQuestions.get(3).getAnswer() != null) {
+			onlineCust.setSecurityQuestion4(secQuestions.get(3).getQuestionSrNo());
+			onlineCust.setSecurityAnswer4(cryptoUtil.getHash(userId, secQuestions.get(3).getAnswer()));
+		}
+		if (secQuestions.get(4).getAnswer() != null) {
+			onlineCust.setSecurityQuestion5(secQuestions.get(4).getQuestionSrNo());
+			onlineCust.setSecurityAnswer5(cryptoUtil.getHash(userId, secQuestions.get(4).getAnswer()));
+		}
 	}
 
 	@Transactional

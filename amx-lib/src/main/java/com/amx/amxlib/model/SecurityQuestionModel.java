@@ -6,6 +6,11 @@ public class SecurityQuestionModel {
 
 	private BigDecimal questionSrNo;
 
+	public SecurityQuestionModel() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public SecurityQuestionModel(BigDecimal questionSrNo, String answer) {
 		super();
 		this.questionSrNo = questionSrNo;

@@ -34,7 +34,7 @@ public class CustomerController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody String json) {
-		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, userSerivce.getModelClass());
+		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, CustomerModel.class);
 		ApiResponse response = userSerivce.saveCustomer(model);
 		return response;
 	}

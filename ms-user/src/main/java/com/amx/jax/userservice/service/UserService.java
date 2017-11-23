@@ -102,7 +102,11 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
+		validateCustomerForOnlineFlow(model.getIdentityId());
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(model.getIdentityId());
+		if (onlineCust == null) {
+			throw new UserNotFoundException("Customer is not registered for online flow");
+		}
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(convert(onlineCust));

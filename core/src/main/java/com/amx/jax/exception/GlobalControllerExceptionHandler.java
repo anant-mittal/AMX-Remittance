@@ -12,8 +12,6 @@ import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 
-
-
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
 
@@ -25,7 +23,7 @@ public class GlobalControllerExceptionHandler {
 
 		ApiResponse response = getApiResponse(ex);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
-		logger.info(ex.getErrorMessage());
+		logger.info("Exception occured in controller " + ex.getClass().getName(), ex);
 		return response;
 	}
 
