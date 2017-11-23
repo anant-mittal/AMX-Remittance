@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>jax</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+		<version>${jax.version}</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
@@ -50,17 +50,8 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${jax.version}</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>
