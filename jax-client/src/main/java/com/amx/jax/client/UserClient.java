@@ -1,9 +1,5 @@
 package com.amx.jax.client;
 
-import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
-
-import java.net.URI;
-
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 
 import org.apache.log4j.Logger;
@@ -23,21 +19,23 @@ import com.amx.jax.client.util.ConverterUtility;
 public class UserClient extends AbstractJaxServiceClient {
 
 	private Logger log = Logger.getLogger(getClass());
+
 	@Autowired
 	private ConverterUtility util;
 
-	public ApiResponse registerUser(AbstractUserModel model) {
-		ApiResponse response = null;
+	public ApiResponse validateOtp(String civilId, String otp) {
+		ResponseEntity<ApiResponse> response = null;
 		try {
-			log.info("calling registeruser api: ");
+			log.info("calling validateOtp api: ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			headers.add("meta-info", "{\"country-id\":91}");
-			HttpEntity<AbstractUserModel> entity = new HttpEntity<AbstractUserModel>(model, headers);
-			response = restTemplate.postForObject(baseUrl.toString() + USER_API_ENDPOINT, entity, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/validate-otp/";
+			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity, ApiResponse.class);
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in validateOtp ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
@@ -51,7 +49,23 @@ public class UserClient extends AbstractJaxServiceClient {
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity, ApiResponse.class);
 			log.info("responce from  sendOtpForCivilId api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
-			log.debug("exception in sendOtpForCivilId ", e);
+			log.error("exception in sendOtpForCivilId ", e);
+		}
+		return response.getBody();
+	}
+
+	public ApiResponse saveCustomer(String json) {
+		ResponseEntity<ApiResponse> response = null;
+		try {
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			headers.add("meta-info", "{\"country-id\":91}");
+			HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
+			log.info("calling saveCustomer api: " + sendOtpUrl);
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity, ApiResponse.class);
+			log.info("responce from  saveCustomer api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in saveCustomer ", e);
 		}
 		return response.getBody();
 	}

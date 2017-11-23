@@ -2,8 +2,6 @@ package com.amx.jax.controller;
 
 import static com.amx.jax.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,17 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.meta.MetaData;
-import com.amx.jax.services.OracleCustomerService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
 public class CustomerController {
-
-	@Autowired
-	private MetaData metaData;
 
 	@Autowired
 	private ConverterUtil converterUtil;

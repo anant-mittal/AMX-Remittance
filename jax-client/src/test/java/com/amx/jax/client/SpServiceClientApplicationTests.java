@@ -39,20 +39,7 @@ public class SpServiceClientApplicationTests {
 	@Autowired
 	protected Config conf;
 
-	//@Test
-	public void testUserApi() throws IOException {
-		AbstractUserModel[] users = getTestUsers();
-		ApiResponse response = client.registerUser(users[0]);
-		logger.info("response of register user is:" + util.marshall(response));
-		assertNotNull("Response is null", response);
-	}
-
-	private AbstractUserModel[] getTestUsers() throws IOException {
-		InputStream stream = this.getClass().getClassLoader().getResourceAsStream("users.json");
-		String json = IOUtils.toString(stream);
-		AbstractUserModel[] users = (UserModel[]) util.unmarshall(json, UserModel[].class);
-		return users;
-	}
+	
 	
 	@Test
 	public void testSendotpapi() throws IOException {
