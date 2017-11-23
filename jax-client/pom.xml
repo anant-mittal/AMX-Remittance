@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>jax-service-client</artifactId>
+	<artifactId>jax-client</artifactId>
 	<packaging>jar</packaging>
 
-	<name>jax-service-client</name>
+	<name>jax-client</name>
 	<description>Client to consume jax Service</description>
 
 	<parent>

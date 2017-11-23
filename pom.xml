@@ -55,11 +55,13 @@
 		<version>1.5.8.RELEASE</version>
 	</parent>
 	<modules>
+		<module>boot-utils</module>
+		<module>amx-lib</module>
 		<module>core</module>
+		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
-		<module>ms-meta</module>
 		<module>server-ui</module>
 	</modules>
 </project>
