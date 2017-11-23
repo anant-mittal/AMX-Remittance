@@ -21,15 +21,13 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 	private MetaData metaData;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,Object handler) throws Exception {
 
 		String metaInfo = request.getHeader("meta-info");
 		if (!StringUtils.isEmpty(metaInfo)) {
 			TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
 			};
-			HashMap<String, Object> metaInfoMap = new ObjectMapper().readValue(metaInfo,
-					typeRef);
+			HashMap<String, Object> metaInfoMap = new ObjectMapper().readValue(metaInfo,typeRef);
 			if (!StringUtils.isEmpty(metaInfoMap.get("country-id"))) {
 				Integer countryId = (Integer) metaInfoMap.get("country-id");
 				metaData.setCountryId(countryId);

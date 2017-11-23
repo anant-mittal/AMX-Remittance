@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IQuestionAnswerRepository;
@@ -29,8 +28,13 @@ public class QuestionAnswerService extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(questList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
+		
 		}
+		response.getData().setType("quest");
+		return response;
+		
+		
+		
 	}
 	
 	
@@ -43,8 +47,10 @@ public class QuestionAnswerService extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(questList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		
+		response.getData().setType("quest");
+		return response;
 	}
 	
 	

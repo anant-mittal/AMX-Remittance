@@ -32,8 +32,9 @@ public class WhyDoAskService extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(termsConditionList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("why");
+		return response;
 	}
 	
 

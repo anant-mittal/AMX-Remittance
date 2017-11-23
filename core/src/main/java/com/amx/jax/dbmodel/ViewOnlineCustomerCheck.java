@@ -63,6 +63,9 @@ public class ViewOnlineCustomerCheck  implements Serializable{
 	private BigDecimal nationality;
 	private BigDecimal loyaltyPoints;
 	
+	private String loginId;
+	
+	
 	
 	
 	
@@ -373,5 +376,14 @@ public class ViewOnlineCustomerCheck  implements Serializable{
 	public void setLoyaltyPoints(BigDecimal loyaltyPoints) {
 		this.loyaltyPoints = loyaltyPoints;
 	}
+	
+	@Column(name="LOGIN_ID")
+    public String getLoginId() {
+        return loginId;
+    }
+    public void setLoginId(String loginId) {
+        this.loginId = loginId;
+	}
+	
 	
 }

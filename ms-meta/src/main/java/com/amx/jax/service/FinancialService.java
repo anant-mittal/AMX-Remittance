@@ -32,8 +32,9 @@ public class FinancialService  extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(financialList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("fyear");
+		return response;
 	}
 	
 	

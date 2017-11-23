@@ -1,23 +1,15 @@
-package com.amx.jax.dbmodel;
+package com.amx.amxlib.meta.model;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name="EX_ONLINE_QUES_MAST")
-public class OnlineQuestModel implements Serializable{
+public class QuestModelDTO  {
 	
 
 	
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 6048220443720210188L;
+	private static final long serialVersionUID = 8157975211922060021L;
 	private BigDecimal questId;
 	private BigDecimal questNumber;
 	private BigDecimal companyId;
@@ -26,8 +18,6 @@ public class OnlineQuestModel implements Serializable{
 	private String status;
 	private String description;
 	
-	@Id
-	@Column(name="QUEST_ID")
 	public BigDecimal getQuestId() {
 		return questId;
 	}
@@ -35,35 +25,35 @@ public class OnlineQuestModel implements Serializable{
 		this.questId = questId;
 	}
 	
-	@Column(name="COMPANY_ID")
+
 	public BigDecimal getCompanyId() {
 		return companyId;
 	}
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
 	}
-	@Column(name="LANGUAGE_ID")
+
 	public BigDecimal getLanguageId() {
 		return languageId;
 	}
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
 	}
-	@Column(name="COUNTRY_ID")
+
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
-	@Column(name="ISACTIVE")
+
 	public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
 	}
-	@Column(name="QUEST_DESC")
+
 	public String getDescription() {
 		return description;
 	}
@@ -74,7 +64,7 @@ public class OnlineQuestModel implements Serializable{
 	
 	
 	
-	@Column(name="QUEST_NO")
+
 	public BigDecimal getQuestNumber() {
 		return questNumber;
 	}

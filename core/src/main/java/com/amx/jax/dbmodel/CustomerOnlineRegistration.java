@@ -68,6 +68,8 @@ public class CustomerOnlineRegistration {
 	private String smsToken;
 	private String mobileNumber;
 	private Date tokenDate;
+	private String loginId;
+	
 	
 	/** added by Prashant */
 	public CustomerOnlineRegistration(Customer cust) {
@@ -488,6 +490,15 @@ public class CustomerOnlineRegistration {
 
 	public void setSecurityQuestion5(BigDecimal securityQuestion5) {
 		this.securityQuestion5 = securityQuestion5;
+	}
+
+	@Column(name="LOGIN_ID")
+	public String getLoginId() {
+		return loginId;
+	}
+
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
 	}
 	
 }

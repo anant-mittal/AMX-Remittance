@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.TermsAndCondition;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ITermsAndConditionRepository;
@@ -34,8 +33,10 @@ public class TermsAndConditionService extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(termsConditionList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		
+		response.getData().setType("terms");
+		return response;
 	}
 	
 	

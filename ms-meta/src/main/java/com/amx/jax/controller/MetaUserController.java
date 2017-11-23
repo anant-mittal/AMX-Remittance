@@ -15,13 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.dbmodel.BlackListModel;
-import com.amx.jax.dbmodel.ContactDetail;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerIdProof;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
-import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.service.BlackMasterService;
 import com.amx.jax.service.ContactDetailService;
 import com.amx.jax.service.CustomerIdProofService;
@@ -114,39 +108,20 @@ public class MetaUserController implements Serializable{
 	
 	
 	
-
-	
-	
 	
 	@RequestMapping(value = "/idproof/{customerId}", method = RequestMethod.GET)
-	public ResponseEntity<List<CustomerIdProof>> getOnlineCustomer(@PathVariable("customerId") BigDecimal customerId){
-		List<CustomerIdProof> customerIdProofList = customerIdProofService.getCustomerIdProofByCustomerId(customerId);
-		if (customerIdProofList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<CustomerIdProof>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + customerIdProofList.size() + " Employees 1");
-		logger.debug(customerIdProofList);
-		logger.debug(Arrays.toString(customerIdProofList.toArray()));
-		return new ResponseEntity<List<CustomerIdProof>>(customerIdProofList, HttpStatus.OK);
-		
+	public ApiResponse getCustomerIdProofResponse(@PathVariable("customerId") BigDecimal customerId){
+		ApiResponse response = customerIdProofService.getCustomerIdProofByCustomerId(customerId);
+		return response;
 	}
 	
 	
+
 	@RequestMapping(value = "/imageVal/{customerId}/{identityTypeId}", method = RequestMethod.GET)
-	public ResponseEntity<List<CustomerIdProof>> getImageVAlidation(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
-		List<CustomerIdProof> customerIdProofList = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
-		if (customerIdProofList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<CustomerIdProof>>(HttpStatus.NO_CONTENT);
-		}
-		logger.debug("Found " + customerIdProofList.size() + " Employees 1");
-		logger.debug(customerIdProofList);
-		logger.debug(Arrays.toString(customerIdProofList.toArray()));
-		return new ResponseEntity<List<CustomerIdProof>>(customerIdProofList, HttpStatus.OK);
-		
+	public ApiResponse getCustomerImageValidationResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
+		ApiResponse response = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
+		return response;
 	}
-	
 	
 	
 	/** 
@@ -154,56 +129,29 @@ public class MetaUserController implements Serializable{
 	 * @param name
 	 * @return Fetch Contact details
 	 */
-	
-	
+
 	
 	@RequestMapping(value = "/contact/{customerId}", method = RequestMethod.GET)
-	public ResponseEntity<List<ContactDetail>> getCustomerContactDetails(@PathVariable("customerId") BigDecimal customerId){
-		logger.info("getCustomerContactDetails customerId :"+customerId);
-		List<ContactDetail> contactDetailList = contactDetailService.getContactDetail(customerId);
-		if (contactDetailList.isEmpty()) {
-			logger.debug("contactDetailList does not exists");
-			return new ResponseEntity<List<ContactDetail>>(HttpStatus.NOT_FOUND);
-		}
-		logger.debug("Found " + contactDetailList.size() + " Employees 1");
-		logger.debug(contactDetailList);
-		logger.debug(Arrays.toString(contactDetailList.toArray()));
-		return new ResponseEntity<List<ContactDetail>>(contactDetailList, HttpStatus.OK);
-		
+	public ApiResponse getCustomerContactDetailsByIdResponse(@PathVariable("customerId") BigDecimal customerId){
+		ApiResponse response =   contactDetailService.getContactDetail(customerId);
+		return response;
 	}
 	
 	
 	@RequestMapping(value = "/contact/{customerId}/{contactId}", method = RequestMethod.GET)
-	public ResponseEntity<List<ContactDetail>> getCustomerContactDetails(@PathVariable("customerId") BigDecimal customerId,@PathVariable("contactId") BigDecimal contactId){
-		logger.info("getCustomerContactDetails customerId :"+customerId);
-		List<ContactDetail> contactDetailList = contactDetailService.getContactDetailByCotactId(customerId, contactId);
-		if (contactDetailList.isEmpty()) {
-			logger.debug("contactDetailList does not exists");
-			return new ResponseEntity<List<ContactDetail>>(HttpStatus.NOT_FOUND);
-		}
-		logger.debug("Found " + contactDetailList.size() + " Employees 1");
-		logger.debug(contactDetailList);
-		logger.debug(Arrays.toString(contactDetailList.toArray()));
-		return new ResponseEntity<List<ContactDetail>>(contactDetailList, HttpStatus.OK);
-		
+	public ApiResponse getCustomerContactDetailsResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("contactId") BigDecimal contactId){
+		ApiResponse response =   contactDetailService.getContactDetailByCotactId(customerId, contactId);
+		return response;
 	}
-	
-	
 	
 	@RequestMapping(value = "/blist/{name}", method = RequestMethod.GET)
-	public ResponseEntity<List<BlackListModel>> getBlackList(@PathVariable("name") String name){
-		logger.info("name :"+name);
-		List<BlackListModel> blackList = blackMasterService.getBlackList(name);
-		if (blackList.isEmpty()) {
-			logger.debug("Employees does not exists");
-			return new ResponseEntity<List<BlackListModel>>(HttpStatus.OK);
-		}
-		logger.debug("Found " + blackList.size() + " Employees 1");
-		logger.debug(blackList);
-		logger.debug(Arrays.toString(blackList.toArray()));
-		return new ResponseEntity<List<BlackListModel>>(blackList, HttpStatus.OK);
-		
+	public ApiResponse getBlackListResponse(@PathVariable("name") String name){
+		ApiResponse response =  blackMasterService.getBlackList(name);
+		return response;
 	}
+	
+	
+	
 	@RequestMapping(value = "/loyaltyPoint/{cusref}/{fYear}", method = RequestMethod.GET)
 	public ResponseEntity<List<LoyaltyPointModel>> getLoyaltyFromOldTable(@PathVariable("cusref") BigDecimal cusref,@PathVariable("fYear") BigDecimal fYear){
 		logger.info("getLoyaltyFromOldTable name :"+cusref+"\t Year :"+fYear);
@@ -216,7 +164,6 @@ public class MetaUserController implements Serializable{
 		logger.debug(loyaltyPointList);
 		logger.debug(Arrays.toString(loyaltyPointList.toArray()));
 		return new ResponseEntity<List<LoyaltyPointModel>>(loyaltyPointList, HttpStatus.OK);
-		
 	}
 	
 

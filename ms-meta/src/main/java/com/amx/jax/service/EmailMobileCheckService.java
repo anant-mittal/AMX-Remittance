@@ -37,6 +37,7 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(emailCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
+		response.getData().setType("email");
 		return response;
 	}
 	
@@ -54,6 +55,7 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(mobileCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
+		response.getData().setType("mobile");
 		return response;
 	}
 	

@@ -33,8 +33,9 @@ public class CountryService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("country");
+		return response;
 	}
 	
 	
@@ -47,8 +48,9 @@ public class CountryService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("country");
+		return response;
 	}
 	
 	
@@ -60,8 +62,9 @@ public class CountryService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("country");
+		return response;
 	}
 	
 
@@ -74,8 +77,9 @@ public class CountryService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(countryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("country");
+		return response;
 	}
 	
 

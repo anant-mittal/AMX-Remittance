@@ -28,8 +28,10 @@ public class CustomerService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(customerList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		
+		response.getData().setType("customer");
+		return response;
 	}
 	
 
@@ -42,8 +44,9 @@ public class CustomerService extends AbstractService {
 		}else {
 		response.getData().getValues().addAll(customerList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("customer");
+		return response;
 	}
 	
 

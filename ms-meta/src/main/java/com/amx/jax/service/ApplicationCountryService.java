@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.services.AbstractService;
@@ -31,8 +30,10 @@ public class ApplicationCountryService  extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(appCountryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		
+		response.getData().setType("appl_country");
+		return response;
 	}
 	
 	
@@ -47,8 +48,9 @@ public class ApplicationCountryService  extends AbstractService{
 		}else {
 		response.getData().getValues().addAll(appCountryList);
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
 		}
+		response.getData().setType("appl_country");
+		return response;
 	}
 	
 	
