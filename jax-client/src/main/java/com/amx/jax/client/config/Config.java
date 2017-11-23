@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Config {
 
-	@Value("${spservice.url}")
+	@Value("${jaxservice.url}")
 	private String spServiceUrl;
 
 	public String getSpServiceUrl() {

@@ -8,10 +8,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 
 import com.amx.ui.config.Properties;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
+@ComponentScan("com.amx")
 public class WebApplication {
 
 	@Autowired
