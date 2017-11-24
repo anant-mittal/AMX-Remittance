@@ -22,6 +22,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
@@ -111,11 +112,25 @@ public class UserService extends AbstractUserService {
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
 		}
+		if (model.getLoginId() != null) {
+			validateLoginId(model.getLoginId());
+		}
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(convert(onlineCust));
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	private void validateLoginId(String loginId) {
+		boolean userNameValid = patternValidator.validateUserName(loginId);
+		if (!userNameValid) {
+			throw new GlobalException("Username is not valid", "INVALID_USERNAME");
+		}
+		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
+		if (existingCust != null) {
+			throw new GlobalException("Username already taken", "INVALID_USERNAME");
+		}
 	}
 
 	@Override
@@ -132,6 +147,7 @@ public class UserService extends AbstractUserService {
 			onlineCust.setHresetBy(cust.getIdentityInt());
 			onlineCust.setHresetIp(webutil.getClientIp());
 			onlineCust.setHresetkDt(new Date());
+			onlineCust.setResetIp(webutil.getClientIp());
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());

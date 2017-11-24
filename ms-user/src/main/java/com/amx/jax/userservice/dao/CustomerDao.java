@@ -35,8 +35,6 @@ public class CustomerDao {
 	@Autowired
 	private CryptoUtil cryptoUtil;
 
-	@Autowired
-	private PatternValidator patternValidator;
 
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
@@ -92,10 +90,6 @@ public class CustomerDao {
 		}
 
 		if (model.getLoginId() != null) {
-			boolean userNameValid = patternValidator.validateUserName(model.getLoginId());
-			if (!userNameValid) {
-				throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-			}
 			onlineCust.setLoginId(model.getLoginId());
 		}
 		if (model.getPassword() != null) {
@@ -135,6 +129,10 @@ public class CustomerDao {
 	@Transactional
 	public void saveOnlineCustomer(CustomerOnlineRegistration onlineCust) {
 		onlineCustRepo.save(onlineCust);
+	}
+
+	public CustomerOnlineRegistration getCustomerByLoginId(String loginId) {
+		return onlineCustRepo.getOnlineCustomersByLoginId(loginId);
 	}
 
 }

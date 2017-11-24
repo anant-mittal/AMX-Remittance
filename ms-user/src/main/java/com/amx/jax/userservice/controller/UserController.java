@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
@@ -19,11 +18,8 @@ import com.amx.jax.util.ConverterUtil;
 public class UserController {
 
 	@Autowired
-	private MetaData metaData;
-
-	@Autowired
 	private ConverterUtil converterUtil;
-	
+
 	@Autowired
 	private UserService userService;
 
