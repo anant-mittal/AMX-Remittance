@@ -76,7 +76,8 @@ public class CustomerDao {
 	}
 
 	@Transactional
-	public CustomerOnlineRegistration saveOrUpdateOnlineCustomer(CustomerOnlineRegistration onlineCust,CustomerModel model) {
+	public CustomerOnlineRegistration saveOrUpdateOnlineCustomer(CustomerOnlineRegistration onlineCust,
+			CustomerModel model) {
 		String userId = model.getIdentityId();
 
 		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
