@@ -8,12 +8,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 
-public interface AuthicationLimitCheckDAO extends JpaRepository<AuthenticationLimitCheckView, Serializable>{
+public interface AuthenticationLimitCheckDAO extends JpaRepository<AuthenticationLimitCheckView, Serializable>{
 	
 
-	@Query("select cts from AuthicationLimitCheckView where authorizationType=27")
+	@Query(value="select cts from AuthenticationLimitCheckView cts where authorizationType='27'")
 	public List<AuthenticationLimitCheckView> getContactUsTime();
 	
-	@Query("select cts from AuthicationLimitCheckView where authorizationType=28")
+	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType='28'")
 	public List<AuthenticationLimitCheckView> getContactUsPhoneNo();
 }

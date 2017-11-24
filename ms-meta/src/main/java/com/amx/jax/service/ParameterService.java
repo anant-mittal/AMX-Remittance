@@ -9,7 +9,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.repository.AuthicationLimitCheckDAO;
+import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.services.AbstractService;
 
 @Service
@@ -17,7 +17,7 @@ public class ParameterService extends AbstractService {
 	
 	
 	@Autowired
-	AuthicationLimitCheckDAO authentication;
+	AuthenticationLimitCheckDAO authentication;
 	
 	public ApiResponse  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
