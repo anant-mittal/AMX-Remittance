@@ -18,6 +18,7 @@
 
 ## MAVEN
 1. Download Maven [link](https://maven.apache.org/download.cgi)
+	* [Install Ubuntu](https://www.mkyong.com/maven/how-to-install-maven-in-ubuntu/)
 2. Extract files and rename folder to apache-maven and put it in your Projects folder
     ```
      /Users/lalittanwar/Projects/apache-maven
