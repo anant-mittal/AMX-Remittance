@@ -13,6 +13,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dal.CryptoDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.WebUtils;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -36,7 +37,7 @@ public class JaxServiceApplicationTests {
 		assertTrue(output.equals("15BBA6D8EF5C4D660F57CB9E91C7B9D5"));
 	}
 
-	@Test
+	//@Test
 	public void sendOtpForCivilidCheck() {
 		ApiResponse apiResp = userService.sendOtpForCivilId("284052306594");
 		assertTrue(apiResp.getError() == null);
@@ -47,5 +48,13 @@ public class JaxServiceApplicationTests {
 		MetaData metad =new MetaData();
 		metad.setCountryId(91);
 		return metad;
+	}
+	
+	@Autowired WebUtils webutil;
+	
+	@Test
+	public void testwebutil() {
+		
+		webutil.getClientIp();
 	}
 }

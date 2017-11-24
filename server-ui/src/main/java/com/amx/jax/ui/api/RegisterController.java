@@ -27,7 +27,7 @@ public class RegisterController {
 	@RequestMapping(value = "/register/api/verifycuser", method = { RequestMethod.POST })
 	public UIResponse verifyCustomer(@RequestParam String civilid, @RequestParam String otp) {
 		UIResponse response = new UIResponse();
-		VerifyIdData data = registrationService.verifyCustomer(civilid);
+		VerifyIdData data = registrationService.verifyCustomer(civilid, otp);
 		response.setData(data);
 		return response;
 	}

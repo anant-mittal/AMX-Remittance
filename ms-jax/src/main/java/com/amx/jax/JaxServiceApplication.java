@@ -7,11 +7,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @EnableTransactionManagement
-@ComponentScan(basePackages= {"com.amx.jax"})
+@ComponentScan(basePackages = { "com.amx.jax" })
 public class JaxServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JaxServiceApplication.class, args);
 	}
-	
 }

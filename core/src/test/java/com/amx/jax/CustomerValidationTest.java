@@ -4,8 +4,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.jax.util.WebUtils;
 import com.amx.jax.util.validation.CustomerValidation;
 
 /**
@@ -13,8 +17,8 @@ import com.amx.jax.util.validation.CustomerValidation;
  * @author Prashant
  */
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class CustomerValidationTest
 
 {
@@ -25,6 +29,9 @@ public class CustomerValidationTest
 
 	@Autowired
 	CustomerValidation custVal;
+	
+	@Autowired
+	WebUtils webutil;
 
 	//@Test
 	public void civilIdValidate() {
@@ -47,5 +54,9 @@ public class CustomerValidationTest
 	@Test
 	public void test() {}
 	
+	@Test
+	public void testwebutil() {
+		webutil.getClientIp();
+	}
 	
 }

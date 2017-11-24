@@ -1,6 +1,5 @@
 package com.amx.jax.ui.service;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,8 +25,14 @@ public class RegistrationService {
 		return data;
 	}
 
-	public VerifyIdData verifyCustomer(String civilid) {
-		return null;
+	public VerifyIdData verifyCustomer(String civilid, String otp) {
+		ApiResponse response = userclient.validateOtp(civilid, otp);
+		VerifyIdData data = new VerifyIdData();
+		if (!CollectionUtils.isEmpty(response.getData().getValues())) {
+			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
+			data.setOtpdata(model);
+		}
+		return data;
 	}
 
 }

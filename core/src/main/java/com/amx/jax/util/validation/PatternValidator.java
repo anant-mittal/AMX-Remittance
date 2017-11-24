@@ -17,9 +17,7 @@ public class PatternValidator {
 	}
 
 	public boolean validateUserName(final String username) {
-
 		matcher = userNamepattern.matcher(username);
 		return matcher.matches();
-
 	}
 }
