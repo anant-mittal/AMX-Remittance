@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.service.ApplicationCountryService;
+import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
@@ -66,6 +67,9 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	ParameterService parameterService;
+	
+	@Autowired
+	CompanyService companyService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -169,6 +173,12 @@ public class MetaController implements Serializable{
 	@RequestMapping(value = "/contactnumber", method = RequestMethod.GET)
 	public ApiResponse getContactNumberResponse(){
 		ApiResponse response = parameterService.getContactPhoneNo();
+		return response;
+	}
+	
+	@RequestMapping(value = "/company/{languageId}", method = RequestMethod.GET)
+	public ApiResponse getCompanyDetailResponse(@PathVariable("languageId") BigDecimal languageId){
+		ApiResponse response = companyService.getCompanyDetails(languageId);
 		return response;
 	}
 	

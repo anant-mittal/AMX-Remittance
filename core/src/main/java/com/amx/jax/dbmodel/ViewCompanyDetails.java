@@ -2,18 +2,10 @@ package com.amx.jax.dbmodel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Blob;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 /* *****************************************************************************************************************
 
@@ -41,7 +33,7 @@ public class ViewCompanyDetails implements Serializable {
 	private BigDecimal companyCode;
 	private String isActive;
 	private String companyName;
-	private Blob companyLogoImg1;
+	//private Blob companyLogoImg1;
 	private BigDecimal applicationCountryId;
 	private String telephoneNo;
 	private String email;
@@ -56,15 +48,24 @@ public class ViewCompanyDetails implements Serializable {
 	private String estYear;
 	private BigDecimal currencyId;
 	private String capitalAmount;
-	//private BigDecimal grpcod;
-	//private BigDecimal finbgn;
-	//private BigDecimal finend;
-	//private String telexNo;
 	
 	
 	
+	
+
+	private BigDecimal idNo;
 	
 	@Id
+	@Column(name="IDNO")
+	public BigDecimal getIdNo() {
+		return idNo;
+	}
+
+	public void setIdNo(BigDecimal idNo) {
+		this.idNo = idNo;
+	}
+	
+	
 	@Column(name = "COMPANY_ID", length = 2)
 	public BigDecimal getCompanyId() {
 		return this.companyId;
@@ -74,7 +75,7 @@ public class ViewCompanyDetails implements Serializable {
 		this.companyId = companyId;
 	}
 	
-	@Id
+	
 	@Column(name="LANGUAGE_ID")
 	public BigDecimal getLanguageId() {
 		return languageId;
@@ -170,13 +171,13 @@ public class ViewCompanyDetails implements Serializable {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-	@Column(name = "LOGO_IMG1", nullable = true,  length = 10485760 )
+	/*@Column(name = "LOGO_IMG1", nullable = true,  length = 10485760 )
 	public Blob getCompanyLogoImg1() {
 		return companyLogoImg1;
 	}
 	public void setCompanyLogoImg1(Blob companyLogoImg1) {
 		this.companyLogoImg1 = companyLogoImg1;
-	}
+	}*/
 	@Column(name="APPLICATION_COUNTRY_ID")
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
@@ -220,6 +221,7 @@ public class ViewCompanyDetails implements Serializable {
 	public void setOnlineInnerHeaderArabicText(String onlineInnerHeaderArabicText) {
 		this.onlineInnerHeaderArabicText = onlineInnerHeaderArabicText;
 	}
+
 	
 	
 
