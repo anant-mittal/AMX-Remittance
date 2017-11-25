@@ -215,6 +215,7 @@ public class UserService extends AbstractUserService {
 		if (!otpHash.equals(emailTokenHash)) {
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}
+		// TODO mobile and email are verified
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
@@ -222,5 +223,15 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		logger.debug("end of validateopt for civilid: " + civilId);
 		return response;
+	}
+
+	public ApiResponse loginUser(String userId, String password) {
+
+		CustomerOnlineRegistration customer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		if (customer == null) {
+			throw new UserNotFoundException("User with userId: " + userId + " not found");
+		}
+		customer.getPassword();// TODO
+		return null;
 	}
 }

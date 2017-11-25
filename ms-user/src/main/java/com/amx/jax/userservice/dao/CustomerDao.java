@@ -33,7 +33,6 @@ public class CustomerDao {
 	@Autowired
 	private CryptoUtil cryptoUtil;
 
-
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
@@ -131,6 +130,10 @@ public class CustomerDao {
 
 	public CustomerOnlineRegistration getCustomerByLoginId(String loginId) {
 		return onlineCustRepo.getOnlineCustomersByLoginId(loginId);
+	}
+
+	public CustomerOnlineRegistration getOnlineCustomerByLoginIdOrUserName(String loginId) {
+		return onlineCustRepo.getOnlineCustomerByLoginIdOrUserName(loginId);
 	}
 
 }
