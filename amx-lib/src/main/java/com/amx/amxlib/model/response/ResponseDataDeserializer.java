@@ -13,6 +13,7 @@ import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserModel;
+import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -82,7 +83,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<AuthenticationLimitCheckDTO>>(){});
 			break;		
 				
-			
+		case "checklist":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<UserVerificationCheckListDTO>>(){});
+			break;	
 			
 			
 		}

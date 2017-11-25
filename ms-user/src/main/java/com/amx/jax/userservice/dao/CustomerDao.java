@@ -13,9 +13,11 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
+import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 import com.amx.jax.util.CryptoUtil;
 
 @Component
@@ -26,6 +28,9 @@ public class CustomerDao {
 
 	@Autowired
 	private OnlineCustomerRepository onlineCustRepo;
+
+	@Autowired
+	private UserVerificationCheckListModelRepository checkListrepo;
 
 	@Autowired
 	private MetaData meta;
@@ -134,6 +139,10 @@ public class CustomerDao {
 
 	public CustomerOnlineRegistration getOnlineCustomerByLoginIdOrUserName(String loginId) {
 		return onlineCustRepo.getOnlineCustomerByLoginIdOrUserName(loginId);
+	}
+
+	public UserVerificationCheckListModel getCheckListForUserId(String civilId) {
+		return checkListrepo.findOne(civilId);
 	}
 
 }

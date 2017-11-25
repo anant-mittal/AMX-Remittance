@@ -18,6 +18,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserModel;
+import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
@@ -66,6 +67,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private PatternValidator patternValidator;
+
+	@Autowired
+	private CheckListManager checkListManager;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -116,6 +120,7 @@ public class UserService extends AbstractUserService {
 			validateLoginId(model.getLoginId());
 		}
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
+		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(convert(onlineCust));
 		response.setResponseStatus(ResponseStatus.OK);
@@ -215,7 +220,7 @@ public class UserService extends AbstractUserService {
 		if (!otpHash.equals(emailTokenHash)) {
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}
-		// TODO mobile and email are verified
+		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
@@ -233,5 +238,16 @@ public class UserService extends AbstractUserService {
 		}
 		customer.getPassword();// TODO
 		return null;
+	}
+
+	public ApiResponse getUserCheckList(String loginId) {
+		UserVerificationCheckListDTO model = checkListManager.getUserCheckList(loginId);
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(model);
+		response.getData().setType(model.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		logger.debug("end of getUserCheckList for loginId: " + loginId);
+		return response;
+
 	}
 }
