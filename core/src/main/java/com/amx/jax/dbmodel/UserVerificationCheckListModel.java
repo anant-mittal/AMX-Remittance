@@ -14,10 +14,6 @@ import com.fasterxml.jackson.databind.ser.std.SerializableSerializer;
 @Table(name = "JAX_USER_CHECKLIST")
 public class UserVerificationCheckListModel extends SerializableSerializer {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -8360731811464042446L;
 	@Id
 	@Column(name = "LOGIN_ID")
 	private String loginId;

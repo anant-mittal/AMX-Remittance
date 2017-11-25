@@ -6,11 +6,9 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -51,6 +49,10 @@ public class ApplicationSetup implements Serializable {
 	private String emailId;
 	private String onlineFeedbackEmail;
 	private String onlineDomUrl;
+	private String isoCode;
+	private String amlSystem;
+	private String amlCustomerSource;
+	private String amlInstanciated;
 
 	
 	public ApplicationSetup() {
@@ -304,6 +306,57 @@ public class ApplicationSetup implements Serializable {
 
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
+	}
+
+
+
+	@Column(name="ISO_CODE")
+	public String getIsoCode() {
+		return isoCode;
+	}
+
+
+
+	public void setIsoCode(String isoCode) {
+		this.isoCode = isoCode;
+	}
+
+
+
+	@Column(name="AML_SYSTEM")
+	public String getAmlSystem() {
+		return amlSystem;
+	}
+
+
+
+	public void setAmlSystem(String amlSystem) {
+		this.amlSystem = amlSystem;
+	}
+
+
+
+	@Column(name="AML_CUSTOMER_SOURCE")
+	public String getAmlCustomerSource() {
+		return amlCustomerSource;
+	}
+
+
+
+	public void setAmlCustomerSource(String amlCustomerSource) {
+		this.amlCustomerSource = amlCustomerSource;
+	}
+
+
+	@Column(name="AML_INSTANCEID")	
+	public String getAmlInstanciated() {
+		return amlInstanciated;
+	}
+
+
+
+	public void setAmlInstanciated(String amlInstanciated) {
+		this.amlInstanciated = amlInstanciated;
 	}
 
 	

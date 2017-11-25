@@ -1,10 +1,12 @@
 package com.amx.jax.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -25,7 +27,7 @@ public class ParameterService extends AbstractService {
 		if(contactUsList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}else {
-		response.getData().getValues().addAll(contactUsList);
+		response.getData().getValues().addAll(convert(contactUsList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("parameter");
@@ -40,13 +42,32 @@ public class ParameterService extends AbstractService {
 		if(phoneNoList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		}else {
-		response.getData().getValues().addAll(phoneNoList);
+		response.getData().getValues().addAll(convert(phoneNoList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("parameter");
 		return response;
 	}
 	
+	
+	
+	
+	
+	
+	private List<AuthenticationLimitCheckDTO> convert(List<AuthenticationLimitCheckView> checkLimit) {
+		List<AuthenticationLimitCheckDTO> list = new ArrayList<>();
+		for (AuthenticationLimitCheckView appl : checkLimit) {
+			AuthenticationLimitCheckDTO model = new AuthenticationLimitCheckDTO();
+			model.setApplicationCountryId(appl.getApplicationCountryId());
+			model.setAuthId(appl.getAuthId());
+			model.setAuthLimit(appl.getAuthLimit());
+			model.setAuthMessage(appl.getAuthMessage());
+			model.setAuthorizationType(appl.getAuthorizationType());
+			model.setAuthPercentage(appl.getAuthPercentage());
+			list.add(model);
+		}
+		return list;
+	}
 
 	@Override
 	public String getModelType() {

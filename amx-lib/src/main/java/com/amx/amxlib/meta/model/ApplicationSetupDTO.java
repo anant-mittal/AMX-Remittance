@@ -1,6 +1,7 @@
 package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.Date;
+
 import com.amx.amxlib.model.AbstractModel;
 
 
@@ -37,8 +38,10 @@ public class ApplicationSetupDTO  extends AbstractModel{
 	private String emailId;
 	private String onlineFeedbackEmail;
 	private String onlineDomUrl;
-
-	
+	private String isoCode;
+	private String amlSystem;
+	private String amlCustomerSource;
+	private String amlInstanciated;
 
 	
 	
@@ -280,6 +283,38 @@ public class ApplicationSetupDTO  extends AbstractModel{
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public String getIsoCode() {
+		return isoCode;
+	}
+
+	public void setIsoCode(String isoCode) {
+		this.isoCode = isoCode;
+	}
+
+	public String getAmlSystem() {
+		return amlSystem;
+	}
+
+	public void setAmlSystem(String amlSystem) {
+		this.amlSystem = amlSystem;
+	}
+
+	public String getAmlCustomerSource() {
+		return amlCustomerSource;
+	}
+
+	public void setAmlCustomerSource(String amlCustomerSource) {
+		this.amlCustomerSource = amlCustomerSource;
+	}
+
+	public String getAmlInstanciated() {
+		return amlInstanciated;
+	}
+
+	public void setAmlInstanciated(String amlInstanciated) {
+		this.amlInstanciated = amlInstanciated;
 	}
 
 	

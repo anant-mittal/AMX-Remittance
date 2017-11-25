@@ -2,7 +2,6 @@ package com.amx.jax.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +36,23 @@ public class QuestionAnswerService extends AbstractService {
 
 	}
 
+	
+	public ApiResponse getQuestionDescription(BigDecimal languageId, BigDecimal countryId, BigDecimal questId) {
+		List<OnlineQuestModel> questList = questionAnswerRepository.getQuestionDescription(languageId, countryId,
+				questId);
+		ApiResponse response = getBlackApiResponse();
+		if (questList.isEmpty()) {
+			throw new GlobalException("Question not found");
+		} else {
+			response.getData().getValues().addAll(convert(questList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+
+		response.getData().setType("quest");
+		return response;
+	}
+
+	
 	private List<QuestModelDTO> convert(List<OnlineQuestModel> questList) {
 		List<QuestModelDTO> list = new ArrayList<>();
 		for (OnlineQuestModel quest : questList) {
@@ -53,21 +69,7 @@ public class QuestionAnswerService extends AbstractService {
 		return list;
 	}
 
-	public ApiResponse getQuestionDescription(BigDecimal languageId, BigDecimal countryId, BigDecimal questId) {
-		List<OnlineQuestModel> questList = questionAnswerRepository.getQuestionDescription(languageId, countryId,
-				questId);
-		ApiResponse response = getBlackApiResponse();
-		if (questList.isEmpty()) {
-			throw new GlobalException("Question not found");
-		} else {
-			response.getData().getValues().addAll(convert(questList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-
-		response.getData().setType("quest");
-		return response;
-	}
-
+	
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
