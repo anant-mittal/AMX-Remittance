@@ -1,11 +1,13 @@
 package com.amx.jax.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.TermsAndCondition;
@@ -31,13 +33,30 @@ public class TermsAndConditionService extends AbstractService{
 		if(termsConditionList.isEmpty()) {
 			throw new GlobalException("Terms and Condition is not abaliable");
 		}else {
-		response.getData().getValues().addAll(termsConditionList);
+		response.getData().getValues().addAll(convert(termsConditionList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		
 		response.getData().setType("terms");
 		return response;
 	}
+	
+	
+	private List<TermsAndConditionDTO> convert(List<TermsAndCondition> termsConditionList) {
+		List<TermsAndConditionDTO> list = new ArrayList<TermsAndConditionDTO>();
+		for (TermsAndCondition terms : termsConditionList) {
+			TermsAndConditionDTO model = new TermsAndConditionDTO();
+			model.setCompanyId(terms.getCompanyId());
+			model.setCountryId(terms.getCountryId());
+			model.setDescription(terms.getDescription());
+			model.setLanguageId(terms.getLanguageId());
+			model.setStatus(terms.getStatus());
+			model.setTermsConditionId(terms.getTermsConditionId());
+			list.add(model);
+		}
+		return list;
+	}
+
 	
 	
 

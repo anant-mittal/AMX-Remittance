@@ -19,6 +19,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
+import com.amx.jax.service.TransactionHistroyService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.WhyDoAskService;
 
@@ -70,6 +71,10 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	CompanyService companyService;
+	
+	
+	@Autowired
+	TransactionHistroyService transactionHistroyService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -182,6 +187,14 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
+	
+	@RequestMapping(value = "/trnxHist/{cutomerReference}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
+	public ApiResponse getTrnxHistroyDetailResponse(@PathVariable("cutomerReference") BigDecimal cutomerReference,
+			@PathVariable("docfyr") BigDecimal docfyr,@PathVariable("docNumber") BigDecimal docNumber,
+			@PathVariable("fromDate") String fromDate,@PathVariable("toDate") String toDate){
+		ApiResponse response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr, docNumber, fromDate, toDate);
+		return response;
+	}
 	
 	
 }

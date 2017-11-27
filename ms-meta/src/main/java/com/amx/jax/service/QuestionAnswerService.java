@@ -54,7 +54,7 @@ public class QuestionAnswerService extends AbstractService {
 
 	
 	private List<QuestModelDTO> convert(List<OnlineQuestModel> questList) {
-		List<QuestModelDTO> list = new ArrayList<>();
+		List<QuestModelDTO> list = new ArrayList<QuestModelDTO>();
 		for (OnlineQuestModel quest : questList) {
 			QuestModelDTO model = new QuestModelDTO();
 			model.setCompanyId(quest.getCompanyId());

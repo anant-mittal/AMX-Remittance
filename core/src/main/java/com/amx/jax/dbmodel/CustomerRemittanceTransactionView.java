@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "VW_EX_TRANSACTION_INQUIRY")
@@ -40,6 +42,7 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name = "CORRESPONDING_BANK")
 	private String beneficaryCorespondingBankName;
 	
+	@Temporal(TemporalType.DATE)
 	@Column(name = "DOCUMENT_DATE")
 	private Date documentDate;
 	
