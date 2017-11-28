@@ -24,6 +24,10 @@ public class ApiError {
 		this.errorType = "Error";
 	}
 
+	public ApiError() {
+		super();
+	}
+
 	public String getErrorId() {
 		return errorId;
 	}
