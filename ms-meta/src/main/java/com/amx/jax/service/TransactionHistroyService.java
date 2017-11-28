@@ -22,8 +22,8 @@ public class TransactionHistroyService extends AbstractService {
 	ITransactionHistroyDAO transactionHistroyDao;
 	
 	
-	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference,BigDecimal docfyr, BigDecimal docNumber, String fromDate,String  toDate){
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference, docfyr, docNumber, fromDate, toDate);
+	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference,BigDecimal docfyr){ //, String fromDate,String  toDate
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
 		ApiResponse response = getBlackApiResponse();
 		if(trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found");
@@ -35,6 +35,39 @@ public class TransactionHistroyService extends AbstractService {
 		response.getData().setType("trnxhistroy");
 		return response;
 	}
+
+	
+	public ApiResponse getTransactionHistroyByDocumentNumber(BigDecimal cutomerReference,BigDecimal docfyr, BigDecimal docNumber){ //, String fromDate,String  toDate
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); //, fromDate, toDate
+		ApiResponse response = getBlackApiResponse();
+		if(trnxHisList.isEmpty()) {
+			throw new GlobalException("Transaction histroy not found");
+		}else {
+		response.getData().getValues().addAll(trnxHisList);
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		
+		response.getData().setType("trnxhistroy");
+		return response;
+	}
+	
+	
+	
+	
+	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference,BigDecimal docfyr,String fromDate,String  toDate) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, docfyr,fromDate, toDate);
+		ApiResponse response = getBlackApiResponse();
+		if(trnxHisList.isEmpty()) {
+			throw new GlobalException("Transaction histroy not found");
+		}else {
+		response.getData().getValues().addAll(trnxHisList);
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		
+		response.getData().setType("trnxhistroy");
+		return response;
+	}
+	
 
 	
 

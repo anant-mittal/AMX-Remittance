@@ -190,9 +190,22 @@ public class MetaController implements Serializable{
 	
 	@RequestMapping(value = "/trnxHist/{cutomerReference}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@PathVariable("cutomerReference") BigDecimal cutomerReference,
-			@PathVariable("docfyr") BigDecimal docfyr,@PathVariable("docNumber") BigDecimal docNumber,
-			@PathVariable("fromDate") String fromDate,@PathVariable("toDate") String toDate){
-		ApiResponse response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr, docNumber, fromDate, toDate);
+			@PathVariable("docfyr") BigDecimal docfyr,
+			@PathVariable("docNumber") String docNumber,
+			@PathVariable("fromDate")  String fromDate,
+			@PathVariable("toDate") String toDate) {
+			
+		logger.info("cutomerReference :"+cutomerReference+"\t docfyr :"+docfyr+"\t docNumber :"+docNumber+"\t fromDate :"+fromDate+"\t toDate :"+toDate);
+		ApiResponse response = null;
+		if(docNumber!=null && !docNumber.equals("null")) {
+			 response = transactionHistroyService.getTransactionHistroyByDocumentNumber(cutomerReference, docfyr, new BigDecimal(docNumber));
+		}else if((fromDate!= null && !fromDate.equals("null")) || (toDate!= null && !toDate.equals("null"))) {
+			response = transactionHistroyService.getTransactionHistroyDateWise(cutomerReference, docfyr,fromDate,toDate); 
+		}
+		else {
+			response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
+		}
+		// response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr, docNumber); //, fromDate, toDate
 		return response;
 	}
 	
