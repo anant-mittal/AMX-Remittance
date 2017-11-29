@@ -5,7 +5,13 @@ import java.io.Serializable;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 
-public class UIResponse<T extends ResponseData> implements Serializable {
+public class ResponseWrapper<T extends ResponseData> implements Serializable {
+
+	public ResponseWrapper(T data) {
+		super();
+		this.data = data;
+		this.timestamp = System.currentTimeMillis();
+	}
 
 	private static final long serialVersionUID = 7545829974699803746L;
 
@@ -29,11 +35,6 @@ public class UIResponse<T extends ResponseData> implements Serializable {
 		return statusKey;
 	}
 
-	public void setStatusKey(StatusCode status) {
-		this.statusKey = status.getKey();
-		this.status = status.getCode();
-	}
-
 	public void setStatusKey(String statusKey) {
 		this.statusKey = statusKey;
 	}
@@ -46,11 +47,26 @@ public class UIResponse<T extends ResponseData> implements Serializable {
 		this.status = status;
 	}
 
+	public void setStatus(StatusCode status) {
+		this.statusKey = status.getKey();
+		this.status = status.getCode();
+	}
+
+	public void setStatus(StatusCode status, String message) {
+		this.setStatus(status);
+		this.message = message;
+	}
+
 	public String getError() {
 		return error;
 	}
 
 	public void setError(String error) {
+		this.error = error;
+	}
+
+	public void setError(StatusCode status, String error) {
+		this.setStatus(status);
 		this.error = error;
 	}
 

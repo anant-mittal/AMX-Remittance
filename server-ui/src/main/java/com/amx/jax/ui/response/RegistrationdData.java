@@ -2,7 +2,7 @@ package com.amx.jax.ui.response;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
 
-public class VerifyIdData implements ResponseData {
+public class RegistrationdData implements ResponseData {
 
 	private Boolean valid = false;
 	private Boolean otpsent = false;

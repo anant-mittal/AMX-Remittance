@@ -1,17 +1,24 @@
 package com.amx.jax.ui.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
+import com.amx.jax.ui.EnumUtil.StatusCode;
+import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.model.UserSessionInfo;
-import com.amx.jax.ui.response.LoginData;
-import com.amx.jax.ui.response.UIResponse;
-import com.amx.jax.ui.response.VerifyIdData;
+import com.amx.jax.ui.response.RegistrationdData;
+import com.amx.jax.ui.response.ResponseWrapper;
 
 @Service
 public class RegistrationService {
@@ -22,40 +29,56 @@ public class RegistrationService {
 	@Autowired
 	private UserSessionInfo userSessionInfo;
 
-	public UIResponse<VerifyIdData> verifyId(String civilid) {
+	@Autowired
+	private CustomerAuthProvider customerAuthProvider;
 
-		ApiResponse<CivilIdOtpModel> response = userclient.sendOtpForCivilId(civilid);
-		CivilIdOtpModel result = response.getResult();
-		VerifyIdData data = new VerifyIdData();
-		UIResponse<VerifyIdData> uiresponse = new UIResponse<VerifyIdData>();
-		if (result != null) {
+	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+
+		ApiResponse response = userclient.sendOtpForCivilId(civilid);
+
+		if (!CollectionUtils.isEmpty(response.getData().getValues())) {
 			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
-			data.setOtpdata(model);
-			if (!model.getIsActiveCustomer()) {
-				uiresponse.setStatusKey(EnumUtil.StatusCode.ALREADY_ACTIVE);
-			}
 
-			if (model.getOtp() == null) {
-				uiresponse.setStatusKey(EnumUtil.StatusCode.INVALID_ID);
+			if (!model.getIsActiveCustomer()) {
+				wrapper.setStatus(EnumUtil.StatusCode.ALREADY_ACTIVE);
+			} else if (model.getOtp() == null) {
+				wrapper.setStatus(EnumUtil.StatusCode.INVALID_ID);
 			}
 
 			userSessionInfo.setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
 
+			wrapper.getData().setOtpdata(model);
 		}
-		return uiresponse;
+		return wrapper;
 	}
 
-	public LoginData loginWithOtp(String civilid, String otp) {
-		ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
-		LoginData data = new LoginData();
-		CustomerModel result = response.getResult();
-		if (result != null) {
-			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
-			data.setOtpdata(model);
-		}
+	public ResponseWrapper<RegistrationdData> loginWithOtp(String civilid, String otp, HttpServletRequest request) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		if (userSessionInfo.isValid()) {
+			wrapper.setStatus(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
+		} else {
+			UsernamePasswordAuthenticationToken token = null;
+			try {
+				if (userSessionInfo.isValid(civilid, otp)) {
+					token = new UsernamePasswordAuthenticationToken(civilid, otp);
+					token.setDetails(new WebAuthenticationDetails(request));
+					Authentication authentication = this.customerAuthProvider.authenticate(token);
+					wrapper.setStatus(StatusCode.VERIFY_SUCCESS, "Authing");
+					userSessionInfo.setValid(true);
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				} else {
+					wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
+				}
 
-		return data;
+			} catch (Exception e) {
+				token = null;
+				wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
+			}
+			SecurityContextHolder.getContext().setAuthentication(token);
+		}
+		return wrapper;
 	}
 
 }
