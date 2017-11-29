@@ -26,7 +26,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	private Logger log = Logger.getLogger(MetaClient.class);
 
 
-	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> applicationCountry() {
+	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> getApplicationCountry() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -43,7 +43,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 	
-	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> applicationCountryByCountryAndCompany(String countryId,String companyId) {
+	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> getApplicationCountryByCountryAndCompany(String countryId,String companyId) {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -61,7 +61,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	//CountryMasterDTO
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getClientForAllCountry() {
+	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountry() {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -77,7 +77,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getClientForAllCountryByLanguageId(String languageId) {
+	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountryByLanguageId(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -93,7 +93,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		return response;
 	}
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getClientForAllCountryByLanguageId(String languageId,String countryId) {
+	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountryByLanguageId(String languageId,String countryId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -111,7 +111,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getClientForBusinessCountry(String languageId) {
+	public ResponseEntity<ApiResponse<CountryMasterDTO>> getBusinessCountry(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -127,7 +127,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ResponseEntity<ApiResponse<QuestModelDTO>> getClientForSequrityQuestion(String languageId,String countryId) {
+	public ResponseEntity<ApiResponse<QuestModelDTO>> getSequrityQuestion(String languageId,String countryId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
@@ -142,7 +142,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		return response;
 	}
 	
-	public ResponseEntity<ApiResponse<QuestModelDTO>> getClientForSequrityQuestionById(String languageId,String countryId,String questionId) {
+	public ResponseEntity<ApiResponse<QuestModelDTO>> getSequrityQuestionById(String languageId,String countryId,String questionId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
@@ -159,7 +159,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 	
-	public ApiResponse getClientForTermsAndCondition(String languageId) {
+	public ApiResponse getTermsAndCondition(String languageId) {
 		ApiResponse response = null;
 		try {
 			log.info("Terms and Condition "+languageId);
@@ -173,7 +173,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ApiResponse getClientForTermsAndConditionAsPerCountry(String languageId,String countryId) {
+	public ApiResponse getTermsAndConditionAsPerCountry(String languageId,String countryId) {
 		ApiResponse response = null;
 		try {
 			log.info("Terms and Condition "+languageId);
@@ -188,7 +188,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 
-	public ApiResponse getClienWhyAskInfo(String languageId,String countryId) {
+	public ApiResponse getWhyAskInfo(String languageId,String countryId) {
 		ApiResponse response = null;
 		try {
 			log.info("Terms and Condition "+languageId);
@@ -202,7 +202,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ApiResponse getClienFinancialYear() {
+	public ApiResponse getFinancialYear() {
 		ApiResponse response = null;
 		try {
 			log.info("Financial Year");
@@ -216,7 +216,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ApiResponse getClienContactUsTime() {
+	public ApiResponse getContactUsTime() {
 		ApiResponse response = null;
 		try {
 			log.info("Contact Us time");
@@ -229,7 +229,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		return response;
 	}
 	
-	public ApiResponse getClienHelpDeskNo() {
+	public ApiResponse getHelpDeskNo() {
 		ApiResponse response = null;
 		try {
 			log.info("Contact Us time");
