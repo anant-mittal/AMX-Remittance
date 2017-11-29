@@ -3,9 +3,21 @@ package com.amx.jax.client;
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import org.apache.log4j.Logger;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.meta.model.ApplicationSetupDTO;
+import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.UserFinancialYearDTO;
+import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 
 /**
@@ -15,191 +27,241 @@ import com.amx.amxlib.model.response.ApiResponse;
  *
  */
 
+@Component
 public class MetaClient extends AbstractJaxServiceClient{
 	private Logger log = Logger.getLogger(MetaClient.class);
 
 
-	public ApiResponse applicationCountry() {
-		ApiResponse response = null;
+	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
+		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			//headers.add("meta-info", "{\"country-id\":91}");
-			//HttpEntity<AbstractUserModel> entity = new HttpEntity<AbstractUserModel>(model, headers);
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/applcountry/";
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>(){});
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
 	
-	public ApiResponse applicationCountryByCountryAndCompany(String countryId,String companyId) {
-		ApiResponse response = null;
+	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany(String countryId,String companyId) {
+		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/applcountry/"+countryId+"/"+companyId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>(){});
+			
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
+	//CountryMasterDTO
 	
-	
-	public ApiResponse getClientForAllCountry() {
-		ApiResponse response = null;
+	public ApiResponse<CountryMasterDTO> getAllCountry() {
+		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/";
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ApiResponse getClientForAllCountryByLanguageId(String languageId) {
-		ApiResponse response = null;
+	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
+		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/"+languageId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
+			
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ApiResponse getClientForAllCountryByLanguageId(String languageId,String countryId) {
-		ApiResponse response = null;
+	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId,String countryId) {
+		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/"+languageId+"/"+countryId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
+		
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ApiResponse getClientForBusinessCountry(String languageId) {
-		ApiResponse response = null;
+	public ApiResponse<CountryMasterDTO> getBusinessCountry(String languageId) {
+		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/bc/"+languageId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ApiResponse getClientForSequrityQuestion(String languageId,String countryId) {
-		ApiResponse response = null;
+	
+	public ApiResponse<QuestModelDTO> getSequrityQuestion(String languageId,String countryId) {
+		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ApiResponse getClientForSequrityQuestionById(String languageId,String countryId,String questionId) {
-		ApiResponse response = null;
+	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId,String countryId,String questionId) {
+		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId+"/"+questionId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
-	}
-	
-	
-	
-	public ApiResponse getClientForTermsAndCondition(String languageId) {
-		ApiResponse response = null;
-		try {
-			log.info("Terms and Condition "+languageId);
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
-		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
-		}
-		return response;
+		return response.getBody();
 	}
 	
 	
 
-	public ApiResponse getClienWhyAskInfo(String languageId,String countryId) {
-		ApiResponse response = null;
+	
+	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition(String languageId) {
+		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
+		try {
+			log.info("Terms and Condition "+languageId);
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>(){});
+		
+			
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response.getBody();
+	}
+	
+	
+	
+	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId,String countryId) {
+		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
+		try {
+			log.info("Terms and Condition "+languageId);
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId+"/"+countryId;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>(){});
+		
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response.getBody();
+	}
+	
+	
+	
+	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId,String countryId) {
+		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response = null;
 		try {
 			log.info("Terms and Condition "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/why/"+languageId+"/"+countryId;
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
+
 	
-	public ApiResponse getClienFinancialYear() {
-		ApiResponse response = null;
+	public ApiResponse<UserFinancialYearDTO> getFinancialYear() {
+		ResponseEntity<ApiResponse<UserFinancialYearDTO>> response = null;
 		try {
 			log.info("Financial Year");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/fyear/";
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ApiResponse getClienContactUsTime() {
-		ApiResponse response = null;
+	public ApiResponse<AuthenticationLimitCheckDTO> getContactUsTime() {
+		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdtime/";
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>(){});
+		
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ApiResponse getClienHelpDeskNo() {
-		ApiResponse response = null;
+	public ApiResponse<AuthenticationLimitCheckDTO> getHelpDeskNo() {
+		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdno/";
-			response = restTemplate.getForObject(url, ApiResponse.class);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>(){});
+			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	

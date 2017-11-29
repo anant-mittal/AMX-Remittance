@@ -19,12 +19,6 @@ public class ViewDistrictService extends AbstractService{
 	@Autowired
 	IViewDistrictDAO viewDistrictDao;
 	
-/*	public List<ViewDistrict> getDistrict(BigDecimal stateId, BigDecimal districtId, BigDecimal languageId){
-		return viewDistrictDao.getDistrict(stateId, districtId, languageId);
-	}
-	*/
-	
-	
 	public ApiResponse getDistrict(BigDecimal stateId, BigDecimal districtId, BigDecimal languageId){
 		List<ViewDistrict> viewDistrict =viewDistrictDao.getDistrict(stateId, districtId, languageId);
 		ApiResponse response = getBlackApiResponse();

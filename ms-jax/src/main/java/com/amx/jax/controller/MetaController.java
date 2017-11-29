@@ -72,9 +72,15 @@ public class MetaController implements Serializable{
 	@Autowired
 	CompanyService companyService;
 	
+
 	
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
+	
+	
+	/*@Autowired
+	MetaService<T> metaService;*/
+	
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -141,6 +147,12 @@ public class MetaController implements Serializable{
 	}
 	
 	
+	@RequestMapping(value = "/terms/{languageId}/{countryId}", method = RequestMethod.GET)
+	public ApiResponse getTermsAndConditionAsPerCountryResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+		ApiResponse response = termsAndConditionService.getTermsAndConditionAsPerCountry(languageId, countryId);
+		return response;
+	}
+	
 	
 	@RequestMapping(value = "/why/{languageId}/{countryId}", method = RequestMethod.GET)
 	public ApiResponse getWhyAskInformationResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
@@ -205,9 +217,16 @@ public class MetaController implements Serializable{
 		else {
 			response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
 		}
-		// response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr, docNumber); //, fromDate, toDate
 		return response;
 	}
+	
+	
+/*	@RequestMapping(value = "/district/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
+	public ApiResponse getDistrictResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
+		ApiResponse response = metaService.getDistrict(stateId, districtId, languageId);
+		return response;
+	}*/
+	
 	
 	
 }

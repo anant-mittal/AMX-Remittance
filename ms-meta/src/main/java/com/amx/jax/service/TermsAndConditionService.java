@@ -42,6 +42,23 @@ public class TermsAndConditionService extends AbstractService{
 	}
 	
 	
+	public ApiResponse getTermsAndConditionAsPerCountry(BigDecimal languageId,BigDecimal countryId) {
+		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId);
+		ApiResponse response = getBlackApiResponse();
+		if(termsConditionList.isEmpty()) {
+			throw new GlobalException("Terms and Condition is not abaliable");
+		}else {
+		response.getData().getValues().addAll(convert(termsConditionList));
+		response.setResponseStatus(ResponseStatus.OK);
+		}
+		
+		response.getData().setType("terms");
+		return response;
+	}
+	
+	
+	
+	
 	private List<TermsAndConditionDTO> convert(List<TermsAndCondition> termsConditionList) {
 		List<TermsAndConditionDTO> list = new ArrayList<TermsAndConditionDTO>();
 		for (TermsAndCondition terms : termsConditionList) {

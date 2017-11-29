@@ -18,22 +18,19 @@ import com.amx.jax.multitenant.MultiTenantJaxProperties.DataSourceProperties;
 @EnableConfigurationProperties({ MultiTenantJaxProperties.class, JpaProperties.class })
 
 public class MultiTenantJpaConfiguration {
-	
+
 	@Autowired
 	MultiTenantJaxProperties multiTenantJaxProperties;
-	
-	@Bean(name = "dataSourcesJax" )
+
+	@Bean(name = "dataSourcesJax")
 	public Map<String, DataSource> dataSourcesDvdRental() {
-	     Map<String, DataSource> result = new HashMap<>();
-	     for (DataSourceProperties dsProperties : this.multiTenantJaxProperties.getDataSourcesProps()) {
-	       DataSourceBuilder factory = DataSourceBuilder
-	         .create()
-	         .url(dsProperties.getUrl())
-	         .username(dsProperties.getUsername())
-	         .password(dsProperties.getPassword())
-	         .driverClassName(dsProperties.getDriverClassName());
-	       result.put(dsProperties.getTenantId(), factory.build());
-	     }
-	     return result;
-	   }
+		Map<String, DataSource> result = new HashMap<>();
+		for (DataSourceProperties dsProperties : this.multiTenantJaxProperties.getDataSourcesProps()) {
+			DataSourceBuilder factory = DataSourceBuilder.create().url(dsProperties.getUrl())
+					.username(dsProperties.getUsername()).password(dsProperties.getPassword())
+					.driverClassName(dsProperties.getDriverClassName());
+			result.put(dsProperties.getTenantId(), factory.build());
+		}
+		return result;
+	}
 }

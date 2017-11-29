@@ -33,7 +33,8 @@ public class UserClient extends AbstractJaxServiceClient {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			headers.add("meta-info", "{\"country-id\":91}");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/validate-otp/";
+			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/validate-otp/?otp="
+					+ otp;
 			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
