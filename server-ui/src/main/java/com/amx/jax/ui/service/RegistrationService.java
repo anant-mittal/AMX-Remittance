@@ -2,9 +2,9 @@ package com.amx.jax.ui.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
@@ -23,13 +23,14 @@ public class RegistrationService {
 	private UserSessionInfo userSessionInfo;
 
 	public UIResponse<VerifyIdData> verifyId(String civilid) {
-		UIResponse<VerifyIdData> uiresponse = new UIResponse<VerifyIdData>();
 
-		ApiResponse response = userclient.sendOtpForCivilId(civilid);
+		ApiResponse<CivilIdOtpModel> response = userclient.sendOtpForCivilId(civilid);
+		CivilIdOtpModel result = response.getResult();
 		VerifyIdData data = new VerifyIdData();
-		if (!CollectionUtils.isEmpty(response.getData().getValues())) {
+		UIResponse<VerifyIdData> uiresponse = new UIResponse<VerifyIdData>();
+		if (result != null) {
 			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
-
+			data.setOtpdata(model);
 			if (!model.getIsActiveCustomer()) {
 				uiresponse.setStatusKey(EnumUtil.StatusCode.ALREADY_ACTIVE);
 			}
@@ -41,16 +42,18 @@ public class RegistrationService {
 			userSessionInfo.setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
 
-			data.setOtpdata(model);
 		}
-
-		uiresponse.setData(data);
 		return uiresponse;
 	}
 
 	public LoginData loginWithOtp(String civilid, String otp) {
-		// ApiResponse response = userclient.validateOtp(civilid, otp);
+		ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
 		LoginData data = new LoginData();
+		CustomerModel result = response.getResult();
+		if (result != null) {
+			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
+			data.setOtpdata(model);
+		}
 
 		return data;
 	}
