@@ -26,7 +26,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	private Logger log = Logger.getLogger(MetaClient.class);
 
 
-	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> getApplicationCountry() {
+	public ApiResponse<ApplicationSetupDTO> applicationCountry() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -38,12 +38,12 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
 	
-	public ResponseEntity<ApiResponse<ApplicationSetupDTO>> getApplicationCountryByCountryAndCompany(String countryId,String companyId) {
+	public ApiResponse<ApplicationSetupDTO> applicationCountryByCountryAndCompany(String countryId,String companyId) {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -56,12 +56,12 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	//CountryMasterDTO
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountry() {
+	public ApiResponse<CountryMasterDTO> getClientForAllCountry() {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
@@ -73,11 +73,11 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountryByLanguageId(String languageId) {
+	public ApiResponse<CountryMasterDTO> getClientForAllCountryByLanguageId(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -90,10 +90,10 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getAllCountryByLanguageId(String languageId,String countryId) {
+	public ApiResponse<CountryMasterDTO> getClientForAllCountryByLanguageId(String languageId,String countryId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -107,11 +107,11 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ResponseEntity<ApiResponse<CountryMasterDTO>> getBusinessCountry(String languageId) {
+	public ApiResponse<CountryMasterDTO> getClientForBusinessCountry(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId);
@@ -123,11 +123,11 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
-	public ResponseEntity<ApiResponse<QuestModelDTO>> getSequrityQuestion(String languageId,String countryId) {
+	public ApiResponse<QuestModelDTO> getClientForSequrityQuestion(String languageId,String countryId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
@@ -139,10 +139,10 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
-	public ResponseEntity<ApiResponse<QuestModelDTO>> getSequrityQuestionById(String languageId,String countryId,String questionId) {
+	public ApiResponse<QuestModelDTO> getClientForSequrityQuestionById(String languageId,String countryId,String questionId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
@@ -154,7 +154,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
-		return response;
+		return response.getBody();
 	}
 	
 	
