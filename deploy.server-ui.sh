@@ -4,6 +4,8 @@ source config/setvars.sh
 
 bash setup.sh
 
+echo "VARIABLES"
+
 mvn clean
 
 mvn package -DskipTests
@@ -12,6 +14,7 @@ cd server-ui
 
 mv target/server-ui-0.0.1-SNAPSHOT.war target/app.war
 
+echo "VARIABLES"
 echo $TOMCAT_USER
 echo $TOMCAT_PASSWORD
 echo $TOMCAT_HOST
