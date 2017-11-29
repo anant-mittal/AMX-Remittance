@@ -3,6 +3,7 @@ package com.amx.jax.ui.response;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.SecurityQuestionModel;
 
 public class RegistrationdData implements ResponseData {
 
@@ -19,10 +20,24 @@ public class RegistrationdData implements ResponseData {
 		this.otp = otp;
 	}
 
-	private List<QuestModelDTO> secQues = null;
+	private List<QuestModelDTO> secQuesMeta = null;
 
-	public List<QuestModelDTO> getSecQues() {
-		return secQues;
+	public List<QuestModelDTO> getSecQuesMeta() {
+		return secQuesMeta;
+	}
+
+	public void setSecQuesMeta(List<QuestModelDTO> secQuesMeta) {
+		this.secQuesMeta = secQuesMeta;
+	}
+
+	private List<SecurityQuestionModel> secQuesAns = null;
+
+	public List<SecurityQuestionModel> getSecQuesAns() {
+		return secQuesAns;
+	}
+
+	public void setSecQuesAns(List<SecurityQuestionModel> secQuesAns) {
+		this.secQuesAns = secQuesAns;
 	}
 
 	public Boolean getValid() {
@@ -39,10 +54,6 @@ public class RegistrationdData implements ResponseData {
 
 	public void setOtpsent(Boolean otpsent) {
 		this.otpsent = otpsent;
-	}
-
-	public void setSecQues(List<QuestModelDTO> questModel) {
-		this.secQues = questModel;
 	}
 
 }

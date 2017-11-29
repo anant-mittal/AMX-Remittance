@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
@@ -33,15 +34,15 @@ public class RegisterController {
 		return registrationService.loginWithOtp(civilid, otp, request);
 	}
 
-	@RequestMapping(value = "/register/api/secques", method = { RequestMethod.GET })
+	@RequestMapping(value = "/register/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<RegistrationdData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues();
 	}
 
-	@RequestMapping(value = "/register/api/secques", method = { RequestMethod.POST, })
-	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<QuestModelDTO> quesModel) {
+	@RequestMapping(value = "/register/api/secques/save", method = { RequestMethod.POST, })
+	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<SecurityQuestionModel> quesAnsModel) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		wrapper.getData().setSecQues(quesModel);
+		wrapper.getData().setSecQuesAns(quesAnsModel);
 		return wrapper;
 	}
 

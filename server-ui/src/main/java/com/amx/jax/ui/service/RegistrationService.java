@@ -89,11 +89,14 @@ public class RegistrationService {
 	}
 
 	public ResponseWrapper<RegistrationdData> getSecQues() {
-		// userSessionInfo.getCustomerModel().getSecurityquestions()
+
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 		List<QuestModelDTO> questModel = metaClient
 				.getSequrityQuestion(UserSessionInfo.LANGUAGE_ID, UserSessionInfo.COUNTRY_ID).getResults();
-		wrapper.getData().setSecQues(questModel);
+
+		wrapper.getData().setSecQuesMeta(questModel);
+		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
+
 		return wrapper;
 	}
 

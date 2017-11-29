@@ -1,6 +1,8 @@
 package com.amx.jax.ui.response;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.EnumUtil.StatusCode;
