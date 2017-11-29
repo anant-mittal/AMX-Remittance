@@ -165,7 +165,6 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 
-	
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition(String languageId) {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
@@ -181,7 +180,6 @@ public class MetaClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();
 	}
-	
 	
 	
 	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId,String countryId) {
@@ -200,7 +198,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	
+
 	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId,String countryId) {
 		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response = null;
 		try {

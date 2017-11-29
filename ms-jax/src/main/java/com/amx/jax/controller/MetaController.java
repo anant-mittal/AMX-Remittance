@@ -31,7 +31,7 @@ import com.amx.jax.service.WhyDoAskService;
  */
 @RestController
 @RequestMapping("/meta")
-public class MetaController implements Serializable{
+public class MetaController<T> implements Serializable{
 
 	/**
 	 * 
@@ -77,8 +77,8 @@ public class MetaController implements Serializable{
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
-	
-	/*@Autowired
+/*	
+	@Autowired
 	MetaService<T> metaService;*/
 	
 	
@@ -222,7 +222,7 @@ public class MetaController implements Serializable{
 	
 	
 /*	@RequestMapping(value = "/district/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
-	public ApiResponse getDistrictResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
+	public ApiResponse<T> getDistrictResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
 		ApiResponse response = metaService.getDistrict(stateId, districtId, languageId);
 		return response;
 	}*/
