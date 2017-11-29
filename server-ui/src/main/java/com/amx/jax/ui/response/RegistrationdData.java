@@ -1,7 +1,5 @@
 package com.amx.jax.ui.response;
 
-import com.amx.amxlib.model.CivilIdOtpModel;
-
 public class RegistrationdData implements ResponseData {
 
 	private Boolean valid = false;
@@ -22,15 +20,8 @@ public class RegistrationdData implements ResponseData {
 	public void setOtpsent(Boolean otpsent) {
 		this.otpsent = otpsent;
 	}
-
-	private CivilIdOtpModel otpdata;
-
-	public CivilIdOtpModel getOtpdata() {
-		return otpdata;
-	}
-
-	public void setOtpdata(CivilIdOtpModel otpdata) {
-		this.otpdata = otpdata;
-	}
+	
+	
+	
 
 }

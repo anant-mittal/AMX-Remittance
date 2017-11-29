@@ -6,14 +6,29 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.model.CustomerModel;
+
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserSessionInfo implements Serializable {
 
 	private static final long serialVersionUID = -6354887590466374869L;
+	public static final String COUNTRY_ID = "91";
+	public static final String LANGUAGE_ID = "1";
+
 	private boolean valid = false;
 	private String otp = null;
 	private String userid = null;
+
+	private CustomerModel customerModel = null;
+
+	public CustomerModel getCustomerModel() {
+		return customerModel;
+	}
+
+	public void setCustomerModel(CustomerModel customerModel) {
+		this.customerModel = customerModel;
+	}
 
 	public String getUserid() {
 		return userid;

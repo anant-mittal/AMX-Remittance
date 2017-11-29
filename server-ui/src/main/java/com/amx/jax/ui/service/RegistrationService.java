@@ -1,5 +1,7 @@
 package com.amx.jax.ui.service;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +10,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
@@ -32,24 +35,23 @@ public class RegistrationService {
 	@Autowired
 	private CustomerAuthProvider customerAuthProvider;
 
+	@Autowired
+	private MetaClient metaClient;
+
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
-		ApiResponse response = userclient.sendOtpForCivilId(civilid);
+		ApiResponse<CivilIdOtpModel> response = userclient.sendOtpForCivilId(civilid);
+		CivilIdOtpModel model = response.getResult();
 
-		if (!CollectionUtils.isEmpty(response.getData().getValues())) {
-			CivilIdOtpModel model = (CivilIdOtpModel) response.getData().getValues().get(0);
-
+		if (model != null) {
 			if (!model.getIsActiveCustomer()) {
 				wrapper.setStatus(EnumUtil.StatusCode.ALREADY_ACTIVE);
 			} else if (model.getOtp() == null) {
 				wrapper.setStatus(EnumUtil.StatusCode.INVALID_ID);
 			}
-
 			userSessionInfo.setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
-
-			wrapper.getData().setOtpdata(model);
 		}
 		return wrapper;
 	}
@@ -61,11 +63,15 @@ public class RegistrationService {
 		} else {
 			UsernamePasswordAuthenticationToken token = null;
 			try {
-				if (userSessionInfo.isValid(civilid, otp)) {
+				ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
+				CustomerModel model = response.getResult();
+
+				if (model != null && userSessionInfo.isValid(civilid, otp)) {
 					token = new UsernamePasswordAuthenticationToken(civilid, otp);
 					token.setDetails(new WebAuthenticationDetails(request));
 					Authentication authentication = this.customerAuthProvider.authenticate(token);
 					wrapper.setStatus(StatusCode.VERIFY_SUCCESS, "Authing");
+					userSessionInfo.setCustomerModel(model);
 					userSessionInfo.setValid(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} else {
@@ -79,6 +85,15 @@ public class RegistrationService {
 			SecurityContextHolder.getContext().setAuthentication(token);
 		}
 		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> getSecQues() {
+		// userSessionInfo.getCustomerModel().getSecurityquestions()
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		ApiResponse response = metaClient.getClientForSequrityQuestion(UserSessionInfo.LANGUAGE_ID,
+				UserSessionInfo.COUNTRY_ID);
+		//wrapper.getData().setSecQues();
+		return null;
 	}
 
 }
