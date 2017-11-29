@@ -4,13 +4,6 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import java.util.ArrayList;
-import java.util.Date;
-//import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import javax.persistence.TableGenerator;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -50,24 +42,6 @@ public class UserFinancialYear implements Serializable {
 	public String modifiedBy;
 	private Date modifiedDate;
 	
-	//private List<CustomerSpecialDealRequest> documentFinancialYear = new ArrayList<CustomerSpecialDealRequest>();
-	/*private Set<TreasuryDealHeader> exDealHeader = new HashSet<TreasuryDealHeader>(0);
-	private Set<TreasuryDealDetail> exDealDetail = new HashSet<TreasuryDealDetail>(0);
-	private Set<TreasuryStandardInstruction> exTreasuryStandardIns = new HashSet<TreasuryStandardInstruction>(0);*/
-//	private List<TreasuryDealDetail> exTreasuryDealDetails = new ArrayList<TreasuryDealDetail>();
-	// private List<SpecialRateRequest> specialRatefinacialList=new ArrayList<SpecialRateRequest>();
-	// private Set<Remittance> exRemittance = new HashSet<Remittance>(0);
-	
-	 //private Set<RemiittanceApplication> exRemiittanceApplicationsForFileFinanceYr = new HashSet<RemiittanceApplication>(0);
-	 //private Set<RemiittanceApplication> exRemiittanceApplicationsForDocumentFinanceYear = new HashSet<RemiittanceApplication>(0);
-	 //private Set<RemiittanceApplication> exRemiittanceApplicationsForApplicationFinanceYear = new HashSet<RemiittanceApplication>(0);
-	// private Set<RemittanceAppBenificiary> exRemittanceAppBenificiary = new HashSet<RemittanceAppBenificiary>(0);
-	 
-	// private Set<RemittanceApplication> exRemittanceApplicationsForDocumentFinanceYear = new HashSet<RemittanceApplication>(0);
-   //private Set<RemittanceApplication> exRemittanceApplicationsForTransactionFinanceYear = new HashSet<RemittanceApplication>(0);
-	// private Set<RemittanceApplication> exRemittanceAppBenificiaries = new HashSet<RemittanceApplication>(0);
-	// private Set<AdditionalInstructionData> additionalInstData = new HashSet<AdditionalInstructionData>(0);
-	
 	
 	
 	public UserFinancialYear(){
@@ -86,58 +60,9 @@ public class UserFinancialYear implements Serializable {
 	 * @param modifiedBy
 	 * @param modifiedDate
 	 */
-	/*public UserFinancialYear(
-			BigDecimal financialYearID,
-			BigDecimal financialYear,
-			Date financialYearBegin,
-			Date financialYearEnd,
-			String fullDesc,
-			String shortDesc,
-			Date newBeginYear,
-			String createdBy,
-			Date createdDate,
-			String modifiedBy,
-			Date modifiedDate,
-			//List<CustomerSpecialDealRequest> documentFinancialYear,
-			//List<SpecialRateRequest> specialRatefinacialList,
-		//	Set<Remittance> exRemittance,
-			//Set<RemiittanceApplication> exRemiittanceApplicationsForFileFinanceYr,
-			//Set<RemiittanceApplication> exRemiittanceApplicationsForDocumentFinanceYear,
-			//Set<RemiittanceApplication> exRemiittanceApplicationsForApplicationFinanceYear,
-		//	Set<RemittanceAppBenificiary> exRemittanceAppBenificiary,
-		//	Set<RemittanceApplication> exRemittanceApplicationsForDocumentFinanceYear,
-		//	Set<RemittanceApplication> exRemittanceAppBenificiaries,
-			//Set<AdditionalInstructionData> additionalInstData) {
-		super();
-		this.financialYearID = financialYearID;
-		this.financialYear = financialYear;
-		this.financialYearBegin = financialYearBegin;
-		this.financialYearEnd = financialYearEnd;
-		this.fullDesc = fullDesc;
-		this.shortDesc = shortDesc;
-		NewBeginYear = newBeginYear;
-		this.createdBy = createdBy;
-		this.createdDate = createdDate;
-		this.modifiedBy = modifiedBy;
-		this.modifiedDate = modifiedDate;
-		//this.documentFinancialYear = documentFinancialYear;
-		//this.specialRatefinacialList = specialRatefinacialList;
-		//this.exRemittance = exRemittance;
-		//this.exRemiittanceApplicationsForFileFinanceYr = exRemiittanceApplicationsForFileFinanceYr;
-		//this.exRemiittanceApplicationsForDocumentFinanceYear = exRemiittanceApplicationsForDocumentFinanceYear;
-		//this.exRemiittanceApplicationsForApplicationFinanceYear = exRemiittanceApplicationsForApplicationFinanceYear;
-		//this.exRemittanceAppBenificiary = exRemittanceAppBenificiary;
-		//this.exRemittanceApplicationsForDocumentFinanceYear = exRemittanceApplicationsForDocumentFinanceYear;
-		//this.exRemittanceAppBenificiaries = exRemittanceAppBenificiaries;
-		//this.additionalInstData = additionalInstData;
-	}
 	
-	*/
 	
 	@Id
-	/*@TableGenerator(name="financialyearid",table="ex_user_financial_yearpk",pkColumnName="financialyearKey",pkColumnValue="financialyearvalue",allocationSize=1)
-	@GeneratedValue(strategy = GenerationType.TABLE, generator="financialyearid")
-	*/
 	@GeneratedValue(generator="ex_user_financial_year_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="ex_user_financial_year_seq" ,sequenceName="EX_USER_FINANCIAL_YEAR_SEQ",allocationSize=1)	
 	@Column(name = "FINANCIAL_YEAR_ID",unique=true, nullable=false, precision=22, scale=0)

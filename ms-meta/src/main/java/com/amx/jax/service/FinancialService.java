@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -37,6 +38,21 @@ public class FinancialService  extends AbstractService{
 		return response;
 	}
 	
+	
+	
+	
+	private List<UserFinancialYearDTO> convert(List<UserFinancialYear> financialList){
+		List<UserFinancialYearDTO> list = null;
+		for (UserFinancialYear fyr : financialList) {
+			UserFinancialYearDTO model = new UserFinancialYearDTO();
+			fyr.setFinancialYear(model.getFinancialYear());
+			fyr.setFinancialYearID(model.getFinancialYearID());
+			fyr.setFullDesc(model.getFullDesc());
+			fyr.setShortDesc(model.getShortDesc());
+			list.add(model);
+		}
+		return list;
+	}
 	
 
 	@Override
