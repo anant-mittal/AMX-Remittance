@@ -1,9 +1,10 @@
 package com.amx.jax.ui.service;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -50,6 +51,7 @@ public class RegistrationService {
 				wrapper.setStatus(EnumUtil.StatusCode.INVALID_ID);
 			}
 			userSessionInfo.setOtp(model.getOtp());
+			wrapper.getData().setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
 		}
 		return wrapper;
@@ -89,9 +91,10 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> getSecQues() {
 		// userSessionInfo.getCustomerModel().getSecurityquestions()
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		//QuestModelDTO questModel = metaClient.getSequrityQuestion(UserSessionInfo.LANGUAGE_ID,UserSessionInfo.COUNTRY_ID).getResult();
-		//wrapper.getData().setSecQues();
-		return null;
+		List<QuestModelDTO> questModel = metaClient
+				.getSequrityQuestion(UserSessionInfo.LANGUAGE_ID, UserSessionInfo.COUNTRY_ID).getResults();
+		wrapper.getData().setSecQues(questModel);
+		return wrapper;
 	}
 
 }

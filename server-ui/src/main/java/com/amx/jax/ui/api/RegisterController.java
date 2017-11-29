@@ -32,7 +32,7 @@ public class RegisterController {
 	@RequestMapping(value = "/register/api/getsecques", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<RegistrationdData> getSecQues(@RequestParam String civilid, @RequestParam String otp,
 			HttpServletRequest request) {
-		return registrationService.loginWithOtp(civilid, otp, request);
+		return registrationService.getSecQues();
 	}
 
 }
