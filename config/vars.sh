@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 TOMCAT_USER=amxtomcatuser
 TOMCAT_PASSWORD="amxtomcatpass"

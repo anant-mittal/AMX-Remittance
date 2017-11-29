@@ -6,5 +6,5 @@ file="~/config/vars.sh"
 
 if [ -f "$file" ]
 then
-	source $file
+        source $file
 fi
