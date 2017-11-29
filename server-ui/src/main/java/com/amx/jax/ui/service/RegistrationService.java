@@ -41,8 +41,7 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
-		ApiResponse<CivilIdOtpModel> response = userclient.sendOtpForCivilId(civilid);
-		CivilIdOtpModel model = response.getResult();
+		CivilIdOtpModel model = userclient.sendOtpForCivilId(civilid).getResult();
 
 		if (model != null) {
 			if (!model.getIsActiveCustomer()) {
@@ -90,7 +89,7 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> getSecQues() {
 		// userSessionInfo.getCustomerModel().getSecurityquestions()
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		ResponseEntity<ApiResponse<QuestModelDTO>> response = metaClient.getClientForSequrityQuestion(UserSessionInfo.LANGUAGE_ID,UserSessionInfo.COUNTRY_ID);
+		//QuestModelDTO questModel = metaClient.getSequrityQuestion(UserSessionInfo.LANGUAGE_ID,UserSessionInfo.COUNTRY_ID).getResult();
 		//wrapper.getData().setSecQues();
 		return null;
 	}
