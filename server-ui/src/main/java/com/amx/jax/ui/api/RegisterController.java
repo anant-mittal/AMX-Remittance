@@ -1,13 +1,17 @@
 package com.amx.jax.ui.api;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
@@ -29,10 +33,16 @@ public class RegisterController {
 		return registrationService.loginWithOtp(civilid, otp, request);
 	}
 
-	@RequestMapping(value = "/register/api/getsecques", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<RegistrationdData> getSecQues(@RequestParam String civilid, @RequestParam String otp,
-			HttpServletRequest request) {
+	@RequestMapping(value = "/register/api/secques", method = { RequestMethod.GET })
+	public ResponseWrapper<RegistrationdData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues();
+	}
+
+	@RequestMapping(value = "/register/api/secques", method = { RequestMethod.POST, })
+	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<QuestModelDTO> quesModel) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		wrapper.getData().setSecQues(quesModel);
+		return wrapper;
 	}
 
 }
