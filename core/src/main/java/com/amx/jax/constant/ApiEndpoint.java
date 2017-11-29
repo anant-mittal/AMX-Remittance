@@ -9,4 +9,6 @@ public class ApiEndpoint {
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 
 	public static final String CIVIL_ID_VALIDATE = "/{civil-id}/send-otp/";
+	
+	public static final String BENE_API_ENDPOINT = "/bene";
 }
