@@ -39,21 +39,21 @@ public class CustomerController {
 
 	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse verifyCivilId(@PathVariable("civil-id") String civilId) {
-		logger.debug("saveCust Request:civilId" + civilId);
+		logger.debug("verifyCivilId Request:civilId" + civilId);
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
 		return response;
 	}
 
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("otp") String otp) {
-		logger.debug("saveCust Request:civilId" + civilId + " otp:" + otp);
+		logger.debug("validateOtp Request:civilId" + civilId + " otp:" + otp);
 		ApiResponse response = userSerivce.validateOtp(civilId, otp);
 		return response;
 	}
 
 	@RequestMapping(value = "/{civil-id}/checklist/", method = RequestMethod.GET)
 	public ApiResponse getCheckList(@PathVariable("civil-id") String civilId) {
-		logger.debug("saveCust Request:civilId" + civilId);
+		logger.debug("getCheckList Request:civilId" + civilId);
 		ApiResponse response = userSerivce.getUserCheckList(civilId);
 		return response;
 	}
