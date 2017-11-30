@@ -89,11 +89,6 @@ public class MetaUserController implements Serializable{
 		return response;
 	}
 	
-	@RequestMapping(value = "/imageVal/{customerId}/{identityTypeId}", method = RequestMethod.GET)
-	public ApiResponse getCustomerImageValidationResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
-		ApiResponse response = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
-		return response;
-	}
 	
 	@RequestMapping(value = "/blist/{name}", method = RequestMethod.GET)
 	public ApiResponse getBlackListResponse(@PathVariable("name") String name){

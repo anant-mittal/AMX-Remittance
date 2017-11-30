@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,7 +15,9 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.CusmasModel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
@@ -22,6 +25,7 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CustomerIdProofService;
+import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.validation.CustomerValidation;
@@ -54,6 +58,9 @@ public class UserValidationService {
 
 	@Autowired
 	private BlackListDao blistDao;
+
+	@Autowired
+	private CusmosDao cusmosDao;
 
 	protected void validateLoginId(String loginId) {
 		boolean userNameValid = patternValidator.validateUserName(loginId);
@@ -93,11 +100,10 @@ public class UserValidationService {
 		if (!dbPwd.equals(passwordEncrypted)) {
 			throw new GlobalException("Incorrect/wrong password", "WRONG PASSWORD");
 		}
-
 	}
 
 	protected void validateCustIdProofs(BigDecimal custId) {
-		idproofService.validateCustomerIdProofs(custId);
+		List<CustomerIdProof> idProofs = idproofService.validateCustomerIdProofs(custId);
 	}
 
 	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
@@ -123,7 +129,22 @@ public class UserValidationService {
 			throw new GlobalException("ID is expired", "ID_PROOF_EXPIRED");
 		}
 		validateBlackListedCustomer(customer);
+		validateOldEmosData(customer);
 
+	}
+
+	private void validateOldEmosData(Customer customer) {
+		if (customer.getCustomerReference() == null) {
+			throw new GlobalException("Old customer records not found in EMOS", "OLD_EMOS_USER_NOT_FOUND");
+		}
+		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
+		if (emosCustomer.getStatus() != null) {
+			throw new GlobalException("RECORD IS DELETED IN OLD EMOS", "OLD_EMOS_USER_DELETED");
+		}
+		if (emosCustomer.getIdExpireDate() == null || emosCustomer.getIdExpireDate().compareTo(new Date()) < 0) {
+			throw new GlobalException("ID EXPIRY IS NOT UPDATED OR HAS BEEN EXPIRED IN OLD EMOS",
+					"OLD_EMOS_USER_DATA_EXPIRED");
+		}
 	}
 
 	private void validateCustContact(Customer customer) {

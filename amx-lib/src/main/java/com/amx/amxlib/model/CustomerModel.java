@@ -1,5 +1,6 @@
 package com.amx.amxlib.model;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -20,6 +21,8 @@ public class CustomerModel extends AbstractModel {
 	private String caption;
 
 	private String imageUrl;
+	
+	private BigDecimal customerId;
 
 	public String getEmail() {
 		return email;
@@ -88,6 +91,14 @@ public class CustomerModel extends AbstractModel {
 
 	public void setLoginId(String loginId) {
 		this.loginId = loginId;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

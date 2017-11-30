@@ -16,7 +16,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryService;
-import com.amx.jax.service.CusmasService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.ParameterService;
@@ -81,8 +80,6 @@ public class MetaController implements Serializable{
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
-	@Autowired
-	CusmasService cusmasService;
 	
 /*	
 	@Autowired
@@ -224,17 +221,6 @@ public class MetaController implements Serializable{
 		else {
 			response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
 		}
-		return response;
-	}
-	
-	
-	
-	
-	
-	
-	@RequestMapping(value = "/oldcusmas/{customerRefernce}", method = RequestMethod.GET)
-	public ApiResponse getCusMasResponse(@PathVariable("customerRefernce") BigDecimal customerRefernce){
-		ApiResponse response = cusmasService.getOldCusMasDetails(customerRefernce);
 		return response;
 	}
 	

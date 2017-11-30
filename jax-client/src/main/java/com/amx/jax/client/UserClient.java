@@ -27,15 +27,16 @@ public class UserClient extends AbstractJaxServiceClient {
 	private Logger log = Logger.getLogger(getClass());
 
 	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
+
+	@Autowired
 	private ConverterUtility util;
 
 	public ApiResponse<CustomerModel> validateOtp(String civilId, String otp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			log.info("calling validateOtp api: ");
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			headers.add("meta-info", "{\"country-id\":91}");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/validate-otp/?otp="
 					+ otp;
 			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
@@ -50,9 +51,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String civilId) {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		try {
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			headers.add("meta-info", "{\"country-id\":91}");
-			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(headers);
+			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/send-otp/";
 			log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
@@ -68,9 +67,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	public ApiResponse<CustomerModel> saveCustomer(String json) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			headers.add("meta-info", "{\"country-id\":91}");
-			HttpEntity<String> requestEntity = new HttpEntity<String>(json, headers);
+			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveCustomer api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
@@ -88,9 +85,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			CustomerModel custModel = new CustomerModel();
 			custModel.setSecurityquestions(securityquestions);
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			headers.add("meta-info", "{\"country-id\":91}");
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), headers);
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveSecurityQuestions api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,

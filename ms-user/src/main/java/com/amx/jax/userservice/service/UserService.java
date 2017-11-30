@@ -89,6 +89,7 @@ public class UserService extends AbstractUserService {
 		model.setEmail(cust.getEmail());
 		model.setImageUrl(cust.getImageUrl());
 		model.setMobile(cust.getMobileNumber());
+		model.setCustomerId(cust.getCustomerId());
 		List<SecurityQuestionModel> securityquestions = new ArrayList<>();
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion1(), cust.getSecurityAnswer1()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion2(), cust.getSecurityAnswer2()));
@@ -101,7 +102,7 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse saveCustomer(CustomerModel model) {
 		userValidationService.validateCustomerForOnlineFlow(model.getIdentityId());
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(model.getIdentityId());
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
 		}
