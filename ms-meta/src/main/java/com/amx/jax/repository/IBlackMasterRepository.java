@@ -8,21 +8,13 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.BlackListModel;
 
-public interface IBlackMasterRepository extends JpaRepository<BlackListModel, Serializable>{
-	
-	//@Query(value="select bm from BlackListModel where cName=?1")
-	
-	@Query(value="select bm  from BlackListModel  bm where cName=?1")
-	public List<BlackListModel> getBlackByName(String name);
-	
-	
-	
-	
-	
-	
-		
+public interface IBlackMasterRepository extends JpaRepository<BlackListModel, Serializable> {
 
-	
-	
+	// @Query(value="select bm from BlackListModel where cName=?1")
+
+	@Query(value = "select bm  from BlackListModel  bm where cName=?1")
+	public List<BlackListModel> getBlackByName(String name);
+
+	public List<BlackListModel> findByarabicName(String localName);
 
 }

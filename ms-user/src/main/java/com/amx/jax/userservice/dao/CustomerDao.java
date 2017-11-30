@@ -14,10 +14,12 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
+import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
+import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.CryptoUtil;
 
 @Component
@@ -33,11 +35,14 @@ public class CustomerDao {
 	private UserVerificationCheckListModelRepository checkListrepo;
 
 	@Autowired
+	private ViewOnlineCustomerCheckRepository onlineCustViewRepo;
+
+	@Autowired
 	private MetaData meta;
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
-
+	
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
@@ -148,6 +153,20 @@ public class CustomerDao {
 
 	public UserVerificationCheckListModel getCheckListForUserId(String civilId) {
 		return checkListrepo.findOne(civilId);
+	}
+
+	public ViewOnlineCustomerCheck getOnlineCustomerview(BigDecimal countryId, String civilId) {
+		ViewOnlineCustomerCheck view = null;
+		List<ViewOnlineCustomerCheck> custViewRepoList = onlineCustViewRepo.civilIdCheckForOnlineUser(countryId,
+				civilId);
+		if (!CollectionUtils.isEmpty(custViewRepoList)) {
+			view = custViewRepoList.get(0);
+		}
+		return view;
+	}
+
+	public ViewOnlineCustomerCheck getOnlineCustomerview(BigDecimal custId) {
+		return onlineCustViewRepo.findOne(custId);
 	}
 
 }

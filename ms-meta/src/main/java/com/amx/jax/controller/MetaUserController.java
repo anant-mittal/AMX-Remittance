@@ -18,7 +18,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.service.BlackMasterService;
 import com.amx.jax.service.CustomerIdProofService;
-import com.amx.jax.service.CustomerOnlineServiceFromView;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.LoyaltyPointService;
 import com.amx.jax.service.OnlineCustomerService;
@@ -55,9 +54,6 @@ public class MetaUserController implements Serializable{
 	@Autowired
 	LoyaltyPointService loyaltyPointService;
 	
-	@Autowired
-	CustomerOnlineServiceFromView customerOnlineServiceFromView;
-	
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerDetailsResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
 		ApiResponse response = customerService.getCustomer(countryId, userId);
@@ -90,13 +86,6 @@ public class MetaUserController implements Serializable{
 	@RequestMapping(value = "/online/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getOnlineCustomerResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
 		ApiResponse response = onlineCustomerService.getOnlineCustomerList(countryId, userId);
-		return response;
-	}
-	
-	
-	@RequestMapping(value = "/onlinecheck/{companyId}/{countryId}/{civilid}", method = RequestMethod.GET)
-	public ApiResponse civilIdStatusForOnlineFromViewResponse(@PathVariable("companyId") BigDecimal companyId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("civilid") String civilid){
-		ApiResponse response = customerOnlineServiceFromView.civilIdCheckForOnlineUser(companyId, countryId, civilid);
 		return response;
 	}
 	

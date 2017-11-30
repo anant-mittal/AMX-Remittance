@@ -3,17 +3,20 @@ package com.amx.jax.userservice.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.UserNotFoundException;
@@ -48,6 +51,9 @@ public class UserValidationService {
 
 	@Autowired
 	private CustomerIdProofService idproofService;
+
+	@Autowired
+	private BlackListDao blistDao;
 
 	protected void validateLoginId(String loginId) {
 		boolean userNameValid = patternValidator.validateUserName(loginId);
@@ -96,7 +102,7 @@ public class UserValidationService {
 
 	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
-		if (StringUtils.isEmpty(customer.getCustomerReference())) {
+		if (customer.getCustomerReference() == null) {
 			throw new GlobalException("Invalid Customer Reference", "INVALID_CUSTOMER_REFERENCE");
 		}
 		// validate contact details
@@ -112,7 +118,12 @@ public class UserValidationService {
 		if (!insuranceCheck) {
 			throw new GlobalException("INVALID MEDICAL INSURANCE INDICATOR", "INVALID_INSURANCE_INDICATOR");
 		}
-		
+		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
+		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
+			throw new GlobalException("ID is expired", "ID_PROOF_EXPIRED");
+		}
+		validateBlackListedCustomer(customer);
+
 	}
 
 	private void validateCustContact(Customer customer) {
@@ -134,7 +145,39 @@ public class UserValidationService {
 			throw new GlobalException("No home contact details found", "MISSING_HOME_CONTACT_DETAILS");
 		}
 		if (!islocal) {
-			throw new GlobalException("No home local details found", "MISSING_LOCAL_CONTACT_DETAILS");
+			throw new GlobalException("No local details found", "MISSING_LOCAL_CONTACT_DETAILS");
+		}
+	}
+
+	private void validateBlackListedCustomer(Customer customer) {
+
+		StringBuffer engNamesbuf = new StringBuffer();
+		if (StringUtils.isNotBlank(customer.getFirstName())) {
+			engNamesbuf.append(customer.getFirstName().trim());
+		}
+		if (StringUtils.isNotBlank(customer.getMiddleName())) {
+			engNamesbuf.append(customer.getMiddleName().trim());
+		}
+		if (StringUtils.isNotBlank(customer.getLastName())) {
+			engNamesbuf.append(customer.getLastName().trim());
+		}
+		StringBuffer localNamesbuf = new StringBuffer();
+		if (StringUtils.isNotBlank(customer.getFirstNameLocal())) {
+			localNamesbuf.append(customer.getFirstNameLocal().trim());
+		}
+		if (StringUtils.isNotBlank(customer.getMiddleNameLocal())) {
+			localNamesbuf.append(customer.getMiddleNameLocal().trim());
+		}
+		if (StringUtils.isNotBlank(customer.getLastNameLocal())) {
+			localNamesbuf.append(customer.getLastNameLocal().trim());
+		}
+		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException("Customer name found matching with black list ", "BLACK_LISTED_CUSTOMER");
+		}
+		blist = blistDao.getBlackByName(localNamesbuf.toString());
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException("Customer local name found matching with black list ", "BLACK_LISTED_CUSTOMER");
 		}
 	}
 }
