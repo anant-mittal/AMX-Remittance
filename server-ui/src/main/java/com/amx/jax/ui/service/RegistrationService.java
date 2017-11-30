@@ -142,6 +142,7 @@ public class RegistrationService {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 		CustomerModel customerModel = new CustomerModel();
 
+		customerModel.setCustomerId(userSessionInfo.getCustomerModel().getCustomerId());
 		customerModel.setImageUrl(imageUrl);
 		customerModel.setCaption(caption);
 
