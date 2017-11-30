@@ -5,6 +5,8 @@ import java.net.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -14,7 +16,16 @@ public abstract class AbstractJaxServiceClient {
 	protected RestTemplate restTemplate;
 
 	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
+
+	@Autowired
 	@Qualifier("base_url")
 	protected URL baseUrl;
+
+	protected MultiValueMap<String, String> getHeader() {
+		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		headers.add("meta-info", "{\"country-id\":" + jaxMetaInfo.getCountryId() + "}");
+		return headers;
+	}
 
 }

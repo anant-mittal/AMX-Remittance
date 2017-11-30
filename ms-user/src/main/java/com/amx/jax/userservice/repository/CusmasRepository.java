@@ -1,4 +1,4 @@
-package com.amx.jax.repository;
+package com.amx.jax.userservice.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.CusmasModel;
 
-public interface ICusmasDao extends JpaRepository<CusmasModel, Serializable>{
+public interface CusmasRepository extends JpaRepository<CusmasModel, Serializable>{
 
 	@Query("select cd from CusmasModel cd where cd.customerReference=?1")
 	public List<CusmasModel> getEmosCustomerDetails(BigDecimal customerRefernce);

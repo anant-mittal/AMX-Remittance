@@ -1,5 +1,7 @@
 package com.amx.jax.controller;
 
+import static com.amx.jax.constant.ApiEndpoint.META_API_ENDPOINT;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -14,7 +16,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryService;
-import com.amx.jax.service.CusmasService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.ParameterService;
@@ -31,8 +32,9 @@ import com.amx.jax.service.WhyDoAskService;
  *
  */
 @RestController
-@RequestMapping("/meta")
-public class MetaController<T> implements Serializable{
+@RequestMapping(META_API_ENDPOINT)
+@SuppressWarnings("rawtypes")
+public class MetaController implements Serializable{
 
 	/**
 	 * 
@@ -78,8 +80,6 @@ public class MetaController<T> implements Serializable{
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
-	@Autowired
-	CusmasService cusmasService;
 	
 /*	
 	@Autowired
@@ -221,17 +221,6 @@ public class MetaController<T> implements Serializable{
 		else {
 			response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
 		}
-		return response;
-	}
-	
-	
-	
-	
-	
-	
-	@RequestMapping(value = "/oldcusmas/{customerRefernce}", method = RequestMethod.GET)
-	public ApiResponse getCusMasResponse(@PathVariable("customerRefernce") BigDecimal customerRefernce){
-		ApiResponse response = cusmasService.getOldCusMasDetails(customerRefernce);
 		return response;
 	}
 	

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.service.BlackMasterService;
-import com.amx.jax.service.CustomerIdProofService;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.LoyaltyPointService;
 import com.amx.jax.service.OnlineCustomerService;
@@ -44,9 +43,6 @@ public class MetaUserController implements Serializable{
 	
 	@Autowired
 	OnlineCustomerService onlineCustomerService;
-	
-	@Autowired
-	CustomerIdProofService customerIdProofService;
 	
 	@Autowired
 	BlackMasterService blackMasterService;
@@ -89,11 +85,6 @@ public class MetaUserController implements Serializable{
 		return response;
 	}
 	
-	@RequestMapping(value = "/imageVal/{customerId}/{identityTypeId}", method = RequestMethod.GET)
-	public ApiResponse getCustomerImageValidationResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
-		ApiResponse response = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
-		return response;
-	}
 	
 	@RequestMapping(value = "/blist/{name}", method = RequestMethod.GET)
 	public ApiResponse getBlackListResponse(@PathVariable("name") String name){

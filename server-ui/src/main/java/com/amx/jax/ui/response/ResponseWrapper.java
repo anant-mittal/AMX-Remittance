@@ -1,8 +1,6 @@
 package com.amx.jax.ui.response;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.EnumUtil.StatusCode;
@@ -19,7 +17,7 @@ public class ResponseWrapper<T extends ResponseData> implements Serializable {
 
 	private Long timestamp = null;
 	private String status = "200";
-	private String statusKey = null;
+	private String statusKey = "";
 	private String message = Constants.EMPTY;
 	private String error = Constants.EMPTY;
 
@@ -54,11 +52,6 @@ public class ResponseWrapper<T extends ResponseData> implements Serializable {
 		this.status = status.getCode();
 	}
 
-	public void setStatus(StatusCode status, String message) {
-		this.setStatus(status);
-		this.message = message;
-	}
-
 	public String getError() {
 		return error;
 	}
@@ -72,19 +65,16 @@ public class ResponseWrapper<T extends ResponseData> implements Serializable {
 		this.error = error;
 	}
 
-	public String getStatusCode() {
-		return status;
-	}
-
-	public void setStatusCode(String statusCode) {
-		this.status = statusCode;
-	}
-
 	public String getMessage() {
 		return message;
 	}
 
 	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public void setMessage(StatusCode status, String message) {
+		this.setStatus(status);
 		this.message = message;
 	}
 

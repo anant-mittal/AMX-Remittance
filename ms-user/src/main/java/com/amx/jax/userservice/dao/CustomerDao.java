@@ -42,7 +42,7 @@ public class CustomerDao {
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
-	
+
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
@@ -145,6 +145,15 @@ public class CustomerDao {
 
 	public CustomerOnlineRegistration getCustomerByLoginId(String loginId) {
 		return onlineCustRepo.getOnlineCustomersByLoginId(loginId);
+	}
+
+	public CustomerOnlineRegistration getOnlineCustomerByCustomerId(BigDecimal customerId) {
+		List<CustomerOnlineRegistration> list = onlineCustRepo.getOnlineCustomersById(customerId);
+		CustomerOnlineRegistration onlinecust = null;
+		if (list != null) {
+			onlinecust = list.get(0);
+		}
+		return onlinecust;
 	}
 
 	public CustomerOnlineRegistration getOnlineCustomerByLoginIdOrUserName(String loginId) {

@@ -8,31 +8,29 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dbmodel.CusmasModel;
+import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.repository.ICusmasDao;
+import com.amx.jax.repository.IDmsDocumentDao;
 import com.amx.jax.services.AbstractService;
 
 @Service
-public class CusmasService extends AbstractService{
-	
+public class DmsDocumentService extends AbstractService{
 	
 	@Autowired
-	ICusmasDao cusmasDao;
+	IDmsDocumentDao iDmsDocumentDao;
 	
 	
-	
-	
-	public ApiResponse  getOldCusMasDetails(BigDecimal customerRefernce){
-		List<CusmasModel> cusmasDetails =cusmasDao.getEmosCustomerDetails(customerRefernce);
+	public ApiResponse getDmsDocument(BigDecimal blobId,BigDecimal docFyr){
+		List<DmsDocumentModel> dmsDocumentList = iDmsDocumentDao.getDmsDocumentList(blobId, docFyr);
 		ApiResponse response = getBlackApiResponse();
-		if(cusmasDetails.isEmpty()) {
-			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
+		if(dmsDocumentList.isEmpty()) {
+			throw new GlobalException("Image is not found");
 		}else {
-		response.getData().getValues().addAll(cusmasDetails);
+		response.getData().getValues().addAll(dmsDocumentList);
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("cusmas");
+		
+		response.getData().setType("dms_image");
 		return response;
 	}
 	

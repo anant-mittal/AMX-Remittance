@@ -11,4 +11,6 @@ public class ApiEndpoint {
 	public static final String CIVIL_ID_VALIDATE = "/{civil-id}/send-otp/";
 	
 	public static final String BENE_API_ENDPOINT = "/bene";
+	
+	public static final String META_API_ENDPOINT = "/meta";
 }
