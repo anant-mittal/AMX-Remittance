@@ -1,4 +1,4 @@
-package com.amx.jax.repository;
+package com.amx.jax.userservice.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.CustomerIdProof;
 
-public interface ICustomerIdProofDAO extends JpaRepository<CustomerIdProof, Serializable> {
+public interface CustomerIdProofRepository extends JpaRepository<CustomerIdProof, Serializable> {
 
 	@Query(value = "select * from FS_CUSTOMER_ID_PROOF where CUSTOMER_ID=?1 and NVL(ISACTIVE,'') <>'D' and  TRUNC(IDENTITY_EXPIRY_DATE) >=TRUNC(SYSDATE)"
 			+ " ORDER BY NVL(LAST_UPDATED_DATE,CREATION_DATE) DESC", nativeQuery = true)

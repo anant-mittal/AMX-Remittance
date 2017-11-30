@@ -363,15 +363,15 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setScanSystem(String scanSystem) {
 		this.scanSystem = scanSystem;
 	}
-	
-	/*@Column(name = "SCAN_SYSTEM")
-	public String getScanType() {
-		return scanType;
+	*/
+	@Column(name = "SCAN_SYSTEM")
+	public String getScanSystem() {
+		return scanSystem;
 	}
 
-	public void setScanType(String scanType) {
-		this.scanType = scanType;
-	}*/
+	public void setScanSystem(String scanSystem) {
+		this.scanSystem = scanSystem;
+	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "REF_CUSTOMER_ID")

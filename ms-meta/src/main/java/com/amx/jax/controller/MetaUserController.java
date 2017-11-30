@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.service.BlackMasterService;
-import com.amx.jax.service.CustomerIdProofService;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.LoyaltyPointService;
 import com.amx.jax.service.OnlineCustomerService;
@@ -44,9 +43,6 @@ public class MetaUserController implements Serializable{
 	
 	@Autowired
 	OnlineCustomerService onlineCustomerService;
-	
-	@Autowired
-	CustomerIdProofService customerIdProofService;
 	
 	@Autowired
 	BlackMasterService blackMasterService;

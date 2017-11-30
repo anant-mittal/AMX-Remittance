@@ -1,21 +1,20 @@
-package com.amx.jax.service;
+package com.amx.jax.userservice.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.repository.ICustomerIdProofDAO;
-import com.amx.jax.services.AbstractService;
+import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 
-@Service
-public class CustomerIdProofService extends AbstractService {
+@Component
+public class CustomerIdProofDao {
 
 	@Autowired
-	ICustomerIdProofDAO customerIdProofRepository;
+	CustomerIdProofRepository customerIdProofRepository;
 
 	public List<CustomerIdProof> validateCustomerIdProofs(BigDecimal customerId) {
 		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerIdProofByCustomerId(customerId);
@@ -30,17 +29,4 @@ public class CustomerIdProofService extends AbstractService {
 				identityTypeId);
 		return idProofList;
 	}
-
-	@Override
-	public String getModelType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class<?> getModelClass() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
