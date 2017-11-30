@@ -18,6 +18,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
+import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.config.CustomerAuthProvider;
@@ -41,7 +42,10 @@ public class RegistrationService {
 	private MetaClient metaClient;
 
 	@Autowired
-	private JaxClient jaxClient;
+	private JaxService jaxClient;
+
+	@Autowired
+	private ConverterUtility converterUtil;
 
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
 
@@ -57,7 +61,7 @@ public class RegistrationService {
 			} else if (model.getOtp() == null) {
 				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for givin cil ID");
 			} else {
-				wrapper.setStatus(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
+				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 				wrapper.getData().setOtpsent(true);
@@ -75,7 +79,7 @@ public class RegistrationService {
 
 		if (userSessionInfo.isValid()) {
 			// Check if use is already logged in;
-			wrapper.setStatus(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
+			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
 			UsernamePasswordAuthenticationToken token = null;
 			try {
@@ -89,18 +93,18 @@ public class RegistrationService {
 					token = new UsernamePasswordAuthenticationToken(civilid, otp);
 					token.setDetails(new WebAuthenticationDetails(request));
 					Authentication authentication = this.customerAuthProvider.authenticate(token);
-					wrapper.setStatus(StatusCode.VERIFY_SUCCESS, "Authing");
+					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
 					userSessionInfo.setCustomerModel(model);
 					userSessionInfo.setValid(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} else { // Use is cannot be validated
 
-					wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
+					wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
 				}
 
 			} catch (Exception e) { // user cannot be validated
 				token = null;
-				wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
+				wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
 			}
 			SecurityContextHolder.getContext().setAuthentication(token);
 		}
@@ -110,9 +114,9 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> getSecQues() {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		
+
 		List<QuestModelDTO> questModel = metaClient
-				.getSequrityQuestion(JaxClient.DEFAULT_LANGUAGE_ID, JaxClient.DEFAULT_COUNTRY_ID).getResults();
+				.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID).getResults();
 
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
@@ -125,15 +129,23 @@ public class RegistrationService {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
 		jaxClient.setDefaults();
-		
-		//userSessionInfo.getCustomerModel();
 
 		CustomerModel customerModel = userclient.saveSecurityQuestions(securityquestions).getResult();
 
-		//userSessionInfo.setCustomerModel(customerModel);
-
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
-		wrapper.setStatus(EnumUtil.StatusCode.QA_UPDATED, "Question Answer Saved Scfuly");
+		wrapper.setMessage(EnumUtil.StatusCode.QA_UPDATED, "Question Answer Saved Scfuly");
+
+		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> updatePhising(String imageUrl, String caption) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		CustomerModel customerModel = new CustomerModel();
+
+		customerModel.setImageUrl(imageUrl);
+		customerModel.setCaption(caption);
+
+		jaxClient.setDefaults().getUserclient().saveCustomer(converterUtil.marshall(customerModel)).getResult();
 
 		return wrapper;
 	}

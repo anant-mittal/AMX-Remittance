@@ -71,4 +71,9 @@ public class RegisterController {
 		return registrationService.updateSecQues(securityquestions);
 	}
 
+	@RequestMapping(value = "/register/api/phising/set", method = { RequestMethod.POST, })
+	public ResponseWrapper<RegistrationdData> updatePhising(@RequestParam String imageUrl,
+			@RequestParam String caption) {
+		return registrationService.updatePhising(imageUrl, caption);
+	}
 }
