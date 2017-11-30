@@ -135,7 +135,7 @@ public class RegistrationService {
 		CustomerModel customerModel = userclient.saveSecurityQuestions(securityquestions).getResult();
 
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
-		wrapper.setMessage(EnumUtil.StatusCode.QA_UPDATED, "Question Answer Saved Scfuly");
+		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
 
 		return wrapper;
 	}
@@ -149,6 +149,8 @@ public class RegistrationService {
 		customerModel.setCaption(caption);
 
 		jaxClient.setDefaults().getUserclient().saveCustomer(converterUtil.marshall(customerModel)).getResult();
+
+		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 
 		return wrapper;
 	}

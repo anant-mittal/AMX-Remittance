@@ -18,7 +18,7 @@ public class EnumUtil {
 				"VERIFY_FAILED"),
 
 		// Registration - QA
-		QA_UPDATED("200", "QA_UPDATED"),
+		USER_UPDATE_SUCCESS("200", "USER_UPDATE_SUCCESS"),
 
 		// Registration - END ERROR
 		ERROR("500", "ERROR");
