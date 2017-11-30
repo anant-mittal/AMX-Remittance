@@ -1,5 +1,7 @@
 package com.amx.jax.controller;
 
+import static com.amx.jax.constant.ApiEndpoint.META_API_ENDPOINT;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -31,8 +33,9 @@ import com.amx.jax.service.WhyDoAskService;
  *
  */
 @RestController
-@RequestMapping("/meta")
-public class MetaController<T> implements Serializable{
+@RequestMapping(META_API_ENDPOINT)
+@SuppressWarnings("rawtypes")
+public class MetaController implements Serializable{
 
 	/**
 	 * 
