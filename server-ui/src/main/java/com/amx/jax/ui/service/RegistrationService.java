@@ -41,33 +41,45 @@ public class RegistrationService {
 	private MetaClient metaClient;
 
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 		CivilIdOtpModel model = userclient.sendOtpForCivilId(civilid).getResult();
 
 		if (model != null) {
+
+			// Check if response was successful
 			if (!model.getIsActiveCustomer()) {
-				wrapper.setStatus(EnumUtil.StatusCode.ALREADY_ACTIVE);
+				wrapper.setError(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
 			} else if (model.getOtp() == null) {
-				wrapper.setStatus(EnumUtil.StatusCode.INVALID_ID);
+				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for givin cil ID");
+			} else {
+				wrapper.setStatus(EnumUtil.StatusCode.OTP_SENT, "Not able to generate OTP for givin cil ID");
+				// append info in response data
+				wrapper.getData().setOtp(model.getOtp());
+				wrapper.getData().setOtpsent(true);
 			}
-			userSessionInfo.setOtp(model.getOtp());
-			wrapper.getData().setOtp(model.getOtp());
+
+			// Save information in user session
 			userSessionInfo.setUserid(civilid);
+			userSessionInfo.setOtp(model.getOtp());
 		}
 		return wrapper;
 	}
 
 	public ResponseWrapper<RegistrationdData> loginWithOtp(String civilid, String otp, HttpServletRequest request) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+
 		if (userSessionInfo.isValid()) {
+			// Check if use is already logged in;
 			wrapper.setStatus(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
 			UsernamePasswordAuthenticationToken token = null;
 			try {
+
 				ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
 				CustomerModel model = response.getResult();
 
+				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(civilid, otp)) {
 					token = new UsernamePasswordAuthenticationToken(civilid, otp);
 					token.setDetails(new WebAuthenticationDetails(request));
@@ -76,11 +88,12 @@ public class RegistrationService {
 					userSessionInfo.setCustomerModel(model);
 					userSessionInfo.setValid(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
-				} else {
+				} else { // Use is cannot be validated
+
 					wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
 				}
 
-			} catch (Exception e) {
+			} catch (Exception e) { // user cannot be validated
 				token = null;
 				wrapper.setStatus(StatusCode.VERIFY_FAILED, "NoAuthing");
 			}
