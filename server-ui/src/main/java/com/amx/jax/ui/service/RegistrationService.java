@@ -40,9 +40,13 @@ public class RegistrationService {
 	@Autowired
 	private MetaClient metaClient;
 
+	@Autowired
+	private JaxClient jaxClient;
+
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		jaxClient.setDefaults();
 		CivilIdOtpModel model = userclient.sendOtpForCivilId(civilid).getResult();
 
 		if (model != null) {
@@ -53,7 +57,7 @@ public class RegistrationService {
 			} else if (model.getOtp() == null) {
 				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for givin cil ID");
 			} else {
-				wrapper.setStatus(EnumUtil.StatusCode.OTP_SENT, "Not able to generate OTP for givin cil ID");
+				wrapper.setStatus(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 				wrapper.getData().setOtpsent(true);
@@ -76,6 +80,7 @@ public class RegistrationService {
 			UsernamePasswordAuthenticationToken token = null;
 			try {
 
+				jaxClient.setDefaults();
 				ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
 				CustomerModel model = response.getResult();
 
@@ -105,8 +110,9 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> getSecQues() {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		
 		List<QuestModelDTO> questModel = metaClient
-				.getSequrityQuestion(UserSessionInfo.LANGUAGE_ID, UserSessionInfo.COUNTRY_ID).getResults();
+				.getSequrityQuestion(JaxClient.DEFAULT_LANGUAGE_ID, JaxClient.DEFAULT_COUNTRY_ID).getResults();
 
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
@@ -117,10 +123,18 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+
+		jaxClient.setDefaults();
+		
+		//userSessionInfo.getCustomerModel();
+
 		CustomerModel customerModel = userclient.saveSecurityQuestions(securityquestions).getResult();
-		userSessionInfo.setCustomerModel(customerModel);
+
+		//userSessionInfo.setCustomerModel(customerModel);
+
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setStatus(EnumUtil.StatusCode.QA_UPDATED, "Question Answer Saved Scfuly");
+
 		return wrapper;
 	}
 
