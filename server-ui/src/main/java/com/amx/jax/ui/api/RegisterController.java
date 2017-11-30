@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -40,10 +39,8 @@ public class RegisterController {
 	}
 
 	@RequestMapping(value = "/register/api/secques/save", method = { RequestMethod.POST, })
-	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<SecurityQuestionModel> quesAnsModel) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		wrapper.getData().setSecQuesAns(quesAnsModel);
-		return wrapper;
+	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<SecurityQuestionModel> securityquestions) {
+		return registrationService.updateSecQues(securityquestions);
 	}
 
 }

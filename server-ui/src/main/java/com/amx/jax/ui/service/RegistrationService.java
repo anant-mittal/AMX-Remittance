@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
@@ -97,6 +98,16 @@ public class RegistrationService {
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
 
+		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
+
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		CustomerModel customerModel = userclient.saveSecurityQuestions(securityquestions).getResult();
+		userSessionInfo.setCustomerModel(customerModel);
+		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
+		wrapper.setStatus(EnumUtil.StatusCode.QA_UPDATED, "Question Answer Saved Scfuly");
 		return wrapper;
 	}
 
