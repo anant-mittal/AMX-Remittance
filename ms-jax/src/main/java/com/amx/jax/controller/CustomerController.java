@@ -17,6 +17,7 @@ import com.amx.jax.util.ConverterUtil;
 
 @RestController
 @RequestMapping(CUSTOMER_ENDPOINT)
+@SuppressWarnings("rawtypes")
 public class CustomerController {
 
 	@Autowired

@@ -1,4 +1,4 @@
-package com.amx.jax.repository;
+package com.amx.jax.userservice.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -9,13 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.ContactDetail;
 
-public interface IContactDetailsDAO  extends JpaRepository<ContactDetail, Serializable>{
-	
+public interface ContactDetailsRepository extends JpaRepository<ContactDetail, Serializable> {
+
 	@Query("select cd from ContactDetail cd where customerId =?1 and activeStatus='Y'")
 	public List<ContactDetail> getContactDetails(BigDecimal customerId);
-	
+
 	@Query("select cd from ContactDetail cd where customerId =?1 and contactTypeId=?2 and activeStatus='Y'")
-	public List<ContactDetail> getContactDetailByCotactId(BigDecimal customerId,BigDecimal contactTypeId);
-	
-	
+	public List<ContactDetail> getContactDetailByCotactId(BigDecimal customerId, BigDecimal contactTypeId);
+
 }

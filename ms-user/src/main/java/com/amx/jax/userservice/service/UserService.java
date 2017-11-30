@@ -23,15 +23,12 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.dao.KwUserDao;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
@@ -40,21 +37,13 @@ import com.amx.jax.util.validation.PatternValidator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@SuppressWarnings("rawtypes")
 public class UserService extends AbstractUserService {
 
 	Logger logger = Logger.getLogger(UserService.class);
 
 	@Autowired
-	private KwUserDao dao;
-
-	@Autowired
 	private CustomerDao custDao;
-
-	@Autowired
-	private CustomerValidation custValidation;
-
-	@Autowired
-	private MetaData meta;
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
@@ -66,10 +55,10 @@ public class UserService extends AbstractUserService {
 	private WebUtils webutil;
 
 	@Autowired
-	private PatternValidator patternValidator;
+	private CheckListManager checkListManager;
 
 	@Autowired
-	private CheckListManager checkListManager;
+	private UserValidationService userValidationService;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -84,7 +73,7 @@ public class UserService extends AbstractUserService {
 
 	@Override
 	public AbstractUserDao getDao() {
-		return dao;
+		return null;
 	}
 
 	@Override
@@ -111,13 +100,13 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
-		validateCustomerForOnlineFlow(model.getIdentityId());
+		userValidationService.validateCustomerForOnlineFlow(model.getIdentityId());
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(model.getIdentityId());
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
 		}
 		if (model.getLoginId() != null) {
-			validateLoginId(model.getLoginId());
+			userValidationService.validateLoginId(model.getLoginId());
 		}
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
@@ -127,24 +116,13 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
-	private void validateLoginId(String loginId) {
-		boolean userNameValid = patternValidator.validateUserName(loginId);
-		if (!userNameValid) {
-			throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-		}
-		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
-		if (existingCust != null) {
-			throw new GlobalException("Username already taken", "INVALID_USERNAME");
-		}
-	}
-
 	@Override
 	public Class<UserModel> getModelClass() {
 		return UserModel.class;
 	}
 
 	public CustomerOnlineRegistration verifyCivilId(String civilId, CivilIdOtpModel model) {
-		Customer cust = validateCustomerForOnlineFlow(civilId);
+		Customer cust = userValidationService.validateCustomerForOnlineFlow(civilId);
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
 		if (onlineCust == null) {
@@ -160,22 +138,8 @@ public class UserService extends AbstractUserService {
 		return onlineCust;
 	}
 
-	private Customer validateCustomerForOnlineFlow(String civilId) {
-		Customer cust = custDao.getCustomerByCivilId(civilId);
-		if (cust == null) {
-			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
-		}
-		if (cust.getMobile() == null) {
-			throw new InvalidCivilIdException("Mobile number is empty. Contact branch to update the same.");
-		}
-		if (cust.getEmail() == null) {
-			throw new InvalidCivilIdException("Email is empty. Contact branch to update the same.");
-		}
-		return cust;
-	}
-
 	public ApiResponse sendOtpForCivilId(String civilId) {
-		validateCivilId(civilId);
+		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 
@@ -189,13 +153,6 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
-	}
-
-	public void validateCivilId(String civilId) {
-		boolean isValid = custValidation.validateCivilId(civilId, meta.getCountry().getCountryCode());
-		if (!isValid) {
-			throw new InvalidCivilIdException("Civil Id " + civilId + " is not valid.");
-		}
 	}
 
 	private void generateToken(String userId, CivilIdOtpModel model) {
@@ -231,12 +188,14 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-
-		CustomerOnlineRegistration customer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
-		if (customer == null) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		if (onlineCustomer == null) {
 			throw new UserNotFoundException("User with userId: " + userId + " not found");
 		}
-		customer.getPassword();// TODO
+		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+		userValidationService.validatePassword(onlineCustomer, password);
+		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
+		userValidationService.validateCustomerData(onlineCustomer, customer);
 		return null;
 	}
 

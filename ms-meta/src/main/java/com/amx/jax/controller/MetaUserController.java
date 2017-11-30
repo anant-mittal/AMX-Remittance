@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.service.BlackMasterService;
-import com.amx.jax.service.ContactDetailService;
 import com.amx.jax.service.CustomerIdProofService;
 import com.amx.jax.service.CustomerOnlineServiceFromView;
 import com.amx.jax.service.CustomerService;
@@ -58,11 +57,6 @@ public class MetaUserController implements Serializable{
 	
 	@Autowired
 	CustomerOnlineServiceFromView customerOnlineServiceFromView;
-	
-	@Autowired
-	ContactDetailService contactDetailService;
-	
-	
 	
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerDetailsResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
@@ -106,41 +100,9 @@ public class MetaUserController implements Serializable{
 		return response;
 	}
 	
-	
-	
-	
-	@RequestMapping(value = "/idproof/{customerId}", method = RequestMethod.GET)
-	public ApiResponse getCustomerIdProofResponse(@PathVariable("customerId") BigDecimal customerId){
-		ApiResponse response = customerIdProofService.getCustomerIdProofByCustomerId(customerId);
-		return response;
-	}
-	
-	
-
 	@RequestMapping(value = "/imageVal/{customerId}/{identityTypeId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerImageValidationResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("identityTypeId") BigDecimal identityTypeId){
 		ApiResponse response = customerIdProofService.getCustomerImageValidation(customerId, identityTypeId);
-		return response;
-	}
-	
-	
-	/** 
-	 * 
-	 * @param name
-	 * @return Fetch Contact details
-	 */
-
-	
-	@RequestMapping(value = "/contact/{customerId}", method = RequestMethod.GET)
-	public ApiResponse getCustomerContactDetailsByIdResponse(@PathVariable("customerId") BigDecimal customerId){
-		ApiResponse response =   contactDetailService.getContactDetail(customerId);
-		return response;
-	}
-	
-	
-	@RequestMapping(value = "/contact/{customerId}/{contactId}", method = RequestMethod.GET)
-	public ApiResponse getCustomerContactDetailsResponse(@PathVariable("customerId") BigDecimal customerId,@PathVariable("contactId") BigDecimal contactId){
-		ApiResponse response =   contactDetailService.getContactDetailByCotactId(customerId, contactId);
 		return response;
 	}
 	

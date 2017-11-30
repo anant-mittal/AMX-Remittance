@@ -14,7 +14,4 @@ public class Util {
 		return password;
 	}
 	
-	
-	
-
 }
