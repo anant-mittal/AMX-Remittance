@@ -1,5 +1,6 @@
 package com.amx.jax.dal;
 
+import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -44,7 +45,6 @@ public class NotificationDao {
 			List<SqlParameter> declaredParameters = Arrays.asList(new SqlOutParameter("output_str", Types.VARCHAR),
 					new SqlParameter(Types.VARCHAR));
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
-
 
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
@@ -105,7 +105,8 @@ public class NotificationDao {
 	}
 
 	private int getLangNumber() {
-		Integer langId = meta.getLanguageId();
+		BigDecimal langIdBig = meta.getLanguageId();
+		Integer langId = langIdBig.intValue();
 		int nNo = 0;
 		if (langId.equals(1)) {
 			nNo = 0;

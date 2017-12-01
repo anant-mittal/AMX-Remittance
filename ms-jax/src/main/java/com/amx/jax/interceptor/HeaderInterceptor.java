@@ -31,7 +31,7 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 			};
 			HashMap<String, Object> metaInfoMap = new ObjectMapper().readValue(metaInfo, typeRef);
 			if (!StringUtils.isEmpty(metaInfoMap.get("country-id"))) {
-				Integer countryId = (Integer) metaInfoMap.get("country-id");
+				BigDecimal countryId = (BigDecimal) metaInfoMap.get("country-id");
 				metaData.setCountryId(countryId);
 			}
 			if (!StringUtils.isEmpty(metaInfoMap.get("company-id"))) {

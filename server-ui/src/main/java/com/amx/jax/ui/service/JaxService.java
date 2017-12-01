@@ -56,7 +56,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	}
 
 	public JaxService setDefaults() {
-		jaxMetaInfo.setCountryId(new Integer(JaxService.DEFAULT_COUNTRY_ID));
+		jaxMetaInfo.setCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID));
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
 		if (userSessionInfo.getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(userSessionInfo.getCustomerModel().getCustomerId());

@@ -2,6 +2,8 @@ package com.amx.jax;
 
 import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,24 +39,25 @@ public class JaxServiceApplicationTests {
 		assertTrue(output.equals("15BBA6D8EF5C4D660F57CB9E91C7B9D5"));
 	}
 
-	//@Test
+	// @Test
 	public void sendOtpForCivilidCheck() {
 		ApiResponse apiResp = userService.sendOtpForCivilId("284052306594");
 		assertTrue(apiResp.getError() == null);
 	}
-	
+
 	@Bean
 	public MetaData meta() {
-		MetaData metad =new MetaData();
-		metad.setCountryId(91);
+		MetaData metad = new MetaData();
+		metad.setCountryId(new BigDecimal(91));
 		return metad;
 	}
-	
-	@Autowired WebUtils webutil;
-	
+
+	@Autowired
+	WebUtils webutil;
+
 	@Test
 	public void testwebutil() {
-		
+
 		webutil.getClientIp();
 	}
 }

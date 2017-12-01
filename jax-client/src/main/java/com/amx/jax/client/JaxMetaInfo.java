@@ -11,17 +11,9 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JaxMetaInfo {
 
-	private Integer countryId;
+	private BigDecimal countryId;
 	private BigDecimal customerId;
 	private BigDecimal companyId;
-
-	public Integer getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(Integer countryId) {
-		this.countryId = countryId;
-	}
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -37,6 +29,14 @@ public class JaxMetaInfo {
 
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
+	}
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
 	}
 
 }

@@ -14,19 +14,11 @@ import com.amx.jax.services.AbstractServiceFactory;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MetaData implements IMetaData {
 
-	private Integer countryId;
+	private BigDecimal countryId;
 
-	private Integer languageId;
+	private BigDecimal languageId;
 
 	private BigDecimal companyId;
-
-	public Integer getLanguageId() {
-		return languageId;
-	}
-
-	public void setLanguageId(Integer languageId) {
-		this.languageId = languageId;
-	}
 
 	/**
 	 * this returns service factory object depending on site country
@@ -37,16 +29,8 @@ public class MetaData implements IMetaData {
 		return null;
 	}
 
-	public Integer getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(Integer countryId) {
-		this.countryId = countryId;
-	}
-
 	public Country getCountry() {
-		Country country = Country.countryIdToCountryMap.get(countryId);
+		Country country = Country.countryIdToCountryMap.get(countryId.intValue());
 		return country;
 	}
 
@@ -56,5 +40,21 @@ public class MetaData implements IMetaData {
 
 	public void setCompanyId(BigDecimal companyId) {
 		this.companyId = companyId;
+	}
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
 	}
 }

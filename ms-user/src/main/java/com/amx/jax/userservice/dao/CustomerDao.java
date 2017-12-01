@@ -51,7 +51,7 @@ public class CustomerDao {
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
 		Customer cust = null;
-		BigDecimal countryId = new BigDecimal(meta.getCountryId());
+		BigDecimal countryId = meta.getCountryId();
 		List<Customer> customers = repo.getCustomerbyuser(countryId, civilId);
 		if (customers != null && !customers.isEmpty()) {
 			cust = customers.get(0);
@@ -81,7 +81,7 @@ public class CustomerDao {
 
 	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByUserId(String userName) {
-		BigDecimal countryId = new BigDecimal(meta.getCountryId());
+		BigDecimal countryId = meta.getCountryId();
 		CustomerOnlineRegistration customer = null;
 		List<CustomerOnlineRegistration> customers = onlineCustRepo.getOnlineCustomerList(countryId, userName);
 		if (!CollectionUtils.isEmpty(customers)) {
