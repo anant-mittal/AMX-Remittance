@@ -73,6 +73,5 @@ public class JaxClientApplicationTests {
 		ApiResponse<CustomerModel> response = client.saveLoginIdAndPassword("284052306594", "12345");
 		logger.info("response of testsavecustapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
 	}
 }

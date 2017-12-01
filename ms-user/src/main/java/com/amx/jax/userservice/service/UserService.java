@@ -100,6 +100,7 @@ public class UserService extends AbstractUserService {
 		model.setImageUrl(cust.getImageUrl());
 		model.setMobile(cust.getMobileNumber());
 		model.setCustomerId(cust.getCustomerId());
+		model.setIsActive("Y".equals(cust.getStatus()));
 		List<SecurityQuestionModel> securityquestions = new ArrayList<>();
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion1(), cust.getSecurityAnswer1()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion2(), cust.getSecurityAnswer2()));

@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -147,15 +148,32 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId + "/random-questions/?size="
+			String randQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId + "/random-questions/?size="
 					+ size;
-			log.info("calling fetchRandomQuestoins api: " + saveCustUrl);
-			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
+			log.info("calling fetchRandomQuestoins api: " + randQuestionstUrl);
+			response = restTemplate.exchange(randQuestionstUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  fetchRandomQuestoins api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in fetchRandomQuestoins ", e);
+		}
+		return response.getBody();
+	}
+
+	public ApiResponse<CustomerModel> login(String loginId, String password) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		try {
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			String loginCustUrl = baseUrl.toString() + USER_API_ENDPOINT + "/login/?userId=" + loginId + "&password="
+					+ password;
+			log.info("calling login api: " + loginCustUrl);
+			response = restTemplate.exchange(loginCustUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			log.info("responce from  login api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in login ", e);
 		}
 		return response.getBody();
 	}

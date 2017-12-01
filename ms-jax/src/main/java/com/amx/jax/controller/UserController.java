@@ -13,14 +13,14 @@ import com.amx.jax.userservice.service.UserService;
 
 @RestController
 @RequestMapping(USER_API_ENDPOINT)
+@SuppressWarnings("rawtypes")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestParam String userId, @RequestParam String password) {
-
 		ApiResponse response = userService.loginUser(userId, password);
 		return response;
 	}
