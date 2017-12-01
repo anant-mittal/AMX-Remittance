@@ -112,7 +112,9 @@ public class UserService extends AbstractUserService {
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().add(convert(onlineCust));
+		CustomerModel outputModel = convert(onlineCust);
+		response.getData().getValues().add(outputModel);
+		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}

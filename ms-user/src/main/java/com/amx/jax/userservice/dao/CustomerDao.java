@@ -183,10 +183,12 @@ public class CustomerDao {
 		return onlineCustViewRepo.findOne(custId);
 	}
 
-	public BigDecimal updatetLoyaltyPoint(BigDecimal custId) {
+	@Transactional
+	public boolean updatetLoyaltyPoint(BigDecimal custId) {
 		Customer customer = getCustById(custId);
-		BigDecimal loyalityPoints= loyaltyPointRepo.getLoyaltyPoints(customer.getCustomerReference());
+		BigDecimal loyalityPoints = loyaltyPointRepo.getLoyaltyPoints(customer.getCustomerReference());
 		customer.setLoyaltyPoints(loyalityPoints);
-		return null;
+		repo.save(customer);
+		return true;
 	}
 }
