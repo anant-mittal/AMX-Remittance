@@ -23,6 +23,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
@@ -102,6 +103,9 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse saveCustomer(CustomerModel model) {
 		// userValidationService.validateCustomerForOnlineFlow(model.getCustomerId());
+		if (model.getCustomerId() == null) {
+			throw new GlobalException("Null customer id passed ", "NULL_CUSTOMER_ID");
+		}
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");

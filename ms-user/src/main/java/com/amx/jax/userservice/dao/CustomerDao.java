@@ -93,7 +93,7 @@ public class CustomerDao {
 	@Transactional
 	public CustomerOnlineRegistration saveOrUpdateOnlineCustomer(CustomerOnlineRegistration onlineCust,
 			CustomerModel model) {
-		String userId = model.getIdentityId();
+		String userId = onlineCust.getUserName();
 
 		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
 		if (!CollectionUtils.isEmpty(secQuestions)) {
