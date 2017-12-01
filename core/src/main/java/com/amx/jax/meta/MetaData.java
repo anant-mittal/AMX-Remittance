@@ -21,7 +21,7 @@ public class MetaData implements IMetaData {
 	private BigDecimal companyId;
 
 	/**
-	 * this returns service factory object depending on site country
+	 * This returns service factory object depending on site country
 	 */
 	@Override
 	public AbstractServiceFactory getServiceFactory() {
