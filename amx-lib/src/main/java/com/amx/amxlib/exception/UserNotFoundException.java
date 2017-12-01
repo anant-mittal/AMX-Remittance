@@ -13,9 +13,6 @@ public class UserNotFoundException extends AbstractException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public String getErrorCode() {
-		return "USER_NOT_FOUND";
-	}
+	
 
 }

@@ -1,5 +1,6 @@
 package com.amx.amxlib.exception;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
 
 public abstract class AbstractException extends Exception {
@@ -11,10 +12,10 @@ public abstract class AbstractException extends Exception {
 
 	protected String errorMessage;
 
-	protected String errorCode;
+	protected JaxError error;
 
 	public AbstractException(ApiError error) {
-		this.errorCode = error.getErrorId();
+		this.error = JaxError.valueOf(error.getErrorId());
 		this.errorMessage = error.getErrorMessage();
 	}
 
@@ -26,11 +27,7 @@ public abstract class AbstractException extends Exception {
 	public AbstractException(String errorMessage, String errorCode) {
 		super();
 		this.errorMessage = errorMessage;
-		this.errorCode = errorCode;
-	}
-
-	public String getErrorCode() {
-		return this.errorCode;
+		this.error = JaxError.valueOf(errorCode);
 	}
 
 	public String getErrorMessage() {
@@ -41,7 +38,11 @@ public abstract class AbstractException extends Exception {
 		this.errorMessage = errorMessage;
 	}
 
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+	public JaxError getError() {
+		return error;
+	}
+
+	public void setError(JaxError error) {
+		this.error = error;
 	}
 }

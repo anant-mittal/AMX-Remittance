@@ -43,7 +43,7 @@ public abstract class AbstractJaxServiceClient {
 		if (response.getError() != null) {
 			ApiError error = response.getError().get(0);
 			if (JaxError.INVALID_CIVIL_ID.getCode().equals(error.getErrorId())) {
-				throw new InvalidInputException(error.getErrorMessage());
+				throw new InvalidInputException(error);
 			}
 		}
 	}

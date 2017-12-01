@@ -11,9 +11,5 @@ public class InvalidJsonInputException extends AbstractException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public String getErrorCode() {
-		return "INVALID_JSON_BODY";
-	}
 
 }
