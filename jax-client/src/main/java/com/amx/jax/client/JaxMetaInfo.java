@@ -13,19 +13,30 @@ public class JaxMetaInfo {
 
 	private Integer countryId;
 	private BigDecimal customerId;
-	
+	private BigDecimal companyId;
+
 	public Integer getCountryId() {
 		return countryId;
 	}
+
 	public void setCountryId(Integer countryId) {
 		this.countryId = countryId;
 	}
+
 	public BigDecimal getCustomerId() {
 		return customerId;
 	}
+
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
-	
-	
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(BigDecimal companyId) {
+		this.companyId = companyId;
+	}
+
 }

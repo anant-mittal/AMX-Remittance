@@ -13,10 +13,12 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.repository.LoyaltyPointRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
@@ -42,6 +44,9 @@ public class CustomerDao {
 
 	@Autowired
 	private CryptoUtil cryptoUtil;
+
+	@Autowired
+	private LoyaltyPointRepository loyaltyPointRepo;
 
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
@@ -178,4 +183,10 @@ public class CustomerDao {
 		return onlineCustViewRepo.findOne(custId);
 	}
 
+	public BigDecimal updatetLoyaltyPoint(BigDecimal custId) {
+		Customer customer = getCustById(custId);
+		BigDecimal loyalityPoints= loyaltyPointRepo.getLoyaltyPoints(customer.getCustomerReference());
+		customer.setLoyaltyPoints(loyalityPoints);
+		return null;
+	}
 }

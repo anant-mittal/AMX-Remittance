@@ -18,7 +18,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.service.BlackMasterService;
 import com.amx.jax.service.CustomerService;
-import com.amx.jax.service.LoyaltyPointService;
 import com.amx.jax.service.OnlineCustomerService;
 
 /**
@@ -47,8 +46,6 @@ public class MetaUserController implements Serializable{
 	@Autowired
 	BlackMasterService blackMasterService;
 	
-	@Autowired
-	LoyaltyPointService loyaltyPointService;
 	
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerDetailsResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
@@ -91,23 +88,6 @@ public class MetaUserController implements Serializable{
 		ApiResponse response =  blackMasterService.getBlackList(name);
 		return response;
 	}
-	
-	
-	
-	@RequestMapping(value = "/loyaltyPoint/{cusref}/{fYear}", method = RequestMethod.GET)
-	public ResponseEntity<List<LoyaltyPointModel>> getLoyaltyFromOldTable(@PathVariable("cusref") BigDecimal cusref,@PathVariable("fYear") BigDecimal fYear){
-		logger.info("getLoyaltyFromOldTable name :"+cusref+"\t Year :"+fYear);
-		List<LoyaltyPointModel> loyaltyPointList = loyaltyPointService.getLoyaltyPointFromLoyaltyTable(cusref, fYear);
-		if (loyaltyPointList.isEmpty()) {
-			logger.debug("loyaltyPointList does not exists");
-			return new ResponseEntity<List<LoyaltyPointModel>>(HttpStatus.OK);
-		}
-		logger.debug("Found " + loyaltyPointList.size() + " Employees 1");
-		logger.debug(loyaltyPointList);
-		logger.debug(Arrays.toString(loyaltyPointList.toArray()));
-		return new ResponseEntity<List<LoyaltyPointModel>>(loyaltyPointList, HttpStatus.OK);
-	}
-	
 
 
 }

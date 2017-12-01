@@ -1,5 +1,7 @@
 package com.amx.jax.ui.service;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +20,8 @@ public class JaxService extends AbstractJaxServiceClient {
 	public static final String DEFAULT_LANGUAGE_ID = "1";
 
 	public static final String DEFAULT_COUNTRY_ID = "91";
+
+	public static final String DEFAULT_COMPANY_ID = "1";
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
@@ -53,6 +57,7 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public JaxService setDefaults() {
 		jaxMetaInfo.setCountryId(new Integer(JaxService.DEFAULT_COUNTRY_ID));
+		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
 		if (userSessionInfo.getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(userSessionInfo.getCustomerModel().getCustomerId());
 		}

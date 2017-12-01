@@ -1,5 +1,7 @@
 package com.amx.jax.meta;
 
+import java.math.BigDecimal;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -13,9 +15,10 @@ import com.amx.jax.services.AbstractServiceFactory;
 public class MetaData implements IMetaData {
 
 	private Integer countryId;
-	
+
 	private Integer languageId;
-	
+
+	private BigDecimal companyId;
 
 	public Integer getLanguageId() {
 		return languageId;
@@ -45,5 +48,13 @@ public class MetaData implements IMetaData {
 	public Country getCountry() {
 		Country country = Country.countryIdToCountryMap.get(countryId);
 		return country;
+	}
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(BigDecimal companyId) {
+		this.companyId = companyId;
 	}
 }
