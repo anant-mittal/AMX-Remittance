@@ -97,4 +97,44 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		try {
+			CustomerModel custModel = new CustomerModel();
+			custModel.setCaption(caption);
+			custModel.setImageUrl(imageUrl);
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
+			log.info("calling savePhishiingImage api: " + saveCustUrl);
+			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			log.info("responce from  savePhishiingImage api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in savePhishiingImage ", e);
+		}
+		return response.getBody();
+	}
+
+	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		try {
+			CustomerModel custModel = new CustomerModel();
+			custModel.setLoginId(loginId);
+			custModel.setPassword(password);
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
+			log.info("calling saveLoginIdAndPassword api: " + saveCustUrl);
+			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			log.info("responce from  saveLoginIdAndPassword api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in saveLoginIdAndPassword ", e);
+		}
+		return response.getBody();
+	}
+
 }
