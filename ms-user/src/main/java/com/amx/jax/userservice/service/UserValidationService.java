@@ -5,6 +5,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import com.amx.jax.dbmodel.CusmasModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
@@ -30,6 +32,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
+import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.validation.CustomerValidation;
 import com.amx.jax.util.validation.PatternValidator;
@@ -68,7 +71,10 @@ public class UserValidationService {
 	@Autowired
 	private ImageCheckDao imageCheckDao;
 
-	private DateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+	@Autowired
+	private DmsDocumentDao dmsDocDao;
+
+	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
 		boolean userNameValid = patternValidator.validateUserName(loginId);
@@ -127,10 +133,20 @@ public class UserValidationService {
 			if (validIds == null || validIds.isEmpty()) {
 				throw new GlobalException("Identity proof are expired or invalid", "ID_PROOFS_NOT_VALID");
 			}
-		}
-		if ("D".equals(scanSystem)) {
-			imageCheckDao.dmsImageCheck(idProof.getIdentityTypeId(), idProof.getIdentityInt(),
-					sdf.format(idProof.getIdentityExpiryDate()));
+		} else if ("D".equals(scanSystem)) {
+			Map<String, Object> imageChecks = imageCheckDao.dmsImageCheck(idProof.getIdentityTypeId(),
+					idProof.getIdentityInt(), sdf.format(idProof.getIdentityExpiryDate()));
+			if (imageChecks.get("docBlobId") != null && imageChecks.get("docFinYr") != null) {
+				Integer docBlobIdInt = (Integer) imageChecks.get("docBlobId");
+				Integer docFinYrInt = (Integer) imageChecks.get("docFinYr");
+				List<DmsDocumentModel> dmsDocs = dmsDocDao.getDmsDocument(new BigDecimal(docBlobIdInt),
+						new BigDecimal(docFinYrInt));
+				if (dmsDocs == null || dmsDocs.isEmpty()) {
+					throw new GlobalException("Identity proof images not found", "ID_PROOFS_IMAGES_NOT_FOUND");
+				}
+			}
+		} else {
+			throw new GlobalException("Identity proof scans not found", "ID_PROOFS_SCAN_NOT_FOUND");
 		}
 	}
 
@@ -229,4 +245,5 @@ public class UserValidationService {
 			throw new GlobalException("Customer local name found matching with black list ", "BLACK_LISTED_CUSTOMER");
 		}
 	}
+	
 }
