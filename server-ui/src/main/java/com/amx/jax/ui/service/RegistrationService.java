@@ -18,11 +18,10 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
-import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.config.CustomerAuthProvider;
-import com.amx.jax.ui.model.UserSessionInfo;
+import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
 
@@ -33,7 +32,7 @@ public class RegistrationService {
 	private UserClient userclient;
 
 	@Autowired
-	private UserSessionInfo userSessionInfo;
+	private UserSession userSessionInfo;
 
 	@Autowired
 	private CustomerAuthProvider customerAuthProvider;
@@ -43,9 +42,6 @@ public class RegistrationService {
 
 	@Autowired
 	private JaxService jaxClient;
-
-	@Autowired
-	private ConverterUtility converterUtil;
 
 	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
 
@@ -59,7 +55,7 @@ public class RegistrationService {
 			if (model.getIsActiveCustomer()) {
 				wrapper.setError(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
 			} else if (model.getOtp() == null) {
-				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for givin cil ID");
+				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
 			} else {
 				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
 				// append info in response data

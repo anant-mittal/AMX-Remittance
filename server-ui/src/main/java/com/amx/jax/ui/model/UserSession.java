@@ -10,7 +10,7 @@ import com.amx.amxlib.model.CustomerModel;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserSessionInfo implements Serializable {
+public class UserSession implements Serializable {
 
 	private static final long serialVersionUID = -6354887590466374869L;
 	private boolean valid = false;

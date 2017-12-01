@@ -16,6 +16,9 @@ import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 /**
  * Controller responsible for providing online registration of offline user
  * 
@@ -23,6 +26,7 @@ import com.amx.jax.ui.service.RegistrationService;
  *
  */
 @RestController
+@Api(value = "Registration APIs", description = "Online Registration related APIs")
 public class RegisterController {
 
 	@Autowired
@@ -33,12 +37,16 @@ public class RegisterController {
 	 * @param civilid
 	 * @return
 	 */
+	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/register/api/verifyid", method = { RequestMethod.POST })
 	public ResponseWrapper<RegistrationdData> verifyID(@RequestParam String civilid) {
 		return registrationService.verifyId(civilid);
 	}
 
 	/**
+	 * 
+	 * Verifies OTP for civilID
+	 * 
 	 * 
 	 * @param civilid
 	 * @param otp

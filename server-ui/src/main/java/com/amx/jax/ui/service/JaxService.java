@@ -10,7 +10,7 @@ import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
-import com.amx.jax.ui.model.UserSessionInfo;
+import com.amx.jax.ui.model.UserSession;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
@@ -27,7 +27,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	private UserSessionInfo userSessionInfo;
+	private UserSession userSessionInfo;
 
 	@Autowired
 	private UserClient userclient;

@@ -20,11 +20,11 @@ public class SwaggerConfig {
 				.build();
 	}
 
+	@SuppressWarnings("unused")
 	private ApiInfo metaData() {
-		ApiInfo apiInfo = new ApiInfo(
-				"Spring Boot REST API", "Spring Boot REST API for Online Store", "1.0",
+		ApiInfo apiInfo = new ApiInfo("AMX UI Server Rest API", "Spring Boot REST API for Online Store", "1.0",
 				"Terms of service",
-				new Contact("John Thompson", "https://springframework.guru/about/", "john@springfrmework.guru"),
+				new Contact("Lalit Tanwar", "https://springframework.guru/about/", "lalit.tanwar@almullagroup.com"),
 				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0");
 		return apiInfo;
 	}
