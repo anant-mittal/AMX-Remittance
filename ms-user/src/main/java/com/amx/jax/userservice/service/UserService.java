@@ -101,7 +101,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
-		userValidationService.validateCustomerForOnlineFlow(model.getIdentityId());
+		// userValidationService.validateCustomerForOnlineFlow(model.getCustomerId());
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
