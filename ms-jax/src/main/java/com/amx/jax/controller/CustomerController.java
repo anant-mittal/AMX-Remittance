@@ -2,6 +2,8 @@ package com.amx.jax.controller;
 
 import static com.amx.jax.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 
+import javax.websocket.server.PathParam;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,6 +57,13 @@ public class CustomerController {
 	public ApiResponse getCheckList(@PathVariable("civil-id") String civilId) {
 		logger.debug("getCheckList Request:civilId" + civilId);
 		ApiResponse response = userSerivce.getUserCheckList(civilId);
+		return response;
+	}
+
+	@RequestMapping(value = "{customer-id}/random-questions/", method = RequestMethod.GET)
+	public ApiResponse getRandomQuestion(@RequestParam Integer size, @PathVariable("customer-id") Integer customerId) {
+		logger.debug("getCheckList Request: customerId" + customerId + " size= " + size);
+		ApiResponse response = userSerivce.generateRandomQuestions(size, customerId);
 		return response;
 	}
 }

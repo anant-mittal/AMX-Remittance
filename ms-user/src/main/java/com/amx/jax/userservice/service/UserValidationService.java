@@ -77,10 +77,10 @@ public class UserValidationService {
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-		boolean userNameValid = patternValidator.validateUserName(loginId);
-		if (!userNameValid) {
-			throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-		}
+//		boolean userNameValid = patternValidator.validateUserName(loginId);
+//		if (!userNameValid) {
+//			throw new GlobalException("Username is not valid", "INVALID_USERNAME");
+//		}
 		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
 		if (existingCust != null) {
 			throw new GlobalException("Username already taken", "INVALID_USERNAME");

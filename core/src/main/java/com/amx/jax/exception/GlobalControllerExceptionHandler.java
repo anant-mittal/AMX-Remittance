@@ -23,7 +23,8 @@ public class GlobalControllerExceptionHandler {
 
 		ApiResponse response = getApiResponse(ex);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
-		logger.info("Exception occured in controller " + ex.getClass().getName(), ex);
+		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: " + ex.getErrorMessage(),
+				ex);
 		return response;
 	}
 

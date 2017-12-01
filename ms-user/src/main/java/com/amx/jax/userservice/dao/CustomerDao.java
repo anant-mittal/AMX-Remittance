@@ -111,6 +111,7 @@ public class CustomerDao {
 		}
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));
+			onlineCust.setStatus("Y");
 		}
 		onlineCustRepo.save(onlineCust);
 		return onlineCust;

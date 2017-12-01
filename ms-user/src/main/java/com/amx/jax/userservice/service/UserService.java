@@ -1,6 +1,8 @@
 package com.amx.jax.userservice.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -23,13 +26,16 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
+import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
@@ -60,6 +66,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private UserValidationService userValidationService;
+
+	@Autowired
+	private SecurityQuestionsManager secQmanager;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -203,7 +212,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		return null;
+		ApiResponse response = getBlackApiResponse();
+		CustomerModel customerModel = convert(onlineCustomer);
+		response.getData().getValues().add(customerModel);
+		response.getData().setType(customerModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 	}
 
 	public ApiResponse getUserCheckList(String loginId) {
@@ -215,5 +229,15 @@ public class UserService extends AbstractUserService {
 		logger.debug("end of getUserCheckList for loginId: " + loginId);
 		return response;
 
+	}
+
+	public ApiResponse generateRandomQuestions(Integer size, Integer customerId) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
+		ApiResponse response = getBlackApiResponse();
+		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
+		response.getData().setType("quest");
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 	}
 }

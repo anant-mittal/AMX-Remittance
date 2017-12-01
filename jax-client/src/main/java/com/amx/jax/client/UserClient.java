@@ -2,6 +2,7 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -133,6 +134,28 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.info("responce from  saveLoginIdAndPassword api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in saveLoginIdAndPassword ", e);
+		}
+		return response.getBody();
+	}
+
+	/**
+	 * @param size:
+	 *            specify how many questions you need
+	 */
+	public ApiResponse<CustomerModel> fetchRandomQuestoins(int size) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		try {
+			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId + "/random-questions/?size="
+					+ size;
+			log.info("calling fetchRandomQuestoins api: " + saveCustUrl);
+			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			log.info("responce from  fetchRandomQuestoins api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in fetchRandomQuestoins ", e);
 		}
 		return response.getBody();
 	}
