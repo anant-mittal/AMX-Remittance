@@ -76,4 +76,10 @@ public class RegisterController {
 			@RequestParam String caption) {
 		return registrationService.updatePhising(imageUrl, caption);
 	}
+
+	@RequestMapping(value = "/register/api/creds/set", method = { RequestMethod.POST, })
+	public ResponseWrapper<RegistrationdData> saveLoginIdAndPassword(@RequestParam String loginId,
+			@RequestParam String password) {
+		return registrationService.saveLoginIdAndPassword(loginId, password);
+	}
 }

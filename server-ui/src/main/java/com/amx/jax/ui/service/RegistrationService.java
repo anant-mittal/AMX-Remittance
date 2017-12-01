@@ -142,15 +142,20 @@ public class RegistrationService {
 
 	public ResponseWrapper<RegistrationdData> updatePhising(String imageUrl, String caption) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		CustomerModel customerModel = new CustomerModel();
 
-		customerModel.setCustomerId(userSessionInfo.getCustomerModel().getCustomerId());
-		customerModel.setImageUrl(imageUrl);
-		customerModel.setCaption(caption);
-
-		jaxClient.setDefaults().getUserclient().saveCustomer(converterUtil.marshall(customerModel)).getResult();
+		jaxClient.setDefaults().getUserclient().savePhishiingImage(imageUrl, caption).getResult();
 
 		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "Phishing Image Updated");
+
+		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> saveLoginIdAndPassword(String loginId, String password) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+
+		jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
+
+		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 
 		return wrapper;
 	}
