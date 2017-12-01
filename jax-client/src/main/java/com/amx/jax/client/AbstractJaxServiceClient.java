@@ -24,8 +24,8 @@ public abstract class AbstractJaxServiceClient {
 
 	protected MultiValueMap<String, String> getHeader() {
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("meta-info", "{\"country-id\":" + jaxMetaInfo.getCountryId() + "}");
-		headers.add("meta-info", "{\"company-id\":" + jaxMetaInfo.getCompanyId() + "}");
+		headers.add("meta-info", "{\"country-id\":" + jaxMetaInfo.getCountryId().intValue() + "}");
+		headers.add("meta-info", "{\"company-id\":" + jaxMetaInfo.getCompanyId().intValue() + "}");
 		return headers;
 	}
 
