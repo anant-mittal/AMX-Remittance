@@ -2,6 +2,8 @@
 
 source config/setvars.sh
 
+echo $JAX_PASS
+
 bash setup.sh
 
 mvn clean
