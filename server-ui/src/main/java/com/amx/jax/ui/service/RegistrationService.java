@@ -56,7 +56,7 @@ public class RegistrationService {
 		if (model != null) {
 
 			// Check if response was successful
-			if (!model.getIsActiveCustomer()) {
+			if (model.getIsActiveCustomer()) {
 				wrapper.setError(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
 			} else if (model.getOtp() == null) {
 				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for givin cil ID");
