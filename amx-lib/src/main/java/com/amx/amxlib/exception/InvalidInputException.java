@@ -1,16 +1,16 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.jax.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractException;
 
-public class InvalidCivilIdException extends AbstractException {
+public class InvalidInputException extends AbstractException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public InvalidCivilIdException(String errorMessage) {
+	public InvalidInputException(String errorMessage) {
 		super(errorMessage);
 	}
 

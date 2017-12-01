@@ -1,6 +1,4 @@
-package com.amx.jax.exception;
-
-import com.amx.amxlib.error.JaxError;
+package com.amx.amxlib.exception;
 
 public class GlobalException extends AbstractException {
 
@@ -15,9 +13,5 @@ public class GlobalException extends AbstractException {
 
 	public GlobalException(String errorMessage, String errorCode) {
 		super(errorMessage, errorCode);
-	}
-
-	public GlobalException(String errorMessage, JaxError error) {
-		super(errorMessage, error.getCode());
 	}
 }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
@@ -64,7 +65,8 @@ public class CheckListManager {
 		CustomerOnlineRegistration customer = custRepo.getOnlineCustomerByLoginIdOrUserName(userId);
 		UserVerificationCheckListModel checkList = checkListrepo.findOne(customer.getUserName());
 		if (checkList == null) {
-			throw new GlobalException("No User verfification record found", "USER_VERFICATION_RECORD_NOT_FOUND");
+			throw new GlobalException("No User verfification record found",
+					JaxError.USER_VERFICATION_RECORD_NOT_FOUND);
 		}
 		return convert(checkList);
 	}

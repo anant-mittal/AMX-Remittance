@@ -1,7 +1,6 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception;
 
-import com.amx.amxlib.error.JaxError;
-import com.amx.jax.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractException;
 
 public class UserNotFoundException extends AbstractException {
 
@@ -16,7 +15,7 @@ public class UserNotFoundException extends AbstractException {
 
 	@Override
 	public String getErrorCode() {
-		return JaxError.USER_NOT_FOUND.getCode();
+		return "USER_NOT_FOUND";
 	}
 
 }

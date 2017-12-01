@@ -1,5 +1,6 @@
 package com.amx.jax.exception;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.jax.exception.AbstractException;
 
 public class InvalidOtpException extends AbstractException {
@@ -15,7 +16,7 @@ public class InvalidOtpException extends AbstractException {
 
 	@Override
 	public String getErrorCode() {
-		return "INVALID_OTP";
+		return JaxError.INVALID_OTP.getCode();
 	}
 
 }

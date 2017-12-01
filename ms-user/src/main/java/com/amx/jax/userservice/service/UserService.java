@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
@@ -114,7 +115,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse saveCustomer(CustomerModel model) {
 		// userValidationService.validateCustomerForOnlineFlow(model.getCustomerId());
 		if (model.getCustomerId() == null) {
-			throw new GlobalException("Null customer id passed ", "NULL_CUSTOMER_ID");
+			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
 		if (onlineCust == null) {

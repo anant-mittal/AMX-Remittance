@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
@@ -19,7 +20,7 @@ public class CustomerIdProofDao {
 	public List<CustomerIdProof> validateCustomerIdProofs(BigDecimal customerId) {
 		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerIdProofByCustomerId(customerId);
 		if (idProofList.isEmpty()) {
-			throw new GlobalException("NO_ID_PROOFS_AVAILABLE", "ID proofs not available, contact branch");
+			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
 		}
 		return idProofList;
 	}

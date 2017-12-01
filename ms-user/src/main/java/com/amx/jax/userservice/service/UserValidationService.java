@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -77,13 +78,13 @@ public class UserValidationService {
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-//		boolean userNameValid = patternValidator.validateUserName(loginId);
-//		if (!userNameValid) {
-//			throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-//		}
+		// boolean userNameValid = patternValidator.validateUserName(loginId);
+		// if (!userNameValid) {
+		// throw new GlobalException("Username is not valid", "INVALID_USERNAME");
+		// }
 		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
 		if (existingCust != null) {
-			throw new GlobalException("Username already taken", "INVALID_USERNAME");
+			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
 		}
 	}
 
@@ -112,7 +113,7 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordEncrypted = cryptoUtil.encrypt(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordEncrypted)) {
-			throw new GlobalException("Incorrect/wrong password", "WRONG PASSWORD");
+			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
 		}
 	}
 
@@ -131,7 +132,7 @@ public class UserValidationService {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
-				throw new GlobalException("Identity proof are expired or invalid", "ID_PROOFS_NOT_VALID");
+				throw new GlobalException("Identity proof are expired or invalid", JaxError.ID_PROOFS_NOT_VALID);
 			}
 		} else if ("D".equals(scanSystem)) {
 			Map<String, Object> imageChecks = imageCheckDao.dmsImageCheck(idProof.getIdentityTypeId(),
@@ -142,35 +143,35 @@ public class UserValidationService {
 				List<DmsDocumentModel> dmsDocs = dmsDocDao.getDmsDocument(new BigDecimal(docBlobIdInt),
 						new BigDecimal(docFinYrInt));
 				if (dmsDocs == null || dmsDocs.isEmpty()) {
-					throw new GlobalException("Identity proof images not found", "ID_PROOFS_IMAGES_NOT_FOUND");
+					throw new GlobalException("Identity proof images not found", JaxError.ID_PROOFS_IMAGES_NOT_FOUND);
 				}
 			}
 		} else {
-			throw new GlobalException("Identity proof scans not found", "ID_PROOFS_SCAN_NOT_FOUND");
+			throw new GlobalException("Identity proof scans not found", JaxError.ID_PROOFS_SCAN_NOT_FOUND);
 		}
 	}
 
 	protected void validateCustomerData(CustomerOnlineRegistration onlineCust, Customer customer) {
 
 		if (customer.getCustomerReference() == null) {
-			throw new GlobalException("Invalid Customer Reference", "INVALID_CUSTOMER_REFERENCE");
+			throw new GlobalException("Invalid Customer Reference", JaxError.INVALID_CUSTOMER_REFERENCE);
 		}
 		// validate contact details
 		validateCustContact(customer);
 		if (!"Y".equals(customer.getIsActive())) {
-			throw new GlobalException("Customer is not active", "CUSTOMER_INACTIVE");
+			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
 		}
 		if (customer.getSignatureSpecimenClob() == null) {
-			throw new GlobalException("CUSTOMER SIGNATURE NOT AVAILABLE", "CUSTOMER__SIGNATURE_UNAVAILABLE");
+			throw new GlobalException("CUSTOMER SIGNATURE NOT AVAILABLE", JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE);
 		}
 		boolean insuranceCheck = ("Y".equals(customer.getMedicalInsuranceInd())
 				|| "N".equals(customer.getMedicalInsuranceInd()));
 		if (!insuranceCheck) {
-			throw new GlobalException("INVALID MEDICAL INSURANCE INDICATOR", "INVALID_INSURANCE_INDICATOR");
+			throw new GlobalException("INVALID MEDICAL INSURANCE INDICATOR", JaxError.INVALID_INSURANCE_INDICATOR);
 		}
 		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
 		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
-			throw new GlobalException("ID is expired", "ID_PROOF_EXPIRED");
+			throw new GlobalException("ID is expired", JaxError.ID_PROOF_EXPIRED);
 		}
 		validateBlackListedCustomer(customer);
 		validateOldEmosData(customer);
@@ -179,15 +180,15 @@ public class UserValidationService {
 
 	private void validateOldEmosData(Customer customer) {
 		if (customer.getCustomerReference() == null) {
-			throw new GlobalException("Old customer records not found in EMOS", "OLD_EMOS_USER_NOT_FOUND");
+			throw new GlobalException("Old customer records not found in EMOS", JaxError.OLD_EMOS_USER_NOT_FOUND);
 		}
 		CusmasModel emosCustomer = cusmosDao.getOldCusMasDetails(customer.getCustomerReference());
 		if (emosCustomer.getStatus() != null) {
-			throw new GlobalException("RECORD IS DELETED IN OLD EMOS", "OLD_EMOS_USER_DELETED");
+			throw new GlobalException("RECORD IS DELETED IN OLD EMOS", JaxError.OLD_EMOS_USER_DELETED);
 		}
 		if (emosCustomer.getIdExpireDate() == null || emosCustomer.getIdExpireDate().compareTo(new Date()) < 0) {
 			throw new GlobalException("ID EXPIRY IS NOT UPDATED OR HAS BEEN EXPIRED IN OLD EMOS",
-					"OLD_EMOS_USER_DATA_EXPIRED");
+					JaxError.OLD_EMOS_USER_DATA_EXPIRED);
 		}
 	}
 
@@ -195,7 +196,7 @@ public class UserValidationService {
 
 		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCompanyId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
-			throw new GlobalException("No contact details found", "MISSING_CONTACT_DETAILS");
+			throw new GlobalException("No contact details found", JaxError.MISSING_CONTACT_DETAILS);
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
@@ -207,10 +208,10 @@ public class UserValidationService {
 			}
 		}
 		if (!ishome) {
-			throw new GlobalException("No home contact details found", "MISSING_HOME_CONTACT_DETAILS");
+			throw new GlobalException("No home contact details found", JaxError.MISSING_HOME_CONTACT_DETAILS);
 		}
 		if (!islocal) {
-			throw new GlobalException("No local details found", "MISSING_LOCAL_CONTACT_DETAILS");
+			throw new GlobalException("No local details found", JaxError.MISSING_LOCAL_CONTACT_DETAILS);
 		}
 	}
 
@@ -238,12 +239,14 @@ public class UserValidationService {
 		}
 		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer name found matching with black list ", "BLACK_LISTED_CUSTOMER");
+			throw new GlobalException("Customer name found matching with black list ",
+					JaxError.BLACK_LISTED_CUSTOMER.getCode());
 		}
 		blist = blistDao.getBlackByName(localNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer local name found matching with black list ", "BLACK_LISTED_CUSTOMER");
+			throw new GlobalException("Customer local name found matching with black list ",
+					JaxError.BLACK_LISTED_CUSTOMER.getCode());
 		}
 	}
-	
+
 }

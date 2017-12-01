@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
@@ -46,10 +47,11 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> generateRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			Integer customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", "CUSTOMER_NOT_FOUND");
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
 		}
 		if (size > 4) {
-			throw new GlobalException("Random questions size can't be more than 4", "INVALID_RANDOM_QUEST_SIZE");
+			throw new GlobalException("Random questions size can't be more than 4",
+					JaxError.INVALID_RANDOM_QUEST_SIZE.getCode());
 		}
 		List<BigDecimal> questions = new ArrayList<>();
 		questions.add(onlineCustomer.getSecurityQuestion1());

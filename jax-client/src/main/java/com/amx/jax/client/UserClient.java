@@ -14,6 +14,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.AlreadyExistsException;
+import com.amx.amxlib.exception.CustomerValidationException;
+import com.amx.amxlib.exception.IncorrectInputException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -32,12 +36,12 @@ public class UserClient extends AbstractJaxServiceClient {
 	@Autowired
 	private ConverterUtility util;
 
-	public ApiResponse<CustomerModel> validateOtp(String civilId, String otp) {
+	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp) throws IncorrectInputException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			log.info("calling validateOtp api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/validate-otp/?otp="
+			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp="
 					+ otp;
 			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
@@ -45,14 +49,15 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			log.error("exception in validateOtp ", e);
 		}
+		checkIncorrectInputError(response.getBody());
 		return response.getBody();
 	}
 
-	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String civilId) {
+	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId) throws InvalidInputException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		try {
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
-			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + civilId + "/send-otp/";
+			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
 			log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
@@ -61,10 +66,11 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			log.error("exception in sendOtpForCivilId ", e);
 		}
+		checkInvalidInputErrors(response.getBody());
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveCustomer(String json) {
+	public ApiResponse<CustomerModel> saveCustomer(String json) throws CustomerValidationException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
@@ -77,6 +83,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			log.error("exception in saveCustomer ", e);
 		}
+		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}
 
@@ -119,7 +126,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password) {
+	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password)
+			throws AlreadyExistsException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
@@ -136,6 +144,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			log.error("exception in saveLoginIdAndPassword ", e);
 		}
+		checkAlreadyExistsError(response.getBody());
 		return response.getBody();
 	}
 
@@ -148,8 +157,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			String randQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId + "/random-questions/?size="
-					+ size;
+			String randQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId
+					+ "/random-questions/?size=" + size;
 			log.info("calling fetchRandomQuestoins api: " + randQuestionstUrl);
 			response = restTemplate.exchange(randQuestionstUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
