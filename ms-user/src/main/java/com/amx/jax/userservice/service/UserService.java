@@ -96,7 +96,9 @@ public class UserService extends AbstractUserService {
 	public CustomerModel convert(CustomerOnlineRegistration cust) {
 		CustomerModel model = new CustomerModel();
 		model.setIdentityId(cust.getUserName());
-		model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
+		if (cust.getCaption() != null) {
+			model.setCaption(cryptoUtil.decrypt(cust.getUserName(), cust.getCaption()));
+		}
 		model.setEmail(cust.getEmail());
 		model.setImageUrl(cust.getImageUrl());
 		model.setMobile(cust.getMobileNumber());
