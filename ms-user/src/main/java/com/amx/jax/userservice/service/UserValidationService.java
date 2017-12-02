@@ -261,6 +261,7 @@ public class UserValidationService {
 		for (SecurityQuestionModel answer : answers) {
 			String actualAnswer = getActualAnswer(answer.getQuestionSrNo(), customer);
 			if (!actualAnswer.equals(cryptoUtil.getHash(customer.getUserName(), answer.getAnswer()))) {
+				updateLockCount(customer);
 				throw new GlobalException("Incorrect answer for question no. : " + answer.getQuestionSrNo(),
 						JaxError.INCORRECT_SECURITY_QUESTION_ANSWER);
 			}
