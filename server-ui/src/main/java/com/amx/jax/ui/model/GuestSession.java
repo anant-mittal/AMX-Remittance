@@ -44,4 +44,8 @@ public class GuestSession implements Serializable {
 		this.quesIndex = quesIndex;
 	}
 
+	public void nextQuesIndex() {
+		this.quesIndex++;
+	}
+
 }

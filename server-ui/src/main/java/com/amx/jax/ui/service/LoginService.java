@@ -115,6 +115,7 @@ public class LoginService {
 						customerModel.getSecurityquestions());
 
 				SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
+				sessionService.getGuestSession().nextQuesIndex();
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
 						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)

@@ -30,7 +30,7 @@ public class ListManager<T> {
 	public T pickNext(int offset) {
 		if (list != null) {
 			int size = list.size();
-			int next = (offset + 1) / size;
+			int next = (offset + 1) % size;
 			return list.get(next);
 		}
 		return null;
