@@ -152,7 +152,7 @@ public class UserService extends AbstractUserService {
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
-		model.setIsActiveCustomer("Y".equals(cust.getActivatedInd()) ? true : false);
+		model.setIsActiveCustomer("Y".equals(onlineCust.getStatus()) ? true : false);
 		return onlineCust;
 	}
 

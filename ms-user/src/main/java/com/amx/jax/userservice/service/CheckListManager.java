@@ -41,7 +41,7 @@ public class CheckListManager {
 		model.setCreatedBy(onlineCust.getUserName());
 		model.setUpdatedBy(onlineCust.getUserName());
 		model.setLoginId(onlineCust.getUserName());
-		model.setIsActive("Y");
+		model.setIsActive("N");
 		model.setCreatedDate(new Date());
 		return model;
 	}
