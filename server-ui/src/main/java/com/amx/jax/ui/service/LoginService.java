@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -51,32 +52,37 @@ public class LoginService {
 			// Check if use is already logged in;
 			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
-			CustomerModel customerModel = jaxService.setDefaults().getUserclient().login(identity, password)
-					.getResult();
-			guestSession.setCustomerModel(customerModel);
+			CustomerModel customerModel;
+			try {
+				customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
 
-			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-					customerModel.getSecurityquestions());
+				guestSession.setCustomerModel(customerModel);
 
-			SecurityQuestionModel answer = listmgr.pickRandom();
-			guestSession.setQuesIndex(listmgr.getIndex());
+				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+						customerModel.getSecurityquestions());
 
-			List<QuestModelDTO> questModel = jaxService.getMetaClient()
-					.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID).getResults();
+				SecurityQuestionModel answer = listmgr.pickRandom();
+				guestSession.setQuesIndex(listmgr.getIndex());
 
-			for (QuestModelDTO questModelDTO : questModel) {
-				if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
-					wrapper.getData().setQuestion(questModelDTO.getDescription());
+				List<QuestModelDTO> questModel = jaxService.getMetaClient()
+						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
+						.getResults();
+
+				for (QuestModelDTO questModelDTO : questModel) {
+					if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
+						wrapper.getData().setQuestion(questModelDTO.getDescription());
+					}
 				}
+
+				wrapper.getData().setAnswer(answer);
+				wrapper.getData().setImageId(customerModel.getImageUrl());
+				wrapper.getData().setImageCaption(customerModel.getCaption());
+
+				wrapper.setMessage(StatusCode.AUTH_OK, "Password is Correct");
+
+			} catch (IncorrectInputException e) {
+				wrapper.setMessage(StatusCode.AUTH_FAILED, "Wrong Credentials");
 			}
-
-			wrapper.getData().setAnswer(answer);
-		}
-
-		if (guestSession.isValid()) {
-			wrapper.setMessage(StatusCode.AUTH_OK, "Password is Correct");
-		} else {
-			wrapper.setMessage(StatusCode.AUTH_FAILED, "Wrong Credentials");
 		}
 
 		return wrapper;
