@@ -49,7 +49,7 @@ public class RegistrationService {
 			model = userclient.sendOtpForCivilId(civilid).getResult();
 			// Check if response was successful
 			if (model.getIsActiveCustomer()) {
-				wrapper.setError(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
+				wrapper.setMessage(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
 			} else {
 				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
 				// append info in response data
@@ -61,7 +61,7 @@ public class RegistrationService {
 			wrapper.getData().setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
 		} catch (InvalidInputException e) {
-			wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
+			wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
 		}
 		return wrapper;
 	}
