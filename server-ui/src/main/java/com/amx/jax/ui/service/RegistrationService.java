@@ -11,6 +11,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.AlreadyExistsException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -47,27 +49,24 @@ public class RegistrationService {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 		jaxClient.setDefaults();
-		CivilIdOtpModel model = userclient.sendOtpForCivilId(civilid).getResult();
-
-		if (model != null) {
-
+		CivilIdOtpModel model;
+		try {
+			model = userclient.sendOtpForCivilId(civilid).getResult();
 			// Check if response was successful
 			if (model.getIsActiveCustomer()) {
 				wrapper.setError(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
-			} else if (model.getOtp() == null) {
-				wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
 			} else {
 				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 				wrapper.getData().setOtpsent(true);
 			}
-
-			// Save information in user session
 			userSessionInfo.setUserid(civilid);
 			userSessionInfo.setOtp(model.getOtp());
 			wrapper.getData().setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
+		} catch (InvalidInputException e) {
+			wrapper.setError(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
 		}
 		return wrapper;
 	}
@@ -82,8 +81,8 @@ public class RegistrationService {
 			UsernamePasswordAuthenticationToken token = null;
 			try {
 
-				jaxClient.setDefaults();
-				ApiResponse<CustomerModel> response = userclient.validateOtp(civilid, otp);
+				;
+				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(civilid, otp);
 				CustomerModel model = response.getResult();
 
 				// Check if otp is valid
@@ -149,9 +148,12 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> saveLoginIdAndPassword(String loginId, String password) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
-		jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
-
-		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+		try {
+			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
+			wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+		} catch (AlreadyExistsException e) {
+			wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_FAILED, "LoginId already exists");
+		}
 
 		return wrapper;
 	}
