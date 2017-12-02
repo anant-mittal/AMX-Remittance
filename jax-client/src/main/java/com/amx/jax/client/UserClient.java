@@ -170,7 +170,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> login(String loginId, String password) {
+	public ApiResponse<CustomerModel> login(String loginId, String password) throws IncorrectInputException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
@@ -184,6 +184,29 @@ public class UserClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			log.error("exception in login ", e);
 		}
+		checkIncorrectInputError(response.getBody());
+		return response.getBody();
+	}
+
+	public ApiResponse<CustomerModel> validateSecurityQuestions(List<SecurityQuestionModel> securityquestions)
+			throws IncorrectInputException {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		try {
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			CustomerModel custModel = new CustomerModel();
+			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+			custModel.setSecurityquestions(securityquestions);
+			String validatSecurityQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT
+					+ "/validate-random-questions/";
+			log.info("calling validateSecurityQuestions api: " + validatSecurityQuestionstUrl);
+			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			log.info("responce from  validateSecurityQuestions api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in validateSecurityQuestions ", e);
+		}
+		checkIncorrectInputError(response.getBody());
 		return response.getBody();
 	}
 

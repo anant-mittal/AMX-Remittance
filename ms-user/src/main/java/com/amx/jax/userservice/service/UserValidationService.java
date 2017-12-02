@@ -16,6 +16,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -247,6 +248,41 @@ public class UserValidationService {
 			throw new GlobalException("Customer local name found matching with black list ",
 					JaxError.BLACK_LISTED_CUSTOMER.getCode());
 		}
+	}
+
+	protected void validateCustomerSecurityQuestions(List<SecurityQuestionModel> answers,
+			CustomerOnlineRegistration customer) {
+
+		for (SecurityQuestionModel answer : answers) {
+			String actualAnswer = getActualAnswer(answer.getQuestionSrNo(), customer);
+			if (!actualAnswer.equals(cryptoUtil.getHash(customer.getUserName(), answer.getAnswer()))) {
+				throw new GlobalException("Incorrect answer for question no. : " + answer.getQuestionSrNo(),
+						JaxError.INCORRECT_SECURITY_QUESTION_ANSWER);
+			}
+		}
+
+	}
+
+	private String getActualAnswer(BigDecimal questionSrNo, CustomerOnlineRegistration customer) {
+
+		if (questionSrNo.equals(customer.getSecurityQuestion1())) {
+			return customer.getSecurityAnswer1();
+		}
+		if (questionSrNo.equals(customer.getSecurityQuestion2())) {
+			return customer.getSecurityAnswer2();
+		}
+		if (questionSrNo.equals(customer.getSecurityQuestion3())) {
+			return customer.getSecurityAnswer3();
+		}
+		if (questionSrNo.equals(customer.getSecurityQuestion4())) {
+			return customer.getSecurityAnswer4();
+		}
+		if (questionSrNo.equals(customer.getSecurityQuestion5())) {
+			return customer.getSecurityAnswer5();
+		}
+
+		return null;
+
 	}
 
 }

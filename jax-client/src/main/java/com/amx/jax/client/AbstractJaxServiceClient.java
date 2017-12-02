@@ -77,6 +77,9 @@ public abstract class AbstractJaxServiceClient {
 			if (JaxError.INVALID_OTP.getCode().equals(error.getErrorId())) {
 				throw new IncorrectInputException(error);
 			}
+			if (JaxError.INCORRECT_SECURITY_QUESTION_ANSWER.getCode().equals(error.getErrorId())) {
+				throw new IncorrectInputException(error);
+			}
 		}
 	}
 

@@ -66,4 +66,12 @@ public class CustomerController {
 		ApiResponse response = userSerivce.generateRandomQuestions(size, customerId);
 		return response;
 	}
+
+	@RequestMapping(value = "/validate-random-questions/", method = RequestMethod.GET)
+	public ApiResponse validateCustomerData(@RequestBody String json) {
+		logger.debug("validateCustomerData Request:" + json);
+		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, CustomerModel.class);
+		ApiResponse response = userSerivce.validateCustomerData(model);
+		return response;
+	}
 }
