@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
@@ -64,8 +65,9 @@ public class UserController {
 
 	@ApiOperation(value = "Login User & Creates session")
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> loginSecQues(@RequestBody LoginData loginData, HttpServletRequest request) {
-		return loginService.loginSecQues(loginData, request);
+	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
+			HttpServletRequest request) {
+		return loginService.loginSecQues(guestanswer, request);
 	}
 
 }

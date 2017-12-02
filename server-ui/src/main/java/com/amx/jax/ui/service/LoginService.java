@@ -84,7 +84,7 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> loginSecQues(LoginData loginData, HttpServletRequest request) {
+	public ResponseWrapper<LoginData> loginSecQues(SecurityQuestionModel guestanswer, HttpServletRequest request) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
@@ -92,9 +92,9 @@ public class LoginService {
 		} else {
 			CustomerModel customerModel;
 			try {
-				List<SecurityQuestionModel> guestanswer = new ArrayList<SecurityQuestionModel>();
-				guestanswer.add(loginData.getAnswer());
-				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswer)
+				List<SecurityQuestionModel> guestanswers = new ArrayList<SecurityQuestionModel>();
+				guestanswers.add(guestanswer);
+				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswers)
 						.getResult();
 
 				sessionService.authorize(customerModel);
