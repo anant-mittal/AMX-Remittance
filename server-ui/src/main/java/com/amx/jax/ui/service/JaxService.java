@@ -27,7 +27,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	private UserSession userSessionInfo;
+	private SessionService sessionService;
 
 	@Autowired
 	private UserClient userclient;
@@ -58,8 +58,10 @@ public class JaxService extends AbstractJaxServiceClient {
 	public JaxService setDefaults() {
 		jaxMetaInfo.setCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID));
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
-		if (userSessionInfo.getCustomerModel() != null) {
-			jaxMetaInfo.setCustomerId(userSessionInfo.getCustomerModel().getCustomerId());
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
 		}
 		return this;
 	}
