@@ -249,6 +249,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse validateCustomerData(CustomerModel model) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
+		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
 		response.getData().getValues().add(responseModel);

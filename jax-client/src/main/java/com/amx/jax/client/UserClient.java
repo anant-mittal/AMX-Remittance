@@ -193,7 +193,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<CustomerModel> validateSecurityQuestions(List<SecurityQuestionModel> securityquestions)
-			throws IncorrectInputException {
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
@@ -211,6 +211,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.error("exception in validateSecurityQuestions ", e);
 		}
 		checkIncorrectInputError(response.getBody());
+		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}
 
