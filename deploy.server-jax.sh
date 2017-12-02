@@ -8,7 +8,15 @@ bash setup.sh
 
 mvn clean
 
-mvn package -DskipTests
+#mvn package -DskipTests
+
+mvn -pl amx-lib clean install -DskipTests
+mvn -pl core clean install -DskipTests
+mvn -pl ms-meta clean install -DskipTests
+mvn -pl ms-user clean install -DskipTests
+mvn -pl ms-jax clean install -DskipTests
+mvn -pl jax-client clean install -DskipTests
+
 
 sshpass -p $JAX_PASS scp ms-jax/target/ms-jax-0.0.1-SNAPSHOT.jar $JAX_USER@$JAX_HOST:~/jax
 
