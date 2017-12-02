@@ -12,7 +12,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -77,7 +79,11 @@ public class LoginService {
 				wrapper.setMessage(StatusCode.AUTH_OK, "Password is Correct");
 
 			} catch (IncorrectInputException e) {
-				wrapper.setMessage(StatusCode.AUTH_FAILED, "Wrong Credentials");
+				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+			} catch (CustomerValidationException e) {
+				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+			} catch (LimitExeededException e) {
+				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, "You have exceeded max no. of login attempts");
 			}
 		}
 
@@ -121,6 +127,10 @@ public class LoginService {
 				}
 				wrapper.getData().setAnswer(answer);
 				wrapper.setMessage(EnumUtil.StatusCode.AUTH_FAILED, "Security Question is not validated");
+			} catch (CustomerValidationException e) {
+				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+			} catch (LimitExeededException e) {
+				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, "You have exceeded max no. of login attempts");
 			}
 
 		}
