@@ -2,7 +2,6 @@ package com.amx.jax.ui.service;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,8 +16,6 @@ import com.amx.jax.ui.model.UserSession;
 
 @Component
 public class SessionService {
-
-	private Logger log = Logger.getLogger(SessionService.class);
 
 	@Autowired
 	private HttpServletRequest request;
