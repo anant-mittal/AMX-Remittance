@@ -203,7 +203,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			String validatSecurityQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT
 					+ "/validate-random-questions/";
 			log.info("calling validateSecurityQuestions api: " + validatSecurityQuestionstUrl);
-			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.GET, requestEntity,
+			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  validateSecurityQuestions api: " + util.marshall(response.getBody()));

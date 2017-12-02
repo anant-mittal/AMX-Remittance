@@ -67,7 +67,7 @@ public class CustomerController {
 		return response;
 	}
 
-	@RequestMapping(value = "/validate-random-questions/", method = RequestMethod.GET)
+	@RequestMapping(value = "/validate-random-questions/", method = RequestMethod.POST)
 	public ApiResponse validateCustomerData(@RequestBody String json) {
 		logger.debug("validateCustomerData Request:" + json);
 		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, CustomerModel.class);
