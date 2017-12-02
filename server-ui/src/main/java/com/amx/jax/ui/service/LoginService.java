@@ -67,7 +67,8 @@ public class LoginService {
 						.getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
-					if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
+					System.out.println(questModelDTO.getQuestNumber() + "===" + answer.getQuestionSrNo());
+					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
 						wrapper.getData().setQuestion(questModelDTO.getDescription());
 					}
 				}
@@ -83,7 +84,7 @@ public class LoginService {
 			} catch (CustomerValidationException e) {
 				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
 			} catch (LimitExeededException e) {
-				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, "You have exceeded max no. of login attempts");
+				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, e.getMessage());
 			}
 		}
 
@@ -122,56 +123,19 @@ public class LoginService {
 						.getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
-					if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
+					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
 						wrapper.getData().setQuestion(questModelDTO.getDescription());
 					}
 				}
 				wrapper.getData().setAnswer(answer);
-				wrapper.setMessage(EnumUtil.StatusCode.AUTH_FAILED, "Security Question is not validated");
+				wrapper.setMessage(EnumUtil.StatusCode.AUTH_FAILED, e.getMessage());
 			} catch (CustomerValidationException e) {
 				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
 			} catch (LimitExeededException e) {
-				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, "You have exceeded max no. of login attempts");
+				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, e.getMessage());
 			}
 
 		}
-		return wrapper;
-	}
-
-	public ResponseWrapper<RegistrationdData> checkSecurity(String identity, String password,
-			HttpServletRequest request) {
-
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-
-		if (userSession.isValid()) {
-			// Check if use is already logged in;
-			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
-		} else {
-			UsernamePasswordAuthenticationToken token = null;
-			try {
-
-				CustomerModel customerModel = jaxService.setDefaults().getUserclient().login(identity, password)
-						.getResult();
-				// Check if otp is valid
-				if (customerModel != null) {
-					token = new UsernamePasswordAuthenticationToken(identity, password);
-					token.setDetails(new WebAuthenticationDetails(request));
-					Authentication authentication = this.customerAuthProvider.authenticate(token);
-					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
-					userSession.setCustomerModel(customerModel);
-					userSession.setValid(true);
-					SecurityContextHolder.getContext().setAuthentication(authentication);
-				} else { // Use is cannot be validated
-					wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
-				}
-
-			} catch (Exception e) { // user cannot be validated
-				token = null;
-				wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
-			}
-			SecurityContextHolder.getContext().setAuthentication(token);
-		}
-
 		return wrapper;
 	}
 

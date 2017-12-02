@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
+import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -61,7 +62,7 @@ public class RegistrationService {
 			wrapper.getData().setOtp(model.getOtp());
 			userSessionInfo.setUserid(civilid);
 		} catch (InvalidInputException e) {
-			wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, "Not able to generate OTP for given civil ID");
+			wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, e.getMessage());
 		}
 		return wrapper;
 	}
@@ -81,13 +82,12 @@ public class RegistrationService {
 				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(civilid, otp)) {
 					sessionService.authorize(model);
-					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
+					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authentication successful");
 				} else { // Use is cannot be validated
-					wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
+					wrapper.setMessage(StatusCode.VERIFY_FAILED, "Verification Failed");
 				}
-
-			} catch (Exception e) { // user cannot be validated
-				wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
+			} catch (IncorrectInputException e) {
+				wrapper.setMessage(StatusCode.VERIFY_FAILED, e.getMessage());
 			}
 		}
 		return wrapper;
