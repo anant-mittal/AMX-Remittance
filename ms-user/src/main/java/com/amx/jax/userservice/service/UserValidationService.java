@@ -195,7 +195,7 @@ public class UserValidationService {
 
 	private void validateCustContact(Customer customer) {
 
-		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCompanyId());
+		List<ContactDetail> contactDetails = contactDetailService.getContactDetail(customer.getCustomerId());
 		if (CollectionUtils.isEmpty(contactDetails)) {
 			throw new GlobalException("No contact details found", JaxError.MISSING_CONTACT_DETAILS);
 		}
