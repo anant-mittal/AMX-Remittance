@@ -172,7 +172,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> login(String loginId, String password) throws IncorrectInputException {
+	public ApiResponse<CustomerModel> login(String loginId, String password)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
@@ -187,6 +188,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.error("exception in login ", e);
 		}
 		checkIncorrectInputError(response.getBody());
+		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}
 
