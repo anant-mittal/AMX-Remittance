@@ -1,0 +1,45 @@
+package com.amx.jax.ui.service;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
+import org.springframework.stereotype.Component;
+
+import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.ui.config.CustomerAuthProvider;
+import com.amx.jax.ui.model.GuestSession;
+import com.amx.jax.ui.model.UserSession;
+
+@Component
+public class SessionService {
+
+	private Logger log = Logger.getLogger(SessionService.class);
+
+	@Autowired
+	private HttpServletRequest request;
+
+	@Autowired
+	private CustomerAuthProvider customerAuthProvider;
+
+	@Autowired
+	private GuestSession guestSession;
+
+	@Autowired
+	private UserSession userSession;
+
+	public void authorize(CustomerModel customerModel) {
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
+				customerModel.getIdentityId(), customerModel.getPassword());
+		token.setDetails(new WebAuthenticationDetails(request));
+		Authentication authentication = this.customerAuthProvider.authenticate(token);
+		userSession.setCustomerModel(customerModel);
+		userSession.setValid(true);
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
+
+}

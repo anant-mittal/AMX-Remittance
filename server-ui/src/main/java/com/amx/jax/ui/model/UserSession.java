@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.jax.ui.response.LoginData;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)

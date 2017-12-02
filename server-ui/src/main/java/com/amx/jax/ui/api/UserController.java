@@ -1,5 +1,7 @@
 package com.amx.jax.ui.api;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,8 +64,8 @@ public class UserController {
 
 	@ApiOperation(value = "Login User & Creates session")
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> loginSecQues(@RequestBody LoginData loginData) {
-		return loginService.loginSecQues(loginData);
+	public ResponseWrapper<LoginData> loginSecQues(@RequestBody LoginData loginData, HttpServletRequest request) {
+		return loginService.loginSecQues(loginData, request);
 	}
 
 }

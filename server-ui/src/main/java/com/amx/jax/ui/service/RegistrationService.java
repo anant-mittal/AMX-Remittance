@@ -138,7 +138,7 @@ public class RegistrationService {
 	public ResponseWrapper<RegistrationdData> updatePhising(String imageUrl, String caption) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
-		jaxClient.setDefaults().getUserclient().savePhishiingImage(imageUrl, caption).getResult();
+		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl).getResult();
 
 		wrapper.setMessage(EnumUtil.StatusCode.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 

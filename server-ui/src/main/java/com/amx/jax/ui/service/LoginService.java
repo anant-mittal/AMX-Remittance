@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,7 +16,6 @@ import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.config.CustomerAuthProvider;
@@ -30,9 +30,6 @@ import com.bootloaderjs.ListManager;
 public class LoginService {
 
 	@Autowired
-	private UserClient userclient;
-
-	@Autowired
 	private GuestSession guestSession;
 
 	@Autowired
@@ -43,6 +40,9 @@ public class LoginService {
 
 	@Autowired
 	private JaxService jaxService;
+
+	@Autowired
+	SessionService sessionService;
 
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
@@ -88,28 +88,46 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> loginSecQues(LoginData loginData) {
+	public ResponseWrapper<LoginData> loginSecQues(LoginData loginData, HttpServletRequest request) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
 			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
-			CustomerModel customerModel = guestSession.getCustomerModel();
+			CustomerModel customerModel;
+			try {
+				List<SecurityQuestionModel> guestanswer = new ArrayList<SecurityQuestionModel>();
+				guestanswer.add(loginData.getAnswer());
+				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswer)
+						.getResult();
 
-			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-					customerModel.getSecurityquestions());
+				sessionService.authorize(customerModel);
 
-			SecurityQuestionModel answer = listmgr.pickNext(guestSession.getQuesIndex());
+				wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
 
-			List<QuestModelDTO> questModel = jaxService.getMetaClient()
-					.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID).getResults();
+				wrapper.setMessage(EnumUtil.StatusCode.AUTH_DONE, "User authenitcated successfully");
 
-			for (QuestModelDTO questModelDTO : questModel) {
-				if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
-					wrapper.getData().setQuestion(questModelDTO.getDescription());
+			} catch (IncorrectInputException e) {
+				customerModel = guestSession.getCustomerModel();
+
+				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+						customerModel.getSecurityquestions());
+
+				SecurityQuestionModel answer = listmgr.pickNext(guestSession.getQuesIndex());
+
+				List<QuestModelDTO> questModel = jaxService.getMetaClient()
+						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
+						.getResults();
+
+				for (QuestModelDTO questModelDTO : questModel) {
+					if (questModelDTO.getQuestNumber() == answer.getQuestionSrNo()) {
+						wrapper.getData().setQuestion(questModelDTO.getDescription());
+					}
 				}
+				wrapper.getData().setAnswer(answer);
+				wrapper.setMessage(EnumUtil.StatusCode.AUTH_FAILED, "Security Question is not validated");
 			}
-			wrapper.getData().setAnswer(answer);
+
 		}
 		return wrapper;
 	}
