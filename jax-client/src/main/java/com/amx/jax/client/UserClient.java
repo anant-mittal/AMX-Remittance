@@ -18,6 +18,7 @@ import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -70,7 +71,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveCustomer(String json) throws CustomerValidationException {
+	public ApiResponse<CustomerModel> saveCustomer(String json)
+			throws CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());

@@ -15,6 +15,7 @@ import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -48,11 +49,15 @@ public abstract class AbstractJaxServiceClient {
 		}
 	}
 
-	protected void checkCustomerValidationErrors(ApiResponse<?> response) throws CustomerValidationException {
+	protected void checkCustomerValidationErrors(ApiResponse<?> response)
+			throws CustomerValidationException, LimitExeededException {
 		if (response.getError() != null) {
 			ApiError error = response.getError().get(0);
 			if (JaxError.BLACK_LISTED_CUSTOMER.getCode().equals(error.getErrorId())) {
 				throw new CustomerValidationException(error);
+			}
+			if (JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.getCode().equals(error.getErrorId())) {
+				throw new LimitExeededException(error);
 			}
 		}
 	}
@@ -82,5 +87,6 @@ public abstract class AbstractJaxServiceClient {
 			}
 		}
 	}
+	
 
 }
