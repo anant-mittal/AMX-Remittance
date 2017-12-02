@@ -3,23 +3,52 @@
 	xmlns:th="http://www.thymeleaf.org"
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-<title>Spring Security Example</title>
+  <meta charset="UTF-8">
+  <title>Almulla Online</title>
 </head>
 <body>
-	<div th:if="${param.error}">Invalid username and password.</div>
-	<div th:if="${param.logout}">You have been logged out.</div>
-	<form th:action="@{/login}" method="post">
-		<div>
-			<label> User Name : <input type="text" name="username" />
-			</label>
-		</div>
-		<div>
-			<label> Password: <input type="password" name="password" />
-			</label>
-		</div>
-		<div>
-			<input type="submit" value="Sign In" />
-		</div>
-	</form>
+<div id="app"></div>
+<script>
+  function getJson(str) {
+    var json;
+    try {
+      json = JSON.parse(str);
+    } catch (e) {
+      console.error('Error in config: ', e);
+      return false;
+    }
+    return json;
+  }
+  window.CONST = {
+    remoteServerUrl: '',
+    remoteJsUrl: 'http://10.6.42.95/onlinewebapp',
+    dummyApi: false
+  };
+  var config = getJson(window.localStorage.getItem('debugConfig'));
+  if (config) {
+    window.CONST.dummyApi = config.dummyApi || false;
+    window.CONST.remoteServerUrl = config.remoteServerUrl || '';
+    window.CONST.remoteJsUrl = config.remoteJsUrl || '';
+  }
+
+  // add css and js
+  var head = document.getElementsByTagName('head')[0];
+  var js = document.createElement('script');
+  js.type = 'text/javascript';
+  js.src = window.CONST.remoteJsUrl + '/dist/main.bundle.js';
+  var css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = window.CONST.remoteJsUrl + '/dist/style.css';
+  head.appendChild(css);
+  head.appendChild(js);
+
+  // add favicon
+  var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+  link.type = 'image/x-icon';
+  link.rel = 'shortcut icon';
+  link.href = window.CONST.remoteJsUrl + '/dist/favicon.ico';
+  document.getElementsByTagName('head')[0].appendChild(link);
+
+</script>
 </body>
 </html>
