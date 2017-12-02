@@ -112,8 +112,8 @@ public class UserValidationService {
 
 	protected void validatePassword(CustomerOnlineRegistration customer, String password) {
 		String dbPwd = customer.getPassword();
-		String passwordEncrypted = cryptoUtil.encrypt(customer.getUserName(), password);
-		if (!dbPwd.equals(passwordEncrypted)) {
+		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
+		if (!dbPwd.equals(passwordhashed)) {
 			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
 		}
 	}

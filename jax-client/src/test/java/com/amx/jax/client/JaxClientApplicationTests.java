@@ -85,7 +85,7 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		ApiResponse<CustomerModel> response = client.saveLoginIdAndPassword("284052306594", "12345");
+		ApiResponse<CustomerModel> response = client.saveLoginIdAndPassword("284052306594", "amx@123");
 		logger.info("response of testsavecustapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 	}
