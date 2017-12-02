@@ -292,24 +292,29 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
-		int lockCnt = onlineCustomer.getLockCnt().intValue();
-		Date midnightTomorrow = getMidnightTomorrow();
+		if (onlineCustomer.getLockCnt() != null) {
+			int lockCnt = onlineCustomer.getLockCnt().intValue();
+			Date midnightTomorrow = getMidnightToday();
 
-		if (lockCnt > 0) {
-			if (midnightTomorrow.compareTo(onlineCustomer.getLockDt()) > 0) {
-				onlineCustomer.setLockCnt(new BigDecimal(0));
-				custDao.saveOnlineCustomer(onlineCustomer);
-				lockCnt = 0;
-			}
-			if (lockCnt > 3) {
-				throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
-						JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+			if (lockCnt > 0 && onlineCustomer.getLockDt() != null) {
+				if (midnightTomorrow.compareTo(onlineCustomer.getLockDt()) > 0) {
+					onlineCustomer.setLockCnt(new BigDecimal(0));
+					custDao.saveOnlineCustomer(onlineCustomer);
+					lockCnt = 0;
+				}
+				if (lockCnt > 3) {
+					throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
+							JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+				}
 			}
 		}
 	}
 
 	public void updateLockCount(CustomerOnlineRegistration onlineCustomer) {
-		int lockCnt = onlineCustomer.getLockCnt().intValue();
+		int lockCnt = 0;
+		if (onlineCustomer.getLockCnt() != null) {
+			lockCnt = onlineCustomer.getLockCnt().intValue();
+		}
 		lockCnt++;
 		if (lockCnt > 3) {
 			onlineCustomer.setLockDt(new Date());
@@ -318,14 +323,13 @@ public class UserValidationService {
 		custDao.saveOnlineCustomer(onlineCustomer);
 	}
 
-	public Date getMidnightTomorrow() {
+	public Date getMidnightToday() {
 		Calendar date = new GregorianCalendar();
 		date.set(Calendar.HOUR_OF_DAY, 0);
 		date.set(Calendar.MINUTE, 0);
 		date.set(Calendar.SECOND, 0);
 		date.set(Calendar.MILLISECOND, 0);
 
-		date.add(Calendar.DAY_OF_MONTH, 1);
 		return date.getTime();
 	}
 

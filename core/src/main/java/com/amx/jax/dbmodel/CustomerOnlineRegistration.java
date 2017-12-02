@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -526,4 +527,8 @@ public class CustomerOnlineRegistration {
 		this.deviceType = deviceType;
 	}
 	
+	@PrePersist
+	public void prepersist() {
+		this.lastUpdated = new Date();
+	}
 }
