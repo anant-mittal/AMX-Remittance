@@ -19,7 +19,6 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.config.CustomerAuthProvider;
-import com.amx.jax.ui.model.GuestSession;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.RegistrationdData;
@@ -28,9 +27,6 @@ import com.bootloaderjs.ListManager;
 
 @Service
 public class LoginService {
-
-	@Autowired
-	private GuestSession guestSession;
 
 	@Autowired
 	private UserSession userSession;
@@ -56,13 +52,13 @@ public class LoginService {
 			try {
 				customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
 
-				guestSession.setCustomerModel(customerModel);
+				sessionService.getGuestSession().setCustomerModel(customerModel);
 
 				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
 						customerModel.getSecurityquestions());
 
 				SecurityQuestionModel answer = listmgr.pickRandom();
-				guestSession.setQuesIndex(listmgr.getIndex());
+				sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
 						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
@@ -104,16 +100,15 @@ public class LoginService {
 				sessionService.authorize(customerModel);
 
 				wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
-
 				wrapper.setMessage(EnumUtil.StatusCode.AUTH_DONE, "User authenitcated successfully");
 
 			} catch (IncorrectInputException e) {
-				customerModel = guestSession.getCustomerModel();
+				customerModel = sessionService.getGuestSession().getCustomerModel();
 
 				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
 						customerModel.getSecurityquestions());
 
-				SecurityQuestionModel answer = listmgr.pickNext(guestSession.getQuesIndex());
+				SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
 						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
@@ -156,7 +151,6 @@ public class LoginService {
 					userSession.setValid(true);
 					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} else { // Use is cannot be validated
-
 					wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
 				}
 

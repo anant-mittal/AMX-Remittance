@@ -32,6 +32,14 @@ public class SessionService {
 	@Autowired
 	private UserSession userSession;
 
+	public GuestSession getGuestSession() {
+		return guestSession;
+	}
+
+	public UserSession getUserSession() {
+		return userSession;
+	}
+
 	public void authorize(CustomerModel customerModel) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				customerModel.getIdentityId(), customerModel.getPassword());

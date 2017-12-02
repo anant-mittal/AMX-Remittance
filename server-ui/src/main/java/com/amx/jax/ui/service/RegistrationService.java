@@ -5,10 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
@@ -22,7 +18,6 @@ import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
-import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.RegistrationdData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -37,7 +32,7 @@ public class RegistrationService {
 	private UserSession userSessionInfo;
 
 	@Autowired
-	private CustomerAuthProvider customerAuthProvider;
+	SessionService sessionService;
 
 	@Autowired
 	private MetaClient metaClient;
@@ -78,32 +73,22 @@ public class RegistrationService {
 			// Check if use is already logged in;
 			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
-			UsernamePasswordAuthenticationToken token = null;
-			try {
 
-				;
+			try {
 				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(civilid, otp);
 				CustomerModel model = response.getResult();
 
 				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(civilid, otp)) {
-					token = new UsernamePasswordAuthenticationToken(civilid, otp);
-					token.setDetails(new WebAuthenticationDetails(request));
-					Authentication authentication = this.customerAuthProvider.authenticate(token);
+					sessionService.authorize(model);
 					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
-					userSessionInfo.setCustomerModel(model);
-					userSessionInfo.setValid(true);
-					SecurityContextHolder.getContext().setAuthentication(authentication);
 				} else { // Use is cannot be validated
-
 					wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
 				}
 
 			} catch (Exception e) { // user cannot be validated
-				token = null;
 				wrapper.setMessage(StatusCode.VERIFY_FAILED, "NoAuthing");
 			}
-			SecurityContextHolder.getContext().setAuthentication(token);
 		}
 		return wrapper;
 	}
