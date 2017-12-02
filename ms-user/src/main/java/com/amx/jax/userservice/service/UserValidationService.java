@@ -3,9 +3,13 @@ package com.amx.jax.userservice.service;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+
+import javax.naming.LimitExceededException;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +118,7 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
+			updateLockCount(customer);
 			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
 		}
 	}
@@ -283,6 +288,44 @@ public class UserValidationService {
 
 		return null;
 
+	}
+
+	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
+		int lockCnt = onlineCustomer.getLockCnt().intValue();
+		Date midnightTomorrow = getMidnightTomorrow();
+
+		if (lockCnt > 0) {
+			if (midnightTomorrow.compareTo(onlineCustomer.getLockDt()) > 0) {
+				onlineCustomer.setLockCnt(new BigDecimal(0));
+				custDao.saveOnlineCustomer(onlineCustomer);
+				lockCnt = 0;
+			}
+			if (lockCnt > 3) {
+				throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
+						JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+			}
+		}
+	}
+
+	public void updateLockCount(CustomerOnlineRegistration onlineCustomer) {
+		int lockCnt = onlineCustomer.getLockCnt().intValue();
+		lockCnt++;
+		if (lockCnt > 3) {
+			onlineCustomer.setLockDt(new Date());
+		}
+		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
+		custDao.saveOnlineCustomer(onlineCustomer);
+	}
+
+	public Date getMidnightTomorrow() {
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		date.add(Calendar.DAY_OF_MONTH, 1);
+		return date.getTime();
 	}
 
 }

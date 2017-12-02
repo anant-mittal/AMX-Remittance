@@ -211,6 +211,7 @@ public class UserService extends AbstractUserService {
 			throw new UserNotFoundException("User with userId: " + userId + " not found");
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
