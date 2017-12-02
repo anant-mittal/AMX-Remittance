@@ -196,12 +196,12 @@ public class UserClient extends AbstractJaxServiceClient {
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
-			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			CustomerModel custModel = new CustomerModel();
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			custModel.setSecurityquestions(securityquestions);
 			String validatSecurityQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT
 					+ "/validate-random-questions/";
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 			log.info("calling validateSecurityQuestions api: " + validatSecurityQuestionstUrl);
 			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
