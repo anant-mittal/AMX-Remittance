@@ -1,6 +1,6 @@
 package com.amx.jax.controller;
 
-import static com.amx.jax.constant.ApiEndpoint.META_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

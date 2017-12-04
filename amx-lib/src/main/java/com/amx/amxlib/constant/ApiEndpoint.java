@@ -7,6 +7,10 @@ public class ApiEndpoint {
 	public static final String CUSTOMER_ENDPOINT = "/customer";
 
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
-	
+
 	public static final String META_API_ENDPOINT = "/meta";
+
+	public static final String UPDATE_PASSWORD_ENDPOINT = "/{identity-id}/password/";
+
+	public static final String BENE_API_ENDPOINT = "/bene";
 }

@@ -1,6 +1,6 @@
 package com.amx.jax.controller;
 
-import static com.amx.jax.constant.ApiEndpoint.BENE_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 
 import java.math.BigDecimal;
 

@@ -49,6 +49,9 @@ public abstract class AbstractJaxServiceClient {
 			if (JaxError.CUSTOMER_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				throw new InvalidInputException(error);
 			}
+			if (JaxError.NULL_CUSTOMER_ID.getCode().equals(error.getErrorId())) {
+				throw new InvalidInputException(error);
+			}
 		}
 	}
 

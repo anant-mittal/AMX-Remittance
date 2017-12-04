@@ -16,6 +16,7 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.model.UserSession;
@@ -168,9 +169,13 @@ public class LoginService {
 
 	public ResponseWrapper<RegistrationdData> updatepwd(String password) {
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
-		CustomerModel model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
-		sessionService.authorize(model);
-		wrapper.setMessage(StatusCode.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+		try {
+			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
+			wrapper.setMessage(StatusCode.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
+			wrapper.setMessage(StatusCode.USER_UPDATE_FAILED, e.getMessage());
+		}
+		
 		return wrapper;
 	}
 

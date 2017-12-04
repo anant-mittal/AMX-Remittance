@@ -216,12 +216,12 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<BooleanResponse> updatePassword(String identityId, String password)
+	public ApiResponse<BooleanResponse> updatePassword(String password)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
 		try {
-			String validatSecurityQuestionstUrl = baseUrl.toString() + USER_API_ENDPOINT + "/" + identityId
-					+ "/password/?password=" + password;
+			String validatSecurityQuestionstUrl = baseUrl.toString() + USER_API_ENDPOINT + "/"
+					+ jaxMetaInfo.getCustomerId() + "/password/?password=" + password;
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			log.info("calling updatePassword api: " + validatSecurityQuestionstUrl);
 			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.PUT, requestEntity,

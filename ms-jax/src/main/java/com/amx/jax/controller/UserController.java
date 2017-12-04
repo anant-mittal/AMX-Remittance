@@ -1,6 +1,6 @@
 package com.amx.jax.controller;
 
-import static com.amx.jax.constant.ApiEndpoint.USER_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
 import javax.websocket.server.PathParam;
 
@@ -28,13 +28,6 @@ public class UserController {
 	public ApiResponse loginUser(@RequestParam String userId, @RequestParam String password) {
 		logger.debug("loginUser Request: usreid: " + userId + " pssword: " + password);
 		ApiResponse response = userService.loginUser(userId, password);
-		return response;
-	}
-
-	@RequestMapping(value = "/{identityId}/password/", method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@PathParam("identityId") String identityId, @RequestParam String password) {
-		logger.debug("updatePassword Request: identityId: " + identityId + " pssword: " + password);
-		ApiResponse response = userService.updatePassword(identityId, password);
 		return response;
 	}
 

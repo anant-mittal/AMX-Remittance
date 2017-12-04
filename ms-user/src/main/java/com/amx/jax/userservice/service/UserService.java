@@ -283,11 +283,11 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
-	public ApiResponse updatePassword(String identityId, String password) {
-		if (identityId == null) {
-			throw new GlobalException("Null identityId id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+	public ApiResponse updatePassword(Integer custId, String password) {
+		if (custId == null) {
+			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCustomer = userValidationService.validateOnlineCustomerById(identityId);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(custId));
 		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), password));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		ApiResponse response = getBlackApiResponse();

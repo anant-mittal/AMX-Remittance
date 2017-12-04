@@ -1,6 +1,6 @@
 package com.amx.jax.controller;
 
-import static com.amx.jax.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 
 import javax.websocket.server.PathParam;
 
@@ -72,6 +72,13 @@ public class CustomerController {
 		logger.debug("validateCustomerData Request:" + json);
 		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, CustomerModel.class);
 		ApiResponse response = userSerivce.validateCustomerData(model);
+		return response;
+	}
+
+	@RequestMapping(value = "/{user-id}/password/", method = RequestMethod.PUT)
+	public ApiResponse updatePassword(@PathParam("user-id") Integer customerId, @RequestParam String password) {
+		logger.debug("updatePassword Request:  pssword: " + password);
+		ApiResponse response = userSerivce.updatePassword(customerId, password);
 		return response;
 	}
 }
