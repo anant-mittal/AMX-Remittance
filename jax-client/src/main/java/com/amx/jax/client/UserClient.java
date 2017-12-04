@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
 import java.math.BigDecimal;
@@ -220,11 +221,13 @@ public class UserClient extends AbstractJaxServiceClient {
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
 		try {
-			String validatSecurityQuestionstUrl = baseUrl.toString() + USER_API_ENDPOINT + "/"
-					+ jaxMetaInfo.getCustomerId() + "/password/?password=" + password;
+			String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
+			endpoint = endpoint.replaceAll("\\{customer\\-id\\}", jaxMetaInfo.getCustomerId().toPlainString());
+
+			String updatePasswordUrl = baseUrl.toString() + endpoint + "?password=" + password;
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			log.info("calling updatePassword api: " + validatSecurityQuestionstUrl);
-			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.PUT, requestEntity,
+			log.info("calling updatePassword api: " + updatePasswordUrl);
+			response = restTemplate.exchange(updatePasswordUrl, HttpMethod.PUT, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 			log.info("responce from  updatePassword api: " + util.marshall(response.getBody()));

@@ -86,7 +86,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "checklist":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserVerificationCheckListDTO>>(){});
 			break;	
-			
+		case "boolean_response":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BooleanResponse>>(){});
+			break;
 			
 			
 			

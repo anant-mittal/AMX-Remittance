@@ -15,13 +15,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
+import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.client.config.Config;
 import com.amx.jax.client.util.ConverterUtility;
@@ -87,6 +90,16 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = client.saveLoginIdAndPassword("284052306594", "amx@123");
 		logger.info("response of testsavecustapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+	}
+
+	@Test
+	public void updatepasswordapi() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<BooleanResponse> response = client.updatePassword("Amx@123456");
+		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 	}
 }

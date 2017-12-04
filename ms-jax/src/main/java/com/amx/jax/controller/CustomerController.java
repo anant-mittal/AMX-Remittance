@@ -1,6 +1,6 @@
 package com.amx.jax.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.*;
 
 import javax.websocket.server.PathParam;
 
@@ -75,7 +75,7 @@ public class CustomerController {
 		return response;
 	}
 
-	@RequestMapping(value = "/{user-id}/password/", method = RequestMethod.PUT)
+	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public ApiResponse updatePassword(@PathParam("user-id") Integer customerId, @RequestParam String password) {
 		logger.debug("updatePassword Request:  pssword: " + password);
 		ApiResponse response = userSerivce.updatePassword(customerId, password);

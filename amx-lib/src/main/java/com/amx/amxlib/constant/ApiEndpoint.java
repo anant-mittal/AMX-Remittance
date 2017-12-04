@@ -10,7 +10,7 @@ public class ApiEndpoint {
 
 	public static final String META_API_ENDPOINT = "/meta";
 
-	public static final String UPDATE_PASSWORD_ENDPOINT = "/{identity-id}/password/";
+	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/{customer-id}/password/";
 
 	public static final String BENE_API_ENDPOINT = "/bene";
 }
