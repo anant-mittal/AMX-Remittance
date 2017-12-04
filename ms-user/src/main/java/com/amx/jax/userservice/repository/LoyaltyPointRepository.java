@@ -10,6 +10,6 @@ import com.amx.jax.dbmodel.LoyaltyPointModel;
 
 public interface LoyaltyPointRepository extends JpaRepository<LoyaltyPointModel, Serializable> {
 
-	@Query("select lp from LoyaltyPointModel lp where cusRef=?1")
+	@Query("select SUM(ytdnetPoints) from LoyaltyPointModel  where cusRef=?1")
 	public BigDecimal getLoyaltyPoints(BigDecimal cusref);
 }

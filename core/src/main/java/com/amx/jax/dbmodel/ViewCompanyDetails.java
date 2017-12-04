@@ -49,6 +49,15 @@ public class ViewCompanyDetails implements Serializable {
 	private BigDecimal currencyId;
 	private String capitalAmount;
 	
+	//ADDRESS2
+	private String engAddress1;
+	private String engAddress2;
+	private String engAddress3;
+	
+	private String arabicAddress1;
+	private String arabicAddress2;
+	private String arabicAddress3;
+	private String registrationNumber;
 	
 	
 	
@@ -220,6 +229,71 @@ public class ViewCompanyDetails implements Serializable {
 
 	public void setOnlineInnerHeaderArabicText(String onlineInnerHeaderArabicText) {
 		this.onlineInnerHeaderArabicText = onlineInnerHeaderArabicText;
+	}
+
+	@Column(name="ADDRESS1")
+	public String getEngAddress1() {
+		return engAddress1;
+	}
+
+	public void setEngAddress1(String engAddress1) {
+		this.engAddress1 = engAddress1;
+	}
+
+	@Column(name="ADDRESS2")
+	public String getEngAddress2() {
+		return engAddress2;
+	}
+
+	public void setEngAddress2(String engAddress2) {
+		this.engAddress2 = engAddress2;
+	}
+	
+	@Column(name="ADDRESS3")
+	public String getEngAddress3() {
+		return engAddress3;
+	}
+
+	public void setEngAddress3(String engAddress3) {
+		this.engAddress3 = engAddress3;
+	}
+
+	@Column(name="AR_ADDR1")
+	public String getArabicAddress1() {
+		return arabicAddress1;
+	}
+
+
+	public void setArabicAddress1(String arabicAddress1) {
+		this.arabicAddress1 = arabicAddress1;
+	}
+	
+	@Column(name="AR_ADDR2")
+	public String getArabicAddress2() {
+		return arabicAddress2;
+	}
+
+	
+	public void setArabicAddress2(String arabicAddress2) {
+		this.arabicAddress2 = arabicAddress2;
+	}
+
+	@Column(name="AR_ADDR3")
+	public String getArabicAddress3() {
+		return arabicAddress3;
+	}
+
+	public void setArabicAddress3(String arabicAddress3) {
+		this.arabicAddress3 = arabicAddress3;
+	}
+
+	@Column(name="REGISTRATION_NUMBER")
+	public String getRegistrationNumber() {
+		return registrationNumber;
+	}
+
+	public void setRegistrationNumber(String registrationNumber) {
+		this.registrationNumber = registrationNumber;
 	}
 
 	

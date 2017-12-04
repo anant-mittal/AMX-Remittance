@@ -3,6 +3,7 @@ package com.amx.jax;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dal.CryptoDao;
+import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;
@@ -26,6 +28,9 @@ public class JaxServiceApplicationTests {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	LoyaltyInsuranceProDao loyaltyDao;
 
 	// @Test
 	public void decrypt() {
@@ -55,9 +60,25 @@ public class JaxServiceApplicationTests {
 	@Autowired
 	WebUtils webutil;
 
-	@Test
+//	@Test
 	public void testwebutil() {
 
 		webutil.getClientIp();
 	}
+	
+	/** Test for Loyalty Msg **/
+	
+	@Test
+	public void loyaltyInsuranceMsg() {
+		BigDecimal cusRef= new BigDecimal("1553194");
+		try {
+		Map<String, Object> outputMAp = loyaltyDao.loyaltyInsuranceProcedure(cusRef, "02/12/2017");
+		System.out.println("Lty Points :"+outputMAp.get("P_LTY_STR1")+"\n Lyt Msg2 :"+outputMAp.get("P_LTY_STR2"));
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		//System.out.println("outputMAp :"+outputMAp.toString());
+		
+	}
+	
 }

@@ -44,9 +44,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp="
 					+ otp;
-			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-					});
+			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
 		} catch (Exception e) {
 			log.error("exception in validateOtp ", e);
 		}
@@ -78,9 +76,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveCustomer api: " + sendOtpUrl);
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-					});
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
 			log.info("responce from  saveCustomer api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in saveCustomer ", e);
@@ -98,9 +94,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveSecurityQuestions api: " + sendOtpUrl);
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-					});
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
 			log.info("responce from  saveSecurityQuestions api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in saveSecurityQuestions ", e);

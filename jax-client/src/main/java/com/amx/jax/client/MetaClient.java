@@ -2,7 +2,10 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -16,6 +19,7 @@ import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -30,6 +34,10 @@ import com.amx.amxlib.model.response.ApiResponse;
 @Component
 public class MetaClient extends AbstractJaxServiceClient{
 	private Logger log = Logger.getLogger(MetaClient.class);
+	
+	
+	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
 
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
@@ -49,9 +57,12 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 	
-	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany(String countryId,String companyId) {
+	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
+
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/applcountry/"+countryId+"/"+companyId;
@@ -133,9 +144,13 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ApiResponse<QuestModelDTO> getSequrityQuestion(String languageId,String countryId) {
+	public ApiResponse<QuestModelDTO> getSequrityQuestion(String languageId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
+			
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			
+			
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId;
@@ -148,9 +163,10 @@ public class MetaClient extends AbstractJaxServiceClient{
 		return response.getBody();
 	}
 	
-	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId,String countryId,String questionId) {
+	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId,String questionId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId+"/"+questionId;
@@ -182,9 +198,10 @@ public class MetaClient extends AbstractJaxServiceClient{
 	}
 	
 	
-	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId,String countryId) {
+	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId) {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			log.info("Terms and Condition "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId+"/"+countryId;
@@ -199,9 +216,10 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 
-	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId,String countryId) {
+	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId) {
 		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response = null;
 		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			log.info("Terms and Condition "+languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/why/"+languageId+"/"+countryId;
@@ -255,6 +273,23 @@ public class MetaClient extends AbstractJaxServiceClient{
 			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdno/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>(){});
+			
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response.getBody();
+	}
+	
+	
+	
+	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String cutomerReference,String docfyr,String docNumber,String fromDate,String toDate) {
+		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
+		try {
+			log.info("Contact Us time");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/trnxHist/"+cutomerReference+"/"+docfyr+"/"+docNumber+"/"+fromDate+"/"+toDate;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>(){});
 			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);

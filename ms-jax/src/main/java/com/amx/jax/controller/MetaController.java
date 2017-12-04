@@ -13,13 +13,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.service.ApplicationCountryService;
+import com.amx.jax.service.CollectionDetailViewService;
+import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
+import com.amx.jax.service.RemittanceTransactionService;
 import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.TransactionHistroyService;
 import com.amx.jax.service.ViewDistrictService;
@@ -43,6 +49,9 @@ public class MetaController implements Serializable{
 
 	final static Logger logger = Logger.getLogger(MetaController.class);
 
+	//@Autowired
+	//ConstantDocum
+	
 	@Autowired
 	CountryService countryService;
 
@@ -79,6 +88,23 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
+	
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
+	
+	@Autowired
+	CurrencyMasterService currencyMasterService;
+	
+	@Autowired
+	PurposeOfRemittanceService purposeOfRemittanceService;
+	
+	@Autowired
+	CollectionDetailViewService collectionDetailViewService;
+	
+	
+	@Autowired
+	CollectionPaymentDetailsViewService collectionPaymentDetailsViewService;
 	
 	
 /*	
@@ -224,6 +250,58 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/remitPrint/{documnetNo}/{docFyr}", method = RequestMethod.GET)
+	public ApiResponse getRrmittanceDetailForPrintResponse(@PathVariable("documnetNo") BigDecimal documnetNo,@PathVariable("docFyr") BigDecimal docFyr){
+		//BigDecimal collectionDocumentCode =new BigDecimal(2);
+		ApiResponse response = remittanceTransactionService.getRemittanceTransactionDetails(documnetNo,docFyr,ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		return response;
+	}
+	
+	
+
+	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
+	public ApiResponse getCurrencyMasterResponse(@PathVariable("currencyId") BigDecimal currencyId){
+		ApiResponse response = currencyMasterService.getCurrencyDetails(currencyId);
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/purpose/{documentNumber}/{documentFinancialYear}", method = RequestMethod.GET)
+	public ApiResponse getPurposeOfRemittanceResponse(@PathVariable("documentNumber") BigDecimal documentNumber,@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
+		ApiResponse response =purposeOfRemittanceService.getPurposeOfRemittance(documentNumber, documentFinancialYear);
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
+	public ApiResponse getCollectionDetailFromView(
+			@PathVariable("companyId") BigDecimal companyId,
+			@PathVariable("documentNo") BigDecimal documentNo,
+			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
+			//@PathVariable("documentCode") BigDecimal documentCode){
+		ApiResponse response =collectionDetailViewService.getCollectionDetailFromView(companyId, documentNo, documentFinancialYear, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		return response;
+	}
+	
+	
+	
+
+	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
+	public ApiResponse getCollectPaymentDetailsFromView(
+			@PathVariable("companyId") BigDecimal companyId,
+			@PathVariable("documentNo") BigDecimal documentNo,
+			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
+			//@PathVariable("documentCode") BigDecimal documentCode){
+		System.out.println("Document :"+ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		ApiResponse response =collectionPaymentDetailsViewService.getCollectionPaymentDetailsFromView(companyId, documentNo, documentFinancialYear, 
+				ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		return response;
+	}
 	
 	
 	

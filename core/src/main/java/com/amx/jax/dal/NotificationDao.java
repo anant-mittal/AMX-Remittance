@@ -41,9 +41,9 @@ public class NotificationDao {
 		String decStr = null;
 		try {
 			logger.debug("start sendSmsOtpProcedure");
-
 			List<SqlParameter> declaredParameters = Arrays.asList(new SqlOutParameter("output_str", Types.VARCHAR),
 					new SqlParameter(Types.VARCHAR));
+
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 
 				@Override

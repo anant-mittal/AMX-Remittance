@@ -44,7 +44,7 @@ public class MigrationProcedure {
 		String errorMsg = null;
 		try {
 			logger.debug("start input parameters :"+cusref);
-			List<SqlParameter> declaredParameters = Arrays.asList(new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
+			List<SqlParameter> declaredInAndOutParameters = Arrays.asList(new SqlParameter(Types.BIGINT),new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
@@ -57,9 +57,9 @@ public class MigrationProcedure {
 					return cs;
 				}
 
-			}, declaredParameters);
+			}, declaredInAndOutParameters);
 			errorMsg = output.get("P_ERROR_MESSAGE").toString();
-			logger.debug("MIG_BENEFICARY_MASTER_NEW = " + declaredParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
+			logger.debug("MIG_BENEFICARY_MASTER_NEW = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}
@@ -73,7 +73,7 @@ public class MigrationProcedure {
 		String errorMsg = null;
 		try {
 			logger.debug("start input parameters :"+cusref);
-			List<SqlParameter> declaredParameters = Arrays.asList(new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
+			List<SqlParameter> declaredInAndOutParameters = Arrays.asList(new SqlParameter(Types.BIGINT),new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
@@ -86,9 +86,9 @@ public class MigrationProcedure {
 					return cs;
 				}
 
-			}, declaredParameters);
+			}, declaredInAndOutParameters);
 			errorMsg = output.get("P_ERROR_MESSAGE").toString();
-			logger.debug("MIG_CUSMAS_BNK = " + declaredParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
+			logger.debug("MIG_CUSMAS_BNK = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}

@@ -5,6 +5,7 @@ public enum UserType {
 	USER("U"), 
 	ADMIN("A"),
 	D("D");
+	
 
 	private String type;
 

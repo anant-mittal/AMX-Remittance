@@ -18,10 +18,6 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dbmodel.DmsDocumentModel;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.util.DateUtil;
 
 /**
@@ -44,7 +40,7 @@ public class ImageCheckDao {
 		logger.info("In put Parameters : identityIntId :" + identityIntId + "\t identityInt :" + identityInt
 				+ "\t identityExpDate :" + identityExpDate);
 
-		List<SqlParameter> declareOutputParameters = Arrays.asList(new SqlOutParameter("docBlobId", Types.INTEGER),
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.INTEGER),new SqlParameter(Types.VARCHAR),new SqlParameter(Types.VARCHAR),new SqlParameter(Types.INTEGER),new SqlOutParameter("docBlobId", Types.INTEGER),
 				new SqlOutParameter("docFinYr", Types.INTEGER));
 		/**
 		 * DMS_P_GET_LST_BLOB@AGDMSLNK(1, 'CMAP', W_IMG_ID, C0.IDENTITY_INT,
@@ -68,7 +64,7 @@ public class ImageCheckDao {
 				return cs;
 			}
 
-		}, declareOutputParameters);
+		}, declareInAndOutputParameters);
 
 		logger.info("Out put Parameters :" + output.toString());
 

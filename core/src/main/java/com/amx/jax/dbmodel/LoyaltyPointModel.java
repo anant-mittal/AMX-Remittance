@@ -31,7 +31,7 @@ public class LoyaltyPointModel  implements Serializable{
 	
 	private BigDecimal cusRef;
 	private BigDecimal finYear;
-	private BigDecimal YtdnetPoints;
+	private BigDecimal ytdnetPoints;
 	private String creator;	
 	private Date createdDate;
 	private Date updatedDate;
@@ -55,10 +55,10 @@ public class LoyaltyPointModel  implements Serializable{
 	}
 	@Column(name="YTDNET_POINTS")
 	public BigDecimal getYtdnetPoints() {
-		return YtdnetPoints;
+		return ytdnetPoints;
 	}
 	public void setYtdnetPoints(BigDecimal ytdnetPoints) {
-		YtdnetPoints = ytdnetPoints;
+		ytdnetPoints = ytdnetPoints;
 	}
 	@Column(name="CREATOR")
 	public String getCreator() {

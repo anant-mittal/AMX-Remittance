@@ -34,7 +34,7 @@ public class TransactionHistroyService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		
-		response.getData().setType("trnxhistroy");
+		response.getData().setType("trnxHist");
 		return response;
 	}
 
@@ -49,7 +49,7 @@ public class TransactionHistroyService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		
-		response.getData().setType("trnxhistroy");
+		response.getData().setType("trnxHist");
 		return response;
 	}
 	
@@ -66,7 +66,7 @@ public class TransactionHistroyService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		
-		response.getData().setType("trnxhistroy");
+		response.getData().setType("trnxHist");
 		return response;
 	}
 	
