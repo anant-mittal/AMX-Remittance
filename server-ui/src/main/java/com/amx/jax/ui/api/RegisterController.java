@@ -26,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
  *
  */
 @RestController
-@Api(value = "Registration APIs", description = "Online Registration related APIs")
+@Api(value = "Registration APIs")
 public class RegisterController {
 
 	@Autowired

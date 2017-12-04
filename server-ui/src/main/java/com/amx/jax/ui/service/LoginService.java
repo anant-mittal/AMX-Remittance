@@ -6,21 +6,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
-import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.RegistrationdData;
@@ -32,9 +29,6 @@ public class LoginService {
 
 	@Autowired
 	private UserSession userSession;
-
-	@Autowired
-	private CustomerAuthProvider customerAuthProvider;
 
 	@Autowired
 	private JaxService jaxService;
@@ -63,8 +57,7 @@ public class LoginService {
 				sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
-						.getResults();
+						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					System.out.println(questModelDTO.getQuestNumber() + "===" + answer.getQuestionSrNo());
@@ -119,8 +112,7 @@ public class LoginService {
 				sessionService.getGuestSession().nextQuesIndex();
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID)
-						.getResults();
+						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
@@ -136,6 +128,49 @@ public class LoginService {
 			}
 
 		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> reset(String identity, String otp) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		if (otp == null) {
+			try {
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity)
+						.getResult();
+				// Check if response was successful
+				// append info in response data
+				wrapper.getData().setOtp(model.getOtp());
+				wrapper.getData().setOtpsent(true);
+				userSession.setUserid(identity);
+				userSession.setOtp(model.getOtp());
+
+				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
+
+			} catch (InvalidInputException e) {
+				wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, e.getMessage());
+			}
+		} else {
+			try {
+				CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
+				// Check if otp is valid
+				if (model != null) {
+					sessionService.authorize(model);
+					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authentication successful");
+				} else { // Use is cannot be validated
+					wrapper.setMessage(StatusCode.VERIFY_FAILED, "Verification Failed");
+				}
+			} catch (IncorrectInputException e) {
+				wrapper.setMessage(StatusCode.VERIFY_FAILED, e.getMessage());
+			}
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<RegistrationdData> updatepwd(String password) {
+		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		CustomerModel model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
+		sessionService.authorize(model);
+		wrapper.setMessage(StatusCode.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 		return wrapper;
 	}
 

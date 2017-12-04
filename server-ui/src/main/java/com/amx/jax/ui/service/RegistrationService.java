@@ -59,8 +59,6 @@ public class RegistrationService {
 			}
 			userSessionInfo.setUserid(civilid);
 			userSessionInfo.setOtp(model.getOtp());
-			wrapper.getData().setOtp(model.getOtp());
-			userSessionInfo.setUserid(civilid);
 		} catch (InvalidInputException e) {
 			wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, e.getMessage());
 		}
@@ -97,8 +95,7 @@ public class RegistrationService {
 
 		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
 
-		List<QuestModelDTO> questModel = metaClient
-				.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID, JaxService.DEFAULT_COUNTRY_ID).getResults();
+		List<QuestModelDTO> questModel = metaClient.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
 
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
