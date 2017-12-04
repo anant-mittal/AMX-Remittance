@@ -15,7 +15,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
-import com.amx.jax.ui.response.RegistrationdData;
+import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.UserMetaData;
 import com.amx.jax.ui.service.LoginService;
@@ -61,14 +61,14 @@ public class UserController {
 
 	@ApiOperation(value = "Sends OTP and resets password")
 	@RequestMapping(value = "/api/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<RegistrationdData> reset(@RequestParam String identity,
+	public ResponseWrapper<UserUpdateData> reset(@RequestParam String identity,
 			@RequestParam(required = false) String otp) {
 		return loginService.reset(identity, otp);
 	}
 
 	@ApiOperation(value = "Sends OTP and resets password")
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<RegistrationdData> changePassword(String password) {
+	public ResponseWrapper<UserUpdateData> changePassword(String password) {
 		return loginService.updatepwd(password);
 	}
 

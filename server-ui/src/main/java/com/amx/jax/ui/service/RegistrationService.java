@@ -2,8 +2,6 @@ package com.amx.jax.ui.service;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,8 +18,9 @@ import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.model.UserSession;
-import com.amx.jax.ui.response.RegistrationdData;
+import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.UserUpdateData;
 
 @Service
 public class RegistrationService {
@@ -41,18 +40,18 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
-	public ResponseWrapper<RegistrationdData> verifyId(String civilid) {
+	public ResponseWrapper<UserUpdateData> verifyId(String civilid) {
 
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		jaxClient.setDefaults();
 		CivilIdOtpModel model;
 		try {
 			model = userclient.sendOtpForCivilId(civilid).getResult();
 			// Check if response was successful
 			if (model.getIsActiveCustomer()) {
-				wrapper.setMessage(EnumUtil.StatusCode.ALREADY_ACTIVE, "User is already registered for online");
+				wrapper.setMessage(EnumUtil.StatusCode.ALREADY_ACTIVE, "msg.usr.actv.alrdy");
 			} else {
-				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
+				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "msg.rsp.tp.sent");
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 				wrapper.getData().setOtpsent(true);
@@ -65,8 +64,8 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> loginWithOtp(String civilid, String otp, HttpServletRequest request) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+	public ResponseWrapper<LoginData> loginWithOtp(String idnetity, String otp) {
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 
 		if (userSessionInfo.isValid()) {
 			// Check if use is already logged in;
@@ -74,11 +73,11 @@ public class RegistrationService {
 		} else {
 
 			try {
-				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(civilid, otp);
+				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity,
+						otp);
 				CustomerModel model = response.getResult();
-
 				// Check if otp is valid
-				if (model != null && userSessionInfo.isValid(civilid, otp)) {
+				if (model != null && userSessionInfo.isValid(idnetity, otp)) {
 					sessionService.authorize(model);
 					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authentication successful");
 				} else { // Use is cannot be validated
@@ -91,9 +90,9 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> getSecQues() {
+	public ResponseWrapper<UserUpdateData> getSecQues() {
 
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		List<QuestModelDTO> questModel = metaClient.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
 
@@ -103,9 +102,9 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
+	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
 
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		jaxClient.setDefaults();
 
@@ -117,8 +116,8 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> updatePhising(String imageUrl, String caption) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl).getResult();
 
@@ -127,8 +126,8 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> saveLoginIdAndPassword(String loginId, String password) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		try {
 			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();

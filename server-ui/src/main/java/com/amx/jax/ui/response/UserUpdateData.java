@@ -5,7 +5,7 @@ import java.util.List;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 
-public class RegistrationdData implements ResponseData {
+public class UserUpdateData implements ResponseDataInterface {
 
 	private Boolean valid = false;
 

@@ -21,7 +21,7 @@ import com.amx.jax.ui.EnumUtil;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
-import com.amx.jax.ui.response.RegistrationdData;
+import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.bootloaderjs.ListManager;
 
@@ -132,8 +132,8 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> reset(String identity, String otp) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+	public ResponseWrapper<UserUpdateData> reset(String identity, String otp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		if (otp == null) {
 			try {
 				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity)
@@ -167,8 +167,8 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<RegistrationdData> updatepwd(String password) {
-		ResponseWrapper<RegistrationdData> wrapper = new ResponseWrapper<RegistrationdData>(new RegistrationdData());
+	public ResponseWrapper<UserUpdateData> updatepwd(String password) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
 			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
 			wrapper.setMessage(StatusCode.USER_UPDATE_SUCCESS, "Password Updated Succesfully");

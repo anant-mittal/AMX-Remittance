@@ -2,7 +2,7 @@ package com.amx.jax.ui.response;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 
-public class LoginData implements ResponseData {
+public class LoginData implements ResponseDataInterface {
 
 	private String nounce = null;
 	private String imageId = null;

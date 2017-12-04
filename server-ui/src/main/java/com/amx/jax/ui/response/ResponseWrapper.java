@@ -5,7 +5,7 @@ import java.io.Serializable;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.EnumUtil.StatusCode;
 
-public class ResponseWrapper<T extends ResponseData> implements Serializable {
+public class ResponseWrapper<T extends ResponseDataInterface> implements Serializable {
 
 	public ResponseWrapper(T data) {
 		super();

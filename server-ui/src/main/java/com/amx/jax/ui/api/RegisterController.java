@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.response.RegistrationdData;
+import com.amx.jax.ui.response.UserUpdateData;
+import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
 
@@ -39,7 +40,7 @@ public class RegisterController {
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/register/api/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<RegistrationdData> verifyID(@RequestParam String civilid) {
+	public ResponseWrapper<UserUpdateData> verifyID(@RequestParam String civilid) {
 		return registrationService.verifyId(civilid);
 	}
 
@@ -54,9 +55,8 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/register/api/verifycuser", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<RegistrationdData> verifyCustomer(@RequestParam String civilid, @RequestParam String otp,
-			HttpServletRequest request) {
-		return registrationService.loginWithOtp(civilid, otp, request);
+	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String otp) {
+		return registrationService.loginWithOtp(civilid, otp);
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/register/api/secques/get", method = { RequestMethod.GET })
-	public ResponseWrapper<RegistrationdData> getSecQues(HttpServletRequest request) {
+	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues();
 	}
 
@@ -75,18 +75,17 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/register/api/secques/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<RegistrationdData> postSecQues(@RequestBody List<SecurityQuestionModel> securityquestions) {
+	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody List<SecurityQuestionModel> securityquestions) {
 		return registrationService.updateSecQues(securityquestions);
 	}
 
 	@RequestMapping(value = "/register/api/phising/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<RegistrationdData> updatePhising(@RequestParam String imageUrl,
-			@RequestParam String caption) {
+	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption) {
 		return registrationService.updatePhising(imageUrl, caption);
 	}
 
 	@RequestMapping(value = "/register/api/creds/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<RegistrationdData> saveLoginIdAndPassword(@RequestParam String loginId,
+	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password) {
 		return registrationService.saveLoginIdAndPassword(loginId, password);
 	}

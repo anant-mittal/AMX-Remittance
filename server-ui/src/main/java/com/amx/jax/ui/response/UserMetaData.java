@@ -1,6 +1,6 @@
 package com.amx.jax.ui.response;
 
-public class UserMetaData implements ResponseData {
+public class UserMetaData implements ResponseDataInterface {
 
 	public Boolean valid = false;
 	public Boolean active = false;
