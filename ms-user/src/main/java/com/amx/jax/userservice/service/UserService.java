@@ -2,7 +2,6 @@ package com.amx.jax.userservice.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -24,24 +23,22 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
-import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.StringUtil;
 import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
-import com.amx.jax.util.validation.CustomerValidation;
-import com.amx.jax.util.validation.PatternValidator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -70,6 +67,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private SecurityQuestionsManager secQmanager;
+
+	@Autowired
+	private StringUtil stringUtil;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -126,6 +126,8 @@ public class UserService extends AbstractUserService {
 		if (model.getLoginId() != null) {
 			userValidationService.validateLoginId(model.getLoginId());
 		}
+
+		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
@@ -134,6 +136,13 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+		if (securityquestions != null && !securityquestions.isEmpty()) {
+			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
+		}
+
 	}
 
 	@Override
@@ -220,12 +229,21 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
+		afterLoginSteps(onlineCustomer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	/**
+	 * call this method to perform tasks after login
+	 */
+	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
+
 	}
 
 	public ApiResponse getUserCheckList(String loginId) {
@@ -256,6 +274,7 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
+		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
 		response.getData().getValues().add(responseModel);
@@ -263,4 +282,20 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
+
+	public ApiResponse updatePassword(String identityId, String newPassword) {
+		if (identityId == null) {
+			throw new GlobalException("Null identityId id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+		}
+		CustomerOnlineRegistration onlineCustomer = userValidationService.validateOnlineCustomerById(identityId);
+		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), newPassword));
+		custDao.saveOnlineCustomer(onlineCustomer);
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
+
 }

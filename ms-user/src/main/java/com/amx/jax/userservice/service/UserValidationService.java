@@ -342,4 +342,12 @@ public class UserValidationService {
 		return date.getTime();
 	}
 
+	protected CustomerOnlineRegistration validateOnlineCustomerById(String identityId) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(identityId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+		}
+		return onlineCustomer;
+	}
+
 }

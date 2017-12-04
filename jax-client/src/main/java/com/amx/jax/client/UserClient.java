@@ -24,6 +24,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
@@ -44,7 +45,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp="
 					+ otp;
-			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
+			response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
 		} catch (Exception e) {
 			log.error("exception in validateOtp ", e);
 		}
@@ -76,7 +79,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveCustomer api: " + sendOtpUrl);
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
 			log.info("responce from  saveCustomer api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in saveCustomer ", e);
@@ -94,7 +99,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
 			log.info("calling saveSecurityQuestions api: " + sendOtpUrl);
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {});
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
 			log.info("responce from  saveSecurityQuestions api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in saveSecurityQuestions ", e);
@@ -203,6 +210,26 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.info("responce from  validateSecurityQuestions api: " + util.marshall(response.getBody()));
 		} catch (Exception e) {
 			log.error("exception in validateSecurityQuestions ", e);
+		}
+		checkIncorrectInputError(response.getBody());
+		checkCustomerValidationErrors(response.getBody());
+		return response.getBody();
+	}
+
+	public ApiResponse<BooleanResponse> updatePassword(String identityId, String password)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+		try {
+			String validatSecurityQuestionstUrl = baseUrl.toString() + USER_API_ENDPOINT + "/" + identityId
+					+ "/password/";
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			log.info("calling updatePassword api: " + validatSecurityQuestionstUrl);
+			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.PUT, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+			log.info("responce from  updatePassword api: " + util.marshall(response.getBody()));
+		} catch (Exception e) {
+			log.error("exception in updatePassword ", e);
 		}
 		checkIncorrectInputError(response.getBody());
 		checkCustomerValidationErrors(response.getBody());

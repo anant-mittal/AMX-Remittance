@@ -119,7 +119,6 @@ public class CustomerDao {
 
 	private void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
 		String userId = onlineCust.getUserName();
-
 		if (secQuestions.get(0).getAnswer() != null) {
 			onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
 			onlineCust.setSecurityAnswer1(cryptoUtil.getHash(userId, secQuestions.get(0).getAnswer()));

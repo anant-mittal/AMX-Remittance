@@ -2,6 +2,8 @@ package com.amx.jax.controller;
 
 import static com.amx.jax.constant.ApiEndpoint.USER_API_ENDPOINT;
 
+import javax.websocket.server.PathParam;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +28,13 @@ public class UserController {
 	public ApiResponse loginUser(@RequestParam String userId, @RequestParam String password) {
 		logger.debug("loginUser Request: usreid: " + userId + " pssword: " + password);
 		ApiResponse response = userService.loginUser(userId, password);
+		return response;
+	}
+
+	@RequestMapping(value = "/{identityId}/password/", method = RequestMethod.PUT)
+	public ApiResponse updatePassword(@PathParam("identityId") String identityId, @RequestParam String newPassword) {
+		logger.debug("updatePassword Request: identityId: " + identityId + " pssword: " + newPassword);
+		ApiResponse response = userService.updatePassword(identityId, newPassword);
 		return response;
 	}
 
