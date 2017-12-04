@@ -4,7 +4,7 @@ import com.amx.amxlib.model.AbstractModel;
 
 public class BooleanResponse extends AbstractModel {
 
-	boolean success;
+	private boolean success;
 
 	public BooleanResponse(boolean success) {
 		super();
@@ -14,5 +14,13 @@ public class BooleanResponse extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "boolean_response";
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 }

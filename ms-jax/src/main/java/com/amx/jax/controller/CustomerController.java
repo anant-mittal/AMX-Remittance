@@ -76,7 +76,7 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@PathParam("user-id") Integer customerId, @RequestParam String password) {
+	public ApiResponse updatePassword(@PathVariable("customer-id") Integer customerId, @RequestParam String password) {
 		logger.debug("updatePassword Request:  pssword: " + password);
 		ApiResponse response = userSerivce.updatePassword(customerId, password);
 		return response;
