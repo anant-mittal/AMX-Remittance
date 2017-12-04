@@ -5,6 +5,13 @@ import com.amx.amxlib.model.AbstractModel;
 public class BooleanResponse extends AbstractModel {
 
 	private boolean success;
+	
+	
+
+	public BooleanResponse() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public BooleanResponse(boolean success) {
 		super();
