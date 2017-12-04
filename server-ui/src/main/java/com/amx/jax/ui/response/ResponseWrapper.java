@@ -3,7 +3,8 @@ package com.amx.jax.ui.response;
 import java.io.Serializable;
 
 import com.amx.jax.ui.Constants;
-import com.amx.jax.ui.EnumUtil.StatusCode;
+import com.amx.jax.ui.ResponseMessage;
+import com.amx.jax.ui.ResponseStatus;
 
 public class ResponseWrapper<T extends ResponseDataInterface> implements Serializable {
 
@@ -19,7 +20,15 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 	private String status = "200";
 	private String statusKey = "";
 	private String message = Constants.EMPTY;
-	private String error = Constants.EMPTY;
+	private String messageKey = Constants.EMPTY;
+
+	public String getMessageKey() {
+		return messageKey;
+	}
+
+	public void setMessageKey(String messageKey) {
+		this.messageKey = messageKey;
+	}
 
 	private T data = null;
 
@@ -47,22 +56,9 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 		this.status = status;
 	}
 
-	public void setStatus(StatusCode status) {
+	public void setStatus(ResponseStatus status) {
 		this.statusKey = status.getKey();
 		this.status = status.getCode();
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public void setError(StatusCode status, String error) {
-		this.setStatus(status);
-		this.error = error;
 	}
 
 	public String getMessage() {
@@ -73,7 +69,7 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 		this.message = message;
 	}
 
-	public void setMessage(StatusCode status, String message) {
+	public void setMessage(ResponseStatus status, String message) {
 		this.setStatus(status);
 		this.message = message;
 	}
@@ -84,6 +80,16 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 
 	public void setData(T data) {
 		this.data = data;
+	}
+
+	public void setMessage(ResponseMessage responseMessage) {
+		this.messageKey = responseMessage.getMessage();
+		this.setStatus(responseMessage.getStatus());
+	}
+
+	public void setMessage(ResponseMessage responseMessage, String message) {
+		this.messageKey = responseMessage.getMessage();
+		this.setMessage(responseMessage.getStatus(), message);
 	}
 
 }

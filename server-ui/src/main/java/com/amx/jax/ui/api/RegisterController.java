@@ -39,8 +39,8 @@ public class RegisterController {
 	 * @return
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
-	@RequestMapping(value = "/register/api/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> verifyID(@RequestParam String civilid) {
+	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
+	public ResponseWrapper<LoginData> verifyID(@RequestParam String civilid) {
 		return registrationService.verifyId(civilid);
 	}
 
@@ -54,7 +54,7 @@ public class RegisterController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/register/api/verifycuser", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String otp) {
 		return registrationService.loginWithOtp(civilid, otp);
 	}
@@ -64,7 +64,7 @@ public class RegisterController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/register/api/secques/get", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues();
 	}
@@ -74,17 +74,17 @@ public class RegisterController {
 	 * @param securityquestions
 	 * @return
 	 */
-	@RequestMapping(value = "/register/api/secques/set", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody List<SecurityQuestionModel> securityquestions) {
 		return registrationService.updateSecQues(securityquestions);
 	}
 
-	@RequestMapping(value = "/register/api/phising/set", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption) {
 		return registrationService.updatePhising(imageUrl, caption);
 	}
 
-	@RequestMapping(value = "/register/api/creds/set", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password) {
 		return registrationService.saveLoginIdAndPassword(loginId, password);

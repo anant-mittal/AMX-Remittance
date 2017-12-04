@@ -7,19 +7,6 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 
 public class UserUpdateData implements ResponseDataInterface {
 
-	private Boolean valid = false;
-
-	private Boolean otpsent = false;
-	private String otp = null;
-
-	public String getOtp() {
-		return otp;
-	}
-
-	public void setOtp(String otp) {
-		this.otp = otp;
-	}
-
 	private List<QuestModelDTO> secQuesMeta = null;
 
 	public List<QuestModelDTO> getSecQuesMeta() {
@@ -38,22 +25,6 @@ public class UserUpdateData implements ResponseDataInterface {
 
 	public void setSecQuesAns(List<SecurityQuestionModel> secQuesAns) {
 		this.secQuesAns = secQuesAns;
-	}
-
-	public Boolean getValid() {
-		return valid;
-	}
-
-	public void setValid(Boolean valid) {
-		this.valid = valid;
-	}
-
-	public Boolean getOtpsent() {
-		return otpsent;
-	}
-
-	public void setOtpsent(Boolean otpsent) {
-		this.otpsent = otpsent;
 	}
 
 }

@@ -5,10 +5,19 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 public class LoginData implements ResponseDataInterface {
 
 	private String nounce = null;
+	private String otp = null;
 	private String imageId = null;
 	private String imageCaption = null;
 	private String question = null;
 	private SecurityQuestionModel answer = null;
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
 
 	public String getImageId() {
 		return imageId;

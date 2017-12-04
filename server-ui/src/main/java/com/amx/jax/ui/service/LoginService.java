@@ -17,8 +17,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.ui.EnumUtil;
-import com.amx.jax.ui.EnumUtil.StatusCode;
+import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.UserUpdateData;
@@ -43,7 +42,7 @@ public class LoginService {
 
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
-			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
+			wrapper.setMessage(ResponseStatus.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
 			CustomerModel customerModel;
 			try {
@@ -71,14 +70,14 @@ public class LoginService {
 				wrapper.getData().setImageId(customerModel.getImageUrl());
 				wrapper.getData().setImageCaption(customerModel.getCaption());
 
-				wrapper.setMessage(StatusCode.AUTH_OK, "Password is Correct");
+				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 
 			} catch (IncorrectInputException e) {
-				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e.getErrorMessage());
 			} catch (CustomerValidationException e) {
-				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e.getErrorMessage());
 			} catch (LimitExeededException e) {
-				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, e.getMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e.getMessage());
 			}
 		}
 
@@ -89,7 +88,7 @@ public class LoginService {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
-			wrapper.setMessage(EnumUtil.StatusCode.ALREADY_LOGGED_IN, "User already logged in");
+			wrapper.setMessage(ResponseStatus.ALREADY_LOGGED_IN, "User already logged in");
 		} else {
 			CustomerModel customerModel;
 			try {
@@ -100,8 +99,8 @@ public class LoginService {
 
 				sessionService.authorize(customerModel);
 
-				wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authing");
-				wrapper.setMessage(EnumUtil.StatusCode.AUTH_DONE, "User authenitcated successfully");
+				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, "Authing");
+				wrapper.setMessage(ResponseStatus.AUTH_DONE, "User authenitcated successfully");
 
 			} catch (IncorrectInputException e) {
 				customerModel = sessionService.getGuestSession().getCustomerModel();
@@ -121,19 +120,19 @@ public class LoginService {
 					}
 				}
 				wrapper.getData().setAnswer(answer);
-				wrapper.setMessage(EnumUtil.StatusCode.AUTH_FAILED, e.getMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e.getMessage());
 			} catch (CustomerValidationException e) {
-				wrapper.setMessage(StatusCode.AUTH_FAILED, e.getErrorMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e.getErrorMessage());
 			} catch (LimitExeededException e) {
-				wrapper.setMessage(StatusCode.AUTH_BLOCKED_TEMP, e.getMessage());
+				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e.getMessage());
 			}
 
 		}
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> reset(String identity, String otp) {
-		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+	public ResponseWrapper<LoginData> reset(String identity, String otp) {
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (otp == null) {
 			try {
 				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity)
@@ -141,14 +140,13 @@ public class LoginService {
 				// Check if response was successful
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
-				wrapper.getData().setOtpsent(true);
 				userSession.setUserid(identity);
 				userSession.setOtp(model.getOtp());
 
-				wrapper.setMessage(EnumUtil.StatusCode.OTP_SENT, "OTP generated and sent");
+				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 
 			} catch (InvalidInputException e) {
-				wrapper.setMessage(EnumUtil.StatusCode.INVALID_ID, e.getMessage());
+				wrapper.setMessage(ResponseStatus.INVALID_ID, e.getMessage());
 			}
 		} else {
 			try {
@@ -156,12 +154,12 @@ public class LoginService {
 				// Check if otp is valid
 				if (model != null) {
 					sessionService.authorize(model);
-					wrapper.setMessage(StatusCode.VERIFY_SUCCESS, "Authentication successful");
+					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, "Authentication successful");
 				} else { // Use is cannot be validated
-					wrapper.setMessage(StatusCode.VERIFY_FAILED, "Verification Failed");
+					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, "Verification Failed");
 				}
 			} catch (IncorrectInputException e) {
-				wrapper.setMessage(StatusCode.VERIFY_FAILED, e.getMessage());
+				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e.getMessage());
 			}
 		}
 		return wrapper;
@@ -171,11 +169,13 @@ public class LoginService {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
 			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
-			wrapper.setMessage(StatusCode.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			if (model.isSuccess()) {
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(StatusCode.USER_UPDATE_FAILED, e.getMessage());
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e.getMessage());
 		}
-		
+
 		return wrapper;
 	}
 

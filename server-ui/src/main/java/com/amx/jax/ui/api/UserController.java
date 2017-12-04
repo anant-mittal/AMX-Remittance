@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.EnumUtil;
+import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.UserUpdateData;
@@ -33,8 +33,47 @@ public class UserController {
 	@Autowired
 	private LoginService loginService;
 
+	/**
+	 * Asks for user login and password
+	 * 
+	 * @param identity
+	 * @param password
+	 * @return
+	 */
+	@ApiOperation(value = "Validates login/pass but does not creates session")
+	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
+	public ResponseWrapper<LoginData> login(@RequestParam String identity, @RequestParam String password) {
+		return loginService.login(identity, password);
+	}
+
+	@ApiOperation(value = "Logins User & creates session")
+	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
+	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
+			HttpServletRequest request) {
+		return loginService.loginSecQues(guestanswer, request);
+	}
+
+	@ApiOperation(value = "Sends OTP and resets password")
+	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
+	public ResponseWrapper<LoginData> reset(@RequestParam String identity, @RequestParam(required = false) String otp) {
+		return loginService.reset(identity, otp);
+	}
+
+	@ApiOperation(value = "Logout User & Terminates session")
+	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
+	public ResponseWrapper<UserMetaData> logout() {
+		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
+
+		userSession.setValid(false);
+		userSession.setCustomerModel(null);
+		SecurityContextHolder.getContext().setAuthentication(null);
+
+		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
+		return wrapper;
+	}
+
 	@ApiOperation(value = "Get UserMeta Data")
-	@RequestMapping(value = "/api/user/meta", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
@@ -46,43 +85,10 @@ public class UserController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Logout User & Terminates session")
-	@RequestMapping(value = "/api/user/logout", method = { RequestMethod.POST })
-	public ResponseWrapper<UserMetaData> logout() {
-		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-
-		userSession.setValid(false);
-		userSession.setCustomerModel(null);
-		SecurityContextHolder.getContext().setAuthentication(null);
-
-		wrapper.setMessage(EnumUtil.StatusCode.LOGOUT_DONE, "User logged out successfully");
-		return wrapper;
-	}
-
-	@ApiOperation(value = "Sends OTP and resets password")
-	@RequestMapping(value = "/api/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> reset(@RequestParam String identity,
-			@RequestParam(required = false) String otp) {
-		return loginService.reset(identity, otp);
-	}
-
 	@ApiOperation(value = "Sends OTP and resets password")
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> changePassword(String password) {
 		return loginService.updatepwd(password);
-	}
-
-	@ApiOperation(value = "Login User & Creates session")
-	@RequestMapping(value = "/api/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> login(@RequestParam String identity, @RequestParam String password) {
-		return loginService.login(identity, password);
-	}
-
-	@ApiOperation(value = "Login User & Creates session")
-	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			HttpServletRequest request) {
-		return loginService.loginSecQues(guestanswer, request);
 	}
 
 }
