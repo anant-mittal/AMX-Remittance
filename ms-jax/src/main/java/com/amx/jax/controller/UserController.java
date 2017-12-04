@@ -32,9 +32,9 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/{identityId}/password/", method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@PathParam("identityId") String identityId, @RequestParam String newPassword) {
-		logger.debug("updatePassword Request: identityId: " + identityId + " pssword: " + newPassword);
-		ApiResponse response = userService.updatePassword(identityId, newPassword);
+	public ApiResponse updatePassword(@PathParam("identityId") String identityId, @RequestParam String password) {
+		logger.debug("updatePassword Request: identityId: " + identityId + " pssword: " + password);
+		ApiResponse response = userService.updatePassword(identityId, password);
 		return response;
 	}
 

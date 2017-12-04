@@ -221,7 +221,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
 		try {
 			String validatSecurityQuestionstUrl = baseUrl.toString() + USER_API_ENDPOINT + "/" + identityId
-					+ "/password/";
+					+ "/password/?password=" + password;
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			log.info("calling updatePassword api: " + validatSecurityQuestionstUrl);
 			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.PUT, requestEntity,
