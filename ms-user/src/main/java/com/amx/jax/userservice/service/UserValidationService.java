@@ -47,6 +47,8 @@ import com.amx.jax.util.validation.PatternValidator;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
 
+	private static final int WRONG_PASSWORD_ATTEMPTS_ALLOWED = 3;
+
 	@Autowired
 	private PatternValidator patternValidator;
 
@@ -302,7 +304,7 @@ public class UserValidationService {
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
 				}
-				if (lockCnt > 3) {
+				if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
 					throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 							JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 				}
@@ -310,17 +312,24 @@ public class UserValidationService {
 		}
 	}
 
+	/**
+	 * updates lock count by one due to wrong password attempt
+	 */
 	public void updateLockCount(CustomerOnlineRegistration onlineCustomer) {
 		int lockCnt = 0;
 		if (onlineCustomer.getLockCnt() != null) {
 			lockCnt = onlineCustomer.getLockCnt().intValue();
 		}
 		lockCnt++;
-		if (lockCnt > 3) {
+		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
 			onlineCustomer.setLockDt(new Date());
 		}
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
+		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
+					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+		}
 	}
 
 	public Date getMidnightToday() {

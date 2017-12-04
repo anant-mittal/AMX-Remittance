@@ -198,6 +198,9 @@ public class UserService extends AbstractUserService {
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
+		onlineCust.setEmailToken(null);
+		onlineCust.setMobileNumber(null);
+		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
 		response.getData().getValues().add(customerModel);
@@ -247,6 +250,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse validateCustomerData(CustomerModel model) {
+		if (model.getCustomerId() == null) {
+			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
