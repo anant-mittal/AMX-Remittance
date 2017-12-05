@@ -8,6 +8,7 @@ import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -89,6 +90,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "boolean_response":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BooleanResponse>>(){});
 			break;
+			
+		case "trnxHist":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<TransactionHistroyDTO>>(){});
+			break;		
 			
 			
 			
