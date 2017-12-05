@@ -43,6 +43,10 @@ public class TransactionHistroyDTO {
 	private BigDecimal collectionDocumentFinYear;
 
 	private String branchDesc;
+	
+	private String trnxIdNumber;
+	
+	private BigDecimal customerId;
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -202,6 +206,22 @@ public class TransactionHistroyDTO {
 
 	public void setBranchDesc(String branchDesc) {
 		this.branchDesc = branchDesc;
+	}
+
+	public String getTrnxIdNumber() {
+		return trnxIdNumber;
+	}
+
+	public void setTrnxIdNumber(String trnxIdNumber) {
+		this.trnxIdNumber = trnxIdNumber;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

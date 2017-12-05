@@ -13,4 +13,8 @@ public class ApiEndpoint {
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/{customer-id}/password/";
 
 	public static final String BENE_API_ENDPOINT = "/bene";
+	
+	public static final String REMIT_API_ENDPOINT = "/remit";
+	
+
 }
