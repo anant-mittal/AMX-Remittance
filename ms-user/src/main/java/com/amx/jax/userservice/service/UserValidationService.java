@@ -120,7 +120,7 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
-			updateLockCount(customer);
+			incrementLockCount(customer);
 			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
 		}
 	}
@@ -263,7 +263,7 @@ public class UserValidationService {
 		for (SecurityQuestionModel answer : answers) {
 			String actualAnswer = getActualAnswer(answer.getQuestionSrNo(), customer);
 			if (!actualAnswer.equals(cryptoUtil.getHash(customer.getUserName(), answer.getAnswer()))) {
-				updateLockCount(customer);
+				incrementLockCount(customer);
 				throw new GlobalException("Incorrect answer for question no. : " + answer.getQuestionSrNo(),
 						JaxError.INCORRECT_SECURITY_QUESTION_ANSWER);
 			}
@@ -315,7 +315,7 @@ public class UserValidationService {
 	/**
 	 * updates lock count by one due to wrong password attempt
 	 */
-	public void updateLockCount(CustomerOnlineRegistration onlineCustomer) {
+	public void incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
 		int lockCnt = 0;
 		if (onlineCustomer.getLockCnt() != null) {
 			lockCnt = onlineCustomer.getLockCnt().intValue();
@@ -331,6 +331,7 @@ public class UserValidationService {
 					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 		}
 	}
+
 
 	public Date getMidnightToday() {
 		Calendar date = new GregorianCalendar();

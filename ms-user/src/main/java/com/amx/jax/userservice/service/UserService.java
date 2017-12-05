@@ -207,6 +207,7 @@ public class UserService extends AbstractUserService {
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
+		this.unlockCustomer(onlineCust);
 		onlineCust.setEmailToken(null);
 		onlineCust.setMobileNumber(null);
 		custDao.saveOnlineCustomer(onlineCust);
@@ -298,4 +299,15 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
+	/**
+	 * reset lock
+	 */
+	protected void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
+			onlineCustomer.setLockCnt(null);
+			onlineCustomer.setLockDt(null);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+
+	}
 }

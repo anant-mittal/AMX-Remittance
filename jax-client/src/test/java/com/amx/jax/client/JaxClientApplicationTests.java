@@ -84,11 +84,17 @@ public class JaxClientApplicationTests {
 	}
 
 	@Test
-	public void testsavecustapi() throws IOException, AlreadyExistsException {
+	public void testsavecustapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		ApiResponse<CustomerModel> response = client.saveLoginIdAndPassword("284052306594", "amx@123");
+		ApiResponse<CustomerModel> response = null;
+		try {
+			response = client.saveLoginIdAndPassword("284052306594", "amx@123");
+		} catch (AlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		logger.info("response of testsavecustapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 	}
