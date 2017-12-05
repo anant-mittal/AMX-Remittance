@@ -6,9 +6,9 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
@@ -30,11 +30,11 @@ public class RemittanceController {
 	TransactionHistroyService transactionHistroyService;
 	
 	@RequestMapping(value = "/trnxHist/{customerId}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@PathVariable("customerId") BigDecimal customerId,
-			@PathVariable("docfyr") BigDecimal docfyr,
-			@PathVariable("docNumber") String docNumber,
-			@PathVariable("fromDate")  String fromDate,
-			@PathVariable("toDate") String toDate) {
+	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("customerId") BigDecimal customerId,
+			@RequestParam("docfyr") BigDecimal docfyr,
+			@RequestParam("docNumber") String docNumber,
+			@RequestParam("fromDate")  String fromDate,
+			@RequestParam("toDate") String toDate) {	
 			
 		logger.info("customerId :"+customerId+"\t docfyr :"+docfyr+"\t docNumber :"+docNumber+"\t fromDate :"+fromDate+"\t toDate :"+toDate);
 		ApiResponse response = null;
