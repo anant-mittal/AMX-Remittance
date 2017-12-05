@@ -2,6 +2,8 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -22,9 +24,11 @@ public class RemitClient extends AbstractJaxServiceClient{
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 	
-	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String customerId,String docfyr,String docNumber,String fromDate,String toDate) {
+	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr,String docNumber,String fromDate,String toDate) {
 		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
 		try {
+			BigDecimal countryId  = jaxMetaInfo.getCountryId();
+			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			log.info("Transaction Histroy");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
@@ -33,7 +37,6 @@ public class RemitClient extends AbstractJaxServiceClient{
 			String url =baseUrl.toString()+ REMIT_API_ENDPOINT+"/trnxHist/"+sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>(){});
-			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
