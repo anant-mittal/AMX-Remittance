@@ -13,7 +13,6 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.ResponseMessage;
 import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
@@ -23,9 +22,6 @@ import com.amx.jax.ui.response.UserUpdateData;
 
 @Service
 public class RegistrationService {
-
-	@Autowired
-	private UserClient userclient;
 
 	@Autowired
 	private UserSession userSessionInfo;
@@ -43,17 +39,18 @@ public class RegistrationService {
 			CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().sendOtpForCivilId(civilid).getResult();
 			// Check if response was successful
 			if (model.getIsActiveCustomer()) {
-				wrapper.setMessage(ResponseMessage.USER_ALREADY_ACTIVE);
+				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 			} else {
-				wrapper.setMessage(ResponseMessage.OTP_SENT);
+				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 			}
 			userSessionInfo.setUserid(civilid);
 			userSessionInfo.setOtp(model.getOtp());
 		} catch (InvalidInputException e) {
-			wrapper.setMessage(ResponseMessage.INVALID_ID, e.getMessage());
+			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
 		}
+
 		return wrapper;
 	}
 
@@ -62,7 +59,7 @@ public class RegistrationService {
 
 		if (userSessionInfo.isValid()) {
 			// Check if use is already logged in;
-			wrapper.setMessage(ResponseStatus.ALREADY_LOGGED_IN, "User already logged in");
+			wrapper.setMessage(ResponseStatus.ACTIVE_SESSION, ResponseMessage.USER_ALREADY_LOGGIN);
 		} else {
 
 			try {
@@ -72,12 +69,12 @@ public class RegistrationService {
 				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(idnetity, otp)) {
 					sessionService.authorize(model);
-					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, "Authentication successful");
+					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
-					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, "Verification Failed");
+					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 				}
 			} catch (IncorrectInputException e) {
-				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e.getMessage());
+				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
 			}
 		}
 		return wrapper;
@@ -99,8 +96,6 @@ public class RegistrationService {
 	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
 
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-
-		;
 
 		CustomerModel customerModel = jaxClient.setDefaults().getUserclient().saveSecurityQuestions(securityquestions)
 				.getResult();
@@ -128,7 +123,7 @@ public class RegistrationService {
 			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		} catch (AlreadyExistsException e) {
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, "LoginId already exists");
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}
 
 		return wrapper;

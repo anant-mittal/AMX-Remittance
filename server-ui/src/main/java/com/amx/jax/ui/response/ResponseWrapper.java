@@ -2,6 +2,8 @@ package com.amx.jax.ui.response;
 
 import java.io.Serializable;
 
+import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.ResponseMessage;
 import com.amx.jax.ui.ResponseStatus;
@@ -32,6 +34,14 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 
 	private T data = null;
 
+	public T getData() {
+		return data;
+	}
+
+	public void setData(T data) {
+		this.data = data;
+	}
+
 	public Long getTimestamp() {
 		return timestamp;
 	}
@@ -57,7 +67,7 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 	}
 
 	public void setStatus(ResponseStatus status) {
-		this.statusKey = status.getKey();
+		this.statusKey = status.toString();
 		this.status = status.getCode();
 	}
 
@@ -69,27 +79,35 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 		this.message = message;
 	}
 
+	public void setMessage(ResponseStatus status) {
+		this.setStatus(status);
+	}
+
 	public void setMessage(ResponseStatus status, String message) {
 		this.setStatus(status);
 		this.message = message;
 	}
 
-	public T getData() {
-		return data;
+	public void setMessage(ResponseStatus status, ResponseMessage responseMessage) {
+		this.setStatus(status);
+		this.messageKey = responseMessage.toString();
+		this.message = responseMessage.getMessage();
 	}
 
-	public void setData(T data) {
-		this.data = data;
+	public void setMessage(ResponseStatus status, String messageKey, String message) {
+		this.setStatus(status);
+		this.messageKey = messageKey;
+		this.message = message;
 	}
 
-	public void setMessage(ResponseMessage responseMessage) {
-		this.messageKey = responseMessage.getMessage();
-		this.setStatus(responseMessage.getStatus());
+	public void setMessage(ResponseStatus status, JaxError jaxError, String message) {
+		this.setStatus(status);
+		this.messageKey = jaxError.toString();
+		this.message = message;
 	}
 
-	public void setMessage(ResponseMessage responseMessage, String message) {
-		this.messageKey = responseMessage.getMessage();
-		this.setMessage(responseMessage.getStatus(), message);
+	public void setMessage(ResponseStatus status, AbstractException jaxExcep) {
+		this.setMessage(status, jaxExcep.getError(), jaxExcep.getErrorMessage());
 	}
 
 }

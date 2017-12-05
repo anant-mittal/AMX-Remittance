@@ -2,24 +2,17 @@ package com.amx.jax.ui;
 
 public enum ResponseMessage {
 
-	USER_ALREADY_ACTIVE(ResponseStatus.ALREADY_ACTIVE, "error.usr.active.alrdy"),
+	USER_ALREADY_ACTIVE("User Already Active"), USER_ALREADY_LOGGIN("User already logged in"),
 
-	INVALID_ID(ResponseStatus.INVALID_ID, "error.invalid.id"),
+	AUTH_SUCCESS("User authenticated succfully"), AUTH_FAILED("User authenticated failed"),
 
-	OTP_SENT(ResponseStatus.OTP_SENT, "msg.otp.sent"),
 
-	UNKNOWN_ERROR(ResponseStatus.ERROR, "error.unknown");
+	UNKNOWN_ERROR("error.unknown");
 
-	private final ResponseStatus status;
 	private final String message;
 
-	ResponseMessage(ResponseStatus status, String message) {
-		this.status = status;
+	ResponseMessage(String message) {
 		this.message = message;
-	}
-
-	public ResponseStatus getStatus() {
-		return status;
 	}
 
 	public String getMessage() {
