@@ -17,9 +17,9 @@ import org.springframework.util.MultiValueMap;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
-import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -282,21 +282,21 @@ public class MetaClient extends AbstractJaxServiceClient{
 	
 	
 	
-	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String cutomerReference,String docfyr,String docNumber,String fromDate,String toDate) {
-		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
+
+	
+	public ApiResponse<MultiCountryDTO> getMultiCountryList() {
+		ResponseEntity<ApiResponse<MultiCountryDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/trnxHist/"+cutomerReference+"/"+docfyr+"/"+docNumber+"/"+fromDate+"/"+toDate;
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/multi/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>(){});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>(){});
 			
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
 	
 }

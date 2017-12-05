@@ -1,4 +1,4 @@
-package com.amx.jax.service;
+package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -13,9 +13,9 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ITransactionHistroyDAO;
-import com.amx.jax.services.AbstractService;
 
 @Service
+@SuppressWarnings("rawtypes")
 public class TransactionHistroyService extends AbstractService {
 	
 	
@@ -74,7 +74,7 @@ public class TransactionHistroyService extends AbstractService {
 	
 	
 	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist) {
-		List<TransactionHistroyDTO> list = new ArrayList<TransactionHistroyDTO>();
+		List<TransactionHistroyDTO> list = new ArrayList<>();
 		for (CustomerRemittanceTransactionView hist : trnxHist) {
 			TransactionHistroyDTO model = new TransactionHistroyDTO();
 			model.setBeneficaryAccountNumber(hist.getBeneficaryAccountNumber());
@@ -99,7 +99,10 @@ public class TransactionHistroyService extends AbstractService {
 			model.setDocumentNumber(hist.getDocumentNumber());
 			model.setBranchDesc(hist.getBranchDesc());
 			model.setServiceDescription(hist.getServiceDescription());
+			model.setForeignTransactionAmount(hist.getForeignTransactionAmount());
 			model.setIdno(hist.getIdno());
+			model.setTrnxIdNumber(hist.getDocumentFinanceYear()+"/"+hist.getDocumentNumber());
+			
 			
 			list.add(model);
 		}

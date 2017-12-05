@@ -309,6 +309,8 @@ public class RemittanceTransactionView implements Serializable{
 	
 	@Column(name ="PIN_NO")
 	private  String pinNo;
+	
+
 
 
 	
@@ -360,6 +362,7 @@ public class RemittanceTransactionView implements Serializable{
 		this.applicationTypeDesc = applicationTypeDesc;
 	}
 
+	
 	public BigDecimal getCustomerId() {
 		return customerId;
 	}

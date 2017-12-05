@@ -22,12 +22,13 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
-import com.amx.jax.service.RemittanceTransactionService;
+//import com.amx.jax.service.RemittanceTransactionService;
 import com.amx.jax.service.TermsAndConditionService;
-import com.amx.jax.service.TransactionHistroyService;
+//import com.amx.jax.service.TransactionHistroyService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.WhyDoAskService;
 
@@ -84,14 +85,17 @@ public class MetaController implements Serializable{
 	@Autowired
 	CompanyService companyService;
 	
+	@Autowired
+	MultiCountryService multiCountryService;
+	
 
 	
-	@Autowired
+/*	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
 	
 	@Autowired
-	RemittanceTransactionService remittanceTransactionService;
+	RemittanceTransactionService remittanceTransactionService;*/
 	
 	@Autowired
 	CurrencyMasterService currencyMasterService;
@@ -106,10 +110,6 @@ public class MetaController implements Serializable{
 	@Autowired
 	CollectionPaymentDetailsViewService collectionPaymentDetailsViewService;
 	
-	
-/*	
-	@Autowired
-	MetaService<T> metaService;*/
 	
 	
 
@@ -230,37 +230,37 @@ public class MetaController implements Serializable{
 	}
 	
 	
-	@RequestMapping(value = "/trnxHist/{cutomerReference}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@PathVariable("cutomerReference") BigDecimal cutomerReference,
+/*	@RequestMapping(value = "/trnxHist/{cutomerReference}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
+	public ApiResponse getTrnxHistroyDetailResponse(@PathVariable("customerId") BigDecimal customerId,
 			@PathVariable("docfyr") BigDecimal docfyr,
 			@PathVariable("docNumber") String docNumber,
 			@PathVariable("fromDate")  String fromDate,
 			@PathVariable("toDate") String toDate) {
 			
-		logger.info("cutomerReference :"+cutomerReference+"\t docfyr :"+docfyr+"\t docNumber :"+docNumber+"\t fromDate :"+fromDate+"\t toDate :"+toDate);
+		logger.info("customerId :"+customerId+"\t docfyr :"+docfyr+"\t docNumber :"+docNumber+"\t fromDate :"+fromDate+"\t toDate :"+toDate);
 		ApiResponse response = null;
 		if(docNumber!=null && !docNumber.equals("null")) {
-			 response = transactionHistroyService.getTransactionHistroyByDocumentNumber(cutomerReference, docfyr, new BigDecimal(docNumber));
+			 response = transactionHistroyService.getTransactionHistroyByDocumentNumber(customerId, docfyr, new BigDecimal(docNumber));
 		}else if((fromDate!= null && !fromDate.equals("null")) || (toDate!= null && !toDate.equals("null"))) {
-			response = transactionHistroyService.getTransactionHistroyDateWise(cutomerReference, docfyr,fromDate,toDate); 
+			response = transactionHistroyService.getTransactionHistroyDateWise(customerId, docfyr,fromDate,toDate); 
 		}
 		else {
-			response = transactionHistroyService.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
+			response = transactionHistroyService.getTransactionHistroy(customerId, docfyr); //, fromDate, toDate
 		}
 		return response;
 	}
+	*/
 	
 	
 	
 	
 	
-	
-	@RequestMapping(value = "/remitPrint/{documnetNo}/{docFyr}", method = RequestMethod.GET)
+/*	@RequestMapping(value = "/remitPrint/{documnetNo}/{docFyr}", method = RequestMethod.GET)
 	public ApiResponse getRrmittanceDetailForPrintResponse(@PathVariable("documnetNo") BigDecimal documnetNo,@PathVariable("docFyr") BigDecimal docFyr){
 		//BigDecimal collectionDocumentCode =new BigDecimal(2);
 		ApiResponse response = remittanceTransactionService.getRemittanceTransactionDetails(documnetNo,docFyr,ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		return response;
-	}
+	}*/
 	
 	
 
@@ -282,8 +282,7 @@ public class MetaController implements Serializable{
 	public ApiResponse getCollectionDetailFromView(
 			@PathVariable("companyId") BigDecimal companyId,
 			@PathVariable("documentNo") BigDecimal documentNo,
-			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {
-			//@PathVariable("documentCode") BigDecimal documentCode){
+			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {		
 		ApiResponse response =collectionDetailViewService.getCollectionDetailFromView(companyId, documentNo, documentFinancialYear, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		return response;
 	}
@@ -295,13 +294,20 @@ public class MetaController implements Serializable{
 	public ApiResponse getCollectPaymentDetailsFromView(
 			@PathVariable("companyId") BigDecimal companyId,
 			@PathVariable("documentNo") BigDecimal documentNo,
-			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
-			//@PathVariable("documentCode") BigDecimal documentCode){
+			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){			
 		System.out.println("Document :"+ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		ApiResponse response =collectionPaymentDetailsViewService.getCollectionPaymentDetailsFromView(companyId, documentNo, documentFinancialYear, 
 				ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		return response;
 	}
+	
+	@RequestMapping(value = "/multi/", method = RequestMethod.GET)
+	public ApiResponse getMultiCountry() {
+		ApiResponse response = multiCountryService.getMultiCountryList();
+		return response;
+		
+	}
+
 	
 	
 	

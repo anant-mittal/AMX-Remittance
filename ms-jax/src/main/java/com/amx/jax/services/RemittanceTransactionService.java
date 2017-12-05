@@ -1,4 +1,4 @@
-package com.amx.jax.service;
+package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.List;

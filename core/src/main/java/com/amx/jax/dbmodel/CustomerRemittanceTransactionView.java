@@ -79,6 +79,9 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name="BRANCH_DESC")
 	private String branchDesc;
 	
+	@Column(name="CUSTOMER_ID")
+	private BigDecimal customerId;
+	
 	
 
 	public CustomerRemittanceTransactionView() {
@@ -247,5 +250,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setBranchDesc(String branchDesc) {
 		this.branchDesc = branchDesc;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 }
