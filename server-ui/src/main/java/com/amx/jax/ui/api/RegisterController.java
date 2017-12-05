@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.service.RegistrationService;
 
 import io.swagger.annotations.Api;

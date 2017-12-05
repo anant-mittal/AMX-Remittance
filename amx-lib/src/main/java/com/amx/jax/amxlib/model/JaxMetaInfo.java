@@ -1,4 +1,4 @@
-package com.amx.jax.client;
+package com.amx.jax.amxlib.model;
 
 import java.math.BigDecimal;
 
@@ -7,6 +7,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxChannel;
+
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JaxMetaInfo {
@@ -14,6 +16,7 @@ public class JaxMetaInfo {
 	private BigDecimal countryId;
 	private BigDecimal customerId;
 	private BigDecimal companyId;
+	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -37,6 +40,14 @@ public class JaxMetaInfo {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+
+	public JaxChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(JaxChannel channel) {
+		this.channel = channel;
 	}
 
 }

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.constant.Country;
 import com.amx.jax.services.AbstractServiceFactory;
 
@@ -19,6 +20,8 @@ public class MetaData implements IMetaData {
 	private BigDecimal languageId;
 
 	private BigDecimal companyId;
+
+	private JaxChannel channel;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -56,5 +59,13 @@ public class MetaData implements IMetaData {
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+
+	public JaxChannel getChannel() {
+		return channel;
+	}
+
+	public void setChannel(JaxChannel channel) {
+		this.channel = channel;
 	}
 }

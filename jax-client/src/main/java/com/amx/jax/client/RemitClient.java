@@ -16,6 +16,7 @@ import org.springframework.util.MultiValueMap;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient{

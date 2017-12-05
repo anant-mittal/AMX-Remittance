@@ -2,8 +2,6 @@ package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
-import javax.websocket.server.PathParam;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -23,6 +23,7 @@ import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 /**
  * 

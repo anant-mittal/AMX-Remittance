@@ -2,9 +2,9 @@ package com.amx.jax.client;
 
 import java.net.URL;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -16,9 +16,11 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public abstract class AbstractJaxServiceClient {
@@ -33,10 +35,21 @@ public abstract class AbstractJaxServiceClient {
 	@Qualifier("base_url")
 	protected URL baseUrl;
 
+	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
+
 	protected MultiValueMap<String, String> getHeader() {
+
 		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-		headers.add("meta-info", "{\"country-id\":" + jaxMetaInfo.getCountryId().intValue() + "}");
-		headers.add("meta-info", "{\"company-id\":" + jaxMetaInfo.getCompanyId().intValue() + "}");
+		try {
+			JaxMetaInfo info = new JaxMetaInfo();
+			info.setCountryId(jaxMetaInfo.getCountryId());
+			info.setChannel(jaxMetaInfo.getChannel());
+			info.setCompanyId(jaxMetaInfo.getCompanyId());
+			info.setCustomerId(jaxMetaInfo.getCustomerId());
+			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
+		} catch (JsonProcessingException e) {
+			log.error("error in getheader of jaxclient", e);
+		}
 		return headers;
 	}
 

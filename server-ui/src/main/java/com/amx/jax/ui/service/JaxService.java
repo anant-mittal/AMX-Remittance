@@ -6,12 +6,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
-import com.amx.jax.client.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
-import com.amx.jax.ui.model.UserSession;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {

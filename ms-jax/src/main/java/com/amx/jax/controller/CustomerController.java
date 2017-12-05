@@ -1,8 +1,7 @@
 package com.amx.jax.controller;
 
-import static com.amx.amxlib.constant.ApiEndpoint.*;
-
-import javax.websocket.server.PathParam;
+import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
