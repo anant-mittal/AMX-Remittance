@@ -29,7 +29,7 @@ public class RemittanceController {
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
-	@RequestMapping(value = "/trnxHist/{customerId}/{docfyr}/{docNumber}/{fromDate}/{toDate}", method = RequestMethod.GET)
+	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("customerId") BigDecimal customerId,
 			@RequestParam("docfyr") BigDecimal docfyr,
 			@RequestParam("docNumber") String docNumber,
