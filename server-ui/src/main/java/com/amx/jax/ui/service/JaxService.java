@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.ui.model.UserSession;
 
@@ -31,6 +32,17 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private UserClient userclient;
+
+	@Autowired
+	private RemitClient remitClient;
+
+	public RemitClient getRemitClient() {
+		return remitClient;
+	}
+
+	public void setRemitClient(RemitClient remitClient) {
+		this.remitClient = remitClient;
+	}
 
 	public UserClient getUserclient() {
 		return userclient;

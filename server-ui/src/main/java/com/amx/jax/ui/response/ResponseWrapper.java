@@ -8,7 +8,12 @@ import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.ResponseMessage;
 import com.amx.jax.ui.ResponseStatus;
 
-public class ResponseWrapper<T extends ResponseDataInterface> implements Serializable {
+public class ResponseWrapper<T> implements Serializable {
+
+	public ResponseWrapper() {
+		super();
+		this.timestamp = System.currentTimeMillis();
+	}
 
 	public ResponseWrapper(T data) {
 		super();
@@ -41,6 +46,10 @@ public class ResponseWrapper<T extends ResponseDataInterface> implements Seriali
 	public void setData(T data) {
 		this.data = data;
 	}
+	
+//	public void setData(List<T> results) {
+//		this.data = results;
+//	}
 
 	public Long getTimestamp() {
 		return timestamp;
