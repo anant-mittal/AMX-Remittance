@@ -74,6 +74,12 @@ public class JaxClientApplicationTests {
 		} catch (IncorrectInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (CustomerValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LimitExeededException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		logger.info("response of testSendotpapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
