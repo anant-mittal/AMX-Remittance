@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
+import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -73,7 +75,7 @@ public class RegistrationService {
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 				}
-			} catch (IncorrectInputException e) {
+			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
 			}
 		}

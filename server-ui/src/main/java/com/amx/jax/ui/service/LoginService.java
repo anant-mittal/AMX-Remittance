@@ -160,7 +160,7 @@ public class LoginService {
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 				}
-			} catch (IncorrectInputException e) {
+			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
 			}
 		}
