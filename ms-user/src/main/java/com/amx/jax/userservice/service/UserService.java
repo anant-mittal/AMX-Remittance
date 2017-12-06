@@ -201,9 +201,11 @@ public class UserService extends AbstractUserService {
 		if (StringUtils.isEmpty(otp)) {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
+		userValidationService.validateCustomerLockCount(onlineCust);
 		String emailTokenHash = onlineCust.getEmailToken();
 		String otpHash = cryptoUtil.getHash(civilId, otp);
 		if (!otpHash.equals(emailTokenHash)) {
+			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));

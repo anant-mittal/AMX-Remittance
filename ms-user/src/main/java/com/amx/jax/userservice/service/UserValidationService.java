@@ -313,7 +313,7 @@ public class UserValidationService {
 	}
 
 	/**
-	 * updates lock count by one due to wrong password attempt
+	 * updates lock count by one due to wrong password/otp attempt
 	 */
 	public void incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
 		int lockCnt = 0;

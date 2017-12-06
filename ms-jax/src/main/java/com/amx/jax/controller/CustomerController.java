@@ -39,7 +39,7 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
-	public ApiResponse verifyCivilId(@PathVariable("civil-id") String civilId) {
+	public ApiResponse sendOtp(@PathVariable("civil-id") String civilId) {
 		logger.debug("verifyCivilId Request:civilId" + civilId);
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
 		return response;
