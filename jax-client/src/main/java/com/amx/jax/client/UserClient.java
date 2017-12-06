@@ -40,7 +40,8 @@ public class UserClient extends AbstractJaxServiceClient {
 	@Autowired
 	private ConverterUtility util;
 
-	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp) throws IncorrectInputException {
+	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			log.info("calling validateOtp api: ");
@@ -54,6 +55,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.error("exception in validateOtp ", e);
 		}
 		checkIncorrectInputError(response.getBody());
+		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}
 
