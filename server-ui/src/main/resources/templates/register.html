@@ -20,12 +20,14 @@
     return json;
   }
   window.CONST = {
+    dev: false,
     remoteServerUrl: '',
     remoteJsUrl: 'http://10.6.42.95/onlinewebapp',
     dummyApi: false
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));
   if (config) {
+    window.CONST.dev = config.dev || false;
     window.CONST.dummyApi = config.dummyApi || false;
     window.CONST.remoteServerUrl = config.remoteServerUrl || '';
     window.CONST.remoteJsUrl = config.remoteJsUrl || '';
