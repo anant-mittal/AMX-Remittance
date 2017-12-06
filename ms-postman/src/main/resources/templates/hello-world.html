@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<body>
+<h1>This is Test Mail</h1>
+<p>Hi <span th:text="${user}"></span>,<BR/>
+You are receiving this mail as part of testing on <span th:text="${today}"></span>.
+
+<BR/><BR/>
+ <span th:text="${user}"></span>, we request you not to reply to this mail.
+<BR/><BR/>
+</p>
+
+<p>
+Thanks,<BR/>
+Spring Boot!
+</p>
+
+</body>
+</html>

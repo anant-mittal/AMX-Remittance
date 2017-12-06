@@ -158,7 +158,7 @@ public class LoginService {
 					sessionService.authorize(model);
 					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
-					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_SUCCESS);
+					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 				}
 			} catch (IncorrectInputException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);

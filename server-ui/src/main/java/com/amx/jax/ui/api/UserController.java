@@ -1,6 +1,6 @@
+
 package com.amx.jax.ui.api;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.client.RemitClient;
 import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
-import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.UserMetaData;
+import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 

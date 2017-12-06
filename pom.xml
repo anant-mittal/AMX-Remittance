@@ -63,6 +63,7 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-jax</module>
+		<module>ms-postman</module>
 		<module>jax-client</module>
 		<module>server-ui</module>
 	</modules>
