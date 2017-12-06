@@ -246,6 +246,7 @@ public class UserService extends AbstractUserService {
 	 */
 	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
+		this.unlockCustomer(onlineCustomer);
 
 	}
 
@@ -279,6 +280,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
+		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
