@@ -34,7 +34,10 @@ public class JaxFile {
 	public void donwload(HttpServletResponse response) throws DocumentException, IOException {
 		FileOutputStream os = null;
 		response.setHeader("Cache-Control", "cache, must-revalidate");
-		response.addHeader("Content-disposition", "attachment; filename=" + getName());
+		response.addHeader("Content-type", "application/pdf");
+		//response.addHeader("Content-Type", "application/force-download");
+		//response.setHeader("Content-Transfer-Encoding", "binary");
+		response.addHeader("Content-Disposition", "attachment; filename=" + getName());
 		try {
 			// final File outputFile = File.createTempFile(fileName, ".pdf");
 			OutputStream outputStream = response.getOutputStream();

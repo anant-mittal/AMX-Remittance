@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -116,11 +117,14 @@ public class UserController {
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
-	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(@RequestBody TransactionHistroyDTO tranxDTO)
-			throws IOException, DocumentException {
+	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
+			@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentCode,
+			@RequestParam(required = false) BigDecimal customerReference) throws IOException, DocumentException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
-		postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
+		postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport.pdf");
 		return wrapper;
 	}
 
