@@ -116,7 +116,7 @@ public class UserController {
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
-	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(TransactionHistroyDTO tranxDTO)
+	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(@RequestBody TransactionHistroyDTO tranxDTO)
 			throws IOException, DocumentException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
