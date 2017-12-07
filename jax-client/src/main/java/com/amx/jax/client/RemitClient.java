@@ -57,11 +57,12 @@ public class RemitClient extends AbstractJaxServiceClient{
 		try {
 		BigDecimal countryId  = jaxMetaInfo.getCountryId();
 		BigDecimal companyId  = jaxMetaInfo.getCompanyId();
+		BigDecimal customerId = jaxMetaInfo.getCustomerId();
 		transactionHistroyDTO.setApplicationCountryId(countryId);
 		transactionHistroyDTO.setCompanyId(companyId);
 		transactionHistroyDTO.setLanguageId(new BigDecimal(1));
-		log.info("Remit Client :"+countryId+"\t companyId :"+companyId);
-		log.info("ALL_COMPANY_DETALIS :");
+		transactionHistroyDTO.setCustomerId(customerId);
+		log.info("Remit Client :"+countryId+"\t companyId :"+companyId+"\t customerId :"+customerId);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO), getHeader());
 		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT+"/remitReport/";
 		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {});
