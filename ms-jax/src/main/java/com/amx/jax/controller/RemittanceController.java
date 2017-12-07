@@ -4,14 +4,22 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.services.RemittanceTransactionService;
+import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.util.ConverterUtil;
 
@@ -22,6 +30,7 @@ public class RemittanceController {
 	
 	private Logger logger = Logger.getLogger(RemittanceController.class);
 	
+
 	
 	@Autowired
 	private ConverterUtil converterUtil;
@@ -29,13 +38,27 @@ public class RemittanceController {
 	@Autowired
 	TransactionHistroyService transactionHistroyService;
 	
+	
+	@Autowired
+	RemittanceTransactionService remittanceTransactionService;
+	
+	@Autowired
+	ReportManagerService reportManagerService;
+	
+	@Autowired
+    HttpServletResponse httpServletResponse;
+	
+	
+
+	
+	
+	
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("customerId") BigDecimal customerId,
 			@RequestParam("docfyr") BigDecimal docfyr,
 			@RequestParam("docNumber") String docNumber,
 			@RequestParam("fromDate")  String fromDate,
-			@RequestParam("toDate") String toDate) {	
-			
+			@RequestParam("toDate") String toDate) {
 		logger.info("customerId :"+customerId+"\t docfyr :"+docfyr+"\t docNumber :"+docNumber+"\t fromDate :"+fromDate+"\t toDate :"+toDate);
 		ApiResponse response = null;
 		if(docNumber!=null && !docNumber.equals("null")) {
@@ -44,10 +67,64 @@ public class RemittanceController {
 			response = transactionHistroyService.getTransactionHistroyDateWise(customerId, docfyr,fromDate,toDate); 
 		}
 		else {
-			response = transactionHistroyService.getTransactionHistroy(customerId, docfyr); //, fromDate, toDate
+			response = transactionHistroyService.getTransactionHistroy(customerId, docfyr); 
 		}
 		return response;
 	}
+	
+	
+	@RequestMapping(value = "/remitReport/", method = RequestMethod.POST)
+	public ApiResponse getRemittanceDetailForReport(@RequestBody TransactionHistroyDTO transactionHistroyDTO){
+		logger.info("getRemittanceDetailForReport Trnx Report:");
+	
+		logger.info("Colle Doc No :"+transactionHistroyDTO.getCollectionDocumentNo());
+		logger.info("Colle Doc code :"+transactionHistroyDTO.getCollectionDocumentCode());
+		logger.info("Colle Doc Fyear :"+transactionHistroyDTO.getCollectionDocumentFinYear());
+		logger.info("Customer Id :"+transactionHistroyDTO.getCustomerId()+"\t Reference :"+transactionHistroyDTO.getCustomerReference());
+		logger.info("Country Id :"+transactionHistroyDTO.getApplicationCountryId()+"\t Currency Id :"+transactionHistroyDTO.getCurrencyId());
+	 
+		ApiResponse response =reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
+		return response;
+	}
+		
+	
+	
+	
+	
+/*	@RequestMapping(value = "/remitPrintReport/", method = RequestMethod.GET)
+	public ApiResponse getRemittanceDetailForPrintResponse(
+			@RequestParam("documnetNo") BigDecimal documnetNo,
+			@RequestParam("docFyr") BigDecimal docFyr){
+		    ApiResponse response =null;
+		
+		    TransactionHistroyDTO transactionHistroyDTO =new TransactionHistroyDTO();
+			BigDecimal countryId  = new BigDecimal(91);
+			BigDecimal companyId  =new BigDecimal(1);
+			BigDecimal currencyId = new BigDecimal(1);
+			BigDecimal customerId = new BigDecimal(5218);
+			transactionHistroyDTO.setApplicationCountryId(countryId);
+			transactionHistroyDTO.setCompanyId(companyId);
+			transactionHistroyDTO.setCurrencyId(currencyId);
+			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
+			transactionHistroyDTO.setCollectionDocumentNo(documnetNo);
+			transactionHistroyDTO.setCollectionDocumentFinYear(docFyr);
+			transactionHistroyDTO.setCollectionDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+			transactionHistroyDTO.setCustomerId(customerId);
+			
+			reportManagerService.generatePersonalRemittanceReceiptReport(transactionHistroyDTO, httpServletResponse);
+		   return response;
+		
+	}
+	*/
+	
+	@RequestMapping(value = "/remitPrint/{documnetNo}/{docFyr}/", method = RequestMethod.GET)
+	public ApiResponse getRemittanceDetailForPrintResponseTest(
+			@PathVariable("documnetNo") BigDecimal documnetNo,
+			@PathVariable("docFyr") BigDecimal docFyr){
+		  ApiResponse response = remittanceTransactionService.getRemittanceTransactionDetails(documnetNo,docFyr,ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+			return response;
+		}
+		
 	
 	
 

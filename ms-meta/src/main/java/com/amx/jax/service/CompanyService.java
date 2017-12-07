@@ -21,7 +21,7 @@ public class CompanyService extends AbstractService {
 	@Autowired
 	ICompanyDAO companyDao;
 
-	public static List<ViewCompanyDetails> ALL_COMPANY_DETALIS;
+	public static List<ViewCompanyDetails> DEFAULT_COMPANY_DETALIS;
 
 	public ApiResponse getCompanyDetails(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
@@ -36,10 +36,11 @@ public class CompanyService extends AbstractService {
 		return response;
 	}
 
-	public ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
+	public  static ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
 		ViewCompanyDetails companyDetails=null;
-		for (ViewCompanyDetails vcd : ALL_COMPANY_DETALIS) {
-			if (vcd.getLanguageId().equals(languageId)) {
+		for (ViewCompanyDetails vcd : DEFAULT_COMPANY_DETALIS) {
+			
+			if (vcd.getLanguageId().compareTo(languageId)==0) {
 				companyDetails = vcd;
 			}
 		}

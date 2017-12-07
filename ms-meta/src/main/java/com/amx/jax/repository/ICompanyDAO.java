@@ -15,4 +15,7 @@ public interface ICompanyDAO extends JpaRepository<ViewCompanyDetails, Serializa
 	@Query("select cd from ViewCompanyDetails cd where languageId=?1 and isActive='Y'")
 	public List<ViewCompanyDetails> getCompanyDetails(BigDecimal languageId);
 	
+	@Query("select cd from ViewCompanyDetails cd where languageId=?1 and companyId=?2 and  isActive='Y' ")
+	public List<ViewCompanyDetails> getCompanyDetailsByCompanyId(BigDecimal languageId,BigDecimal companyId);
+	
 }

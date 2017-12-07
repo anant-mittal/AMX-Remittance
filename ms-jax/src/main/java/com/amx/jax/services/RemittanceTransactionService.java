@@ -29,11 +29,16 @@ public class RemittanceTransactionService extends AbstractService {
 			response.getData().getValues().addAll(transctionDetail);
 			response.setResponseStatus(ResponseStatus.OK);
 		}
-
 		response.getData().setType("remittance_transaction");
 		return response;
 
 	}
+	
+	/*public ApiResponse convert(List<RemittanceTransactionView> transctionDetail){
+		List<RemittanceReportBean> reportBean = new ArrayList<>();
+	
+	}*/
+	
 
 	@Override
 	public String getModelType() {

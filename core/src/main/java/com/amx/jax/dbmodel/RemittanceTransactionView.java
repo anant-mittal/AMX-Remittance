@@ -2,7 +2,6 @@ package com.amx.jax.dbmodel;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.sql.Clob;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -105,8 +104,12 @@ public class RemittanceTransactionView implements Serializable{
 	@Column(name="SIGNATURE_SPECIMEN")
 	private String customerSignature;
 
+	//@Column(name="SIGNATURE_SPECIMEN_CLOB")
+	//private Clob customerSignatureClob;
+	
+	
 	@Column(name="SIGNATURE_SPECIMEN_CLOB")
-	private Clob customerSignatureClob;
+	private String customerSignatureClob;
 
 	@Column(name="BENEFICIARY_NAME")
 	private String beneficiaryName;
@@ -859,11 +862,11 @@ public class RemittanceTransactionView implements Serializable{
 		this.foreignCurrencyId = foreignCurrencyId;
 	}
 
-	public Clob getCustomerSignatureClob() {
+	public String getCustomerSignatureClob() {
 		return customerSignatureClob;
 	}
 
-	public void setCustomerSignatureClob(Clob customerSignatureClob) {
+	public void setCustomerSignatureClob(String customerSignatureClob) {
 		this.customerSignatureClob = customerSignatureClob;
 	}
 	public Date getAccountMMYYYY() {

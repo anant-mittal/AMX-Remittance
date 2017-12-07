@@ -7,6 +7,7 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
@@ -95,7 +96,13 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<TransactionHistroyDTO>>(){});
 			break;	
 			
-		}
+		case "remitReport":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceReceiptSubreport>>(){});
+			break;	
+		
+	}
+		
+		
 
 		responseData.setValues(models);
 		return responseData;

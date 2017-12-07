@@ -78,7 +78,6 @@ public class RemittanceReportBean {
 
 	private List<CollectionDetailBean> collectionViewList;
 
-	//private List<RemittanceCollectionBean> collectionAppList;
 
 	private String engCompanyInfo;
 	private String arabicCompanyInfo;

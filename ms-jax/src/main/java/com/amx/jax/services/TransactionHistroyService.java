@@ -24,8 +24,8 @@ public class TransactionHistroyService extends AbstractService {
 	ITransactionHistroyDAO transactionHistroyDao;
 	
 	
-	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference,BigDecimal docfyr){ //, String fromDate,String  toDate
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference, docfyr); //, fromDate, toDate
+	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference,BigDecimal docfyr){ 
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference); 
 		ApiResponse response = getBlackApiResponse();
 		if(trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found");
@@ -102,7 +102,7 @@ public class TransactionHistroyService extends AbstractService {
 			model.setForeignTransactionAmount(hist.getForeignTransactionAmount());
 			model.setIdno(hist.getIdno());
 			model.setTrnxIdNumber(hist.getDocumentFinanceYear()+"/"+hist.getDocumentNumber());
-			
+			model.setCustomerId(hist.getCustomerId());
 			
 			list.add(model);
 		}

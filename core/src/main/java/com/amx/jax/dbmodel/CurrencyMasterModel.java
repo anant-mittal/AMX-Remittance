@@ -54,6 +54,7 @@ public class CurrencyMasterModel implements java.io.Serializable {
 	private String approvedBy;
 	private Date approvedDate;
 	private String remarks;
+	private BigDecimal countryId;
 
 	
 	public CurrencyMasterModel() {
@@ -265,6 +266,15 @@ public class CurrencyMasterModel implements java.io.Serializable {
 
 	public void setRemarks(String remarks) {
 		this.remarks = remarks;
+	}
+
+	@Column(name="COUNTRY_ID")
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
 	}
 
 }

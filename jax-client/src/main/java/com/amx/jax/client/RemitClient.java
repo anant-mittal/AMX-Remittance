@@ -14,9 +14,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.util.ConverterUtility;
+
 
 @Component
 public class RemitClient extends AbstractJaxServiceClient{
@@ -24,6 +27,10 @@ public class RemitClient extends AbstractJaxServiceClient{
 	
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
+	
+	@Autowired
+	private ConverterUtility util;
+
 	
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr,String docNumber,String fromDate,String toDate) {
 		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
@@ -43,6 +50,27 @@ public class RemitClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();
 	}
+	
+	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
+		
+		ResponseEntity<ApiResponse<RemittanceReceiptSubreport>> response = null;
+		try {
+		BigDecimal countryId  = jaxMetaInfo.getCountryId();
+		BigDecimal companyId  = jaxMetaInfo.getCompanyId();
+		transactionHistroyDTO.setApplicationCountryId(countryId);
+		transactionHistroyDTO.setCompanyId(companyId);
+		transactionHistroyDTO.setLanguageId(new BigDecimal(1));
+		log.info("Remit Client :"+countryId+"\t companyId :"+companyId);
+		log.info("ALL_COMPANY_DETALIS :");
+		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO), getHeader());
+		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT+"/remitReport/";
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {});
+		}catch(Exception e) {
+			log.error("exception in saveSecurityQuestions ", e);
+		}
+		return response.getBody();
+	}
+	
 	
 
 }

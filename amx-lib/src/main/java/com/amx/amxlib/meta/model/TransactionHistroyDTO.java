@@ -47,6 +47,12 @@ public class TransactionHistroyDTO {
 	private String trnxIdNumber;
 	
 	private BigDecimal customerId;
+	
+	private BigDecimal applicationCountryId;
+	private BigDecimal companyId;
+	private BigDecimal currencyId;
+	private BigDecimal languageId;
+	
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -222,6 +228,38 @@ public class TransactionHistroyDTO {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
+	}
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(BigDecimal companyId) {
+		this.companyId = companyId;
+	}
+
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
 	}
 
 }
