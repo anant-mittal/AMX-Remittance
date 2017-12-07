@@ -11,6 +11,7 @@ mvn clean
 mvn -pl boot-utils clean install
 mvn -pl amx-lib clean install -DskipTests
 mvn -pl jax-client clean install -DskipTests
+mvn -pl ms-postman clean install -DskipTests
 mvn -pl server-ui clean install -DskipTests
 
 #mvn package -DskipTests
