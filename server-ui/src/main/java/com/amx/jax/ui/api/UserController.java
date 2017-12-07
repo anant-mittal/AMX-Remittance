@@ -1,6 +1,7 @@
 
 package com.amx.jax.ui.api;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.postman.client.PostManClient;
@@ -24,6 +26,7 @@ import com.amx.jax.ui.response.UserMetaData;
 import com.amx.jax.ui.response.UserUpdateData;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
+import com.lowagie.text.DocumentException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -105,9 +108,19 @@ public class UserController {
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
-	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory(String password) {
+	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>(
 				jaxService.setDefaults().getRemitClient().getTransactionHistroy("2017", null, null, null).getResults());
+		return wrapper;
+	}
+
+	@ApiOperation(value = "Returns transaction history")
+	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(TransactionHistroyDTO tranxDTO)
+			throws IOException, DocumentException {
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
+		postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
 		return wrapper;
 	}
 
