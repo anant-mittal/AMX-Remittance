@@ -1,6 +1,8 @@
 package com.amx.jax;
 
 
+import java.math.BigDecimal;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +22,10 @@ public class MetaServiceStartUpInit {
 		initializeViewCompanyMaster();
 	}
 
-	private void initializeViewCompanyMaster() {
-		CompanyService.ALL_COMPANY_DETALIS = companyDao.findAll();
+	private  void initializeViewCompanyMaster() {
+		BigDecimal languageId = new BigDecimal(1);
+		CompanyService.DEFAULT_COMPANY_DETALIS = companyDao.getCompanyDetails(languageId);
+		
 	}
+	
 }
