@@ -16,30 +16,40 @@ import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.services.AbstractService;
 
 @Service
-public class CompanyService  extends AbstractService{
-	
+public class CompanyService extends AbstractService {
+
 	@Autowired
 	ICompanyDAO companyDao;
-	
-	public ApiResponse  getCompanyDetails(BigDecimal languageId){
-	List<ViewCompanyDetails> companyDetails =companyDao.getCompanyDetails(languageId);
-	ApiResponse response = getBlackApiResponse();
-	if(companyDetails.isEmpty()) {
-		throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-	}else {
-	response.getData().getValues().addAll(convert(companyDetails));
-	response.setResponseStatus(ResponseStatus.OK);
-	}
-	response.getData().setType("company");
-	return response;
-}
 
-	
-	
-	public List<ViewCompanyDetailDTO> convert(List<ViewCompanyDetails> companyDetails){
-		
+	public static List<ViewCompanyDetails> ALL_COMPANY_DETALIS;
+
+	public ApiResponse getCompanyDetails(BigDecimal languageId) {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
+		ApiResponse response = getBlackApiResponse();
+		if (companyDetails.isEmpty()) {
+			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
+		} else {
+			response.getData().getValues().addAll(convert(companyDetails));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("company");
+		return response;
+	}
+
+	public ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
+		ViewCompanyDetails companyDetails=null;
+		for (ViewCompanyDetails vcd : ALL_COMPANY_DETALIS) {
+			if (vcd.getLanguageId().equals(languageId)) {
+				companyDetails = vcd;
+			}
+		}
+		return companyDetails;
+	}
+
+	public List<ViewCompanyDetailDTO> convert(List<ViewCompanyDetails> companyDetails) {
+
 		List<ViewCompanyDetailDTO> list = new ArrayList<ViewCompanyDetailDTO>();
-		for(ViewCompanyDetails comp: companyDetails) {
+		for (ViewCompanyDetails comp : companyDetails) {
 			ViewCompanyDetailDTO modelDto = new ViewCompanyDetailDTO();
 			modelDto.setApplicationCountryId(comp.getApplicationCountryId());
 			modelDto.setArabicAddress1(comp.getArabicAddress1());
@@ -64,9 +74,8 @@ public class CompanyService  extends AbstractService{
 			list.add(modelDto);
 		}
 		return list;
-		
+
 	}
-	
 
 	@Override
 	public String getModelType() {
