@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.amx.jax.postman</groupId>
+	<groupId>com.amx.jax</groupId>
 	<artifactId>ms-postman</artifactId>
 	<packaging>jar</packaging>
 	<name>ms-postman</name>
@@ -17,6 +17,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
+		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
 	</properties>
 
 	<dependencies>
@@ -31,10 +33,24 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.thymeleaf.extras</groupId>
+			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
+			<version>3.0.0.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>flying-saucer-pdf</artifactId>
+			<version>9.1.4</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.bootloaderjs</groupId>
 			<artifactId>boot-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+
+
 	</dependencies>
 	<description>Common utils library for boot projects</description>
 </project>

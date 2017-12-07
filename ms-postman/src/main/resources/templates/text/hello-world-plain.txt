@@ -1,4 +1,4 @@
-Outer TextFile
+TextFile Inner
 Dear [(${user})],
 
 You are receiving this mail as part of testing on ${today}.

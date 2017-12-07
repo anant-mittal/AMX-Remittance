@@ -8,10 +8,6 @@ import java.util.Map;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Utils;
 
-/**
- * @author pavan.solapure
- *
- */
 public class EmailTemplate {
 
 	private String templateId;

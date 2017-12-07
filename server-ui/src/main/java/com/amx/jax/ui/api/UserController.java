@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
 import com.amx.jax.ui.response.LoginData;
@@ -40,6 +41,9 @@ public class UserController {
 	@Autowired
 	private JaxService jaxService;
 
+	@Autowired
+	PostManClient postManClient;
+
 	/**
 	 * Asks for user login and password
 	 * 
@@ -61,9 +65,10 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Sends OTP and resets password")
-	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<LoginData> reset(@RequestParam String identity, @RequestParam(required = false) String otp) {
-		return loginService.reset(identity, otp);
+		ResponseWrapper<LoginData> wrapper = loginService.reset(identity, otp);
+		return wrapper;
 	}
 
 	@ApiOperation(value = "Logout User & Terminates session")

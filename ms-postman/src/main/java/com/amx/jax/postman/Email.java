@@ -2,7 +2,9 @@ package com.amx.jax.postman;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.bootloaderjs.Utils;
 
@@ -18,11 +20,38 @@ public class Email {
 
 	private String message;
 
+	private String template = null;
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	private Map<String, Object> model = new HashMap<String, Object>();
+
+	public Map<String, Object> getModel() {
+		return model;
+	}
+
+	public void setModel(Map<String, Object> model) {
+		this.model = model;
+	}
+
 	private boolean isHtml;
 
 	public Email() {
 		this.to = new ArrayList<String>();
 		this.cc = new ArrayList<String>();
+	}
+
+	public Email(String from, String toList, String subject) {
+		this();
+		this.from = from;
+		this.subject = subject;
+		this.to.addAll(Arrays.asList(splitByComma(toList)));
 	}
 
 	public Email(String from, String toList, String subject, String message) {
