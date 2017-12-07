@@ -220,12 +220,12 @@ public class ReportManagerService extends AbstractService{
 	
 				Map<String, Object> loyaltiPoints = loyaltyInsuranceProDao.loyaltyInsuranceProcedure(view.getCustomerReference(), obj.getDate());
 				
-				String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1").toString();
-				String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2").toString();
-				String prInsStr1 =loyaltiPoints.get("P_INS_STR1").toString();
-				String prInsStr2 =loyaltiPoints.get("P_INS_STR2").toString();
-				String prInsStrAr1 =loyaltiPoints.get("P_INS_STR_AR1").toString();
-				String prInsStrAr2 =loyaltiPoints.get("P_INS_STR_AR2").toString();
+				String prLtyStr1 =loyaltiPoints.get("P_LTY_STR1")==null?"":loyaltiPoints.get("P_LTY_STR1").toString();
+				String prLtyStr2 =loyaltiPoints.get("P_LTY_STR2")==null?"":loyaltiPoints.get("P_LTY_STR2").toString();
+				String prInsStr1 =loyaltiPoints.get("P_INS_STR1")==null?"":loyaltiPoints.get("P_INS_STR1").toString();
+				String prInsStr2 =loyaltiPoints.get("P_INS_STR2")==null?"":loyaltiPoints.get("P_INS_STR2").toString();
+				String prInsStrAr1 =loyaltiPoints.get("P_INS_STR_AR1")==null?"":loyaltiPoints.get("P_INS_STR_AR1").toString();
+				String prInsStrAr2 =loyaltiPoints.get("P_INS_STR_AR2")==null?"":loyaltiPoints.get("P_INS_STR_AR2").toString();
 
 				if(!prLtyStr1.trim().equals("") && !prLtyStr2.trim().equals("")){
 					obj.setLoyalityPointExpiring(prLtyStr1+"  \n"+prLtyStr2);

@@ -74,9 +74,9 @@ public class RemittanceController {
 	
 	
 	@RequestMapping(value = "/remitReport/", method = RequestMethod.POST)
-	public ApiResponse getRemittanceDetailForReport(@RequestBody TransactionHistroyDTO transactionHistroyDTO){
+	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO){
 		logger.info("getRemittanceDetailForReport Trnx Report:");
-	
+		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
 		logger.info("Colle Doc No :"+transactionHistroyDTO.getCollectionDocumentNo());
 		logger.info("Colle Doc code :"+transactionHistroyDTO.getCollectionDocumentCode());
 		logger.info("Colle Doc Fyear :"+transactionHistroyDTO.getCollectionDocumentFinYear());
@@ -89,34 +89,7 @@ public class RemittanceController {
 		
 	
 	
-	
-	
-/*	@RequestMapping(value = "/remitPrintReport/", method = RequestMethod.GET)
-	public ApiResponse getRemittanceDetailForPrintResponse(
-			@RequestParam("documnetNo") BigDecimal documnetNo,
-			@RequestParam("docFyr") BigDecimal docFyr){
-		    ApiResponse response =null;
-		
-		    TransactionHistroyDTO transactionHistroyDTO =new TransactionHistroyDTO();
-			BigDecimal countryId  = new BigDecimal(91);
-			BigDecimal companyId  =new BigDecimal(1);
-			BigDecimal currencyId = new BigDecimal(1);
-			BigDecimal customerId = new BigDecimal(5218);
-			transactionHistroyDTO.setApplicationCountryId(countryId);
-			transactionHistroyDTO.setCompanyId(companyId);
-			transactionHistroyDTO.setCurrencyId(currencyId);
-			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
-			transactionHistroyDTO.setCollectionDocumentNo(documnetNo);
-			transactionHistroyDTO.setCollectionDocumentFinYear(docFyr);
-			transactionHistroyDTO.setCollectionDocumentCode(ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
-			transactionHistroyDTO.setCustomerId(customerId);
-			
-			reportManagerService.generatePersonalRemittanceReceiptReport(transactionHistroyDTO, httpServletResponse);
-		   return response;
-		
-	}
-	*/
-	
+
 	@RequestMapping(value = "/remitPrint/{documnetNo}/{docFyr}/", method = RequestMethod.GET)
 	public ApiResponse getRemittanceDetailForPrintResponseTest(
 			@PathVariable("documnetNo") BigDecimal documnetNo,
