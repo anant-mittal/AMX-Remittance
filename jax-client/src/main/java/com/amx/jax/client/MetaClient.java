@@ -1,6 +1,6 @@
 package com.amx.jax.client;
 
-import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.*;
 
 import java.math.BigDecimal;
 
@@ -16,7 +16,9 @@ import org.springframework.util.MultiValueMap;
 
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
@@ -299,5 +301,42 @@ public class MetaClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();
 	}
+	
+	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
+		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response = null;
+		try {
+			log.info("in getAllOnlineCurrency");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/online/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
+
+		} catch (Exception e) {
+			log.debug("exception in getAllOnlineCurrency ", e);
+		}
+		return response.getBody();
+	}
+	
+	public ApiResponse<BankMasterDTO> getBankListForCountry(BigDecimal countryId) {
+		ResponseEntity<ApiResponse<BankMasterDTO>> response = null;
+		try {
+			log.info("in getBankListForCountry");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String endpoint = META_API_ENDPOINT + BANK_MASTER_BY_COUNTRY_API_ENDPOINT;
+			endpoint = endpoint.replaceAll("\\{country\\-id\\}", countryId.toPlainString());
+			String url = baseUrl.toString() + endpoint;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BankMasterDTO>>() {
+					});
+
+		} catch (Exception e) {
+			log.debug("exception in getBankListForCountry ", e);
+		}
+		return response.getBody();
+	}
+	
 	
 }

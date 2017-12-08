@@ -22,4 +22,6 @@ public interface ICurrencyDao extends JpaRepository<CurrencyMasterModel, Seriali
 	
 	@Query("select cm from CurrencyMasterModel cm where cm.countryId =?1 and cm.isactive='Y'")
 	public List<CurrencyMasterModel> getCurrencyListByCountryId(BigDecimal counryId);
+	
+	public List<CurrencyMasterModel> findByisactive(String isActive);
 }

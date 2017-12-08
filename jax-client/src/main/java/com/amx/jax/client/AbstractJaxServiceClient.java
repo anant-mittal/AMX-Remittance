@@ -66,6 +66,9 @@ public abstract class AbstractJaxServiceClient {
 			if (JaxError.NULL_CUSTOMER_ID.getCode().equals(error.getErrorId())) {
 				throw new InvalidInputException(error);
 			}
+			if (JaxError.INVALID_EXCHANGE_AMOUNT.getCode().equals(error.getErrorId())) {
+				throw new InvalidInputException(error);
+			}
 		}
 	}
 

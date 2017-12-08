@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
@@ -101,7 +103,12 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "ex_rate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ExchangeRateResponseModel>>(){});
 			break;	
-			
+		case "currencyMaster":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CurrencyMasterDTO>>(){});
+			break;
+		case "bankmaster":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BankMasterDTO>>(){});
+			break;
 		}
 
 		responseData.setValues(models);

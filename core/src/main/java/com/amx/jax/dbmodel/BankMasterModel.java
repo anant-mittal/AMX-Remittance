@@ -51,6 +51,8 @@ public class BankMasterModel implements java.io.Serializable {
 	private Date approvedDate;
 	private String remarks;
 	private String splitIndicator;
+	private BigDecimal bankCountryId;
+	
 	public BankMasterModel() {
 	}
 
@@ -341,6 +343,15 @@ public class BankMasterModel implements java.io.Serializable {
 
 	public void setSplitIndicator(String splitIndicator) {
 		this.splitIndicator = splitIndicator;
+	}
+
+	@Column(name = "BANK_COUNTRY_ID", precision = 22, scale = 0)
+	public BigDecimal getBankCountryId() {
+		return bankCountryId;
+	}
+
+	public void setBankCountryId(BigDecimal bankCountryId) {
+		this.bankCountryId = bankCountryId;
 	}
 	 
 	

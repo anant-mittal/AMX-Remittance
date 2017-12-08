@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -21,7 +22,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 	private Logger log = Logger.getLogger(getClass());
 
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal amount) throws ResourceNotFoundException {
+			BigDecimal amount) throws ResourceNotFoundException, InvalidInputException {
 		ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
 		try {
 			String endpoint = EXCHANGE_RATE_ENDPOINT;
@@ -39,6 +40,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			log.error("exception in getExchangeRate ", e);
 		}
 		checkResourceNotFoundException(response.getBody());
+		checkInvalidInputErrors(response.getBody());
 		return response.getBody();
 	}
 }

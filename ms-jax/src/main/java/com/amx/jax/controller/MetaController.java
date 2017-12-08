@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.service.ApplicationCountryService;
+import com.amx.jax.service.BankMasterService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
@@ -110,7 +111,8 @@ public class MetaController implements Serializable{
 	@Autowired
 	CollectionPaymentDetailsViewService collectionPaymentDetailsViewService;
 	
-	
+	@Autowired
+	BankMasterService bankMasterService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -270,6 +272,11 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
+	@RequestMapping(value = "/currency/online/", method = RequestMethod.GET)
+	public ApiResponse getAllCurrencyDetails(){
+		ApiResponse response = currencyMasterService.getAllOnlineCurrencyDetails();
+		return response;
+	}
 	
 	@RequestMapping(value = "/purpose/{documentNumber}/{documentFinancialYear}", method = RequestMethod.GET)
 	public ApiResponse getPurposeOfRemittanceResponse(@PathVariable("documentNumber") BigDecimal documentNumber,@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
@@ -308,6 +315,11 @@ public class MetaController implements Serializable{
 		
 	}
 
+	@RequestMapping(value = "/bank/{country-id}", method = RequestMethod.GET)
+	public ApiResponse getAllCurrencyDetails(@PathVariable("country-id") BigDecimal countryId){
+		ApiResponse response = bankMasterService.getBanksApiResponseByCountryId(countryId);
+		return response;
+	}
 	
 	
 	
