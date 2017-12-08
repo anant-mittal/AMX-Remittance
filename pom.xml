@@ -62,6 +62,7 @@
 		<module>core</module>
 		<module>ms-meta</module>
 		<module>ms-user</module>
+		<module>ms-exchangerate</module>
 		<module>ms-jax</module>
 		<module>ms-postman</module>
 		<module>jax-client</module>
