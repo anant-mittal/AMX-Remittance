@@ -14,6 +14,7 @@ mvn -pl amx-lib clean install -DskipTests
 mvn -pl core clean install -DskipTests
 mvn -pl ms-meta clean install -DskipTests
 mvn -pl ms-user clean install -DskipTests
+mvn -pl ms-exchangerate clean install -DskipTests
 mvn -pl ms-jax clean install -DskipTests
 mvn -pl jax-client clean install -DskipTests
 
