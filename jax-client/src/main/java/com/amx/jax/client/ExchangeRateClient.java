@@ -22,7 +22,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 	private Logger log = Logger.getLogger(getClass());
 
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
-			BigDecimal amount) throws ResourceNotFoundException, InvalidInputException {
+			BigDecimal amount, BigDecimal bankId) throws ResourceNotFoundException, InvalidInputException {
 		ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
 		try {
 			String endpoint = EXCHANGE_RATE_ENDPOINT;
@@ -30,6 +30,9 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			sb.append("?").append("fromCurrency=").append(fromCurrency);
 			sb.append("&").append("toCurrency=").append(toCurrency);
 			sb.append("&").append("amount=").append(amount);
+			if (bankId != null) {
+				sb.append("&").append("bankId=").append(bankId);
+			}
 			String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
