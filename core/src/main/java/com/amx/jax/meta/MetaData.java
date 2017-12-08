@@ -19,7 +19,17 @@ public class MetaData implements IMetaData {
 
 	private BigDecimal languageId;
 
+	/**
+	 * This is default language id from countryId
+	 */
+	private BigDecimal defaultLanguageId;
+
 	private BigDecimal companyId;
+
+	/**
+	 * This is default currency id from countryId
+	 */
+	private BigDecimal defaultCurrencyId;
 
 	private JaxChannel channel;
 
@@ -67,5 +77,21 @@ public class MetaData implements IMetaData {
 
 	public void setChannel(JaxChannel channel) {
 		this.channel = channel;
+	}
+
+	public BigDecimal getDefaultLanguageId() {
+		return defaultLanguageId;
+	}
+
+	public void setDefaultLanguageId(BigDecimal defaultLanguageId) {
+		this.defaultLanguageId = defaultLanguageId;
+	}
+
+	public BigDecimal getDefaultCurrencyId() {
+		return defaultCurrencyId;
+	}
+
+	public void setDefaultCurrencyId(BigDecimal defaultCurrencyId) {
+		this.defaultCurrencyId = defaultCurrencyId;
 	}
 }

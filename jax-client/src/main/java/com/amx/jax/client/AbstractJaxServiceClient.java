@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
@@ -29,7 +30,7 @@ public abstract class AbstractJaxServiceClient {
 	protected RestTemplate restTemplate;
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	protected JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
 	@Qualifier("base_url")
@@ -107,4 +108,12 @@ public abstract class AbstractJaxServiceClient {
 		}
 	}
 
+	protected void checkResourceNotFoundException(ApiResponse<?> response) throws ResourceNotFoundException {
+		if (response.getError() != null) {
+			ApiError error = response.getError().get(0);
+			if (JaxError.EXCHANGE_RATE_NOT_FOUND.getCode().equals(error.getErrorId())) {
+				throw new ResourceNotFoundException(error);
+			}
+		}
+	}
 }

@@ -6,7 +6,7 @@ public class ApiEndpoint {
 
 	public static final String CUSTOMER_ENDPOINT = "/customer";
 
-	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate/";
+	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
 
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 

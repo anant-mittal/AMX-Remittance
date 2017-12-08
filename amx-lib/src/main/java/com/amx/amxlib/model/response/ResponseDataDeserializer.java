@@ -100,9 +100,11 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceReceiptSubreport>>(){});
 			break;	
 		
-	}
-		
-		
+		case "ex_rate":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ExchangeRateResponseModel>>(){});
+			break;	
+			
+		}
 
 		responseData.setValues(models);
 		return responseData;

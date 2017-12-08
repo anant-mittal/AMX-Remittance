@@ -3,6 +3,8 @@ package com.amx.amxlib.model.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ApiResponse<T> {
 
 	private ResponseData data;
@@ -36,6 +38,7 @@ public class ApiResponse<T> {
 	}
 
 	@SuppressWarnings("unchecked")
+	@JsonIgnore
 	public List<T> getResults() {
 		List<T> result = null;
 		if (this.getData() != null && this.getData().getValues() != null && this.getData().getValues().size() > 0) {
@@ -48,6 +51,7 @@ public class ApiResponse<T> {
 		return result;
 	}
 
+	@JsonIgnore
 	public T getResult() {
 		List<T> results = getResults();
 		T result = null;

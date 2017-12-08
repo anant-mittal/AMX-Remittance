@@ -70,6 +70,11 @@
 			<version>2.6.1</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>ms-exchangerate</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
