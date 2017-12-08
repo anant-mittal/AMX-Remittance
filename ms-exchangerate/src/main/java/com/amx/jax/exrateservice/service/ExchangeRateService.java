@@ -1,11 +1,13 @@
 package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -16,7 +18,9 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.exception.GlobalException;
@@ -30,6 +34,8 @@ import com.amx.jax.services.AbstractService;
 @SuppressWarnings("rawtypes")
 public class ExchangeRateService extends AbstractService {
 
+	private Logger logger = Logger.getLogger(ExchangeRateService.class);
+
 	@Autowired
 	private PipsMasterDao pipsDao;
 
@@ -38,6 +44,9 @@ public class ExchangeRateService extends AbstractService {
 
 	@Autowired
 	private MetaData meta;
+
+	@Autowired
+	private CurrencyMasterDao currencyMasterDao;
 
 	@Override
 	public String getModelType() {
@@ -58,7 +67,7 @@ public class ExchangeRateService extends AbstractService {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency);
-			BigDecimal onlineExchangeRates = getApplicableExchangeRate(allExchangeRates, pips);
+			BigDecimal onlineExchangeRates = getApplicableExchangeRate(allExchangeRates, pips, toCurrency);
 			if (onlineExchangeRates == null) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -73,7 +82,7 @@ public class ExchangeRateService extends AbstractService {
 
 	// logic acc. to VW_EX_TRATE
 	private BigDecimal getApplicableExchangeRate(List<ExchangeRateApprovalDetModel> allExchangeRates,
-			List<PipsMaster> pips) {
+			List<PipsMaster> pips, BigDecimal toCurrency) {
 		BigDecimal output = null;
 		Map<BigDecimal, ExchangeRateApprovalDetModel> map = new HashMap<>();
 		if (allExchangeRates != null && !allExchangeRates.isEmpty()) {
@@ -99,7 +108,13 @@ public class ExchangeRateService extends AbstractService {
 			}
 		}
 		if (output != null) {
-			return new BigDecimal(1).divide(output);
+			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
+			if (toCurrencyMaster == null) {
+				logger.error("No currency master record found for currencyId:- " + toCurrency);
+			} else {
+				return new BigDecimal(1).divide(output, toCurrencyMaster.getDecinalNumber().intValue(),
+						RoundingMode.HALF_UP);
+			}
 		}
 		return output;
 	}
