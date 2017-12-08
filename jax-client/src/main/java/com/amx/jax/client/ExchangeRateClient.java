@@ -25,7 +25,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			BigDecimal amount, BigDecimal bankId) throws ResourceNotFoundException, InvalidInputException {
 		ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
 		try {
-			String endpoint = EXCHANGE_RATE_ENDPOINT;
+			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
 			StringBuilder sb = new StringBuilder();
 			sb.append("?").append("fromCurrency=").append(fromCurrency);
 			sb.append("&").append("toCurrency=").append(toCurrency);
