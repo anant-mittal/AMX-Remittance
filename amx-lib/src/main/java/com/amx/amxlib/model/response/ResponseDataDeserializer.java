@@ -95,11 +95,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "trnxHist":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<TransactionHistroyDTO>>(){});
 			break;	
-			
 		case "remitReport":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceReceiptSubreport>>(){});
 			break;	
-		
 		case "ex_rate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ExchangeRateResponseModel>>(){});
 			break;	
