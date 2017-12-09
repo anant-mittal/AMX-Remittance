@@ -10,7 +10,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.lowagie.text.DocumentException;
 
-public class JaxFile {
+public class File {
 
 	private String content;
 	private String name;

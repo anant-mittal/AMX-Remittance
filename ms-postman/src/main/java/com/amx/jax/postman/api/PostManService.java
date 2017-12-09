@@ -9,8 +9,10 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.Email;
 import com.amx.jax.postman.EmailService;
-import com.amx.jax.postman.JaxFile;
+import com.amx.jax.postman.File;
+import com.amx.jax.postman.SMS;
 import com.bootloaderjs.JsonUtil;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManService {
@@ -23,6 +25,9 @@ public class PostManService {
 
 	@Autowired
 	private TemplateEngine textTemplateEngine;
+
+	@Autowired
+	private SMService smsService;
 
 	public void sendEmail(Email email) {
 
@@ -38,14 +43,18 @@ public class PostManService {
 		emailService.send(email);
 	}
 
-	public JaxFile processTemplate(String template, Object data, String fileName) {
-		JaxFile file = new JaxFile();
+	public File processTemplate(String template, Object data, String fileName) {
+		File file = new File();
 		Map<String, Object> map = JsonUtil.toMap(data);
 		Context context = new Context();
 		context.setVariables(map);
 		file.setContent(templateEngine.process(template, context));
 		file.setName(fileName);
 		return file;
+	}
+
+	public void sendSMS(SMS sms) throws UnirestException {
+		this.smsService.sendSMS(sms);
 	}
 
 }

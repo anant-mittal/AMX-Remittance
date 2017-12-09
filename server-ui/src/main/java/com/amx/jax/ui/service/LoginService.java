@@ -17,6 +17,8 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.postman.SMS;
+import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.ResponseMessage;
 import com.amx.jax.ui.ResponseStatus;
 import com.amx.jax.ui.model.UserSession;
@@ -24,6 +26,7 @@ import com.amx.jax.ui.response.LoginData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.UserUpdateData;
 import com.bootloaderjs.ListManager;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class LoginService {
@@ -35,7 +38,10 @@ public class LoginService {
 	private JaxService jaxService;
 
 	@Autowired
-	SessionService sessionService;
+	private SessionService sessionService;
+
+	@Autowired
+	private PostManClient postManClient;
 
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
@@ -145,10 +151,18 @@ public class LoginService {
 				userSession.setUserid(identity);
 				userSession.setOtp(model.getOtp());
 
+				SMS sms = new SMS();
+				sms.setTo("7710072192");
+				sms.setText("Your OTP for Reset is " + model.getOtp());
+
+				postManClient.sendSMS(sms);
+
 				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 
 			} catch (InvalidInputException e) {
 				wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+			} catch (UnirestException e) {
+				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 			}
 		} else {
 			try {
