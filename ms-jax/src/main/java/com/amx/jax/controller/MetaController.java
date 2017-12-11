@@ -284,6 +284,16 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
+	
+	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
+	public ApiResponse getCurrencyDetailsByCountryId(BigDecimal countryId){
+		ApiResponse response = currencyMasterService.getCurrencyByCountryId(countryId);
+		return response;
+	}
+	
+
+	
+	
 	@RequestMapping(value = "/purpose/{documentNumber}/{documentFinancialYear}", method = RequestMethod.GET)
 	public ApiResponse getPurposeOfRemittanceResponse(@PathVariable("documentNumber") BigDecimal documentNumber,@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
 		ApiResponse response =purposeOfRemittanceService.getPurposeOfRemittance(documentNumber, documentFinancialYear);
@@ -314,7 +324,7 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
-	@RequestMapping(value = "/multi/", method = RequestMethod.GET)
+	@RequestMapping(value = "/multicountry/", method = RequestMethod.GET)
 	public ApiResponse getMultiCountry() {
 		ApiResponse response = multiCountryService.getMultiCountryList();
 		return response;

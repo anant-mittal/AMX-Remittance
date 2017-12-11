@@ -295,7 +295,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/multi/";
+			String url =baseUrl.toString()+ META_API_ENDPOINT+"/multicountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>(){});
 			
@@ -322,6 +322,26 @@ public class MetaClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();	
 	}
+	
+	
+	public ApiResponse<CurrencyMasterDTO> getCurrencyByCountryId(BigDecimal countryId) {
+		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response = null;
+		try {
+			log.info("in getAllOnlineCurrency");
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/bycountry/"+countryId;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
+
+		} catch (Exception e) {
+			log.debug("exception in getAllOnlineCurrency ", e);
+		}
+		return response.getBody();	
+	}
+	
+	
 	
 	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal languageId,BigDecimal stateId,BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;

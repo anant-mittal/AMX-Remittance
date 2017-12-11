@@ -3,7 +3,6 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -77,7 +76,26 @@ public class CurrencyMasterService extends AbstractService {
 
 		return response;
 	}
+	
+	
+	
+	public ApiResponse getCurrencyByCountryId(BigDecimal countryId) {
+		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyListByCountryId(countryId);
+		ApiResponse response = getBlackApiResponse();
+		if (currencyList.isEmpty()) {
+			throw new GlobalException("Currency details not avaliable");
+		} else {
+			response.getData().getValues().addAll(convertToModelDto(currencyList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("currency");
+		return response;
+	}
+	
 
+	
+	
+	
 	private List<CurrencyMasterDTO> convert(List<ViewOnlineCurrency> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convert(currency)));
@@ -85,6 +103,24 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 	private CurrencyMasterDTO convert(ViewOnlineCurrency currency) {
+		CurrencyMasterDTO dto = new CurrencyMasterDTO();
+		try {
+			BeanUtils.copyProperties(dto, currency);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("unable to convert currency", e);
+		}
+		return dto;
+	}
+	
+	
+	
+	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterModel> currencyList) {
+		List<CurrencyMasterDTO> output = new ArrayList<>();
+		currencyList.forEach(currency -> output.add(convertModel(currency)));
+		return output;
+	}
+	
+	private CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, currency);
