@@ -17,6 +17,7 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -68,13 +69,23 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
-	public ResponseWrapper<XRateData> xrate(@RequestParam BigDecimal forCur,
+	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount)
 			throws ResourceNotFoundException, InvalidInputException {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
-		jaxService.setDefaults().getxRateClient().getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID),
-				forCur, domAmount, null);
-		//wrapper.getData().
+
+		wrapper.getData().setDomCur(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID));
+
+		if (forCur != null) {
+			ExchangeRateResponseModel resp = jaxService.setDefaults().getxRateClient()
+					.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCur, domAmount, null)
+					.getResult();
+			wrapper.getData().setForXRate(resp.getRate());
+			wrapper.getData().setForAmount(resp.getRate());
+			wrapper.getData().setBeneBanks(resp.getBankWiseRates());
+
+		}
+		
 		return wrapper;
 	}
 

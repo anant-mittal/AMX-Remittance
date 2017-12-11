@@ -1,24 +1,37 @@
 package com.amx.jax.ui.model;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import com.amx.amxlib.meta.model.BankMasterDTO;
 
 public class XRateData {
 
-	String forCur = null;
+	BigDecimal forCur = null;
 	String forCurDesc = null;
 	BigDecimal forXRate = null;
 	BigDecimal forAmount = null;
 
-	String domCur = null;
+	BigDecimal domCur = null;
 	String domCurDesc = null;
 	BigDecimal domXRate = null;
 	BigDecimal domAmount = null;
 
-	public String getForCur() {
+	List<BankMasterDTO> beneBanks = null;
+
+	public List<BankMasterDTO> getBeneBanks() {
+		return beneBanks;
+	}
+
+	public void setBeneBanks(List<BankMasterDTO> beneBanks) {
+		this.beneBanks = beneBanks;
+	}
+
+	public BigDecimal getForCur() {
 		return forCur;
 	}
 
-	public void setForCur(String forCur) {
+	public void setForCur(BigDecimal forCur) {
 		this.forCur = forCur;
 	}
 
@@ -46,11 +59,11 @@ public class XRateData {
 		this.forAmount = forAmount;
 	}
 
-	public String getDomCur() {
+	public BigDecimal getDomCur() {
 		return domCur;
 	}
 
-	public void setDomCur(String domCur) {
+	public void setDomCur(BigDecimal domCur) {
 		this.domCur = domCur;
 	}
 
