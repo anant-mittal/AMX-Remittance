@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
@@ -29,21 +30,21 @@ public class BeneficiaryOnlineService extends AbstractService{
 	
 	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId,BigDecimal applicationCountryId,BigDecimal beneCountryId) {
-		List<BenificiaryListView> beneOnlineList = null;
+		List<BenificiaryListView> beneList = null;
 		if(beneCountryId!=null && beneCountryId.compareTo(BigDecimal.ZERO)!=0) {
-			beneOnlineList = beneficiaryOnlineDao.getOnlineBeneListFromViewForCountry(customerId, applicationCountryId,beneCountryId);
+			beneList = beneficiaryOnlineDao.getOnlineBeneListFromViewForCountry(customerId, applicationCountryId,beneCountryId);
 		}else {
-			beneOnlineList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
+			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
 		
 		ApiResponse response = getBlackApiResponse();
-		if(beneOnlineList.isEmpty()) {
+		if(beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
 		}else {
-	    response.getData().getValues().addAll(beneOnlineList);
+	    response.getData().getValues().addAll(beneList);
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("onlinebene");
+		response.getData().setType("beneList");
 		return response;
 	}
 	
@@ -52,21 +53,21 @@ public class BeneficiaryOnlineService extends AbstractService{
 	
 	public ApiResponse getBeneficiaryListForBranch(BigDecimal customerId,BigDecimal applicationCountryId,BigDecimal beneCountryId) {
 		
-		List<BenificiaryListView> beneOnlineList = null;
+		List<BenificiaryListView> beneList = null;
 		if(beneCountryId!=null && beneCountryId.compareTo(BigDecimal.ZERO)!=0) {
-			beneOnlineList = beneficiaryOnlineDao.getBeneListFromViewForCountry(customerId, applicationCountryId, beneCountryId);
+			beneList = beneficiaryOnlineDao.getBeneListFromViewForCountry(customerId, applicationCountryId, beneCountryId);
 		}else {
-			beneOnlineList = beneficiaryOnlineDao.getBeneListFromView(customerId, applicationCountryId);
+			beneList = beneficiaryOnlineDao.getBeneListFromView(customerId, applicationCountryId);
 		}
 		
 		ApiResponse response = getBlackApiResponse();
-		if(beneOnlineList.isEmpty()) {
+		if(beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
 		}else {
-	    response.getData().getValues().addAll(beneOnlineList);
+	    response.getData().getValues().addAll(beneList);
 		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("onlinebene");
+		response.getData().setType("beneList");
 		return response;
 	}
 	
@@ -120,7 +121,15 @@ private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryLi
 	}
 
 
-
+private List<BeneficiaryListDTO> convertBeneList(List<BenificiaryListView> beneList){
+	List<BeneficiaryListDTO> list = new ArrayList<>();
+	
+	for(BenificiaryListView bene : beneList) {
+		
+	}
+	
+	return list;
+}
 	
 	
 

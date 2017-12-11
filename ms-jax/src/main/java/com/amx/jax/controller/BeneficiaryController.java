@@ -6,11 +6,12 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.service.BeneficiaryOnlineService;
 
@@ -30,12 +31,14 @@ public class BeneficiaryController {
 	
 
 	
-	@RequestMapping(value = "/beneonline/{userType}/{customerId}/{applicationCountryId}/{beneCountryId}", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryOnlineListResponse(@PathVariable("userType") String userType,@PathVariable("customerId") BigDecimal customerId,@PathVariable("applicationCountryId") BigDecimal applicationCountryId,
-			@PathVariable("beneCountryId") BigDecimal beneCountryId) {
+	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("userType") String userType,
+			@RequestParam("customerId") BigDecimal customerId,
+			@RequestParam("applicationCountryId") BigDecimal applicationCountryId,
+			@RequestParam("beneCountryId") BigDecimal beneCountryId) {
 		logger.info("userType :"+userType+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
 		ApiResponse response =null;
-		if(userType!=null && userType.equalsIgnoreCase("BR")) {
+		if(userType!=null && userType.equalsIgnoreCase(JaxChannel.BRANCH.toString())) {
 			response = beneOnlineService.getBeneficiaryListForBranch(customerId, applicationCountryId,beneCountryId);
 		}else {
 			response = beneOnlineService.getBeneficiaryListForOnline(customerId, applicationCountryId,beneCountryId);
@@ -44,11 +47,12 @@ public class BeneficiaryController {
 	}
 	
 	
-	@RequestMapping(value = "/benecountry/{userType}/{customerId}", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCountryListResponse(@PathVariable("userType") String userType,@PathVariable("customerId") BigDecimal customerId) {
+	@RequestMapping(value = "/benecountry/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryCountryListResponse(@RequestParam("userType") String userType,
+			@RequestParam("customerId") BigDecimal customerId) {
 		logger.info("userType :"+userType+"\t customerId :"+customerId);
 		ApiResponse response ;
-		if(userType!=null && userType.equalsIgnoreCase("BR")) {
+		if(userType!=null && userType.equalsIgnoreCase(JaxChannel.BRANCH.toString())) {
 		 response = beneOnlineService.getBeneficiaryCountryListForBranch(customerId);
 		}else {
 			 response = beneOnlineService.getBeneficiaryCountryListForOnline(customerId);

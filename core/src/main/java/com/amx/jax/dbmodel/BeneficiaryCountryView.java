@@ -15,7 +15,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name="VW_BENEFICIARY_COUNTRY_ALL")
+@Table(name="JAX_VW_BENEFICIARY_COUNTRY")
 public class BeneficiaryCountryView {
 	
 	@Id

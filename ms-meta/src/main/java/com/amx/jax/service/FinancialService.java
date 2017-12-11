@@ -1,5 +1,6 @@
 package com.amx.jax.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class FinancialService  extends AbstractService{
 	
 	
 	private List<UserFinancialYearDTO> convert(List<UserFinancialYear> financialList){
-		List<UserFinancialYearDTO> list = null;
+		List<UserFinancialYearDTO> list = new ArrayList<>();
 		for (UserFinancialYear fyr : financialList) {
 			UserFinancialYearDTO model = new UserFinancialYearDTO();
 			fyr.setFinancialYear(model.getFinancialYear());

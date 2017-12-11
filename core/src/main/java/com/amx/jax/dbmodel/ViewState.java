@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="VW_STATE")
+@Table(name="JAX_VW_STATE")
 public class ViewState implements Serializable{
 	/**
 	 * 
@@ -26,9 +26,9 @@ public class ViewState implements Serializable{
 	@Column(name="LANGUAGE_ID")
 	private BigDecimal languageId;
 	@Column(name="STATE_CODE")
-	private String countryCode;
+	private String stateCode;
 	@Column(name="STATE_NAME")
-	private String countryName;
+	private String stateName;
 	public BigDecimal getStateId() {
 		return stateId;
 	}
@@ -47,19 +47,18 @@ public class ViewState implements Serializable{
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
 	}
-	public String getCountryCode() {
-		return countryCode;
+	public String getStateCode() {
+		return stateCode;
 	}
-	public void setCountryCode(String countryCode) {
-		this.countryCode = countryCode;
+	public void setStateCode(String stateCode) {
+		this.stateCode = stateCode;
 	}
-	public String getCountryName() {
-		return countryName;
+	public String getStateName() {
+		return stateName;
 	}
-	public void setCountryName(String countryName) {
-		this.countryName = countryName;
+	public void setStateName(String stateName) {
+		this.stateName = stateName;
 	}
-	
 	
 
 

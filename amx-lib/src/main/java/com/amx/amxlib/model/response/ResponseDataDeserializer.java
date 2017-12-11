@@ -6,6 +6,8 @@ import java.util.List;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BeneCountryDTO;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -13,6 +15,8 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
+import com.amx.amxlib.meta.model.ViewDistrictDto;
+import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -100,6 +104,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "remitReport":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceReceiptSubreport>>(){});
 			break;	
+
 		case "ex_rate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ExchangeRateResponseModel>>(){});
 			break;	
@@ -109,7 +114,23 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "bankmaster":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BankMasterDTO>>(){});
 			break;
-		}
+		case "beneList":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneficiaryListDTO>>(){});
+			break;		
+			
+		case "benecountry":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneCountryDTO>>(){});
+			break;	
+		case "district":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewDistrictDto>>(){});
+			break;
+		case "state":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewStateDto>>(){});
+			break;	
+	}
+		
+		
+
 
 		responseData.setValues(models);
 		return responseData;

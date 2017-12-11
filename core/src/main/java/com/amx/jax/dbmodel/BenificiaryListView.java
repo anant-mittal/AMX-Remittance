@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "VW_LIST_BENEFICIARY_ALL")
+@Table(name = "JAX_VW_LIST_BENEFICIARY_ALL")
 public class BenificiaryListView implements Serializable {
 
 	/**

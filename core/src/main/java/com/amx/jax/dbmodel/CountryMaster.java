@@ -4,11 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,9 +15,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /*import com.amg.exchange.registration.model.ContactDetail;
 import com.amg.exchange.registration.model.Customer;
@@ -92,99 +86,7 @@ public class CountryMaster implements Serializable {
 	private String businessCountry;
 	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
 	
-	/*private List<StateMaster> fsStateMasters = new ArrayList<StateMaster>();
-	private List<ContactDetail> fsContactDetails = new ArrayList<ContactDetail>();
-	private List<CustomerLogin> fsCustomerLogins = new ArrayList<CustomerLogin>();
-	private List<CountryMasterDesc> fsCountryMasterDescs = new ArrayList<CountryMasterDesc>();
-	private List<CustomerEmploymentInfo> fsCustomerEmploymentInfos = new ArrayList<CustomerEmploymentInfo>();
-	private List<Customer> fsCustomersForNationality = new ArrayList<Customer>();
-	private List<Customer> fsCustomersForCountryId = new ArrayList<Customer>();
-	private Set<CurrencyMaster> exCurrencyMasters = new HashSet<CurrencyMaster>(
-			0);
-	private List<RuleApplicationDesc> fsRuleApplicationDescs = new ArrayList<RuleApplicationDesc>();
-	private List<BusinessComponentConf> fsBusinessComponentConfs = new ArrayList<BusinessComponentConf>();
-	private Set<SupplierMaster> exSupplierMasters = new HashSet<SupplierMaster>(
-			0);
-	private Set<SpecialDeal> exSpecialDeals = new HashSet<SpecialDeal>(0);
-	private Set<OutrightSwapMaster> exOutrightSwapMasters = new HashSet<OutrightSwapMaster>(
-			0);
-	private Set<MonthAccountBalance> exMonthAccountBalances = new HashSet<MonthAccountBalance>(
-			0);
-	private Set<Message> exMessages = new HashSet<Message>(0);
-	private Set<FundProjection> exFundProjections = new HashSet<FundProjection>(
-			0);
-	private Set<DealSupplier> exDealSuppliers = new HashSet<DealSupplier>(0);
-	private Set<DealPurchase> exDealPurchases = new HashSet<DealPurchase>(0);
-	private Set<DealConclusionType> exDealConclusionTypes = new HashSet<DealConclusionType>(
-			0);
-*/
-	/*private Set<FundEstimation> exFundEstimtaionForApplicationCountry = new HashSet<FundEstimation>(
-			0);
-	private Set<FundEstimation> exFundEstimtaionForBankCountry = new HashSet<FundEstimation>(
-			0);
-
-	private Set<FundEstimationDetails> exFundEstimtaionDetailsForApplicationCountry = new HashSet<FundEstimationDetails>(
-			0);
-	private Set<FundEstimationDetails> exFundEstimtaionDeatilsForBankCountry = new HashSet<FundEstimationDetails>(
-			0);
-
-	private Set<FundEstimationDays> exFundEstimationDaysApplicationCountry = new HashSet<FundEstimationDays>(
-			0);
-	private Set<FundEstimationDays> exFundEstimationDaysBankCountry = new HashSet<FundEstimationDays>(
-			0);*/
-
-	/*private Set<DailyBalance> dailyBalance = new HashSet<DailyBalance>(0);
-
-	private Set<Deal> exDeals = new HashSet<Deal>(0);
-
-	private Set<BankMaster> fsCountryMaster = new HashSet<BankMaster>(0);
-	//18/10/2014  we removed FS_Application_CountryID from Bank Master Table
-	private Set<BankMaster> fsApplicationCountryMaster = new HashSet<BankMaster>(
-			0);
-	private Set<DailyAccountBalance> exdailyAccountBalance = new HashSet<DailyAccountBalance>(
-			0);
-	private Set<CustomerSpecialDealRequest> applicationCountryCountryMaster = new HashSet<CustomerSpecialDealRequest>(
-			0);
-	private Set<CustomerSpecialDealRequest> customerSpeacialDealReqCountryMaster = new HashSet<CustomerSpecialDealRequest>(
-			0);
-	private Set<TreasuryDealHeader> exDealHeader = new HashSet<TreasuryDealHeader>(
-			0);
-
-	private Set<TreasuryDealDetail> exDealDetail = new HashSet<TreasuryDealDetail>(
-			0);
-	private Set<TreasuryStandardInstruction> exTreasuryStandardIns = new HashSet<TreasuryStandardInstruction>(0);
 	
-	private Set<DayBookHeader> exDayBook = new HashSet<DayBookHeader>(0);
-	
-	private Set<ApplicationSetup> exApplicationSetup= new HashSet<ApplicationSetup>(0);
-	
-	private Set<DayBookDetails> dayBookDetailsList = new HashSet<DayBookDetails>(0);
-	
-	private List<Data> dataList=new ArrayList<Data>();
-	private List<ExchangeRate> exchangeRate=new ArrayList<ExchangeRate>();
-	private List<PipsMaster> pipsMaster=new ArrayList<PipsMaster>();
-	private List<BeneCountryService> beneCountryServiceMaster=new ArrayList<BeneCountryService>();
-	private List<MarketingData> maketlist=new ArrayList<MarketingData>();
-	private List<ServiceApplicabilityRule> serviceApplicabilityRule=new ArrayList<ServiceApplicabilityRule>();
-	private List<BeneficaryAccount> beneApplicationCountry=new ArrayList<BeneficaryAccount>();
-	private List<BeneficaryAccount> beneficaryCountry=new ArrayList<BeneficaryAccount>();
-	private List<BankServiceRule> bankServieRule =new ArrayList<BankServiceRule>();
-	//private List<SwiftMaster> swiftMaster=new ArrayList<SwiftMaster>();
-	private List<InsuranceMaster> insuranceSetUp=new ArrayList<InsuranceMaster>();
-	private Set<Remittance> exRemittanceforBankCountry = new HashSet<Remittance>(0);
-	private Set<Remittance> exRemittanceforAppCountry = new HashSet<Remittance>(0);
-	
-	//private Set<RemittanceApplication> fsCountryMasterByCorespondingCountryId = new HashSet<RemittanceApplication>();
-	private Set<RemittanceApplication> fsCountryMasterByBankCountryId = new HashSet<RemittanceApplication>();
-	private Set<RemittanceApplication> fsCountryMasterByApplicationCountryId = new HashSet<RemittanceApplication>();
-	
-	private Set<RemiittanceApplication> fsCountryMasterByBankCountry = new HashSet<RemiittanceApplication>();
-	private Set<RemiittanceApplication> fsCountryMasterByApplicationCountry = new HashSet<RemiittanceApplication>();
-	private Set<ApplicationAmlCheck> exApplicationAmlCheck = new HashSet<ApplicationAmlCheck>(0);
-	private Set<RemitApplAml> exRemitApplAml = new HashSet<RemitApplAml>(0);
-	private Set<AdditionalInstructionData> additionalInstData = new HashSet<AdditionalInstructionData>(0);*/
-	/*private Set<ServiceApplicabilityRule> serviceAppRuleCountry = new HashSet<ServiceApplicabilityRule>(0);
-	private Set<CurrencyOtherInformation> currencyOtherInfo=new HashSet<CurrencyOtherInformation>(0);*/
 	
 	private String createdBy;
 	private Date createdDate;

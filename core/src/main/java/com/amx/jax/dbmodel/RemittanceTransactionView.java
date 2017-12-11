@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="VW_REMITTANCE_TRANSACTION")
+@Table(name="JAX_VW_REMITTANCE_TRANSACTION")
 public class RemittanceTransactionView implements Serializable{
 
 

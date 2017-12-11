@@ -66,8 +66,6 @@ public class CityMaster implements java.io.Serializable {
 	private Date approvedDate;
 	private String remarks;
 	private List<CityMasterDesc> fsCityMasterDescs = new ArrayList<CityMasterDesc>();
-	//private List<ContactDetail> fsContactDetails = new ArrayList<ContactDetail>();
-	//private List<CustomerEmploymentInfo> fsCustomerEmploymentInfos = new ArrayList<CustomerEmploymentInfo>();
 
 	public CityMaster() {
 	}

@@ -13,7 +13,7 @@ import javax.persistence.Table;
  */
 
 @Entity
-@Table(name="VW_DISTRICT")
+@Table(name="JAX_VW_DISTRICT")
 public class ViewDistrict implements Serializable{
 	
 	

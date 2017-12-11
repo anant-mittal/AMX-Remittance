@@ -31,6 +31,7 @@ import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
 //import com.amx.jax.service.TransactionHistroyService;
 import com.amx.jax.service.ViewDistrictService;
+import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
 
 /**
@@ -76,8 +77,7 @@ public class MetaController implements Serializable{
 	@Autowired
 	FinancialService financialService;
 	
-	@Autowired
-	ViewDistrictService districtServcie;
+	
 	
 	
 	@Autowired
@@ -88,6 +88,12 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	MultiCountryService multiCountryService;
+	
+	@Autowired
+	ViewDistrictService districtService;
+	
+	@Autowired
+	ViewStateService stateService;
 	
 
 	
@@ -262,8 +268,8 @@ public class MetaController implements Serializable{
 		//BigDecimal collectionDocumentCode =new BigDecimal(2);
 		ApiResponse response = remittanceTransactionService.getRemittanceTransactionDetails(documnetNo,docFyr,ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		return response;
-	}*/
-	
+	}
+	*/
 	
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
@@ -323,11 +329,30 @@ public class MetaController implements Serializable{
 	
 	
 	
-/*	@RequestMapping(value = "/district/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
-	public ApiResponse<T> getDistrictResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
-		ApiResponse response = metaService.getDistrict(stateId, districtId, languageId);
+	@RequestMapping(value = "/districtdesc/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
+	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
+		ApiResponse response = districtService.getDistrict(stateId, districtId, languageId);
 		return response;
-	}*/
+	}
+	
+	@RequestMapping(value = "/districtlist/{languageId}/{stateId}", method = RequestMethod.GET)
+	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
+		ApiResponse response = districtService.getAllDistrict(stateId, languageId);
+		return response;
+	}
+	
+	@RequestMapping(value = "/statedesc/{languageId}/{stateId}/{countryId}", method = RequestMethod.GET)
+	public ApiResponse getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("countryId") BigDecimal countryId){
+		ApiResponse response = stateService.getState(countryId, stateId, languageId);
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/statelist/{languageId}/{countryId}", method = RequestMethod.GET)
+	public ApiResponse getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+		ApiResponse response = stateService.getStateAll(countryId, languageId);
+		return response;
+	}
 	
 	
 	
