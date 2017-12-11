@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.ui.config.CustomerAuthProvider;
-import com.amx.jax.ui.model.GuestSession;
 import com.amx.jax.ui.model.UserSession;
+import com.amx.jax.ui.session.GuestSession;
 
 @Component
 public class SessionService {
