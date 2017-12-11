@@ -5,8 +5,6 @@ import java.io.Serializable;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.ui.Constants;
-import com.amx.jax.ui.ResponseMessage;
-import com.amx.jax.ui.ResponseStatus;
 
 public class ResponseWrapper<T> implements Serializable {
 

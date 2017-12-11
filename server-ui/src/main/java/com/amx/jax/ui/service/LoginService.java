@@ -19,12 +19,12 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.postman.SMS;
 import com.amx.jax.postman.client.PostManClient;
-import com.amx.jax.ui.ResponseMessage;
-import com.amx.jax.ui.ResponseStatus;
+import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserSession;
-import com.amx.jax.ui.response.LoginData;
+import com.amx.jax.ui.model.UserUpdateData;
+import com.amx.jax.ui.response.ResponseMessage;
+import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.UserUpdateData;
 import com.bootloaderjs.ListManager;
 import com.mashape.unirest.http.exceptions.UnirestException;
 

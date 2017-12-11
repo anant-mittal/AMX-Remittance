@@ -15,12 +15,12 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.ui.ResponseMessage;
-import com.amx.jax.ui.ResponseStatus;
+import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserSession;
-import com.amx.jax.ui.response.LoginData;
+import com.amx.jax.ui.model.UserUpdateData;
+import com.amx.jax.ui.response.ResponseMessage;
+import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.response.UserUpdateData;
 
 @Service
 public class RegistrationService {

@@ -1,4 +1,6 @@
-package com.amx.jax.ui.response;
+package com.amx.jax.ui.model;
+
+import com.amx.jax.ui.response.ResponseDataInterface;
 
 public class UserMetaData implements ResponseDataInterface {
 

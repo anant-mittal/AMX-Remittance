@@ -1,4 +1,4 @@
-package com.amx.jax.ui;
+package com.amx.jax.ui.response;
 
 public enum ResponseStatus {
 
