@@ -53,4 +53,12 @@ public class Util {
 		output.forEach(o -> result.add(new BigDecimal(o)));
 		return result;
 	}
+	
+	public static boolean isNullZeroBigDecimalCheck(BigDecimal value) {
+		if(value != null && value.compareTo(BigDecimal.ZERO)!=0) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
