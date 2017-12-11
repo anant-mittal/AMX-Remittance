@@ -23,7 +23,7 @@ public class ResponseWrapper<T> implements Serializable {
 
 	private Long timestamp = null;
 	private String status = "200";
-	private ResponseStatus statusKey = null;
+	private ResponseStatus statusKey = ResponseStatus.SUCCESS;
 	private String message = Constants.EMPTY;
 	private String messageKey = Constants.EMPTY;
 

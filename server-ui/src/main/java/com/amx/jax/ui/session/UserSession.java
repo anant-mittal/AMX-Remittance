@@ -1,4 +1,4 @@
-package com.amx.jax.ui.model;
+package com.amx.jax.ui.session;
 
 import java.io.Serializable;
 

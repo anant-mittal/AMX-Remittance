@@ -1,9 +1,8 @@
 package com.amx.jax.ui.model;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.response.ResponseDataInterface;
 
-public class LoginData implements ResponseDataInterface {
+public class LoginData  {
 
 	private String nounce = null;
 	private String otp = null;

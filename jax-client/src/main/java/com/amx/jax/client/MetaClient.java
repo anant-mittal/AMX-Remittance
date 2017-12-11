@@ -310,7 +310,7 @@ public class MetaClient extends AbstractJaxServiceClient{
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response = null;
 		try {
 			log.info("in getAllOnlineCurrency");
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			MultiValueMap<String, String> headers = getHeader();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/online/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
