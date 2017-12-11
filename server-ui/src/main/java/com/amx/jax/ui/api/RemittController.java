@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -42,16 +44,20 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Returns transaction history")
+	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
 			@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference) throws IOException, DocumentException {
+			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
+			throws IOException, DocumentException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
-		postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport.pdf");
+		if (skipd == null || skipd.booleanValue() == false) {
+			postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
+					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
+		}
 		return wrapper;
 	}
 
@@ -62,9 +68,14 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
-	public ResponseWrapper<XRateData> xrate(@RequestParam String forCur, @RequestParam(required = false) String banBank,
-			@RequestParam(required = false) BigDecimal domAmount) {
-		return new ResponseWrapper<XRateData>(new XRateData());
+	public ResponseWrapper<XRateData> xrate(@RequestParam BigDecimal forCur,
+			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount)
+			throws ResourceNotFoundException, InvalidInputException {
+		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
+		jaxService.setDefaults().getxRateClient().getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID),
+				forCur, domAmount, null);
+		//wrapper.getData().
+		return wrapper;
 	}
 
 }

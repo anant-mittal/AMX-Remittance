@@ -16,6 +16,16 @@ public class JaxMetaInfo {
 	private BigDecimal countryId;
 	private BigDecimal customerId;
 	private BigDecimal companyId;
+	private BigDecimal languageId;
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 
 	public BigDecimal getCustomerId() {

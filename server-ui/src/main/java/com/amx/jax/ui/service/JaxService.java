@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
+import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
@@ -23,6 +24,8 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 
+	public static final String DEFAULT_CURRENCY_ID = "1";
+
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
@@ -34,6 +37,17 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private RemitClient remitClient;
+
+	@Autowired
+	private ExchangeRateClient xRateClient;
+
+	public ExchangeRateClient getxRateClient() {
+		return xRateClient;
+	}
+
+	public void setxRateClient(ExchangeRateClient xRateClient) {
+		this.xRateClient = xRateClient;
+	}
 
 	public RemitClient getRemitClient() {
 		return remitClient;
@@ -67,8 +81,11 @@ public class JaxService extends AbstractJaxServiceClient {
 	}
 
 	public JaxService setDefaults() {
+
 		jaxMetaInfo.setCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID));
+		jaxMetaInfo.setLanguageId(new BigDecimal(JaxService.DEFAULT_LANGUAGE_ID));
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
+
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
