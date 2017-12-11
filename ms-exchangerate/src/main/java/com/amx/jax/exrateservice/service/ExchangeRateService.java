@@ -62,12 +62,13 @@ public class ExchangeRateService extends AbstractService {
 
 	@Override
 	public Class<?> getModelClass() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal amount,
 			BigDecimal bankId) {
+		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
+				+ amount);
 		ApiResponse response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline();

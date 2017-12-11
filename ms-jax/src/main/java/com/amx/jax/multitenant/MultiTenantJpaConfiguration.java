@@ -23,7 +23,7 @@ public class MultiTenantJpaConfiguration {
 	MultiTenantJaxProperties multiTenantJaxProperties;
 
 	@Bean(name = "dataSourcesJax")
-	public Map<String, DataSource> dataSourcesDvdRental() {
+	public Map<String, DataSource> dataSourcesJax() {
 		Map<String, DataSource> result = new HashMap<>();
 		for (DataSourceProperties dsProperties : this.multiTenantJaxProperties.getDataSourcesProps()) {
 			DataSourceBuilder factory = DataSourceBuilder.create().url(dsProperties.getUrl())
