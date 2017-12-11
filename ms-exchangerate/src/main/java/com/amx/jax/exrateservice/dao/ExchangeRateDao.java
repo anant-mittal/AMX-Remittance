@@ -15,11 +15,9 @@ public class ExchangeRateDao {
 	@Autowired
 	private ExchangeRateApprovalDetRepository repo;
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
-			BigDecimal countryId) {
+	public List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,BigDecimal countryId) {
 
-		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId,
-				countryId);
+		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId,countryId);
 		return exchangeRates;
 	}
 
