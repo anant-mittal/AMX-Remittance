@@ -18,4 +18,8 @@ public class CurrencyMasterDao {
 		return repo.findOne(id);
 	}
 
+	public CurrencyMasterModel getCurrencyMasterByQuote(String quoteName) {
+		return repo.findByquoteName(quoteName).get(0);
+	}
+
 }

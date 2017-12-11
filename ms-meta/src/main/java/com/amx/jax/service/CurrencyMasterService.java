@@ -69,11 +69,12 @@ public class CurrencyMasterService extends AbstractService {
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		} else {
-			response.getData().getValues().addAll(convert(currencyList));
+			List<CurrencyMasterDTO> list = convert(currencyList);
+			response.getData().getValues().addAll(list);
+			response.getData().setType(list.get(0).getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
 		}
 
-		response.getData().setType("currency");
 		return response;
 	}
 
