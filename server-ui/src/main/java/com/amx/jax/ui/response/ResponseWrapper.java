@@ -25,7 +25,7 @@ public class ResponseWrapper<T> implements Serializable {
 
 	private Long timestamp = null;
 	private String status = "200";
-	private String statusKey = "";
+	private ResponseStatus statusKey = null;
 	private String message = Constants.EMPTY;
 	private String messageKey = Constants.EMPTY;
 
@@ -46,10 +46,10 @@ public class ResponseWrapper<T> implements Serializable {
 	public void setData(T data) {
 		this.data = data;
 	}
-	
-//	public void setData(List<T> results) {
-//		this.data = results;
-//	}
+
+	// public void setData(List<T> results) {
+	// this.data = results;
+	// }
 
 	public Long getTimestamp() {
 		return timestamp;
@@ -59,11 +59,11 @@ public class ResponseWrapper<T> implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	public String getStatusKey() {
+	public ResponseStatus getStatusKey() {
 		return statusKey;
 	}
 
-	public void setStatusKey(String statusKey) {
+	public void setStatusKey(ResponseStatus statusKey) {
 		this.statusKey = statusKey;
 	}
 
@@ -76,7 +76,7 @@ public class ResponseWrapper<T> implements Serializable {
 	}
 
 	public void setStatus(ResponseStatus status) {
-		this.statusKey = status.toString();
+		this.statusKey = status;
 		this.status = status.getCode();
 	}
 

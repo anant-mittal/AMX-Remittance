@@ -6,7 +6,6 @@ public enum ResponseMessage {
 
 	AUTH_SUCCESS("User authenticated succfully"), AUTH_FAILED("User authenticated failed"),
 
-
 	UNKNOWN_ERROR("error.unknown");
 
 	private final String message;

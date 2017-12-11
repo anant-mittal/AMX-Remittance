@@ -4,7 +4,9 @@ source ./config/vars.sh
 
 file="~/config/vars.sh"
 
-if [ -f "$file" ]
+if [ -f ~/config/vars.sh ]
 then
-        source $file
+        source ~/config/vars.sh
+else
+	echo "CONFIG FILE NOT FOUND"
 fi
