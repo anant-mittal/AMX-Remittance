@@ -15,10 +15,12 @@ public class BlackListDao {
 	private IBlackMasterRepository repo;
 
 	public List<BlackListModel> getBlackByName(String name) {
+		name = name.replaceAll("\\s+", "");
 		return repo.getBlackByName(name);
 	}
 
 	public List<BlackListModel> getBlackByLocalName(String localName) {
+		localName = localName.replaceAll("\\s+", "");
 		return repo.findByarabicName(localName);
 	}
 }

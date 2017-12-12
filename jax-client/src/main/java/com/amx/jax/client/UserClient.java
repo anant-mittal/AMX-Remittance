@@ -59,7 +59,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId) throws InvalidInputException {
+	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		try {
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
@@ -73,6 +74,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			log.error("exception in sendOtpForCivilId ", e);
 		}
 		checkInvalidInputErrors(response.getBody());
+		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}
 

@@ -82,6 +82,41 @@ public abstract class AbstractJaxServiceClient {
 			if (JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.getCode().equals(error.getErrorId())) {
 				throw new LimitExeededException(error);
 			}
+			boolean iscustValidationError = false;
+			if (JaxError.USER_NOT_FOUND.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.ID_PROOF_EXPIRED.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.ID_PROOFS_NOT_VALID.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.ID_PROOFS_SCAN_NOT_FOUND.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.CUSTOMER__SIGNATURE_UNAVAILABLE.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.INVALID_INSURANCE_INDICATOR.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.OLD_EMOS_USER_NOT_FOUND.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.MISSING_CONTACT_DETAILS.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.MISSING_HOME_CONTACT_DETAILS.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.MISSING_LOCAL_CONTACT_DETAILS.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+
+			if (iscustValidationError) {
+				throw new CustomerValidationException(error);
+			}
 		}
 	}
 

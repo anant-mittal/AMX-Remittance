@@ -106,7 +106,7 @@ public class ExchangeRateService extends AbstractService {
 			for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 				List<PipsMaster> piplist = entry.getValue();
 				ExchangeRateApprovalDetModel rate = entry.getKey();
-				BankMasterDTO dto = bankMasterService.getBankMasterbyId(rate.getBankId());
+				BankMasterDTO dto = bankMasterService.getBankMasterDTObyId(rate.getBankId());
 				dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
 				bankWiseRates.add(dto);
 			}

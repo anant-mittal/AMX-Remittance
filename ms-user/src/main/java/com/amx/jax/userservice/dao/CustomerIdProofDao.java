@@ -17,11 +17,8 @@ public class CustomerIdProofDao {
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
 
-	public List<CustomerIdProof> validateCustomerIdProofs(BigDecimal customerId) {
+	public List<CustomerIdProof> getCustomerIdProofs(BigDecimal customerId) {
 		List<CustomerIdProof> idProofList = customerIdProofRepository.getCustomerIdProofByCustomerId(customerId);
-		if (idProofList.isEmpty()) {
-			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
-		}
 		return idProofList;
 	}
 

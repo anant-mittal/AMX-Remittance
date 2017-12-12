@@ -106,6 +106,7 @@ public class UserValidationService {
 		if (cust.getEmail() == null) {
 			throw new InvalidCivilIdException("Email is empty. Contact branch to update the same.");
 		}
+		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
 	}
 
@@ -126,22 +127,33 @@ public class UserValidationService {
 	}
 
 	protected void validateCustIdProofs(BigDecimal custId) {
-		List<CustomerIdProof> idProofs = idproofDao.validateCustomerIdProofs(custId);
+		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			validateIdProof(idProof);
 		}
-
+		if (idProofs.isEmpty()) {
+			throw new GlobalException("ID proofs not available, contact branch", JaxError.NO_ID_PROOFS_AVAILABLE);
+		}
 	}
 
 	private void validateIdProof(CustomerIdProof idProof) {
 
 		String scanSystem = idProof.getScanSystem();
+		if (idProof.getIdentityExpiryDate() != null && idProof.getIdentityExpiryDate().compareTo(new Date()) < 0) {
+			throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+		}
 		if ("A".equals(scanSystem)) {
 			List<CustomerIdProof> validIds = idproofDao
 					.getCustomerImageValidation(idProof.getFsCustomer().getCustomerId(), idProof.getIdentityTypeId());
 			if (validIds == null || validIds.isEmpty()) {
 				throw new GlobalException("Identity proof are expired or invalid", JaxError.ID_PROOFS_NOT_VALID);
 			}
+			for (CustomerIdProof id : validIds) {
+				if (id.getIdentityExpiryDate() != null && id.getIdentityExpiryDate().compareTo(new Date()) < 0) {
+					throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
+				}
+			}
+
 		} else if ("D".equals(scanSystem)) {
 			Map<String, Object> imageChecks = imageCheckDao.dmsImageCheck(idProof.getIdentityTypeId(),
 					idProof.getIdentityInt(), sdf.format(idProof.getIdentityExpiryDate()));
@@ -331,7 +343,6 @@ public class UserValidationService {
 					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 		}
 	}
-
 
 	public Date getMidnightToday() {
 		Calendar date = new GregorianCalendar();

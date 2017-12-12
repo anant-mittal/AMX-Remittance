@@ -47,14 +47,20 @@ public class JaxClientApplicationTests {
 	@Autowired
 	protected Config conf;
 
-	@Test
+	//@Test
 	public void testSendotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		ApiResponse<CivilIdOtpModel> response = null;
 		try {
-			response = client.sendOtpForCivilId("284052306594");
+			response = client.sendOtpForCivilId("289053104436");
 		} catch (InvalidInputException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CustomerValidationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LimitExeededException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -70,7 +76,7 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.validateOtp("284052306594", "1234");
+			response = client.validateOtp("289053104436", "112357");
 		} catch (IncorrectInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -85,7 +91,7 @@ public class JaxClientApplicationTests {
 		assertNotNull("Response is null", response);
 	}
 
-	@Test
+	//@Test
 	public void testsavecustapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -101,7 +107,7 @@ public class JaxClientApplicationTests {
 		assertNotNull("Response is null", response);
 	}
 
-	@Test
+	//@Test
 	public void updatepasswordapi() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

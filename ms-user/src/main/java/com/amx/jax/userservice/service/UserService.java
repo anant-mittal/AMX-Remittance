@@ -114,7 +114,7 @@ public class UserService extends AbstractUserService {
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion4(), cust.getSecurityAnswer4()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion5(), cust.getSecurityAnswer5()));
 		model.setSecurityquestions(securityquestions);
-		
+
 		return model;
 	}
 
@@ -291,7 +291,7 @@ public class UserService extends AbstractUserService {
 		try {
 			BeanUtils.copyProperties(personinfo, customer);
 		} catch (Exception e) {
-		} 
+		}
 		responseModel.setPersoninfo(personinfo);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());

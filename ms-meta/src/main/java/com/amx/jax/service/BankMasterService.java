@@ -66,12 +66,17 @@ public class BankMasterService extends AbstractService {
 		return dto;
 	}
 
-	public BankMasterDTO getBankMasterbyId(BigDecimal bankId) {
+	public BankMasterDTO getBankMasterDTObyId(BigDecimal bankId) {
 		BankMasterModel dbModel = repo.findOne(bankId);
 		if (dbModel != null) {
 			return convert(dbModel);
 		}
 		return null;
+	}
+	
+	public BankMasterModel getBankMasterbyId(BigDecimal bankId) {
+		BankMasterModel dbModel = repo.findOne(bankId);
+		return dbModel;
 	}
 
 	@Override
