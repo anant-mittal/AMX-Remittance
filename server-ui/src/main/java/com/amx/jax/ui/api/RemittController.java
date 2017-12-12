@@ -54,8 +54,8 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd,
-			@PathVariable("ext") String ext) throws IOException, DocumentException {
+			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
+			throws IOException, DocumentException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
@@ -66,7 +66,7 @@ public class RemittController {
 	}
 
 	@ApiOperation(value = "Returns transaction reciept")
-	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
