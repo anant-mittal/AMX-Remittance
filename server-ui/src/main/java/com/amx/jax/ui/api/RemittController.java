@@ -82,15 +82,14 @@ public class RemittController {
 				resp = jaxService.setDefaults().getxRateClient()
 						.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCur, domAmount, null)
 						.getResult();
-				wrapper.getData().setForXRate(resp.getRate());
-				wrapper.getData().setForAmount(resp.getRate());
+				wrapper.getData().setForXRate(resp.getExRateBreakup().getRate());
+				wrapper.getData().setDomXRate(resp.getExRateBreakup().getInverseRate());
+				wrapper.getData().setForAmount(resp.getExRateBreakup().getConversionAmount());
 				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
 			} catch (ResourceNotFoundException | InvalidInputException e) {
 				wrapper.setMessage(ResponseStatus.ERROR, e);
 			}
-
 		}
-
 		return wrapper;
 	}
 
