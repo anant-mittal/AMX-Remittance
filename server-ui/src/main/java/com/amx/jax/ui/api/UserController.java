@@ -83,6 +83,7 @@ public class UserController {
 
 		if (userSession.getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
+			wrapper.getData().setInfo(userSession.getCustomerModel().getPersoninfo());
 		}
 		return wrapper;
 	}
