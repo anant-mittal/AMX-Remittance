@@ -27,6 +27,11 @@ public class PostManClient {
 		file.donwload(response);
 	}
 
+	public String processTemplate(String template, Object data, String fileName) throws IOException, DocumentException {
+		File file = postManService.processTemplate(template, data, fileName);
+		return file.getContent();
+	}
+
 	public void sendSMS(SMS sms) throws UnirestException {
 		postManService.sendSMS(sms);
 	}

@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
+import com.bootloaderjs.JsonUtil;
 import com.lowagie.text.DocumentException;
 
 import io.swagger.annotations.Api;
@@ -52,8 +54,8 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
-			throws IOException, DocumentException {
+			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd,
+			@PathVariable("ext") String ext) throws IOException, DocumentException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
@@ -61,6 +63,33 @@ public class RemittController {
 					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
 		}
 		return wrapper;
+	}
+
+	@ApiOperation(value = "Returns transaction reciept")
+	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.POST })
+	public String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
+			@RequestParam(required = false) BigDecimal collectionDocumentCode,
+			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext)
+			throws IOException, DocumentException {
+
+		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
+		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
+		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
+		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
+		tranxDTO.setCustomerReference(customerReference);
+
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
+		if ("pdf".equals(ext)) {
+			postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
+					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
+			return null;
+		} else if ("html".equals(ext)) {
+			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
+		} else {
+			return JsonUtil.toJson(wrapper);
+		}
 	}
 
 	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })
