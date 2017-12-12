@@ -1,5 +1,6 @@
 package com.amx.jax.postman;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,6 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.lowagie.text.DocumentException;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
+
+import com.itextpdf.text.Document;
 
 public class File {
 
@@ -31,12 +36,40 @@ public class File {
 		this.content = content;
 	}
 
-	public void donwload(HttpServletResponse response) throws DocumentException, IOException {
+	public void donwload(HttpServletResponse response) throws DocumentException, IOException, com.itextpdf.text.DocumentException {
 		FileOutputStream os = null;
 		response.setHeader("Cache-Control", "cache, must-revalidate");
 		response.addHeader("Content-type", "application/pdf");
-		//response.addHeader("Content-Type", "application/force-download");
-		//response.setHeader("Content-Transfer-Encoding", "binary");
+		// response.addHeader("Content-Type", "application/force-download");
+		// response.setHeader("Content-Transfer-Encoding", "binary");
+		response.addHeader("Content-Disposition", "attachment; filename=" + getName());
+		try {
+			// final File outputFile = File.createTempFile(fileName, ".pdf");
+			OutputStream outputStream = response.getOutputStream();
+
+			Document document = new Document();
+			PdfWriter writer = PdfWriter.getInstance(document, outputStream);
+			document.open();
+			XMLWorkerHelper.getInstance().parseXHtml(writer, document,
+					new ByteArrayInputStream(content.getBytes("UTF-8")));
+			document.close();
+			System.out.println("PDF created successfully");
+		} finally {
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+					/* ignore */ }
+			}
+		}
+	}
+
+	public void donwloadOld(HttpServletResponse response) throws DocumentException, IOException {
+		FileOutputStream os = null;
+		response.setHeader("Cache-Control", "cache, must-revalidate");
+		response.addHeader("Content-type", "application/pdf");
+		// response.addHeader("Content-Type", "application/force-download");
+		// response.setHeader("Content-Transfer-Encoding", "binary");
 		response.addHeader("Content-Disposition", "attachment; filename=" + getName());
 		try {
 			// final File outputFile = File.createTempFile(fileName, ".pdf");
