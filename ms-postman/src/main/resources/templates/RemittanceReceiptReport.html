@@ -1,10 +1,356 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="ar">
+
+<head>
+<meta charset="utf-8" />
+<style type="text/css">
+html, body {
+	margin: 0;
+	padding: 0;
+}
+
+.table {
+	font-size: 14px;
+	line-height: 16px;
+	width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	empty-cells: show;
+	border: 1px solid #cbcbcb;
+}
+
+.table caption {
+	color: #000;
+	font: italic 85%/1;
+	padding: 1em 0;
+	text-align: center;
+}
+.table:not(.col-4) td:nth-child(1){
+	width:20%;
+}
+.table:not(.col-4) td:nth-child(2){
+	width:60%;
+}
+.table:not(.col-4) td:nth-child(3){
+	width:20%;
+}
+.table td {
+	width: 25%;
+	border-width: 0 0 0 0;
+	font-size: inherit;
+	margin: 0;
+	overflow: visible;
+	padding: 4px 5px;
+	background-color: transparent;
+}
+
+.table td:first-child {
+	border-left-width: 0;
+}
+
+.table th {
+	border-left: 1px solid #cbcbcb;
+	border-width: 0 0 0 1px;
+	font-size: inherit;
+	margin: 0;
+	overflow: visible;
+	padding: 0.5em 1em;
+}
+
+.table th:first-child {
+	border-left-width: 0;
+}
+
+.table thead {
+	background-color: #e0e0e0;
+	color: #000;
+	text-align: left;
+	vertical-align: bottom;
+}
+
+.table-odd td {
+	background-color: #f2f2f2;
+}
+
+.table-striped tr:nth-child(2n-1) td {
+	background-color: #f2f2f2;
+}
+
+.table-bordered td {
+	border-bottom: 1px solid #cbcbcb;
+}
+
+.table-bordered tbody>tr:last-child>td {
+	border-bottom-width: 0;
+}
+
+.table-horizontal td {
+	border-width: 0 0 1px 0;
+	border-bottom: 1px solid #cbcbcb;
+}
+
+.table-horizontal th {
+	border-width: 0 0 1px 0;
+	border-bottom: 1px solid #cbcbcb;
+}
+
+.table-horizontal tbody>tr:last-child>td {
+	border-bottom-width: 0;
+}
+</style>
+</head>
 <body>
+	<!--<span th:text="${data}">TesTUser</span>-->
 
-	<span th:text="${data}">TesTUser</span>
+	<table width="100%" border="0">
+		<tr>
+			<td>
+				<!--header table-->
+				<table class="table col-4">
+					<tr>
+						<td align="center" colspan="2"><img
+							src="http://10.28.42.83/onlinewebapp/dist/logo.png" /></td>
+					</tr>
+					<tr>
+						<td>PO BOX 177,SAFAT 13002,KUWAIT,C.R. 81300,Share
+							Capital-14000000</td>
+						<td align="right">ص. ب. : 177صفاة 13002,الكويت,ج.ص. 81300,رأس
+							المال 14000000</td>
+					</tr>
+				</table> <!--header table end--> <!--customer table-->
+				<table class="table  table-horizontal">
+					<tr>
+						<td>Senders Details</td>
+						<td></td>
+						<td>بيانات المرسل</td>
+					</tr>
+					<tr>
+						<td>Customer ID /Name</td>
+						<td>1553194 / RABIL UDDIN MIR MIR RAJAK WORKING</td>
+						<td align="right" style="text-align: right; width: 200px">الاسم</td>
+					</tr>
+					<tr>
+						<td>Contact No</td>
+						<td>51780410</td>
+						<td>رقم الاتصال</td>
+					</tr>
+					<tr>
+						<td>Civil Id No</td>
+						<td>284052306594</td>
+						<td>رقم البطاقة المدنية</td>
+					</tr>
+					<tr>
+						<td>ID Expiry Date</td>
+						<td>15/08/2017</td>
+						<td th:inline="text">تاريخ انتهاء المدنية</td>
+					</tr>
+				</table> <!--customer table end--> <!--loyalty insurance table-->
+				<table class="table table-horizontal">
+					<tr>
+						<td>Loyalty Point Expiring</td>
+						<td>Loyalty Points Expiring on 31/12/2018 19030<br />
+							Loyalty Points Expiring on 31/12/2017 0
+						</td>
+						<td>تاريخ انتهاء سريان النقاط</td>
+					</tr>
+					<tr>
+						<td>Insurance 1</td>
+						<td>You are now insured for another KD 250/- against natural
+							or accidental death or KD 250 for PTD due to Accident until
+							19/06/2017</td>
+						<td>تأمين ١</td>
+					</tr>
+					<tr>
+						<td>Insurance 2</td>
+						<td>You are now insured for KD 1000/- against natural or
+							accidental death or another KD 1000 for PTD due to Accident until
+							19/06/2017</td>
+						<td>تأمين ٢</td>
+					</tr>
+				</table> <!--loyalty insurance table end--> <!--transaction detail table-->
+				<table class="table table-horizontal">
+					<tr>
+						<td>No Of Transactions</td>
+						<td>2</td>
+						<td>عدد المعاملات</td>
+					</tr>
+					<tr>
+						<td>Location / Phone No</td>
+						<td>KUWAIT / 1840123</td>
+						<td>الموقع / رقم الهاتف</td>
+					</tr>
+					<tr>
+						<td>Receipt No / Date</td>
+						<td>2017 / 27000003 / 24/05/2017</td>
+						<td>استلام رقم / تاريخ</td>
+					</tr>
+				</table> <!--transaction detail table end--> <!--Beneficiary's Details table-->
+				<table class="table table-horizontal">
+					<tr>
+						<td>Beneficiary's Details</td>
+						<td></td>
+						<td>المستفيد تفاصيل</td>
+					</tr>
+					<tr>
+						<td>Transaction No</td>
+						<td>2017 / 27000003</td>
+						<td>الصفقة لا</td>
+					</tr>
+					<tr>
+						<td>Name</td>
+						<td>UDDIN RABIL MIR(TEL NO:9861846644)</td>
+						<td>الاسم</td>
+					</tr>
+					<tr>
+						<td>Bank Name</td>
+						<td>STATE BANK OF INDIA</td>
+						<td>اسم البنك</td>
+					</tr>
+					<tr>
+						<td>Branch Name</td>
+						<td>JAGATSINGHPUR ADB</td>
+						<td>اسم الفرع</td>
+					</tr>
+					<tr>
+						<td>Account No</td>
+						<td>11297591218</td>
+						<td>رقم الحساب</td>
+					</tr>
+					<tr>
+						<td>Payment Channel</td>
+						<td>ELECTRONIC FUND TRANSFER - BANKING CHANNEL</td>
+						<td>قناة الدفع</td>
+					</tr>
+					<tr>
+						<td>Currency &amp; Amount</td>
+						<td>INR ******2404.00</td>
+						<td>العملات و المبلغ</td>
+					</tr>
+					<tr>
+						<td>Exchange Rate</td>
+						<td>INR / KWD 0.004576</td>
+						<td>سعر الصرف</td>
+					</tr>
+					<tr>
+						<td>Amount</td>
+						<td>KWD ******11.000</td>
+						<td>لجنة</td>
+					</tr>
+					<tr>
+						<td>Commission</td>
+						<td>KWD ******1.000</td>
+						<td>رسوم أخرى</td>
+					</tr>
+					<tr>
+						<td>Other Charges</td>
+						<td>: KWD ******0.000</td>
+						<td>رسوم أخرى</td>
+					</tr>
+					<tr>
+						<td>Total Amount</td>
+						<td>KWD ******12.000</td>
+						<td>المبلغ الإجمالي</td>
+					</tr>
+					<tr>
+						<td>Further Instructions</td>
+						<td>URGENT</td>
+						<td>مزيد من التعليمات</td>
+					</tr>
+					<tr>
+						<td>Source Of Income</td>
+						<td></td>
+						<td>مصدر الدخل</td>
+					</tr>
+					<tr>
+						<td>Intermeditary Bank</td>
+						<td></td>
+						<td>البنك الوسيط</td>
+					</tr>
+					<tr>
+						<td>Address</td>
+						<td>ORISSA, BALIKUDA, JAGATSINGHPUR</td>
+						<td>عنوان</td>
+					</tr>
+					<tr>
+						<td>PURPOSE OF REMITTANCE</td>
+						<td>Payment towards travel for medical treatment</td>
+						<td></td>
+					</tr>
+				</table> <!--Beneficiary's Details table end--> <!--Payment Details table-->
+				<table class="table table-horizontal col-4">
+					<tr>
+						<td>Payment Details</td>
+						<td></td>
+						<td></td>
+						<td>دفع التفاصيل</td>
+					</tr>
+					<tr>
+						<td>Amount Paid</td>
+						<td>KWD ******24.000</td>
+						<td></td>
+						<td>المبلغ المدفوع</td>
+					</tr>
+					<tr>
+						<td>Amount Refund</td>
+						<td>KWD ******0.000</td>
+						<td></td>
+						<td>استرداد المبلغ</td>
+					</tr>
+					<tr>
+						<td>Amount Payable</td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Net Paid Amount</td>
+						<td>KWD ******24.000</td>
+						<td></td>
+						<td>صافي المبلغ المدفوع</td>
+					</tr>
+					<tr>
+						<td>Payment Mode</td>
+						<td>K-NET : 24.000</td>
+						<td>Approved No : 1234</td>
+						<td>دفع الوضع</td>
+					</tr>
+				</table> <!--Payment Details table end--> <!--Cashier table-->
+				<table>
+					<tr>
+						<td>Cashier's Name</td>
+						<td>284052306594</td>
+						<td>أمين الصندوق اسم</td>
+					</tr>
+					<tr>
+						<td>Cashier's Signature</td>
+						<td></td>
+						<td>التوقيع أمين الصندوق</td>
+					</tr>
+				</table> <!--Cashier table end-->
 
-
+				<table>
+					<tr>
+						<td>I / We confirm that the beneficiary details furnished
+							above are correct. I/ We have read the terms and conditions
+							overleaf and confirm to have fully understood and accepted the
+							same without any</td>
+						<td>I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد
+							قرأت الشروط والأحكام الوارد في الصفحة التالية و تأكيد لقد فهمت
+							تماما وقبلت نفسه دون</td>
+					</tr>
+					<tr>
+						<td>Signature Of Remitter)</td>
+						<td>)التوقيع على المحول(</td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+						<td>Page 1 of 2</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
 </body>
 </html>
