@@ -206,7 +206,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setSecurityquestions(securityquestions);
 			String validatSecurityQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT
 					+ "/validate-random-questions/";
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			log.info("calling validateSecurityQuestions api: " + validatSecurityQuestionstUrl);
 			response = restTemplate.exchange(validatSecurityQuestionstUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
