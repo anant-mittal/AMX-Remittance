@@ -22,7 +22,7 @@ public class PostManClient {
 	@Autowired
 	private PostManService postManService;
 
-	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException, com.itextpdf.text.DocumentException {
+	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
 		File file = postManService.processTemplate(template, data, fileName);
 		file.donwload(response);
 	}

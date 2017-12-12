@@ -1,13 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org" lang="ar">
 
 <head>
-<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
+@font-face {
+	font-family: 'Arial';
+	src: url("arial.ttf");
+	-fs-pdf-font-embed: embed;
+	-fs-pdf-font-encoding: Identity-H;
+}
+
 html, body {
 	margin: 0;
 	padding: 0;
+	font-family: Arial;
 }
 
 .table {
@@ -26,15 +35,19 @@ html, body {
 	padding: 1em 0;
 	text-align: center;
 }
-.table:not(.col-4) td:nth-child(1){
-	width:20%;
+
+.table:not (.col-4 ) td:nth-child(1) {
+	width: 20%;
 }
-.table:not(.col-4) td:nth-child(2){
-	width:60%;
+
+.table:not (.col-4 ) td:nth-child(2) {
+	width: 60%;
 }
-.table:not(.col-4) td:nth-child(3){
-	width:20%;
+
+.table:not (.col-4 ) td:nth-child(3) {
+	width: 20%;
 }
+
 .table td {
 	width: 25%;
 	border-width: 0 0 0 0;
@@ -123,7 +136,9 @@ html, body {
 					<tr>
 						<td>Senders Details</td>
 						<td></td>
-						<td>بيانات المرسل</td>
+						<td dir="rtl" style="text-align: right">[
+							&#1576;&#1610;&#1575;&#1606;&#1575;&#1578;
+							&#1575;&#1604;&#1605;&#1585;&#1587;&#1604; ]</td>
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
@@ -133,7 +148,7 @@ html, body {
 					<tr>
 						<td>Contact No</td>
 						<td>51780410</td>
-						<td>رقم الاتصال</td>
+						<td style="color:red" >رقم الاتصال</td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
