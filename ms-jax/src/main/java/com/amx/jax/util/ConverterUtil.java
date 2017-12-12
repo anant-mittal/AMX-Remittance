@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.exception.InvalidJsonInputException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -20,5 +21,13 @@ public class ConverterUtil {
 			logger.error("Error in parsing json", e);
 			throw new InvalidJsonInputException("Unable to parse request body json");
 		}
+	}
+
+	public String marshall(Object o) {
+		try {
+			return new ObjectMapper().writeValueAsString(o);
+		} catch (JsonProcessingException e) {
+		}
+		return null;
 	}
 }

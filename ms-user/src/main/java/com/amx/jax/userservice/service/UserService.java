@@ -1,10 +1,12 @@
 package com.amx.jax.userservice.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -19,6 +21,7 @@ import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
@@ -111,6 +114,7 @@ public class UserService extends AbstractUserService {
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion4(), cust.getSecurityAnswer4()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion5(), cust.getSecurityAnswer5()));
 		model.setSecurityquestions(securityquestions);
+		
 		return model;
 	}
 
@@ -276,12 +280,19 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
+		Customer customer = custDao.getCustById(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		} 
+		responseModel.setPersoninfo(personinfo);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);

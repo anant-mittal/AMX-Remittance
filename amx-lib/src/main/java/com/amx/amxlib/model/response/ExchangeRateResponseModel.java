@@ -1,6 +1,5 @@
 package com.amx.amxlib.model.response;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -8,7 +7,7 @@ import com.amx.amxlib.model.AbstractModel;
 
 public class ExchangeRateResponseModel extends AbstractModel {
 
-	BigDecimal rate;
+	ExchangeRateBreakup exRateBreakup;
 
 	List<BankMasterDTO> bankWiseRates;
 
@@ -17,20 +16,20 @@ public class ExchangeRateResponseModel extends AbstractModel {
 		return "ex_rate";
 	}
 
-	public BigDecimal getRate() {
-		return rate;
-	}
-
-	public void setRate(BigDecimal rate) {
-		this.rate = rate;
-	}
-
 	public List<BankMasterDTO> getBankWiseRates() {
 		return bankWiseRates;
 	}
 
 	public void setBankWiseRates(List<BankMasterDTO> bankWiseRates) {
 		this.bankWiseRates = bankWiseRates;
+	}
+
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
+	}
+
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
 	}
 
 }

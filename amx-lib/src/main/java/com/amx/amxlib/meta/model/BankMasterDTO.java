@@ -3,6 +3,7 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 
 public class BankMasterDTO extends AbstractModel {
 
@@ -12,7 +13,7 @@ public class BankMasterDTO extends AbstractModel {
 	private String bankShortName;
 	private BigDecimal bankCountryId;
 	
-	private BigDecimal exchangeRate;
+	private ExchangeRateBreakup exRateBreakup;
 
 	@Override
 	public String getModelType() {
@@ -108,12 +109,13 @@ public class BankMasterDTO extends AbstractModel {
 		return true;
 	}
 
-	public BigDecimal getExchangeRate() {
-		return exchangeRate;
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
 	}
 
-	public void setExchangeRate(BigDecimal exchangeRate) {
-		this.exchangeRate = exchangeRate;
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
 	}
+
 
 }

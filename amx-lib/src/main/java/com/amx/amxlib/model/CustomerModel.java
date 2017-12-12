@@ -25,6 +25,8 @@ public class CustomerModel extends AbstractModel {
 	private BigDecimal customerId;
 	
 	private Boolean isActive;
+	
+	private PersonInfo personinfo;
 
 	public String getEmail() {
 		return email;
@@ -109,6 +111,14 @@ public class CustomerModel extends AbstractModel {
 
 	public void setIsActive(Boolean isActive) {
 		this.isActive = isActive;
+	}
+
+	public PersonInfo getPersoninfo() {
+		return personinfo;
+	}
+
+	public void setPersoninfo(PersonInfo personinfo) {
+		this.personinfo = personinfo;
 	}
 
 }
