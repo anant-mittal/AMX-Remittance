@@ -20,6 +20,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.model.XRateData;
+import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.lowagie.text.DocumentException;
@@ -70,22 +71,26 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
-			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount)
-			throws ResourceNotFoundException, InvalidInputException {
+			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		wrapper.getData().setDomCur(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID));
 
 		if (forCur != null) {
-			ExchangeRateResponseModel resp = jaxService.setDefaults().getxRateClient()
-					.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCur, domAmount, null)
-					.getResult();
-			wrapper.getData().setForXRate(resp.getRate());
-			wrapper.getData().setForAmount(resp.getRate());
-			wrapper.getData().setBeneBanks(resp.getBankWiseRates());
+			ExchangeRateResponseModel resp;
+			try {
+				resp = jaxService.setDefaults().getxRateClient()
+						.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCur, domAmount, null)
+						.getResult();
+				wrapper.getData().setForXRate(resp.getRate());
+				wrapper.getData().setForAmount(resp.getRate());
+				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
+			} catch (ResourceNotFoundException | InvalidInputException e) {
+				wrapper.setMessage(ResponseStatus.ERROR, e);
+			}
 
 		}
-		
+
 		return wrapper;
 	}
 
