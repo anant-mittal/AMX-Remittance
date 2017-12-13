@@ -15,7 +15,7 @@ import com.amx.jax.ui.Constants;
 @Service
 public class UserService {
 
-	private Logger log = Logger.getLogger(JaxService.class);
+	private Logger log = Logger.getLogger(UserService.class);
 
 	@Autowired
 	private PostManClient postManClient;

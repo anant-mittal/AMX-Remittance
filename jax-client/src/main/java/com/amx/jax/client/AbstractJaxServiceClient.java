@@ -47,6 +47,7 @@ public abstract class AbstractJaxServiceClient {
 			info.setChannel(jaxMetaInfo.getChannel());
 			info.setCompanyId(jaxMetaInfo.getCompanyId());
 			info.setCustomerId(jaxMetaInfo.getCustomerId());
+			info.setLanguageId(jaxMetaInfo.getLanguageId());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 			log.error("error in getheader of jaxclient", e);

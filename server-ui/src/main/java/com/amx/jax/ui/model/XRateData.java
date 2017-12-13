@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 
 public class XRateData {
 
@@ -12,7 +13,7 @@ public class XRateData {
 	BigDecimal forXRate = null;
 	BigDecimal forAmount = null;
 
-	BigDecimal domCur = null;
+	CurrencyMasterDTO domCur = null;
 	String domCurDesc = null;
 	BigDecimal domXRate = null;
 	BigDecimal domAmount = null;
@@ -59,11 +60,11 @@ public class XRateData {
 		this.forAmount = forAmount;
 	}
 
-	public BigDecimal getDomCur() {
+	public CurrencyMasterDTO getDomCur() {
 		return domCur;
 	}
 
-	public void setDomCur(BigDecimal domCur) {
+	public void setDomCur(CurrencyMasterDTO domCur) {
 		this.domCur = domCur;
 	}
 
