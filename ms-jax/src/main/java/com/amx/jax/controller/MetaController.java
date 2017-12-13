@@ -286,7 +286,7 @@ public class MetaController implements Serializable{
 	
 	
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getCurrencyDetailsByCountryId(BigDecimal countryId){
+	public ApiResponse getCurrencyDetailsByCountryId(@PathVariable("countryId") BigDecimal countryId){
 		ApiResponse response = currencyMasterService.getCurrencyByCountryId(countryId);
 		return response;
 	}
