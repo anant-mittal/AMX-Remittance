@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="ar">
 <head>
 <meta name="viewport" content="width=device-width" />
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>Alerts e.g. approaching your limit</title>
+	<style th:replace="style.css :: style"></style>
 </head>
 <body itemtype="http://schema.org/EmailMessage">
 
-	<div th:replace="style.css :: style"></div>
 
 	<table class="body-wrap">
 		<tr>
@@ -24,18 +24,21 @@
 							<td class="content-wrap">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td class="content-block">Your OTP is <strong>${otp}</strong>.
+										<td class="content-block">Your OTP is <strong  th:text="${otp}"></strong>.
 										</td>
 									</tr>
 									<tr>
-										<td class="content-block">You or someone else on your behalf has requested to change access.</td>
+										<td class="content-block">You or someone else on your
+											behalf has requested to change access.</td>
 									</tr>
 									<tr>
-										<td class="content-block"><a
-											href="#" class="btn-primary">${otp}</a></td>
+										<td class="content-block">
+											<a href="#" class="btn-primary" th:text="${otp}" ></a>
+										</td>
 									</tr>
 									<tr>
-										<td class="content-block">Thanks for choosing Almulla Exchange.</td>
+										<td class="content-block">Thanks for choosing Almulla
+											Exchange.</td>
 									</tr>
 								</table>
 							</td>
@@ -44,9 +47,8 @@
 					<div class="footer">
 						<table width="100%">
 							<tr>
-								<td class="aligncenter content-block"><a
-									href="#">Unsubscribe</a> from these
-									alerts.</td>
+								<td class="aligncenter content-block"><a href="#">Unsubscribe</a>
+									from these alerts.</td>
 							</tr>
 						</table>
 					</div>

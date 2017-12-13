@@ -24,10 +24,14 @@ public class UserService {
 		postManClient.sendSMS(sms);
 
 		Email email = new Email();
+		email.setSubject("Almulla Reset OTP");
+		email.setFrom("amxjax@gmail.com");
+		//email.setTo("lalit.tanwar07@gmail.com");
 		email.setTo("umesh.gupta@almullagroup.com");
 		email.setTemplate(Templates.RESET_OTP);
-		email.isHtml();
-
+		email.setHtml(true);
+		email.getModel().put("otp", model.getOtp());
+		
 		postManClient.sendEmail(email);
 
 	}
