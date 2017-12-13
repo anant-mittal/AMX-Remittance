@@ -30,6 +30,10 @@ public class Email {
 		this.template = template;
 	}
 
+	public void setTemplate(Templates template) {
+		this.template = template.getFileName();
+	}
+
 	private Map<String, Object> model = new HashMap<String, Object>();
 
 	public Map<String, Object> getModel() {
@@ -99,6 +103,14 @@ public class Email {
 	 */
 	public void setTo(List<String> to) {
 		this.to = to;
+	}
+
+	/**
+	 * @param to
+	 *            the to to set
+	 */
+	public void setTo(String emailId) {
+		this.to.add(emailId);
 	}
 
 	/**

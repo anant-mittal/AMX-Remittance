@@ -79,12 +79,13 @@ public class UserController {
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
-		wrapper.getData().setValid(userSession.isValid());
+		wrapper.getData().setValidSession(userSession.isValid());
 
 		if (userSession.getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setInfo(userSession.getCustomerModel().getPersoninfo());
 		}
+		
 		return wrapper;
 	}
 

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.postman.Email;
 import com.amx.jax.postman.File;
 import com.amx.jax.postman.SMS;
 import com.amx.jax.postman.api.PostManService;
@@ -24,7 +25,12 @@ public class PostManClient {
 
 	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
 		File file = postManService.processTemplate(template, data, fileName);
-		file.donwload(response);
+		file.donwload(response, true);
+	}
+
+	public void createPDF(String template, Object data) throws IOException, DocumentException {
+		File file = postManService.processTemplate(template, data, null);
+		file.donwload(response, false);
 	}
 
 	public String processTemplate(String template, Object data, String fileName) throws IOException, DocumentException {
@@ -34,6 +40,10 @@ public class PostManClient {
 
 	public void sendSMS(SMS sms) throws UnirestException {
 		postManService.sendSMS(sms);
+	}
+
+	public void sendEmail(Email email) throws UnirestException {
+		postManService.sendEmail(email);
 	}
 
 }

@@ -21,6 +21,7 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class RegistrationService {
@@ -34,6 +35,9 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
+	@Autowired
+	private UserService userService;
+
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
 
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
@@ -43,14 +47,18 @@ public class RegistrationService {
 			if (model.getIsActiveCustomer()) {
 				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 			} else {
+				userService.notifyResetOTP(model);
+
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
 			}
 			userSessionInfo.setUserid(civilid);
 			userSessionInfo.setOtp(model.getOtp());
-		} catch (InvalidInputException e) {
+		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+		} catch (UnirestException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
 
 		return wrapper;

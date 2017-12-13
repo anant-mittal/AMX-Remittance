@@ -82,8 +82,7 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
-					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
+			postManClient.createPDF("RemittanceReceiptReport", wrapper);
 			return null;
 		} else if ("html".equals(ext)) {
 			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");

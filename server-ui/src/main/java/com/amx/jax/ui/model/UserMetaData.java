@@ -4,16 +4,16 @@ import com.amx.amxlib.model.PersonInfo;
 
 public class UserMetaData {
 
-	public Boolean valid = false;
+	public Boolean validSession = false;
 	public Boolean active = false;
 	public PersonInfo personinfo = null;
 
-	public Boolean getValid() {
-		return valid;
+	public Boolean getValidSession() {
+		return validSession;
 	}
 
-	public void setValid(Boolean valid) {
-		this.valid = valid;
+	public void setValidSession(Boolean valid) {
+		this.validSession = valid;
 	}
 
 	public Boolean getActive() {
