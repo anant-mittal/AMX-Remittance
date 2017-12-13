@@ -138,7 +138,7 @@ public class UserService extends AbstractUserService {
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
-		if (model.getLoginId() != null) { // after this step flow is going to login
+		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
 			Map<String, Object> output = afterLoginSteps(onlineCust);
 			if (output.get("PERSON_INFO") != null) {
 				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
