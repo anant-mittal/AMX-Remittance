@@ -6,8 +6,10 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
+import com.amx.jax.postman.api.B64ImgReplacedElementFactory;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 
@@ -83,8 +85,17 @@ public class File {
 			// final File outputFile = File.createTempFile(fileName, ".pdf");
 			OutputStream outputStream = response.getOutputStream();
 			ITextRenderer renderer = new ITextRenderer();
-
+			// renderer.getFontResolver().addFont("/fonts/arialbold.ttf",
+			// BaseFont.IDENTITY_H,BaseFont.EMBEDDED);
+			renderer.getFontResolver().addFont("/fonts/arialuni.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 			renderer.getFontResolver().addFont("/fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			renderer.getFontResolver().addFont("/fonts/arialbold.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+			// SharedContext sharedContext = renderer.getSharedContext();
+			// sharedContext.setPrint(true);
+			// sharedContext.setInteractive(false);
+			// sharedContext.setReplacedElementFactory(new B64ImgReplacedElementFactory());
+			// sharedContext.getTextRenderer().setSmoothingThreshold(0);
 
 			renderer.setDocumentFromString(content);
 			renderer.layout();

@@ -1,32 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html th:marginheight="0" xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org" lang="ar">
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
-@font-face {
-	font-family: 'Arial';
-	src: url("arial.ttf");
-	-fs-pdf-font-embed: embed;
-	-fs-pdf-font-encoding: Identity-H;
-}
-
 html, body {
 	margin: 0;
 	padding: 0;
-	font-family: Arial;
+	font-family: Arial, Arial Bold;
+	font-size: 10px;
+	line-height: 14px;
 }
 
 .table {
-	font-size: 14px;
-	line-height: 16px;
 	width: 100%;
 	border-collapse: collapse;
 	border-spacing: 0;
 	empty-cells: show;
-	border: 1px solid #cbcbcb;
+	border: 1px solid transparent;
+	margin: 0 0 5px;
 }
 
 .table caption {
@@ -36,16 +30,21 @@ html, body {
 	text-align: center;
 }
 
-.table:not (.col-4 ) td:nth-child(1) {
+.table.col-3 td:nth-child(1), .table.col-4 td:nth-child(1) {
 	width: 20%;
+	font-weight: bold;
+	font-family: 'Arial';
 }
 
-.table:not (.col-4 ) td:nth-child(2) {
+.table.col-3 td:nth-child(2) {
 	width: 60%;
 }
 
-.table:not (.col-4 ) td:nth-child(3) {
+.table.col-3 td:nth-child(3), .table.col-4 td:nth-child(4) {
 	width: 20%;
+	text-align: right;
+	font-weight: bold;
+	font-family: 'Arial';
 }
 
 .table td {
@@ -54,7 +53,7 @@ html, body {
 	font-size: inherit;
 	margin: 0;
 	overflow: visible;
-	padding: 4px 5px;
+	padding: 2px 5px;
 	background-color: transparent;
 }
 
@@ -82,8 +81,8 @@ html, body {
 	vertical-align: bottom;
 }
 
-.table-odd td {
-	background-color: #f2f2f2;
+.table-odd {
+	margin: 0 0 5px;
 }
 
 .table-striped tr:nth-child(2n-1) td {
@@ -100,7 +99,7 @@ html, body {
 
 .table-horizontal td {
 	border-width: 0 0 1px 0;
-	border-bottom: 1px solid #cbcbcb;
+	border-bottom: 1px solid #f1f1f1;
 }
 
 .table-horizontal th {
@@ -111,44 +110,100 @@ html, body {
 .table-horizontal tbody>tr:last-child>td {
 	border-bottom-width: 0;
 }
+
+.nowrap {
+	white-space: nowrap;
+	font-size: 10px;
+}
+
+@page {
+	size: A4;
+	margin: 0;
+	margin-top: 107px;
+	margin-bottom: 28px;
+	@top-center {content: element(header);}
+	@bottom-right {
+    	content: "Page " counter(page) " of " counter(pages)"&nbsp;&nbsp;";
+  }
+}
+#header {
+	position: running(header);
+	height: 100px;
+	width: 100%;
+	background: #000;
+	padding: 0 5px 5px;
+}
+
+#header td {
+	padding: 0;
+	margin: 0;
+	color: #ffffff;
+	height: 10px;
+}
+
+.logo {
+	padding-top: 5px;
+}
+
+.noborder {
+	border: 0;
+}
+
+.height100 {
+	height: 80px;
+}
+.mainTable{
+	margin:5px;	
+	border:0;
+	border-collapse: collapse;
+	border-spacing: 0;
+	empty-cells: show;
+}
+.mainTable-border {
+	border-bottom: 1px dashed #000000;
+}
 </style>
 </head>
 <body>
 	<!--<span th:text="${data}">TesTUser</span>-->
-
-	<table width="100%" border="0">
+	<!--header table-->
+	<table class="nowrap" id="header" border="0" cellspacing="0"
+		cellpadding="0" >
 		<tr>
-			<td>
-				<!--header table-->
-				<table class="table col-4">
-					<tr>
-						<td align="center" colspan="2"><img
-							src="http://10.28.42.83/onlinewebapp/dist/logo.png" /></td>
-					</tr>
-					<tr>
-						<td>PO BOX 177,SAFAT 13002,KUWAIT,C.R. 81300,Share
-							Capital-14000000</td>
-						<td align="right">ص. ب. : 177صفاة 13002,الكويت,ج.ص. 81300,رأس
-							المال 14000000</td>
-					</tr>
-				</table> <!--header table end--> <!--customer table-->
-				<table class="table  table-horizontal">
+			<td align="center" colspan="2">
+				<div class="logo">
+					<img
+						src="data:image/png;base64,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+ZrIysqSv/71ryIiYtu2xGIxCYVCEgqFxDAMp45bbrnFKXP33XfL6tWrpaKiQurq6kRE5IknnnCmds2aNUuamprk3HPPlcWLF4uISCKRkNtuu00Aeemll2TBggXi8XhkyZIlIiKyceNGqaio6Pc1WFNTI1u3bhURka6uLtm9e7cYhiGLFi06rIFcf1t5ebk8//zzYpqm7Nq1S9avXy/hcFhERB588MF+ywYCAXnggQfEMAzp6uqSt956S1paWpxXd2oK2n/8x3+IiMiqVavE5XIddhunTJki4XBYIpGInHLKKWn7xowZI21tbc59syxLBsK2bef3HTt2yPXXXy+apjkD3qNmfvSlsbGRpUuXEgwG6ejoSAsyvPTSS9x0003k5uYya9YsFi5cSDQaTXtCBxuB2rZtG7///e+Jx+NYlkVNTQ3f+ta3cLvdzpPr8/mYNm0aq1atYseOHaxatYra2lq+8pWvUFlZSWNjI4lEgmAwSGtrKz/4wQ+ora2loKCAO++8k2XLljnBIE3TnLb1NS1S2mPSpEmMHTuWUCjE0qVL0zTxli1bWL16NTk5OXz44YdHLdFn7ty5XHjhhaxbt465c+fS0NDAY489xqxZs9JMs4Nx/vnn893vfpfW1lbmzZvHK6+8wnXXXcfDDz+cNlMmVU80Gj0ijZhIJJygx/5vJ9u2HSfDr371K1asWHHQbMq+pELz8+bNY+rUqdx9990sW7bMyek5UvoV6jfffJNbb70VOPB1cu655zqzUqZPn87UqVNZunQpPT09ji83tX8gtm7dyo9//GPn7zFjxnDttdemJSVVVlYyadIkvF4v8+fPd8yH6upqTjnlFBobGx3vRk5ODitWrODee+/lF7/4BUVFRdx3330UFBSwfv16DMNwpnD5/f4DJj1ceeWV/PM//zO7du3irLPOSpvutXjxYn70ox+l9ckntSldLpeTnbdkyRI2bNgA4HhpBqp7/PjxuFwuXn31VZ5//nkAx54+WB76p2n/mqbJihUrWLRo0aDLbN++neeee47KykoqKio+sVD3a/js7xJLaaXJkycze/ZslixZQkdHB8FgkCuvvBJN06ivr3fSP2tqag6prfumhrrd7rSnOjs7+4Bk/6lTp5Kfn091dTXXXXcd1dXVzuyYr371q07ZvjnVDz74IH/+85+BZM72hAkTnP2NjY1AMmBTUVGR1q5IJIKmaRiG4YTzU+3o285Un3xSIenb5r4DsVT/D1R/qo8LCws57bTTmDBhAhMmTOi37JG0ub+JGn2DY6lkscHS1tZGLBZz0hkOdb7BtvkAoe471/Bgr1ZN07j99ttpb29n7ty5ziBtxowZnHDCCWzZsoU1a9YAyYkGKZ9yX4LBYL9pk30Tofpm2i1btoyzzz6bM888kxkzZvDWW28ByYcsLy/PeSWmysfjcX70ox85AqyUcupbsWIFlmWRm5vrTKxNkXoo4/E4pmmmtedoDQr3J9XXqfpFxBmoDpQ/vXv3bnbt2sXIkSN56KGH+P3vf8+cOXMOeQ9T8zkPl3A4jIhg2/YB/vne3l7nAe9vIvPBSJlFtm2n5Rul3lSpfJ3B5pEfNPU0pSFKS0sZO3YsWVlZuN1uVq9ezXnnncdll13Gv/zLv7Br1y5efPFFzjnnHMrKypg1axYbN27kgQce4Ktf/SojR47knnvu4c4773RGymeeeSZnn302Dz74oCNgqdkdKfpqRtu2GTZsGBMmTOD++++noaHBOe6tt95iypQpnHjiidTU1KRpuRQbN27kpz/9Kb/5zW9wu93Otb3yyissWrSIr3/968ydO5c1a9awcOHCtPKBQMDpj9RDWFlZydixY8nNzcUwDCeL7Ghoa0g+oNdeey1er9cJ65966qlcf/31+Hy+AzIfRYTKykrq6uqwbRuXy0UikXDcqwebKFFVVcXNN9/suOMGQywWo6amxvGEzZkzh8bGRidprKysjNzcXHRd5+KLLyYvL29QwZ9YLMZxxx3nLH0we/Zstm7dimmaTJ8+HUiGy+fNm8f48eMPuL+HIs37UVNT4wQaEomENDc3S3t7u6xdu1bGjx8va9eulZaWFhkxYoRAMqze3t7ujGDHjh0rkFxcZs+ePU4g4IknnpCFCxdKe3u7/PznP5f8/HwnyLN+/fq0IMr06dOd0fNdd90lt99+u0SjUScsn9puuOEGZ/Q8f/58mTt3riQSCZk+fXracX6/XxYuXOgENlKBlqqqKnn55ZdFRKS7u1sWLVokTz31lGzfvt0ZdZeUlMiECROkq6tLREQikYg0NzdLV1eXLF++/KgEONxutzz33HMDegv6wzRNsSxLTNOURCLhfN7X+9E3cPVFZv+AHAN5P0KhEA8//DB+vx/TNMnKyiIQCLBjxw48Hg/PP/88W7ZsYdu2bUDSQ3LXXXdRXl6OrusEg0EAHnroITZt2sQ3vvENJk6cyNixY+nu7ua+++7j4YcfxrIsnnzySZYuXcqePXvSnr6Wlhbmz5+PpmmsWbOGgoIC7rnnnrSEfUhq2/nz5+Pz+WhoaKChoYH//M//dNqWIhqN8sMf/pCNGzfy0UcfOVq1sbGRq666issvv5yvfe1rlJeXk5uby8svv8xbb73FqlWraG1tJRAI8Itf/AJIvjmCwSB+v59t27YNuMzaYBARnn76abZu3UoikXD6QvbZkUeynmCq7Pvvv09XVxd+v9/RdHV1dSxevHjQCf8iQigUwjRNJ0Qdj8dxu91kZWU5A+WUSaNpmmPCHmxMdbBr6Vs2db3Sx45Orf+hlBrQZ39A6ml/I/mDJcTvf/zB7HGfz4fH4yEajToRvf3L9XfewXgXPmn5VD61aZoH5Jsc6XkHWx4+HY9EbW0tc+bMcSY0nH766bS0tPDNb36TN95447DaWFtby4gRI1i8eLGzWte7777rjKk+R1gwwFp6me2Lu33961+X1157Terq6uS1116TRx99VKZOnXrY9QwbNswJ5txxxx1OEGfTpk2Sl5d3zK9zv810kfles39YFi1a5CxDkVq+7Ejo7e3l5Zdf5oQTTmDTpk0Eg0HWrVvHypUrP7WZ7Z8AlfnuyQz9kjKvgsEgubm5tLS0oGkaZWVltLe3E41GP3cJTf8fOBrCBpNFXQcAAAAASUVORK5CYII=" />
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>PO BOX 177,SAFAT
+				13002,KUWAIT,C.R. 81300,Share Capital-14000000</td>
+			<td align="right">ص. ب. : 177صفاة 13002,الكويت,ج.ص. 81300,رأس
+				المال 14000000</td>
+		</tr>
+	</table>
+	<!--header table end-->
+	<table class="mainTable">
+		<tr>
+			<td class="mainTable-border">
+				<!--customer table-->
+				<table class="table  table-horizontal col-3 table-odd ">
 					<tr>
 						<td>Senders Details</td>
 						<td></td>
-						<td dir="rtl" style="text-align: right">[
-							&#1576;&#1610;&#1575;&#1606;&#1575;&#1578;
-							&#1575;&#1604;&#1605;&#1585;&#1587;&#1604; ]</td>
+						<td>بيانات المرسل</td>
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
 						<td>1553194 / RABIL UDDIN MIR MIR RAJAK WORKING</td>
-						<td align="right" style="text-align: right; width: 200px">الاسم</td>
+						<td>الاسم</td>
 					</tr>
 					<tr>
 						<td>Contact No</td>
 						<td>51780410</td>
-						<td style="color:red" >رقم الاتصال</td>
+						<td>رقم الاتصال</td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
@@ -158,10 +213,13 @@ html, body {
 					<tr>
 						<td>ID Expiry Date</td>
 						<td>15/08/2017</td>
-						<td th:inline="text">تاريخ انتهاء المدنية</td>
+						<td>تاريخ انتهاء المدنية</td>
 					</tr>
-				</table> <!--customer table end--> <!--loyalty insurance table-->
-				<table class="table table-horizontal">
+				</table> <!--customer table end-->
+				</td></tr>
+				<tr><td class="mainTable-border">
+				 <!--loyalty insurance table-->
+				<table class="table table-horizontal col-3 ">
 					<tr>
 						<td>Loyalty Point Expiring</td>
 						<td>Loyalty Points Expiring on 31/12/2018 19030<br />
@@ -183,8 +241,11 @@ html, body {
 							19/06/2017</td>
 						<td>تأمين ٢</td>
 					</tr>
-				</table> <!--loyalty insurance table end--> <!--transaction detail table-->
-				<table class="table table-horizontal">
+				</table> <!--loyalty insurance table end--> 
+				</td></tr>
+				<tr><td class="mainTable-border">
+				<!--transaction detail table-->
+				<table class="table table-horizontal  col-3 table-odd">
 					<tr>
 						<td>No Of Transactions</td>
 						<td>2</td>
@@ -200,8 +261,10 @@ html, body {
 						<td>2017 / 27000003 / 24/05/2017</td>
 						<td>استلام رقم / تاريخ</td>
 					</tr>
-				</table> <!--transaction detail table end--> <!--Beneficiary's Details table-->
-				<table class="table table-horizontal">
+				</table> <!--transaction detail table end-->
+				</td></tr>
+				<tr><td class="mainTable-border"> <!--Beneficiary's Details table-->
+				<table class="table table-horizontal  col-3 ">
 					<tr>
 						<td>Beneficiary's Details</td>
 						<td></td>
@@ -292,8 +355,10 @@ html, body {
 						<td>Payment towards travel for medical treatment</td>
 						<td></td>
 					</tr>
-				</table> <!--Beneficiary's Details table end--> <!--Payment Details table-->
-				<table class="table table-horizontal col-4">
+				</table> <!--Beneficiary's Details table end-->
+				</td></tr>
+				<tr><td class="mainTable-border"> <!--Payment Details table-->
+				<table class="table table-horizontal col-4 table-odd">
 					<tr>
 						<td>Payment Details</td>
 						<td></td>
@@ -330,11 +395,13 @@ html, body {
 						<td>Approved No : 1234</td>
 						<td>دفع الوضع</td>
 					</tr>
-				</table> <!--Payment Details table end--> <!--Cashier table-->
-				<table>
+				</table> <!--Payment Details table end--> 
+				</td></tr>
+				<tr><td class="mainTable-border"><!--Cashier table-->
+				<table class="table col-3 height100">
 					<tr>
 						<td>Cashier's Name</td>
-						<td>284052306594</td>
+						<td>KANMANI1</td>
 						<td>أمين الصندوق اسم</td>
 					</tr>
 					<tr>
@@ -342,29 +409,25 @@ html, body {
 						<td></td>
 						<td>التوقيع أمين الصندوق</td>
 					</tr>
-				</table> <!--Cashier table end-->
-
-				<table>
-					<tr>
-						<td>I / We confirm that the beneficiary details furnished
-							above are correct. I/ We have read the terms and conditions
-							overleaf and confirm to have fully understood and accepted the
-							same without any</td>
-						<td>I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد
-							قرأت الشروط والأحكام الوارد في الصفحة التالية و تأكيد لقد فهمت
-							تماما وقبلت نفسه دون</td>
-					</tr>
-					<tr>
-						<td>Signature Of Remitter)</td>
-						<td>)التوقيع على المحول(</td>
-					</tr>
 				</table>
-				<table>
-					<tr>
-						<td>Page 1 of 2</td>
-					</tr>
-				</table>
-			</td>
+		<!--Cashier table end-->
+</td></tr>
+				<tr><td>
+		<table class="table noborder">
+			<tr>
+				<td>I / We confirm that the beneficiary details furnished above
+					are correct. I/ We have read the terms and conditions overleaf and
+					confirm to have fully understood and accepted the same without any</td>
+				<td>I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد قرأت
+					الشروط والأحكام الوارد في الصفحة التالية و تأكيد لقد فهمت تماما
+					وقبلت نفسه دون</td>
+			</tr>
+			<tr>
+				<td>(Signature Of Remitter)</td>
+				<td>(التوقيع على المحول)</td>
+			</tr>
+		</table>
+		</td>
 		</tr>
 	</table>
 </body>
