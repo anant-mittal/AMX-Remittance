@@ -110,7 +110,16 @@ public abstract class AbstractJaxServiceClient {
 			if (JaxError.MISSING_HOME_CONTACT_DETAILS.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.MISSING_LOCAL_CONTACT_DETAILS.getCode().equals(error.getErrorId())) {
+			if (JaxError.INVALID_CUSTOMER_REFERENCE.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.OLD_EMOS_USER_DELETED.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.OLD_EMOS_USER_DATA_EXPIRED.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
+			if (JaxError.ID_PROOFS_IMAGES_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
 
