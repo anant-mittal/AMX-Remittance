@@ -57,7 +57,7 @@ public class RegistrationService {
 			userSessionInfo.setOtp(model.getOtp());
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
-		} catch (UnirestException e) {
+		} catch (Exception e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
 

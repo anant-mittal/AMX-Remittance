@@ -42,7 +42,7 @@ public class PostManClient {
 		postManService.sendSMS(sms);
 	}
 
-	public void sendEmail(Email email) throws UnirestException {
+	public void sendEmail(Email email) {
 		postManService.sendEmail(email);
 	}
 

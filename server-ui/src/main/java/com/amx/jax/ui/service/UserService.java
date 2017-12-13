@@ -1,6 +1,8 @@
 package com.amx.jax.ui.service;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -8,31 +10,46 @@ import com.amx.jax.postman.Email;
 import com.amx.jax.postman.SMS;
 import com.amx.jax.postman.Templates;
 import com.amx.jax.postman.client.PostManClient;
-import com.mashape.unirest.http.exceptions.UnirestException;
+import com.amx.jax.ui.Constants;
 
 @Service
 public class UserService {
 
+	private Logger log = Logger.getLogger(JaxService.class);
+
 	@Autowired
 	private PostManClient postManClient;
 
-	public void notifyResetOTP(CivilIdOtpModel model) throws UnirestException {
+	@Async
+	public void notifyResetOTP(CivilIdOtpModel model) {
 
 		SMS sms = new SMS();
-		sms.setTo("7710072192");
-		sms.setText("Your OTP for Reset is " + model.getOtp());
-		postManClient.sendSMS(sms);
+
+		try {
+			sms.setTo("7710072192");
+			sms.setText("Your OTP for Reset is " + model.getOtp());
+			postManClient.sendSMS(sms);
+		} catch (Exception e) {
+			log.error("Error while sending OTP SMS to 7710072192", e);
+		}
 
 		Email email = new Email();
-		email.setSubject("Almulla Reset OTP");
+		email.setSubject("Verify Your Account");
 		email.setFrom("amxjax@gmail.com");
-		//email.setTo("lalit.tanwar07@gmail.com");
-		email.setTo("umesh.gupta@almullagroup.com");
+		if (model.getEmail() != null && !Constants.EMPTY.equals(model.getEmail())) {
+			email.setTo(model.getEmail());
+		} else {
+			email.setTo("umesh.gupta@almullagroup.com");
+		}
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
 		email.getModel().put("otp", model.getOtp());
-		
-		postManClient.sendEmail(email);
+
+		try {
+			postManClient.sendEmail(email);
+		} catch (Exception e) {
+			log.error("Error while sending OTP Email to" + model.getEmail(), e);
+		}
 
 	}
 

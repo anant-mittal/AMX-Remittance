@@ -11,11 +11,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.ui.config.Properties;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
+@EnableAsync
 public class WebApplication extends SpringBootServletInitializer {
 
 	@Autowired

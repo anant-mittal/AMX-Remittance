@@ -150,15 +150,15 @@ public class LoginService {
 				userSession.setOtp(model.getOtp());
 
 				userService.notifyResetOTP(model);
-				
+
 				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 
-			} catch (UnirestException e) {
-				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 			} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+			} catch (Exception e) {
+				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 			}
-			
+
 		} else {
 			try {
 				CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
