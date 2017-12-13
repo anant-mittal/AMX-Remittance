@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -136,6 +138,12 @@ public class UserService extends AbstractUserService {
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
+		if (model.getLoginId() != null) { // after this step flow is going to login
+			Map<String, Object> output = afterLoginSteps(onlineCust);
+			if (output.get("PERSON_INFO") != null) {
+				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
+			}
+		}
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -175,7 +183,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
-
+		userValidationService.validateCustomerLockCount(onlineCust);
 		generateToken(civilId, model);
 		onlineCust.setEmailToken(model.getHashedOtp());
 		onlineCust.setSmsToken(model.getHashedOtp());
@@ -248,10 +256,18 @@ public class UserService extends AbstractUserService {
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
-
+		PersonInfo personinfo = new PersonInfo();
+		Map<String, Object> output = new HashMap<>();
+		try {
+			Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+			BeanUtils.copyProperties(personinfo, customer);
+			output.put("PERSON_INFO", personinfo);
+		} catch (Exception e) {
+		}
+		return output;
 	}
 
 	public ApiResponse getUserCheckList(String loginId) {
@@ -280,19 +296,17 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
-		Customer customer = custDao.getCustById(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
-		PersonInfo personinfo = new PersonInfo();
-		try {
-			BeanUtils.copyProperties(personinfo, customer);
-		} catch (Exception e) {
+		Map<String, Object> output = afterLoginSteps(onlineCustomer);
+		if (output.get("PERSON_INFO") != null) {
+			responseModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
 		}
-		responseModel.setPersoninfo(personinfo);
+
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
