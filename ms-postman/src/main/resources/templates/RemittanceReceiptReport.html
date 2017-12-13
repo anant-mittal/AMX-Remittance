@@ -31,17 +31,19 @@ html, body {
 }
 
 .table.col-3 td:nth-child(1), .table.col-4 td:nth-child(1) {
-	width: 20%;
+	width: 15%;
 	font-weight: bold;
 	font-family: 'Arial';
 }
 
 .table.col-3 td:nth-child(2) {
-	width: 60%;
+	width: 70%;
 }
-
+.table.col-4 td:nth-child(2),.table.col-4 td:nth-child(3) {
+	width: 35%;
+}
 .table.col-3 td:nth-child(3), .table.col-4 td:nth-child(4) {
-	width: 20%;
+	width: 15%;
 	text-align: right;
 	font-weight: bold;
 	font-family: 'Arial';
@@ -120,9 +122,9 @@ html, body {
 	size: A4;
 	margin: 0;
 	margin-top: 107px;
-	margin-bottom: 28px;
+	margin-bottom: 18px;
 	@top-center {content: element(header);}
-	@bottom-right {
+	@bottom-center {
     	content: "Page " counter(page) " of " counter(pages)"&nbsp;&nbsp;";
   }
 }
@@ -162,6 +164,12 @@ html, body {
 .mainTable-border {
 	border-bottom: 1px dashed #000000;
 }
+.mode + .mode td:nth-child(1){
+	color:#fff;
+}
+.mode + .mode td:nth-child(3){
+	color:#fff;
+}
 </style>
 </head>
 <body>
@@ -178,14 +186,12 @@ html, body {
 			</td>
 		</tr>
 		<tr>
-			<td>PO BOX 177,SAFAT
-				13002,KUWAIT,C.R. 81300,Share Capital-14000000</td>
-			<td align="right">ص. ب. : 177صفاة 13002,الكويت,ج.ص. 81300,رأس
-				المال 14000000</td>
+			<td th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
+			<td th:text="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
 		</tr>
 	</table>
 	<!--header table end-->
-	<table class="mainTable">
+	<table class="mainTable" th:each="remittance : ${data.remittanceApplList}">
 		<tr>
 			<td class="mainTable-border">
 				<!--customer table-->
@@ -197,22 +203,22 @@ html, body {
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
-						<td>1553194 / RABIL UDDIN MIR MIR RAJAK WORKING</td>
+						<td th:text="${remittance.firstName}">--</td>
 						<td>الاسم</td>
 					</tr>
 					<tr>
 						<td>Contact No</td>
-						<td>51780410</td>
+						<td th:text="${remittance.mobileNo}">--</td>
 						<td>رقم الاتصال</td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
-						<td>284052306594</td>
+						<td th:text="${remittance.civilId}">--</td>
 						<td>رقم البطاقة المدنية</td>
 					</tr>
 					<tr>
 						<td>ID Expiry Date</td>
-						<td>15/08/2017</td>
+						<td th:text="${remittance.idExpiryDate}">--</td>
 						<td>تاريخ انتهاء المدنية</td>
 					</tr>
 				</table> <!--customer table end-->
@@ -222,25 +228,15 @@ html, body {
 				<table class="table table-horizontal col-3 ">
 					<tr>
 						<td>Loyalty Point Expiring</td>
-						<td>Loyalty Points Expiring on 31/12/2018 19030<br />
-							Loyalty Points Expiring on 31/12/2017 0
-						</td>
+						<td th:text="${remittance.loyalityPointExpiring}">--</td>
 						<td>تاريخ انتهاء سريان النقاط</td>
 					</tr>
 					<tr>
 						<td>Insurance 1</td>
-						<td>You are now insured for another KD 250/- against natural
-							or accidental death or KD 250 for PTD due to Accident until
-							19/06/2017</td>
+						<td th:text="${remittance.insurence1}">--</td>
 						<td>تأمين ١</td>
 					</tr>
-					<tr>
-						<td>Insurance 2</td>
-						<td>You are now insured for KD 1000/- against natural or
-							accidental death or another KD 1000 for PTD due to Accident until
-							19/06/2017</td>
-						<td>تأمين ٢</td>
-					</tr>
+				
 				</table> <!--loyalty insurance table end--> 
 				</td></tr>
 				<tr><td class="mainTable-border">
@@ -248,17 +244,17 @@ html, body {
 				<table class="table table-horizontal  col-3 table-odd">
 					<tr>
 						<td>No Of Transactions</td>
-						<td>2</td>
+						<td th:text="${remittance.noOfTransaction}">--</td>
 						<td>عدد المعاملات</td>
 					</tr>
 					<tr>
 						<td>Location / Phone No</td>
-						<td>KUWAIT / 1840123</td>
+						<td th:text="${remittance.location} + ' / ' + ${remittance.phoneNumber}">KUWAIT / 1840123</td>
 						<td>الموقع / رقم الهاتف</td>
 					</tr>
 					<tr>
 						<td>Receipt No / Date</td>
-						<td>2017 / 27000003 / 24/05/2017</td>
+						<td th:text="${remittance.receiptNo} +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; '+  ${remittance.date} +''">2017 / 27000003 / 24/05/2017</td>
 						<td>استلام رقم / تاريخ</td>
 					</tr>
 				</table> <!--transaction detail table end-->
@@ -272,88 +268,86 @@ html, body {
 					</tr>
 					<tr>
 						<td>Transaction No</td>
-						<td>2017 / 27000003</td>
+						<td th:text="${remittance.transactionNo}">--</td>
 						<td>الصفقة لا</td>
 					</tr>
 					<tr>
 						<td>Name</td>
-						<td>UDDIN RABIL MIR(TEL NO:9861846644)</td>
+						<td th:text="${remittance.beneficiaryName}">--</td>
 						<td>الاسم</td>
 					</tr>
 					<tr>
 						<td>Bank Name</td>
-						<td>STATE BANK OF INDIA</td>
+						<td th:text="${remittance.benefeciaryBankName}">--</td>
 						<td>اسم البنك</td>
 					</tr>
 					<tr>
 						<td>Branch Name</td>
-						<td>JAGATSINGHPUR ADB</td>
+						<td th:text="${remittance.benefeciaryBranchName}">--</td>
 						<td>اسم الفرع</td>
 					</tr>
 					<tr>
 						<td>Account No</td>
-						<td>11297591218</td>
+						<td th:text="${remittance.benefeciaryAccountNumber}">--</td>
 						<td>رقم الحساب</td>
 					</tr>
 					<tr>
 						<td>Payment Channel</td>
-						<td>ELECTRONIC FUND TRANSFER - BANKING CHANNEL</td>
+						<td th:text="${remittance.paymentChannel}">--</td>
 						<td>قناة الدفع</td>
 					</tr>
 					<tr>
 						<td>Currency &amp; Amount</td>
-						<td>INR ******2404.00</td>
+						<td th:text="${remittance.currencyAndAmount}">--</td>
 						<td>العملات و المبلغ</td>
 					</tr>
 					<tr>
 						<td>Exchange Rate</td>
-						<td>INR / KWD 0.004576</td>
+						<td th:text="${remittance.exchangeRate}">--</td>
 						<td>سعر الصرف</td>
 					</tr>
 					<tr>
 						<td>Amount</td>
-						<td>KWD ******11.000</td>
+						<td th:text="${remittance.localTransactionAmount}">--</td>
 						<td>لجنة</td>
 					</tr>
 					<tr>
 						<td>Commission</td>
-						<td>KWD ******1.000</td>
+						<td th:text="${remittance.commision}">--</td>
 						<td>رسوم أخرى</td>
 					</tr>
 					<tr>
 						<td>Other Charges</td>
-						<td>: KWD ******0.000</td>
+						<td th:text="${remittance.otherCharges}">--</td>
 						<td>رسوم أخرى</td>
 					</tr>
 					<tr>
 						<td>Total Amount</td>
-						<td>KWD ******12.000</td>
+						<td th:text="${remittance.totalAmount}">--</td>
 						<td>المبلغ الإجمالي</td>
 					</tr>
 					<tr>
 						<td>Further Instructions</td>
-						<td>URGENT</td>
+						<td th:text="${remittance.futherInstructions}">--</td>
 						<td>مزيد من التعليمات</td>
 					</tr>
 					<tr>
 						<td>Source Of Income</td>
-						<td></td>
+						<td th:text="${remittance.sourceOfIncome}">--</td>
 						<td>مصدر الدخل</td>
 					</tr>
 					<tr>
 						<td>Intermeditary Bank</td>
-						<td></td>
+						<td th:text="${remittance.intermediataryBank}">--</td>
 						<td>البنك الوسيط</td>
 					</tr>
 					<tr>
 						<td>Address</td>
-						<td>ORISSA, BALIKUDA, JAGATSINGHPUR</td>
+						<td th:text="${remittance.address}">--</td>
 						<td>عنوان</td>
 					</tr>
 					<tr>
-						<td>PURPOSE OF REMITTANCE</td>
-						<td>Payment towards travel for medical treatment</td>
-						<td></td>
+						<td colspan="3" th:text="${remittance.purposeOfRemitTrList[0].purposeOfTrField} + '&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;' + ${remittance.purposeOfRemitTrList[0].purposeOfTrValue}">--</td>
 					</tr>
 				</table> <!--Beneficiary's Details table end-->
 				</td></tr>
@@ -367,32 +361,32 @@ html, body {
 					</tr>
 					<tr>
 						<td>Amount Paid</td>
-						<td>KWD ******24.000</td>
+						<td th:text="${remittance.paidAmount}">--</td>
 						<td></td>
 						<td>المبلغ المدفوع</td>
 					</tr>
 					<tr>
 						<td>Amount Refund</td>
-						<td>KWD ******0.000</td>
+						<td th:text="${remittance.refundedAmount}">--</td>
 						<td></td>
 						<td>استرداد المبلغ</td>
 					</tr>
 					<tr>
 						<td>Amount Payable</td>
-						<td></td>
+						<td th:text="${remittance.amountPayable}">--</td>
 						<td></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Net Paid Amount</td>
-						<td>KWD ******24.000</td>
+						<td th:text="${remittance.netAmount}">--</td>
 						<td></td>
 						<td>صافي المبلغ المدفوع</td>
 					</tr>
-					<tr>
+					<tr class="mode" th:each="mode : ${remittance.collectionDetailList}">
 						<td>Payment Mode</td>
-						<td>K-NET : 24.000</td>
-						<td>Approved No : 1234</td>
+						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
+						<td th:text="${mode.approvalNo}">Approved No : 1234</td>
 						<td>دفع الوضع</td>
 					</tr>
 				</table> <!--Payment Details table end--> 
@@ -401,12 +395,12 @@ html, body {
 				<table class="table col-3 height100">
 					<tr>
 						<td>Cashier's Name</td>
-						<td>KANMANI1</td>
+						<td th:text="${remittance.userName}">KANMANI1</td>
 						<td>أمين الصندوق اسم</td>
 					</tr>
 					<tr>
 						<td>Cashier's Signature</td>
-						<td></td>
+						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
 						<td>التوقيع أمين الصندوق</td>
 					</tr>
 				</table>
@@ -415,16 +409,21 @@ html, body {
 				<tr><td>
 		<table class="table noborder">
 			<tr>
-				<td>I / We confirm that the beneficiary details furnished above
+				<td valign="top">I / We confirm that the beneficiary details furnished above
 					are correct. I/ We have read the terms and conditions overleaf and
 					confirm to have fully understood and accepted the same without any</td>
-				<td>I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد قرأت
+				<td valign="top" align="right">I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد قرأت
 					الشروط والأحكام الوارد في الصفحة التالية و تأكيد لقد فهمت تماما
 					وقبلت نفسه دون</td>
 			</tr>
 			<tr>
-				<td>(Signature Of Remitter)</td>
-				<td>(التوقيع على المحول)</td>
+				<td align="center"><img height="50"  th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
+				<td></td>
+			</tr>
+			
+			<tr>
+				<td align="center"><STRONG>(Signature Of Remitter)</STRONG></td>
+				<td align="center"><STRONG>(التوقيع على المحول)</STRONG></td>
 			</tr>
 		</table>
 		</td>
