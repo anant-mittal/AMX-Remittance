@@ -25,8 +25,11 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
@@ -48,10 +51,10 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private MetaData meta;
-	
+
 	@Autowired
 	private BankServiceRuleDao bankServiceRuleDao;
-	
+
 	@Autowired
 	private BankMasterService bankMasterService;
 
@@ -68,10 +71,36 @@ public class RemittanceTransactionManager {
 		BigDecimal rountingBankbranchId = new BigDecimal(routingDetails.get("4").toString());
 		BigDecimal remittanceMode = new BigDecimal(routingDetails.get("5").toString());
 		BigDecimal deliveryMode = new BigDecimal(routingDetails.get("6").toString());
-//		bankServiceRuleDao.getBankServiceRule(routingBankId, beneficiary.getCountryId(), beneficiary.getCurrencyId(),
-//				remittanceMode, deliveryMode);
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, beneficiary.getCountryId(),
+				beneficiary.getCurrencyId(), remittanceMode, deliveryMode);
+		if (rules == null || rules.isEmpty()) {
+			throw new GlobalException("Routing Rules not defined for Routing Bank Id:- " + routingBankId,
+					JaxError.TRANSACTION_VALIDATION_FAIL);
+		}
+		BankServiceRule appliedRule = rules.get(0);
+		List<BankCharges> charges = appliedRule.getBankCharges();
+		BankCharges bankCharge = getApplicableCharge(charges);
+		if (bankCharge == null) {
+			throw new GlobalException("Routing Bank Charges not defined for Routing Bank Id:- " + routingBankId,
+					JaxError.TRANSACTION_VALIDATION_FAIL);
+		}
+		BigDecimal comission = bankCharge.getChargeAmount();
 		return model;
 
+	}
+
+	private BankCharges getApplicableCharge(List<BankCharges> charges) {
+
+		if (charges != null) {
+			for (BankCharges charge : charges) {
+				BizComponentData chargesFor = charge.getChargeFor();
+				// Individual for now
+				if ("Y".equals(chargesFor.getActive()) && "I".equals(chargesFor.getComponentCode())) {
+					return charge;
+				}
+			}
+		}
+		return null;
 	}
 
 	private HashMap<String, String> getBeneBankDetails(BenificiaryListView beneficiary) {

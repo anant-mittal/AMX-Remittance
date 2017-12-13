@@ -59,6 +59,8 @@ public class BankServiceRule implements Serializable{
 	private Date approvedDate;
 	private String approvedBy;
 	private BigDecimal applicationCountryId;
+	private BigDecimal remittanceModeId;
+	private BigDecimal deliveryModeId;
 	
 	private List<BankCharges> bankCharges=new ArrayList<BankCharges>();
 	
@@ -326,6 +328,28 @@ public class BankServiceRule implements Serializable{
 
 	public void setApplicationCountryId(BigDecimal applicationCountryId) {
 		this.applicationCountryId = applicationCountryId;
+	}
+
+
+	@Column(name="REMITTANCE_MODE_ID")
+	public BigDecimal getRemittanceModeId() {
+		return remittanceModeId;
+	}
+
+
+	public void setRemittanceModeId(BigDecimal remittanceModeId) {
+		this.remittanceModeId = remittanceModeId;
+	}
+
+
+	@Column(name="DELIVERY_MODE_ID")
+	public BigDecimal getDeliveryModeId() {
+		return deliveryModeId;
+	}
+
+
+	public void setDeliveryModeId(BigDecimal deliveryModeId) {
+		this.deliveryModeId = deliveryModeId;
 	}
 	
 	

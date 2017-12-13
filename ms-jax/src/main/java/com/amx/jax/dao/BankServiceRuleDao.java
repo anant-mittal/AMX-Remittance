@@ -1,5 +1,8 @@
 package com.amx.jax.dao;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -14,7 +17,11 @@ public class BankServiceRuleDao {
 
 	BankServiceRuleRepository bankServiceRuleRepo;
 	
-//	public BankServiceRule getBankServiceRule() {
-//		
-//	}
+	
+	public List<BankServiceRule> getBankServiceRule(BigDecimal routingBankId, BigDecimal countryId, BigDecimal currencyId,
+			BigDecimal remittanceMode, BigDecimal deliveryMode) {
+
+		return bankServiceRuleRepo.getServiceRules(routingBankId, countryId, currencyId, remittanceMode, deliveryMode);
+		
+	}
 }
