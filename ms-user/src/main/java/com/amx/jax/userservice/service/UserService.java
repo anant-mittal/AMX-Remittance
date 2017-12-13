@@ -116,7 +116,13 @@ public class UserService extends AbstractUserService {
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion4(), cust.getSecurityAnswer4()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion5(), cust.getSecurityAnswer5()));
 		model.setSecurityquestions(securityquestions);
-
+		try {
+			PersonInfo personinfo = new PersonInfo();
+			Customer customer = custDao.getCustById(cust.getCustomerId());
+			BeanUtils.copyProperties(personinfo, customer);
+			model.setPersoninfo(personinfo);
+		} catch (Exception e) {
+		}
 		return model;
 	}
 
@@ -244,9 +250,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		afterLoginSteps(onlineCustomer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
+		Map<String, Object> output = afterLoginSteps(onlineCustomer);
+		if (output.get("PERSON_INFO") != null) {
+			customerModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
+		}
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -259,14 +268,7 @@ public class UserService extends AbstractUserService {
 	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
-		PersonInfo personinfo = new PersonInfo();
 		Map<String, Object> output = new HashMap<>();
-		try {
-			Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
-			BeanUtils.copyProperties(personinfo, customer);
-			output.put("PERSON_INFO", personinfo);
-		} catch (Exception e) {
-		}
 		return output;
 	}
 
