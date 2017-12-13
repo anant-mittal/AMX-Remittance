@@ -32,37 +32,34 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 /**
  * 
- * @author :Rabil
- * Date    :23/11/2017 
+ * @author :Rabil Date :23/11/2017
  *
  */
 
 @Component
-public class MetaClient extends AbstractJaxServiceClient{
+public class MetaClient extends AbstractJaxServiceClient {
 	private Logger log = Logger.getLogger(MetaClient.class);
-	
-	
+
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
-
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/applcountry/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/applcountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>(){});
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
-	
+
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response = null;
 		try {
@@ -71,240 +68,248 @@ public class MetaClient extends AbstractJaxServiceClient{
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/applcountry/"+countryId+"/"+companyId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/applcountry/" + countryId + "/" + companyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>(){});
-			
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	//CountryMasterDTO
-	
+
+	// CountryMasterDTO
+
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
-			log.info("Get all the applciation country "+languageId);
+			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/"+languageId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
-			
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId,String countryId) {
+
+	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId, String countryId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
-			log.info("Get all the applciation country "+languageId);
+			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/"+languageId+"/"+countryId;
-			
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/" + languageId + "/" + countryId;
+
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
-		
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<CountryMasterDTO> getBusinessCountry(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
-			log.info("Get all the applciation country "+languageId);
+			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/country/bc/"+languageId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/bc/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<QuestModelDTO> getSequrityQuestion(String languageId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
-			
+
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			
-			
-			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
+
+			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId,String questionId) {
+
+	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId, String questionId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			log.info("Get all the applciation country "+languageId+"\t countryId :"+countryId);
+			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/quest/"+languageId+"/"+countryId+"/"+questionId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
+					+ questionId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
 
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition(String languageId) {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
-			log.info("Terms and Condition "+languageId);
+			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>(){});
-		
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId) {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			log.info("Terms and Condition "+languageId);
+			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/terms/"+languageId+"/"+countryId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
 
 	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId) {
 		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			log.info("Terms and Condition "+languageId);
+			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/why/"+languageId+"/"+countryId;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
 
-	
 	public ApiResponse<UserFinancialYearDTO> getFinancialYear() {
 		ResponseEntity<ApiResponse<UserFinancialYearDTO>> response = null;
 		try {
 			log.info("Financial Year");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/fyear/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/fyear/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<AuthenticationLimitCheckDTO> getContactUsTime() {
 		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdtime/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/helpdtime/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>(){});
-		
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<AuthenticationLimitCheckDTO> getHelpDeskNo() {
 		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/helpdno/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/helpdno/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>(){});
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
-	
 
-	
 	public ApiResponse<MultiCountryDTO> getMultiCountryList() {
 		ResponseEntity<ApiResponse<MultiCountryDTO>> response = null;
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/multicountry/";
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/multicountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>(){});
-			
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>() {
+					});
+
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
 
 	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response = null;
@@ -320,51 +325,50 @@ public class MetaClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.debug("exception in getAllOnlineCurrency ", e);
 		}
-		return response.getBody();	
+		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<CurrencyMasterDTO> getCurrencyByCountryId(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response = null;
 		try {
 			log.info("in getAllOnlineCurrency");
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/bycountry/"+countryId;
+			MultiValueMap<String, String> headers = getHeader();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/bycountry/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-
 		} catch (Exception e) {
 			log.debug("exception in getAllOnlineCurrency ", e);
 		}
-		return response.getBody();	
+		return response.getBody();
 	}
-	
-	
-	
-	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal languageId,BigDecimal stateId,BigDecimal districtId) {
+
+	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal languageId, BigDecimal stateId,
+			BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			if(languageId==null && languageId.compareTo(BigDecimal.ZERO)==0) {
-			 languageId = new BigDecimal(1);
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId).append("&districtId=").append(districtId);
-			log.info("District Input :"+sb.toString());
+			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId).append("&districtId=")
+					.append(districtId);
+			log.info("District Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/districtdesc/"+sb.toString();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/districtdesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>(){});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
+					});
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 
 		}
 		return response.getBody();
 	}
-	
 
 	public ApiResponse<BankMasterDTO> getBankListForCountry(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<BankMasterDTO>> response = null;
@@ -384,67 +388,72 @@ public class MetaClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();
 	}
-	
-	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal languageId,BigDecimal stateId) {
+
+	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal languageId, BigDecimal stateId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			if(languageId==null && languageId.compareTo(BigDecimal.ZERO)==0) {
-			 languageId = new BigDecimal(1);
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
 			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId);
-			log.info("District Input :"+sb.toString());
+			log.info("District Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/districtlist/"+sb.toString();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/districtlist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>(){});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
+					});
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 
 		}
 		return response.getBody();
 	}
-	
 
-	public ApiResponse<ViewStateDto> getStateList(BigDecimal languageId,BigDecimal countryId) {
+	public ApiResponse<ViewStateDto> getStateList(BigDecimal languageId, BigDecimal countryId) {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
-			
+
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			if(languageId==null && languageId.compareTo(BigDecimal.ZERO)==0) {
-			 languageId = new BigDecimal(1);
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
 			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId);
-			log.info("State Input :"+sb.toString());
+			log.info("State Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/statelist/"+sb.toString();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/statelist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewStateDto>>(){});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
+					});
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
-	
-	
-	public ApiResponse<ViewStateDto> getStateDesc(BigDecimal languageId,BigDecimal countryId,BigDecimal stateId) {
+
+	public ApiResponse<ViewStateDto> getStateDesc(BigDecimal languageId, BigDecimal countryId, BigDecimal stateId) {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
-			
+
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			if(languageId==null && languageId.compareTo(BigDecimal.ZERO)==0) {
-			 languageId = new BigDecimal(1);
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId).append("&stateId=").append(stateId);
-			log.info("State Input :"+sb.toString());
+			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId).append("&stateId=")
+					.append(stateId);
+			log.info("State Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url =baseUrl.toString()+ META_API_ENDPOINT+"/statedesc/"+sb.toString();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/statedesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewStateDto>>(){});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
+					});
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
 		}

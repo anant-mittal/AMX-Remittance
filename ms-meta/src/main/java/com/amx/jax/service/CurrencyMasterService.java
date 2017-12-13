@@ -46,7 +46,7 @@ public class CurrencyMasterService extends AbstractService {
 			response.setResponseStatus(ResponseStatus.OK);
 		}
 
-		response.getData().setType("currency");
+		response.getData().setType("currencyMaster");
 		return response;
 
 	}
@@ -88,7 +88,7 @@ public class CurrencyMasterService extends AbstractService {
 			response.getData().getValues().addAll(convertToModelDto(currencyList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("currency");
+		response.getData().setType("currencyMaster");
 		return response;
 	}
 	
