@@ -54,6 +54,11 @@ public class PostManService {
 	}
 
 	public void sendSMS(SMS sms) throws UnirestException {
+		if (sms.getTemplate() != null) {
+			Context context = new Context();
+			context.setVariables(sms.getModel());
+			sms.setText(templateEngine.process(sms.getTemplate(), context));
+		}
 		this.smsService.sendSMS(sms);
 	}
 

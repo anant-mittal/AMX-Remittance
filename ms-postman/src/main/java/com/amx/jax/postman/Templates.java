@@ -1,8 +1,8 @@
 package com.amx.jax.postman;
 
 public enum Templates {
-	
-	RESET_OTP("reset-otp"), REMIT_RECEIPT("RemittanceReceiptReport");
+
+	RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), REMIT_RECEIPT("RemittanceReceiptReport");
 
 	String fileName;
 

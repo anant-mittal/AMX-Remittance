@@ -2,13 +2,9 @@ package com.amx.jax.postman;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import com.bootloaderjs.Utils;
-
-public class Email {
+public class Email extends Message {
 
 	private String from;
 
@@ -19,30 +15,6 @@ public class Email {
 	private String subject;
 
 	private String message;
-
-	private String template = null;
-
-	public String getTemplate() {
-		return template;
-	}
-
-	public void setTemplate(String template) {
-		this.template = template;
-	}
-
-	public void setTemplate(Templates template) {
-		this.template = template.getFileName();
-	}
-
-	private Map<String, Object> model = new HashMap<String, Object>();
-
-	public Map<String, Object> getModel() {
-		return model;
-	}
-
-	public void setModel(Map<String, Object> model) {
-		this.model = model;
-	}
 
 	private boolean isHtml;
 
@@ -88,29 +60,6 @@ public class Email {
 	 */
 	public void setFrom(String from) {
 		this.from = from;
-	}
-
-	/**
-	 * @return the to
-	 */
-	public List<String> getTo() {
-		return to;
-	}
-
-	/**
-	 * @param to
-	 *            the to to set
-	 */
-	public void setTo(List<String> to) {
-		this.to = to;
-	}
-
-	/**
-	 * @param to
-	 *            the to to set
-	 */
-	public void setTo(String emailId) {
-		this.to.add(emailId);
 	}
 
 	/**
@@ -176,9 +125,5 @@ public class Email {
 	private String[] splitByComma(String toMultiple) {
 		String[] toSplit = toMultiple.split(",");
 		return toSplit;
-	}
-
-	public String getToAsList() {
-		return Utils.concatenate(this.to, ",");
 	}
 }

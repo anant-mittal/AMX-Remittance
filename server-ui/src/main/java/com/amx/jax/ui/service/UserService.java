@@ -28,6 +28,7 @@ public class UserService {
 		try {
 			sms.setTo("7710072192");
 			sms.setText("Your OTP for Reset is " + model.getOtp());
+			sms.setTemplate(Templates.RESET_OTP_SMS);
 			postManClient.sendSMS(sms);
 		} catch (Exception e) {
 			log.error("Error while sending OTP SMS to 7710072192", e);
