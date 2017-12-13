@@ -78,7 +78,7 @@ public class RegistrationService {
 				CustomerModel model = response.getResult();
 				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(idnetity, otp)) {
-					sessionService.authorize(model);
+					sessionService.authorize(model, true);
 					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);

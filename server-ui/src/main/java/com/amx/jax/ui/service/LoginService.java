@@ -102,7 +102,7 @@ public class LoginService {
 				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswers)
 						.getResult();
 
-				sessionService.authorize(customerModel);
+				sessionService.authorize(customerModel, true);
 
 				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_FAILED);
@@ -164,7 +164,7 @@ public class LoginService {
 				CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
 				// Check if otp is valid
 				if (model != null) {
-					sessionService.authorize(model);
+					sessionService.authorize(model, true);
 					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
