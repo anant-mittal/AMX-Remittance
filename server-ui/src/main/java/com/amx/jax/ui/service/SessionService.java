@@ -37,14 +37,18 @@ public class SessionService {
 		return userSession;
 	}
 
-	public void authorize(CustomerModel customerModel) {
+	public void authorize(CustomerModel customerModel, Boolean valid) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				customerModel.getIdentityId(), customerModel.getPassword());
 		token.setDetails(new WebAuthenticationDetails(request));
 		Authentication authentication = this.customerAuthProvider.authenticate(token);
 		userSession.setCustomerModel(customerModel);
-		userSession.setValid(true);
+		// userSession.setValid(true);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+	}
+
+	public void validate(Boolean valid) {
+		userSession.setValid(valid);
 	}
 
 }
