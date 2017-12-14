@@ -4,10 +4,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,9 +87,10 @@ public class ExchangeRateService extends AbstractService {
 					allExchangeRates, pips, fcAmount, bankId);
 			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,
 					fcAmount);
-			equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, fcAmount);
-			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(fromCurrency, applicableRatesWithDiscount,
-					fcAmount);
+			if (equivalentAmount == null) {
+				equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, fcAmount);
+			}
+			Set<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount, fcAmount);
 			if (equivalentAmount == null && (bankWiseRates == null || bankWiseRates.isEmpty())) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -112,16 +115,16 @@ public class ExchangeRateService extends AbstractService {
 		for (ExchangeRateApprovalDetModel rate : allExchangeRates) {
 			if (rate.getSellRateMax().compareTo(maxInverseRate) > 0) {
 				equivalentAmount = createBreakUp(rate.getSellRateMax(), amount);
-				maxInverseRate =  rate.getSellRateMax();
+				maxInverseRate = rate.getSellRateMax();
 			}
 		}
 		return equivalentAmount;
 	}
 
-	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
+	private Set<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
 		CurrencyMasterModel currency = currencyMasterDao.getCurrencyMasterByQuote("BDT");
-		List<BankMasterDTO> bankWiseRates = new ArrayList<>();
+		Set<BankMasterDTO> bankWiseRates = new HashSet<>();
 		if (currency != null && currency.getCurrencyId().equals(fromCurrency)) {
 			for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 				List<PipsMaster> piplist = entry.getValue();
@@ -150,6 +153,8 @@ public class ExchangeRateService extends AbstractService {
 					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
 				}
 			}
+		} else {
+			exrate = rate.getSellRateMax();
 		}
 		return createBreakUp(exrate, amount);
 	}

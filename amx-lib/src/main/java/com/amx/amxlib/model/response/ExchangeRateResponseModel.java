@@ -1,6 +1,7 @@
 package com.amx.amxlib.model.response;
 
 import java.util.List;
+import java.util.Set;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.AbstractModel;
@@ -9,18 +10,18 @@ public class ExchangeRateResponseModel extends AbstractModel {
 
 	ExchangeRateBreakup exRateBreakup;
 
-	List<BankMasterDTO> bankWiseRates;
+	Set<BankMasterDTO> bankWiseRates;
 
 	@Override
 	public String getModelType() {
 		return "ex_rate";
 	}
 
-	public List<BankMasterDTO> getBankWiseRates() {
+	public Set<BankMasterDTO> getBankWiseRates() {
 		return bankWiseRates;
 	}
 
-	public void setBankWiseRates(List<BankMasterDTO> bankWiseRates) {
+	public void setBankWiseRates(Set<BankMasterDTO> bankWiseRates) {
 		this.bankWiseRates = bankWiseRates;
 	}
 
