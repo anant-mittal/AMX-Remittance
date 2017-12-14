@@ -94,8 +94,7 @@ public class RegistrationService {
 
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient()
-				.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
+		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
 
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());

@@ -24,7 +24,6 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
 import com.bootloaderjs.ListManager;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class LoginService {
@@ -62,7 +61,7 @@ public class LoginService {
 				sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
+						.getSequrityQuestion().getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					System.out.println(questModelDTO.getQuestNumber() + "===" + answer.getQuestionSrNo());
@@ -117,7 +116,7 @@ public class LoginService {
 				sessionService.getGuestSession().nextQuesIndex();
 
 				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion(JaxService.DEFAULT_LANGUAGE_ID).getResults();
+						.getSequrityQuestion().getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {

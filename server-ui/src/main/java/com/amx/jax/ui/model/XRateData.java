@@ -1,7 +1,7 @@
 package com.amx.jax.ui.model;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.util.Set;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -18,14 +18,14 @@ public class XRateData {
 	BigDecimal domXRate = null;
 	BigDecimal domAmount = null;
 
-	List<BankMasterDTO> beneBanks = null;
+	Set<BankMasterDTO> beneBanks = null;
 
-	public List<BankMasterDTO> getBeneBanks() {
+	public Set<BankMasterDTO> getBeneBanks() {
 		return beneBanks;
 	}
 
-	public void setBeneBanks(List<BankMasterDTO> beneBanks) {
-		this.beneBanks = beneBanks;
+	public void setBeneBanks(Set<BankMasterDTO> set) {
+		this.beneBanks = set;
 	}
 
 	public BigDecimal getForCur() {
