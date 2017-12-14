@@ -3,6 +3,7 @@ package com.amx.amxlib.model.response;
 import java.io.IOException;
 import java.util.List;
 
+import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -15,6 +16,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
+import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
@@ -126,7 +128,18 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "state":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewStateDto>>(){});
+			break;
+			
+		case "accountType":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<AccountTypeDto>>(){});
 			break;	
+			
+		case "city":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewCityDto>>(){});
+			break;		
+			
+			
+			
 	}
 		
 		

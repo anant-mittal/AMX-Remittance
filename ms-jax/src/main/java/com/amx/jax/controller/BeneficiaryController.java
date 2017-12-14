@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.service.BeneficiaryOnlineService;
 
 /**
@@ -28,6 +29,9 @@ public class BeneficiaryController {
 	
 	@Autowired
 	BeneficiaryOnlineService beneOnlineService;
+	
+	@Autowired
+	AccountTypeService accountTypeService;
 	
 
 	
@@ -57,6 +61,15 @@ public class BeneficiaryController {
 		}else {
 			 response = beneOnlineService.getBeneficiaryCountryListForOnline(customerId);
 		}
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/accounttype/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryAccountType(@RequestParam("countryId") BigDecimal countryId) {
+		logger.info("getBeneficiaryAccountType countryId :"+countryId);
+		ApiResponse response ;
+		 response = accountTypeService.getAccountTypeFromView(countryId);
 		return response;
 	}
 	

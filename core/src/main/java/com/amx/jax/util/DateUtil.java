@@ -61,7 +61,7 @@ public class DateUtil {
 		System.out.println("Date ---->:"+DateUtil.convertStringToDate(DateUtil.todaysDateWithDDMMYY(new Date(), "10")));
 		System.out.println("Date to String :"+DateUtil.todaysDateWithDDMMYY(new Date(), "10"));
 		
-		System.out.println("Convert String to SQL Date :"+DateUtil.convretStringToSqlDate("10/05/2017"));
+		System.out.println("Convert String to SQL Date :"+DateUtil.convretStringToSqlDate("17/06/2018"));
 	}
 
 }

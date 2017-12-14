@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
@@ -61,6 +62,25 @@ public class BeneClinet extends AbstractJaxServiceClient{
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/benecountry/"+sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>(){});
+		} catch (Exception e) {
+			log.debug("Bene country list ", e);
+		}
+		return response.getBody();
+	}
+	
+	
+	
+	public ApiResponse<AccountTypeDto> getBeneficiaryAccountType(BigDecimal beneCountryId) {
+		ResponseEntity<ApiResponse<AccountTypeDto>> response = null;
+		try {
+			
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			StringBuffer sb = new StringBuffer();
+			sb.append("?beneCountryId=").append(beneCountryId);
+			log.info("Bene Clinet to get bene list Input String :"+sb.toString());
+			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/accounttype/"+sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<AccountTypeDto>>(){});
 		} catch (Exception e) {
 			log.debug("Bene country list ", e);
 		}

@@ -23,6 +23,7 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.EmailMobileCheckService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.service.PurposeOfRemittanceService;
@@ -76,10 +77,6 @@ public class MetaController implements Serializable{
 
 	@Autowired
 	FinancialService financialService;
-	
-	
-	
-	
 	@Autowired
 	ParameterService parameterService;
 	
@@ -94,6 +91,9 @@ public class MetaController implements Serializable{
 	
 	@Autowired
 	ViewStateService stateService;
+	
+	@Autowired
+	MetaService metaService;
 	
 
 	
@@ -359,11 +359,26 @@ public class MetaController implements Serializable{
 	
 	
 	@RequestMapping(value = "/statelist/{languageId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+	public ApiResponse getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		ApiResponse response = stateService.getStateAll(countryId, languageId);
 		return response;
 	}
 	
+	
+	@RequestMapping(value = "/citylist/{languageId}/{districtId}", method = RequestMethod.GET)
+	public ApiResponse getCityListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("districtId") BigDecimal districtId){
+		ApiResponse response = metaService.getDistrictCity(districtId, languageId);
+		return response;
+	}
+	
+	
+	@RequestMapping(value = "/citydesc/{districtid}/{languageId}/{cityid}", method = RequestMethod.GET)
+	public ApiResponse getCityNameResponse(@PathVariable("districtid") BigDecimal districtid,
+			@PathVariable("languageId") BigDecimal languageId,
+			@PathVariable("cityid") BigDecimal cityid){
+		ApiResponse response = metaService.getCityDescription(districtid, languageId, cityid);
+		return response;
+	}
 	
 	
 }

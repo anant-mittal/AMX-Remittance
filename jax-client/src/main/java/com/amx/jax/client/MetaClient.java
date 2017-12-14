@@ -24,6 +24,7 @@ import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
+import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
@@ -134,9 +135,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CountryMasterDTO> getBusinessCountry(String languageId) {
+	public ApiResponse<CountryMasterDTO> getBusinessCountry() {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response = null;
 		try {
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/bc/" + languageId;
@@ -151,11 +153,15 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<QuestModelDTO> getSequrityQuestion(String languageId) {
+	public ApiResponse<QuestModelDTO> getSequrityQuestion() {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
 
 			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
@@ -171,10 +177,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String languageId, String questionId) {
+	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String questionId) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
 			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
@@ -190,9 +200,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition(String languageId) {
+	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition() {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId;
@@ -207,10 +221,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry(String languageId) {
+	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry() {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
@@ -225,10 +243,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo(String languageId) {
+	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo() {
 		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
@@ -344,12 +366,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal languageId, BigDecimal stateId,
-			BigDecimal districtId) {
+	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal stateId,BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
 				languageId = new BigDecimal(1);
 			}
@@ -413,11 +435,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<ViewStateDto> getStateList(BigDecimal languageId, BigDecimal countryId) {
+	public ApiResponse<ViewStateDto> getStateList(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
 
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
 				languageId = new BigDecimal(1);
 			}
@@ -436,11 +459,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<ViewStateDto> getStateDesc(BigDecimal languageId, BigDecimal countryId, BigDecimal stateId) {
+	public ApiResponse<ViewStateDto> getStateDesc(BigDecimal countryId, BigDecimal stateId) {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
 
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
 				languageId = new BigDecimal(1);
 			}
@@ -459,5 +483,54 @@ public class MetaClient extends AbstractJaxServiceClient {
 		}
 		return response.getBody();
 	}
+	
+	
+	public ApiResponse<ViewCityDto> getCitytList(BigDecimal districtId) {
+		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
+		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
+			StringBuffer sb = new StringBuffer();
+			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId);
+			log.info("City Input :" + sb.toString());
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/citylist/" + sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+
+		}
+		return response.getBody();
+	}
+	
+	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId,BigDecimal cityId) {
+		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
+		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
+			
+			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+				languageId = new BigDecimal(1);
+			}
+			StringBuffer sb = new StringBuffer();
+			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId).append("&cityId=").append(cityId);
+			log.info("City Input :" + sb.toString());
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+
+		}
+		return response.getBody();
+	}
+	
 
 }
