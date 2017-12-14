@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.exception.GlobalException;
@@ -62,7 +63,7 @@ public class RemittanceTransactionService extends AbstractService {
 
 	public ApiResponse validateRemittanceTransaction(RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
-		Object responseModel = remittanceTxnManger.validateTransactionData(model);
+		RemittanceTransactionResponsetModel responseModel = remittanceTxnManger.validateTransactionData(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(model.getModelType());

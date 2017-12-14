@@ -6,9 +6,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -28,7 +31,7 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	private Date approvedDate;
 	private String authorisedBy;
 	private Date authorisedDate;
-	private BigDecimal bankId;
+	private BankMasterModel bankMaster;
 	private BigDecimal buyRateMax;
 	private BigDecimal buyRateMin;
 	private BigDecimal corporateRate;
@@ -56,50 +59,6 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 		super();
 	}
 
-	public ExchangeRateApprovalDetModel(BigDecimal exchangeRateMasterAprDetId,
-			BigDecimal applicationCountryId, String approvedBy,
-			Date approvedDate, String authorisedBy, Date authorisedDate,
-			BigDecimal bankId, BigDecimal buyRateMax, BigDecimal buyRateMin,
-			BigDecimal corporateRate, BigDecimal countryBranchId,
-			BigDecimal countryId, String createdBy, Date createdDate,
-			BigDecimal currencyId, BigDecimal deliveryModeId,
-			BigDecimal exchangeRateMasterId, String isActive,
-			String modifiedBy, Date modifiedDate, String remarks,
-			BigDecimal remitanceModeId, BigDecimal sellRateMin,
-			BigDecimal sellRateMax, BigDecimal serviceId,
-			BigDecimal prvBuyRateMax, BigDecimal prvBuyRateMin,
-			BigDecimal prvSellRateMin, BigDecimal prvSellRateMax) {
-		super();
-		this.exchangeRateMasterAprDetId = exchangeRateMasterAprDetId;
-		this.applicationCountryId = applicationCountryId;
-		this.approvedBy = approvedBy;
-		this.approvedDate = approvedDate;
-		this.authorisedBy = authorisedBy;
-		this.authorisedDate = authorisedDate;
-		this.bankId = bankId;
-		this.buyRateMax = buyRateMax;
-		this.buyRateMin = buyRateMin;
-		this.corporateRate = corporateRate;
-		this.countryBranchId = countryBranchId;
-		this.countryId = countryId;
-		this.createdBy = createdBy;
-		this.createdDate = createdDate;
-		this.currencyId = currencyId;
-		this.deliveryModeId = deliveryModeId;
-		this.exchangeRateMasterId = exchangeRateMasterId;
-		this.isActive = isActive;
-		this.modifiedBy = modifiedBy;
-		this.modifiedDate = modifiedDate;
-		this.remarks = remarks;
-		this.remitanceModeId = remitanceModeId;
-		this.sellRateMin = sellRateMin;
-		this.sellRateMax = sellRateMax;
-		this.serviceId = serviceId;
-		this.prvBuyRateMax = prvBuyRateMax;
-		this.prvBuyRateMin = prvBuyRateMin;
-		this.prvSellRateMin = prvSellRateMin;
-		this.prvSellRateMax = prvSellRateMax;
-	}
 
 
 
@@ -152,14 +111,6 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	}
 	public void setAuthorisedDate(Date authorisedDate) {
 		this.authorisedDate = authorisedDate;
-	}
-
-	@Column(name = "BANK_ID")
-	public BigDecimal getBankId() {
-		return bankId;
-	}
-	public void setBankId(BigDecimal bankId) {
-		this.bankId = bankId;
 	}
 
 	@Column(name = "BUY_RATE_MAX")
@@ -336,6 +287,16 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	}
 	public void setPrvSellRateMax(BigDecimal prvSellRateMax) {
 		this.prvSellRateMax = prvSellRateMax;
+	}
+
+	@JoinColumn(name = "BANK_ID")
+	@ManyToOne(fetch = FetchType.LAZY)
+	public BankMasterModel getBankMaster() {
+		return bankMaster;
+	}
+
+	public void setBankMaster(BankMasterModel bankMaster) {
+		this.bankMaster = bankMaster;
 	}
 	
 }

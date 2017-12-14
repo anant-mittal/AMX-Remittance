@@ -56,7 +56,7 @@ public class BankMasterService extends AbstractService {
 		return bankdtos;
 	}
 
-	private BankMasterDTO convert(BankMasterModel dbmodel) {
+	public BankMasterDTO convert(BankMasterModel dbmodel) {
 		BankMasterDTO dto = new BankMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, dbmodel);

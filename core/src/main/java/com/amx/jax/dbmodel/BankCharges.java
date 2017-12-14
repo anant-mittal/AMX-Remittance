@@ -15,6 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 @Entity
 @Table(name="EX_BANK_CHARGES")
 public class BankCharges implements Serializable{
@@ -182,6 +185,7 @@ public BankCharges() {
 
 	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="CHARGES_FOR")
+	@NotFound(action=NotFoundAction.IGNORE)
 	public BizComponentData getChargeFor() {
 		return chargeFor;
 	}

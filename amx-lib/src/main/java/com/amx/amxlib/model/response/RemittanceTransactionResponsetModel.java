@@ -13,11 +13,10 @@ import com.amx.amxlib.model.AbstractModel;
  */
 public class RemittanceTransactionResponsetModel extends AbstractModel {
 
-	private BigDecimal equivalentAmount;
-	private BigDecimal exchangeRate;
 	private BigDecimal txnFee;
 	private BigDecimal totalLoyalityPoints;
 	private BigDecimal maxLoyalityPointsAvailableForTxn;
+	private ExchangeRateBreakup exRateBreakup;
 
 	/*
 	 * (non-Javadoc)
@@ -27,22 +26,6 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "remittance_transaction";
-	}
-
-	public BigDecimal getEquivalentAmount() {
-		return equivalentAmount;
-	}
-
-	public void setEquivalentAmount(BigDecimal equivalentAmount) {
-		this.equivalentAmount = equivalentAmount;
-	}
-
-	public BigDecimal getExchangeRate() {
-		return exchangeRate;
-	}
-
-	public void setExchangeRate(BigDecimal exchangeRate) {
-		this.exchangeRate = exchangeRate;
 	}
 
 	public BigDecimal getTxnFee() {
@@ -67,6 +50,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setMaxLoyalityPointsAvailableForTxn(BigDecimal maxLoyalityPointsAvailableForTxn) {
 		this.maxLoyalityPointsAvailableForTxn = maxLoyalityPointsAvailableForTxn;
+	}
+
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
+	}
+
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
 	}
 
 }

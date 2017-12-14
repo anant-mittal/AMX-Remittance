@@ -1,6 +1,7 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
@@ -31,10 +34,18 @@ import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
+import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.exrateservice.dao.ExchangeRateDao;
+import com.amx.jax.exrateservice.dao.PipsMasterDao;
+import com.amx.jax.exrateservice.repository.ExchangeRateApprovalDetRepository;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.service.BankMasterService;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 
 @Component
@@ -56,23 +67,35 @@ public class RemittanceTransactionManager {
 	private BankServiceRuleDao bankServiceRuleDao;
 
 	@Autowired
-	private BankMasterService bankMasterService;
+	private ExchangeRateDao exchangeRateDao;
+
+	@Autowired
+	private PipsMasterDao pipsDao;
+
+	@Autowired
+	private CustomerDao custDao;
 
 	private Logger logger = Logger.getLogger(RemittanceTransactionManager.class);
 
-	public Object validateTransactionData(RemittanceTransactionRequestModel model) {
+	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
 		BigDecimal beneId = model.getBeneId();
+		Customer customer = custDao.getCustById(model.getCustomerId());
+		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(beneId);
 		validateBlackListedBene(beneficiary);
 		HashMap<String, String> beneBankDetails = getBeneBankDetails(beneficiary);
 		Map<String, Object> routingDetails = this.getRoutingDetails(beneBankDetails);
+		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("1").toString());
 		BigDecimal routingBankId = new BigDecimal(routingDetails.get("3").toString());
 		BigDecimal rountingBankbranchId = new BigDecimal(routingDetails.get("4").toString());
 		BigDecimal remittanceMode = new BigDecimal(routingDetails.get("5").toString());
 		BigDecimal deliveryMode = new BigDecimal(routingDetails.get("6").toString());
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, beneficiary.getCountryId(),
-				beneficiary.getCurrencyId(), remittanceMode, deliveryMode);
+		BigDecimal currencyId = beneficiary.getCurrencyId();
+		BigDecimal countryId = beneficiary.getCountryId();
+		BigDecimal applicationCountryId = meta.getCountryId();
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, countryId, currencyId,
+				remittanceMode, deliveryMode);
 		if (rules == null || rules.isEmpty()) {
 			throw new GlobalException("Routing Rules not defined for Routing Bank Id:- " + routingBankId,
 					JaxError.TRANSACTION_VALIDATION_FAIL);
@@ -85,22 +108,61 @@ public class RemittanceTransactionManager {
 					JaxError.TRANSACTION_VALIDATION_FAIL);
 		}
 		BigDecimal comission = bankCharge.getChargeAmount();
-		return model;
+
+		// commission
+		responseModel.setTxnFee(comission);
+		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
+				new BigDecimal(78), countryId, applicationCountryId, routingBankId, serviceMasterId);
+		if (exchangeRates == null || exchangeRates.isEmpty()) {
+			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
+					JaxError.TRANSACTION_VALIDATION_FAIL);
+		}
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model.getLocalAmount());
+		// exrate
+		responseModel.setExRateBreakup(breakup);
+		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
+		responseModel.setMaxLoyalityPointsAvailableForTxn(new BigDecimal(1000));
+		return responseModel;
+
+	}
+
+	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
+			BigDecimal localAmount) {
+		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
+		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
+		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
+		breakup.setInverseRate(inverseExchangeRate);
+		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
+		breakup.setConversionAmount(breakup.getRate().multiply(localAmount));
+		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConversionAmount());
+		// apply discounts
+		if (pips != null && !pips.isEmpty()) {
+			PipsMaster pip = pips.get(0);
+			inverseExchangeRate = inverseExchangeRate.subtract(pip.getPipsNo());
+			breakup.setInverseRate(inverseExchangeRate);
+			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
+			breakup.setConversionAmount(breakup.getRate().multiply(localAmount));
+		}
+		return breakup;
 
 	}
 
 	private BankCharges getApplicableCharge(List<BankCharges> charges) {
 
-		if (charges != null) {
+		BankCharges output = null;
+		if (charges != null && !charges.isEmpty()) {
+			output = charges.get(0);
 			for (BankCharges charge : charges) {
 				BizComponentData chargesFor = charge.getChargeFor();
-				// Individual for now
-				if ("Y".equals(chargesFor.getActive()) && "I".equals(chargesFor.getComponentCode())) {
-					return charge;
+				if (chargesFor != null) {
+					// individual charges
+					if ("Y".equals(chargesFor.getActive()) && "I".equals(chargesFor.getComponentCode())) {
+						output = charge;
+					}
 				}
 			}
 		}
-		return null;
+		return output;
 	}
 
 	private HashMap<String, String> getBeneBankDetails(BenificiaryListView beneficiary) {
@@ -124,10 +186,12 @@ public class RemittanceTransactionManager {
 			throw new GlobalException("Beneficiary name found matching with black list ",
 					JaxError.BLACK_LISTED_CUSTOMER.getCode());
 		}
-		blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
-		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Beneficiary local name found matching with black list ",
-					JaxError.BLACK_LISTED_CUSTOMER.getCode());
+		if (beneficiary.getArbenificaryName() != null) {
+			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Beneficiary local name found matching with black list ",
+						JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			}
 		}
 	}
 

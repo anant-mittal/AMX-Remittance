@@ -17,6 +17,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal sourceOfFund;
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
+	private BigDecimal customerId;
 	private boolean availLoyalityPoints;
 
 	/*
@@ -67,6 +68,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 
 	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
 		this.availLoyalityPoints = availLoyalityPoints;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

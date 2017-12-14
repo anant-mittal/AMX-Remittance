@@ -13,8 +13,14 @@ import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 @Transactional
 public interface ExchangeRateApprovalDetRepository extends CrudRepository<ExchangeRateApprovalDetModel, BigDecimal> {
 
-	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
-			+ "and rate.countryId=?3")
-	List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,BigDecimal countryId);
+	@Query("select rate from ExchangeRateApprovalDetModel rate where  rate.currencyId=?1 and rate.countryBranchId=?2 "
+			+ "and rate.countryId=?3 and rate.bankMaster.recordStatus = 'Y'")
+	List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
+			BigDecimal countryId);
 
+	@Query("select rate from ExchangeRateApprovalDetModel rate where rate.currencyId=?1 and rate.countryBranchId=?2 "
+			+ "and rate.countryId=?3 and rate.applicationCountryId=?4 and rate.bankMaster.bankId=?5 and rate.serviceId=?6")
+	List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBank(BigDecimal currencyId, BigDecimal countryBranchId,
+			BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
+			BigDecimal serviceIndicatorId);
 }
