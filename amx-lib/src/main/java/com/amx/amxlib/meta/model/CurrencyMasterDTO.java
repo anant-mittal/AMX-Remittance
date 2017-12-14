@@ -1,9 +1,9 @@
 package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CurrencyMasterDTO extends AbstractModel {
 
@@ -11,7 +11,10 @@ public class CurrencyMasterDTO extends AbstractModel {
 	private String currencyCode;
 	private String currencyName;
 	private String quoteName;
+
+	@JsonProperty("decimalNumber")
 	private BigDecimal decinalNumber;
+	
 	private BigDecimal countryId;
 
 	@Override
