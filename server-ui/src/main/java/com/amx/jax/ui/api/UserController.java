@@ -33,7 +33,6 @@ public class UserController {
 	@Autowired
 	private LoginService loginService;
 
-
 	/**
 	 * Asks for user login and password
 	 * 
@@ -85,7 +84,7 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setInfo(userSession.getCustomerModel().getPersoninfo());
 		}
-		
+
 		return wrapper;
 	}
 
