@@ -9,11 +9,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.ui.config.Properties;
+import com.amx.jax.ui.service.HealthService;
 
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
@@ -24,7 +26,9 @@ public class WebApplication extends SpringBootServletInitializer {
 	private Properties props;
 
 	public static void main(String[] args) {
-		SpringApplication.run(WebApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(WebApplication.class, args);
+
+		context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
 	@Bean("base_url")

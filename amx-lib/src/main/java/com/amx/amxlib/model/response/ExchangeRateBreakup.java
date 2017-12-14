@@ -2,12 +2,17 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class ExchangeRateBreakup {
-	
+
+	@JsonProperty("domXRate")
 	BigDecimal rate;
 
+	@JsonProperty("forXRate")
 	BigDecimal inverseRate;
 
+	@JsonProperty("forAmount")
 	BigDecimal conversionAmount;
 
 	public BigDecimal getRate() {

@@ -18,10 +18,17 @@ public class HealthService {
 	@Autowired
 	private PostManClient postManClient;
 
+	@Autowired
+	AppEnvironment environment;
+
 	@Async
 	public void sendApplicationLiveMessage() {
 		SMS sms = new SMS();
 
+		if (environment.isDebug()) {
+			log.info("Server is in debug mode");
+			return;
+		}
 		try {
 			sms.setTo("7710072192");
 			sms.setText("Your OTP for Reset is");
@@ -41,6 +48,7 @@ public class HealthService {
 
 		try {
 			postManClient.sendEmail(email);
+			log.info("Sending Server up emailt to admi");
 		} catch (Exception e) {
 			log.error("Error while sending UP Email to riddhi.madhu@almullagroup.com", e);
 		}
