@@ -107,6 +107,7 @@ public class RemittController {
 		wrapper.getData().setDomCur(domCur);
 
 		if (forCur != null) {
+			wrapper.getData().setForCur(forCur);
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()

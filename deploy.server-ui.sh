@@ -8,11 +8,14 @@ echo "VARIABLES"
 
 mvn clean
 
-mvn -pl boot-utils clean install
-mvn -pl amx-lib clean install -DskipTests
-mvn -pl jax-client clean install -DskipTests
-mvn -pl ms-postman clean install -DskipTests
-mvn -pl server-ui clean install -DskipTests
+#mvn -T 4 -pl boot-utils install
+#mvn -T 4 -pl amx-lib install -DskipTests
+#mvn -T 4 -pl jax-client install -DskipTests
+#mvn -T 4 -pl ms-postman install -DskipTests
+#mvn -T 4 -pl server-ui package -DskipTests
+
+# short command
+mvn -T 4 package -pl server-ui -am -DskipTests
 
 #mvn package -DskipTests
 
