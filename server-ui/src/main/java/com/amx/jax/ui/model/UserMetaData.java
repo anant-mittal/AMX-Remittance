@@ -1,19 +1,18 @@
 package com.amx.jax.ui.model;
 
-import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.ui.response.ResponseDataInterface;
 
-public class UserMetaData {
+public class UserMetaData implements ResponseDataInterface {
 
-	public Boolean validSession = false;
+	public Boolean valid = false;
 	public Boolean active = false;
-	public PersonInfo personinfo = null;
 
-	public Boolean getValidSession() {
-		return validSession;
+	public Boolean getValid() {
+		return valid;
 	}
 
-	public void setValidSession(Boolean valid) {
-		this.validSession = valid;
+	public void setValid(Boolean valid) {
+		this.valid = valid;
 	}
 
 	public Boolean getActive() {
@@ -22,13 +21,5 @@ public class UserMetaData {
 
 	public void setActive(Boolean active) {
 		this.active = active;
-	}
-
-	public void setInfo(PersonInfo personinfo) {
-		this.personinfo = personinfo;
-	}
-
-	public PersonInfo getInfo() {
-		return this.personinfo;
 	}
 }
