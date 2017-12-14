@@ -2,12 +2,18 @@ package com.amx.jax.ui;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+
+import javax.servlet.ServletRequestListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +21,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.ui.config.Properties;
+import com.amx.jax.ui.config.WebRequestFilter;
+import com.amx.jax.ui.config.WebRequestListener;
 import com.amx.jax.ui.service.HealthService;
 
+@ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
 @EnableAsync
@@ -39,6 +48,24 @@ public class WebApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
 		return applicationBuilder.sources(WebApplication.class);
+	}
+
+	@Bean
+	public FilterRegistrationBean filterRegistrationBean() {
+		WebRequestFilter f = new WebRequestFilter();
+		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+		registrationBean.setFilter(f);
+		ArrayList<String> match = new ArrayList<>();
+		match.add("/*");
+		registrationBean.setUrlPatterns(match);
+		return registrationBean;
+	}
+
+	@Bean
+	ServletListenerRegistrationBean<ServletRequestListener> myServletRequestListener() {
+		ServletListenerRegistrationBean<ServletRequestListener> srb = new ServletListenerRegistrationBean<>();
+		srb.setListener(new WebRequestListener());
+		return srb;
 	}
 
 }

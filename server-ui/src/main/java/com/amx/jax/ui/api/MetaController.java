@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.scope.TenantBean;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
@@ -27,6 +28,12 @@ public class MetaController {
 	@Autowired
 	AppEnvironment env;
 
+	@Autowired
+	TenantBean foo;
+	
+	@Autowired
+	TenantBean bar;
+	
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -37,6 +44,7 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST })
 	public ResponseWrapper<Map<String, Object>> status() {
+		foo.sayHello();
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
 		wrapper.getData().put("debug", env.isDebug());
