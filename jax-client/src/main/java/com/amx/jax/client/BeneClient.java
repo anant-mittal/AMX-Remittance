@@ -44,7 +44,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			MultiValueMap<String, String> headers = getHeader();
 			StringBuffer sb = new StringBuffer();
-			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&countryId=")
+			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&applicationCountryId=")
 					.append(countryId).append("&beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
 			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/beneList/" + sb.toString();
