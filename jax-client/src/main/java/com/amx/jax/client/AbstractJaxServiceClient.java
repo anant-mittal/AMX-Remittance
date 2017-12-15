@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -161,6 +162,17 @@ public abstract class AbstractJaxServiceClient {
 			ApiError error = response.getError().get(0);
 			if (JaxError.EXCHANGE_RATE_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				throw new ResourceNotFoundException(error);
+			}
+		}
+	}
+	
+	protected void validateRemittanceDataValidation(ApiResponse<?> response)
+			throws RemittanceTransactionValidationException {
+
+		if (response.getError() != null) {
+			ApiError error = response.getError().get(0);
+			if (JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL.getCode().equals(error.getErrorId())) {
+				throw new RemittanceTransactionValidationException(error);
 			}
 		}
 	}

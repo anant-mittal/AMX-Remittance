@@ -14,9 +14,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
@@ -72,6 +75,27 @@ public class RemitClient extends AbstractJaxServiceClient{
 		return response.getBody();
 	}
 	
-	
+	public ApiResponse<RemittanceTransactionResponsetModel> validateTransaction(
+			RemittanceTransactionRequestModel request) throws RemittanceTransactionValidationException {
+
+		ResponseEntity<ApiResponse<RemittanceTransactionResponsetModel>> response = null;
+		try {
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			log.info("Remit Client validateTransaction :" + countryId + "\t companyId :" + companyId + "\t customerId :"
+					+ customerId);
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+			String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/validate/";
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
+					});
+		} catch (Exception e) {
+			log.error("exception in saveSecurityQuestions ", e);
+		}
+		validateRemittanceDataValidation(response.getBody());
+		return response.getBody();
+	}
 
 }

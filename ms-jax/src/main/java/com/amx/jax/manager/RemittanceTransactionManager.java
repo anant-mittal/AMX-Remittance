@@ -25,11 +25,9 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
-import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BankCharges;
-import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
@@ -40,13 +38,9 @@ import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
-import com.amx.jax.exrateservice.repository.ExchangeRateApprovalDetRepository;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
-import com.amx.jax.service.BankMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.userservice.service.UserService;
-import com.amx.jax.util.DateUtil;
 
 @Component
 public class RemittanceTransactionManager {
@@ -98,14 +92,14 @@ public class RemittanceTransactionManager {
 				remittanceMode, deliveryMode);
 		if (rules == null || rules.isEmpty()) {
 			throw new GlobalException("Routing Rules not defined for Routing Bank Id:- " + routingBankId,
-					JaxError.TRANSACTION_VALIDATION_FAIL);
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
 		if (bankCharge == null) {
 			throw new GlobalException("Routing Bank Charges not defined for Routing Bank Id:- " + routingBankId,
-					JaxError.TRANSACTION_VALIDATION_FAIL);
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		BigDecimal comission = bankCharge.getChargeAmount();
 
@@ -115,7 +109,7 @@ public class RemittanceTransactionManager {
 				new BigDecimal(78), countryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
-					JaxError.TRANSACTION_VALIDATION_FAIL);
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model.getLocalAmount());
 		// exrate
