@@ -42,7 +42,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String userType = jaxMetaInfo.getChannel().toString();
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			MultiValueMap<String, String> headers = getHeader();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&countryId=")
 					.append(countryId).append("&beneCountryId=").append(beneCountryId);
