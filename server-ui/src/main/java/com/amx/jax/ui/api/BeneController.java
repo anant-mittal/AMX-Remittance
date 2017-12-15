@@ -31,7 +31,7 @@ public class BeneController {
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
 
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(null).getResults());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
 
 		return wrapper;
 	}
