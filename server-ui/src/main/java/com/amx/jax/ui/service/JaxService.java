@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
+import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
@@ -40,6 +41,17 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private ExchangeRateClient xRateClient;
+
+	@Autowired
+	private BeneClient beneClient;
+
+	public BeneClient getBeneClient() {
+		return beneClient;
+	}
+
+	public void setBeneClient(BeneClient beneClient) {
+		this.beneClient = beneClient;
+	}
 
 	public ExchangeRateClient getxRateClient() {
 		return xRateClient;
