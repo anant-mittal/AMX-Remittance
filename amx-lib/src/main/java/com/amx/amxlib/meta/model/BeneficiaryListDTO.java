@@ -78,7 +78,9 @@ public class BeneficiaryListDTO {
 	
 	private BigDecimal totalTrnx;
 	private BigDecimal orsStatus;
-	private BigDecimal languageId;
+	private BigDecimal languageId;	
+	
+	private boolean isUpdateNeeded=false;
 	
 	
 	public BigDecimal getIdNo() {
@@ -506,6 +508,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+	public boolean isUpdateNeeded() {
+		return isUpdateNeeded;
+	}
+	public void setUpdateNeeded(boolean isUpdateNeeded) {
+		this.isUpdateNeeded = isUpdateNeeded;
 	}
 	
 
