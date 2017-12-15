@@ -10,6 +10,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -19,7 +20,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
-public class BeneClient extends AbstractJaxServiceClient{
+@Component
+public class BeneClient extends AbstractJaxServiceClient {
 	private Logger log = Logger.getLogger(BeneClient.class);
 
 	@Autowired
@@ -28,7 +30,12 @@ public class BeneClient extends AbstractJaxServiceClient{
 	@Autowired
 	private ConverterUtility util;
 
-
+	/**
+	 * sdsd
+	 * 
+	 * @param beneCountryId
+	 * @return
+	 */
 	public ApiResponse<BeneCountryDTO> getBeneficiaryList(BigDecimal beneCountryId) {
 		ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
 		try {
