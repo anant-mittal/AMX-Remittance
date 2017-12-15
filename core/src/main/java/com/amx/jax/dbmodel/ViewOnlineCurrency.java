@@ -21,6 +21,7 @@ public class ViewOnlineCurrency {
 	private String currencyName;
 	private String quoteName;
 	private BigDecimal countryId;
+	private BigDecimal decinalNumber;
 	
 	@Id
 	@Column(name="CURRENCY_ID")
@@ -57,5 +58,13 @@ public class ViewOnlineCurrency {
 	}
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+	
+	@Column(name="DECIMAL_NUMBER")
+	public BigDecimal getDecinalNumber() {
+		return decinalNumber;
+	}
+	public void setDecinalNumber(BigDecimal decimalNumber) {
+		this.decinalNumber = decimalNumber;
 	}
 }

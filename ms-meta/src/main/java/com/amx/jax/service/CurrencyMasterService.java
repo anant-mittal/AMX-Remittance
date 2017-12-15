@@ -76,9 +76,7 @@ public class CurrencyMasterService extends AbstractService {
 
 		return response;
 	}
-	
-	
-	
+
 	public ApiResponse getCurrencyByCountryId(BigDecimal countryId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyListByCountryId(countryId);
 		ApiResponse response = getBlackApiResponse();
@@ -91,11 +89,7 @@ public class CurrencyMasterService extends AbstractService {
 		response.getData().setType("currencyMaster");
 		return response;
 	}
-	
 
-	
-	
-	
 	private List<CurrencyMasterDTO> convert(List<ViewOnlineCurrency> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convert(currency)));
@@ -111,15 +105,13 @@ public class CurrencyMasterService extends AbstractService {
 		}
 		return dto;
 	}
-	
-	
-	
+
 	private List<CurrencyMasterDTO> convertToModelDto(List<CurrencyMasterModel> currencyList) {
 		List<CurrencyMasterDTO> output = new ArrayList<>();
 		currencyList.forEach(currency -> output.add(convertModel(currency)));
 		return output;
 	}
-	
+
 	private CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {

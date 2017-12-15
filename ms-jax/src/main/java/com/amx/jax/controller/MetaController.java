@@ -279,7 +279,7 @@ public class MetaController implements Serializable{
 	}
 	
 	@RequestMapping(value = "/currency/online/", method = RequestMethod.GET)
-	public ApiResponse getAllCurrencyDetails(){
+	public ApiResponse getAllOnlineCurrencyDetails(){
 		ApiResponse response = currencyMasterService.getAllOnlineCurrencyDetails();
 		return response;
 	}
