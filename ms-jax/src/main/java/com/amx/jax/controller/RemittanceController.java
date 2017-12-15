@@ -53,10 +53,10 @@ public class RemittanceController {
 		logger.info("customerId :" + customerId + "\t docfyr :" + docfyr + "\t docNumber :" + docNumber
 				+ "\t fromDate :" + fromDate + "\t toDate :" + toDate);
 		ApiResponse response = null;
-		if (docNumber != null && !docNumber.equals("null")) {
+		if (docNumber!=null && !docNumber.equals("null")) {
 			response = transactionHistroyService.getTransactionHistroyByDocumentNumber(customerId, docfyr,
 					new BigDecimal(docNumber));
-		} else if ((fromDate != null && !fromDate.equals("null")) || (toDate != null && !toDate.equals("null"))) {
+		} else if ((fromDate !=null && !fromDate.equals("0") && !fromDate.equals("null"))||(toDate !=null && !toDate.equals("0") && !toDate.equals("null"))) {
 			response = transactionHistroyService.getTransactionHistroyDateWise(customerId, docfyr, fromDate, toDate);
 		} else {
 			response = transactionHistroyService.getTransactionHistroy(customerId, docfyr);

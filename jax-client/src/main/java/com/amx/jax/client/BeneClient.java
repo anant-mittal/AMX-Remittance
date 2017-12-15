@@ -19,7 +19,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
-public class BeneClient extends AbstractJaxServiceClient {
+public class BeneClient extends AbstractJaxServiceClient{
 	private Logger log = Logger.getLogger(BeneClient.class);
 
 	@Autowired
@@ -28,12 +28,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	@Autowired
 	private ConverterUtility util;
 
-	/**
-	 * sdsd
-	 * 
-	 * @param beneCountryId
-	 * @return
-	 */
+
 	public ApiResponse<BeneCountryDTO> getBeneficiaryList(BigDecimal beneCountryId) {
 		ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
 		try {
@@ -56,11 +51,13 @@ public class BeneClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<BeneCountryDTO> getBeneficiaryCountryList(String userType, BigDecimal beneCountryId) {
+	
+	public ApiResponse<BeneCountryDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
 		ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			String userType       = jaxMetaInfo.getChannel().toString();
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&countryId=")

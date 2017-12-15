@@ -1,9 +1,12 @@
 package com.amx.jax.service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,7 @@ import com.amx.jax.services.AbstractService;
 @Service
 public class BeneficiaryOnlineService extends AbstractService{
 	
+	Logger logger = Logger.getLogger(BeneficiaryOnlineService.class);
 	
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
@@ -41,7 +45,7 @@ public class BeneficiaryOnlineService extends AbstractService{
 		if(beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
 		}else {
-	    response.getData().getValues().addAll(beneList);
+	    response.getData().getValues().addAll(convertBeneList(beneList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("beneList");
@@ -64,7 +68,7 @@ public class BeneficiaryOnlineService extends AbstractService{
 		if(beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
 		}else {
-	    response.getData().getValues().addAll(beneList);
+	    response.getData().getValues().addAll(convertBeneList(beneList));
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("beneList");
@@ -121,16 +125,23 @@ private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryLi
 	}
 
 
-private List<BeneficiaryListDTO> convertBeneList(List<BenificiaryListView> beneList){
-	List<BeneficiaryListDTO> list = new ArrayList<>();
-	
-	for(BenificiaryListView bene : beneList) {
-		
-	}
-	
-	return list;
+private List<BeneficiaryListDTO> convertBeneList(List<BenificiaryListView> beneList) {
+	List<BeneficiaryListDTO> output = new ArrayList<>();
+	beneList.forEach(beneModel -> output.add(convertCityModelToDto(beneModel)));
+	return output;
 }
-	
+
+private BeneficiaryListDTO convertCityModelToDto(BenificiaryListView beneModel) {
+	BeneficiaryListDTO dto = new BeneficiaryListDTO();
+	try {
+		BeanUtils.copyProperties(dto, beneModel);
+	} catch (IllegalAccessException | InvocationTargetException e) {
+		logger.error("bene list display", e);
+	}
+	return dto;
+}
+
+
 	
 
 	@Override

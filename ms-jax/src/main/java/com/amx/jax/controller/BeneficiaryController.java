@@ -74,6 +74,23 @@ public class BeneficiaryController {
 	}
 	
 	
+	/*@RequestMapping(value = "/benecheck/", method = RequestMethod.POST)
+	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonBeneDTO) {
+		logger.info("getRemittanceDetailForReport Trnx Report:");
+		BeneficiaryListDTO beneficiaryDto = (BeneficiaryListDTO) converterUtil.unmarshall(jsonBeneDTO, BeneficiaryListDTO.class);
+		logger.info("Bene Master Id :" + beneficiaryDto.getBeneficaryMasterSeqId());
+		logger.info("Bene Rela Seq Id :" + beneficiaryDto.getBeneficiaryRelationShipSeqId());
+		logger.info("Bene Account Length :" + beneficiaryDto.getBeneficiaryAccountSeqId());
+		logger.info("Customer Id :" + beneficiaryDto.getCustomerId() + "\t Reference :"
+				+ beneficiaryDto.getServiceGroupId());
+		logger.info("Country Id :" + beneficiaryDto.getApplicationCountryId() + "\t Currency Id :"
+				+ beneficiaryDto.getCurrencyId());
+
+		//ApiResponse response = reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
+		//return response;
+	}
+
+	*/
 	
 	
 }

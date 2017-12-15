@@ -1,7 +1,6 @@
-package com.amx.jax.dbmodel;
+package com.amx.jax.dbmodel.bene;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,37 +14,13 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "EX_BANK_ACCOUNT_LENGTH")
 public class BankAccountLength implements java.io.Serializable {
-
 	private BigDecimal accountLenId;
+	private BigDecimal bankMasterId;
 	private BigDecimal acLength;
 	private String recordStatus;
-	private Date createDate;
 	private String creator;
 	private String remarks;
-	private BigDecimal bankId;
-
-	public BankAccountLength() {
-	}
-
-	public BankAccountLength(BigDecimal accountLenId) {
-		this.accountLenId = accountLenId;
-	}
 	
-
-
-	public BankAccountLength(BigDecimal accountLenId,
-			//BankMaster bankMaster,
-			BigDecimal acLength, String recordStatus, Date createDate,
-			String creator, String remarks) {
-		super();
-		this.accountLenId = accountLenId;
-		this.acLength = acLength;
-		this.recordStatus = recordStatus;
-		this.createDate = createDate;
-		this.creator = creator;
-		this.remarks = remarks;
-	}
-
 	@Id
 	@GeneratedValue(generator="ex_bank_account_length_seq",strategy=GenerationType.SEQUENCE)
 	@SequenceGenerator(name="ex_bank_account_length_seq",sequenceName="EX_BANK_ACCOUNT_LENGTH_SEQ",allocationSize=1)
@@ -57,9 +32,6 @@ public class BankAccountLength implements java.io.Serializable {
 	public void setAccountLenId(BigDecimal accountLenId) {
 		this.accountLenId = accountLenId;
 	}
-
-	
-
 
 	@Column(name = "ACCOUNT_LENGTH", precision = 22, scale = 0)
 	public BigDecimal getAcLength() {
@@ -77,15 +49,6 @@ public class BankAccountLength implements java.io.Serializable {
 
 	public void setRecordStatus(String recordStatus) {
 		this.recordStatus = recordStatus;
-	}
-
-	@Column(name = "CREATED_DATE")
-	public Date getCreateDate() {
-		return this.createDate;
-	}
-
-	public void setCreateDate(Date createDate) {
-		this.createDate = createDate;
 	}
 
 
@@ -108,14 +71,12 @@ public class BankAccountLength implements java.io.Serializable {
 		this.remarks = remarks;
 	}
 
-	@Column(name="BANK_ID")
-	public BigDecimal getBankId() {
-		return bankId;
+	@Column(name = "BANK_ID")
+	public BigDecimal getBankMasterId() {
+		return bankMasterId;
 	}
 
-	public void setBankId(BigDecimal bankId) {
-		this.bankId = bankId;
+	public void setBankMasterId(BigDecimal bankMasterId) {
+		this.bankMasterId = bankMasterId;
 	}
-
-
 }

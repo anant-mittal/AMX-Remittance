@@ -11,7 +11,6 @@ import com.amx.jax.dbmodel.bene.BankAccountLength;
 
 public interface IBankAccountLengthDao extends JpaRepository<BankAccountLength, Serializable>{
 
-	
-	@Query("select bal from BankAccountLength bal where bal.bankId=?1")
-	public List<BankAccountLength> getBankAccountLengthByBankId(BigDecimal bankId);
+	@Query("select bal from BankAccountLength bal where bal.bankMasterId=?1 and bal.recordStatus='Y' and bal.acLength <>0")
+	public List<BankAccountLength> getBankAccountLength(BigDecimal bankId);
 }
