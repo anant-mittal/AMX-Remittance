@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel.remittance;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -15,7 +16,7 @@ public class ViewTransfer {
 	Date docDate;
 
 	@Column(name = "CUSREF")
-	String cusRef;
+	BigDecimal cusRef;
 
 	@Column(name = "ACYYMM")
 	Date acyymm;
@@ -26,6 +27,9 @@ public class ViewTransfer {
 	@Id
 	@Column(name = "TRNREF")
 	String trnref;
+	
+	@Column(name = "NETAMT")
+	BigDecimal netAmount;
 
 	public Date getDocDate() {
 		return docDate;
@@ -35,11 +39,11 @@ public class ViewTransfer {
 		this.docDate = docDate;
 	}
 
-	public String getCusRef() {
+	public BigDecimal getCusRef() {
 		return cusRef;
 	}
 
-	public void setCusRef(String cusRef) {
+	public void setCusRef(BigDecimal cusRef) {
 		this.cusRef = cusRef;
 	}
 
@@ -66,5 +70,14 @@ public class ViewTransfer {
 	public void setTrnref(String trnref) {
 		this.trnref = trnref;
 	}
+
+	public BigDecimal getNetAmount() {
+		return netAmount;
+	}
+
+	public void setNetAmount(BigDecimal netAmount) {
+		this.netAmount = netAmount;
+	}
+
 
 }

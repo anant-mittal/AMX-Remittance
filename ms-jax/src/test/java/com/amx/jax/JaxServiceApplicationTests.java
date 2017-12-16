@@ -93,14 +93,5 @@ public class JaxServiceApplicationTests {
 	@Autowired
 	private VTransferRepository transferRepo;
 
-	@Test
-	public void testPips() {
-		try {
-		List<ViewTransfer> pips = transferRepo.findBycusRef("1553194");
-		System.out.println(pips.size());
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
+	
 }

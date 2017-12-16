@@ -6,8 +6,11 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -42,6 +46,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Component
@@ -73,6 +78,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private VTransferRepository transferRepo;
+
+	@Autowired
+	private ParameterService parameterService;
 
 	private Logger logger = Logger.getLogger(RemittanceTransactionManager.class);
 
@@ -116,7 +124,8 @@ public class RemittanceTransactionManager {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
-		getCustomerTransactionAmounts();
+		validateNumberOfTransactionLimits();
+		validateTransactionAmount(model);
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model.getLocalAmount());
 		// exrate
 		responseModel.setExRateBreakup(breakup);
@@ -124,6 +133,26 @@ public class RemittanceTransactionManager {
 		responseModel.setMaxLoyalityPointsAvailableForTxn(new BigDecimal(1000));
 		return responseModel;
 
+	}
+
+	private void validateTransactionAmount(RemittanceTransactionRequestModel model) {
+		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
+		if (model.getLocalAmount().compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
+			throw new GlobalException(
+					"Online Transaction Amount should not exceed - KD" + onlineTxnLimit.getAuthLimit(),
+					JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+		}
+	}
+
+	private void validateNumberOfTransactionLimits() {
+		Map<String, Integer> customerTxnAmounts = getCustomerTransactionAmounts();
+		List<AuthenticationLimitCheckView> txnLimits = parameterService.getAllNumberOfTxnLimits();
+		for (AuthenticationLimitCheckView limitView : txnLimits) {
+			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
+			if (txnCount > limitView.getAuthLimit().intValue()) {
+				throw new GlobalException(limitView.getAuthMessage(), JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
+			}
+		}
 	}
 
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
@@ -250,10 +279,31 @@ public class RemittanceTransactionManager {
 	 * Returns customer's transaction amounts in 3 forms 1. daily 2. weekly 3.
 	 * monthly
 	 */
-	public Map<String, BigDecimal> getCustomerTransactionAmounts() {
-
-		Map<String, BigDecimal> output = new HashMap<>();
-		List<ViewTransfer> list = transferRepo.findBycusRef("284052306594");
+	public Map<String, Integer> getCustomerTransactionAmounts() {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Map<String, Integer> output = new HashMap<>();
+		Customer customer = custDao.getCustById(meta.getCustomerId());
+		List<ViewTransfer> monthlyTxns = transferRepo.findBycusRef(customer.getCustomerReference());
+		int monthlyCount = monthlyTxns.size();
+		int weeklyCount = 0;
+		int dailyCount = 0;
+		Calendar today = Calendar.getInstance();
+		String todayStr = sdf.format(today.getTime());
+		for (ViewTransfer txn : monthlyTxns) {
+			Calendar txnDate = Calendar.getInstance();
+			txnDate.setTime(txn.getDocDate());
+			if (todayStr.equals(sdf.format(txn.getDocDate()))) {
+				dailyCount++;
+			}
+			int thisWeek = today.get(Calendar.WEEK_OF_MONTH);
+			int txnWeek = txnDate.get(Calendar.WEEK_OF_MONTH);
+			if (thisWeek == txnWeek) {
+				weeklyCount++;
+			}
+		}
+		output.put("13", dailyCount);
+		output.put("12", monthlyCount);
+		output.put("11", weeklyCount);
 		return output;
 	}
 }

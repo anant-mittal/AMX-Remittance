@@ -1,9 +1,8 @@
 package com.amx.jax.repository;
 
-import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +15,5 @@ public interface VTransferRepository extends CrudRepository<ViewTransfer, String
 
 	@Query(nativeQuery = true, value = "select * from v_TRANSFER WHERE  CUSREF = ?1"
 			+ "            AND    ACYYMM = TRUNC(SYSDATE,'MONTH')" + "            AND    NVL(CANSTS,' ') = ' '")
-	public List<ViewTransfer> findBycusRef(String cusRef);
+	public List<ViewTransfer> findBycusRef(BigDecimal cusRef);
 }
