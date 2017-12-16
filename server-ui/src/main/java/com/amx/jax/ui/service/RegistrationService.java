@@ -21,7 +21,6 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class RegistrationService {
@@ -40,8 +39,14 @@ public class RegistrationService {
 
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
 
+		/**
+		 * Clearing old session before proceeding
+		 */
+		sessionService.clear();
+
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		try {
+
 			CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().sendOtpForCivilId(civilid).getResult();
 			// Check if response was successful
 			if (model.getIsActiveCustomer()) {

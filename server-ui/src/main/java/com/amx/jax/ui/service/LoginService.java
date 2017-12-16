@@ -43,7 +43,7 @@ public class LoginService {
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
-
+		sessionService.clear();
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
 			wrapper.setMessage(ResponseStatus.ACTIVE_SESSION, ResponseMessage.USER_ALREADY_LOGGIN);
@@ -137,6 +137,9 @@ public class LoginService {
 	}
 
 	public ResponseWrapper<LoginData> reset(String identity, String otp) {
+
+		sessionService.clear();
+
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (otp == null) {
 			try {
