@@ -59,11 +59,12 @@ public class BeneController {
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficiaryId,
-			@RequestParam BigDecimal beneRelSeqId, @RequestParam String remarks) {
+	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
+			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		// Disable Beneficiary
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneDisable(beneRelSeqId, remarks));
+		wrapper.setData(
+				jaxService.setDefaults().getBeneClient().beneDisable(beneficaryMasterSeqId, remarks).getResult());
 		return wrapper;
 	}
 

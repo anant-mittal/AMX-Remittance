@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -85,9 +86,8 @@ public class BeneficiaryController {
 
 	
 	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
-	public ApiResponse beneDisable(@RequestParam("beneMasterSeqId") BigDecimal beneMasterSeqId,
-			@RequestParam("remarks") String remarks) {
-		logger.info("getRemittanceDetailForReport Trnx Report:");
+	public ApiResponse beneDisable(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,@RequestParam("remarks") String remarks) {
+		logger.info("Bene disable method Trnx Report:");
 		
 		ApiResponse response = null;
 		
@@ -106,6 +106,24 @@ public class BeneficiaryController {
 	}
 
 	
+	
+	
+	
+	
+	
+	@RequestMapping(value = "/beneupdate/", method = RequestMethod.POST)
+	public ApiResponse getBeneUpdate(@RequestBody String jsonBeneDTO) {
+		logger.info("getRemittanceDetailForReport Trnx Report:");
+		BeneficiaryListDTO beneficiaryDto = (BeneficiaryListDTO) converterUtil.unmarshall(jsonBeneDTO, BeneficiaryListDTO.class);
+		logger.info("Bene Master Id :" + beneficiaryDto.getBeneficaryMasterSeqId());
+		logger.info("Bene Rela Seq Id :" + beneficiaryDto.getBeneficiaryRelationShipSeqId());
+		logger.info("Bene Account Length :" + beneficiaryDto.getBeneficiaryAccountSeqId());
+		logger.info("Customer Id :" + beneficiaryDto.getCustomerId() + "\t Reference :"+ beneficiaryDto.getServiceGroupId());
+		logger.info("Country Id :" + beneficiaryDto.getApplicationCountryId() + "\t Currency Id :"+ beneficiaryDto.getCurrencyId());
+		ApiResponse response = beneService.beneficiaryUpdate(beneficiaryDto);
+		return response;
+	}
+
 	
 	
 	

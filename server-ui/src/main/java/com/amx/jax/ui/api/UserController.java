@@ -15,7 +15,6 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.request.LoginRequest;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;

@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -87,7 +88,7 @@ public class BeneClient extends AbstractJaxServiceClient{
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/disable/"+sb.toString();
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>(){});
 		} catch (Exception e) {
@@ -95,6 +96,24 @@ public class BeneClient extends AbstractJaxServiceClient{
 		}
 		return response.getBody();
 	}
+	
+	
+	
+
+	public ApiResponse<BeneficiaryListDTO> beneUpdate(BeneficiaryListDTO beneficiarydto) {
+		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+		try {
+		
+		log.info("Bene update Client :"+beneficiarydto.getCustomerId()+"\t customerId :"+beneficiarydto.getBeneficiaryRelationShipSeqId());
+		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(beneficiarydto), getHeader());
+		String url = baseUrl.toString() + REMIT_API_ENDPOINT+"/beneupdate/";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {});
+		}catch(Exception e) {
+			log.error("exception in saveSecurityQuestions ", e);
+		}
+		return response.getBody();
+	}
+	
 	
 	
 	
