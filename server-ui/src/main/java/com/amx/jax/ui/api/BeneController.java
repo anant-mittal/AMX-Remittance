@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
@@ -26,8 +28,8 @@ public class BeneController {
 
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<BeneCountryDTO>> beneList() {
-		ResponseWrapper<List<BeneCountryDTO>> wrapper = new ResponseWrapper<List<BeneCountryDTO>>();
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
+		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
 
 		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(null).getResults());
 
@@ -40,7 +42,7 @@ public class BeneController {
 		ResponseWrapper<BeneCountryDTO> wrapper = new ResponseWrapper<BeneCountryDTO>();
 
 		// Disable Beneficiary
-		jaxService.setDefaults().getBeneClient();
+		// jaxService.setDefaults().getBeneClient().beneDisable(beneRelSeqId, remarks);
 
 		return wrapper;
 	}
@@ -50,19 +52,18 @@ public class BeneController {
 	public ResponseWrapper<BeneCountryDTO> beneDetails(@RequestBody BeneCountryDTO beneficiary) {
 		ResponseWrapper<BeneCountryDTO> wrapper = new ResponseWrapper<BeneCountryDTO>();
 
-		// Disable Beneficiary
+		// wrapper.setData(jaxService.setDefaults().getBeneClient().);
 
 		return wrapper;
 	}
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> beneDisable(BigDecimal beneficiaryId) {
+	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficiaryId,
+			@RequestParam BigDecimal beneRelSeqId, @RequestParam String remarks) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-
 		// Disable Beneficiary
-		jaxService.setDefaults().getBeneClient();
-
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneDisable(beneRelSeqId, remarks));
 		return wrapper;
 	}
 
