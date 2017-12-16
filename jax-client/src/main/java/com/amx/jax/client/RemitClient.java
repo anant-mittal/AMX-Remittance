@@ -41,12 +41,11 @@ public class RemitClient extends AbstractJaxServiceClient{
 			BigDecimal countryId  = jaxMetaInfo.getCountryId();
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			log.info("Transaction Histroy");
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=").append(toDate);
 			log.info("Input String :"+sb.toString());
 			String url =baseUrl.toString()+ REMIT_API_ENDPOINT+"/trnxHist/"+sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>(){});
 		} catch (Exception e) {
 			log.debug("exception in registeruser ", e);
