@@ -90,7 +90,7 @@ public class BeneClient extends AbstractJaxServiceClient{
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/disable/"+sb.toString();
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>(){});
 		} catch (Exception e) {
