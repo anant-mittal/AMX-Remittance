@@ -25,4 +25,5 @@ public interface IBeneficiaryRelationshipDao extends JpaRepository<BeneficaryRel
 			@Param("beneMasterId") BigDecimal beneMasterId,
 			@Param("customerId") BigDecimal customerId);
 	
+	
 }

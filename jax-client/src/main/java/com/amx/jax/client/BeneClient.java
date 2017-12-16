@@ -16,12 +16,16 @@ import org.springframework.util.MultiValueMap;
 
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
+
+
 @Component
-public class BeneClient extends AbstractJaxServiceClient {
+public class BeneClient extends AbstractJaxServiceClient{
+
 	private Logger log = Logger.getLogger(BeneClient.class);
 
 	@Autowired
@@ -36,22 +40,17 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * @param beneCountryId
 	 * @return
 	 */
-	public ApiResponse<BeneCountryDTO> getBeneficiaryList(BigDecimal beneCountryId) {
-		ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
+	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId) {
+		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
 		try {
-			String userType = jaxMetaInfo.getChannel().toString();
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			
 			MultiValueMap<String, String> headers = getHeader();
 			StringBuffer sb = new StringBuffer();
-			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&countryId=")
-					.append(countryId).append("&beneCountryId=").append(beneCountryId);
+			sb.append("?beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
 			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/beneList/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
-					});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {});
 		} catch (Exception e) {
 			log.debug("Bene country list ", e);
 		}
@@ -67,8 +66,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String userType       = jaxMetaInfo.getChannel().toString();
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
-			sb.append("?customerId=").append(customerId).append("&userType=").append(userType).append("&countryId=")
-					.append(countryId).append("&beneCountryId=").append(beneCountryId);
+			sb.append("?beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
 			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/benecountry/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
@@ -81,6 +79,28 @@ public class BeneClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	
+	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneRelSeqId,String remarks) {
+		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+		try {
+			
+			log.info("Transaction Histroy");
+			
+			StringBuffer sb = new StringBuffer();
+			sb.append("?beneRelSeqId=").append(beneRelSeqId).append("&remarks=").append(remarks);
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/disable/"+sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>(){});
+		} catch (Exception e) {
+			log.debug("exception in registeruser ", e);
+		}
+		return response.getBody();
+	}
+	
+	
+	
+	
 	public ApiResponse<AccountTypeDto> getBeneficiaryAccountType(BigDecimal beneCountryId) {
 		ResponseEntity<ApiResponse<AccountTypeDto>> response = null;
 		try {

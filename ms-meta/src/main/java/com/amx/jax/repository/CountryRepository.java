@@ -16,7 +16,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
  */
 public interface CountryRepository extends JpaRepository<CountryMasterView, BigDecimal>{
 	
-	@Query("Select c from CountryMasterView c where  languageId=?")
+	@Query("Select c from CountryMasterView c where  languageId=?1")
 	List<CountryMasterView> findByLanguageId(BigDecimal languageId);
 	
 	@Query("Select c from CountryMasterView c where  languageId=?1 and countryId=?2")

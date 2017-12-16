@@ -43,7 +43,7 @@ public class RemitClient extends AbstractJaxServiceClient{
 			log.info("Transaction Histroy");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
-			sb.append("?customerId=").append(customerId).append("&docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=").append(toDate);
+			sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=").append(toDate);
 			log.info("Input String :"+sb.toString());
 			String url =baseUrl.toString()+ REMIT_API_ENDPOINT+"/trnxHist/"+sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
@@ -55,7 +55,6 @@ public class RemitClient extends AbstractJaxServiceClient{
 	}
 	
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
-		
 		ResponseEntity<ApiResponse<RemittanceReceiptSubreport>> response = null;
 		try {
 		BigDecimal countryId  = jaxMetaInfo.getCountryId();

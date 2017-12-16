@@ -12,8 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import com.amx.jax.dbmodel.Customer;
-
 @Entity
 @Table(name="EX_BENEFICARY_RELATIONSHIP")
 public class BeneficaryRelationship implements Serializable {
@@ -23,7 +21,7 @@ public class BeneficaryRelationship implements Serializable {
 
 	private BigDecimal beneficaryRelationshipId;
 	private BigDecimal applicationCountry;
-	private Customer customerId;
+	private BigDecimal customerId;
 	private String isActive;
 	private String createdBy;
 	private Date createdDate;
@@ -58,11 +56,11 @@ public class BeneficaryRelationship implements Serializable {
 	
 	
 	@Column(name="CUSTOMER_ID")
-	public Customer getCustomerId() {
+	public BigDecimal getCustomerId() {
 		return customerId;
 	}
 	
-	public void setCustomerId(Customer customerId) {
+	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
 	
