@@ -153,6 +153,19 @@ public class BeneficiaryService extends AbstractService{
 	
 	
 	
+	public ApiResponse beneficiaryUpdate(BeneficiaryListDTO beneDetails) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("Error while update Custoemr Id"+beneDetails.getCustomerId()+"\t Bene Ralation :"+beneDetails.getBeneficiaryRelationShipSeqId());
+		}
+		
+		return response;
+	}
+	
+	
 private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();
 		for (BeneficiaryCountryView beneCountry : beneocountryList) {
