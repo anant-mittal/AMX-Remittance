@@ -80,14 +80,14 @@ public class BeneClient extends AbstractJaxServiceClient{
 	}
 
 	
-	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneRelSeqId,String remarks) {
+	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneMasSeqId,String remarks) {
 		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
 		try {
 			
 			log.info("Transaction Histroy");
 			
 			StringBuffer sb = new StringBuffer();
-			sb.append("?beneRelSeqId=").append(beneRelSeqId).append("&remarks=").append(remarks);
+			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/disable/"+sb.toString();
