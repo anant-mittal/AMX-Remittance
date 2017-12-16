@@ -31,7 +31,7 @@ public class BeneController {
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
 
-		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(null).getResults());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0)).getResults());
 
 		return wrapper;
 	}
@@ -59,11 +59,12 @@ public class BeneController {
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficiaryId,
-			@RequestParam BigDecimal beneRelSeqId, @RequestParam String remarks) {
+	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
+			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		// Disable Beneficiary
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneDisable(beneRelSeqId, remarks));
+		wrapper.setData(
+				jaxService.setDefaults().getBeneClient().beneDisable(beneficaryMasterSeqId, remarks).getResult());
 		return wrapper;
 	}
 
