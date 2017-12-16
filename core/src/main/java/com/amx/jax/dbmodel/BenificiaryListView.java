@@ -89,6 +89,7 @@ public class BenificiaryListView implements Serializable {
 	
 	private BigDecimal totalTrnx;
 	private BigDecimal orsStatus;
+	private String serviceGroupName;
 	
 	
 
@@ -649,5 +650,12 @@ public class BenificiaryListView implements Serializable {
 	}
 	public void setOrsStatus(BigDecimal orsStatus) {
 		this.orsStatus = orsStatus;
+	}
+	@Column(name="SERVICE_GROUP_NAME")
+	public String getServiceGroupName() {
+		return serviceGroupName;
+	}
+	public void setServiceGroupName(String serviceGroupName) {
+		this.serviceGroupName = serviceGroupName;
 	}
 }

@@ -85,6 +85,8 @@ public class BeneficiaryListDTO {
 	
 	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
 	
+	private String serviceGroupName;
+	
 	
 	
 	public BigDecimal getIdNo() {
@@ -524,6 +526,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setBeneficiaryErrorStatus(List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus) {
 		this.beneficiaryErrorStatus = beneficiaryErrorStatus;
+	}
+	public String getServiceGroupName() {
+		return serviceGroupName;
+	}
+	public void setServiceGroupName(String serviceGroupName) {
+		this.serviceGroupName = serviceGroupName;
 	}
 	
 	
