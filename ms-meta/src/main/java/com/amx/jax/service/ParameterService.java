@@ -81,4 +81,9 @@ public class ParameterService extends AbstractService {
 		return null;
 	}
 
+	public List<AuthenticationLimitCheckView>  getAllAuthLimits(){
+		List<AuthenticationLimitCheckView> authLimits =authentication.getAllAuthLimits();
+		return authLimits;
+	}
+	
 }

@@ -35,11 +35,13 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Component
@@ -68,6 +70,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private CustomerDao custDao;
+
+	@Autowired
+	private VTransferRepository transferRepo;
 
 	private Logger logger = Logger.getLogger(RemittanceTransactionManager.class);
 
@@ -111,6 +116,7 @@ public class RemittanceTransactionManager {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
+		getCustomerTransactionAmounts();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model.getLocalAmount());
 		// exrate
 		responseModel.setExRateBreakup(breakup);
@@ -240,4 +246,14 @@ public class RemittanceTransactionManager {
 		return output;
 	}
 
+	/**
+	 * Returns customer's transaction amounts in 3 forms 1. daily 2. weekly 3.
+	 * monthly
+	 */
+	public Map<String, BigDecimal> getCustomerTransactionAmounts() {
+
+		Map<String, BigDecimal> output = new HashMap<>();
+		List<ViewTransfer> list = transferRepo.findBycusRef("284052306594");
+		return output;
+	}
 }

@@ -1,10 +1,10 @@
 package com.amx.jax.interceptor;
 
-import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,10 +27,11 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 		String metaInfo = request.getHeader("meta-info");
 		if (!StringUtils.isEmpty(metaInfo)) {
 			JaxMetaInfo metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
-			metaData.setChannel(metaInfoMap.getChannel());
-			metaData.setCompanyId(metaInfoMap.getCompanyId());
-			metaData.setCountryId(metaInfoMap.getCountryId());
-			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+//			metaData.setChannel(metaInfoMap.getChannel());
+//			metaData.setCompanyId(metaInfoMap.getCompanyId());
+//			metaData.setCountryId(metaInfoMap.getCountryId());
+//			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+			BeanUtils.copyProperties(metaData, metaInfoMap);
 		}
 
 		return super.preHandle(request, response, handler);

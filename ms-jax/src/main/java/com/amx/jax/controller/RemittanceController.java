@@ -19,6 +19,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
@@ -45,14 +46,22 @@ public class RemittanceController {
 
 	@Autowired
 	HttpServletResponse httpServletResponse;
+	
+	@Autowired
+	MetaData metaData;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("customerId") BigDecimal customerId,
-			@RequestParam("docfyr") BigDecimal docfyr, @RequestParam("docNumber") String docNumber,
+	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("docfyr") BigDecimal docfyr, @RequestParam("docNumber") String docNumber,
 			@RequestParam("fromDate") String fromDate, @RequestParam("toDate") String toDate) {
+		
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		
 		logger.info("customerId :" + customerId + "\t docfyr :" + docfyr + "\t docNumber :" + docNumber
 				+ "\t fromDate :" + fromDate + "\t toDate :" + toDate);
 		ApiResponse response = null;
+		
+		
 		if (docNumber!=null && !docNumber.equals("null")) {
 			response = transactionHistroyService.getTransactionHistroyByDocumentNumber(customerId, docfyr,
 					new BigDecimal(docNumber));

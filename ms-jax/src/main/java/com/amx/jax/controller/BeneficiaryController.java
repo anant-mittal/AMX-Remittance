@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.JaxChannel;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
-import com.amx.jax.service.BeneficiaryOnlineService;
+import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.util.ConverterUtil;
 
 /**
  * 
@@ -28,50 +31,93 @@ public class BeneficiaryController {
 	final static Logger logger = Logger.getLogger(BeneficiaryController.class);
 	
 	@Autowired
-	BeneficiaryOnlineService beneOnlineService;
+	BeneficiaryService beneService;
 	
 	@Autowired
 	AccountTypeService accountTypeService;
 	
+	@Autowired
+	private ConverterUtil converterUtil;
+	
+	@Autowired
+	MetaData metaData;
 
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryListResponse(@RequestParam("userType") String userType,
-			@RequestParam("customerId") BigDecimal customerId,
-			@RequestParam("applicationCountryId") BigDecimal applicationCountryId,
-			@RequestParam("beneCountryId") BigDecimal beneCountryId) {
-		logger.info("userType :"+userType+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		JaxChannel channel = metaData.getChannel();
+		logger.info("userType :"+channel.name()+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
 		ApiResponse response =null;
-		if(userType!=null && userType.equalsIgnoreCase(JaxChannel.BRANCH.toString())) {
-			response = beneOnlineService.getBeneficiaryListForBranch(customerId, applicationCountryId,beneCountryId);
+		if(channel!=null && channel.equals(JaxChannel.BRANCH)) {
+			response = beneService.getBeneficiaryListForBranch(customerId, applicationCountryId,beneCountryId);
 		}else {
-			response = beneOnlineService.getBeneficiaryListForOnline(customerId, applicationCountryId,beneCountryId);
+			response = beneService.getBeneficiaryListForOnline(customerId, applicationCountryId,beneCountryId);
 		}
 		return response;
 	}
+
+
+	
+
+	
 	
 	
 	@RequestMapping(value = "/benecountry/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCountryListResponse(@RequestParam("userType") String userType,
-			@RequestParam("customerId") BigDecimal customerId) {
-		logger.info("userType :"+userType+"\t customerId :"+customerId);
+	public ApiResponse getBeneficiaryCountryListResponse() {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		JaxChannel channel = metaData.getChannel();
+		
+		logger.info("userType :"+channel+"\t customerId :"+customerId);
 		ApiResponse response ;
-		if(userType!=null && userType.equalsIgnoreCase(JaxChannel.BRANCH.toString())) {
-		 response = beneOnlineService.getBeneficiaryCountryListForBranch(customerId);
+		if(channel!=null && channel.equals(JaxChannel.BRANCH)) {
+		 response = beneService.getBeneficiaryCountryListForBranch(customerId);
 		}else {
-			 response = beneOnlineService.getBeneficiaryCountryListForOnline(customerId);
+			 response = beneService.getBeneficiaryCountryListForOnline(customerId);
 		}
 		return response;
 	}
+	
+	
+	
+
+	
+	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
+	public ApiResponse beneDisable(@RequestParam("beneRelSeqId") BigDecimal beneRelSeqId,@RequestParam("remarks") String remarks) {
+		logger.info("getRemittanceDetailForReport Trnx Report:");
+		
+		ApiResponse response = null;
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
+		beneDetails.setBeneficiaryRelationShipSeqId(beneRelSeqId);
+		beneDetails.setCustomerId(customerId);
+		beneDetails.setRemarks(remarks);
+		logger.info("Relation ship Id :" + beneDetails.getCustomerId());
+		logger.info("Relation ship Id :" + beneDetails.getBeneficiaryRelationShipSeqId());
+		logger.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
+		logger.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
+		response= beneService.disableBeneficiary(beneDetails);
+		return response;
+	}
+
+	
+	
 	
 	
 	@RequestMapping(value = "/accounttype/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryAccountType(@RequestParam("countryId") BigDecimal countryId) {
 		logger.info("getBeneficiaryAccountType countryId :"+countryId);
-		ApiResponse response ;
+		ApiResponse response =null;
 		 response = accountTypeService.getAccountTypeFromView(countryId);
 		return response;
 	}
+	
+	
+	
+	
 	
 	
 	/*@RequestMapping(value = "/benecheck/", method = RequestMethod.POST)

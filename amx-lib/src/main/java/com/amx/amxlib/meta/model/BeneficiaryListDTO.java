@@ -2,6 +2,7 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 public class BeneficiaryListDTO {
 	
@@ -81,6 +82,9 @@ public class BeneficiaryListDTO {
 	private BigDecimal languageId;	
 	
 	private boolean isUpdateNeeded=false;
+	
+	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
+	
 	
 	
 	public BigDecimal getIdNo() {
@@ -515,6 +519,13 @@ public class BeneficiaryListDTO {
 	public void setUpdateNeeded(boolean isUpdateNeeded) {
 		this.isUpdateNeeded = isUpdateNeeded;
 	}
+	public List<BeneficiaryErrorStatusDto> getBeneficiaryErrorStatus() {
+		return beneficiaryErrorStatus;
+	}
+	public void setBeneficiaryErrorStatus(List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus) {
+		this.beneficiaryErrorStatus = beneficiaryErrorStatus;
+	}
+	
 	
 
 }
