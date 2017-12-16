@@ -14,7 +14,7 @@ import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 public interface ExchangeRateApprovalDetRepository extends CrudRepository<ExchangeRateApprovalDetModel, BigDecimal> {
 
 	@Query("select rate from ExchangeRateApprovalDetModel rate where  rate.currencyId=?1 and rate.countryBranchId=?2 "
-			+ "and rate.countryId=?3 and rate.bankMaster.recordStatus = 'Y' and rate.bankMaster.bankCode in ('SCB','SCBUK')")
+			+ "and rate.countryId=?3 and rate.bankMaster.recordStatus = 'Y' and rate.bankMaster.bankCode not in ('SCB','SCBUK', 'WU')")
 	List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
 			BigDecimal countryId);
 

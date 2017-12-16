@@ -8,6 +8,8 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -63,7 +65,8 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 	public ApiResponse getAllOnlineCurrencyDetails() {
-		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo.findAll();
+		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
+				.findAll(new Sort("quoteName"));
 		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");

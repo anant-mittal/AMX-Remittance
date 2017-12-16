@@ -1,6 +1,8 @@
 package com.amx.jax.interceptor;
 
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,7 +32,7 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 //			metaData.setChannel(metaInfoMap.getChannel());
 //			metaData.setCompanyId(metaInfoMap.getCompanyId());
 //			metaData.setCountryId(metaInfoMap.getCountryId());
-//			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
+			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
 			BeanUtils.copyProperties(metaData, metaInfoMap);
 		}
 
