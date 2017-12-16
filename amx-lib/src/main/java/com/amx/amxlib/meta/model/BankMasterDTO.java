@@ -1,6 +1,7 @@
 package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -117,5 +118,19 @@ public class BankMasterDTO extends AbstractModel {
 		this.exRateBreakup = exRateBreakup;
 	}
 
+	public static class BankMasterDTOComparator implements Comparator<BankMasterDTO> {
+
+		@Override
+		public int compare(BankMasterDTO o1, BankMasterDTO o2) {
+
+			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getInverseRate() : null;
+			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getInverseRate() : null;
+			if (o1Rate != null) {
+				return o1Rate.compareTo(o2Rate);
+			}
+			return 0;
+		}
+
+	}
 
 }

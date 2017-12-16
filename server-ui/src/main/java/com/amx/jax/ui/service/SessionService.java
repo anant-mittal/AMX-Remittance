@@ -51,4 +51,16 @@ public class SessionService {
 		userSession.setValid(valid);
 	}
 
+	/**
+	 * Clear Existing user session if any
+	 */
+	public void clear() {
+		userSession.setValid(Boolean.FALSE);
+		userSession.setCustomerModel(null);
+		userSession.setUserid(null);
+		guestSession.setValid(Boolean.FALSE);
+		guestSession.setCustomerModel(null);
+
+	}
+
 }

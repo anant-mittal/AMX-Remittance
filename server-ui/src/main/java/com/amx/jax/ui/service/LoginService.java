@@ -43,7 +43,7 @@ public class LoginService {
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
-
+		sessionService.clear();
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
 			wrapper.setMessage(ResponseStatus.ACTIVE_SESSION, ResponseMessage.USER_ALREADY_LOGGIN);
@@ -60,8 +60,7 @@ public class LoginService {
 				SecurityQuestionModel answer = listmgr.pickRandom();
 				sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
 
-				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion().getResults();
+				List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					System.out.println(questModelDTO.getQuestNumber() + "===" + answer.getQuestionSrNo());
@@ -101,10 +100,12 @@ public class LoginService {
 				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswers)
 						.getResult();
 
-				sessionService.authorize(customerModel, true);
-
-				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
-				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_FAILED);
+				if (customerModel == null) {
+					wrapper.setMessage(ResponseStatus.AUTH_FAILED, ResponseMessage.AUTH_FAILED);
+				} else {
+					sessionService.authorize(customerModel, true);
+					wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+				}
 
 			} catch (IncorrectInputException e) {
 				customerModel = sessionService.getGuestSession().getCustomerModel();
@@ -115,8 +116,7 @@ public class LoginService {
 				SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
 				sessionService.getGuestSession().nextQuesIndex();
 
-				List<QuestModelDTO> questModel = jaxService.getMetaClient()
-						.getSequrityQuestion().getResults();
+				List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
 
 				for (QuestModelDTO questModelDTO : questModel) {
 					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
@@ -137,6 +137,9 @@ public class LoginService {
 	}
 
 	public ResponseWrapper<LoginData> reset(String identity, String otp) {
+
+		sessionService.clear();
+
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (otp == null) {
 			try {

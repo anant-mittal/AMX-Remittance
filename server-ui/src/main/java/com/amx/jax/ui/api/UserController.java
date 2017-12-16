@@ -15,6 +15,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
+import com.amx.jax.ui.request.LoginRequest;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
@@ -42,7 +43,8 @@ public class UserController {
 	 */
 	@ApiOperation(value = "Validates login/pass but does not creates session")
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> login(@RequestParam String identity, @RequestParam String password) {
+	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
+			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}
 

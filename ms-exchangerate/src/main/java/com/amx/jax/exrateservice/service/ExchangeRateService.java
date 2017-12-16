@@ -3,6 +3,7 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,7 +126,7 @@ public class ExchangeRateService extends AbstractService {
 	private Set<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
 		CurrencyMasterModel currency = currencyMasterDao.getCurrencyMasterByQuote("BDT");
-		Set<BankMasterDTO> bankWiseRates = new HashSet<>();
+		Set<BankMasterDTO> bankWiseRates = new TreeSet<>(new BankMasterDTO.BankMasterDTOComparator());
 		if (currency != null && currency.getCurrencyId().equals(fromCurrency)) {
 			for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 				List<PipsMaster> piplist = entry.getValue();
