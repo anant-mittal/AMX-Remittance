@@ -16,4 +16,7 @@ public interface AuthenticationLimitCheckDAO extends JpaRepository<Authenticatio
 	
 	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType='28'")
 	public List<AuthenticationLimitCheckView> getContactUsPhoneNo();
+	
+	@Query("select cts from AuthenticationLimitCheckView cts")
+	public List<AuthenticationLimitCheckView> getAllAuthLimits();
 }

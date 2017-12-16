@@ -17,8 +17,10 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dal.CryptoDao;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;
 
@@ -87,11 +89,14 @@ public class JaxServiceApplicationTests {
 
 	@Autowired
 	PipsMasterDao pipsDao;
+	
+	@Autowired
+	private VTransferRepository transferRepo;
 
 	@Test
 	public void testPips() {
 		try {
-		List<PipsMaster> pips = pipsDao.getPipsForOnline();
+		List<ViewTransfer> pips = transferRepo.findBycusRef("1553194");
 		System.out.println(pips.size());
 		}catch(Exception e) {
 			e.printStackTrace();

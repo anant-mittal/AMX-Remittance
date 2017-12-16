@@ -32,6 +32,8 @@ public class MetaData implements IMetaData {
 	private BigDecimal defaultCurrencyId;
 
 	private JaxChannel channel;
+	
+	private BigDecimal customerId;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -93,5 +95,13 @@ public class MetaData implements IMetaData {
 
 	public void setDefaultCurrencyId(BigDecimal defaultCurrencyId) {
 		this.defaultCurrencyId = defaultCurrencyId;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.service.BeneficiaryOnlineService;
 
@@ -33,16 +34,18 @@ public class BeneficiaryController {
 	@Autowired
 	AccountTypeService accountTypeService;
 	
+	@Autowired
+	MetaData metaData;
 
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryListResponse(@RequestParam("userType") String userType,
-			@RequestParam("customerId") BigDecimal customerId,
-			@RequestParam("applicationCountryId") BigDecimal applicationCountryId,
-			@RequestParam("beneCountryId") BigDecimal beneCountryId) {
-		logger.info("userType :"+userType+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
+	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		JaxChannel channel = metaData.getChannel();
+		logger.info("userType :"+channel.name()+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
 		ApiResponse response =null;
-		if(userType!=null && userType.equalsIgnoreCase(JaxChannel.BRANCH.toString())) {
+		if(channel!=null && channel.equals(JaxChannel.BRANCH)) {
 			response = beneOnlineService.getBeneficiaryListForBranch(customerId, applicationCountryId,beneCountryId);
 		}else {
 			response = beneOnlineService.getBeneficiaryListForOnline(customerId, applicationCountryId,beneCountryId);
