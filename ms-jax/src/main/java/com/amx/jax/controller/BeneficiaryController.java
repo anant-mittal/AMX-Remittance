@@ -85,15 +85,17 @@ public class BeneficiaryController {
 
 	
 	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
-	public ApiResponse beneDisable(@RequestParam("beneRelSeqId") BigDecimal beneRelSeqId,@RequestParam("remarks") String remarks) {
+	public ApiResponse beneDisable(@RequestParam("beneMasterSeqId") BigDecimal beneMasterSeqId,
+			@RequestParam("remarks") String remarks) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
 		
 		ApiResponse response = null;
 		
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
-		beneDetails.setBeneficiaryRelationShipSeqId(beneRelSeqId);
+		//beneDetails.setBeneficiaryRelationShipSeqId(beneRelSeqId);
 		beneDetails.setCustomerId(customerId);
+		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
 		logger.info("Relation ship Id :" + beneDetails.getCustomerId());
 		logger.info("Relation ship Id :" + beneDetails.getBeneficiaryRelationShipSeqId());

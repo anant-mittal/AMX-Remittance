@@ -31,6 +31,7 @@ public class BeneficaryRelationship implements Serializable {
 	private BigDecimal beneficaryAccountId;
 	private BigDecimal mapSequenceId;
 	private String remarks ;
+	private BigDecimal orsSatus;
 	
 	
 	@Id
@@ -171,6 +172,15 @@ public class BeneficaryRelationship implements Serializable {
 
 	public void setBeneficaryAccountId(BigDecimal beneficaryAccountId) {
 		this.beneficaryAccountId = beneficaryAccountId;
+	}
+
+	@Column(name="ORS_STATUS")
+	public BigDecimal getOrsSatus() {
+		return orsSatus;
+	}
+
+	public void setOrsSatus(BigDecimal orsSatus) {
+		this.orsSatus = orsSatus;
 	}
 	 
 }

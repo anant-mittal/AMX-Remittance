@@ -41,6 +41,8 @@ public class BeneficiaryService extends AbstractService{
 	@Autowired
 	IBeneficiaryRelationshipDao beneRelationShipDao;
 	
+
+	
 	
 
 	
@@ -121,16 +123,27 @@ public class BeneficiaryService extends AbstractService{
 	public ApiResponse disableBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
-		BeneficaryRelationship beneRelation = beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
+			List<BeneficaryRelationship> beneRelationList = null;
+			
+			BeneficaryRelationship beneRelation = null;
 		
-		if(beneRelation != null) {
-			beneRelation.setIsActive("D");
-			beneRelation.setModifiedBy(beneDetails.getCustomerId().toString());
-			beneRelation.setModifiedDate(new Date());
-			beneRelation.setRemarks(beneDetails.getRemarks());
-			beneRelationShipDao.save(beneRelation);
+		
+		//beneRelation	 = beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
+		
+			beneRelationList	 = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+		
+		if(!beneRelationList.isEmpty()) {
+			BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+			beneRelationModel.setIsActive("D");
+			beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+			beneRelationModel.setModifiedDate(new Date());
+			beneRelationModel.setRemarks(beneDetails.getRemarks());
+			beneRelationShipDao.save(beneRelationModel);
+			response.setResponseStatus(ResponseStatus.OK);
+		}else {
+			throw new GlobalException("No record found");
 		}
-		response.setResponseStatus(ResponseStatus.OK);
+		
 		return response;
 		}catch(Exception e) {
 			throw new GlobalException("Error while update");
