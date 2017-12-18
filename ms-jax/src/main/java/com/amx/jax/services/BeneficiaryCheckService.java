@@ -301,7 +301,7 @@ public class BeneficiaryCheckService extends AbstractService {
 						errorListDto.add(errorStatusDto);
 
 					}
-					if (accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
+					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
 						errorDesc = "Invalid Beneficiary Account Number length";
 						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
 
