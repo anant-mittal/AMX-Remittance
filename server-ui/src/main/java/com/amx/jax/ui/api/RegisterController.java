@@ -75,8 +75,9 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody List<SecurityQuestionModel> securityquestions) {
-		return registrationService.updateSecQues(securityquestions);
+	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody UserUpdateData userUpdateData) {
+
+		return registrationService.updateSecQues(userUpdateData.getSecQuesAns());
 	}
 
 	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
