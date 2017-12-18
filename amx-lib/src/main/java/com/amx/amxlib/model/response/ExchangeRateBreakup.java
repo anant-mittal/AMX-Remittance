@@ -14,7 +14,8 @@ public class ExchangeRateBreakup {
 
 	@JsonProperty("forAmount")
 	BigDecimal convertedFCAmount;
-	
+
+	@JsonProperty("domAmount")
 	BigDecimal convertedLCAmount;
 
 	public BigDecimal getRate() {

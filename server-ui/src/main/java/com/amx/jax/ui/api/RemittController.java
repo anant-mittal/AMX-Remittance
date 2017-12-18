@@ -114,7 +114,7 @@ public class RemittController {
 						.getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());
-				wrapper.getData().setForAmount(resp.getExRateBreakup().getConversionAmount());
+				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
 				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
 			} catch (ResourceNotFoundException | InvalidInputException e) {
 				wrapper.setMessage(ResponseStatus.ERROR, e);
