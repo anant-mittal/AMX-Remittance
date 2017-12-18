@@ -3,6 +3,8 @@ package com.amx.jax.services;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -22,151 +24,174 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.userservice.dao.CustomerDao;
 
 @Service
-public class BeneficiaryService extends AbstractService{
-	
+public class BeneficiaryService extends AbstractService {
+
 	Logger logger = Logger.getLogger(BeneficiaryService.class);
-	
+
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
-	
+
 	@Autowired
 	IBeneficiaryCountryDao beneficiaryCountryDao;
-	
+
 	@Autowired
 	BeneficiaryCheckService beneCheck;
-	
-	
+
 	@Autowired
 	IBeneficiaryRelationshipDao beneRelationShipDao;
-	
 
-	
-	
+	@Autowired
+	CustomerDao custDao;
 
-	
-	
-	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId,BigDecimal applicationCountryId,BigDecimal beneCountryId) {
+	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
+			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
-		if(beneCountryId!=null && beneCountryId.compareTo(BigDecimal.ZERO)!=0) {
-			beneList = beneficiaryOnlineDao.getOnlineBeneListFromViewForCountry(customerId, applicationCountryId,beneCountryId);
-		}else {
+		if (beneCountryId != null && beneCountryId.compareTo(BigDecimal.ZERO) != 0) {
+			beneList = beneficiaryOnlineDao.getOnlineBeneListFromViewForCountry(customerId, applicationCountryId,
+					beneCountryId);
+		} else {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
-		
+		BigDecimal nationalityId = custDao.getCustById(customerId). getNationalityId();
+		BenificiaryListViewOnlineComparator comparator = new BenificiaryListViewOnlineComparator(nationalityId);
+		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
-		if(beneList.isEmpty()) {
+		if (beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
-		}else {
-		response.getData().getValues().addAll(convertBeneList(beneList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convertBeneList(beneList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("beneList");
 		return response;
 	}
-	
-	
-	
-	
-	public ApiResponse getBeneficiaryListForBranch(BigDecimal customerId,BigDecimal applicationCountryId,BigDecimal beneCountryId) {
-		
+
+	public class BenificiaryListViewOnlineComparator implements Comparator<BenificiaryListView> {
+
+		private BigDecimal countryId;
+
+		public BenificiaryListViewOnlineComparator(BigDecimal nationalityId) {
+			this.countryId = nationalityId;
+		}
+
+		@Override
+		public int compare(BenificiaryListView o1, BenificiaryListView o2) {
+
+			if (o1.getCountryId() != o2.getCountryId() && o1.getCountryId() != null
+					&& o1.getCountryId().equals(this.countryId)) {
+				return -1;
+			}
+			return 0;
+		}
+
+		public BigDecimal getCountryId() {
+			return countryId;
+		}
+
+		public void setCountryId(BigDecimal countryId) {
+			this.countryId = countryId;
+		}
+
+	}
+
+	public ApiResponse getBeneficiaryListForBranch(BigDecimal customerId, BigDecimal applicationCountryId,
+			BigDecimal beneCountryId) {
+
 		List<BenificiaryListView> beneList = null;
-		if(beneCountryId!=null && beneCountryId.compareTo(BigDecimal.ZERO)!=0) {
-			beneList = beneficiaryOnlineDao.getBeneListFromViewForCountry(customerId, applicationCountryId, beneCountryId);
-		}else {
+		if (beneCountryId != null && beneCountryId.compareTo(BigDecimal.ZERO) != 0) {
+			beneList = beneficiaryOnlineDao.getBeneListFromViewForCountry(customerId, applicationCountryId,
+					beneCountryId);
+		} else {
 			beneList = beneficiaryOnlineDao.getBeneListFromView(customerId, applicationCountryId);
 		}
-		
+
 		ApiResponse response = getBlackApiResponse();
-		if(beneList.isEmpty()) {
+		if (beneList.isEmpty()) {
 			throw new GlobalException("Beneficiary list is not found");
-		}else {
-	    response.getData().getValues().addAll(convertBeneList(beneList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convertBeneList(beneList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("beneList");
 		return response;
 	}
-	
-	
-	
+
 	public ApiResponse getBeneficiaryCountryListForOnline(BigDecimal customerId) {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForOnline(customerId);
 		ApiResponse response = getBlackApiResponse();
-		if(beneocountryList.isEmpty()) {
+		if (beneocountryList.isEmpty()) {
 			throw new GlobalException("Beneficiary country list is not found");
-		}else {
-		response.getData().getValues().addAll(convert(beneocountryList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convert(beneocountryList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("benecountry");
 		return response;
 	}
-	
-	
+
 	public ApiResponse getBeneficiaryCountryListForBranch(BigDecimal customerId) {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForBranch(customerId);
 		ApiResponse response = getBlackApiResponse();
-		if(beneocountryList.isEmpty()) {
+		if (beneocountryList.isEmpty()) {
 			throw new GlobalException("Beneficiary country list is not found");
-		}else {
-	    response.getData().getValues().addAll(convert(beneocountryList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convert(beneocountryList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("benecountry");
 		return response;
 	}
-	
-	
-	
+
 	public ApiResponse disableBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
-			
+
 			BeneficaryRelationship beneRelation = null;
-		
-		
-		//beneRelation	 = beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
-		
-			beneRelationList	 = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
-		
-		if(!beneRelationList.isEmpty()) {
-			BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
-			beneRelationModel.setIsActive("D");
-			beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
-			beneRelationModel.setModifiedDate(new Date());
-			beneRelationModel.setRemarks(beneDetails.getRemarks());
-			beneRelationShipDao.save(beneRelationModel);
-			response.setResponseStatus(ResponseStatus.OK);
-		}else {
-			throw new GlobalException("No record found");
-		}
-		
-		return response;
-		}catch(Exception e) {
+
+			// beneRelation =
+			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
+
+			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
+					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+
+			if (!beneRelationList.isEmpty()) {
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao
+						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				beneRelationModel.setIsActive("D");
+				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+				beneRelationModel.setModifiedDate(new Date());
+				beneRelationModel.setRemarks(beneDetails.getRemarks());
+				beneRelationShipDao.save(beneRelationModel);
+				response.setResponseStatus(ResponseStatus.OK);
+			} else {
+				throw new GlobalException("No record found");
+			}
+
+			return response;
+		} catch (Exception e) {
 			throw new GlobalException("Error while update");
 		}
-		
+
 	}
-	
-	
-	
+
 	public ApiResponse beneficiaryUpdate(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
-			
-		}catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new GlobalException("Error while update Custoemr Id"+beneDetails.getCustomerId()+"\t Bene Ralation :"+beneDetails.getBeneficiaryRelationShipSeqId());
+			throw new GlobalException("Error while update Custoemr Id" + beneDetails.getCustomerId()
+					+ "\t Bene Ralation :" + beneDetails.getBeneficiaryRelationShipSeqId());
 		}
-		
+
 		return response;
 	}
-	
-	
-private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
+
+	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();
 		for (BeneficiaryCountryView beneCountry : beneocountryList) {
 			BeneCountryDTO model = new BeneCountryDTO();
@@ -182,26 +207,21 @@ private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryLi
 		return list;
 	}
 
-
-private List<BeneficiaryListDTO> convertBeneList(List<BenificiaryListView> beneList) {
-	List<BeneficiaryListDTO> output = new ArrayList<>();
-	beneList.forEach(beneModel -> output.add(beneCheck.beneCheck(convertBeneModelToDto(beneModel))));
-	return output;
-}
-
-private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
-	BeneficiaryListDTO dto = new BeneficiaryListDTO();
-	try {
-		BeanUtils.copyProperties(dto, beneModel);
-	} catch (IllegalAccessException | InvocationTargetException e) {
-		logger.error("bene list display", e);
+	private List<BeneficiaryListDTO> convertBeneList(List<BenificiaryListView> beneList) {
+		List<BeneficiaryListDTO> output = new ArrayList<>();
+		beneList.forEach(beneModel -> output.add(beneCheck.beneCheck(convertBeneModelToDto(beneModel))));
+		return output;
 	}
-	return dto;
-}
 
-
-
-	
+	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+		BeneficiaryListDTO dto = new BeneficiaryListDTO();
+		try {
+			BeanUtils.copyProperties(dto, beneModel);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("bene list display", e);
+		}
+		return dto;
+	}
 
 	@Override
 	public String getModelType() {

@@ -136,7 +136,7 @@ public class Customer implements java.io.Serializable {
 	private String deactivatedBy;
 	private Date deactivatedDate;
 	private String kioskPin;
-	
+	private BigDecimal nationalityId;
 	private String isOnlineUser;
 	
 	
@@ -874,6 +874,15 @@ public class Customer implements java.io.Serializable {
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+
+	@Column(name="NATIONALITY")
+	public BigDecimal getNationalityId() {
+		return nationalityId;
+	}
+
+	public void setNationalityId(BigDecimal nationalityId) {
+		this.nationalityId = nationalityId;
 	}
 
 	/*@ManyToOne(fetch = FetchType.LAZY)

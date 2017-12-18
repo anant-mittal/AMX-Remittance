@@ -137,8 +137,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "city":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewCityDto>>(){});
 			break;		
-			
-			
+		case "remittance_transaction":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceTransactionResponsetModel>>(){});
+			break;		
 			
 	}
 		

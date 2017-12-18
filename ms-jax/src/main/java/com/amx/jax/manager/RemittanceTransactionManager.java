@@ -165,6 +165,15 @@ public class RemittanceTransactionManager {
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
 		breakup.setInverseRate(inverseExchangeRate);
 		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
+
+		if (fcAmount != null) {
+			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
+			breakup.setConvertedFCAmount(fcAmount);
+		}
+		if (lcAmount != null) {
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
 		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
