@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -74,7 +75,7 @@ public class RemitClient extends AbstractJaxServiceClient{
 	}
 	
 	public ApiResponse<RemittanceTransactionResponsetModel> validateTransaction(
-			RemittanceTransactionRequestModel request) throws RemittanceTransactionValidationException {
+			RemittanceTransactionRequestModel request) throws RemittanceTransactionValidationException, LimitExeededException {
 
 		ResponseEntity<ApiResponse<RemittanceTransactionResponsetModel>> response = null;
 		try {

@@ -165,15 +165,22 @@ public abstract class AbstractJaxServiceClient {
 			}
 		}
 	}
-	
+
 	protected void validateRemittanceDataValidation(ApiResponse<?> response)
-			throws RemittanceTransactionValidationException {
+			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		if (response.getError() != null) {
 			ApiError error = response.getError().get(0);
 			if (JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL.getCode().equals(error.getErrorId())) {
 				throw new RemittanceTransactionValidationException(error);
 			}
+			if (JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED.getCode().equals(error.getErrorId())) {
+				throw new LimitExeededException(error);
+			}
+			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED.getCode().equals(error.getErrorId())) {
+				throw new LimitExeededException(error);
+			}
+
 		}
 	}
 }

@@ -3,9 +3,7 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +11,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -43,7 +42,7 @@ import com.amx.jax.services.AbstractService;
 @SuppressWarnings("rawtypes")
 public class ExchangeRateService extends AbstractService {
 
-	private Logger logger = Logger.getLogger(ExchangeRateService.class);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private PipsMasterDao pipsDao;
@@ -165,7 +164,7 @@ public class ExchangeRateService extends AbstractService {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConversionAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setConvertedFCAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
 			breakup.setInverseRate(exrate);
 			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
 		}
@@ -200,7 +199,7 @@ public class ExchangeRateService extends AbstractService {
 		}
 		if (exrate != null) {
 			output = new ExchangeRateBreakup();
-			output.setConversionAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
+			output.setConvertedFCAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
 			output.setInverseRate(exrate);
 			output.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
 		}

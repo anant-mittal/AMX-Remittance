@@ -3,7 +3,8 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,8 +29,8 @@ public class CustomerController {
 	@Autowired
 	private UserService userSerivce;
 
-	private Logger logger = Logger.getLogger(UserService.class);
-
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody String json) {
 		logger.debug("saveCust Request:" + json);

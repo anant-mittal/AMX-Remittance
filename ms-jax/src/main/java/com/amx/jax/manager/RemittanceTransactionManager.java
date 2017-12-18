@@ -15,7 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -82,7 +83,7 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private ParameterService parameterService;
 
-	private Logger logger = Logger.getLogger(RemittanceTransactionManager.class);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -125,8 +126,8 @@ public class RemittanceTransactionManager {
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		validateNumberOfTransactionLimits();
-		validateTransactionAmount(model);
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model.getLocalAmount());
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model);
+		validateTransactionAmount(breakup.getConvertedLCAmount());
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
@@ -135,11 +136,11 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void validateTransactionAmount(RemittanceTransactionRequestModel model) {
+	private void validateTransactionAmount(BigDecimal equivalentLCAmount) {
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
-		if (model.getLocalAmount().compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
+		if (equivalentLCAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
 			throw new GlobalException(
-					"Online Transaction Amount should not exceed - KD" + onlineTxnLimit.getAuthLimit(),
+					"Online Transaction Amount should not exceed - KD " + onlineTxnLimit.getAuthLimit(),
 					JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
 		}
 	}
@@ -156,21 +157,29 @@ public class RemittanceTransactionManager {
 	}
 
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
-			BigDecimal localAmount) {
+			RemittanceTransactionRequestModel model) {
+		BigDecimal fcAmount = model.getForeignAmount();
+		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
 		breakup.setInverseRate(inverseExchangeRate);
 		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-		breakup.setConversionAmount(breakup.getRate().multiply(localAmount));
-		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConversionAmount());
+		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
 			PipsMaster pip = pips.get(0);
 			inverseExchangeRate = inverseExchangeRate.subtract(pip.getPipsNo());
 			breakup.setInverseRate(inverseExchangeRate);
 			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-			breakup.setConversionAmount(breakup.getRate().multiply(localAmount));
+		}
+		if (fcAmount != null) {
+			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
+			breakup.setConvertedFCAmount(fcAmount);
+		}
+		if (lcAmount != null) {
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
 		}
 		return breakup;
 

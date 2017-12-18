@@ -4,7 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ import com.amx.jax.util.ConverterUtil;
 @RestController
 @RequestMapping(BENE_API_ENDPOINT)
 public class BeneficiaryController {
-	final static Logger logger = Logger.getLogger(BeneficiaryController.class);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	BeneficiaryService beneService;

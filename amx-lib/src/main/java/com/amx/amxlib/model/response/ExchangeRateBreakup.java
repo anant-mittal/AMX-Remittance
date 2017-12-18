@@ -13,7 +13,9 @@ public class ExchangeRateBreakup {
 	BigDecimal inverseRate;
 
 	@JsonProperty("forAmount")
-	BigDecimal conversionAmount;
+	BigDecimal convertedFCAmount;
+	
+	BigDecimal convertedLCAmount;
 
 	public BigDecimal getRate() {
 		return rate;
@@ -31,11 +33,19 @@ public class ExchangeRateBreakup {
 		this.inverseRate = inverseRate;
 	}
 
-	public BigDecimal getConversionAmount() {
-		return conversionAmount;
+	public void setConvertedFCAmount(BigDecimal convertedFCAmount) {
+		this.convertedFCAmount = convertedFCAmount;
 	}
 
-	public void setConversionAmount(BigDecimal conversionAmount) {
-		this.conversionAmount = conversionAmount;
+	public BigDecimal getConvertedLCAmount() {
+		return convertedLCAmount;
+	}
+
+	public void setConvertedLCAmount(BigDecimal convertedLCAmount) {
+		this.convertedLCAmount = convertedLCAmount;
+	}
+
+	public BigDecimal getConvertedFCAmount() {
+		return convertedFCAmount;
 	}
 }

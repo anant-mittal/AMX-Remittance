@@ -4,7 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.EXCHANGE_RATE_ENDPOINT;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -19,7 +20,7 @@ import com.amx.jax.exrateservice.service.ExchangeRateService;
 @SuppressWarnings("rawtypes")
 public class ExchangeRateController {
 
-	private Logger logger = Logger.getLogger(ExchangeRateController.class);
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	ExchangeRateService service;
