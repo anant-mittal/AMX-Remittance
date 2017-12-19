@@ -13,6 +13,7 @@ import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
+import com.bootloaderjs.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
@@ -97,6 +98,7 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID));
 		jaxMetaInfo.setLanguageId(new BigDecimal(JaxService.DEFAULT_LANGUAGE_ID));
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
+		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());

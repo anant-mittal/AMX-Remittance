@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.scope.TenantBean;
@@ -29,11 +30,8 @@ public class MetaController {
 	AppEnvironment env;
 
 	@Autowired
-	TenantBean foo;
-	
-	@Autowired
-	TenantBean bar;
-	
+	TenantBean tenantBean;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -43,12 +41,17 @@ public class MetaController {
 
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST })
-	public ResponseWrapper<Map<String, Object>> status() {
-		foo.sayHello();
+	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site) {
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
+
+		if (tenantBean.getName() == null) {
+			tenantBean.setName("site=" + site);
+		}
+
 		wrapper.getData().put("debug", env.isDebug());
 		wrapper.getData().put("appDebug", env.getAppDebug());
+		wrapper.getData().put("site", tenantBean.getName());
 		return wrapper;
 	}
 

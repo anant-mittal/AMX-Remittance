@@ -18,6 +18,15 @@ public class JaxMetaInfo {
 	private BigDecimal companyId;
 	private BigDecimal languageId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
+	private Long traceId;
+
+	public Long getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(Long traceId) {
+		this.traceId = traceId;
+	}
 
 	public BigDecimal getLanguageId() {
 		return languageId;

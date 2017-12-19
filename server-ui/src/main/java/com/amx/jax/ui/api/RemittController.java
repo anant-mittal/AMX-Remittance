@@ -96,6 +96,12 @@ public class RemittController {
 				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
 	}
 
+	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })
+	public ResponseWrapper<List<CurrencyMasterDTO>> fundSources() {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(
+				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
+	}
+
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {

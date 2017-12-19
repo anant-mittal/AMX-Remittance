@@ -16,7 +16,7 @@ public class WebRequestListener implements ServletRequestListener {
 	 * Reset the metadata for the current request thread
 	 */
 	public void requestDestroyed(ServletRequestEvent event) {
-		LOGGER.info("Trace Id in filter requestDestroyed {}", ContextUtil.getTraceId());
+		LOGGER.debug("Trace Id in filter requestDestroyed {}", ContextUtil.getTraceId());
 		ContextUtil.map().clear();
 	}
 
@@ -24,7 +24,7 @@ public class WebRequestListener implements ServletRequestListener {
 	 * Don't do anything when the request is initialized
 	 */
 	public void requestInitialized(ServletRequestEvent event) {
-		LOGGER.info("Trace Id in filter requestInitialized {}", ContextUtil.getTraceId());
+		LOGGER.debug("Trace Id in filter requestInitialized {}", ContextUtil.getTraceId());
 	}
 
 }

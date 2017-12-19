@@ -5,12 +5,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.ObjectFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.Scope;
 
 public class TenantScope implements Scope {
-
-	private SiteContextService siteContextService;
 
 	private Map<String, Object> scopedObjects = Collections.synchronizedMap(new HashMap<String, Object>());
 	private Map<String, Runnable> destructionCallbacks = Collections.synchronizedMap(new HashMap<String, Runnable>());
@@ -48,11 +45,11 @@ public class TenantScope implements Scope {
 
 	@Override
 	public String getConversationId() {
-		return currentSite().name();
-	}
-
-	private Site currentSite() {
-		return SiteContextService.currentSite();
+		if (TenantContextHolder.currentSite() == null) {
+			return null;
+		} else {
+			return TenantContextHolder.currentSite().getId();
+		}
 	}
 
 }

@@ -19,16 +19,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and().
-			authorizeRequests().antMatchers("/register/**").permitAll().and()
-			.authorizeRequests().antMatchers("/home/**").permitAll().and()
-			.authorizeRequests().antMatchers("/pub/**").permitAll().and()
-			.authorizeRequests().antMatchers("/login/**").permitAll().and()
-			.authorizeRequests().antMatchers("/api/**").authenticated().and()
-			.authorizeRequests().antMatchers("/app/**").authenticated().and().
-			formLogin().loginPage("/login")
-				.permitAll().failureUrl("/login?error").permitAll().and().
-			logout().permitAll()
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and().authorizeRequests()
+				.antMatchers("/register/**").permitAll().and().authorizeRequests().antMatchers("/home/**").permitAll()
+				.and().authorizeRequests().antMatchers("/pub/**").permitAll().and().authorizeRequests()
+				.antMatchers("/login/**").permitAll().and().authorizeRequests().antMatchers("/api/**").authenticated()
+				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().formLogin().loginPage("/login")
+				.permitAll().failureUrl("/login?error").permitAll().and().logout().permitAll()
 				.logoutSuccessUrl("/login?logout").permitAll().and().exceptionHandling().accessDeniedPage("/403").and()
 				.csrf().disable().headers().disable();
 	}
@@ -43,5 +39,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/resources/**", "/static/**", "/css/**", "/js/**", "/images/**");
 	}
-
 }

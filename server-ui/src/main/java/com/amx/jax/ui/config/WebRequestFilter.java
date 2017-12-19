@@ -1,18 +1,30 @@
 package com.amx.jax.ui.config;
 
 import java.io.IOException;
-import javax.servlet.*;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.scope.TenantContextHolder;
+import com.bootloaderjs.Constants;
 import com.bootloaderjs.ContextUtil;
+import com.bootloaderjs.Urly;
 
 @Component
 public class WebRequestFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
+
+	TenantContextHolder siteContext = new TenantContextHolder();
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -23,15 +35,33 @@ public class WebRequestFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 		long time = System.currentTimeMillis();
-		LOGGER.info("Trace Id in th begining {} {}", ContextUtil.getTraceId(),
-				((HttpServletRequest) req).getRequestURI());
+		HttpServletRequest request = ((HttpServletRequest) req);
+		String url = request.getRequestURI();
+		LOGGER.info("Trace Id in th begining {} {}", ContextUtil.getTraceId(), url);
+		String site = request.getParameter(TenantContextHolder.TENANT);
+		if (site == null) {
+			site = Urly.getSubDomainName(request.getServerName());
+		}
+
+		/**
+		 * Not able to use session scoped bean here so using typical session attribute;
+		 */
+		if (site == null) {
+			site = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
+		}
+
+		if (site != null && !Constants.BLANK.equals(site)) {
+			request.getSession().setAttribute(TenantContextHolder.TENANT, site);
+			siteContext.setSite(site);
+		}
+
+		TenantContextHolder.setCurrent(siteContext);
+
 		try {
 			chain.doFilter(req, resp);
 		} finally {
 			time = System.currentTimeMillis() - time;
-			LOGGER.trace("{}: {} ms ", ((HttpServletRequest) req).getRequestURI(), time);
-			LOGGER.info("Trace Id in filter end {} {}", ContextUtil.getTraceId(),
-					((HttpServletRequest) req).getRequestURI());
+			LOGGER.info("Trace Id in filter end {} {}  time taken was {}", ContextUtil.getTraceId(), url,time);
 		}
 	}
 

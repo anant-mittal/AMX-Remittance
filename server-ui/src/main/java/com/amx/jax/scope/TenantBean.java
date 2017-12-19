@@ -1,17 +1,22 @@
 package com.amx.jax.scope;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope(value = "tenant", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@TenantScoped
 public class TenantBean {
 
-	private final String name;
+	private String name;
 
-	public TenantBean(String name) {
+	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public TenantBean() {
 	}
 
 	public void sayHello() {

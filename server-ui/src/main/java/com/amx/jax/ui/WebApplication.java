@@ -9,8 +9,11 @@ import javax.servlet.ServletRequestListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
@@ -50,7 +53,7 @@ public class WebApplication extends SpringBootServletInitializer {
 		return applicationBuilder.sources(WebApplication.class);
 	}
 
-	@Bean
+	@Bean(name = "checkSession")
 	public FilterRegistrationBean filterRegistrationBean() {
 		WebRequestFilter f = new WebRequestFilter();
 		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
@@ -59,6 +62,16 @@ public class WebApplication extends SpringBootServletInitializer {
 		match.add("/*");
 		registrationBean.setUrlPatterns(match);
 		return registrationBean;
+	}
+
+	@Bean
+	@ConditionalOnBean(name = "checkSession")
+	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
+			SecurityProperties securityProperties) {
+		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean("checkSession");
+		registration.setOrder(securityProperties.getFilterOrder());
+		// registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
+		return registration;
 	}
 
 	@Bean
