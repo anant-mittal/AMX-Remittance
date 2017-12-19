@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.postman.client.PostManClient;
@@ -97,9 +98,15 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })
-	public ResponseWrapper<List<CurrencyMasterDTO>> fundSources() {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(
-				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
+	public ResponseWrapper<List<SourceOfIncomeDto>> fundSources() {
+		return new ResponseWrapper<List<SourceOfIncomeDto>>(
+				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
+	}
+
+	@RequestMapping(value = "/api/meta/tranx_purpose", method = { RequestMethod.POST })
+	public ResponseWrapper<List<SourceOfIncomeDto>> remittPurpose() {
+		return new ResponseWrapper<List<SourceOfIncomeDto>>(
+				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
 	}
 
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
