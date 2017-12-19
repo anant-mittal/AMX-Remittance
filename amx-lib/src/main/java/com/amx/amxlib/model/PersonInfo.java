@@ -1,5 +1,6 @@
 package com.amx.amxlib.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class PersonInfo {
@@ -16,6 +17,7 @@ public class PersonInfo {
 	private Date dateOfBirth;
 	private String alterEmailId;
 	private String mobile;
+	private BigDecimal nationalityId;
 	
 	public String getTitle() {
 		return title;
@@ -88,6 +90,12 @@ public class PersonInfo {
 	}
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}
+	public BigDecimal getNationalityId() {
+		return nationalityId;
+	}
+	public void setNationalityId(BigDecimal nationalityId) {
+		this.nationalityId = nationalityId;
 	}
 	
 }
