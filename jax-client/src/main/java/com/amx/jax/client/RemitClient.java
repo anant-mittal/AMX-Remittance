@@ -11,12 +11,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -96,5 +95,23 @@ public class RemitClient extends AbstractJaxServiceClient{
 		validateRemittanceDataValidation(response.getBody());
 		return response.getBody();
 	}
+	
+	public ApiResponse<SourceOfIncomeDto> getSourceOfIncome(){
+		ResponseEntity<ApiResponse<SourceOfIncomeDto>> response = null;
+		try {
+		HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
+		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/sourceofincome/";
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
+				});
+		
+		}catch(Exception e) {
+			log.error("exception in saveSecurityQuestions ", e);
+		}
+		return response.getBody();
+		
+		
+	}
+	
 
 }

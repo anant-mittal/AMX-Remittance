@@ -13,6 +13,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
@@ -136,10 +137,14 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			
 		case "city":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewCityDto>>(){});
-			break;		
+			break;	
 		case "remittance_transaction":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceTransactionResponsetModel>>(){});
 			break;		
+		case "sourceofincome":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<SourceOfIncomeDto>>(){});
+			break;	
+
 			
 	}
 		

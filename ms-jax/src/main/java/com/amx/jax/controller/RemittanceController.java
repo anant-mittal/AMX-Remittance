@@ -105,4 +105,15 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}
+	
+	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
+	public ApiResponse sourceofIncome() {
+		BigDecimal languageId=metaData.getLanguageId();
+		if(languageId==null || languageId.compareTo(BigDecimal.ZERO)==0) {
+			languageId=new BigDecimal(1);
+		}
+		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
+		return response;
+	}
+	
 }

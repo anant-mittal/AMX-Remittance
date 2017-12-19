@@ -1,19 +1,23 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.repository.IRemittanceTransactionDao;
+import com.amx.jax.repository.ISourceOfIncomeDao;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -24,6 +28,11 @@ public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
 	RemittanceTransactionManager remittanceTxnManger;
+	
+	
+	@Autowired
+	ISourceOfIncomeDao sourceOfIncomeDao;
+	
 
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -41,6 +50,24 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 
 	}
+	
+	
+	
+	
+	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
+		
+		List<SourceOfIncomeView> sourceOfIncomeList  = sourceOfIncomeDao.getSourceofIncome(languageId);
+		ApiResponse response = getBlackApiResponse();
+		if(sourceOfIncomeList.isEmpty()) {
+			throw new GlobalException("No data found");
+		}else {
+			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("sourceofincome");
+		return response;
+	}
+	
 
 	/*
 	 * public ApiResponse convert(List<RemittanceTransactionView> transctionDetail){
@@ -69,6 +96,21 @@ public class RemittanceTransactionService extends AbstractService {
 		response.getData().setType(model.getModelType());
 		return response;
 
+	}
+	
+	
+	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList){
+		List<SourceOfIncomeDto> list = new ArrayList<>();
+		for(SourceOfIncomeView model:sourceOfIncomeList) {
+			SourceOfIncomeDto dto = new SourceOfIncomeDto();
+			dto.setSourceofIncomeId(model.getSourceofIncomeId());
+			dto.setShortDesc(model.getShortDesc());
+			dto.setLanguageId(model.getLanguageId());
+			dto.setDescription(model.getDescription());
+			list.add(dto);
+		}
+		return list;
+		
 	}
 
 }
