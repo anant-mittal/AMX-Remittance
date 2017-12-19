@@ -12,6 +12,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.CallableStatementCreator;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
@@ -119,6 +120,62 @@ public class ApplicationProcedureDao {
 		return addtionalProcValues;
 	}
 	
+	//int countryId, int companyId, int documentId, int financialYear, String processIn, BigDecimal branchId
+	
+	public Map<String ,Object> getDocumentSeriality(BigDecimal applCountryId,BigDecimal companyId,
+			BigDecimal documentId,BigDecimal financialYear,String processIn,BigDecimal branchId){
+		
+		
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO countryId :" + applCountryId);
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO companyId :" + companyId);
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO documentId :" + documentId);
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO financialYear :" + financialYear);
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO processIn :" + processIn);
+		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO branchId :" + branchId);
+		
+		Map<String, Object> output =null;
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
+					new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.VARCHAR),
+					new SqlOutParameter("P_DOC_NO",Types.BIGINT),
+					new SqlOutParameter("P_ERROR_FLAG",Types.VARCHAR),
+					new SqlOutParameter("P_ERROR_MESG",Types.VARCHAR));
+			
+			
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_TO_GEN_NEXT_DOC_SERIAL_NO(?,?,?,?,?,?,?,?,?)}";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applCountryId);
+					cs.setBigDecimal(2, branchId);
+					cs.setBigDecimal(3, companyId);
+					cs.setBigDecimal(4, documentId);
+					cs.setBigDecimal(5, financialYear);
+					cs.setString(6, processIn);
+					cs.registerOutParameter(7, java.sql.Types.INTEGER);
+					cs.registerOutParameter(8, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				
+				}
+
+			}, declareInAndOutputParameters);
+			
+			logger.info("Out put Parameters :" + output.toString());
+			
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
 	
 /*	
 	@Transactional
