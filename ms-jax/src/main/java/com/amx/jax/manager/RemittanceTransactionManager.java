@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
@@ -82,6 +83,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private ParameterService parameterService;
+
+	@Autowired
+	private RemittanceApplicationManager remitAppManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -323,5 +327,11 @@ public class RemittanceTransactionManager {
 		output.put("12", monthlyCount);
 		output.put("11", weeklyCount);
 		return output;
+	}
+
+	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
+		remitAppManager.createRemittanceApplication(model);
+		return null;
+		
 	}
 }

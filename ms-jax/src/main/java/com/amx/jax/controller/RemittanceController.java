@@ -115,5 +115,11 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
 		return response;
 	}
-	
+
+	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
+	public ApiResponse saveApplication(RemittanceTransactionRequestModel model) {
+		logger.info("In Save-Application with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.saveApplication(model);
+		return response;
+	}
 }

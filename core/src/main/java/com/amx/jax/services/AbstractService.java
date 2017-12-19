@@ -3,7 +3,6 @@ package com.amx.jax.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseData;
 

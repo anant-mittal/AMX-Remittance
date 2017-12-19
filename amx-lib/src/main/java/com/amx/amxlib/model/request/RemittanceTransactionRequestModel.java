@@ -78,4 +78,11 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.customerId = customerId;
 	}
 
+	@Override
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", customerId=" + customerId
+				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+	}
+
 }

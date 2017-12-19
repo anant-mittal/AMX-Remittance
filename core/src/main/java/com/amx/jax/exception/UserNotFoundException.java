@@ -1,7 +1,6 @@
 package com.amx.jax.exception;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.jax.exception.AbstractException;
 
 public class UserNotFoundException extends AbstractException {
 

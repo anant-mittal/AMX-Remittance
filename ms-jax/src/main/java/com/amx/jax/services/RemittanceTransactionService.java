@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
@@ -111,6 +112,15 @@ public class RemittanceTransactionService extends AbstractService {
 		}
 		return list;
 		
+	}
+
+	public ApiResponse saveApplication(RemittanceTransactionRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplication(model);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(model.getModelType());
+		return response;
 	}
 
 }
