@@ -21,8 +21,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.springframework.boot.autoconfigure.jms.JmsProperties.DeliveryMode;
-
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CompanyMaster;
 import com.amx.jax.dbmodel.CountryBranch;

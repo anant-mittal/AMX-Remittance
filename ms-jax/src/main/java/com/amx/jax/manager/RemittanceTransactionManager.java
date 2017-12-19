@@ -87,22 +87,27 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private RemittanceApplicationManager remitAppManager;
 
+	protected Map<String, Object> validatedObjects = new HashMap<>();
+
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
 		BigDecimal beneId = model.getBeneId();
 		Customer customer = custDao.getCustById(model.getCustomerId());
+		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(beneId);
 		validateBlackListedBene(beneficiary);
+		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, String> beneBankDetails = getBeneBankDetails(beneficiary);
 		Map<String, Object> routingDetails = this.getRoutingDetails(beneBankDetails);
-		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("1").toString());
-		BigDecimal routingBankId = new BigDecimal(routingDetails.get("3").toString());
-		BigDecimal rountingBankbranchId = new BigDecimal(routingDetails.get("4").toString());
-		BigDecimal remittanceMode = new BigDecimal(routingDetails.get("5").toString());
-		BigDecimal deliveryMode = new BigDecimal(routingDetails.get("6").toString());
+		validatedObjects.put("ROUTINGDETAILS", routingDetails);
+		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
+		BigDecimal routingBankId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_ID").toString());
+		BigDecimal rountingBankbranchId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_BRANCH_ID").toString());
+		BigDecimal remittanceMode = new BigDecimal(routingDetails.get("P_REMITTANCE_MODE_ID").toString());
+		BigDecimal deliveryMode = new BigDecimal(routingDetails.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
@@ -257,8 +262,11 @@ public class RemittanceTransactionManager {
 				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT));
 		List<SqlParameter> ouptutParams = new ArrayList<>();
 		ouptutParams.addAll(declareInAndOutputParameters);
+		String[] outParams = { "P_SERVICE_MASTER_ID", "P_ROUTING_COUNTRY_ID", "P_ROUTING_BANK_ID",
+				"P_ROUTING_BANK_BRANCH_ID", "P_REMITTANCE_MODE_ID", "P_DELIVERY_MODE_ID", "P_SWIFT",
+				"P_ERROR_MESSAGE" };
 		for (int i = 1; i <= 8; i++) {
-			ouptutParams.add(new SqlOutParameter(i + "", Types.BIGINT));
+			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.BIGINT));
 		}
 
 		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
@@ -330,8 +338,9 @@ public class RemittanceTransactionManager {
 	}
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-		remitAppManager.createRemittanceApplication(model);
+		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remitAppManager.createRemittanceApplication(model,validatedObjects, validationResults);
 		return null;
-		
+
 	}
 }
