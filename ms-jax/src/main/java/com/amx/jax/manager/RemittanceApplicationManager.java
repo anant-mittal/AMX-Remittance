@@ -17,27 +17,33 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Component
 public class RemittanceApplicationManager {
 
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
 
 	/**
-	 * @param validatedObjects
+	 * @param validatedObjects:
 	 *            - contains objects obtained after being passed through beneficiary
-	 *            validation
-	 *            validationResults- validation result like exchange
-	 */
+	 *            validation process, validationResults- validation result like exchange
+	 *            rate, net amount etc
+	 **/
 	public void createRemittanceApplication(RemittanceTransactionRequestModel model,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults) {
 
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
-		// set document code and number
+		//TODO set document code and number
+
 		CurrencyMasterModel forcurrencymaster = new CurrencyMasterModel();
 		forcurrencymaster.setCurrencyId(currencyId);
 		remittanceApplication.setExCurrencyMasterByForeignCurrencyId(forcurrencymaster);
+		
+		CurrencyMasterModel commisioncurrencymaster = new CurrencyMasterModel();
+		commisioncurrencymaster.setCurrencyId(currencyId);
+		remittanceApplication.setExCurrencyMasterByLocalCommisionCurrencyId(commisioncurrencymaster);
 
 	}
 }
