@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -34,6 +35,7 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 //			metaData.setCountryId(metaInfoMap.getCountryId());
 			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
 			BeanUtils.copyProperties(metaData, metaInfoMap);
+			MDC.put("customer-id", metaData.getCustomerId());
 		}
 
 		return super.preHandle(request, response, handler);
