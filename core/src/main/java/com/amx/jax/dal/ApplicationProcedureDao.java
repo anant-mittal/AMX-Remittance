@@ -600,22 +600,19 @@ public class ApplicationProcedureDao {
 	 * @return
 	 */
 	@Transactional
-	public Map<String, Object> toFetchSwiftBankProcedure(BigDecimal applicationCountryId, BigDecimal routingCountryId,
-			BigDecimal currencyId, BigDecimal remittanceId, BigDecimal deliveryId, String fieldName,
-			String beneficiarySwiftBank, BigDecimal beneBankCountryId) {
-
-		HashMap<String, String> swiftProcedureValues = new HashMap<String, String>();
-		logger.info("======Start toFtechSwiftBankProcedure ========");
-		logger.info("Procedure Name = EX_P_CHECK_SWIFT_BANK ");
-		logger.info("applicationCountryId :" + applicationCountryId);
-		logger.info("routingCountryId :" + routingCountryId);
-		logger.info("currencyId :" + currencyId);
-		logger.info("remittanceId :" + remittanceId);
-		logger.info("deliveryId :" + deliveryId);
-		logger.info("fieldName :" + fieldName);
-		logger.info("beneficiarySwiftBank :" + beneficiarySwiftBank);
-		logger.info("BeneBankCountry :" + beneBankCountryId);
-		logger.info("======End toFtechSwiftBankProcedure ========");
+	public Map<String, Object> toFetchSwiftBankProcedure(HashMap<String, Object> inputValues){
+			
+			BigDecimal applicationCountyId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+			BigDecimal routingCountryId= (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal currencyId= (BigDecimal) inputValues.get("P_CURRENCY_ID");
+			BigDecimal remittanceId= (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryId= (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+			BigDecimal beneBankCountryId =( BigDecimal) inputValues.get("P_BENE_BANK_COUNTRY_ID");
+			String fieldName =inputValues.get("P_FIELD_NAME")==null?null:inputValues.get("P_FIELD_NAME").toString();  
+			String beneficiarySwiftBank =inputValues.get("P_BENEFICIARY_SWIFT_CODE")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_CODE").toString();  
+			
+		logger.info("Procedure Name = EX_P_CHECK_SWIFT_BANK :"+inputValues.toString());
+		
 		Map<String, Object> output = null;
 
 		try {
@@ -634,7 +631,7 @@ public class ApplicationProcedureDao {
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
 					String proc = "{call EX_P_CHECK_SWIFT_BANK(?, ?, ?, ?, ?, ?, ?, ?, ?) } ";
 					CallableStatement cs = con.prepareCall(proc);
-					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(1, applicationCountyId);
 					cs.setBigDecimal(2, routingCountryId);
 					cs.setBigDecimal(3, currencyId);
 					cs.setBigDecimal(4, remittanceId);
