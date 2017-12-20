@@ -3,7 +3,7 @@ package com.bootloaderjs;
 public class Random {
 
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-	private static final String ALPHA_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+	private static final String ALPHA_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 	public static int getInt(int min, int max) {
 		return (int) (Math.random() * (max - min + 1) + min);

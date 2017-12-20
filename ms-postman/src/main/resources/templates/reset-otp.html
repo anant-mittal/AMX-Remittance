@@ -24,7 +24,7 @@
 							<td class="content-wrap">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td class="content-block">Your OTP is <strong  th:text="${otp}"></strong>.
+										<td class="content-block">Your OTP is <strong  th:text="${data.otpPrefix} +'-'+${data.otp}"></strong>.
 										</td>
 									</tr>
 									<tr>
@@ -33,7 +33,7 @@
 									</tr>
 									<tr>
 										<td class="content-block">
-											<a href="#" class="btn-primary" th:text="${otp}" ></a>
+											<a href="#" class="btn-primary" th:text="${data.otpPrefix} +'-'+${data.otp}" ></a>
 										</td>
 									</tr>
 									<tr>

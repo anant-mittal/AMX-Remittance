@@ -29,7 +29,7 @@ public class UserService {
 			sms.setTo("7710072192");
 			sms.setText("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
-			sms.getModel().put("otp", model.getOtp());
+			sms.getModel().put("data", model);
 			postManClient.sendSMS(sms);
 		} catch (Exception e) {
 			log.error("Error while sending OTP SMS to 7710072192", e);
@@ -45,7 +45,7 @@ public class UserService {
 		}
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
-		email.getModel().put("otp", model.getOtp());
+		email.getModel().put("data", model);
 
 		try {
 			postManClient.sendEmail(email);
