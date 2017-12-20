@@ -9,6 +9,16 @@ public class CivilIdOtpModel extends AbstractModel {
 	@JsonIgnore
 	private String hashedOtp;
 
+	private String otpPrefix = null;
+
+	public String getOtpPrefix() {
+		return otpPrefix;
+	}
+
+	public void setOtpPrefix(String otpPrefix) {
+		this.otpPrefix = otpPrefix;
+	}
+
 	private String email;
 
 	private String mobile;

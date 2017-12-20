@@ -2,14 +2,23 @@ package com.amx.jax.ui.model;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 
-public class LoginData  {
+public class LoginData {
 
 	private String nounce = null;
 	private String otp = null;
+	private String otpPrefix = null;
 	private String imageId = null;
 	private String imageCaption = null;
 	private String question = null;
 	private SecurityQuestionModel answer = null;
+
+	public String getOtpPrefix() {
+		return otpPrefix;
+	}
+
+	public void setOtpPrefix(String otpPrefix) {
+		this.otpPrefix = otpPrefix;
+	}
 
 	public String getOtp() {
 		return otp;

@@ -145,12 +145,14 @@ public class LoginService {
 			try {
 				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity)
 						.getResult();
+
 				// Check if response was successful
 				// append info in response data
+				userSession.setOtpPrefix();
+				model.setOtpPrefix(userSession.getOtpPrefix());
+				wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
 				wrapper.getData().setOtp(model.getOtp());
 				userSession.setUserid(identity);
-				userSession.setOtp(model.getOtp());
-
 				userService.notifyResetOTP(model);
 
 				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");

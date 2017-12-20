@@ -52,14 +52,18 @@ public class RegistrationService {
 			if (model.getIsActiveCustomer()) {
 				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 			} else {
-				userService.notifyResetOTP(model);
+				userSessionInfo.setOtpPrefix();
+				model.setOtpPrefix(userSessionInfo.getOtpPrefix());
 
+				userService.notifyResetOTP(model);
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());
+
+				wrapper.getData().setOtpPrefix(userSessionInfo.getOtpPrefix());
 			}
 			userSessionInfo.setUserid(civilid);
-			userSessionInfo.setOtp(model.getOtp());
+
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
 		} catch (Exception e) {
