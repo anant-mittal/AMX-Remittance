@@ -25,7 +25,7 @@ import com.amx.jax.constant.ConstantDocument;
 
 @Component
 public class ApplicationProcedureDao {
-	
+
 	private Logger logger = Logger.getLogger(ApplicationProcedureDao.class);
 
 	@Autowired
@@ -47,12 +47,13 @@ public class ApplicationProcedureDao {
 	 * @param deliveryMode
 	 * @return
 	 */
-	
+
 	@Transactional
-	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(BigDecimal beneficaryMasterId, BigDecimal beneficaryBankId, BigDecimal beneficaryBankBranchId,
-			BigDecimal beneAccNumSeqId, BigDecimal routingCountry, BigDecimal routingBank, BigDecimal routingBranch, BigDecimal serviceMasterId, BigDecimal applicationCountryId,
-			BigDecimal currencyId, BigDecimal remitMode, BigDecimal deliveryMode) {
-		
+	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(BigDecimal beneficaryMasterId,
+			BigDecimal beneficaryBankId, BigDecimal beneficaryBankBranchId, BigDecimal beneAccNumSeqId,
+			BigDecimal routingCountry, BigDecimal routingBank, BigDecimal routingBranch, BigDecimal serviceMasterId,
+			BigDecimal applicationCountryId, BigDecimal currencyId, BigDecimal remitMode, BigDecimal deliveryMode) {
+
 		logger.info("=====EX_GET_ADDL_BENE_DETAILS =Start toFetchDetilaFromAddtionalBenficiaryDetails ========");
 		logger.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS ");
 		logger.info("beneficaryMasterId :" + beneficaryMasterId);
@@ -68,39 +69,31 @@ public class ApplicationProcedureDao {
 		logger.info("remitMode :" + remitMode);
 		logger.info("deliveryMode :" + deliveryMode);
 		logger.info("======End toFetchDetilaFromAddtionalBenficiaryDetails ========");
-		
-		Map<String, Object> output =null;
+
+		Map<String, Object> output = null;
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlOutParameter("P_BENE_BANK_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_BRANCH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_STATE_ID", Types.VARCHAR),
-					new SqlOutParameter("P_BENE_DISTRICT_ID", Types.VARCHAR), 
+					new SqlOutParameter("P_BENE_DISTRICT_ID", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_CITY_ID", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_FIRST_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_SECOND_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_THIRD_NAME", Types.VARCHAR),
-					new SqlOutParameter("P_BENEFICIARY_FOURTH_NAME", Types.VARCHAR), 
+					new SqlOutParameter("P_BENEFICIARY_FOURTH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_FIFTH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR));
-			
-		        output = jdbcTemplate.call(new CallableStatementCreator() {
+
+			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					
+
 					String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )} ";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, beneficaryMasterId);
@@ -133,9 +126,7 @@ public class ApplicationProcedureDao {
 			}, declareInAndOutputParameters);
 
 			logger.info("EX_GET_ADDL_BENE_DETAILS Out put Parameters :" + output.toString());
-			
-			
-			
+
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -153,31 +144,24 @@ public class ApplicationProcedureDao {
 	 * @param branchId
 	 * @return
 	 */
-	public Map<String ,Object> getDocumentSeriality(BigDecimal applCountryId,BigDecimal companyId,
-			BigDecimal documentId,BigDecimal financialYear,String processIn,BigDecimal branchId){
-		
-		
+	public Map<String, Object> getDocumentSeriality(BigDecimal applCountryId, BigDecimal companyId,
+			BigDecimal documentId, BigDecimal financialYear, String processIn, BigDecimal branchId) {
+
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO countryId :" + applCountryId);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO companyId :" + companyId);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO documentId :" + documentId);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO financialYear :" + financialYear);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO processIn :" + processIn);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO branchId :" + branchId);
-		
-		Map<String, Object> output =null;
+
+		Map<String, Object> output = null;
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.VARCHAR),
-					new SqlOutParameter("P_DOC_NO",Types.BIGINT),
-					new SqlOutParameter("P_ERROR_FLAG",Types.VARCHAR),
-					new SqlOutParameter("P_ERROR_MESG",Types.VARCHAR));
-			
-			
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.VARCHAR),
+					new SqlOutParameter("P_DOC_NO", Types.BIGINT), new SqlOutParameter("P_ERROR_FLAG", Types.VARCHAR),
+					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));
+
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
@@ -194,32 +178,32 @@ public class ApplicationProcedureDao {
 					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
 					cs.execute();
 					return cs;
-				
+
 				}
 
 			}, declareInAndOutputParameters);
-			
+
 			logger.info("Out put Parameters :" + output.toString());
-			
+
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			logger.info("Out put Parameters :" + e.getMessage());
 		}
 		return output;
 	}
-	
+
 	/**
 	 * 
 	 * @param inputValues
 	 * @param listAdditionalBankDataTable
 	 * @return
 	 */
-	
 
 	@Transactional
-	public HashMap<String ,Object> exPBankIndicatorsProcedureCheck(HashMap<String, String> inputValues, List<AddAdditionalBankData> listAdditionalBankDataTable){
+	public HashMap<String, Object> exPBankIndicatorsProcedureCheck(HashMap<String, String> inputValues,
+			List<AddAdditionalBankData> listAdditionalBankDataTable) {
 		HashMap<String, Object> addtionalProcValues = new HashMap<>();
-		
+
 		HashMap<String, String> amicCodeLst = new HashMap<String, String>();
 		for (AddAdditionalBankData dynamicList : listAdditionalBankDataTable) {
 			String amiecdec = dynamicList.getVariableName();
@@ -249,29 +233,28 @@ public class ApplicationProcedureDao {
 				}
 			}
 		}
-		
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-				new SqlParameter(Types.BIGINT), //1
-				new SqlParameter(Types.BIGINT), //2
-				new SqlParameter(Types.BIGINT), //3
-				new SqlParameter(Types.BIGINT), //4
-				new SqlParameter(Types.BIGINT), //5
-				new SqlParameter(Types.BIGINT), //6
-				new SqlParameter(Types.VARCHAR), //7
-				new SqlOutParameter("P_ERROR_MESSAGE1",Types.VARCHAR),  //8
-				new SqlParameter(Types.VARCHAR),//9
-				new SqlOutParameter("P_ERROR_MESSAGE2",Types.VARCHAR),//OUT PUT -10
-				new SqlParameter(Types.VARCHAR), //11
-				new SqlOutParameter("P_ERROR_MESSAGE3",Types.VARCHAR),//OUT PUT -12
-				new SqlParameter(Types.VARCHAR), //13
-				new SqlOutParameter("P_ERROR_MESSAGE4",Types.VARCHAR),//OUT PUT -14
-				new SqlParameter(Types.VARCHAR), //15
-				new SqlOutParameter("P_ERROR_MESSAGE5",Types.VARCHAR));//OUT PUT -16
-			
+
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+				new SqlParameter(Types.BIGINT), // 2
+				new SqlParameter(Types.BIGINT), // 3
+				new SqlParameter(Types.BIGINT), // 4
+				new SqlParameter(Types.BIGINT), // 5
+				new SqlParameter(Types.BIGINT), // 6
+				new SqlParameter(Types.VARCHAR), // 7
+				new SqlOutParameter("P_ERROR_MESSAGE1", Types.VARCHAR), // 8
+				new SqlParameter(Types.VARCHAR), // 9
+				new SqlOutParameter("P_ERROR_MESSAGE2", Types.VARCHAR), // OUT PUT -10
+				new SqlParameter(Types.VARCHAR), // 11
+				new SqlOutParameter("P_ERROR_MESSAGE3", Types.VARCHAR), // OUT PUT -12
+				new SqlParameter(Types.VARCHAR), // 13
+				new SqlOutParameter("P_ERROR_MESSAGE4", Types.VARCHAR), // OUT PUT -14
+				new SqlParameter(Types.VARCHAR), // 15
+				new SqlOutParameter("P_ERROR_MESSAGE5", Types.VARCHAR));// OUT PUT -16
+
 		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 			@Override
 			public CallableStatement createCallableStatement(Connection con) throws SQLException {
-				
+
 				String proc = " { call EX_P_BANK_INDICATORS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 				CallableStatement cs = con.prepareCall(proc);
 				cs.setBigDecimal(1, new BigDecimal(inputValues.get("P_APPLICATION_COUNTRY_ID")));
@@ -297,45 +280,42 @@ public class ApplicationProcedureDao {
 		}, declareInAndOutputParameters);
 
 		logger.info("EX_P_BANK_INDICATORS Out put Parameters :" + output.toString());
-		
+
 		return addtionalProcValues;
 	}
-	
+
 	/**
 	 * 
 	 * @param inputValue
 	 * @return
 	 */
 	@Transactional
-	public Map<String ,Object> getRoutingBankSetupDetails(HashMap<String, String> inputValue){
-		
-		logger.info("EX_GET_ROUTING_SET_UP_OTH IN VALUES :"+inputValue.toString());
-		
-		
-		Map<String, Object> output =null;
-		
+	public Map<String, Object> getRoutingBankSetupDetails(HashMap<String, String> inputValue) {
+
+		logger.info("EX_GET_ROUTING_SET_UP_OTH IN VALUES :" + inputValue.toString());
+
+		Map<String, Object> output = null;
+
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.BIGINT), //1
-					new SqlParameter(Types.VARCHAR),//2
-					new SqlParameter(Types.BIGINT), //3
-					new SqlParameter(Types.BIGINT), //4
-					new SqlParameter(Types.BIGINT),	//5
-					new SqlParameter(Types.VARCHAR),//6
-					new SqlParameter(Types.BIGINT),	//7
-					new SqlParameter(Types.VARCHAR),//8
-					new SqlParameter(Types.BIGINT),	//9
-					new SqlOutParameter("P_SERVICE_MASTER_ID",Types.BIGINT), //10
-					new SqlOutParameter("P_ROUTING_COUNTRY_ID",Types.BIGINT), //11
-					new SqlOutParameter("P_ROUTING_BANK_ID",Types.BIGINT), //12
-					new SqlOutParameter("P_ROUTING_BANK_BRANCH_ID",Types.BIGINT), //13
-					new SqlOutParameter("P_REMITTANCE_MODE_ID",Types.BIGINT), //14
-					new SqlOutParameter("P_DELIVERY_MODE_ID",Types.BIGINT), //15
-					new SqlOutParameter("P_BENEFICIARY_SWIFT_BANK1",Types.VARCHAR), //16
-					new SqlOutParameter("P_ERROR_MESSAGE",Types.VARCHAR) //17
-					);
-			
-			
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.VARCHAR), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 4
+					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.VARCHAR), // 6
+					new SqlParameter(Types.BIGINT), // 7
+					new SqlParameter(Types.VARCHAR), // 8
+					new SqlParameter(Types.BIGINT), // 9
+					new SqlOutParameter("P_SERVICE_MASTER_ID", Types.BIGINT), // 10
+					new SqlOutParameter("P_ROUTING_COUNTRY_ID", Types.BIGINT), // 11
+					new SqlOutParameter("P_ROUTING_BANK_ID", Types.BIGINT), // 12
+					new SqlOutParameter("P_ROUTING_BANK_BRANCH_ID", Types.BIGINT), // 13
+					new SqlOutParameter("P_REMITTANCE_MODE_ID", Types.BIGINT), // 14
+					new SqlOutParameter("P_DELIVERY_MODE_ID", Types.BIGINT), // 15
+					new SqlOutParameter("P_BENEFICIARY_SWIFT_BANK1", Types.VARCHAR), // 16
+					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR) // 17
+			);
+
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
@@ -349,7 +329,7 @@ public class ApplicationProcedureDao {
 					cs.setString(6, inputValue.get("P_BENE_BANK_ACCOUNT"));
 					cs.setBigDecimal(7, new BigDecimal(inputValue.get("P_CUSTOMER_ID")));
 					cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE"));
-					cs.setBigDecimal(9, new BigDecimal(inputValue.get("P_CURRENCY_ID"))); 
+					cs.setBigDecimal(9, new BigDecimal(inputValue.get("P_CURRENCY_ID")));
 					// Out Parameters
 					cs.registerOutParameter(10, java.sql.Types.INTEGER);
 					cs.registerOutParameter(11, java.sql.Types.INTEGER);
@@ -364,15 +344,16 @@ public class ApplicationProcedureDao {
 				}
 
 			}, declareInAndOutputParameters);
-			
+
 			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
-			
+
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			logger.info("Out put Parameters :" + e.getMessage());
 		}
 		return output;
 	}
+
 	/**
 	 * 
 	 * @param appLicationCountryId
@@ -405,90 +386,86 @@ public class ApplicationProcedureDao {
 	 * @param beneSwiftBank1
 	 * @param beneSwiftBank2
 	 * @param errorMessage
-	 * @return
-	 * Additional check proedure
+	 * @return Additional check proedure
 	 */
-	
+
 	@Transactional
-	public Map<String ,Object> getAdditionalCheckProcedure(BigDecimal appLicationCountryId, BigDecimal customerId, BigDecimal branchId, BigDecimal beneId, BigDecimal beneCountryId, BigDecimal beneBankId,
-			BigDecimal beneBankBranchId, String beneAccountNo, BigDecimal serviceMasterId, BigDecimal routingCountryId, BigDecimal routingBankId, BigDecimal routingBankBranchId,
-			BigDecimal remittanceModeId, BigDecimal deliveryModeId, BigDecimal sourceOfIncomeId, BigDecimal exchangeRateApplied, BigDecimal localCommisionCurrencyId, BigDecimal localCommisionAmount,
-			BigDecimal localChargeCurrencyId, BigDecimal localchargeAmount, BigDecimal localDelivCurrencyId, BigDecimal localDeliAmount, BigDecimal serviceProvider, BigDecimal foreignCurrencyId,
-			BigDecimal foreignTrnxAmount, BigDecimal localNetCurrecnyId, BigDecimal localNetTrnxAmount, String beneSwiftBank1, String beneSwiftBank2, String errorMessage){
-		logger.info("======Start getAdditionalCheckProcedure ========");
-		logger.info("Procedure Name =EX_APPL_ADDL_CHECKS");
-		logger.info("appLicationCountryId :" + appLicationCountryId);
-		logger.info("customerId :" + customerId);
-		logger.info("branchId :" + branchId);
-		logger.info("beneId :" + beneId);
-		logger.info("beneCountryId :" + beneCountryId);
-		logger.info("beneBankId :" + beneBankId);
-		logger.info("beneBankBranchId :" + beneBankBranchId);
-		logger.info("beneAccountNo :" + beneAccountNo);
-		logger.info("serviceMasterId :" + serviceMasterId);
-		logger.info("routingCountryId :" + routingCountryId);
-		logger.info("routingBankId :" + routingBankId);
-		logger.info("routingBankBranchId :" + routingBankBranchId);
-		logger.info("remittanceModeId :" + remittanceModeId);
-		logger.info("deliveryModeId :" + deliveryModeId);
-		logger.info("sourceOfIncomeId :" + sourceOfIncomeId);
-		logger.info("exchangeRateApplied :" + exchangeRateApplied);
-		logger.info("localCommisionCurrencyId :" + localCommisionCurrencyId);
-		logger.info("localCommisionAmount :" + localCommisionAmount);
-		logger.info("localChargeCurrencyId :" + localChargeCurrencyId);
-		logger.info("localchargeAmount :" + localchargeAmount);
-		logger.info("localDelivCurrencyId :" + localDelivCurrencyId);
-		logger.info("localDeliAmount :" + localDeliAmount);
-		logger.info("serviceProvider :" + serviceProvider);
-		logger.info("foreignCurrencyId :" + foreignCurrencyId);
-		logger.info("foreignTrnxAmount :" + foreignTrnxAmount);
-		logger.info("localNetCurrecnyId :" + localNetCurrecnyId);
-		logger.info("localNetTrnxAmount :" + localNetTrnxAmount);
-		logger.info("beneSwiftBank1 :" + beneSwiftBank1);
-		logger.info("beneSwiftBank2 :" + beneSwiftBank2);
-		logger.info("errorMessage :" + errorMessage);
-		logger.info("======End getAdditionalCheckProcedure ========");
-		Map<String, Object> output =null;
+	public Map<String, Object> getAdditionalCheckProcedure(HashMap<String, Object> inputValues){
 		
+		logger.info("======Start getAdditionalCheckProcedure EX_APPL_ADDL_CHECKS========:"+inputValues.toString());
+		
+		BigDecimal appLicationCountryId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal customerId =(BigDecimal) inputValues.get("P_CUSTOMER_ID");
+		BigDecimal branchId =(BigDecimal) inputValues.get("P_BRANCH_ID");
+		BigDecimal beneId =(BigDecimal) inputValues.get("P_BENE_ID");
+		
+		BigDecimal beneCountryId = (BigDecimal) inputValues.get("P_BENE_COUNTRY_ID");
+		BigDecimal beneBankId=(BigDecimal) inputValues.get("P_BENE_BANK_ID");
+		BigDecimal beneBankBranchId=(BigDecimal) inputValues.get("P_BENE_BANK_BRANCH_ID");
+		String beneAccountNo=inputValues.get("P_BENE_ACCOUNT_NO")==null?null:inputValues.get("P_BENE_ACCOUNT_NO").toString();
+		BigDecimal serviceMasterId=(BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
+		BigDecimal routingCountryId=(BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingBankId=(BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankBranchId=(BigDecimal) inputValues.get("P_ROUTING_BANK_BRANCH_ID");
+		BigDecimal remittanceModeId=(BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryModeId=(BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+		BigDecimal sourceOfIncomeId=(BigDecimal) inputValues.get("P_SOURCE_OF_INCOME_ID");
+		BigDecimal exchangeRateApplied=(BigDecimal) inputValues.get("P_EXCHANGE_RATE_APPLIED");
+		BigDecimal localCommisionCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_COMMISION_CURRENCY_ID");
+		BigDecimal localCommisionAmount=(BigDecimal) inputValues.get("P_LOCAL_COMMISION_AMOUNT");
+		BigDecimal localChargeCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_CHARGE_CURRENCY_ID");
+		BigDecimal localchargeAmount=(BigDecimal) inputValues.get("P_LOCAL_CHARGE_AMOUNT");
+		BigDecimal localDelivCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_DELIVERY_CURRENCY_ID");
+		BigDecimal localDeliAmount=(BigDecimal) inputValues.get("P_LOCAL_DELIVERY_AMOUNT");
+		BigDecimal serviceProvider=(BigDecimal) inputValues.get("P_SERVICE_PROVIDER");
+		BigDecimal foreignCurrencyId=(BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal foreignTrnxAmount=(BigDecimal) inputValues.get("P_FOREIGN_TRANX_AMOUNT");
+		BigDecimal localNetCurrecnyId=(BigDecimal) inputValues.get("P_LOCAL_NET_CURRENCY_ID");
+		BigDecimal localNetTrnxAmount=(BigDecimal) inputValues.get("P_LOCAL_NET_TRANX_AMOUNT");
+		String beneSwiftBank1=inputValues.get("P_BENEFICIARY_SWIFT_BANK1")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_BANK1").toString();
+		String beneSwiftBank2=inputValues.get("P_BENEFICIARY_SWIFT_BANK2")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_BANK2").toString();
+		
+		
+		
+		Map<String, Object> output = null;
+
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.BIGINT), //1
-					new SqlParameter(Types.BIGINT),//2
-					new SqlParameter(Types.BIGINT), //3
-					new SqlParameter(Types.BIGINT), //4
-					new SqlParameter(Types.BIGINT),	//5
-					new SqlParameter(Types.VARCHAR),//6
-					new SqlParameter(Types.BIGINT),	//7
-					new SqlParameter(Types.VARCHAR),//8
-					new SqlParameter(Types.BIGINT),	//9
-					new SqlParameter(Types.BIGINT),	//10
-					new SqlParameter(Types.BIGINT),	//11
-					new SqlParameter(Types.BIGINT),	//12
-					new SqlParameter(Types.BIGINT),	//13
-					new SqlParameter(Types.BIGINT),	//14
-					new SqlParameter(Types.BIGINT),	//15
-					new SqlParameter(Types.BIGINT),	//16
-					new SqlParameter(Types.BIGINT),	//17
-					new SqlParameter(Types.BIGINT),	//18
-					new SqlParameter(Types.BIGINT),	//19
-					new SqlParameter(Types.BIGINT),	//20
-					new SqlParameter(Types.BIGINT),	//21
-					new SqlParameter(Types.BIGINT),	//22
-					new SqlParameter(Types.BIGINT),	//23
-					new SqlParameter(Types.BIGINT),	//24
-					new SqlParameter(Types.BIGINT),	//25
-					new SqlParameter(Types.BIGINT),	//26
-					new SqlParameter(Types.BIGINT),	//27
-					new SqlParameter(Types.VARCHAR),//28
-					new SqlParameter(Types.VARCHAR),//29
-					new SqlOutParameter("P_ERROR_MESSAGE",Types.VARCHAR) //30
-					);
-			
-			
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.BIGINT), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 4
+					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.VARCHAR), // 6
+					new SqlParameter(Types.BIGINT), // 7
+					new SqlParameter(Types.VARCHAR), // 8
+					new SqlParameter(Types.BIGINT), // 9
+					new SqlParameter(Types.BIGINT), // 10
+					new SqlParameter(Types.BIGINT), // 11
+					new SqlParameter(Types.BIGINT), // 12
+					new SqlParameter(Types.BIGINT), // 13
+					new SqlParameter(Types.BIGINT), // 14
+					new SqlParameter(Types.BIGINT), // 15
+					new SqlParameter(Types.BIGINT), // 16
+					new SqlParameter(Types.BIGINT), // 17
+					new SqlParameter(Types.BIGINT), // 18
+					new SqlParameter(Types.BIGINT), // 19
+					new SqlParameter(Types.BIGINT), // 20
+					new SqlParameter(Types.BIGINT), // 21
+					new SqlParameter(Types.BIGINT), // 22
+					new SqlParameter(Types.BIGINT), // 23
+					new SqlParameter(Types.BIGINT), // 24
+					new SqlParameter(Types.BIGINT), // 25
+					new SqlParameter(Types.BIGINT), // 26
+					new SqlParameter(Types.BIGINT), // 27
+					new SqlParameter(Types.VARCHAR), // 28
+					new SqlParameter(Types.VARCHAR), // 29
+					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR) // 30
+			);
+
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call call EX_APPL_ADDL_CHECKS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, \" + \"?, ?, ?,?, ?,?, ?, ?, ?,?) } ";
+					String proc = "{call EX_APPL_ADDL_CHECKS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, \" + \"?, ?, ?,?, ?,?, ?, ?, ?,?) } ";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, appLicationCountryId);
 					cs.setBigDecimal(2, customerId);
@@ -525,33 +502,34 @@ public class ApplicationProcedureDao {
 				}
 
 			}, declareInAndOutputParameters);
-			
+
 			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
-			
+
 		} catch (DataAccessException e) {
 			e.printStackTrace();
 			logger.info("Out put Parameters :" + e.getMessage());
 		}
 		return output;
 	}
-	
-	
-/**
- * toFetchPurtherInstractionErrorMessaage
- * @param applicationCountyId
- * @param routingCountryId
- * @param routingBankId
- * @param currencyId
- * @param remittanceId
- * @param deliveryId
- * @param furtherInstruction
- * @param beneBankCountryId
- * @return
- */
-	
+
+	/**
+	 * toFetchPurtherInstractionErrorMessaage
+	 * 
+	 * @param applicationCountyId
+	 * @param routingCountryId
+	 * @param routingBankId
+	 * @param currencyId
+	 * @param remittanceId
+	 * @param deliveryId
+	 * @param furtherInstruction
+	 * @param beneBankCountryId
+	 * @return
+	 */
+
 	@Transactional
-	public Map<String ,Object>  toFetchPurtherInstractionErrorMessaage(BigDecimal applicationCountyId, BigDecimal routingCountryId, BigDecimal routingBankId,
-			BigDecimal currencyId, BigDecimal remittanceId, BigDecimal deliveryId, String furtherInstruction,BigDecimal beneBankCountryId){
+	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(BigDecimal applicationCountyId,
+			BigDecimal routingCountryId, BigDecimal routingBankId, BigDecimal currencyId, BigDecimal remittanceId,
+			BigDecimal deliveryId, String furtherInstruction, BigDecimal beneBankCountryId) {
 		logger.info("======Start toFtechPurtherInstractionErrorMessaage ========");
 		logger.info("Procedure Name = EX_P_FURTHER_INSTR ");
 		logger.info("applicationCountyId :" + applicationCountyId);
@@ -563,47 +541,312 @@ public class ApplicationProcedureDao {
 		logger.info("furtherInstruction :" + furtherInstruction);
 		logger.info("BeneBankCountry :" + beneBankCountryId);
 		logger.info("======End toFtechPurtherInstractionErrorMessaage ========");
-Map<String, Object> output =null;
-		
+		Map<String, Object> output = null;
+
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.BIGINT), //1
-					new SqlParameter(Types.BIGINT),//2
-					new SqlParameter(Types.BIGINT), //3
-					new SqlParameter(Types.BIGINT), //4
-					new SqlParameter(Types.BIGINT),	//5
-					new SqlParameter(Types.BIGINT),//6
-					new SqlParameter(Types.VARCHAR),	//7
-					new SqlParameter(Types.BIGINT),//8
-					new SqlOutParameter("P_ERRMSG",Types.VARCHAR));//9
-					
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.BIGINT), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 4
+					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.BIGINT), // 6
+					new SqlParameter(Types.VARCHAR), // 7
+					new SqlParameter(Types.BIGINT), // 8
+					new SqlOutParameter("P_ERRMSG", Types.VARCHAR));// 9
 
-					output = jdbcTemplate.call(new CallableStatementCreator() {
-						@Override
-						public CallableStatement createCallableStatement(Connection con) throws SQLException {
-							String proc = "{call EX_P_FURTHER_INSTR (?, ?, ?, ?, ?, ?, ?, ?, ?) } ";
-							CallableStatement cs = con.prepareCall(proc);
-							cs.setBigDecimal(1, applicationCountyId);
-							cs.setBigDecimal(2, routingCountryId);
-							cs.setBigDecimal(3, routingBankId);
-							cs.setBigDecimal(4, currencyId);
-							cs.setBigDecimal(5, remittanceId);
-							cs.setBigDecimal(6, deliveryId);
-							cs.setString(7, furtherInstruction == null ? "" : furtherInstruction);
-							cs.setBigDecimal(8, deliveryId);
-							cs.registerOutParameter(9, java.sql.Types.VARCHAR);
-							cs.execute();cs.execute();
-							return cs;
-						}
-
-					}, declareInAndOutputParameters);
-					
-					logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
-					
-				} catch (DataAccessException e) {
-					e.printStackTrace();
-					logger.info("Out put Parameters :" + e.getMessage());
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_P_FURTHER_INSTR (?, ?, ?, ?, ?, ?, ?, ?, ?) } ";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountyId);
+					cs.setBigDecimal(2, routingCountryId);
+					cs.setBigDecimal(3, routingBankId);
+					cs.setBigDecimal(4, currencyId);
+					cs.setBigDecimal(5, remittanceId);
+					cs.setBigDecimal(6, deliveryId);
+					cs.setString(7, furtherInstruction == null ? "" : furtherInstruction);
+					cs.setBigDecimal(8, deliveryId);
+					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
+					cs.execute();
+					cs.execute();
+					return cs;
 				}
-				return output;
-			}
+
+			}, declareInAndOutputParameters);
+
+			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
+
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
+
+	/**
+	 * Purpose : Check swift bank procedure
+	 * 
+	 * @param applicationCountryId
+	 * @param routingCountryId
+	 * @param currencyId
+	 * @param remittanceId
+	 * @param deliveryId
+	 * @param fieldName
+	 * @param beneficiarySwiftBank
+	 * @param beneBankCountryId
+	 * @return
+	 */
+	@Transactional
+	public Map<String, Object> toFtechSwiftBankProcedure(BigDecimal applicationCountryId, BigDecimal routingCountryId,
+			BigDecimal currencyId, BigDecimal remittanceId, BigDecimal deliveryId, String fieldName,
+			String beneficiarySwiftBank, BigDecimal beneBankCountryId) {
+
+		HashMap<String, String> swiftProcedureValues = new HashMap<String, String>();
+		logger.info("======Start toFtechSwiftBankProcedure ========");
+		logger.info("Procedure Name = EX_P_CHECK_SWIFT_BANK ");
+		logger.info("applicationCountryId :" + applicationCountryId);
+		logger.info("routingCountryId :" + routingCountryId);
+		logger.info("currencyId :" + currencyId);
+		logger.info("remittanceId :" + remittanceId);
+		logger.info("deliveryId :" + deliveryId);
+		logger.info("fieldName :" + fieldName);
+		logger.info("beneficiarySwiftBank :" + beneficiarySwiftBank);
+		logger.info("BeneBankCountry :" + beneBankCountryId);
+		logger.info("======End toFtechSwiftBankProcedure ========");
+		Map<String, Object> output = null;
+
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.BIGINT), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 4
+					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.VARCHAR), // 6
+					new SqlParameter(Types.VARCHAR), // 7
+					new SqlParameter(Types.BIGINT), // 8
+					new SqlOutParameter("P_ERRMSG", Types.VARCHAR));// 9
+
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_P_CHECK_SWIFT_BANK(?, ?, ?, ?, ?, ?, ?, ?, ?) } ";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(2, routingCountryId);
+					cs.setBigDecimal(3, currencyId);
+					cs.setBigDecimal(4, remittanceId);
+					cs.setBigDecimal(5, deliveryId);
+					cs.setString(6, fieldName);
+					cs.setString(7, beneficiarySwiftBank);
+					cs.setBigDecimal(8, beneBankCountryId);
+					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+
+			logger.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
+
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
+
+	/**
+	 * purpose : Move application to remittance after successfull knet
+	 * 
+	 * @param applicationCountryId
+	 * @param companyId
+	 * @param customerNo
+	 * @param userName
+	 * @param paymentId
+	 * @param authcode
+	 * @param tranId
+	 * @param refId
+	 * @return
+	 * 
+	 * 
+	 */
+	@Transactional
+	public Map<String, Object> insertRemittanceOnline(BigDecimal applicationCountryId, BigDecimal companyId,
+			BigDecimal customerNo, String userName, String paymentId, String authcode, String tranId, String refId) {
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + customerNo
+				+ "\t getApplicationCountryId : " + applicationCountryId + "\t getCompanyId() :" + companyId);
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE sessionmanage.getUserName():" + userName);
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE knet:" + paymentId + "\t authcode :" + authcode
+				+ "\t tranId :" + tranId + "\t refId :" + refId);
+		Map<String, Object> output = null;
+
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.BIGINT), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.VARCHAR), // 4
+					new SqlParameter(Types.VARCHAR), // 5
+					new SqlParameter(Types.VARCHAR), // 6
+					new SqlParameter(Types.VARCHAR), // 7
+					new SqlParameter(Types.VARCHAR), // 8
+					new SqlOutParameter("P_COLLECT_FINYR", Types.BIGINT), // 9
+					new SqlOutParameter("P_COLLECTION_NO", Types.BIGINT), // 10
+					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE", Types.BIGINT), // 11
+					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));// 12
+
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_INSERT_REMITTANCE_ONLINE(?,?,?,?,?,?,?,?,?,?,?,?)}";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(2, companyId);
+					cs.setBigDecimal(3, customerNo);
+					cs.setString(4, userName);
+					cs.setString(5, paymentId);
+					cs.setString(6, authcode);
+					cs.setString(7, tranId);
+					cs.setString(8, refId);
+
+					cs.registerOutParameter(9, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(10, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(11, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(12, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+
+			logger.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
+
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
+
+	@Transactional
+	public Map<String, Object> fetchAdditionalBankRuleIndicators(HashMap<String, Object> inputValues) throws Exception {
+		logger.info("FetchAdditionalBankRuleIndicators :" + inputValues.toString());
+		Map<String, Object> output = null;
+
+		try {
+
+			BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+			BigDecimal serviceMasterId = (BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
+			BigDecimal routingCountryId = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+			BigDecimal routingBankBranchId = (BigDecimal) inputValues.get("P_ROUTING_BANK_BRANCH_ID");
+			BigDecimal deliveryModeId = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+			BigDecimal remittanceModeId = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+			BigDecimal foreignCurrencyId = (BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");
+			BigDecimal foreignAmount = (BigDecimal) inputValues.get("P_FOREIGN_AMOUNT");
+			BigDecimal customerId = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
+			BigDecimal beneficaryRelationshipId = (BigDecimal) inputValues.get("P_BENEFICARY_RELATIONSHIP_ID");
+
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+					new SqlParameter(Types.BIGINT), // 2
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 3
+					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.BIGINT), // 6
+					new SqlParameter(Types.BIGINT), // 7
+					new SqlParameter(Types.BIGINT), // 8
+					new SqlParameter(Types.BIGINT), // 9
+					new SqlParameter(Types.BIGINT), // 10
+					new SqlParameter(Types.BIGINT), // 11
+
+					new SqlOutParameter("P_FURTHER_INSTR_DATA", Types.VARCHAR), // 12
+					new SqlOutParameter("P_FURTHER_INSTR_REQ", Types.VARCHAR), // 13
+					new SqlOutParameter("P_SWIFT_BANK1_DATA", Types.VARCHAR), // 14
+					new SqlOutParameter("P_SWIFT_BANK1_REQ", Types.VARCHAR), // 15
+					new SqlOutParameter("P_SWIFT_BANK2_DATA", Types.VARCHAR), // 16
+
+					new SqlOutParameter("P_SWIFT_BANK2_REQ", Types.VARCHAR), // 17
+					new SqlOutParameter("P_AMIEC_CODE_1", Types.VARCHAR), // 18
+					new SqlOutParameter("P_FLEX_FIELD_VALUE_1", Types.VARCHAR), // 19
+					new SqlOutParameter("P_ADDITIONAL_BANK_RULE_ID_1", Types.VARCHAR), // 20
+					new SqlOutParameter("P_FLEX_FIELD_REQ_1", Types.VARCHAR), // 21
+
+					new SqlOutParameter("P_AMIEC_CODE_2", Types.VARCHAR), // 22
+					new SqlOutParameter("P_FLEX_FIELD_VALUE_2", Types.VARCHAR), // 23
+					new SqlOutParameter("P_ADDITIONAL_BANK_RULE_ID_2", Types.VARCHAR), // 24
+					new SqlOutParameter("P_FLEX_FIELD_REQ_2", Types.VARCHAR), // 25
+					new SqlOutParameter("P_AMIEC_CODE_3", Types.VARCHAR), // 26
+
+					new SqlOutParameter("P_FLEX_FIELD_VALUE_3", Types.VARCHAR), // 27
+					new SqlOutParameter("P_ADDITIONAL_BANK_RULE_ID_3", Types.VARCHAR), // 28
+					new SqlOutParameter("P_FLEX_FIELD_REQ_3", Types.VARCHAR), // 29
+					new SqlOutParameter("P_AMIEC_CODE_4", Types.VARCHAR), // 30
+					new SqlOutParameter("P_FLEX_FIELD_VALUE_4", Types.VARCHAR), // 31
+
+					new SqlOutParameter("P_ADDITIONAL_BANK_RULE_ID_4", Types.VARCHAR), // 32
+					new SqlOutParameter("P_FLEX_FIELD_REQ_4", Types.VARCHAR), // 33
+					new SqlOutParameter("P_AMIEC_CODE_5", Types.VARCHAR), // 34
+					new SqlOutParameter("P_FLEX_FIELD_VALUE_5", Types.VARCHAR), // 35
+					new SqlOutParameter("P_ADDITIONAL_BANK_RULE_ID_5", Types.VARCHAR), // 36
+
+					new SqlOutParameter("P_FLEX_FIELD_REQ_5", Types.VARCHAR), // 37
+					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR)); // 38
+
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{ call EX_REMIT_ADDL_INFO (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(2, serviceMasterId);
+					cs.setBigDecimal(3, routingCountryId);
+					cs.setBigDecimal(4, routingBankId);
+					cs.setBigDecimal(5, routingBankBranchId);
+					cs.setBigDecimal(6, deliveryModeId);
+					cs.setBigDecimal(7, remittanceModeId);
+					cs.setBigDecimal(8, foreignCurrencyId);
+					cs.setBigDecimal(9, foreignAmount);
+					cs.setBigDecimal(10, customerId);
+					cs.setBigDecimal(11, beneficaryRelationshipId);
+					cs.registerOutParameter(12, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(13, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(14, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(15, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(16, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(17, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(18, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(19, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(20, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(21, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(22, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(23, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(24, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(25, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(26, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(27, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(28, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(29, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(30, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(31, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(32, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(33, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(34, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(35, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(36, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(37, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(38, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+
+			logger.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
+
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
 }
