@@ -21,9 +21,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class JaxSwaggerConfig {
 	@Bean
 	public Docket productApi() {
-		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info")
-				.defaultValue("{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\"}").modelRef(new ModelRef("string")).parameterType("header")
-				.required(true).build();
+		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
+				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\"}")
+				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
 		List<Parameter> globalParams = Arrays.asList(headerParam);
 
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.amx.jax"))

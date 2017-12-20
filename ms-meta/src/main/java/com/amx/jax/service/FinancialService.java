@@ -40,7 +40,10 @@ public class FinancialService  extends AbstractService{
 	}
 	
 	
-	
+	public UserFinancialYear getUserFinancialYear() {
+		List<UserFinancialYear> financialList = financialYearRepository.getFinancialYear();
+		return financialList.get(0);
+	}
 	
 	private List<UserFinancialYearDTO> convert(List<UserFinancialYear> financialList){
 		List<UserFinancialYearDTO> list = new ArrayList<>();

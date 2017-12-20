@@ -18,6 +18,8 @@ public class ExchangeRateBreakup {
 	@JsonProperty("domAmount")
 	BigDecimal convertedLCAmount;
 
+	BigDecimal netAmount;
+	
 	public BigDecimal getRate() {
 		return rate;
 	}
@@ -48,5 +50,13 @@ public class ExchangeRateBreakup {
 
 	public BigDecimal getConvertedFCAmount() {
 		return convertedFCAmount;
+	}
+
+	public BigDecimal getNetAmount() {
+		return netAmount;
+	}
+
+	public void setNetAmount(BigDecimal netAmount) {
+		this.netAmount = netAmount;
 	}
 }

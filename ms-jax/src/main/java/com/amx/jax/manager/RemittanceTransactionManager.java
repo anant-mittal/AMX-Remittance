@@ -134,7 +134,7 @@ public class RemittanceTransactionManager {
 		// commission
 		responseModel.setTxnFee(comission);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
-				new BigDecimal(78), countryId, applicationCountryId, routingBankId, serviceMasterId);
+				meta.getCountryBranchId(), countryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);

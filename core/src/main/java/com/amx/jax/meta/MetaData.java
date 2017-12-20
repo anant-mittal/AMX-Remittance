@@ -34,6 +34,8 @@ public class MetaData implements IMetaData {
 	private JaxChannel channel;
 	
 	private BigDecimal customerId;
+	
+	private BigDecimal countryBranchId;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -103,5 +105,13 @@ public class MetaData implements IMetaData {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
 	}
 }

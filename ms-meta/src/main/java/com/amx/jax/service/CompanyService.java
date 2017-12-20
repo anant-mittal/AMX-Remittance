@@ -77,6 +77,11 @@ public class CompanyService extends AbstractService {
 		return list;
 
 	}
+	
+	public ViewCompanyDetails getCompanyDetailsById(BigDecimal companyId) {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(companyId);
+		return companyDetails.get(0); 
+	}
 
 	@Override
 	public String getModelType() {

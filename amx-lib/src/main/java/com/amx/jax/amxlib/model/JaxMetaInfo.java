@@ -17,6 +17,7 @@ public class JaxMetaInfo {
 	private BigDecimal customerId;
 	private BigDecimal companyId;
 	private BigDecimal languageId;
+	private BigDecimal countryBranchId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private Long traceId;
 
@@ -67,5 +68,14 @@ public class JaxMetaInfo {
 	public void setChannel(JaxChannel channel) {
 		this.channel = channel;
 	}
+
+	public BigDecimal getCountryBranchId() {
+		return countryBranchId;
+	}
+
+	public void setCountryBranchId(BigDecimal countryBranchId) {
+		this.countryBranchId = countryBranchId;
+	}
+
 
 }
