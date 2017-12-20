@@ -48,6 +48,14 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@ApiOperation(value = "Returns transaction history")
+	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
+	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
+			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper) throws IOException, DocumentException {
+		postManClient.downloadPDF("RemittanceStatment", wrapper, "RemittanceStatment.pdf");
+		return wrapper;
+	}
+
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceReceiptSubreport> tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
