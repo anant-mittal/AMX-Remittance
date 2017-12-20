@@ -3,7 +3,6 @@ package com.amx.jax;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
 
 import org.junit.Test;
@@ -14,10 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.dal.ApplicationProcedureDao;
 import com.amx.jax.dal.CryptoDao;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
-import com.amx.jax.dbmodel.PipsMaster;
-import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;
@@ -36,6 +34,12 @@ public class JaxServiceApplicationTests {
 
 	@Autowired
 	LoyaltyInsuranceProDao loyaltyDao;
+	
+	@Autowired
+	ApplicationProcedureDao applProDao;
+	
+	
+	
 
 	// @Test
 	public void decrypt() {
@@ -87,6 +91,29 @@ public class JaxServiceApplicationTests {
 
 	}
 
+	
+	/** Generate document seriality **/
+	
+	@Test
+	public void getDocumentSeriality() {
+		BigDecimal applCountryId = new BigDecimal("91");
+		BigDecimal companyId = new BigDecimal("1");
+		BigDecimal documentId = new BigDecimal("1");
+		BigDecimal financialYear = new BigDecimal("2017");
+		String processIn = "U";
+		BigDecimal branchId = new BigDecimal("90");
+		
+		try {
+			Map<String, Object> outputMAp = applProDao.getDocumentSeriality(applCountryId, companyId, documentId, financialYear, processIn, branchId);
+			System.out.println("OUT PUT :"+outputMAp.toString());
+			
+		}catch(Exception e) {
+			System.out.println("Message :"+e.getMessage());
+		}
+	}
+	
+	
+	
 	@Autowired
 	PipsMasterDao pipsDao;
 	

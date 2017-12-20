@@ -16,6 +16,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 
+
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class RemittanceApplicationManager {
