@@ -32,7 +32,7 @@ public class ApplicationProcedureDao {
 	private JdbcTemplate jdbcTemplate;
 
 	/**
-	 * 
+	 * Purpose : toFetchDetilaFromAddtionalBenficiaryDetails
 	 * @param beneficaryMasterId
 	 * @param beneficaryBankId
 	 * @param beneficaryBankBranchId
@@ -49,26 +49,28 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(BigDecimal beneficaryMasterId,
-			BigDecimal beneficaryBankId, BigDecimal beneficaryBankBranchId, BigDecimal beneAccNumSeqId,
-			BigDecimal routingCountry, BigDecimal routingBank, BigDecimal routingBranch, BigDecimal serviceMasterId,
-			BigDecimal applicationCountryId, BigDecimal currencyId, BigDecimal remitMode, BigDecimal deliveryMode) {
+	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(HashMap<String, Object> inputValues){
+			
+			
+			BigDecimal beneficaryMasterId =(BigDecimal)inputValues.get("P_BENEFICARY_ID");
+			BigDecimal beneficaryBankId=(BigDecimal)inputValues.get("P_BENEFICIARY_BANK_ID");
+			BigDecimal beneficaryBankBranchId=(BigDecimal)inputValues.get("P_BENEFICIARY_BRANCH_ID");
+			BigDecimal beneAccNumSeqId=(BigDecimal)inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
+			BigDecimal routingCountry=(BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal routingBank=(BigDecimal)inputValues.get("P_ROUTING_BANK_ID");
+			BigDecimal routingBranch=(BigDecimal)inputValues.get("P_ROUTING_BANK_BRANCH_ID"); 
+			BigDecimal serviceMasterId=(BigDecimal)inputValues.get("P_SERVICE_MASTER_ID");
+			BigDecimal applicationCountryId=(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID");
+			BigDecimal currencyId=(BigDecimal)inputValues.get("P_CURRENCY_ID");
+			BigDecimal remitMode=(BigDecimal)inputValues.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryMode=(BigDecimal)inputValues.get("P_DELIVERY_MODE_ID"); 
 
-		logger.info("=====EX_GET_ADDL_BENE_DETAILS =Start toFetchDetilaFromAddtionalBenficiaryDetails ========");
-		logger.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS ");
-		logger.info("beneficaryMasterId :" + beneficaryMasterId);
-		logger.info("beneficaryBankId :" + beneficaryBankId);
-		logger.info("beneficaryBankBranchId :" + beneficaryBankBranchId);
-		logger.info("beneAccNumSeqId :" + beneAccNumSeqId);
-		logger.info("routingCountry :" + routingCountry);
-		logger.info("routingBank :" + routingBank);
-		logger.info("routingBranch :" + routingBranch);
-		logger.info("serviceMasterId :" + serviceMasterId);
-		logger.info("applicationCountryId :" + applicationCountryId);
-		logger.info("currencyId :" + currencyId);
-		logger.info("remitMode :" + remitMode);
-		logger.info("deliveryMode :" + deliveryMode);
-		logger.info("======End toFetchDetilaFromAddtionalBenficiaryDetails ========");
+
+
+
+		logger.info("=====EX_GET_ADDL_BENE_DETAILS =Start toFetchDetilaFromAddtionalBenficiaryDetails ");
+		logger.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS :"+inputValues.toString());
+		
 
 		Map<String, Object> output = null;
 		try {
@@ -503,7 +505,7 @@ public class ApplicationProcedureDao {
 
 			}, declareInAndOutputParameters);
 
-			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
+			logger.info("EX_APPL_ADDL_CHECKS Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -527,20 +529,20 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(BigDecimal applicationCountyId,
-			BigDecimal routingCountryId, BigDecimal routingBankId, BigDecimal currencyId, BigDecimal remittanceId,
-			BigDecimal deliveryId, String furtherInstruction, BigDecimal beneBankCountryId) {
-		logger.info("======Start toFtechPurtherInstractionErrorMessaage ========");
-		logger.info("Procedure Name = EX_P_FURTHER_INSTR ");
-		logger.info("applicationCountyId :" + applicationCountyId);
-		logger.info("routingCountryId :" + routingCountryId);
-		logger.info("routingBankId :" + routingBankId);
-		logger.info("currencyId :" + currencyId);
-		logger.info("remittanceId :" + remittanceId);
-		logger.info("deliveryId :" + deliveryId);
-		logger.info("furtherInstruction :" + furtherInstruction);
-		logger.info("BeneBankCountry :" + beneBankCountryId);
-		logger.info("======End toFtechPurtherInstractionErrorMessaage ========");
+	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(HashMap<String, Object> inputValues){
+			
+			
+			
+			BigDecimal applicationCountyId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+			BigDecimal routingCountryId= (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+			BigDecimal currencyId= (BigDecimal) inputValues.get("P_CURRENCY_ID");
+			BigDecimal remittanceId= (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryId= (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+			String furtherInstruction =inputValues.get("P_FURTHER_INSTR")==null?null:inputValues.get("P_FURTHER_INSTR").toString();  
+			
+		logger.info("=====EX_P_FURTHER_INSTRe ========"+inputValues.toString());
+		
 		Map<String, Object> output = null;
 
 		try {
@@ -575,7 +577,7 @@ public class ApplicationProcedureDao {
 
 			}, declareInAndOutputParameters);
 
-			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
+			logger.info("EX_P_FURTHER_INSTR Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -598,7 +600,7 @@ public class ApplicationProcedureDao {
 	 * @return
 	 */
 	@Transactional
-	public Map<String, Object> toFtechSwiftBankProcedure(BigDecimal applicationCountryId, BigDecimal routingCountryId,
+	public Map<String, Object> toFetchSwiftBankProcedure(BigDecimal applicationCountryId, BigDecimal routingCountryId,
 			BigDecimal currencyId, BigDecimal remittanceId, BigDecimal deliveryId, String fieldName,
 			String beneficiarySwiftBank, BigDecimal beneBankCountryId) {
 
@@ -672,13 +674,22 @@ public class ApplicationProcedureDao {
 	 * 
 	 */
 	@Transactional
-	public Map<String, Object> insertRemittanceOnline(BigDecimal applicationCountryId, BigDecimal companyId,
-			BigDecimal customerNo, String userName, String paymentId, String authcode, String tranId, String refId) {
-		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + customerNo
-				+ "\t getApplicationCountryId : " + applicationCountryId + "\t getCompanyId() :" + companyId);
-		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE sessionmanage.getUserName():" + userName);
-		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE knet:" + paymentId + "\t authcode :" + authcode
-				+ "\t tranId :" + tranId + "\t refId :" + refId);
+	public Map<String, Object> insertRemittanceOnline(HashMap<String, Object> inputValues){
+			
+			
+			
+			
+			BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
+			BigDecimal companyId=(BigDecimal)inputValues.get("P_COMPANY_ID");
+			BigDecimal customerNo=(BigDecimal)inputValues.get("P_CUSTOMER_ID");
+			String userName=inputValues.get("P_USER_NAME").toString();
+			String paymentId =inputValues.get("P_PAYMENT_ID")==null?"":inputValues.get("P_PAYMENT_ID").toString();
+			String authcode=inputValues.get("P_AUTHCOD")==null?"":inputValues.get("P_AUTHCOD").toString();
+			String tranId=inputValues.get("P_TRANID")==null?"":inputValues.get("P_TRANID").toString();
+			String refId=inputValues.get("P_REFID")==null?"":inputValues.get("P_REFID").toString();
+			
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" +inputValues.toString());
+		
 		Map<String, Object> output = null;
 
 		try {
@@ -719,7 +730,7 @@ public class ApplicationProcedureDao {
 
 			}, declareInAndOutputParameters);
 
-			logger.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
+			logger.info("EX_INSERT_REMITTANCE_ONLINE Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
 			e.printStackTrace();
@@ -730,7 +741,7 @@ public class ApplicationProcedureDao {
 
 	@Transactional
 	public Map<String, Object> fetchAdditionalBankRuleIndicators(HashMap<String, Object> inputValues) throws Exception {
-		logger.info("FetchAdditionalBankRuleIndicators :" + inputValues.toString());
+		logger.info("EX_REMIT_ADDL_INFO :" + inputValues.toString());
 		Map<String, Object> output = null;
 
 		try {
@@ -841,7 +852,7 @@ public class ApplicationProcedureDao {
 
 			}, declareInAndOutputParameters);
 
-			logger.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
+			logger.info("EX_REMIT_ADDL_INFO Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
 			e.printStackTrace();
