@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.jax.scope.TenantBean;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -50,9 +53,26 @@ public class MetaController {
 		}
 
 		wrapper.getData().put("debug", env.isDebug());
-		wrapper.getData().put("appDebug", env.getAppDebug());
 		wrapper.getData().put("site", tenantBean.getName());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(
+				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
+	}
+
+	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })
+	public ResponseWrapper<List<SourceOfIncomeDto>> fundSources() {
+		return new ResponseWrapper<List<SourceOfIncomeDto>>(
+				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
+	}
+
+	@RequestMapping(value = "/api/meta/tranx_purpose", method = { RequestMethod.POST })
+	public ResponseWrapper<List<SourceOfIncomeDto>> remittPurpose() {
+		return new ResponseWrapper<List<SourceOfIncomeDto>>(
+				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
 	}
 
 }

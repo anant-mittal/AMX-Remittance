@@ -13,12 +13,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -99,24 +103,6 @@ public class RemittController {
 		}
 	}
 
-	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(
-				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
-	}
-
-	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })
-	public ResponseWrapper<List<SourceOfIncomeDto>> fundSources() {
-		return new ResponseWrapper<List<SourceOfIncomeDto>>(
-				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
-	}
-
-	@RequestMapping(value = "/api/meta/tranx_purpose", method = { RequestMethod.POST })
-	public ResponseWrapper<List<SourceOfIncomeDto>> remittPurpose() {
-		return new ResponseWrapper<List<SourceOfIncomeDto>>(
-				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
-	}
-
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
@@ -144,4 +130,17 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/remitt/bnfcry_check", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
+			@RequestBody RemittanceTransactionRequestModel remitReq) {
+		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
+
+		try {
+			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(remitReq).getResult());
+		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e);
+		}
+
+		return wrapper;
+	}
 }
