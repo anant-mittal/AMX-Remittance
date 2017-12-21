@@ -81,10 +81,11 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-<dependency>
-<groupId>com.hazelcast</groupId>
-<artifactId>hazelcast-client</artifactId>
-</dependency>
+		<dependency>
+			<groupId>com.hazelcast</groupId>
+			<artifactId>hazelcast-all</artifactId>
+			<version>3.9.1</version>
+		</dependency>
 
 		
 		<!-- Spring Framework Caching Support -->

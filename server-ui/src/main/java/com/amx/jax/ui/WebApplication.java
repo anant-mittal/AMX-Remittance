@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.amx.jax.ui.config.Properties;
+import com.amx.jax.ui.config.JaxProperties;
 import com.amx.jax.ui.config.WebRequestFilter;
 import com.amx.jax.ui.config.WebRequestListener;
 import com.amx.jax.ui.service.HealthService;
@@ -39,7 +39,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	public static final String USE_HAZELCAST = "true";
 
 	@Autowired
-	private Properties props;
+	private JaxProperties props;
 
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(WebApplication.class, args);

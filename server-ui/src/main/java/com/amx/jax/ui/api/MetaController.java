@@ -71,12 +71,12 @@ public class MetaController {
 
 		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
 		hits = mapCustomers.get("hits");
-		if(hits ==null) {
+		if (hits == null) {
 			hits = 0;
 		}
-		
+
 		wrapper.getData().put("hits-h", hits);
-		mapCustomers.put("hits", hits++);
+		mapCustomers.put("hits", ++hits);
 
 		return wrapper;
 	}
