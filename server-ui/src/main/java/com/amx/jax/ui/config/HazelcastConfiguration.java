@@ -1,20 +1,20 @@
 package com.amx.jax.ui.config;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.session.hazelcast.config.annotation.web.http.EnableHazelcastHttpSession;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.web.WebFilter;
 
 @Configuration
+@EnableHazelcastHttpSession
 @ConditionalOnExpression(com.amx.jax.ui.WebApplication.USE_HAZELCAST)
 public class HazelcastConfiguration {
 
@@ -55,7 +55,7 @@ public class HazelcastConfiguration {
 	}
 
 	@Bean
-	public HazelcastInstance getHazelcastInstance(ClientConfig clientConfig) throws IOException {
+	public HazelcastInstance getHazelcastClientInstance(ClientConfig clientConfig) throws IOException {
 		HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 		return hazelcastInstance;
 	}
@@ -78,13 +78,13 @@ public class HazelcastConfiguration {
 	 *            Created by Spring
 	 * @return The web filter for Tomcat
 	 */
-	@Bean
-	public WebFilter webFilter() {
-
-		Properties properties = new Properties();
-		properties.put("instance-name", "spring:session:sessions");
-		properties.put("sticky-session", "false");
-
-		return new WebFilter();
-	}
+//	@Bean
+//	public WebFilter webFilter() {
+//
+//		Properties properties = new Properties();
+//		properties.put("instance-name", "spring:session:sessions");
+//		properties.put("sticky-session", "false");
+//
+//		return new WebFilter();
+//	}
 }
