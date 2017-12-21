@@ -21,7 +21,7 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.amx.amxlib.meta.model.AddAdditionalBankData;
+import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
 
 @Component
@@ -204,11 +204,11 @@ public class ApplicationProcedureDao {
 
 	@Transactional
 	public HashMap<String, Object> exPBankIndicatorsProcedureCheck(HashMap<String, String> inputValues,
-			List<AddAdditionalBankData> listAdditionalBankDataTable) {
+			List<AddAdditionalBankDataDto> listAdditionalBankDataTable) {
 		HashMap<String, Object> addtionalProcValues = new HashMap<>();
 
 		HashMap<String, String> amicCodeLst = new HashMap<String, String>();
-		for (AddAdditionalBankData dynamicList : listAdditionalBankDataTable) {
+		for (AddAdditionalBankDataDto dynamicList : listAdditionalBankDataTable) {
 			String amiecdec = dynamicList.getVariableName();
 			String amicCode = null;
 			if (amiecdec != null) {

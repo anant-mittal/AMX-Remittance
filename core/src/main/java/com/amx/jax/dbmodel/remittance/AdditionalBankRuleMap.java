@@ -12,13 +12,9 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
-import com.amx.jax.dbmodel.CountryMaster;
 
 @Entity
 @Table(name = "EX_ADDITIONAL_BANK_FIELDS")
@@ -36,14 +32,13 @@ public class AdditionalBankRuleMap implements Serializable {
 	private String modifiedBy;
 	private Date modifiedDate;
 	private String isActive;
-	private CountryMaster countryId;
+	private BigDecimal countryId;
 	private Date approvedDate;
 	private String approvedBy;
 	
 	private String remarks;
 	
 
-	//private Set<Remittance> exRemittance = new HashSet<Remittance>(0);
 	private Set<AdditionalBankRuleAmiec> additionalBankRule = new HashSet<AdditionalBankRuleAmiec>(0);
 	private Set<AdditionalBankRuleAddData> additionalBankRuleData = new HashSet<AdditionalBankRuleAddData>(0);
 	private Set<AdditionalInstructionData> additionalInstData = new HashSet<AdditionalInstructionData>(0);
@@ -147,13 +142,13 @@ public class AdditionalBankRuleMap implements Serializable {
 		this.isActive = isActive;
 	}
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "COUNTRY_ID")
-	public CountryMaster getCountryId() {
+	
+	@Column(name = "COUNTRY_ID")
+	public BigDecimal getCountryId() {
 		return countryId;
 	}
 
-	public void setCountryId(CountryMaster countryId) {
+	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
 	

@@ -1,8 +1,10 @@
 package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-public class AddAdditionalBankData {
+public class AddAdditionalBankDataDto {
 	private BigDecimal additionalBankRuleFiledId;
 	private String additionalDesc;
 	private String flexiField;
@@ -28,15 +30,16 @@ public class AddAdditionalBankData {
 	private String amicCode;
 	private String amicDesc;
 	private Boolean msgRender=false;
+	private String exceptionMessage;
 	
-	/*public List<AdditionalBankRuleAddData> additionalBankRuleData = new ArrayList<AdditionalBankRuleAddData>();
-	public List<AdditionalBankDetailsView> listadditionAmiecData = new CopyOnWriteArrayList<AdditionalBankDetailsView>();*/
+	public List<AdditionalBankRuleAddDataDto> additionalBankRuleData = new ArrayList<>();
+	public List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
 	
-	public AddAdditionalBankData() {
+	public AddAdditionalBankDataDto() {
 
 	}
 
-	public AddAdditionalBankData(BigDecimal additionalBankRuleFiledId,
+	public AddAdditionalBankDataDto(BigDecimal additionalBankRuleFiledId,
 			String additionalDesc, String flexiField, String variableName,
 			BigDecimal additionalBankId, String addItionalData,
 			String fieldType, String navicable, String mandatory,
@@ -212,14 +215,7 @@ public class AddAdditionalBankData {
 		this.renderSelect = renderSelect;
 	}
 
-	/*public List<AdditionalBankRuleAddData> getAdditionalBankRuleData() {
-		return additionalBankRuleData;
-	}
 
-	public void setAdditionalBankRuleData(
-			List<AdditionalBankRuleAddData> additionalBankRuleData) {
-		this.additionalBankRuleData = additionalBankRuleData;
-	}*/
 
 	public Boolean getRenderOneSelect() {
 		return renderOneSelect;
@@ -261,20 +257,36 @@ public class AddAdditionalBankData {
 		this.amicDesc = amicDesc;
 	}
 
-	/*public List<AdditionalBankDetailsView> getListadditionAmiecData() {
-		return listadditionAmiecData;
-	}
 
-	public void setListadditionAmiecData(
-			List<AdditionalBankDetailsView> listadditionAmiecData) {
-		this.listadditionAmiecData = listadditionAmiecData;
-	}
-*/
 	public Boolean getMsgRender() {
 		return msgRender;
 	}
 
 	public void setMsgRender(Boolean msgRender) {
 		this.msgRender = msgRender;
+	}
+
+	public List<AdditionalBankRuleAddDataDto> getAdditionalBankRuleData() {
+		return additionalBankRuleData;
+	}
+
+	public void setAdditionalBankRuleData(List<AdditionalBankRuleAddDataDto> additionalBankRuleData) {
+		this.additionalBankRuleData = additionalBankRuleData;
+	}
+
+	public List<AdditionalBankDetailsViewDto> getListadditionAmiecData() {
+		return listadditionAmiecData;
+	}
+
+	public void setListadditionAmiecData(List<AdditionalBankDetailsViewDto> listadditionAmiecData) {
+		this.listadditionAmiecData = listadditionAmiecData;
+	}
+
+	public String getExceptionMessage() {
+		return exceptionMessage;
+	}
+
+	public void setExceptionMessage(String exceptionMessage) {
+		this.exceptionMessage = exceptionMessage;
 	}
 }

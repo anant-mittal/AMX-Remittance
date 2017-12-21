@@ -12,6 +12,7 @@ import javax.persistence.Table;
 @Table(name = "VW_EX_ADDITIONAL_BANK_DETAILS")
 public class AdditionalBankDetailsView implements Serializable {
 
+
 	  /**
 	   * 
 	   */
