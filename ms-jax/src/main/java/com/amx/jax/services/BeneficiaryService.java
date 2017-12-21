@@ -17,10 +17,14 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.SwiftMasterView;
+import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
@@ -44,7 +48,13 @@ public class BeneficiaryService extends AbstractService {
 	IBeneficiaryRelationshipDao beneRelationShipDao;
 
 	@Autowired
+	IBeneficaryContactDao beneficiaryContactDao;
+
+	@Autowired
 	CustomerDao custDao;
+	
+	@Autowired
+	BeneficiaryDao beneDao;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -55,7 +65,7 @@ public class BeneficiaryService extends AbstractService {
 		} else {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
-		BigDecimal nationalityId = custDao.getCustById(customerId). getNationalityId();
+		BigDecimal nationalityId = custDao.getCustById(customerId).getNationalityId();
 		BenificiaryListViewOnlineComparator comparator = new BenificiaryListViewOnlineComparator(nationalityId);
 		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
@@ -222,6 +232,25 @@ public class BeneficiaryService extends AbstractService {
 		}
 		return dto;
 	}
+
+	public String getBeneficiaryContactNumber(BigDecimal beneMasterId) {
+		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
+		BeneficaryContact beneContact = beneContactList.get(0);
+		String contactNumber = null;
+		if (beneContact != null) {
+			if (beneContact.getMobileNumber() != null) {
+				contactNumber = beneContact.getMobileNumber().toString();
+			} else {
+				contactNumber = beneContact.getTelephoneNumber();
+			}
+		}
+		return contactNumber;
+	}
+	
+	public SwiftMasterView getSwiftMasterBySwiftBic(String swiftBic) {
+		return beneDao.getSwiftMasterBySwiftBic(swiftBic);
+	}
+	
 
 	@Override
 	public String getModelType() {

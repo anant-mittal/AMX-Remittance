@@ -73,16 +73,13 @@ public class RemittanceApplicationManager {
 	@Autowired
 	@Qualifier("remitApplParametersMap")
 	private Map<String, Object> parametersMap;
-	
-	@Autowired
-	private RemittanceApplicationDao remitAppDao;
 
 	/**
 	 * @param validatedObjects:
 	 *            - contains objects obtained after being passed through beneficiary
 	 *            validation process, validationResults- validation result like
 	 *            exchange rate, net amount etc
-	 * @return 
+	 * @return
 	 **/
 	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults) {
@@ -103,6 +100,8 @@ public class RemittanceApplicationManager {
 
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
 				.get(0);
+		parametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
+		parametersMap.put("P_DOCUMENT_CODE", document.getDocumentCode());
 		remittanceApplication.setExDocument(document);
 		remittanceApplication.setDocumentCode(document.getDocumentCode());
 		CountryMaster appCountryId = new CountryMaster();
@@ -138,6 +137,7 @@ public class RemittanceApplicationManager {
 		// fin year
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		remittanceApplication.setExUserFinancialYearByDocumentFinanceYear(userFinancialYear);
+		parametersMap.put("P_USER_FINANCIAL_YEAR", userFinancialYear.getFinancialYear());
 		// routing Country
 		CountryMaster bencountrymaster = new CountryMaster();
 		bencountrymaster.setCountryId(routingCountryId);
@@ -187,14 +187,26 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
 				.fetchAdditionalBankRuleIndicators(parametersMap);
+		parametersMap.putAll(furtherSwiftAdditionalDetails);
 		if (furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA") != null) {
 			remittanceApplication.setInstruction((String) furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA"));
 		} else {
 			remittanceApplication.setInstruction("URGENT");
 		}
 		remittanceApplication.setApplInd(ConstantDocument.Individual);
-		remitAppDao.saveApplication(remittanceApplication);
+		remittanceApplication.setDocumentNo(generateDocumentNumber());
 		return remittanceApplication;
+	}
+
+	private BigDecimal generateDocumentNumber() {
+		BigDecimal appCountryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		BigDecimal documentId = (BigDecimal) parametersMap.get("P_DOCUMENT_ID");
+		BigDecimal finYear = (BigDecimal) parametersMap.get("P_USER_FINANCIAL_YEAR");
+		BigDecimal branchId = metaData.getCountryBranchId();
+		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
+				finYear, "U", branchId);
+		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
 	private void setApplicableRates(RemittanceApplication remittanceApplication,

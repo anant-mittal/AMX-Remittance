@@ -53,6 +53,15 @@ public class CurrencyMasterService extends AbstractService {
 
 	}
 
+	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {
+		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		CurrencyMasterModel currencymaster = null;
+		if (currencyList != null && !currencyList.isEmpty()) {
+			currencymaster = currencyList.get(0);
+		}
+		return currencymaster;
+	}
+
 	@Override
 	public String getModelType() {
 		return "currencyMaster";

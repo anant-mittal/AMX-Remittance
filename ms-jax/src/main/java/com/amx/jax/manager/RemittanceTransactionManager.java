@@ -29,8 +29,9 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.dal.ApplicationProcedureDao;
-import com.amx.jax.dao.BankServiceRuleDao;
+import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
@@ -40,6 +41,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exception.GlobalException;
@@ -69,7 +71,7 @@ public class RemittanceTransactionManager {
 	private MetaData meta;
 
 	@Autowired
-	private BankServiceRuleDao bankServiceRuleDao;
+	private BankDao bankServiceRuleDao;
 
 	@Autowired
 	private ExchangeRateDao exchangeRateDao;
@@ -95,6 +97,12 @@ public class RemittanceTransactionManager {
 	@Autowired
 	@Qualifier("remitApplParametersMap")
 	private Map<String, Object> parametersMap;
+
+	@Autowired
+	private RemittanceAppBeneficiaryManager remitAppBeneManager;
+
+	@Autowired
+	private RemittanceApplicationDao remitAppDao;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -333,16 +341,20 @@ public class RemittanceTransactionManager {
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails();
-		RemittanceApplication application = remitAppManager.createRemittanceApplication(model, validatedObjects,
-				validationResults);
+		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
+				validatedObjects, validationResults);
+		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
+				.createRemittanceAppBeneficiary(remittanceApplication);
+		remitAppDao.saveApplication(remittanceApplication, remittanceAppBeneficairy);
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		remiteAppModel.setRemittanceAppId(application.getRemittanceApplicationId());
+		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		return remiteAppModel;
 
 	}
 
 	private void validateAdditionalBeneDetails() {
-		applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(parametersMap);
+		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(parametersMap);
+		parametersMap.putAll(output);
 	}
 
 	private void validateAdditionalCheck() {
