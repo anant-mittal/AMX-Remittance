@@ -63,6 +63,7 @@ public class MetaController {
 		}
 
 		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
+		
 		Integer hits = guestSession.hitCounter();
 
 		wrapper.getData().put("debug", env.isDebug());
@@ -71,7 +72,7 @@ public class MetaController {
 		wrapper.getData().put("hits-s", hits);
 		wrapper.getData().put("hits-h", mapCustomers.get("hits"));
 
-		mapCustomers.put("hits", hits);
+		mapCustomers.put("hits", ++hits);
 
 		return wrapper;
 	}
