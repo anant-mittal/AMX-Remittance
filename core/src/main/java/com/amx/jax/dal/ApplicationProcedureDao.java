@@ -75,11 +75,11 @@ public class ApplicationProcedureDao {
 
 		Map<String, Object> output = null;
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
 					new SqlOutParameter("P_BENE_BANK_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_BRANCH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENE_STATE_ID", Types.VARCHAR),
@@ -159,10 +159,10 @@ public class ApplicationProcedureDao {
 
 		Map<String, Object> output = null;
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.VARCHAR),
-					new SqlOutParameter("P_DOC_NO", Types.BIGINT), new SqlOutParameter("P_ERROR_FLAG", Types.VARCHAR),
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.VARCHAR),
+					new SqlOutParameter("P_DOC_NO", Types.NUMERIC), new SqlOutParameter("P_ERROR_FLAG", Types.VARCHAR),
 					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
@@ -237,12 +237,12 @@ public class ApplicationProcedureDao {
 			}
 		}
 
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-				new SqlParameter(Types.BIGINT), // 2
-				new SqlParameter(Types.BIGINT), // 3
-				new SqlParameter(Types.BIGINT), // 4
-				new SqlParameter(Types.BIGINT), // 5
-				new SqlParameter(Types.BIGINT), // 6
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+				new SqlParameter(Types.NUMERIC), // 2
+				new SqlParameter(Types.NUMERIC), // 3
+				new SqlParameter(Types.NUMERIC), // 4
+				new SqlParameter(Types.NUMERIC), // 5
+				new SqlParameter(Types.NUMERIC), // 6
 				new SqlParameter(Types.VARCHAR), // 7
 				new SqlOutParameter("P_ERROR_MESSAGE1", Types.VARCHAR), // 8
 				new SqlParameter(Types.VARCHAR), // 9
@@ -300,21 +300,21 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = null;
 
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
 					new SqlParameter(Types.VARCHAR), // 2
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 4
-					new SqlParameter(Types.BIGINT), // 5
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC), // 5
 					new SqlParameter(Types.VARCHAR), // 6
-					new SqlParameter(Types.BIGINT), // 7
+					new SqlParameter(Types.NUMERIC), // 7
 					new SqlParameter(Types.VARCHAR), // 8
-					new SqlParameter(Types.BIGINT), // 9
-					new SqlOutParameter("P_SERVICE_MASTER_ID", Types.BIGINT), // 10
-					new SqlOutParameter("P_ROUTING_COUNTRY_ID", Types.BIGINT), // 11
-					new SqlOutParameter("P_ROUTING_BANK_ID", Types.BIGINT), // 12
-					new SqlOutParameter("P_ROUTING_BANK_BRANCH_ID", Types.BIGINT), // 13
-					new SqlOutParameter("P_REMITTANCE_MODE_ID", Types.BIGINT), // 14
-					new SqlOutParameter("P_DELIVERY_MODE_ID", Types.BIGINT), // 15
+					new SqlParameter(Types.NUMERIC), // 9
+					new SqlOutParameter("P_SERVICE_MASTER_ID", Types.NUMERIC), // 10
+					new SqlOutParameter("P_ROUTING_COUNTRY_ID", Types.NUMERIC), // 11
+					new SqlOutParameter("P_ROUTING_BANK_ID", Types.NUMERIC), // 12
+					new SqlOutParameter("P_ROUTING_BANK_BRANCH_ID", Types.NUMERIC), // 13
+					new SqlOutParameter("P_REMITTANCE_MODE_ID", Types.NUMERIC), // 14
+					new SqlOutParameter("P_DELIVERY_MODE_ID", Types.NUMERIC), // 15
 					new SqlOutParameter("P_BENEFICIARY_SWIFT_BANK1", Types.VARCHAR), // 16
 					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR) // 17
 			);
@@ -433,33 +433,33 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = null;
 
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-					new SqlParameter(Types.BIGINT), // 2
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 4
-					new SqlParameter(Types.BIGINT), // 5
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC), // 5
 					new SqlParameter(Types.VARCHAR), // 6
-					new SqlParameter(Types.BIGINT), // 7
+					new SqlParameter(Types.NUMERIC), // 7
 					new SqlParameter(Types.VARCHAR), // 8
-					new SqlParameter(Types.BIGINT), // 9
-					new SqlParameter(Types.BIGINT), // 10
-					new SqlParameter(Types.BIGINT), // 11
-					new SqlParameter(Types.BIGINT), // 12
-					new SqlParameter(Types.BIGINT), // 13
-					new SqlParameter(Types.BIGINT), // 14
-					new SqlParameter(Types.BIGINT), // 15
-					new SqlParameter(Types.BIGINT), // 16
-					new SqlParameter(Types.BIGINT), // 17
-					new SqlParameter(Types.BIGINT), // 18
-					new SqlParameter(Types.BIGINT), // 19
-					new SqlParameter(Types.BIGINT), // 20
-					new SqlParameter(Types.BIGINT), // 21
-					new SqlParameter(Types.BIGINT), // 22
-					new SqlParameter(Types.BIGINT), // 23
-					new SqlParameter(Types.BIGINT), // 24
-					new SqlParameter(Types.BIGINT), // 25
-					new SqlParameter(Types.BIGINT), // 26
-					new SqlParameter(Types.BIGINT), // 27
+					new SqlParameter(Types.NUMERIC), // 9
+					new SqlParameter(Types.NUMERIC), // 10
+					new SqlParameter(Types.NUMERIC), // 11
+					new SqlParameter(Types.NUMERIC), // 12
+					new SqlParameter(Types.NUMERIC), // 13
+					new SqlParameter(Types.NUMERIC), // 14
+					new SqlParameter(Types.NUMERIC), // 15
+					new SqlParameter(Types.NUMERIC), // 16
+					new SqlParameter(Types.NUMERIC), // 17
+					new SqlParameter(Types.NUMERIC), // 18
+					new SqlParameter(Types.NUMERIC), // 19
+					new SqlParameter(Types.NUMERIC), // 20
+					new SqlParameter(Types.NUMERIC), // 21
+					new SqlParameter(Types.NUMERIC), // 22
+					new SqlParameter(Types.NUMERIC), // 23
+					new SqlParameter(Types.NUMERIC), // 24
+					new SqlParameter(Types.NUMERIC), // 25
+					new SqlParameter(Types.NUMERIC), // 26
+					new SqlParameter(Types.NUMERIC), // 27
 					new SqlParameter(Types.VARCHAR), // 28
 					new SqlParameter(Types.VARCHAR), // 29
 					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR) // 30
@@ -547,14 +547,14 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = null;
 
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-					new SqlParameter(Types.BIGINT), // 2
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 4
-					new SqlParameter(Types.BIGINT), // 5
-					new SqlParameter(Types.BIGINT), // 6
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC), // 5
+					new SqlParameter(Types.NUMERIC), // 6
 					new SqlParameter(Types.VARCHAR), // 7
-					new SqlParameter(Types.BIGINT), // 8
+					new SqlParameter(Types.NUMERIC), // 8
 					new SqlOutParameter("P_ERRMSG", Types.VARCHAR));// 9
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
@@ -617,14 +617,14 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = null;
 
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-					new SqlParameter(Types.BIGINT), // 2
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 4
-					new SqlParameter(Types.BIGINT), // 5
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC), // 5
 					new SqlParameter(Types.VARCHAR), // 6
 					new SqlParameter(Types.VARCHAR), // 7
-					new SqlParameter(Types.BIGINT), // 8
+					new SqlParameter(Types.NUMERIC), // 8
 					new SqlOutParameter("P_ERRMSG", Types.VARCHAR));// 9
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
@@ -691,17 +691,17 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = null;
 
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-					new SqlParameter(Types.BIGINT), // 2
-					new SqlParameter(Types.BIGINT), // 3
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
 					new SqlParameter(Types.VARCHAR), // 4
 					new SqlParameter(Types.VARCHAR), // 5
 					new SqlParameter(Types.VARCHAR), // 6
 					new SqlParameter(Types.VARCHAR), // 7
 					new SqlParameter(Types.VARCHAR), // 8
-					new SqlOutParameter("P_COLLECT_FINYR", Types.BIGINT), // 9
-					new SqlOutParameter("P_COLLECTION_NO", Types.BIGINT), // 10
-					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE", Types.BIGINT), // 11
+					new SqlOutParameter("P_COLLECT_FINYR", Types.NUMERIC), // 9
+					new SqlOutParameter("P_COLLECTION_NO", Types.NUMERIC), // 10
+					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE", Types.NUMERIC), // 11
 					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));// 12
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
@@ -736,7 +736,68 @@ public class ApplicationProcedureDao {
 		}
 		return output;
 	}
+	
+	/**
+	 * 
+	 * @param inputValues
+	 * @return :Transfer from JAVA to OLD EMOS table
+	 */
+	@Transactional
+	public Map<String, Object> insertEMOSLIVETransfer(HashMap<String, Object> inputValues){
+			
+			
+			
+			
+			BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
+			BigDecimal companyId=(BigDecimal)inputValues.get("P_COMPANY_ID");
+			BigDecimal documentId = (BigDecimal) inputValues.get("P_DOCUMENT_ID");
+			BigDecimal financialYr = (BigDecimal) inputValues.get("P_DOC_FINYR");
+			BigDecimal documentNo = (BigDecimal) inputValues.get("P_DOCUMENT_NO");
+			
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" +inputValues.toString());
+		
+		Map<String, Object> output = null;
 
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.VARCHAR), // 4
+					new SqlParameter(Types.VARCHAR), // 5
+					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR));// 6
+
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_INSERT_EMOS_TRANSFER_LIVE (?, ?, ?, ?, ?,?) }";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(2, companyId);
+					cs.setBigDecimal(3, documentId);
+					cs.setBigDecimal(4, financialYr);
+					cs.setBigDecimal(5, documentNo);
+					cs.registerOutParameter(6, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+
+			logger.info("EX_INSERT_EMOS_TRANSFER_LIVE Out put Parameters :" + output.toString());
+
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
+	}
+
+	
+	
+
+	/**
+	 * fetchAdditionalBankRuleIndicators
+	 */
 	@Transactional
 	public Map<String, Object> fetchAdditionalBankRuleIndicators(Map<String, Object> inputValues) {
 		logger.info("EX_REMIT_ADDL_INFO :" + inputValues.toString());
@@ -756,17 +817,17 @@ public class ApplicationProcedureDao {
 			BigDecimal customerId = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
 			BigDecimal beneficaryRelationshipId = (BigDecimal) inputValues.get("P_BENEFICARY_RELATIONSHIP_ID");
 
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT), // 1
-					new SqlParameter(Types.BIGINT), // 2
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 3
-					new SqlParameter(Types.BIGINT), // 5
-					new SqlParameter(Types.BIGINT), // 6
-					new SqlParameter(Types.BIGINT), // 7
-					new SqlParameter(Types.BIGINT), // 8
-					new SqlParameter(Types.BIGINT), // 9
-					new SqlParameter(Types.BIGINT), // 10
-					new SqlParameter(Types.BIGINT), // 11
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlParameter(Types.NUMERIC), // 5
+					new SqlParameter(Types.NUMERIC), // 6
+					new SqlParameter(Types.NUMERIC), // 7
+					new SqlParameter(Types.NUMERIC), // 8
+					new SqlParameter(Types.NUMERIC), // 9
+					new SqlParameter(Types.NUMERIC), // 10
+					new SqlParameter(Types.NUMERIC), // 11
 
 					new SqlOutParameter("P_FURTHER_INSTR_DATA", Types.VARCHAR), // 12
 					new SqlOutParameter("P_FURTHER_INSTR_REQ", Types.VARCHAR), // 13
@@ -863,10 +924,10 @@ public class ApplicationProcedureDao {
 
 		logger.info("In getRoutingDetails params:" + inputValue.toString());
 
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.BIGINT), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT));
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.NUMERIC), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC));
 		List<SqlParameter> ouptutParams = new ArrayList<>();
 		ouptutParams.addAll(declareInAndOutputParameters);
 		String[] outParams = { "P_SERVICE_MASTER_ID", "P_ROUTING_COUNTRY_ID", "P_ROUTING_BANK_ID",
@@ -911,4 +972,51 @@ public class ApplicationProcedureDao {
 
 		return output;
 	}
+	/**
+	 * 
+	 * @param inputValues
+	 * @return : For banned bank check
+	 */
+	
+	public Map<String, Object> getBannedBankCheckProcedure(HashMap<String, Object> inputValues) {
+		BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
+		BigDecimal beneBankId=(BigDecimal)inputValues.get("P_COMPANY_ID");
+		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_DOCUMENT_ID");
+		
+	logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" +inputValues.toString());
+	
+	Map<String, Object> output = null;
+
+	try {
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+				new SqlParameter(Types.NUMERIC), // 2
+				new SqlParameter(Types.NUMERIC), // 3
+				new SqlParameter(Types.NUMERIC), // 3
+				new SqlOutParameter("P_ALERT_MESSAGE",Types.VARCHAR), // 4
+				new SqlOutParameter("P_ERROR_MESSAGE",Types.VARCHAR), // 5
+				new SqlOutParameter("P_BLIST_IND", Types.VARCHAR));// 6
+		output = jdbcTemplate.call(new CallableStatementCreator() {
+			@Override
+			public CallableStatement createCallableStatement(Connection con) throws SQLException {
+				String proc = "{call EX_P_BANNED_BANK_CHECK(?,?,?,?,?,?)} ";
+				CallableStatement cs = con.prepareCall(proc);
+				cs.setBigDecimal(1, applicationCountryId);
+				cs.setBigDecimal(2, beneBankId);
+				cs.setBigDecimal(3, beneMasSeqId);
+				cs.registerOutParameter(4, java.sql.Types.VARCHAR);
+				cs.registerOutParameter(5, java.sql.Types.VARCHAR);
+				cs.registerOutParameter(6, java.sql.Types.VARCHAR);
+				cs.execute();
+				return cs;
+			}
+
+		}, declareInAndOutputParameters);
+		logger.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());
+	} catch (DataAccessException e) {
+		e.printStackTrace();
+		logger.info("Out put Parameters :" + e.getMessage());
+	}
+	return output;
+}
+	
 }
