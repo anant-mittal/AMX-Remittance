@@ -70,11 +70,13 @@ public class MetaController {
 		wrapper.getData().put("hits-s", hits);
 
 		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
+		
 		hits = mapCustomers.get("hits");
 		if (hits == null) {
 			hits = 0;
 		}
 
+		wrapper.getData().put("h-name", hazelcastInstance.getName());
 		wrapper.getData().put("hits-h", hits);
 		mapCustomers.put("hits", ++hits);
 

@@ -45,11 +45,16 @@ public class HazelcastConfiguration {
 	private String server;
 
 	@Bean
-	public HazelcastInstance getHazelcastClientInstance() throws IOException {
+	public ClientConfig clientConfig() throws Exception {
 		ClientConfig clientConfig = new ClientConfig();
 		final ClientNetworkConfig networkConfig = new ClientNetworkConfig();
 		networkConfig.addAddress(server);
 		clientConfig.setNetworkConfig(networkConfig);
+		return clientConfig;
+	}
+
+	@Bean
+	public HazelcastInstance getHazelcastInstance(ClientConfig clientConfig) throws IOException {
 		HazelcastInstance hazelcastInstance = HazelcastClient.newHazelcastClient(clientConfig);
 		return hazelcastInstance;
 	}
