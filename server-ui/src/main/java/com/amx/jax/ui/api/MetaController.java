@@ -62,17 +62,17 @@ public class MetaController {
 			tenantBean.setName("site=" + site);
 		}
 
-		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
-		
 		Integer hits = guestSession.hitCounter();
 
 		wrapper.getData().put("debug", env.isDebug());
 		wrapper.getData().put("site", tenantBean.getName());
 		wrapper.getData().put("id", httpSession.getId());
 		wrapper.getData().put("hits-s", hits);
-		wrapper.getData().put("hits-h", mapCustomers.get("hits"));
 
-		mapCustomers.put("hits", ++hits);
+		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
+		hits = mapCustomers.get("hits");
+		wrapper.getData().put("hits-h", hits);
+		mapCustomers.put("hits", hits++);
 
 		return wrapper;
 	}
