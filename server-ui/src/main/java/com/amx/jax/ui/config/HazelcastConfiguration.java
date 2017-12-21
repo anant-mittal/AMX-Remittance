@@ -50,6 +50,7 @@ public class HazelcastConfiguration {
 		final ClientNetworkConfig networkConfig = new ClientNetworkConfig();
 		networkConfig.addAddress(server);
 		clientConfig.setNetworkConfig(networkConfig);
+		clientConfig.setInstanceName("spring:session:sessions");
 		return clientConfig;
 	}
 
@@ -78,10 +79,10 @@ public class HazelcastConfiguration {
 	 * @return The web filter for Tomcat
 	 */
 	@Bean
-	public WebFilter webFilter(HazelcastInstance hazelcastInstance) {
+	public WebFilter webFilter() {
 
 		Properties properties = new Properties();
-		properties.put("instance-name", hazelcastInstance.getName());
+		properties.put("instance-name", "spring:session:sessions");
 		properties.put("sticky-session", "false");
 
 		return new WebFilter();
