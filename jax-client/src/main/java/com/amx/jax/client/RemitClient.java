@@ -90,7 +90,7 @@ public class RemitClient extends AbstractJaxServiceClient{
 					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in saveSecurityQuestions ", e);
+			log.error("exception in validateTransaction ", e);
 		}
 		validateRemittanceDataValidation(response.getBody());
 		return response.getBody();

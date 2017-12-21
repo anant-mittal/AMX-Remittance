@@ -5,6 +5,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,16 +50,16 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(HashMap<String, Object> inputValues){
+	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(Map<String, Object> inputValues){
 			
 			
-			BigDecimal beneficaryMasterId =(BigDecimal)inputValues.get("P_BENEFICARY_ID");
+			BigDecimal beneficaryMasterId =(BigDecimal)inputValues.get("P_BENEFICIARY_ID");
 			BigDecimal beneficaryBankId=(BigDecimal)inputValues.get("P_BENEFICIARY_BANK_ID");
 			BigDecimal beneficaryBankBranchId=(BigDecimal)inputValues.get("P_BENEFICIARY_BRANCH_ID");
 			BigDecimal beneAccNumSeqId=(BigDecimal)inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
 			BigDecimal routingCountry=(BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID");
 			BigDecimal routingBank=(BigDecimal)inputValues.get("P_ROUTING_BANK_ID");
-			BigDecimal routingBranch=(BigDecimal)inputValues.get("P_ROUTING_BANK_BRANCH_ID"); 
+			BigDecimal routingBranch=(BigDecimal)inputValues.get("P_ROUTING_BANK_ID"); 
 			BigDecimal serviceMasterId=(BigDecimal)inputValues.get("P_SERVICE_MASTER_ID");
 			BigDecimal applicationCountryId=(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID");
 			BigDecimal currencyId=(BigDecimal)inputValues.get("P_CURRENCY_ID");
@@ -392,19 +393,19 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> getAdditionalCheckProcedure(HashMap<String, Object> inputValues){
+	public Map<String, Object> getAdditionalCheckProcedure(Map<String, Object> inputValues){
 		
 		logger.info("======Start getAdditionalCheckProcedure EX_APPL_ADDL_CHECKS========:"+inputValues.toString());
 		
 		BigDecimal appLicationCountryId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal customerId =(BigDecimal) inputValues.get("P_CUSTOMER_ID");
 		BigDecimal branchId =(BigDecimal) inputValues.get("P_BRANCH_ID");
-		BigDecimal beneId =(BigDecimal) inputValues.get("P_BENE_ID");
+		BigDecimal beneId =(BigDecimal) inputValues.get("P_BENEFICIARY_ID");
 		
-		BigDecimal beneCountryId = (BigDecimal) inputValues.get("P_BENE_COUNTRY_ID");
-		BigDecimal beneBankId=(BigDecimal) inputValues.get("P_BENE_BANK_ID");
-		BigDecimal beneBankBranchId=(BigDecimal) inputValues.get("P_BENE_BANK_BRANCH_ID");
-		String beneAccountNo=inputValues.get("P_BENE_ACCOUNT_NO")==null?null:inputValues.get("P_BENE_ACCOUNT_NO").toString();
+		BigDecimal beneCountryId = (BigDecimal) inputValues.get("P_BENEFICIARY_COUNTRY_ID");
+		BigDecimal beneBankId=(BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
+		BigDecimal beneBankBranchId=(BigDecimal) inputValues.get("P_BENEFICIARY_BRANCH_ID");
+		String beneAccountNo=inputValues.get("P_BENEFICIARY_ACCOUNT_NO")==null?null:inputValues.get("P_BENEFICIARY_ACCOUNT_NO").toString();
 		BigDecimal serviceMasterId=(BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
 		BigDecimal routingCountryId=(BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal routingBankId=(BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
@@ -467,7 +468,7 @@ public class ApplicationProcedureDao {
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call EX_APPL_ADDL_CHECKS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, \" + \"?, ?, ?,?, ?,?, ?, ?, ?,?) } ";
+					String proc = "{call EX_APPL_ADDL_CHECKS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?,?, ?,?, ?, ?, ?,?) } ";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, appLicationCountryId);
 					cs.setBigDecimal(2, customerId);
@@ -737,7 +738,7 @@ public class ApplicationProcedureDao {
 	}
 
 	@Transactional
-	public Map<String, Object> fetchAdditionalBankRuleIndicators(HashMap<String, Object> inputValues) throws Exception {
+	public Map<String, Object> fetchAdditionalBankRuleIndicators(Map<String, Object> inputValues) {
 		logger.info("EX_REMIT_ADDL_INFO :" + inputValues.toString());
 		Map<String, Object> output = null;
 
@@ -855,6 +856,59 @@ public class ApplicationProcedureDao {
 			e.printStackTrace();
 			logger.info("Out put Parameters :" + e.getMessage());
 		}
+		return output;
+	}
+	
+	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
+
+		logger.info("In getRoutingDetails params:" + inputValue.toString());
+
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+				new SqlParameter(Types.BIGINT), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT));
+		List<SqlParameter> ouptutParams = new ArrayList<>();
+		ouptutParams.addAll(declareInAndOutputParameters);
+		String[] outParams = { "P_SERVICE_MASTER_ID", "P_ROUTING_COUNTRY_ID", "P_ROUTING_BANK_ID",
+				"P_ROUTING_BANK_BRANCH_ID", "P_REMITTANCE_MODE_ID", "P_DELIVERY_MODE_ID", "P_SWIFT",
+				"P_ERROR_MESSAGE" };
+		for (int i = 1; i <= 8; i++) {
+			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.NUMERIC));
+		}
+
+		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
+			@Override
+			public CallableStatement createCallableStatement(Connection con) throws SQLException {
+
+				String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+				CallableStatement cs = con.prepareCall(proc);
+				// In Parameters
+				cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
+				cs.setString(2, inputValue.get("P_USER_TYPE").toString());
+				cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
+				cs.setBigDecimal(4, (BigDecimal) inputValue.get("P_BENEFICIARY_BANK_ID"));
+				cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
+				cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+				cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
+				cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+				cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
+				// Parameters
+				cs.registerOutParameter(10, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(11, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(12, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(13, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(14, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+				cs.registerOutParameter(16, java.sql.Types.VARCHAR);
+				cs.registerOutParameter(17, java.sql.Types.VARCHAR);
+				cs.execute();
+				return cs;
+			}
+
+		}, ouptutParams);
+
+		logger.info("Out put Parameters :" + output.toString());
+
 		return output;
 	}
 }

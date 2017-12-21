@@ -2,15 +2,8 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Types;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +11,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.jdbc.core.CallableStatementCreator;
@@ -33,6 +28,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.jax.dal.ApplicationProcedureDao;
 import com.amx.jax.dao.BankServiceRuleDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -44,6 +40,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
@@ -92,21 +89,32 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private RemittanceApplicationManager remitAppManager;
 
+	@Autowired
+	private ApplicationProcedureDao applicationProcedureDao;
+
+	@Autowired
+	@Qualifier("remitApplParametersMap")
+	private Map<String, Object> parametersMap;
+
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
-		BigDecimal beneId = model.getBeneId();
+		addRequestParameters(model);
 		Customer customer = custDao.getCustById(model.getCustomerId());
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
-		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(beneId);
+		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
 		validatedObjects.put("BENEFICIARY", beneficiary);
-		HashMap<String, String> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = this.getRoutingDetails(beneBankDetails);
+		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
+		Map<String, Object> routingDetails = applicationProcedureDao.getRoutingDetails(beneBankDetails);
+		parametersMap.putAll(beneBankDetails);
+		parametersMap.putAll(routingDetails);
+		parametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
 		BigDecimal routingBankId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_ID").toString());
@@ -146,7 +154,40 @@ public class RemittanceTransactionManager {
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
 		responseModel.setMaxLoyalityPointsAvailableForTxn(new BigDecimal(1000));
+		addExchangeRateParameters(responseModel);
 		return responseModel;
+
+	}
+
+	private void addExchangeRateParameters(RemittanceTransactionResponsetModel responseModel) {
+		ExchangeRateBreakup breakup = responseModel.getExRateBreakup();
+		parametersMap.put("P_EXCHANGE_RATE_APPLIED", breakup.getRate());
+		parametersMap.put("P_LOCAL_COMMISION_CURRENCY_ID", meta.getDefaultCurrencyId());
+		parametersMap.put("P_LOCAL_COMMISION_AMOUNT", responseModel.getTxnFee());
+		parametersMap.put("P_LOCAL_CHARGE_CURRENCY_ID", meta.getDefaultCurrencyId());
+		parametersMap.put("P_LOCAL_CHARGE_AMOUNT", breakup.getConvertedLCAmount());
+		parametersMap.put("P_FOREIGN_TRANX_AMOUNT", breakup.getConvertedFCAmount());
+		parametersMap.put("P_LOCAL_NET_CURRENCY_ID", meta.getDefaultCurrencyId());
+		parametersMap.put("P_LOCAL_NET_TRANX_AMOUNT", breakup.getNetAmount());
+		parametersMap.put("P_FOREIGN_AMOUNT", breakup.getConvertedFCAmount());
+
+	}
+
+	private void addRequestParameters(RemittanceTransactionRequestModel model) {
+		BigDecimal beneId = model.getBeneId();
+		parametersMap.put("P_BENEFICIARY_ID", beneId);
+		parametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
+		parametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
+
+	}
+
+	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
+
+		parametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		parametersMap.put("P_BENEFICIARY_ACCOUNT_NO", beneficiary.getBankAccountNumber());
+		parametersMap.put("P_SERVICE_PROVIDER", beneficiary.getServiceProvider());
+		parametersMap.put("P_FOREIGN_CURRENCY_ID", beneficiary.getCurrencyId());
+		parametersMap.put("P_BENEFICARY_RELATIONSHIP_ID", beneficiary.getBeneficiaryRelationShipSeqId());
 
 	}
 
@@ -226,18 +267,18 @@ public class RemittanceTransactionManager {
 		return output;
 	}
 
-	private HashMap<String, String> getBeneBankDetails(BenificiaryListView beneficiary) {
+	private HashMap<String, Object> getBeneBankDetails(BenificiaryListView beneficiary) {
 
-		HashMap<String, String> beneBankDetails = new HashMap<>();
-		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId().toString());
+		HashMap<String, Object> beneBankDetails = new HashMap<>();
+		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId());
 		beneBankDetails.put("P_USER_TYPE", "I");
-		beneBankDetails.put("P_BENE_COUNTRY_ID", beneficiary.getBenificaryCountry().toString());
-		beneBankDetails.put("P_BENE_BANK_ID", beneficiary.getBankId().toString());
-		beneBankDetails.put("P_BENE_BANK_BRANCH_ID", beneficiary.getBranchId().toString());
-		beneBankDetails.put("P_BENE_BANK_ACCOUNT", beneficiary.getBankAccountNumber().toString());
-		beneBankDetails.put("P_CUSTOMER_ID", beneficiary.getCustomerId().toString());
-		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode().toString());
-		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId().toString());
+		beneBankDetails.put("P_BENEFICIARY_COUNTRY_ID", beneficiary.getBenificaryCountry());
+		beneBankDetails.put("P_BENEFICIARY_BANK_ID", beneficiary.getBankId());
+		beneBankDetails.put("P_BENEFICIARY_BRANCH_ID", beneficiary.getBranchId());
+		beneBankDetails.put("P_BENEFICIARY_BANK_ACCOUNT", beneficiary.getBankAccountNumber());
+		beneBankDetails.put("P_CUSTOMER_ID", meta.getCustomerId());
+		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode());
+		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId());
 		return beneBankDetails;
 	}
 
@@ -254,60 +295,6 @@ public class RemittanceTransactionManager {
 						JaxError.BLACK_LISTED_CUSTOMER.getCode());
 			}
 		}
-	}
-
-	@Transactional
-	public Map<String, Object> getRoutingDetails(HashMap<String, String> inputValue) {
-
-		logger.info("In getRoutingDetails params:" + inputValue.toString());
-
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.BIGINT), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.BIGINT));
-		List<SqlParameter> ouptutParams = new ArrayList<>();
-		ouptutParams.addAll(declareInAndOutputParameters);
-		String[] outParams = { "P_SERVICE_MASTER_ID", "P_ROUTING_COUNTRY_ID", "P_ROUTING_BANK_ID",
-				"P_ROUTING_BANK_BRANCH_ID", "P_REMITTANCE_MODE_ID", "P_DELIVERY_MODE_ID", "P_SWIFT",
-				"P_ERROR_MESSAGE" };
-		for (int i = 1; i <= 8; i++) {
-			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.BIGINT));
-		}
-
-		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
-			@Override
-			public CallableStatement createCallableStatement(Connection con) throws SQLException {
-
-				String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
-				CallableStatement cs = con.prepareCall(proc);
-				// In Parameters
-				cs.setBigDecimal(1, new BigDecimal(inputValue.get("P_APPLICATION_COUNTRY_ID")));
-				cs.setString(2, inputValue.get("P_USER_TYPE"));
-				cs.setBigDecimal(3, new BigDecimal(inputValue.get("P_BENE_COUNTRY_ID")));
-				cs.setBigDecimal(4, new BigDecimal(inputValue.get("P_BENE_BANK_ID")));
-				cs.setBigDecimal(5, new BigDecimal(inputValue.get("P_BENE_BANK_BRANCH_ID")));
-				cs.setString(6, inputValue.get("P_BENE_BANK_ACCOUNT"));
-				cs.setBigDecimal(7, new BigDecimal(inputValue.get("P_CUSTOMER_ID")));
-				cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE"));
-				cs.setBigDecimal(9, new BigDecimal(inputValue.get("P_CURRENCY_ID"))); // Out
-				// Parameters
-				cs.registerOutParameter(10, java.sql.Types.INTEGER);
-				cs.registerOutParameter(11, java.sql.Types.INTEGER);
-				cs.registerOutParameter(12, java.sql.Types.INTEGER);
-				cs.registerOutParameter(13, java.sql.Types.INTEGER);
-				cs.registerOutParameter(14, java.sql.Types.INTEGER);
-				cs.registerOutParameter(15, java.sql.Types.INTEGER);
-				cs.registerOutParameter(16, java.sql.Types.VARCHAR);
-				cs.registerOutParameter(17, java.sql.Types.VARCHAR);
-				cs.execute();
-				return cs;
-			}
-
-		}, ouptutParams);
-
-		logger.info("Out put Parameters :" + output.toString());
-
-		return output;
 	}
 
 	/**
@@ -344,8 +331,22 @@ public class RemittanceTransactionManager {
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		remitAppManager.createRemittanceApplication(model,validatedObjects, validationResults);
-		return null;
+		validateAdditionalCheck();
+		validateAdditionalBeneDetails();
+		RemittanceApplication application = remitAppManager.createRemittanceApplication(model, validatedObjects,
+				validationResults);
+		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
+		remiteAppModel.setRemittanceAppId(application.getRemittanceApplicationId());
+		return remiteAppModel;
 
 	}
+
+	private void validateAdditionalBeneDetails() {
+		applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(parametersMap);
+	}
+
+	private void validateAdditionalCheck() {
+		applicationProcedureDao.getAdditionalCheckProcedure(parametersMap);
+	}
+
 }

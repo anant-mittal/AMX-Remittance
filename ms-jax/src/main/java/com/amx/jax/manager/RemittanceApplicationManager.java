@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,8 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.ApplicationProcedureDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;
@@ -39,7 +42,6 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.util.DateUtil;
-
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
@@ -65,13 +67,24 @@ public class RemittanceApplicationManager {
 	@Autowired
 	DateUtil dateUtil;
 
+	@Autowired
+	private ApplicationProcedureDao applicationProcedureDao;
+
+	@Autowired
+	@Qualifier("remitApplParametersMap")
+	private Map<String, Object> parametersMap;
+	
+	@Autowired
+	private RemittanceApplicationDao remitAppDao;
+
 	/**
 	 * @param validatedObjects:
 	 *            - contains objects obtained after being passed through beneficiary
 	 *            validation process, validationResults- validation result like
 	 *            exchange rate, net amount etc
+	 * @return 
 	 **/
-	public void createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
+	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults) {
 
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
@@ -85,14 +98,21 @@ public class RemittanceApplicationManager {
 		BigDecimal routingBankBranchId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
+		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
+		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
 				.get(0);
 		remittanceApplication.setExDocument(document);
 		remittanceApplication.setDocumentCode(document.getDocumentCode());
+		CountryMaster appCountryId = new CountryMaster();
+		appCountryId.setCountryId(metaData.getCountryId());
+		remittanceApplication.setFsCountryMasterByApplicationCountryId(appCountryId);
 		CurrencyMasterModel localCurrency = new CurrencyMasterModel();
+		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
+		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
-		remittanceApplication.setExCurrencyMasterByForeignCurrencyId(localCurrency);
+		remittanceApplication.setExCurrencyMasterByForeignCurrencyId(foreignCurrency);
 		// commission currency
 		remittanceApplication.setExCurrencyMasterByLocalCommisionCurrencyId(localCurrency);
 		// local currency
@@ -125,13 +145,12 @@ public class RemittanceApplicationManager {
 
 		// Delivery Mode from service
 		DeliveryMode deliverymode = new DeliveryMode();
-		BigDecimal deliveryId = null;// TODO
+
 		deliverymode.setDeliveryModeId(deliveryId);
 		remittanceApplication.setExDeliveryMode(deliverymode);
 
 		// RemittanceModeMaster to get Remittance
 		RemittanceModeMaster remittancemode = new RemittanceModeMaster();
-		BigDecimal remittanceId = null;// TODO
 		remittancemode.setRemittanceModeId(remittanceId);
 		remittanceApplication.setExRemittanceMode(remittancemode);
 
@@ -166,14 +185,16 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
-		//ex_remit_addlinfo sp
-//		if(furtherSwiftAdditionalDetails != null && furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA") != null) {
-//			remittanceApplication.setInstruction((String) furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA"));
-//		}else {
-//			remittanceApplication.setInstruction("URGENT");
-//		}
+		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
+				.fetchAdditionalBankRuleIndicators(parametersMap);
+		if (furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA") != null) {
+			remittanceApplication.setInstruction((String) furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA"));
+		} else {
+			remittanceApplication.setInstruction("URGENT");
+		}
 		remittanceApplication.setApplInd(ConstantDocument.Individual);
-
+		remitAppDao.saveApplication(remittanceApplication);
+		return remittanceApplication;
 	}
 
 	private void setApplicableRates(RemittanceApplication remittanceApplication,

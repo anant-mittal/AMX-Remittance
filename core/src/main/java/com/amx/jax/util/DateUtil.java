@@ -8,10 +8,13 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Component;
+
 /*
  * Auth: Rabil
  * Date: 25/11/2017
  */
+@Component
 public class DateUtil {
 
 	public static String todaysDateWithDDMMYY(Date date, String action) {
