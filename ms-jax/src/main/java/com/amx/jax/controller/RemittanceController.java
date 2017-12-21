@@ -20,6 +20,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
@@ -40,6 +41,9 @@ public class RemittanceController {
 
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
+	
+	@Autowired
+	PurposeOfTransactionService purposeOfTransactionService;
 
 	@Autowired
 	ReportManagerService reportManagerService;
@@ -122,4 +126,7 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
 	}
+	
+	
+	
 }

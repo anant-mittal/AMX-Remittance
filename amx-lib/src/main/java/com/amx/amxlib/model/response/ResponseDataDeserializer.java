@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.AccountTypeDto;
+import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -143,11 +144,16 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;		
 		case "sourceofincome":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<SourceOfIncomeDto>>(){});
+			break;
+			
+		case "additionaldata":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<AddAdditionalBankDataDto>>(){});
 			break;	
+
 		case "remittance-application":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceApplicationResponseModel>>(){});
 			break;
-			
+
 			
 	}
 		

@@ -18,5 +18,10 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	@Query("select ra from RemittanceApplication ra where ra.paymentId=:paymentId")
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByPayId(@Param("paymentId") String paymentId);
 	
+	@Query(name="UPDATE EX_APPL_TRNX set ISACTIVE ='D' , APPLICATION_STATUS=null  "
+			+ "WHERE CUSTOMER_ID=:customerId AND trunc(sysdate)=trunc(CREATED_DATE) AND NVL(RESULT_CODE,' ') NOT IN('CAPTURED','APPROVED')",nativeQuery=true)
+	public void deActivateApplication(@Param("customerId") BigDecimal customerId);
+			
+
 	
 }

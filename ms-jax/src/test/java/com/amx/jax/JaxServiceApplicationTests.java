@@ -102,7 +102,6 @@ public class JaxServiceApplicationTests {
 		BigDecimal financialYear = new BigDecimal("2017");
 		String processIn = "U";
 		BigDecimal branchId = new BigDecimal("90");
-		
 		try {
 			Map<String, Object> outputMAp = applProDao.getDocumentSeriality(applCountryId, companyId, documentId, financialYear, processIn, branchId);
 			System.out.println("OUT PUT :"+outputMAp.toString());

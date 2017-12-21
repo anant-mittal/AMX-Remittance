@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -98,10 +97,14 @@ public class RemittanceApplicationManager {
 		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 
+<<<<<<< Updated upstream
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
 				.get(0);
 		parametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
 		parametersMap.put("P_DOCUMENT_CODE", document.getDocumentCode());
+=======
+		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
+>>>>>>> Stashed changes
 		remittanceApplication.setExDocument(document);
 		remittanceApplication.setDocumentCode(document.getDocumentCode());
 		CountryMaster appCountryId = new CountryMaster();
@@ -176,8 +179,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 
 		try {
-			remittanceApplication
-					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}

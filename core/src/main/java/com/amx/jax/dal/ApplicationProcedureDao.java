@@ -980,9 +980,9 @@ public class ApplicationProcedureDao {
 	 */
 	
 	public Map<String, Object> getBannedBankCheckProcedure(HashMap<String, Object> inputValues) {
-		BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
+		BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal beneBankId=(BigDecimal)inputValues.get("P_COMPANY_ID");
-		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_DOCUMENT_ID");
+		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
 		
 	logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" +inputValues.toString());
 	
@@ -991,7 +991,6 @@ public class ApplicationProcedureDao {
 	try {
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
 				new SqlParameter(Types.NUMERIC), // 2
-				new SqlParameter(Types.NUMERIC), // 3
 				new SqlParameter(Types.NUMERIC), // 3
 				new SqlOutParameter("P_ALERT_MESSAGE",Types.VARCHAR), // 4
 				new SqlOutParameter("P_ERROR_MESSAGE",Types.VARCHAR), // 5
