@@ -14,6 +14,20 @@ public class GuestSession implements Serializable {
 
 	private static final long serialVersionUID = -8825493107883952226L;
 
+	private Integer hits = 0;
+
+	public Integer getHits() {
+		return hits;
+	}
+
+	public void setHits(Integer hits) {
+		this.hits = hits;
+	}
+
+	public Integer hitCounter() {
+		return this.hits++;
+	}
+
 	private CustomerModel customerModel = null;
 
 	public CustomerModel getCustomerModel() {

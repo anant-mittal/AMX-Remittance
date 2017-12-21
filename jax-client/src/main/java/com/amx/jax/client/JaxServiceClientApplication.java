@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
-import com.amx.jax.client.config.Config;
+import com.amx.jax.client.config.JaxConfig;
 
 @SpringBootApplication
-@ComponentScan(basePackages="com.amx.jax")
+@ComponentScan(basePackages = "com.amx.jax")
 public class JaxServiceClientApplication {
 
 	public static void main(String[] args) {
@@ -22,16 +22,17 @@ public class JaxServiceClientApplication {
 	}
 
 	@Autowired
-	protected Config conf;
+	protected JaxConfig jaxConfig;
 
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		builder.rootUri(conf.getSpServiceUrl());
+		builder.rootUri(jaxConfig.getSpServiceUrl());
 		return builder.build();
 	}
 
 	@Bean("base_url")
 	public URL baseUrl() throws MalformedURLException {
-		return new URL(conf.getSpServiceUrl());
+		return new URL(jaxConfig.getSpServiceUrl());
 	}
+
 }

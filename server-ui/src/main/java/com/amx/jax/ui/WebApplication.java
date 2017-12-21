@@ -18,6 +18,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -32,7 +33,10 @@ import com.amx.jax.ui.service.HealthService;
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
 @EnableAsync
+@EnableCaching
 public class WebApplication extends SpringBootServletInitializer {
+
+	public static final String USE_HAZELCAST = "true";
 
 	@Autowired
 	private Properties props;

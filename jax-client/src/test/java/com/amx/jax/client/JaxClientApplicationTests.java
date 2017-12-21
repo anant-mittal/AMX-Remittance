@@ -22,7 +22,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.config.Config;
+import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.client.util.ConverterUtility;
 
 @RunWith(SpringRunner.class)
@@ -45,7 +45,7 @@ public class JaxClientApplicationTests {
 	}
 
 	@Autowired
-	protected Config conf;
+	protected JaxConfig conf;
 
 	//@Test
 	public void testSendotpapi() throws IOException {

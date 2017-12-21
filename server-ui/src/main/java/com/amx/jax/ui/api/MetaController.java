@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,6 +20,8 @@ import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.session.GuestSession;
+import com.hazelcast.core.HazelcastInstance;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +38,11 @@ public class MetaController {
 
 	@Autowired
 	TenantBean tenantBean;
+	@Autowired
+	GuestSession guestSession;
+
+	@Autowired
+	HazelcastInstance hazelcastInstance;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -43,8 +52,9 @@ public class MetaController {
 	}
 
 	@ApiOperation(value = "Ping")
-	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST })
-	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site) {
+	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site,
+			HttpSession httpSession) {
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
 
@@ -52,8 +62,17 @@ public class MetaController {
 			tenantBean.setName("site=" + site);
 		}
 
+		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
+		Integer hits = guestSession.hitCounter();
+
 		wrapper.getData().put("debug", env.isDebug());
 		wrapper.getData().put("site", tenantBean.getName());
+		wrapper.getData().put("id", httpSession.getId());
+		wrapper.getData().put("hits-s", hits);
+		wrapper.getData().put("hits-h", mapCustomers.get("hits"));
+
+		mapCustomers.put("hits", hits);
+
 		return wrapper;
 	}
 
