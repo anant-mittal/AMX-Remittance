@@ -22,7 +22,7 @@ public class CacheRedisConfiguration extends AbstractHttpSessionApplicationIniti
 	// }
 
 	@Value("${spring.redis.host}")
-	private String server;
+	private String host;
 
 	@Value("${spring.redis.port}")
 	private String port;
@@ -30,8 +30,8 @@ public class CacheRedisConfiguration extends AbstractHttpSessionApplicationIniti
 	@Bean(destroyMethod = "shutdown")
 	public RedissonClient redisson() throws IOException {
 		Config config = new Config();
-		config.useClusterServers().addNodeAddress("redis://10.28.42.83:6379");
-		config.useSingleServer().setAddress("redis://10.28.42.83:6379");
+		// config.useClusterServers().addNodeAddress("redis://10.28.42.83:6379");
+		config.useSingleServer().setAddress("redis://" + host + ":" + port);
 		return Redisson.create(config);
 	}
 }
