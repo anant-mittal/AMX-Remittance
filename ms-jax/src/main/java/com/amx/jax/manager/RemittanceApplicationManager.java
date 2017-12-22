@@ -1,5 +1,7 @@
 package com.amx.jax.manager;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -32,16 +36,19 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.services.BankService;
 import com.amx.jax.util.DateUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -72,8 +79,10 @@ public class RemittanceApplicationManager {
 	private ApplicationProcedureDao applicationProcedureDao;
 
 	@Resource
-	//@Qualifier("remitApplParametersMap")
 	private Map<String, Object> remitApplParametersMap;
+
+	@Autowired
+	private BankService bankService;
 
 	/**
 	 * @param validatedObjects:
@@ -178,7 +187,8 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 
 		try {
-			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication
+					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
@@ -186,17 +196,37 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
+		remittanceApplication.setApplInd(ConstantDocument.Individual);
+		remittanceApplication.setDocumentNo(generateDocumentNumber());
+		validateAdditionalErrorMessages(requestModel);
+		remittanceApplication.setInstruction("URGENT");
+		return remittanceApplication;
+	}
+
+	private void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
+		Map<String, Object> errorResponse = applicationProcedureDao
+				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
+		String errorMessage = (String) errorResponse.get("P_ERRMSG");
 		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
 				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
 		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
-		if (furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA") != null) {
-			remittanceApplication.setInstruction((String) furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA"));
-		} else {
-			remittanceApplication.setInstruction("URGENT");
+		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
+		if (requestModel.getSrlId() != null) {
+			BigDecimal srlId = requestModel.getSrlId();
+			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId);
+			if (additionaBnankDetail != null) {
+				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
+				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
+				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());
+			}
 		}
-		remittanceApplication.setApplInd(ConstantDocument.Individual);
-		remittanceApplication.setDocumentNo(generateDocumentNumber());
-		return remittanceApplication;
+		if (remitApplParametersMap.get("P_ADDITIONAL_BANK_RULE_ID_1") == null) {
+			errorMessage = "Additional Field required by bank not set";
+		}
+		if (StringUtils.isNotBlank(errorMessage)) {
+			//throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			//TODO: check why error is coming from s.p.
+		}
 	}
 
 	private BigDecimal generateDocumentNumber() {

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,7 @@ public class RemittanceAppBeneficiaryManager {
 	@Autowired
 	private ApplicationProcedureDao applicationProcedureDao;
 
-	@Autowired
+	@Resource
 	//@Qualifier("remitApplParametersMap")
 	private Map<String, Object> remitApplParametersMap;
 
