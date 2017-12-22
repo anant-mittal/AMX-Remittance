@@ -128,7 +128,7 @@ public class RemittanceController {
 		return response;
 	}
 
-	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.GET)
+	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.POST)
 	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
 		logger.info("In getPurposeOfTransaction with parameters" + model.toString());
 		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);

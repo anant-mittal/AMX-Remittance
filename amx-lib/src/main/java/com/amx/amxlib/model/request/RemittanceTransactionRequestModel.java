@@ -19,6 +19,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal foreignAmount;
 	private BigDecimal customerId;
 	private boolean availLoyalityPoints;
+	private BigDecimal additionalBankRuleFiledId;
+	private BigDecimal srlId;
 
 	/*
 	 * (non-Javadoc)
@@ -83,6 +85,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
 				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", customerId=" + customerId
 				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+	}
+
+	public BigDecimal getSrlId() {
+		return srlId;
+	}
+
+	public void setSrlId(BigDecimal srlId) {
+		this.srlId = srlId;
+	}
+
+	public BigDecimal getAdditionalBankRuleFiledId() {
+		return additionalBankRuleFiledId;
+	}
+
+	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
+		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
 
 }

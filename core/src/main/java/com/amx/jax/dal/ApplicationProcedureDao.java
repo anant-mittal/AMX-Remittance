@@ -529,7 +529,7 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(HashMap<String, Object> inputValues) {
+	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(Map<String, Object> inputValues) {
 
 		BigDecimal applicationCountyId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal routingCountryId = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
@@ -805,7 +805,7 @@ public class ApplicationProcedureDao {
 			BigDecimal foreignCurrencyId = (BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");
 			BigDecimal foreignAmount = (BigDecimal) inputValues.get("P_FOREIGN_AMOUNT");
 			BigDecimal customerId = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
-			BigDecimal beneficaryRelationshipId = (BigDecimal) inputValues.get("P_BENEFICARY_RELATIONSHIP_ID");
+			BigDecimal beneficaryAccountSeqId = (BigDecimal) inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
 
 			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
 					new SqlParameter(Types.NUMERIC), // 2
@@ -867,7 +867,7 @@ public class ApplicationProcedureDao {
 					cs.setBigDecimal(8, foreignCurrencyId);
 					cs.setBigDecimal(9, foreignAmount);
 					cs.setBigDecimal(10, customerId);
-					cs.setBigDecimal(11, beneficaryRelationshipId);
+					cs.setBigDecimal(11, beneficaryAccountSeqId);
 					cs.registerOutParameter(12, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(13, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(14, java.sql.Types.VARCHAR);
@@ -999,6 +999,7 @@ public class ApplicationProcedureDao {
 					cs.execute();
 					return cs;
 				}
+
 
 			}, declareInAndOutputParameters);
 			logger.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());

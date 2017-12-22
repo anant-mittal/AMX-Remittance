@@ -20,6 +20,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
@@ -69,7 +70,7 @@ public class RemitClient extends AbstractJaxServiceClient{
 		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT+"/remitReport/";
 		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {});
 		}catch(Exception e) {
-			log.error("exception in saveSecurityQuestions ", e);
+			log.error("exception in report ", e);
 		}
 		return response.getBody();
 	}
@@ -101,8 +102,8 @@ public class RemitClient extends AbstractJaxServiceClient{
 		ResponseEntity<ApiResponse<SourceOfIncomeDto>> response = null;
 		try {
 		HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
-		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/sourceofincome/";
-		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/sourceofincome/";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
 				});
 		
@@ -113,18 +114,39 @@ public class RemitClient extends AbstractJaxServiceClient{
 	}
 	
 
-	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(RemittanceTransactionRequestModel request) {
+	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
 		ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
 		try {
-			HttpEntity<PurposeOfTransactionModel> requestEntity = new HttpEntity<PurposeOfTransactionModel>(
-					getHeader());
-			String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+			request.setBeneId(beneId);
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
 					});
 
 		} catch (Exception e) {
 			log.error("exception in getPurposeOfTransactions ", e);
+		}
+		return response.getBody();
+
+	}
+	
+	public ApiResponse<PurposeOfTransactionModel> saveTransaction(
+			RemittanceTransactionRequestModel transactionRequestModel) {
+		ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
+		try {
+
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					transactionRequestModel, getHeader());
+			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-application/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
+					});
+
+		} catch (Exception e) {
+			log.error("exception in saveTransaction ", e);
 		}
 		return response.getBody();
 

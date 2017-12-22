@@ -40,7 +40,7 @@ public class RemittanceApplicationAdditionalDataManager {
 	MetaData metaData;
 
 	@Resource
-	//@Qualifier("remitApplParametersMap")
+	// @Qualifier("remitApplParametersMap")
 	private Map<String, Object> remitApplParametersMap;
 
 	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication) {
@@ -66,7 +66,10 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal additionalBankRuleId = (BigDecimal) remitApplParametersMap.get(params.pruleId);
 			String amiecCode = (String) remitApplParametersMap.get(params.pamieCode);
 			String flexFieldValue = (String) remitApplParametersMap.get(params.pflexField);
-			String indicator = params.indic;
+			String indicator = (String) remitApplParametersMap.get("P_FLEX_FIELD_CODE_1");
+			if (indicator == null) {
+				indicator = params.indic;
+			}
 			if (additionalBankRuleId != null) {
 				additionalInsData = createAdditionalIndicatorsData(remittanceApplication, applicationCountryId,
 						indicator, amiecCode, flexFieldValue, additionalBankRuleId);
@@ -112,7 +115,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			additionalInsData.setAmiecCode(amiecCode);
 		} else {
 			additionalInsData.setAmiecCode(ConstantDocument.AMIEC_CODE);
-			additionalInsData.setFlexFieldValue("KIOSK TEST");
+			additionalInsData.setFlexFieldValue("ONLINE TEST");
 		}
 
 		additionalInsData.setExRemittanceApplication(remittanceApplication);

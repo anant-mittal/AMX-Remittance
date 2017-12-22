@@ -45,7 +45,7 @@ public class RemittanceApplicationService {
 	
 	public void deActivateApplication(BigDecimal customerId) {
 		try {
-			remittanceApplicationRepository.deActivateApplication(customerId);
+			//remittanceApplicationRepository.deActivateApplication(customerId);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new GlobalException("deActivateApplication faliled for custoemr:"+customerId);

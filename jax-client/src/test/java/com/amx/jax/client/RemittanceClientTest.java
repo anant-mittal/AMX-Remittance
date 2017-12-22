@@ -42,12 +42,28 @@ public class RemittanceClientTest {
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new  BigDecimal(1424));
 		request.setCustomerId(new BigDecimal(5218));
-		response = client.getPurposeOfTransactions(request);
+		response = client.getPurposeOfTransactions(new  BigDecimal(1424));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	
+	@Test
+	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		ApiResponse<PurposeOfTransactionModel> response = null;
+		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+		request.setBeneId(new BigDecimal(1424));
+		request.setLocalAmount(new BigDecimal(100));
+		request.setCustomerId(new BigDecimal(5218));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+		request.setSrlId(new BigDecimal(48));
+		response = client.saveTransaction(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
 
 }
