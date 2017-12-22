@@ -154,7 +154,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceApplicationResponseModel>>(){});
 			break;
 
-			
+		case "purpose-of-txn":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PurposeOfTransactionModel>>(){});
+			break;
 	}
 		
 		

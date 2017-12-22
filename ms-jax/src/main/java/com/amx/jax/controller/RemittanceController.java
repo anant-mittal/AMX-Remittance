@@ -53,6 +53,7 @@ public class RemittanceController {
 	
 	@Autowired
 	MetaData metaData;
+	
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("docfyr") BigDecimal docfyr, @RequestParam("docNumber") String docNumber,
@@ -126,7 +127,12 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
 	}
-	
-	
+
+	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.GET)
+	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
+		logger.info("In getPurposeOfTransaction with parameters" + model.toString());
+		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);
+		return response;
+	}
 	
 }

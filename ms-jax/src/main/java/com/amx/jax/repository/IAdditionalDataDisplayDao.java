@@ -15,7 +15,7 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 
 
 	
-	String[] flexiFieldIn = {ConstantDocument.INDIC1,ConstantDocument.INDIC2,ConstantDocument.INDIC3,ConstantDocument.INDIC4,ConstantDocument.INDIC5};
+	public static String[] flexiFieldIn = {ConstantDocument.INDIC1,ConstantDocument.INDIC2,ConstantDocument.INDIC3,ConstantDocument.INDIC4,ConstantDocument.INDIC5};
 	
 	@Query("select av from AdditionalDataDisplayView av where av.applicationCountryId=:applicationCountryId "
 			+ " and av.routingCountryId=:countryId "
@@ -27,7 +27,8 @@ public interface IAdditionalDataDisplayDao  extends JpaRepository<AdditionalData
 			@Param("countryId") BigDecimal countryId, 
 			@Param("currencyId") BigDecimal currencyId, 
 			@Param("remittanceModeId") BigDecimal remittanceModeId,
-			@Param("deliveryModeId") BigDecimal deliveryModeId);
+			@Param("deliveryModeId") BigDecimal deliveryModeId,
+			@Param("flexiFieldIn") String[] flexiFieldIn );
 }
 
 //('"+ConstantDocument.INDIC1+"','"+ConstantDocument.INDIC2+"'"

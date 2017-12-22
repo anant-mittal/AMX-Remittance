@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +39,9 @@ public class RemittanceApplicationAdditionalDataManager {
 	@Autowired
 	MetaData metaData;
 
-	@Autowired
-	@Qualifier("remitApplParametersMap")
-	private Map<String, Object> parametersMap;
+	@Resource
+	//@Qualifier("remitApplParametersMap")
+	private Map<String, Object> remitApplParametersMap;
 
 	public List<AdditionalInstructionData> createAdditionalInstnData(RemittanceApplication remittanceApplication) {
 
@@ -61,9 +63,9 @@ public class RemittanceApplicationAdditionalDataManager {
 						ConstantDocument.INDIC5) };
 
 		for (AdditionalRuleDataParamer params : parameterList) {
-			BigDecimal additionalBankRuleId = (BigDecimal) parametersMap.get(params.pruleId);
-			String amiecCode = (String) parametersMap.get(params.pamieCode);
-			String flexFieldValue = (String) parametersMap.get(params.pflexField);
+			BigDecimal additionalBankRuleId = (BigDecimal) remitApplParametersMap.get(params.pruleId);
+			String amiecCode = (String) remitApplParametersMap.get(params.pamieCode);
+			String flexFieldValue = (String) remitApplParametersMap.get(params.pflexField);
 			String indicator = params.indic;
 			if (additionalBankRuleId != null) {
 				additionalInsData = createAdditionalIndicatorsData(remittanceApplication, applicationCountryId,
@@ -78,7 +80,7 @@ public class RemittanceApplicationAdditionalDataManager {
 	}
 
 	// checking Indic1,Indic2,Indic3,Indic4,Indic5
-	public AdditionalInstructionData createAdditionalIndicatorsData(RemittanceApplication remittanceApplication,
+	private AdditionalInstructionData createAdditionalIndicatorsData(RemittanceApplication remittanceApplication,
 			BigDecimal applicationCountryId, String indicatorCode, String amiecCode, String flexFieldValue,
 			BigDecimal additionalBankRuleId) {
 

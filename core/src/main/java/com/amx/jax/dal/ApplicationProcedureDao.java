@@ -25,6 +25,7 @@ import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
 
 @Component
+
 public class ApplicationProcedureDao {
 
 	private Logger logger = Logger.getLogger(ApplicationProcedureDao.class);
@@ -34,6 +35,7 @@ public class ApplicationProcedureDao {
 
 	/**
 	 * Purpose : toFetchDetilaFromAddtionalBenficiaryDetails
+	 * 
 	 * @param beneficaryMasterId
 	 * @param beneficaryBankId
 	 * @param beneficaryBankBranchId
@@ -50,28 +52,23 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(Map<String, Object> inputValues){
-			
-			
-			BigDecimal beneficaryMasterId =(BigDecimal)inputValues.get("P_BENEFICIARY_ID");
-			BigDecimal beneficaryBankId=(BigDecimal)inputValues.get("P_BENEFICIARY_BANK_ID");
-			BigDecimal beneficaryBankBranchId=(BigDecimal)inputValues.get("P_BENEFICIARY_BRANCH_ID");
-			BigDecimal beneAccNumSeqId=(BigDecimal)inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
-			BigDecimal routingCountry=(BigDecimal)inputValues.get("P_ROUTING_COUNTRY_ID");
-			BigDecimal routingBank=(BigDecimal)inputValues.get("P_ROUTING_BANK_ID");
-			BigDecimal routingBranch=(BigDecimal)inputValues.get("P_ROUTING_BANK_ID"); 
-			BigDecimal serviceMasterId=(BigDecimal)inputValues.get("P_SERVICE_MASTER_ID");
-			BigDecimal applicationCountryId=(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID");
-			BigDecimal currencyId=(BigDecimal)inputValues.get("P_CURRENCY_ID");
-			BigDecimal remitMode=(BigDecimal)inputValues.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryMode=(BigDecimal)inputValues.get("P_DELIVERY_MODE_ID"); 
+	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(Map<String, Object> inputValues) {
 
-
-
+		BigDecimal beneficaryMasterId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
+		BigDecimal beneficaryBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
+		BigDecimal beneficaryBankBranchId = (BigDecimal) inputValues.get("P_BENEFICIARY_BRANCH_ID");
+		BigDecimal beneAccNumSeqId = (BigDecimal) inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
+		BigDecimal routingCountry = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingBank = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBranch = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal serviceMasterId = (BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
+		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
+		BigDecimal remitMode = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryMode = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
 
 		logger.info("=====EX_GET_ADDL_BENE_DETAILS =Start toFetchDetilaFromAddtionalBenficiaryDetails ");
-		logger.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS :"+inputValues.toString());
-		
+		logger.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS :" + inputValues.toString());
 
 		Map<String, Object> output = null;
 		try {
@@ -177,7 +174,7 @@ public class ApplicationProcedureDao {
 					cs.setBigDecimal(4, documentId);
 					cs.setBigDecimal(5, financialYear);
 					cs.setString(6, processIn);
-					cs.registerOutParameter(7, java.sql.Types.INTEGER);
+					cs.registerOutParameter(7, java.sql.Types.NUMERIC);
 					cs.registerOutParameter(8, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
 					cs.execute();
@@ -394,43 +391,44 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> getAdditionalCheckProcedure(Map<String, Object> inputValues){
-		
-		logger.info("======Start getAdditionalCheckProcedure EX_APPL_ADDL_CHECKS========:"+inputValues.toString());
-		
-		BigDecimal appLicationCountryId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
-		BigDecimal customerId =(BigDecimal) inputValues.get("P_CUSTOMER_ID");
-		BigDecimal branchId =(BigDecimal) inputValues.get("P_BRANCH_ID");
-		BigDecimal beneId =(BigDecimal) inputValues.get("P_BENEFICIARY_ID");
-		
+	public Map<String, Object> getAdditionalCheckProcedure(Map<String, Object> inputValues) {
+
+		logger.info("======Start getAdditionalCheckProcedure EX_APPL_ADDL_CHECKS========:" + inputValues.toString());
+
+		BigDecimal appLicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal customerId = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
+		BigDecimal branchId = (BigDecimal) inputValues.get("P_BRANCH_ID");
+		BigDecimal beneId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
+
 		BigDecimal beneCountryId = (BigDecimal) inputValues.get("P_BENEFICIARY_COUNTRY_ID");
-		BigDecimal beneBankId=(BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
-		BigDecimal beneBankBranchId=(BigDecimal) inputValues.get("P_BENEFICIARY_BRANCH_ID");
-		String beneAccountNo=inputValues.get("P_BENEFICIARY_ACCOUNT_NO")==null?null:inputValues.get("P_BENEFICIARY_ACCOUNT_NO").toString();
-		BigDecimal serviceMasterId=(BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
-		BigDecimal routingCountryId=(BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
-		BigDecimal routingBankId=(BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
-		BigDecimal routingBankBranchId=(BigDecimal) inputValues.get("P_ROUTING_BANK_BRANCH_ID");
-		BigDecimal remittanceModeId=(BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
-		BigDecimal deliveryModeId=(BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
-		BigDecimal sourceOfIncomeId=(BigDecimal) inputValues.get("P_SOURCE_OF_INCOME_ID");
-		BigDecimal exchangeRateApplied=(BigDecimal) inputValues.get("P_EXCHANGE_RATE_APPLIED");
-		BigDecimal localCommisionCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_COMMISION_CURRENCY_ID");
-		BigDecimal localCommisionAmount=(BigDecimal) inputValues.get("P_LOCAL_COMMISION_AMOUNT");
-		BigDecimal localChargeCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_CHARGE_CURRENCY_ID");
-		BigDecimal localchargeAmount=(BigDecimal) inputValues.get("P_LOCAL_CHARGE_AMOUNT");
-		BigDecimal localDelivCurrencyId=(BigDecimal) inputValues.get("P_LOCAL_DELIVERY_CURRENCY_ID");
-		BigDecimal localDeliAmount=(BigDecimal) inputValues.get("P_LOCAL_DELIVERY_AMOUNT");
-		BigDecimal serviceProvider=(BigDecimal) inputValues.get("P_SERVICE_PROVIDER");
-		BigDecimal foreignCurrencyId=(BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");
-		BigDecimal foreignTrnxAmount=(BigDecimal) inputValues.get("P_FOREIGN_TRANX_AMOUNT");
-		BigDecimal localNetCurrecnyId=(BigDecimal) inputValues.get("P_LOCAL_NET_CURRENCY_ID");
-		BigDecimal localNetTrnxAmount=(BigDecimal) inputValues.get("P_LOCAL_NET_TRANX_AMOUNT");
-		String beneSwiftBank1=inputValues.get("P_BENEFICIARY_SWIFT_BANK1")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_BANK1").toString();
-		String beneSwiftBank2=inputValues.get("P_BENEFICIARY_SWIFT_BANK2")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_BANK2").toString();
-		
-		
-		
+		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
+		BigDecimal beneBankBranchId = (BigDecimal) inputValues.get("P_BENEFICIARY_BRANCH_ID");
+		String beneAccountNo = inputValues.get("P_BENEFICIARY_ACCOUNT_NO") == null ? null
+				: inputValues.get("P_BENEFICIARY_ACCOUNT_NO").toString();
+		BigDecimal serviceMasterId = (BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
+		BigDecimal routingCountryId = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankBranchId = (BigDecimal) inputValues.get("P_ROUTING_BANK_BRANCH_ID");
+		BigDecimal remittanceModeId = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryModeId = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+		BigDecimal sourceOfIncomeId = (BigDecimal) inputValues.get("P_SOURCE_OF_INCOME_ID");
+		BigDecimal exchangeRateApplied = (BigDecimal) inputValues.get("P_EXCHANGE_RATE_APPLIED");
+		BigDecimal localCommisionCurrencyId = (BigDecimal) inputValues.get("P_LOCAL_COMMISION_CURRENCY_ID");
+		BigDecimal localCommisionAmount = (BigDecimal) inputValues.get("P_LOCAL_COMMISION_AMOUNT");
+		BigDecimal localChargeCurrencyId = (BigDecimal) inputValues.get("P_LOCAL_CHARGE_CURRENCY_ID");
+		BigDecimal localchargeAmount = (BigDecimal) inputValues.get("P_LOCAL_CHARGE_AMOUNT");
+		BigDecimal localDelivCurrencyId = (BigDecimal) inputValues.get("P_LOCAL_DELIVERY_CURRENCY_ID");
+		BigDecimal localDeliAmount = (BigDecimal) inputValues.get("P_LOCAL_DELIVERY_AMOUNT");
+		BigDecimal serviceProvider = (BigDecimal) inputValues.get("P_SERVICE_PROVIDER");
+		BigDecimal foreignCurrencyId = (BigDecimal) inputValues.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal foreignTrnxAmount = (BigDecimal) inputValues.get("P_FOREIGN_TRANX_AMOUNT");
+		BigDecimal localNetCurrecnyId = (BigDecimal) inputValues.get("P_LOCAL_NET_CURRENCY_ID");
+		BigDecimal localNetTrnxAmount = (BigDecimal) inputValues.get("P_LOCAL_NET_TRANX_AMOUNT");
+		String beneSwiftBank1 = inputValues.get("P_BENEFICIARY_SWIFT_BANK1") == null ? null
+				: inputValues.get("P_BENEFICIARY_SWIFT_BANK1").toString();
+		String beneSwiftBank2 = inputValues.get("P_BENEFICIARY_SWIFT_BANK2") == null ? null
+				: inputValues.get("P_BENEFICIARY_SWIFT_BANK2").toString();
+
 		Map<String, Object> output = null;
 
 		try {
@@ -531,20 +529,19 @@ public class ApplicationProcedureDao {
 	 */
 
 	@Transactional
-	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(HashMap<String, Object> inputValues){
-			
-			
-			
-			BigDecimal applicationCountyId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
-			BigDecimal routingCountryId= (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
-			BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
-			BigDecimal currencyId= (BigDecimal) inputValues.get("P_CURRENCY_ID");
-			BigDecimal remittanceId= (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryId= (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
-			String furtherInstruction =inputValues.get("P_FURTHER_INSTR")==null?null:inputValues.get("P_FURTHER_INSTR").toString();  
-			
-		logger.info("=====EX_P_FURTHER_INSTRe ========"+inputValues.toString());
-		
+	public Map<String, Object> toFetchPurtherInstractionErrorMessaage(HashMap<String, Object> inputValues) {
+
+		BigDecimal applicationCountyId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
+		BigDecimal remittanceId = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryId = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+		String furtherInstruction = inputValues.get("P_FURTHER_INSTR") == null ? null
+				: inputValues.get("P_FURTHER_INSTR").toString();
+
+		logger.info("=====EX_P_FURTHER_INSTRe ========" + inputValues.toString());
+
 		Map<String, Object> output = null;
 
 		try {
@@ -602,19 +599,20 @@ public class ApplicationProcedureDao {
 	 * @return
 	 */
 	@Transactional
-	public Map<String, Object> toFetchSwiftBankProcedure(HashMap<String, Object> inputValues){
-			
-			BigDecimal applicationCountyId =(BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
-			BigDecimal routingCountryId= (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
-			BigDecimal currencyId= (BigDecimal) inputValues.get("P_CURRENCY_ID");
-			BigDecimal remittanceId= (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
-			BigDecimal deliveryId= (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
-			BigDecimal beneBankCountryId =( BigDecimal) inputValues.get("P_BENE_BANK_COUNTRY_ID");
-			String fieldName =inputValues.get("P_FIELD_NAME")==null?null:inputValues.get("P_FIELD_NAME").toString();  
-			String beneficiarySwiftBank =inputValues.get("P_BENEFICIARY_SWIFT_CODE")==null?null:inputValues.get("P_BENEFICIARY_SWIFT_CODE").toString();  
-			
-		logger.info("Procedure Name = EX_P_CHECK_SWIFT_BANK :"+inputValues.toString());
-		
+	public Map<String, Object> toFetchSwiftBankProcedure(HashMap<String, Object> inputValues) {
+
+		BigDecimal applicationCountyId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
+		BigDecimal remittanceId = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryId = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
+		BigDecimal beneBankCountryId = (BigDecimal) inputValues.get("P_BENE_BANK_COUNTRY_ID");
+		String fieldName = inputValues.get("P_FIELD_NAME") == null ? null : inputValues.get("P_FIELD_NAME").toString();
+		String beneficiarySwiftBank = inputValues.get("P_BENEFICIARY_SWIFT_CODE") == null ? null
+				: inputValues.get("P_BENEFICIARY_SWIFT_CODE").toString();
+
+		logger.info("Procedure Name = EX_P_CHECK_SWIFT_BANK :" + inputValues.toString());
+
 		Map<String, Object> output = null;
 
 		try {
@@ -673,22 +671,19 @@ public class ApplicationProcedureDao {
 	 * 
 	 */
 	@Transactional
-	public Map<String, Object> insertRemittanceOnline(HashMap<String, Object> inputValues){
-			
-			
-			
-			
-			BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
-			BigDecimal companyId=(BigDecimal)inputValues.get("P_COMPANY_ID");
-			BigDecimal customerNo=(BigDecimal)inputValues.get("P_CUSTOMER_ID");
-			String userName=inputValues.get("P_USER_NAME").toString();
-			String paymentId =inputValues.get("P_PAYMENT_ID")==null?"":inputValues.get("P_PAYMENT_ID").toString();
-			String authcode=inputValues.get("P_AUTHCOD")==null?"":inputValues.get("P_AUTHCOD").toString();
-			String tranId=inputValues.get("P_TRANID")==null?"":inputValues.get("P_TRANID").toString();
-			String refId=inputValues.get("P_REFID")==null?"":inputValues.get("P_REFID").toString();
-			
-		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" +inputValues.toString());
-		
+	public Map<String, Object> insertRemittanceOnline(HashMap<String, Object> inputValues) {
+
+		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
+		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
+		BigDecimal customerNo = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
+		String userName = inputValues.get("P_USER_NAME").toString();
+		String paymentId = inputValues.get("P_PAYMENT_ID") == null ? "" : inputValues.get("P_PAYMENT_ID").toString();
+		String authcode = inputValues.get("P_AUTHCOD") == null ? "" : inputValues.get("P_AUTHCOD").toString();
+		String tranId = inputValues.get("P_TRANID") == null ? "" : inputValues.get("P_TRANID").toString();
+		String refId = inputValues.get("P_REFID") == null ? "" : inputValues.get("P_REFID").toString();
+
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + inputValues.toString());
+
 		Map<String, Object> output = null;
 
 		try {
@@ -737,26 +732,23 @@ public class ApplicationProcedureDao {
 		}
 		return output;
 	}
-	
+
 	/**
 	 * 
 	 * @param inputValues
 	 * @return :Transfer from JAVA to OLD EMOS table
 	 */
 	@Transactional
-	public Map<String, Object> insertEMOSLIVETransfer(HashMap<String, Object> inputValues){
-			
-			
-			
-			
-			BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPL_CNTY_ID");
-			BigDecimal companyId=(BigDecimal)inputValues.get("P_COMPANY_ID");
-			BigDecimal documentId = (BigDecimal) inputValues.get("P_DOCUMENT_ID");
-			BigDecimal financialYr = (BigDecimal) inputValues.get("P_DOC_FINYR");
-			BigDecimal documentNo = (BigDecimal) inputValues.get("P_DOCUMENT_NO");
-			
-		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" +inputValues.toString());
-		
+	public Map<String, Object> insertEMOSLIVETransfer(HashMap<String, Object> inputValues) {
+
+		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
+		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
+		BigDecimal documentId = (BigDecimal) inputValues.get("P_DOCUMENT_ID");
+		BigDecimal financialYr = (BigDecimal) inputValues.get("P_DOC_FINYR");
+		BigDecimal documentNo = (BigDecimal) inputValues.get("P_DOCUMENT_NO");
+
+		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + inputValues.toString());
+
 		Map<String, Object> output = null;
 
 		try {
@@ -792,9 +784,6 @@ public class ApplicationProcedureDao {
 		}
 		return output;
 	}
-
-	
-	
 
 	/**
 	 * fetchAdditionalBankRuleIndicators
@@ -920,7 +909,7 @@ public class ApplicationProcedureDao {
 		}
 		return output;
 	}
-	
+
 	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
 
 		logger.info("In getRoutingDetails params:" + inputValue.toString());
@@ -973,50 +962,51 @@ public class ApplicationProcedureDao {
 
 		return output;
 	}
+
 	/**
 	 * 
 	 * @param inputValues
 	 * @return : For banned bank check
 	 */
-	
+
 	public Map<String, Object> getBannedBankCheckProcedure(HashMap<String, Object> inputValues) {
-		BigDecimal applicationCountryId =(BigDecimal)inputValues.get("P_APPLICATION_COUNTRY_ID");
-		BigDecimal beneBankId=(BigDecimal)inputValues.get("P_COMPANY_ID");
+		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
+		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_COMPANY_ID");
 		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
-		
-	logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" +inputValues.toString());
-	
-	Map<String, Object> output = null;
 
-	try {
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
-				new SqlParameter(Types.NUMERIC), // 2
-				new SqlParameter(Types.NUMERIC), // 3
-				new SqlOutParameter("P_ALERT_MESSAGE",Types.VARCHAR), // 4
-				new SqlOutParameter("P_ERROR_MESSAGE",Types.VARCHAR), // 5
-				new SqlOutParameter("P_BLIST_IND", Types.VARCHAR));// 6
-		output = jdbcTemplate.call(new CallableStatementCreator() {
-			@Override
-			public CallableStatement createCallableStatement(Connection con) throws SQLException {
-				String proc = "{call EX_P_BANNED_BANK_CHECK(?,?,?,?,?,?)} ";
-				CallableStatement cs = con.prepareCall(proc);
-				cs.setBigDecimal(1, applicationCountryId);
-				cs.setBigDecimal(2, beneBankId);
-				cs.setBigDecimal(3, beneMasSeqId);
-				cs.registerOutParameter(4, java.sql.Types.VARCHAR);
-				cs.registerOutParameter(5, java.sql.Types.VARCHAR);
-				cs.registerOutParameter(6, java.sql.Types.VARCHAR);
-				cs.execute();
-				return cs;
-			}
+		logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" + inputValues.toString());
 
-		}, declareInAndOutputParameters);
-		logger.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());
-	} catch (DataAccessException e) {
-		e.printStackTrace();
-		logger.info("Out put Parameters :" + e.getMessage());
+		Map<String, Object> output = null;
+
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlOutParameter("P_ALERT_MESSAGE", Types.VARCHAR), // 4
+					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR), // 5
+					new SqlOutParameter("P_BLIST_IND", Types.VARCHAR));// 6
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = "{call EX_P_BANNED_BANK_CHECK(?,?,?,?,?,?)} ";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, applicationCountryId);
+					cs.setBigDecimal(2, beneBankId);
+					cs.setBigDecimal(3, beneMasSeqId);
+					cs.registerOutParameter(4, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(5, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(6, java.sql.Types.VARCHAR);
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+			logger.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());
+		} catch (DataAccessException e) {
+			e.printStackTrace();
+			logger.info("Out put Parameters :" + e.getMessage());
+		}
+		return output;
 	}
-	return output;
-}
-	
+
 }

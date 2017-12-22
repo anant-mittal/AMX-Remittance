@@ -70,7 +70,7 @@ public class JaxClientApplicationTests {
 		assertNotNull(response.getResult().getOtp());
 	}
 
-	@Test
+	//@Test
 	public void testvalidateotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

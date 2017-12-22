@@ -11,7 +11,10 @@ import java.util.List;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -31,6 +34,8 @@ import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Service
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+
 public class BeneficiaryService extends AbstractService {
 
 	Logger logger = Logger.getLogger(BeneficiaryService.class);

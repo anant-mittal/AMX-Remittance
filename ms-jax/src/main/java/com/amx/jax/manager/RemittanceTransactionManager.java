@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +43,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
@@ -94,12 +97,14 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private ApplicationProcedureDao applicationProcedureDao;
 
-	@Autowired
-	@Qualifier("remitApplParametersMap")
-	private Map<String, Object> parametersMap;
+	@Resource
+	private Map<String, Object> remitApplParametersMap;
 
 	@Autowired
 	private RemittanceAppBeneficiaryManager remitAppBeneManager;
+
+	@Autowired
+	private RemittanceApplicationAdditionalDataManager remittanceAppAddlDataManager;
 
 	@Autowired
 	private RemittanceApplicationDao remitAppDao;
@@ -120,10 +125,11 @@ public class RemittanceTransactionManager {
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		Map<String, Object> routingDetails = applicationProcedureDao.getRoutingDetails(beneBankDetails);
-		parametersMap.putAll(beneBankDetails);
-		parametersMap.putAll(routingDetails);
-		parametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
+		remitApplParametersMap.putAll(beneBankDetails);
+		remitApplParametersMap.putAll(routingDetails);
+		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
+		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
 		BigDecimal routingBankId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_ID").toString());
 		BigDecimal rountingBankbranchId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_BRANCH_ID").toString());
@@ -169,33 +175,33 @@ public class RemittanceTransactionManager {
 
 	private void addExchangeRateParameters(RemittanceTransactionResponsetModel responseModel) {
 		ExchangeRateBreakup breakup = responseModel.getExRateBreakup();
-		parametersMap.put("P_EXCHANGE_RATE_APPLIED", breakup.getRate());
-		parametersMap.put("P_LOCAL_COMMISION_CURRENCY_ID", meta.getDefaultCurrencyId());
-		parametersMap.put("P_LOCAL_COMMISION_AMOUNT", responseModel.getTxnFee());
-		parametersMap.put("P_LOCAL_CHARGE_CURRENCY_ID", meta.getDefaultCurrencyId());
-		parametersMap.put("P_LOCAL_CHARGE_AMOUNT", breakup.getConvertedLCAmount());
-		parametersMap.put("P_FOREIGN_TRANX_AMOUNT", breakup.getConvertedFCAmount());
-		parametersMap.put("P_LOCAL_NET_CURRENCY_ID", meta.getDefaultCurrencyId());
-		parametersMap.put("P_LOCAL_NET_TRANX_AMOUNT", breakup.getNetAmount());
-		parametersMap.put("P_FOREIGN_AMOUNT", breakup.getConvertedFCAmount());
+		remitApplParametersMap.put("P_EXCHANGE_RATE_APPLIED", breakup.getRate());
+		remitApplParametersMap.put("P_LOCAL_COMMISION_CURRENCY_ID", meta.getDefaultCurrencyId());
+		remitApplParametersMap.put("P_LOCAL_COMMISION_AMOUNT", responseModel.getTxnFee());
+		remitApplParametersMap.put("P_LOCAL_CHARGE_CURRENCY_ID", meta.getDefaultCurrencyId());
+		remitApplParametersMap.put("P_LOCAL_CHARGE_AMOUNT", breakup.getConvertedLCAmount());
+		remitApplParametersMap.put("P_FOREIGN_TRANX_AMOUNT", breakup.getConvertedFCAmount());
+		remitApplParametersMap.put("P_LOCAL_NET_CURRENCY_ID", meta.getDefaultCurrencyId());
+		remitApplParametersMap.put("P_LOCAL_NET_TRANX_AMOUNT", breakup.getNetAmount());
+		remitApplParametersMap.put("P_FOREIGN_AMOUNT", breakup.getConvertedFCAmount());
 
 	}
 
 	private void addRequestParameters(RemittanceTransactionRequestModel model) {
 		BigDecimal beneId = model.getBeneId();
-		parametersMap.put("P_BENEFICIARY_ID", beneId);
-		parametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
-		parametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
+		remitApplParametersMap.put("P_BENEFICIARY_ID", beneId);
+		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
+		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
 
 	}
 
 	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
 
-		parametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
-		parametersMap.put("P_BENEFICIARY_ACCOUNT_NO", beneficiary.getBankAccountNumber());
-		parametersMap.put("P_SERVICE_PROVIDER", beneficiary.getServiceProvider());
-		parametersMap.put("P_FOREIGN_CURRENCY_ID", beneficiary.getCurrencyId());
-		parametersMap.put("P_BENEFICARY_RELATIONSHIP_ID", beneficiary.getBeneficiaryRelationShipSeqId());
+		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		remitApplParametersMap.put("P_BENEFICIARY_ACCOUNT_NO", beneficiary.getBankAccountNumber());
+		remitApplParametersMap.put("P_SERVICE_PROVIDER", beneficiary.getServiceProvider());
+		remitApplParametersMap.put("P_FOREIGN_CURRENCY_ID", beneficiary.getCurrencyId());
+		remitApplParametersMap.put("P_BENEFICARY_RELATIONSHIP_ID", beneficiary.getBeneficiaryRelationShipSeqId());
 
 	}
 
@@ -345,7 +351,8 @@ public class RemittanceTransactionManager {
 				validatedObjects, validationResults);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
-		remitAppDao.saveApplication(remittanceApplication, remittanceAppBeneficairy);
+		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication);
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		return remiteAppModel;
@@ -353,12 +360,12 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateAdditionalBeneDetails() {
-		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(parametersMap);
-		parametersMap.putAll(output);
+		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
+		remitApplParametersMap.putAll(output);
 	}
 
 	private void validateAdditionalCheck() {
-		applicationProcedureDao.getAdditionalCheckProcedure(parametersMap);
+		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
 	}
 
 }

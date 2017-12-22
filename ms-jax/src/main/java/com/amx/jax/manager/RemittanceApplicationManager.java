@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,9 +71,9 @@ public class RemittanceApplicationManager {
 	@Autowired
 	private ApplicationProcedureDao applicationProcedureDao;
 
-	@Autowired
-	@Qualifier("remitApplParametersMap")
-	private Map<String, Object> parametersMap;
+	@Resource
+	//@Qualifier("remitApplParametersMap")
+	private Map<String, Object> remitApplParametersMap;
 
 	/**
 	 * @param validatedObjects:
@@ -97,14 +99,11 @@ public class RemittanceApplicationManager {
 		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 
-<<<<<<< Updated upstream
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
 				.get(0);
-		parametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
-		parametersMap.put("P_DOCUMENT_CODE", document.getDocumentCode());
-=======
-		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
->>>>>>> Stashed changes
+
+		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
+		remitApplParametersMap.put("P_DOCUMENT_CODE", document.getDocumentCode());
 		remittanceApplication.setExDocument(document);
 		remittanceApplication.setDocumentCode(document.getDocumentCode());
 		CountryMaster appCountryId = new CountryMaster();
@@ -140,7 +139,7 @@ public class RemittanceApplicationManager {
 		// fin year
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		remittanceApplication.setExUserFinancialYearByDocumentFinanceYear(userFinancialYear);
-		parametersMap.put("P_USER_FINANCIAL_YEAR", userFinancialYear.getFinancialYear());
+		remitApplParametersMap.put("P_USER_FINANCIAL_YEAR", userFinancialYear.getFinancialYear());
 		// routing Country
 		CountryMaster bencountrymaster = new CountryMaster();
 		bencountrymaster.setCountryId(routingCountryId);
@@ -188,8 +187,8 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		Map<String, Object> furtherSwiftAdditionalDetails = applicationProcedureDao
-				.fetchAdditionalBankRuleIndicators(parametersMap);
-		parametersMap.putAll(furtherSwiftAdditionalDetails);
+				.fetchAdditionalBankRuleIndicators(remitApplParametersMap);
+		remitApplParametersMap.putAll(furtherSwiftAdditionalDetails);
 		if (furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA") != null) {
 			remittanceApplication.setInstruction((String) furtherSwiftAdditionalDetails.get("P_FURTHER_INSTR_DATA"));
 		} else {
@@ -203,8 +202,8 @@ public class RemittanceApplicationManager {
 	private BigDecimal generateDocumentNumber() {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		BigDecimal documentId = (BigDecimal) parametersMap.get("P_DOCUMENT_ID");
-		BigDecimal finYear = (BigDecimal) parametersMap.get("P_USER_FINANCIAL_YEAR");
+		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
+		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
 		BigDecimal branchId = metaData.getCountryBranchId();
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
 				finYear, "U", branchId);

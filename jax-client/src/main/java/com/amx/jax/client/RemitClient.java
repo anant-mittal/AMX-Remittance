@@ -19,6 +19,7 @@ import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
@@ -106,15 +107,28 @@ public class RemitClient extends AbstractJaxServiceClient{
 				});
 		
 		}catch(Exception e) {
-			log.error("exception in saveSecurityQuestions ", e);
+			log.error("exception in getSourceOfIncome ", e);
 		}
 		return response.getBody();
 	}
 	
-	
-	
-	
-	
+
+	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(RemittanceTransactionRequestModel request) {
+		ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
+		try {
+			HttpEntity<PurposeOfTransactionModel> requestEntity = new HttpEntity<PurposeOfTransactionModel>(
+					getHeader());
+			String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
+					});
+
+		} catch (Exception e) {
+			log.error("exception in getPurposeOfTransactions ", e);
+		}
+		return response.getBody();
+
+	}
 	
 
 }

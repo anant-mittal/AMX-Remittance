@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
@@ -22,6 +25,7 @@ import com.amx.jax.repository.ISourceOfIncomeDao;
 
 @Service
 @SuppressWarnings("rawtypes")
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
@@ -29,7 +33,6 @@ public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
 	RemittanceTransactionManager remittanceTxnManger;
-	
 	
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
