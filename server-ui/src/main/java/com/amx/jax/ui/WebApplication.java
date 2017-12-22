@@ -36,7 +36,8 @@ import com.amx.jax.ui.service.HealthService;
 @EnableCaching
 public class WebApplication extends SpringBootServletInitializer {
 
-	public static final String USE_HAZELCAST = "true";
+	public static final String USE_HAZELCAST = "false";
+	public static final String USE_REDIS = "true";
 
 	@Autowired
 	private JaxProperties props;
