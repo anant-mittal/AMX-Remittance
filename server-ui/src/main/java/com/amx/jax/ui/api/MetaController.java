@@ -40,9 +40,6 @@ public class MetaController {
 	@Autowired
 	GuestSession guestSession;
 
-//	@Autowired
-//	HazelcastInstance hazelcastInstance;
-
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
