@@ -9,5 +9,7 @@ public abstract class AbstractModel implements Serializable {
 	private static final long serialVersionUID = -5279804951579408228L;
 
 	@JsonIgnore
-	public abstract String getModelType();
+	public String getModelType() {
+		return this.getClass().getName();
+	};
 }

@@ -2,7 +2,7 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
-public class SecurityQuestionModel {
+public class SecurityQuestionModel extends AbstractModel {
 
 	private BigDecimal questionSrNo;
 
