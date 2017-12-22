@@ -21,7 +21,6 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.GuestSession;
-import com.hazelcast.core.HazelcastInstance;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,9 +39,6 @@ public class MetaController {
 	TenantBean tenantBean;
 	@Autowired
 	GuestSession guestSession;
-
-	@Autowired
-	HazelcastInstance hazelcastInstance;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -68,7 +64,8 @@ public class MetaController {
 		wrapper.getData().put("site", tenantBean.getName());
 		wrapper.getData().put("id", httpSession.getId());
 		wrapper.getData().put("hits-s", hits);
-
+		
+		/*
 		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
 		
 		hits = mapCustomers.get("hits");
@@ -79,7 +76,7 @@ public class MetaController {
 		wrapper.getData().put("h-name", hazelcastInstance.getName());
 		wrapper.getData().put("hits-h", hits);
 		mapCustomers.put("hits", ++hits);
-
+		*/
 		return wrapper;
 	}
 
