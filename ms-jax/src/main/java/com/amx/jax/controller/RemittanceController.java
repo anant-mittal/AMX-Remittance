@@ -122,14 +122,14 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
-	public ApiResponse saveApplication(RemittanceTransactionRequestModel model) {
+	public ApiResponse saveApplication(@RequestBody RemittanceTransactionRequestModel model) {
 		logger.info("In Save-Application with parameters" + model.toString());
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
 	}
 
 	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.POST)
-	public ApiResponse getPurposeOfTransaction( RemittanceTransactionRequestModel model) {
+	public ApiResponse getPurposeOfTransaction(@RequestBody RemittanceTransactionRequestModel model) {
 		logger.info("In getPurposeOfTransaction with parameters" + model.toString());
 		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);
 		return response;
