@@ -13,11 +13,14 @@ import com.amx.amxlib.model.AbstractModel;
  */
 public class RemittanceTransactionRequestModel extends AbstractModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private BigDecimal beneId;
 	private BigDecimal sourceOfFund;
 	private BigDecimal localAmount;
 	private BigDecimal foreignAmount;
-	private BigDecimal customerId;
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
@@ -72,18 +75,10 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
-
 	@Override
 	public String toString() {
 		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", customerId=" + customerId
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
 				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
 	}
 
