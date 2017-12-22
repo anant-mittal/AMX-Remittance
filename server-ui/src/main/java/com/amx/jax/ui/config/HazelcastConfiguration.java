@@ -18,29 +18,6 @@ import com.hazelcast.core.HazelcastInstance;
 @ConditionalOnExpression(com.amx.jax.ui.WebApplication.USE_HAZELCAST)
 public class HazelcastConfiguration {
 
-	/**
-	 * Create a Hazelcast {@code Config} object as a bean. Spring Boot will use the
-	 * presence of this to determine that a {@code HazelcastInstance} should be
-	 * created with this configuration.
-	 *
-	 * As a simple side-step to possible networking issues, turn off multicast in
-	 * favour of TCP connection to the local host.
-	 *
-	 * @return Configuration for the Hazelcast instance
-	 */
-	// @Bean
-	// public Config config() {
-	//
-	// Config config = new Config();
-	//
-	// JoinConfig joinConfig = config.getNetworkConfig().getJoin();
-	//
-	// joinConfig.getMulticastConfig().setEnabled(false);
-	// joinConfig.getTcpIpConfig().setEnabled(true).setMembers(singletonList("10.28.42.13:5700"));
-	//
-	// return config;
-	// }
-
 	@Value("${spring.session.hazelcast.server}")
 	private String server;
 
@@ -60,31 +37,4 @@ public class HazelcastConfiguration {
 		return hazelcastInstance;
 	}
 
-	/**
-	 * Create a web filter. Parameterize this with two properties,
-	 *
-	 * <ol>
-	 * <li><i>instance-name</i> Direct the web filter to use the existing Hazelcast
-	 * instance rather than to create a new one.</li>
-	 * <li><i>sticky-session</i> As the HTTP session will be accessed from multiple
-	 * processes, deactivate the optimization that assumes each user's traffic is
-	 * routed to the same process for that user.</li>
-	 * </ol>
-	 *
-	 * Spring will assume dispatcher types of {@code FORWARD}, {@code INCLUDE} and
-	 * {@code REQUEST}, and a context pattern of "{@code /*}".
-	 *
-	 * @param hazelcastInstance
-	 *            Created by Spring
-	 * @return The web filter for Tomcat
-	 */
-//	@Bean
-//	public WebFilter webFilter() {
-//
-//		Properties properties = new Properties();
-//		properties.put("instance-name", "spring:session:sessions");
-//		properties.put("sticky-session", "false");
-//
-//		return new WebFilter();
-//	}
 }
