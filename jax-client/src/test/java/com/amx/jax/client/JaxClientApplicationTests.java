@@ -47,7 +47,7 @@ public class JaxClientApplicationTests {
 	@Autowired
 	protected JaxConfig conf;
 
-	//@Test
+	@Test
 	public void testSendotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

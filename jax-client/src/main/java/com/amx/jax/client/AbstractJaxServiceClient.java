@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -43,9 +45,9 @@ public abstract class AbstractJaxServiceClient {
 
 	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
 
-	protected MultiValueMap<String, String> getHeader() {
+	protected HttpHeaders getHeader() {
 
-		MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+		HttpHeaders headers = new HttpHeaders();
 		try {
 			JaxMetaInfo info = new JaxMetaInfo();
 			info.setCountryId(jaxMetaInfo.getCountryId());
