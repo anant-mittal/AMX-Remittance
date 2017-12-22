@@ -110,7 +110,7 @@ public class RemittanceTransactionManager {
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
 		addRequestParameters(model);
-		Customer customer = custDao.getCustById(model.getCustomerId());
+		Customer customer = custDao.getCustById(meta.getCustomerId());
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
