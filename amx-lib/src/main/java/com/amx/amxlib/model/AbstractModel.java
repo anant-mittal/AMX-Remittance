@@ -1,8 +1,12 @@
 package com.amx.amxlib.model;
 
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class AbstractModel {
+public abstract class AbstractModel implements Serializable {
+
+	private static final long serialVersionUID = -5279804951579408228L;
 
 	@JsonIgnore
 	public abstract String getModelType();
