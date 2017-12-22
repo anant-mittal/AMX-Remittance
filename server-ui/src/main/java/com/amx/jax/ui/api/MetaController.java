@@ -67,8 +67,8 @@ public class MetaController {
 		wrapper.getData().put("site", tenantBean.getName());
 		wrapper.getData().put("id", httpSession.getId());
 		wrapper.getData().put("hits-s", hits);
-
-		/**
+		
+		/*
 		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
 		
 		hits = mapCustomers.get("hits");
@@ -79,8 +79,7 @@ public class MetaController {
 		wrapper.getData().put("h-name", hazelcastInstance.getName());
 		wrapper.getData().put("hits-h", hits);
 		mapCustomers.put("hits", ++hits);
-		**/
-
+		*/
 		return wrapper;
 	}
 
