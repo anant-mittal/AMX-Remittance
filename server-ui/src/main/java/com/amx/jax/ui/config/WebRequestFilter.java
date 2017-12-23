@@ -18,17 +18,11 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.Urly;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
-
-import springfox.documentation.RequestHandler;
 
 @Component
 public class WebRequestFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
-	private static final MetricRegistry metrics = new MetricRegistry();
-	//private final Histogram responseSizes = metrics.histogram(name(RequestHandler.class, "response-sizes"));
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
