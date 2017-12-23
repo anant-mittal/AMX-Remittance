@@ -171,7 +171,7 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
 			@RequestBody(required = false) RemittanceTransactionRequestModel request) {
 		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
