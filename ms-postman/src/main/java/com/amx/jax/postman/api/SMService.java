@@ -20,14 +20,16 @@ public class SMService {
 	private String remoteUrl;
 	@Value("${msg91.sender.id}")
 	private String senderId;
+	@Value("${msg91.route}")
+	private String route;
 
 	public void sendSMS(SMS sms) throws UnirestException {
 
 		HttpResponse<String> response = Unirest.post(remoteUrl).header("authkey", authKey)
 				.header("content-type", "application/json")
 				.body(String.format(
-						"{ \"sender\": \"%s\", \"route\": \"4\", \"country\": \"91\", \"sms\": [ { \"message\": \"%s\", \"to\": [ \"%s\" ] } ] }",
-						senderId, sms.getText(), sms.getTo().get(0)))
+						"{ \"sender\": \"%s\", \"route\": \"%s\", \"country\": \"91\", \"sms\": [ { \"message\": \"%s\", \"to\": [ \"%s\" ] } ] }",
+						senderId, route, sms.getText(), sms.getTo().get(0)))
 				.asString();
 		logger.info("SMS Sent   " + response.getBody());
 	}
