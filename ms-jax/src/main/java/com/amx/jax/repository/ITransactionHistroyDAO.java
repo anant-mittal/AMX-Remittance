@@ -46,7 +46,21 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 			@Param("beneRelationId") BigDecimal beneRelationId);
 	
 	
-
+	
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid  and th.beneficiaryRelationSeqId=:beneRelationId and th.idno=:transactionId")
+	public CustomerRemittanceTransactionView getTrnxHistByBeneIdAndTranId(
+			@Param("customerid") BigDecimal customerid, 
+			@Param("beneRelationId") BigDecimal beneRelationId, 
+			@Param("transactionId") BigDecimal transactionId);
+	
+	
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid  and th.idno=:transactionId")
+	public CustomerRemittanceTransactionView getTrnxHistTranId(
+			@Param("customerid") BigDecimal customerid, 
+			@Param("transactionId") BigDecimal transactionId);
+	
+	
+//and th.beneficiaryRelationSeqId=:beneRelationId
 	
 	
 	

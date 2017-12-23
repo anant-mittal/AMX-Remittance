@@ -82,16 +82,15 @@ public class BeneClient extends AbstractJaxServiceClient{
 	
 	
 	
-	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId) {
+	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId,BigDecimal transactionId) {
 		ResponseEntity<ApiResponse<RemittancePageDto>> response = null;
 		try {
 			
 			log.info("Default Beneficiary");
 			
 			StringBuffer sb = new StringBuffer();
-			if(beneRealtionId != null) {
-				sb.append("?beneRelationId=").append(beneRealtionId);
-			}
+			sb.append("?beneRelationId=").append(beneRealtionId).append("&transactionId=").append(transactionId);
+
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/defaultbene/"+sb.toString();

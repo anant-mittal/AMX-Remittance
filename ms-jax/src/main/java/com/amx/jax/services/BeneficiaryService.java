@@ -36,6 +36,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.Util;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -226,10 +227,12 @@ public class BeneficiaryService extends AbstractService {
 	 * to get default beneficiary.
 	 * @param beneocountryList
 	 * @return
+	 * Transaction Id: idno
+	 * And Beneficiary Id :idNo
 	 */
 	
 	public ApiResponse getDefaultBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,
-			BigDecimal beneRealtionId) {
+			BigDecimal beneRealtionId,BigDecimal transactionId) {
 		ApiResponse response = getBlackApiResponse();
 		try {
 		BenificiaryListView beneList = null;
@@ -248,8 +251,12 @@ public class BeneficiaryService extends AbstractService {
 			throw new GlobalException("Not found");
 		}else {
 			beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
-			if(beneDto!=null) {
+			if(beneDto!=null && !Util.isNullZeroBigDecimalCheck(transactionId) && (Util.isNullZeroBigDecimalCheck(beneRealtionId) || Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
 				trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
+			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId) && Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
+				trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId,transactionId);
+			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId)){
+				trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
 			}
 			
 		}
