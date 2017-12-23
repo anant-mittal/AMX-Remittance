@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.jax.scope.TenantBean;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.GuestSession;
 
 import io.swagger.annotations.Api;
@@ -36,7 +36,8 @@ public class MetaController {
 	AppEnvironment env;
 
 	@Autowired
-	TenantBean tenantBean;
+	TenantService tenantService;
+
 	@Autowired
 	GuestSession guestSession;
 
@@ -54,36 +55,26 @@ public class MetaController {
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
 
-		if (tenantBean.getName() == null) {
-			tenantBean.setName("site=" + site);
-		}
-
 		Integer hits = guestSession.hitCounter();
 
 		wrapper.getData().put("debug", env.isDebug());
-		wrapper.getData().put("site", tenantBean.getName());
 		wrapper.getData().put("id", httpSession.getId());
 		wrapper.getData().put("hits-s", hits);
-		
-		/*
-		Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
-		
-		hits = mapCustomers.get("hits");
-		if (hits == null) {
-			hits = 0;
-		}
 
-		wrapper.getData().put("h-name", hazelcastInstance.getName());
-		wrapper.getData().put("hits-h", hits);
-		mapCustomers.put("hits", ++hits);
-		*/
+		/*
+		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
+		 * 
+		 * hits = mapCustomers.get("hits"); if (hits == null) { hits = 0; }
+		 * 
+		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
+		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
+		 */
 		return wrapper;
 	}
 
 	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(
-				jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults());
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantService.getOnlineCurrencies());
 	}
 
 	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })
