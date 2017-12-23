@@ -18,6 +18,7 @@ import org.springframework.util.MultiValueMap;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
@@ -78,6 +79,27 @@ public class BeneClient extends AbstractJaxServiceClient{
 		return response.getBody();
 	}
 
+	
+	
+	
+	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId) {
+		ResponseEntity<ApiResponse<RemittancePageDto>> response = null;
+		try {
+			
+			log.info("Default Beneficiary");
+			
+			StringBuffer sb = new StringBuffer();
+			sb.append("?beneRealtionId=").append(beneRealtionId);
+			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/defaultbene/"+sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>(){});
+		} catch (Exception e) {
+			log.debug("Default Beneficiary bene client ", e);
+		}
+		return response.getBody();
+	}
+	
 	
 	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneMasSeqId,String remarks) {
 		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
