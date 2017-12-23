@@ -969,9 +969,9 @@ public class ApplicationProcedureDao {
 	 * @return : For banned bank check
 	 */
 
-	public Map<String, Object> getBannedBankCheckProcedure(HashMap<String, Object> inputValues) {
+	public Map<String, Object> getBannedBankCheckProcedure(Map<String, Object> inputValues) {
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
-		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_COMPANY_ID");
+		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
 		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
 
 		logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" + inputValues.toString());

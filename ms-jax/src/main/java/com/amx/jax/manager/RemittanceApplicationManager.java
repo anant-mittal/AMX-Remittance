@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -37,6 +38,7 @@ import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
@@ -192,11 +194,27 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setApplInd(ConstantDocument.Individual);
 		remittanceApplication.setDocumentNo(generateDocumentNumber());
 		validateAdditionalErrorMessages(requestModel);
+		validateBannedBank();
+		validateDailyBeneficiaryTransactionLimit();
 		remittanceApplication.setInstruction("URGENT");
 		return remittanceApplication;
 	}
 
+	private void validateDailyBeneficiaryTransactionLimit() {
+		
+		
+	}
+
+	private void validateBannedBank() {
+		Map<String, Object> output = applicationProcedureDao.getBannedBankCheckProcedure(remitApplParametersMap);
+		String errorMessage = (String) output.get("P_ERROR_MESSAGE");
+		if (errorMessage != null) {
+			throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		}
+	}
+
 	private void validateAdditionalErrorMessages(RemittanceTransactionRequestModel requestModel) {
+		remitApplParametersMap.put("P_FURTHER_INSTR", "URGENT");
 		Map<String, Object> errorResponse = applicationProcedureDao
 				.toFetchPurtherInstractionErrorMessaage(remitApplParametersMap);
 		String errorMessage = (String) errorResponse.get("P_ERRMSG");
@@ -217,8 +235,7 @@ public class RemittanceApplicationManager {
 			errorMessage = "Additional Field required by bank not set";
 		}
 		if (StringUtils.isNotBlank(errorMessage)) {
-			//throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
-			//TODO: check why error is coming from s.p.
+			throw new GlobalException(errorMessage, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 	}
 

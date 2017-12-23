@@ -8,21 +8,29 @@ public class RemittancePageDto extends AbstractModel {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private BeneficiaryListDTO beneficiaryDto;
 	private TransactionHistroyDTO trnxHistDto;
-	
+
 	public BeneficiaryListDTO getBeneficiaryDto() {
 		return beneficiaryDto;
 	}
+
 	public void setBeneficiaryDto(BeneficiaryListDTO beneficiaryDto) {
 		this.beneficiaryDto = beneficiaryDto;
 	}
+
 	public TransactionHistroyDTO getTrnxHistDto() {
 		return trnxHistDto;
 	}
+
 	public void setTrnxHistDto(TransactionHistroyDTO trnxHistDto) {
 		this.trnxHistDto = trnxHistDto;
+	}
+
+	@Override
+	public String getModelType() {
+		return "remittance-page-dto";
 	}
 
 }

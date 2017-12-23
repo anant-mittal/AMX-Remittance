@@ -13,6 +13,7 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
@@ -156,6 +157,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 
 		case "purpose-of-txn":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PurposeOfTransactionModel>>(){});
+			break;
+			
+		case "remittance-page-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittancePageDto>>(){});
 			break;
 	}
 		

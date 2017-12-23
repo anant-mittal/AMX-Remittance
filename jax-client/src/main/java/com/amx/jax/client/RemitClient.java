@@ -134,7 +134,8 @@ public class RemitClient extends AbstractJaxServiceClient{
 	}
 	
 	public ApiResponse<PurposeOfTransactionModel> saveTransaction(
-			RemittanceTransactionRequestModel transactionRequestModel) {
+			RemittanceTransactionRequestModel transactionRequestModel)
+			throws RemittanceTransactionValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
 		try {
 
@@ -148,6 +149,7 @@ public class RemitClient extends AbstractJaxServiceClient{
 		} catch (Exception e) {
 			log.error("exception in saveTransaction ", e);
 		}
+		validateRemittanceDataValidation(response.getBody());
 		return response.getBody();
 
 	}
