@@ -14,15 +14,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.exception.InvalidInputException;
-import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -153,16 +150,11 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/bnfcry_check", method = { RequestMethod.POST })
-	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
-			@RequestBody RemittanceTransactionRequestModel remitReq) {
-		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
-
-		try {
-			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(remitReq).getResult());
-		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.ERROR, e);
-		}
+	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestBody(required = false) BigDecimal beneId,
+			@RequestBody(required = false) BigDecimal transactionId) {
+		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
+		wrapper.setData(jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId).getResult());
 		return wrapper;
 	}
 }
