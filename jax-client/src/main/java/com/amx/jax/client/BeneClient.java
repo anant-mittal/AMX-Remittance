@@ -89,7 +89,9 @@ public class BeneClient extends AbstractJaxServiceClient{
 			log.info("Default Beneficiary");
 			
 			StringBuffer sb = new StringBuffer();
-			sb.append("?beneRealtionId=").append(beneRealtionId);
+			if(beneRealtionId != null) {
+				sb.append("?beneRelationId=").append(beneRealtionId);
+			}
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/defaultbene/"+sb.toString();

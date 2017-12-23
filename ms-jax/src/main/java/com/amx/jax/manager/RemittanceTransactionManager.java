@@ -211,7 +211,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateNumberOfTransactionLimits() {
-		Map<String, Integer> customerTxnAmounts = getCustomerTransactionAmounts();
+		Map<String, Integer> customerTxnAmounts = getCustomerTransactionCounts();
 		List<AuthenticationLimitCheckView> txnLimits = parameterService.getAllNumberOfTxnLimits();
 		for (AuthenticationLimitCheckView limitView : txnLimits) {
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
@@ -311,7 +311,7 @@ public class RemittanceTransactionManager {
 	 * Returns customer's transaction amounts in 3 forms 1. daily 2. weekly 3.
 	 * monthly
 	 */
-	public Map<String, Integer> getCustomerTransactionAmounts() {
+	public Map<String, Integer> getCustomerTransactionCounts() {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, Integer> output = new HashMap<>();
 		Customer customer = custDao.getCustById(meta.getCustomerId());
