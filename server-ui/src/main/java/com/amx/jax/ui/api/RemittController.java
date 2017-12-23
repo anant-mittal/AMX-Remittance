@@ -14,12 +14,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
+import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -157,4 +162,25 @@ public class RemittController {
 		wrapper.setData(jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId).getResult());
 		return wrapper;
 	}
+
+	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(
+			@RequestBody(required = false) BigDecimal beneId) {
+		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
+		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
+			@RequestBody(required = false) RemittanceTransactionRequestModel request) {
+		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
+		try {
+			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(request).getResult());
+		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e);
+		}
+		return wrapper;
+	}
+
 }
