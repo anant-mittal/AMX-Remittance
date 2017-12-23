@@ -156,16 +156,15 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
-	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestBody(required = false) BigDecimal beneId,
-			@RequestBody(required = false) BigDecimal transactionId) {
+	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
+			@RequestParam(required = false) BigDecimal transactionId) {
 		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
 		wrapper.setData(jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId).getResult());
 		return wrapper;
 	}
 
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(
-			@RequestBody(required = false) BigDecimal beneId) {
+	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(@RequestParam BigDecimal beneId) {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
@@ -173,7 +172,7 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
-			@RequestBody(required = false) RemittanceTransactionRequestModel request) {
+			@RequestBody RemittanceTransactionRequestModel request) {
 		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
 		try {
 			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(request).getResult());
