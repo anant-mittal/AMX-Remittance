@@ -54,6 +54,14 @@ public class TransactionHistroyDTO {
 	private BigDecimal languageId;
 	
 
+	private BigDecimal beneficiaryRelationSeqId;
+	
+	private BigDecimal localTrnxAmount;
+	
+	
+	private BigDecimal sourceOfIncomeId;
+	
+
 	public BigDecimal getIdno() {
 		return idno;
 	}
@@ -260,6 +268,30 @@ public class TransactionHistroyDTO {
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+
+	public BigDecimal getBeneficiaryRelationSeqId() {
+		return beneficiaryRelationSeqId;
+	}
+
+	public void setBeneficiaryRelationSeqId(BigDecimal beneficiaryRelationSeqId) {
+		this.beneficiaryRelationSeqId = beneficiaryRelationSeqId;
+	}
+
+	public BigDecimal getLocalTrnxAmount() {
+		return localTrnxAmount;
+	}
+
+	public void setLocalTrnxAmount(BigDecimal localTrnxAmount) {
+		this.localTrnxAmount = localTrnxAmount;
+	}
+
+	public BigDecimal getSourceOfIncomeId() {
+		return sourceOfIncomeId;
+	}
+
+	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
+		this.sourceOfIncomeId = sourceOfIncomeId;
 	}
 
 }

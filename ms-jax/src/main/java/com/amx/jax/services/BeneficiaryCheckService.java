@@ -363,7 +363,6 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		} else {
 			beneDto.setUpdateNeeded(true);
-
 			errorDesc = "Invalid beneficiary city";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);

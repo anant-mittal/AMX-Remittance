@@ -103,7 +103,9 @@ public class TransactionHistroyService extends AbstractService {
 			model.setIdno(hist.getIdno());
 			model.setTrnxIdNumber(hist.getDocumentFinanceYear()+"/"+hist.getDocumentNumber());
 			model.setCustomerId(hist.getCustomerId());
-			
+			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
+			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
+			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 			list.add(model);
 		}
 		return list;

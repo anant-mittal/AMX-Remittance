@@ -11,7 +11,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "VW_EX_TRANSACTION_INQUIRY")
+@Table(name = "JAX_VW_EX_TRANSACTION_INQUIRY")
 public class CustomerRemittanceTransactionView implements Serializable {
 	/**
 	 * 
@@ -81,6 +81,18 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	
 	@Column(name="CUSTOMER_ID")
 	private BigDecimal customerId;
+	
+	@Column(name="BENEFICARY_RELATIONSHIP_SEQ_ID")
+	private BigDecimal beneficiaryRelationSeqId;
+	
+	
+	@Column(name="LOCAL_TRANX_AMOUNT")
+	private BigDecimal localTrnxAmount;
+	
+	@Column(name="SOURCE_OF_INCOME_ID")
+	private BigDecimal sourceOfIncomeId;
+	
+	
 	
 	
 
@@ -258,5 +270,29 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	public BigDecimal getBeneficiaryRelationSeqId() {
+		return beneficiaryRelationSeqId;
+	}
+
+	public void setBeneficiaryRelationSeqId(BigDecimal beneficiaryRelationSeqId) {
+		this.beneficiaryRelationSeqId = beneficiaryRelationSeqId;
+	}
+
+	public BigDecimal getLocalTrnxAmount() {
+		return localTrnxAmount;
+	}
+
+	public void setLocalTrnxAmount(BigDecimal localTrnxAmount) {
+		this.localTrnxAmount = localTrnxAmount;
+	}
+
+	public BigDecimal getSourceOfIncomeId() {
+		return sourceOfIncomeId;
+	}
+
+	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
+		this.sourceOfIncomeId = sourceOfIncomeId;
 	}
 }

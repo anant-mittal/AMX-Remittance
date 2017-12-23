@@ -29,11 +29,25 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 			@Param("docNumber") BigDecimal docNumber);
 	
 
-	@Query(value=" select * from VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2 "
+	@Query(value=" select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2 "
 			+ "and DOCUMENT_DATE between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy') ",nativeQuery=true)
 	public List<CustomerRemittanceTransactionView> getTransactionHistroyDateWise(
 			BigDecimal customerId,  BigDecimal docfyr,
 			 String fromDate, String toDate);
 
+	
+
+	
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.beneficiaryRelationSeqId=:beneRelationId "
+			+ " and TRUNC(th.documentDate)=(select MAX(TRUNC(thi.documentDate)) from CustomerRemittanceTransactionView thi "
+			+ " where thi.customerId=:customerid and thi.beneficiaryRelationSeqId=:beneRelationId)")
+	public CustomerRemittanceTransactionView getDefaultTrnxHist(
+			@Param("customerid") BigDecimal customerid, 
+			@Param("beneRelationId") BigDecimal beneRelationId);
+	
+	
+
+	
+	
 	
 }

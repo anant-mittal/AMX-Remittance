@@ -35,6 +35,7 @@ public class BeneficiaryController {
 	@Autowired
 	BeneficiaryService beneService;
 	
+	
 	@Autowired
 	AccountTypeService accountTypeService;
 	
@@ -79,6 +80,21 @@ public class BeneficiaryController {
 		}else {
 			 response = beneService.getBeneficiaryCountryListForOnline(customerId);
 		}
+		return response;
+	}
+	
+	
+	
+	@RequestMapping(value = "/defaultbene/", method = RequestMethod.POST)
+	public ApiResponse defaultBeneficiary(@RequestParam(required=false,value="beneRelationId") BigDecimal beneRelationId) {
+		logger.info("Bene disable method Trnx Report:");
+		ApiResponse response = null;
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		logger.info("Relation ship Id :" + beneRelationId);
+		logger.info("customerId Id :" + customerId);
+		logger.info("applicationCountryId  :" + applicationCountryId);
+		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId);
 		return response;
 	}
 	

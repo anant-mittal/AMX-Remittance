@@ -18,11 +18,14 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
@@ -31,11 +34,12 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-
+@SuppressWarnings("rawtypes")
 public class BeneficiaryService extends AbstractService {
 
 	Logger logger = Logger.getLogger(BeneficiaryService.class);
@@ -60,7 +64,11 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	BeneficiaryDao beneDao;
+	
+	@Autowired
+	ITransactionHistroyDAO tranxHistDao;
 
+	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
@@ -83,6 +91,12 @@ public class BeneficiaryService extends AbstractService {
 		response.getData().setType("beneList");
 		return response;
 	}
+	
+	
+	
+	
+	
+	
 
 	public class BenificiaryListViewOnlineComparator implements Comparator<BenificiaryListView> {
 
@@ -205,6 +219,52 @@ public class BeneficiaryService extends AbstractService {
 
 		return response;
 	}
+	
+	
+	
+	/**
+	 * to get default beneficiary.
+	 * @param beneocountryList
+	 * @return
+	 */
+	
+	public ApiResponse getDefaultBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,
+			BigDecimal beneRealtionId) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+		BenificiaryListView beneList = null;
+		BeneficiaryListDTO beneDto =null;
+		CustomerRemittanceTransactionView trnxView = null;
+		RemittancePageDto remitPageDto = new RemittancePageDto();
+		
+		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+			beneList = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId, beneRealtionId);
+		} else {
+			beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
+		
+		}
+		
+		if(beneList ==null) {
+			throw new GlobalException("Not found");
+		}else {
+			beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
+			if(beneDto!=null) {
+				trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
+			}
+			
+		}
+		
+		remitPageDto.setBeneficiaryDto(beneDto);
+		remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+		response.getData().getValues().add(remitPageDto);
+		response.setResponseStatus(ResponseStatus.OK);
+		}catch (Exception e) {
+			throw new GlobalException("Default bene not found");
+		}
+		return response;
+	}
+	
+	
 
 	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();
@@ -238,6 +298,19 @@ public class BeneficiaryService extends AbstractService {
 		return dto;
 	}
 
+	
+	private TransactionHistroyDTO convertTranHistDto(CustomerRemittanceTransactionView tranView) {
+		TransactionHistroyDTO tranDto = new TransactionHistroyDTO();
+		try {
+			BeanUtils.copyProperties(tranDto, tranView);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("bene list display", e);
+		}
+		return tranDto;
+		
+	}
+	
+	
 	public String getBeneficiaryContactNumber(BigDecimal beneMasterId) {
 		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
 		BeneficaryContact beneContact = beneContactList.get(0);
@@ -255,6 +328,11 @@ public class BeneficiaryService extends AbstractService {
 	public SwiftMasterView getSwiftMasterBySwiftBic(String swiftBic) {
 		return beneDao.getSwiftMasterBySwiftBic(swiftBic);
 	}
+	
+	
+	
+	
+	
 	
 
 	@Override
