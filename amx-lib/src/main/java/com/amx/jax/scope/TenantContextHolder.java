@@ -6,34 +6,24 @@ public class TenantContextHolder {
 
 	public static final String TENANT = "tnt";
 
-	public static void setCurrent(TenantContextHolder context) {
-		ContextUtil.map().put(TENANT, context.getSite());
+	public static void setDefault(Tenant site) {
+		ContextUtil.map().put(TENANT, site);
+	}
+
+	public static void setCurrent(String siteId) {
+		ContextUtil.map().put(TENANT, fromString(siteId));
+	}
+
+	public static void setDefault() {
+		ContextUtil.map().put(TENANT, Tenant.KUWAIT);
 	}
 
 	public static Tenant currentSite() {
-		return (Tenant) ContextUtil.map().get(TENANT);
-	}
-
-	Tenant site;
-
-	public TenantContextHolder() {
-		this.site = Tenant.KUWAIT;
-	}
-
-	public TenantContextHolder(String siteId) {
-		this.site = fromString(siteId);
-	}
-
-	public Tenant getSite() {
-		return site;
-	}
-
-	public void setSite(Tenant site) {
-		this.site = site;
-	}
-
-	public void setSite(String siteId) {
-		this.site = fromString(siteId);
+		Object site = ContextUtil.map().get(TENANT);
+		if (site == null) {
+			return Tenant.KUWAIT;
+		}
+		return (Tenant) site;
 	}
 
 	public static Tenant fromString(String siteId) {

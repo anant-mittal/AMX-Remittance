@@ -18,13 +18,17 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.Urly;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+
+import springfox.documentation.RequestHandler;
 
 @Component
 public class WebRequestFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
-
-	TenantContextHolder siteContext = new TenantContextHolder();
+	private static final MetricRegistry metrics = new MetricRegistry();
+	//private final Histogram responseSizes = metrics.histogram(name(RequestHandler.class, "response-sizes"));
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -38,30 +42,30 @@ public class WebRequestFilter implements Filter {
 		HttpServletRequest request = ((HttpServletRequest) req);
 		String url = request.getRequestURI();
 		LOGGER.info("Trace Id in th begining {} {}", ContextUtil.getTraceId(), url);
-		String site = request.getParameter(TenantContextHolder.TENANT);
-		if (site == null) {
-			site = Urly.getSubDomainName(request.getServerName());
+		String siteId = request.getParameter(TenantContextHolder.TENANT);
+		if (siteId == null) {
+			siteId = Urly.getSubDomainName(request.getServerName());
 		}
 
 		/**
 		 * Not able to use session scoped bean here so using typical session attribute;
 		 */
-		if (site == null) {
-			site = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
+		if (siteId == null) {
+			siteId = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
 		}
 
-		if (site != null && !Constants.BLANK.equals(site)) {
-			request.getSession().setAttribute(TenantContextHolder.TENANT, site);
-			siteContext.setSite(site);
+		if (siteId != null && !Constants.BLANK.equals(siteId)) {
+			request.getSession().setAttribute(TenantContextHolder.TENANT, siteId);
+			TenantContextHolder.setCurrent(siteId);
+		} else {
+			TenantContextHolder.setDefault();
 		}
-
-		TenantContextHolder.setCurrent(siteContext);
 
 		try {
 			chain.doFilter(req, resp);
 		} finally {
 			time = System.currentTimeMillis() - time;
-			LOGGER.info("Trace Id in filter end {} {}  time taken was {}", ContextUtil.getTraceId(), url,time);
+			LOGGER.info("Trace Id in filter end {} {}  time taken was {}", ContextUtil.getTraceId(), url, time);
 		}
 	}
 
