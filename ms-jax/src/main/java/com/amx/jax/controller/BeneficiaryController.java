@@ -85,8 +85,19 @@ public class BeneficiaryController {
 	
 	
 	
+	
+	
+	/**
+	 * to get default beneficiary bene id and tran id is optional.
+	 * @param beneocountryList
+	 * @return
+	 * From Transaction list need to pass transaction history : idno
+	 * And From beneficiary list need to pass Beneficiary :idNo
+	 */
+	
 	@RequestMapping(value = "/defaultbene/", method = RequestMethod.POST)
-	public ApiResponse defaultBeneficiary(@RequestParam(required=false,value="beneRelationId") BigDecimal beneRelationId) {
+	public ApiResponse defaultBeneficiary(@RequestParam(required=false,value="beneRelationId") BigDecimal beneRelationId,
+			@RequestParam(required=false,value="transactionId") BigDecimal transactionId) {
 		logger.info("Bene disable method Trnx Report:");
 		ApiResponse response = null;
 		BigDecimal customerId = metaData.getCustomerId();
@@ -94,7 +105,7 @@ public class BeneficiaryController {
 		logger.info("Relation ship Id :" + beneRelationId);
 		logger.info("customerId Id :" + customerId);
 		logger.info("applicationCountryId  :" + applicationCountryId);
-		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId);
+		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,transactionId);
 		return response;
 	}
 	
