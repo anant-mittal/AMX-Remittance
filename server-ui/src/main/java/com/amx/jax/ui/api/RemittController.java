@@ -33,7 +33,6 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
 import com.bootloaderjs.JsonUtil;
-import com.codahale.metrics.annotation.Timed;
 import com.lowagie.text.DocumentException;
 
 import io.swagger.annotations.Api;
@@ -57,7 +56,6 @@ public class RemittController {
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
-	@Timed
 	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>(
 				jaxService.setDefaults().getRemitClient().getTransactionHistroy("2017", null, null, null).getResults());
