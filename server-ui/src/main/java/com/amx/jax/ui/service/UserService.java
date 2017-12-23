@@ -38,10 +38,14 @@ public class UserService {
 	public CurrencyMasterDTO getDefaultForCurrency() {
 		if (defaultForCurrency == null) {
 			BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
-			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
-				if (currency.getCountryId().equals(nationalityId)) {
-					defaultForCurrency = currency;
-					break;
+			if (nationalityId == null) {
+				defaultForCurrency = tenantService.getOnlineCurrencies().get(0);
+			} else {
+				for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
+					if (nationalityId.equals(currency.getCountryId())) {
+						defaultForCurrency = currency;
+						break;
+					}
 				}
 			}
 		}
