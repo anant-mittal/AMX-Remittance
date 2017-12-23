@@ -28,6 +28,8 @@ import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.service.TenantService;
+import com.amx.jax.ui.service.UserService;
 import com.bootloaderjs.JsonUtil;
 import com.codahale.metrics.annotation.Timed;
 import com.lowagie.text.DocumentException;
@@ -41,6 +43,12 @@ public class RemittController {
 
 	@Autowired
 	private JaxService jaxService;
+
+	@Autowired
+	private TenantService tenantService;
+
+	@Autowired
+	private UserService userService;
 
 	@Autowired
 	private PostManClient postManClient;
@@ -110,16 +118,29 @@ public class RemittController {
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
-		CurrencyMasterDTO domCur = jaxService.setDefaults().getMetaClient()
-				.getCurrencyByCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID)).getResult();
+		CurrencyMasterDTO domCur = tenantService.getDomCurrency();
+		CurrencyMasterDTO forCurcy = null;
+
 		wrapper.getData().setDomCur(domCur);
 
-		if (forCur != null) {
-			wrapper.getData().setForCur(forCur);
+		if (forCur == null) {
+			forCurcy = userService.getDefaultForCurrency();
+		} else {
+			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
+				if (currency.getCurrencyId().equals(forCur)) {
+					forCurcy = currency;
+					break;
+				}
+			}
+		}
+
+		if (forCurcy != null) {
+			wrapper.getData().setForCur(forCurcy);
 			ExchangeRateResponseModel resp;
 			try {
 				resp = jaxService.setDefaults().getxRateClient()
-						.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCur, domAmount, null)
+						.getExchangeRate(new BigDecimal(JaxService.DEFAULT_CURRENCY_ID), forCurcy.getCurrencyId(),
+								domAmount, null)
 						.getResult();
 				wrapper.getData().setForXRate(resp.getExRateBreakup().getInverseRate());
 				wrapper.getData().setDomXRate(resp.getExRateBreakup().getRate());

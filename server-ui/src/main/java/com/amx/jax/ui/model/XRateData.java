@@ -8,7 +8,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 
 public class XRateData {
 
-	BigDecimal forCur = null;
+	CurrencyMasterDTO forCur = null;
 	String forCurDesc = null;
 	BigDecimal forXRate = null;
 	BigDecimal forAmount = null;
@@ -28,12 +28,12 @@ public class XRateData {
 		this.beneBanks = set;
 	}
 
-	public BigDecimal getForCur() {
+	public CurrencyMasterDTO getForCur() {
 		return forCur;
 	}
 
-	public void setForCur(BigDecimal forCur) {
-		this.forCur = forCur;
+	public void setForCur(CurrencyMasterDTO forCurcy) {
+		this.forCur = forCurcy;
 	}
 
 	public String getForCurDesc() {
