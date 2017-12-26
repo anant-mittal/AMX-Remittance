@@ -16,6 +16,15 @@ public class UserSession implements Serializable {
 	private static final long serialVersionUID = -6354887590466374869L;
 	private boolean valid = false;
 	private String otpPrefix = null;
+	private String uuidToken = null;
+
+	public String getUuidToken() {
+		return uuidToken;
+	}
+
+	public void setUuidToken(String uuidToken) {
+		this.uuidToken = uuidToken;
+	}
 
 	public void setOtpPrefix() {
 		this.otpPrefix = Random.randomAlpha(3);

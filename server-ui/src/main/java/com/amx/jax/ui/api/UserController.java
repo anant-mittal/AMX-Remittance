@@ -18,6 +18,7 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
+import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserSession;
 
 import io.swagger.annotations.Api;
@@ -32,6 +33,9 @@ public class UserController {
 
 	@Autowired
 	private LoginService loginService;
+
+	@Autowired
+	SessionService sessionService;
 
 	/**
 	 * Asks for user login and password
@@ -66,9 +70,7 @@ public class UserController {
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
-		userSession.setValid(false);
-		userSession.setCustomerModel(null);
-		SecurityContextHolder.getContext().setAuthentication(null);
+		sessionService.unauthorize();
 
 		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;

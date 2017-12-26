@@ -1,6 +1,7 @@
 package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,6 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
@@ -70,8 +72,8 @@ public class SessionService {
 		token.setDetails(new WebAuthenticationDetails(request));
 		Authentication authentication = this.customerAuthProvider.authenticate(token);
 		userSession.setCustomerModel(customerModel);
-		this.indexUser(customerModel.getCustomerId());
-		// userSession.setValid(true);
+		this.indexUser();
+		userSession.setValid(true);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
@@ -79,9 +81,46 @@ public class SessionService {
 		userSession.setValid(valid);
 	}
 
+	public Boolean validatedUser() {
+		return userSession.isValid();
+	}
+
 	@SuppressWarnings("unchecked")
-	public void indexUser(BigDecimal customerId) {
+	public void indexUser() {
+
+		if (userSession.getCustomerModel() == null) {
+			return;
+		}
+
+		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
 		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+		String userKeyString = String.format("{}#{}", TenantContextHolder.currentSite().getId(), customerId.toString());
+
+		String uuidToken = UUID.randomUUID().toString();
+		userSession.setUuidToken(uuidToken);
+		map.fastPut(userKeyString, uuidToken);
+	}
+
+	public Boolean indexedUser() {
+
+		if (userSession.getCustomerModel() == null) {
+			return Boolean.FALSE;
+		}
+		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
+		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+		String userKeyString = String.format("{}#{}", TenantContextHolder.currentSite().getId(), customerId.toString());
+
+		String uuidToken = userSession.getUuidToken();
+		if (map.containsKey(userKeyString) && uuidToken != null) {
+			String uuidTokenTemp = map.get(userKeyString);
+			return uuidToken.equals(uuidTokenTemp);
+		}
+		return false;
+	}
+
+	public void unauthorize() {
+		this.clear();
+		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
 	/**
