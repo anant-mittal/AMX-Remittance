@@ -388,9 +388,8 @@ public class RemittanceTransactionManager {
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(remittanceApplication.getLocalNetTranxAmount());
-		remiteAppModel.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
-				+ remittanceApplication.getDocumentNo().toString());
-
+		remiteAppModel.setPaymentId(remittanceApplication.getPaymentId());
+		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		return remiteAppModel;
 
 	}
