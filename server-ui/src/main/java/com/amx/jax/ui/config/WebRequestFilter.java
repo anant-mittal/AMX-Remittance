@@ -55,6 +55,8 @@ public class WebRequestFilter implements Filter {
 			TenantContextHolder.setDefault();
 		}
 
+		// LOGGER.info("Tenant {}", sessionService.getTenantBean().getTenant().getId());
+
 		try {
 			chain.doFilter(req, resp);
 		} finally {

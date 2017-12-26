@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.ui.service.JaxService;
 
@@ -46,6 +48,15 @@ public class TenantBean {
 			this.setOnlineCurrencies(onlineCurrencies);
 		}
 		return onlineCurrencies;
+	}
+
+	private Tenant tenant;
+
+	public Tenant getTenant() {
+		if (tenant == null) {
+			tenant = TenantContextHolder.currentSite();
+		}
+		return tenant;
 	}
 
 }
