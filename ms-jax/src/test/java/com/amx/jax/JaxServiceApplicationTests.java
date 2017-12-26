@@ -102,7 +102,7 @@ public class JaxServiceApplicationTests {
 	
 	@Test
 	public void getDocumentSeriality() {
-		System.out.println(loyalityRepo.getTodaysLoyalityPointsEncashed(new  BigDecimal(5218)));
+		System.out.println(beneSerive.getTodaysTransactionForBene(new BigDecimal(5218), new BigDecimal(1424)));
 	}
 	
 	

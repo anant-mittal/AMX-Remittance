@@ -36,14 +36,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.netPayableAmount = netPayableAmount;
 	}
 
-	public String getPaymentId() {
-		return documentIdForPayment;
-	}
-
-	public void setPaymentId(String paymentId) {
-		this.documentIdForPayment = paymentId;
-	}
-
 	public String getDocumentIdForPayment() {
 		return documentIdForPayment;
 	}
@@ -59,5 +51,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	public void setMerchantTrackId(BigDecimal merchantTrackId) {
 		this.merchantTrackId = merchantTrackId;
 	}
+
 
 }
