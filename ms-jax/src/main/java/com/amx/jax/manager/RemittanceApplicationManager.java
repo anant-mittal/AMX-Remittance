@@ -45,6 +45,7 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.BankService;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.util.DateUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -79,6 +80,9 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BankService bankService;
+
+	@Autowired
+	private BeneficiaryService beneficiaryService;
 
 	/**
 	 * @param validatedObjects:
@@ -195,14 +199,22 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(generateDocumentNumber());
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
-		validateDailyBeneficiaryTransactionLimit();
+		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
 		return remittanceApplication;
 	}
 
-	private void validateDailyBeneficiaryTransactionLimit() {
-		
-		
+	private void validateDailyBeneficiaryTransactionLimit(BenificiaryListView beneDetails) {
+		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),
+				beneDetails.getBeneficaryMasterSeqId());
+		if (todaysTxns > 0) {
+			throw new GlobalException(
+					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"
+							+ " hours. In the interest of safety, we do not allow a customer to repeat the same"
+							+ " transaction to the same beneficiary more than once in 24 hours."
+							+ " Kindly logout and login to make a new application for the same details",
+					JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
+		}
 	}
 
 	private void validateBannedBank() {

@@ -339,7 +339,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	
 	
-	
+	public Integer getTodaysTransactionForBene(BigDecimal customerId, BigDecimal benRelationId) {
+		return tranxHistDao.getTodaysTransactionForBeneficiary(customerId, benRelationId);
+	}
 	
 	
 

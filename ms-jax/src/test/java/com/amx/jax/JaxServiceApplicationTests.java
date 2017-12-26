@@ -19,6 +19,7 @@ import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;
 
@@ -38,7 +39,8 @@ public class JaxServiceApplicationTests {
 	@Autowired
 	ApplicationProcedureDao applProDao;
 	
-	
+	@Autowired
+	BeneficiaryService beneSerive;
 	
 
 	// @Test
@@ -96,19 +98,7 @@ public class JaxServiceApplicationTests {
 	
 	@Test
 	public void getDocumentSeriality() {
-		BigDecimal applCountryId = new BigDecimal("91");
-		BigDecimal companyId = new BigDecimal("1");
-		BigDecimal documentId = new BigDecimal("1");
-		BigDecimal financialYear = new BigDecimal("2017");
-		String processIn = "U";
-		BigDecimal branchId = new BigDecimal("90");
-		try {
-			Map<String, Object> outputMAp = applProDao.getDocumentSeriality(applCountryId, companyId, documentId, financialYear, processIn, branchId);
-			System.out.println("OUT PUT :"+outputMAp.toString());
-			
-		}catch(Exception e) {
-			System.out.println("Message :"+e.getMessage());
-		}
+		System.out.println(beneSerive.getTodaysTransactionForBene(new BigDecimal(5218), new BigDecimal(1424)));
 	}
 	
 	

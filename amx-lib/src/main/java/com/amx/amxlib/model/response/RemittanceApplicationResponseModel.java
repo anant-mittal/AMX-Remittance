@@ -6,8 +6,14 @@ import com.amx.amxlib.model.AbstractModel;
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 
-	public BigDecimal remittanceAppId;
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BigDecimal remittanceAppId;
+	private String paymentId;
+	private BigDecimal netPayableAmount;
+
 	@Override
 	public String getModelType() {
 		return "remittance-application";
@@ -19,6 +25,22 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	public void setRemittanceAppId(BigDecimal remittanceAppId) {
 		this.remittanceAppId = remittanceAppId;
+	}
+
+	public BigDecimal getNetPayableAmount() {
+		return netPayableAmount;
+	}
+
+	public void setNetPayableAmount(BigDecimal netPayableAmount) {
+		this.netPayableAmount = netPayableAmount;
+	}
+
+	public String getPaymentId() {
+		return paymentId;
+	}
+
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
 	}
 
 }
