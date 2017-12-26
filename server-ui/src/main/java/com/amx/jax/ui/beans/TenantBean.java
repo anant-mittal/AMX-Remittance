@@ -27,7 +27,7 @@ public class TenantBean {
 
 	@Synchronized
 	public void setDomCurrency(CurrencyMasterDTO domCurrency) {
-		domCurrency = jaxService.setDefaults().getMetaClient()
+		this.domCurrency = jaxService.setDefaults().getMetaClient()
 				.getCurrencyByCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID)).getResult();
 	}
 
@@ -40,7 +40,7 @@ public class TenantBean {
 
 	@Synchronized
 	public void setOnlineCurrencies(List<CurrencyMasterDTO> onlineCurrencies) {
-		onlineCurrencies = jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
+		this.onlineCurrencies = jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
 	}
 
 	public List<CurrencyMasterDTO> getOnlineCurrencies() {

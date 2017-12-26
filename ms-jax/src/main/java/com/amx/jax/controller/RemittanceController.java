@@ -106,7 +106,8 @@ public class RemittanceController {
 
 	
 	@RequestMapping(value = "/validate/", method = RequestMethod.POST)
-	public ApiResponse validateRemittanceTransaction(RemittanceTransactionRequestModel model) {
+	public ApiResponse validateRemittanceTransaction(@RequestBody RemittanceTransactionRequestModel model) {
+		logger.info("In validate with parameters" + model.toString());
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}

@@ -19,5 +19,7 @@ public class ApiEndpoint {
 	public static final String REMIT_API_ENDPOINT = "/remit";
 
 	public static final String BANK_MASTER_BY_COUNTRY_API_ENDPOINT = "/bank/{country-id}";
+	
+	public static final String RATE_ALERT_ENDPOINT = "/rate-alert/";
 
 }

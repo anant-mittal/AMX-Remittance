@@ -46,8 +46,11 @@ import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Component
@@ -102,6 +105,12 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceApplicationDao remitAppDao;
+
+	@Autowired
+	private RemittanceApplicationService remittanceApplicationService;
+
+	@Autowired
+	private LoyalityPointService loyalityPointService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -160,13 +169,31 @@ public class RemittanceTransactionManager {
 		validateNumberOfTransactionLimits();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model);
 		validateTransactionAmount(breakup.getConvertedLCAmount());
+		validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
-		responseModel.setMaxLoyalityPointsAvailableForTxn(new BigDecimal(1000));
+		responseModel
+				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
 		return responseModel;
 
+	}
+
+	private void validateLoyalityPointsBalance(BigDecimal availableLoyaltyPoints) {
+
+		BigDecimal maxLoyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
+		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
+		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
+				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
+		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
+			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		}
+		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashed.intValue() < 0) {
+			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		}
 	}
 
 	private void addExchangeRateParameters(RemittanceTransactionResponsetModel responseModel) {
@@ -255,6 +282,11 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
+		if (model.isAvailLoyalityPoints()) {
+			breakup.setNetAmount(breakup.getConvertedLCAmount().subtract(new BigDecimal(1)));
+		} else {
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
+		}
 		return breakup;
 
 	}
@@ -315,7 +347,8 @@ public class RemittanceTransactionManager {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		Map<String, Integer> output = new HashMap<>();
 		Customer customer = custDao.getCustById(meta.getCustomerId());
-		List<ViewTransfer> monthlyTxns = transferRepo.findBycusRef(customer.getCustomerReference());
+		List<ViewTransfer> monthlyTxns = transferRepo
+				.getMonthlyTransactionByCustomerReference(customer.getCustomerReference());
 		int monthlyCount = monthlyTxns.size();
 		int weeklyCount = 0;
 		int dailyCount = 0;
@@ -341,34 +374,30 @@ public class RemittanceTransactionManager {
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
+		deactivatePreviousApplications();
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails();
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults);
+
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
 				.createAdditionalInstnData(remittanceApplication);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
-		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
-		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
+		remiteAppModel.setNetPayableAmount(remittanceApplication.getLocalNetTranxAmount());
 		remiteAppModel.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
+
 		return remiteAppModel;
 
 	}
 
-	private BigDecimal getPaymentAmount(RemittanceApplication remittanceApplication,
-			RemittanceTransactionRequestModel model) {
-		boolean availLoyalityPoint = model.isAvailLoyalityPoints();
-		BigDecimal paymentAmount = remittanceApplication.getLocalNetTranxAmount();
-		if (availLoyalityPoint) {
-			BigDecimal loyalityPoints = remittanceApplication.getLoyaltyPointsEncashed();
-			BigDecimal loyalityVoucherAmount = loyalityPoints.divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
-			paymentAmount = remittanceApplication.getLocalNetTranxAmount().subtract(loyalityVoucherAmount);
-		}
-		return paymentAmount;
+	private void deactivatePreviousApplications() {
+		BigDecimal customerId = meta.getCustomerId();
+		remittanceApplicationService.deActivateApplication(customerId);
 	}
 
 	private void validateAdditionalBeneDetails() {

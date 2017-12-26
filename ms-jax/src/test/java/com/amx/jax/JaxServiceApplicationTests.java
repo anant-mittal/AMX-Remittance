@@ -19,6 +19,7 @@ import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.repository.VwLoyalityEncashRepository;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;
@@ -41,6 +42,9 @@ public class JaxServiceApplicationTests {
 	
 	@Autowired
 	BeneficiaryService beneSerive;
+	
+	@Autowired
+	VwLoyalityEncashRepository loyalityRepo;
 	
 
 	// @Test
@@ -98,7 +102,7 @@ public class JaxServiceApplicationTests {
 	
 	@Test
 	public void getDocumentSeriality() {
-		System.out.println(beneSerive.getTodaysTransactionForBene(new BigDecimal(5218), new BigDecimal(1424)));
+		System.out.println(loyalityRepo.getTodaysLoyalityPointsEncashed(new  BigDecimal(5218)));
 	}
 	
 	

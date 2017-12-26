@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
 @Transactional
@@ -19,6 +21,6 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	
 	@Query("select appl from RemittanceApplication appl where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) "
 			+ " and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
-	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") BigDecimal customerId);
+	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
 }

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.service.ApplicationCountryService;
-import com.amx.jax.service.BankMasterService;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
@@ -118,7 +118,7 @@ public class MetaController implements Serializable{
 	CollectionPaymentDetailsViewService collectionPaymentDetailsViewService;
 	
 	@Autowired
-	BankMasterService bankMasterService;
+	BankMetaService bankMasterService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)

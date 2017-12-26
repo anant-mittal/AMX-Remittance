@@ -28,6 +28,8 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public static final String DEFAULT_CURRENCY_ID = "1";
 
+	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
+
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
@@ -99,6 +101,7 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setLanguageId(new BigDecimal(JaxService.DEFAULT_LANGUAGE_ID));
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
