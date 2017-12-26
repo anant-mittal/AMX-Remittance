@@ -107,7 +107,8 @@ public class RemittController {
 			postManClient.createPDF("RemittanceReceiptReport", wrapper);
 			return null;
 		} else if ("html".equals(ext)) {
-			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
+			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport")
+					.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
 		}

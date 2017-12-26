@@ -9,6 +9,16 @@ import com.bootloaderjs.Utils;
 
 public class Message {
 
+	protected String message;
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String text) {
+		this.message = text;
+	}
+
 	private List<String> to;
 
 	private String template = null;

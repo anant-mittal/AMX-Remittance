@@ -9,19 +9,21 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.Email;
 import com.amx.jax.postman.File;
+import com.amx.jax.postman.Message;
 import com.amx.jax.postman.SMS;
 import com.amx.jax.postman.api.PostManService;
+import com.amx.jax.postman.api.PostManServiceImpl;
 import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
-public class PostManClient {
+public class PostManClient implements PostManService {
 
 	@Autowired
 	private HttpServletResponse response;
 
 	@Autowired
-	private PostManService postManService;
+	private PostManServiceImpl postManService;
 
 	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
 		File file = postManService.processTemplate(template, data, fileName);
@@ -33,9 +35,9 @@ public class PostManClient {
 		file.donwload(response, false);
 	}
 
-	public String processTemplate(String template, Object data, String fileName) throws IOException, DocumentException {
+	public File processTemplate(String template, Object data, String fileName) {
 		File file = postManService.processTemplate(template, data, fileName);
-		return file.getContent();
+		return file;// file.getContent();
 	}
 
 	public void sendSMS(SMS sms) throws UnirestException {
@@ -44,6 +46,12 @@ public class PostManClient {
 
 	public void sendEmail(Email email) {
 		postManService.sendEmail(email);
+	}
+
+	@Override
+	public void notifySlack(Message msg) throws UnirestException {
+		postManService.notifySlack(msg);
+
 	}
 
 }

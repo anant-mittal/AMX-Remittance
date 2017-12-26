@@ -2,11 +2,12 @@ package com.amx.jax.ui.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.postman.Email;
-import com.amx.jax.postman.SMS;
+import com.amx.jax.postman.Message;
 import com.amx.jax.postman.Templates;
 import com.amx.jax.postman.client.PostManClient;
 
@@ -14,6 +15,9 @@ import com.amx.jax.postman.client.PostManClient;
 public class HealthService {
 
 	private Logger log = Logger.getLogger(HealthService.class);
+
+	@Value("${application.name}")
+	private String appName;
 
 	@Autowired
 	private PostManClient postManClient;
@@ -23,19 +27,19 @@ public class HealthService {
 
 	@Async
 	public void sendApplicationLiveMessage() {
-		SMS sms = new SMS();
+
+		Message msg = new Message();
 
 		if (environment.isDebug()) {
 			log.info("Server is in debug mode");
 			return;
 		}
+
 		try {
-			sms.setTo("7710072192");
-			sms.setText("Your OTP for Reset is");
-			sms.setTemplate(Templates.RESET_OTP_SMS);
-			// postManClient.sendSMS(sms);
+			msg.setMessage(appName + "\n is Up and Runnnig.");
+			postManClient.notifySlack(msg);
 		} catch (Exception e) {
-			log.error("Error while sending OTP SMS to 7710072192", e);
+			log.error("Error while sending Notification to Slack", e);
 		}
 
 		Email email = new Email();

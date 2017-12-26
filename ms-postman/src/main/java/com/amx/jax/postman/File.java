@@ -6,10 +6,8 @@ import java.io.OutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.xhtmlrenderer.layout.SharedContext;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.amx.jax.postman.api.B64ImgReplacedElementFactory;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.BaseFont;
 

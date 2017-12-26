@@ -59,7 +59,7 @@ public class UserService {
 
 		try {
 			sms.setTo("7710072192");
-			sms.setText("Your OTP for Reset is " + model.getOtp());
+			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
 			postManClient.sendSMS(sms);
