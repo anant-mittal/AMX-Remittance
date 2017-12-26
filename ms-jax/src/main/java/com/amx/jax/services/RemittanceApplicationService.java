@@ -45,6 +45,18 @@ public class RemittanceApplicationService {
 	
 	public void deActivateApplication(BigDecimal customerId) {
 		try {
+			
+			List<RemittanceApplication> listOfApplication = remittanceApplicationRepository.deActivateNotUsedApplication(customerId);
+			if(!listOfApplication.isEmpty()) {
+				for(RemittanceApplication application : listOfApplication) {
+					RemittanceApplication remittanceApplication =  remittanceApplicationRepository.findOne(application.getRemittanceApplicationId());
+					remittanceApplication.setIsactive("D");
+					remittanceApplication.setApplicaitonStatus(null);
+					remittanceApplicationRepository.save(remittanceApplication);
+				}
+				
+			}
+			
 			//remittanceApplicationRepository.deActivateApplication(customerId);
 		} catch (Exception e) {
 			e.printStackTrace();
