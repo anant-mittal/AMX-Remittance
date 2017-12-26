@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -46,7 +47,7 @@ public class RemittanceApplicationService {
 	public void deActivateApplication(BigDecimal customerId) {
 		try {
 			
-			List<RemittanceApplication> listOfApplication = remittanceApplicationRepository.deActivateNotUsedApplication(customerId);
+			List<RemittanceApplication> listOfApplication = remittanceApplicationRepository.deActivateNotUsedApplication(new Customer(customerId));
 			if(!listOfApplication.isEmpty()) {
 				for(RemittanceApplication application : listOfApplication) {
 					RemittanceApplication remittanceApplication =  remittanceApplicationRepository.findOne(application.getRemittanceApplicationId());

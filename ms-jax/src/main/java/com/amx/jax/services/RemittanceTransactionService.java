@@ -122,7 +122,7 @@ public class RemittanceTransactionService extends AbstractService {
 		RemittanceApplicationResponseModel responseModel = remittanceTxnManger.saveApplication(model);
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(model.getModelType());
+		response.getData().setType(responseModel.getModelType());
 		return response;
 	}
 

@@ -1,6 +1,7 @@
 package com.amx.jax.manager;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,6 +43,7 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.BankService;
@@ -83,6 +85,9 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BeneficiaryService beneficiaryService;
+	
+	@Autowired
+	private BankMetaService bankMetaService;
 
 	/**
 	 * @param validatedObjects:
@@ -140,8 +145,7 @@ public class RemittanceApplicationManager {
 		ViewCompanyDetails companyDetails = companyService.getCompanyDetailsById(metaData.getCompanyId());
 		remittanceApplication.setCompanyCode(companyDetails.getCompanyCode());
 		// branch id
-		CountryBranch countryBranch = new CountryBranch();
-		countryBranch.setCountryBranchId(metaData.getCountryBranchId());
+		CountryBranch countryBranch = bankMetaService.getCountryBranchById((metaData.getCountryBranchId()));
 		remittanceApplication.setLoccod(metaData.getCountryBranchId());
 		remittanceApplication.setExCountryBranch(countryBranch);
 		// fin year
@@ -196,7 +200,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Individual);
-		remittanceApplication.setDocumentNo(generateDocumentNumber());
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch()));
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -251,14 +255,14 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private BigDecimal generateDocumentNumber() {
+	private BigDecimal generateDocumentNumber(CountryBranch countryBranch) {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
 		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
-		BigDecimal branchId = metaData.getCountryBranchId();
+		BigDecimal branchId = countryBranch.getBranchId();
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
-				finYear, "U", branchId);
+				finYear,ConstantDocument.Yes, branchId);
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
@@ -266,17 +270,24 @@ public class RemittanceApplicationManager {
 			RemittanceTransactionRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal loyalityPointsEncashed = null;
-		if (requestModel.isAvailLoyalityPoints()) {
-			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
-		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
 		remittanceApplication.setExchangeRateApplied(breakup.getRate());
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
 		remittanceApplication.setLocalChargeAmount(null);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
+
+		if (requestModel.isAvailLoyalityPoints()) {
+			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
+			BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new BigDecimal(1000), 10,
+					RoundingMode.HALF_UP);
+			breakup.setNetAmount(breakup.getConvertedLCAmount().subtract(loyalityVoucherAmount));
+		} else {
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
+		}
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
+
 
 	}
 }

@@ -17,19 +17,24 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.BankMasterRepository;
+import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.services.AbstractService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
-public class BankMasterService extends AbstractService {
+public class BankMetaService extends AbstractService {
 
-	private Logger logger = Logger.getLogger(BankMasterService.class);
+	private Logger logger = Logger.getLogger(BankMetaService.class);
 
 	@Autowired
 	private BankMasterRepository repo;
+	
+	@Autowired
+	private CountryBranchRepository countryBranchRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
 		return repo.findBybankCountryId(countryId);
@@ -77,6 +82,10 @@ public class BankMasterService extends AbstractService {
 	public BankMasterModel getBankMasterbyId(BigDecimal bankId) {
 		BankMasterModel dbModel = repo.findOne(bankId);
 		return dbModel;
+	}
+	
+	public CountryBranch getCountryBranchById(BigDecimal id) {
+		return countryBranchRepository.findOne(id);
 	}
 
 	@Override

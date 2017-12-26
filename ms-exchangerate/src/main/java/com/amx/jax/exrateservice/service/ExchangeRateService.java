@@ -34,7 +34,7 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.service.BankMasterService;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.AbstractService;
 
 @Service
@@ -48,7 +48,7 @@ public class ExchangeRateService extends AbstractService {
 	private PipsMasterDao pipsDao;
 
 	@Autowired
-	BankMasterService bankMasterService;
+	BankMetaService bankMasterService;
 
 	@Autowired
 	private ExchangeRateDao exchangeRateDao;
