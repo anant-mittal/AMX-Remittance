@@ -89,7 +89,21 @@ public class BeneClient extends AbstractJaxServiceClient{
 			log.info("Default Beneficiary");
 			
 			StringBuffer sb = new StringBuffer();
-			sb.append("?beneRelationId=").append(beneRealtionId).append("&transactionId=").append(transactionId);
+			
+			
+			if(beneRealtionId!=null || transactionId!=null) {
+				sb.append("?");
+			}
+			
+			if(beneRealtionId!=null) {
+				sb.append("beneRelationId=").append(beneRealtionId).append("&");
+			}
+			if(transactionId!=null) {
+				sb.append("transactionId=").append(transactionId);
+			}
+			
+			
+		
 
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());

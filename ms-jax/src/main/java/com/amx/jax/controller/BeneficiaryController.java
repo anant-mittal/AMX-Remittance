@@ -100,12 +100,16 @@ public class BeneficiaryController {
 			@RequestParam(required=false,value="transactionId") BigDecimal transactionId) {
 		logger.info("Bene disable method Trnx Report:");
 		ApiResponse response = null;
+		try {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		logger.info("Relation ship Id :" + beneRelationId);
 		logger.info("customerId Id :" + customerId);
 		logger.info("applicationCountryId  :" + applicationCountryId);
 		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,transactionId);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
 		return response;
 	}
 	

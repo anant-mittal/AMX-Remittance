@@ -267,7 +267,7 @@ public class BeneficiaryService extends AbstractService {
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		}catch (Exception e) {
-			throw new GlobalException("Default bene not found");
+			throw new GlobalException("Default bene not found"+e.getMessage());
 		}
 		return response;
 	}
@@ -339,7 +339,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	
 	
-	
+	public Integer getTodaysTransactionForBene(BigDecimal customerId, BigDecimal benRelationId) {
+		return tranxHistDao.getTodaysTransactionForBeneficiary(customerId, benRelationId);
+	}
 	
 	
 

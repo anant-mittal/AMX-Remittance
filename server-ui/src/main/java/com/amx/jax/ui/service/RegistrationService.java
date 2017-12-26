@@ -15,6 +15,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -35,7 +36,7 @@ public class RegistrationService {
 	private JaxService jaxClient;
 
 	@Autowired
-	private UserService userService;
+	private UserBean userBean;
 
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
 
@@ -55,7 +56,7 @@ public class RegistrationService {
 				userSessionInfo.setOtpPrefix();
 				model.setOtpPrefix(userSessionInfo.getOtpPrefix());
 
-				userService.notifyResetOTP(model);
+				userBean.notifyResetOTP(model);
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());

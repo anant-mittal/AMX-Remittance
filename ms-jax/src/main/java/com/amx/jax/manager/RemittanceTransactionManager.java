@@ -123,7 +123,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
-		
+
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
@@ -347,16 +347,33 @@ public class RemittanceTransactionManager {
 				validatedObjects, validationResults);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
-		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication);
+		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
+				.createAdditionalInstnData(remittanceApplication);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
+		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
+		remiteAppModel.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
+				+ remittanceApplication.getDocumentNo().toString());
 		return remiteAppModel;
 
 	}
 
+	private BigDecimal getPaymentAmount(RemittanceApplication remittanceApplication,
+			RemittanceTransactionRequestModel model) {
+		boolean availLoyalityPoint = model.isAvailLoyalityPoints();
+		BigDecimal paymentAmount = remittanceApplication.getLocalNetTranxAmount();
+		if (availLoyalityPoint) {
+			BigDecimal loyalityPoints = remittanceApplication.getLoyaltyPointsEncashed();
+			BigDecimal loyalityVoucherAmount = loyalityPoints.divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
+			paymentAmount = remittanceApplication.getLocalNetTranxAmount().subtract(loyalityVoucherAmount);
+		}
+		return paymentAmount;
+	}
+
 	private void validateAdditionalBeneDetails() {
-		Map<String, Object> output = applicationProcedureDao.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
+		Map<String, Object> output = applicationProcedureDao
+				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
 	}
 

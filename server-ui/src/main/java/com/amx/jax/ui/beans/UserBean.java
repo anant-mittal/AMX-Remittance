@@ -1,4 +1,4 @@
-package com.amx.jax.ui.service;
+package com.amx.jax.ui.beans;
 
 import java.math.BigDecimal;
 
@@ -20,9 +20,9 @@ import com.amx.jax.ui.session.UserSession;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserService {
+public class UserBean {
 
-	private Logger log = Logger.getLogger(UserService.class);
+	private Logger log = Logger.getLogger(UserBean.class);
 
 	@Autowired
 	private PostManClient postManClient;
@@ -31,7 +31,7 @@ public class UserService {
 	private UserSession userSession;
 
 	@Autowired
-	private TenantService tenantService;
+	private TenantBean tenantBean;
 
 	CurrencyMasterDTO defaultForCurrency;
 
@@ -39,9 +39,9 @@ public class UserService {
 		if (defaultForCurrency == null) {
 			BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
 			if (nationalityId == null) {
-				defaultForCurrency = tenantService.getOnlineCurrencies().get(0);
+				defaultForCurrency = tenantBean.getOnlineCurrencies().get(0);
 			} else {
-				for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
+				for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
 					if (nationalityId.equals(currency.getCountryId())) {
 						defaultForCurrency = currency;
 						break;
@@ -59,7 +59,7 @@ public class UserService {
 
 		try {
 			sms.setTo("7710072192");
-			sms.setText("Your OTP for Reset is " + model.getOtp());
+			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
 			postManClient.sendSMS(sms);

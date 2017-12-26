@@ -26,12 +26,12 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.ui.beans.TenantBean;
+import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
-import com.amx.jax.ui.service.TenantService;
-import com.amx.jax.ui.service.UserService;
 import com.bootloaderjs.JsonUtil;
 import com.lowagie.text.DocumentException;
 
@@ -46,10 +46,10 @@ public class RemittController {
 	private JaxService jaxService;
 
 	@Autowired
-	private TenantService tenantService;
+	private TenantBean tenantBean;
 
 	@Autowired
-	private UserService userService;
+	private UserBean userBean;
 
 	@Autowired
 	private PostManClient postManClient;
@@ -107,7 +107,8 @@ public class RemittController {
 			postManClient.createPDF("RemittanceReceiptReport", wrapper);
 			return null;
 		} else if ("html".equals(ext)) {
-			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
+			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport")
+					.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
 		}
@@ -118,15 +119,15 @@ public class RemittController {
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
-		CurrencyMasterDTO domCur = tenantService.getDomCurrency();
+		CurrencyMasterDTO domCur = tenantBean.getDomCurrency();
 		CurrencyMasterDTO forCurcy = null;
 
 		wrapper.getData().setDomCur(domCur);
 
 		if (forCur == null) {
-			forCurcy = userService.getDefaultForCurrency();
+			forCurcy = userBean.getDefaultForCurrency();
 		} else {
-			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
 				if (currency.getCurrencyId().equals(forCur)) {
 					forCurcy = currency;
 					break;

@@ -21,7 +21,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class PostManController {
 
 	@Autowired
-	private PostManService postManService;
+	private PostManServiceImpl postManService;
 
 	private Logger logger = Logger.getLogger(PostManController.class);
 
