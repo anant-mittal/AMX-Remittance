@@ -24,6 +24,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.beans.TenantBean;
@@ -197,11 +198,11 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
-	public ResponseWrapper<PurposeOfTransactionModel> createApplication(
+	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
 			@RequestBody RemittanceTransactionRequestModel transactionRequestModel) {
-		ResponseWrapper<PurposeOfTransactionModel> wrapper = new ResponseWrapper<PurposeOfTransactionModel>();
+		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
 		try {
-			PurposeOfTransactionModel respTxMdl = jaxService.setDefaults().getRemitClient()
+			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
 			wrapper.setData(respTxMdl);
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
