@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.bootloaderjs.Random;
 
@@ -29,8 +28,6 @@ public class UserSession implements Serializable {
 	private String userid = null;
 
 	private CustomerModel customerModel = null;
-
-	private CurrencyMasterDTO localCurrency = null;
 
 	public CustomerModel getCustomerModel() {
 		return customerModel;

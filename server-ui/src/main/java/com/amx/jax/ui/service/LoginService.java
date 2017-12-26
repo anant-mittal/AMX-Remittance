@@ -17,6 +17,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -38,7 +39,7 @@ public class LoginService {
 	private SessionService sessionService;
 
 	@Autowired
-	private UserService userService;
+	private UserBean userBean;
 
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
@@ -153,7 +154,7 @@ public class LoginService {
 				wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
 				wrapper.getData().setOtp(model.getOtp());
 				userSession.setUserid(identity);
-				userService.notifyResetOTP(model);
+				userBean.notifyResetOTP(model);
 
 				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 
