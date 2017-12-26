@@ -20,6 +20,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
@@ -35,7 +36,7 @@ public class RemittanceClientTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	@Test
+	//@Test
 	public void getPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -50,7 +51,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -67,5 +68,24 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
+	
+	@Test
+	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<RemittanceTransactionResponsetModel> response = null;
+		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+		request.setBeneId(new BigDecimal(88041));
+		request.setLocalAmount(new BigDecimal(100));
+//		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+//		request.setSrlId(new BigDecimal(48));
+		response = client.validateTransaction(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+	
 
 }

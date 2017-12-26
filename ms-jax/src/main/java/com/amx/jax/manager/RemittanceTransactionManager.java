@@ -165,6 +165,7 @@ public class RemittanceTransactionManager {
 		validateNumberOfTransactionLimits();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model);
 		validateTransactionAmount(breakup.getConvertedLCAmount());
+		validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
@@ -172,6 +173,13 @@ public class RemittanceTransactionManager {
 		addExchangeRateParameters(responseModel);
 		return responseModel;
 
+	}
+
+	private void validateLoyalityPointsBalance(BigDecimal loyaltyPoints) {
+		if (loyaltyPoints.intValue() < 1000) {
+			throw new GlobalException("Insufficient loyality points. Available points- : ",
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		}
 	}
 
 	private void addExchangeRateParameters(RemittanceTransactionResponsetModel responseModel) {
@@ -260,7 +268,11 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-
+		if (model.isAvailLoyalityPoints()) {
+			breakup.setNetAmount(breakup.getConvertedLCAmount().subtract(new BigDecimal(1)));
+		} else {
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
+		}
 		return breakup;
 
 	}
