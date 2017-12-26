@@ -23,7 +23,7 @@ mvn -T 4 package -pl server-ui -am -DskipTests
 
 sshpass -p $JAX_PASS scp server-ui/target/server-ui-0.0.1-SNAPSHOT.jar $JAX_USER@$JAX_HOST:~/jax/server-ui
 
-sshpass -p $JAX_PASS ssh -o StrictHostKeyChecking=no $JAX_USER@$JAX_HOST 'kill -9 $(cat /var/run/server-ui/server-ui.pid)'
+#sshpass -p $JAX_PASS ssh -o StrictHostKeyChecking=no $JAX_USER@$JAX_HOST 'kill -9 $(cat /var/run/server-ui/server-ui.pid)'
 sshpass -p $JAX_PASS ssh -o StrictHostKeyChecking=no $JAX_USER@$JAX_HOST '/etc/init.d/server-ui restart &'
 
 #curl -T "target/app.war" "http://$TOMCAT_USER:$TOMCAT_PASSWORD@$TOMCAT_HOST/manager/text/deploy?path=/&update=true"
