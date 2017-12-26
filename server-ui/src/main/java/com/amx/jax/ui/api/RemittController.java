@@ -196,4 +196,17 @@ public class RemittController {
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
+	public ResponseWrapper<PurposeOfTransactionModel> createApplication(
+			@RequestBody RemittanceTransactionRequestModel transactionRequestModel) {
+		ResponseWrapper<PurposeOfTransactionModel> wrapper = new ResponseWrapper<PurposeOfTransactionModel>();
+		try {
+			PurposeOfTransactionModel respTxMdl = jaxService.setDefaults().getRemitClient()
+					.saveTransaction(transactionRequestModel).getResult();
+			wrapper.setData(respTxMdl);
+		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e);
+		}
+		return wrapper;
+	}
 }
