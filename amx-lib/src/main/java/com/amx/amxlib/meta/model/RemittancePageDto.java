@@ -12,6 +12,26 @@ public class RemittancePageDto extends AbstractModel {
 	private BeneficiaryListDTO beneficiaryDto;
 	private TransactionHistroyDTO trnxHistDto;
 
+	CurrencyMasterDTO forCur = null;
+
+	public CurrencyMasterDTO getForCur() {
+		return forCur;
+	}
+
+	public void setForCur(CurrencyMasterDTO forCur) {
+		this.forCur = forCur;
+	}
+
+	public CurrencyMasterDTO getDomCur() {
+		return domCur;
+	}
+
+	public void setDomCur(CurrencyMasterDTO domCur) {
+		this.domCur = domCur;
+	}
+
+	CurrencyMasterDTO domCur = null;
+
 	public BeneficiaryListDTO getBeneficiaryDto() {
 		return beneficiaryDto;
 	}

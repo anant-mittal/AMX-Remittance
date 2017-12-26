@@ -158,7 +158,20 @@ public class RemittController {
 	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal transactionId) {
 		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId).getResult());
+		RemittancePageDto remittancePageDto = jaxService.setDefaults().getBeneClient()
+				.defaultBeneficiary(beneId, transactionId).getResult();
+
+		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
+
+		for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
+			if (currency.getCurrencyId().equals(forCurId)) {
+				remittancePageDto.setForCur(currency);
+				break;
+			}
+		}
+		remittancePageDto.setDomCur(tenantBean.getDomCurrency());
+
+		wrapper.setData(remittancePageDto);
 		return wrapper;
 	}
 
@@ -174,7 +187,9 @@ public class RemittController {
 			@RequestBody RemittanceTransactionRequestModel request) {
 		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
 		try {
-			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(request).getResult());
+			RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
+					.validateTransaction(request).getResult();
+			wrapper.setData(respTxMdl);
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
 		}
