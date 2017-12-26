@@ -85,7 +85,7 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BeneficiaryService beneficiaryService;
-	
+
 	@Autowired
 	private BankMetaService bankMetaService;
 
@@ -262,7 +262,7 @@ public class RemittanceApplicationManager {
 		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
 		BigDecimal branchId = countryBranch.getBranchId();
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
-				finYear,ConstantDocument.Yes, branchId);
+				finYear, ConstantDocument.Yes, branchId);
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 
@@ -287,7 +287,6 @@ public class RemittanceApplicationManager {
 		}
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
-
 
 	}
 }

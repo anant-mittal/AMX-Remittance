@@ -48,6 +48,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -107,6 +108,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceApplicationService remittanceApplicationService;
+
+	@Autowired
+	private LoyalityPointService loyalityPointService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -169,15 +173,25 @@ public class RemittanceTransactionManager {
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
-		responseModel.setMaxLoyalityPointsAvailableForTxn(new BigDecimal(1000));
+		responseModel
+				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
 		return responseModel;
 
 	}
 
-	private void validateLoyalityPointsBalance(BigDecimal loyaltyPoints) {
-		if (loyaltyPoints.intValue() < 1000) {
-			throw new GlobalException("Insufficient loyality points. Available points- : ",
+	private void validateLoyalityPointsBalance(BigDecimal availableLoyaltyPoints) {
+
+		BigDecimal maxLoyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
+		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
+		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
+				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
+		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
+			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		}
+		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashed.intValue() < 0) {
+			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 	}
@@ -366,7 +380,7 @@ public class RemittanceTransactionManager {
 		validateAdditionalBeneDetails();
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults);
-		
+
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
@@ -385,7 +399,6 @@ public class RemittanceTransactionManager {
 		BigDecimal customerId = meta.getCustomerId();
 		remittanceApplicationService.deActivateApplication(customerId);
 	}
-
 
 	private void validateAdditionalBeneDetails() {
 		Map<String, Object> output = applicationProcedureDao

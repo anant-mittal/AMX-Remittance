@@ -15,8 +15,8 @@ public class VwLoyalityEncash {
 	@Id
 	BigDecimal seqId;
 
-	@Column(name = "LOYALITY_POINT")
-	BigDecimal cusRef;
+	@Column(name = "LOYALTY_POINT")
+	BigDecimal loyalityPoint;
 
 	@Column(name = "EQUIVALENT_AMOUNT")
 	BigDecimal equivalentAmount;
@@ -29,20 +29,20 @@ public class VwLoyalityEncash {
 		this.seqId = seqId;
 	}
 
-	public BigDecimal getCusRef() {
-		return cusRef;
-	}
-
-	public void setCusRef(BigDecimal cusRef) {
-		this.cusRef = cusRef;
-	}
-
 	public BigDecimal getEquivalentAmount() {
 		return equivalentAmount;
 	}
 
 	public void setEquivalentAmount(BigDecimal equivalentAmount) {
 		this.equivalentAmount = equivalentAmount;
+	}
+
+	public BigDecimal getLoyalityPoint() {
+		return loyalityPoint;
+	}
+
+	public void setLoyalityPoint(BigDecimal loyalityPoint) {
+		this.loyalityPoint = loyalityPoint;
 	}
 
 }

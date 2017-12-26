@@ -20,6 +20,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -51,13 +52,13 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		ApiResponse<PurposeOfTransactionModel> response = null;
+		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(1424));
 		request.setLocalAmount(new BigDecimal(100));
@@ -69,7 +70,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 	
-	@Test
+//	@Test
 	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
