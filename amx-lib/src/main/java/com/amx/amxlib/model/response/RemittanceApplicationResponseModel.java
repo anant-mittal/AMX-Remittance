@@ -52,5 +52,12 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.merchantTrackId = merchantTrackId;
 	}
 
+	@Override
+	public String toString() {
+		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+				+ documentIdForPayment + ", netPayableAmount=" + netPayableAmount + ", merchantTrackId="
+				+ merchantTrackId + "]";
+	}
+
 
 }

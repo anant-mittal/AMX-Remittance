@@ -90,9 +90,7 @@ public class RemittanceAppBeneficiaryManager {
 		remittanceAppBenificary.setDocumentNo(remittanceApplication.getDocumentNo());
 		remittanceAppBenificary.setBeneficiaryId(beneficiaryDT.getBeneficaryMasterSeqId());
 
-		if (beneficiaryDT.getBankAccountNumber() != null) {
-			remittanceAppBenificary.setBeneficiaryAccountNo(beneficiaryDT.getBankAccountNumber());
-		}
+		setBeneDetails(remittanceAppBenificary, beneficiaryDT);
 
 		setSwiftCodes(remittanceAppBenificary, remittanceApplication);
 
@@ -108,16 +106,26 @@ public class RemittanceAppBeneficiaryManager {
 		return remittanceAppBenificary;
 	}
 
+	private void setBeneDetails(RemittanceAppBenificiary remittanceAppBenificary, BenificiaryListView beneficiaryDT) {
+		// Bene details
+		if (beneficiaryDT.getBankAccountNumber() != null) {
+			remittanceAppBenificary.setBeneficiaryAccountNo(beneficiaryDT.getBankAccountNumber());
+		}
+		remittanceAppBenificary.setBeneficiaryName(beneficiaryDT.getBenificaryName());
+		remittanceAppBenificary.setBeneficiaryBank(beneficiaryDT.getBankName());
+		remittanceAppBenificary.setBeneficiaryBranch(beneficiaryDT.getBankBranchName());
+	}
+
 	private void setAdditionalBeneficiaryDetails(RemittanceAppBenificiary remittanceAppBenificary) {
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
-		remittanceAppBenificary.setBeneficiaryName((String) remitApplParametersMap.get("P_BENE_NAME"));
+		remittanceAppBenificary.setBeneficiaryName((String) remitApplParametersMap.get("P_BENEFICIARY_NAME"));
 		remittanceAppBenificary.setBeneficiaryFirstName((String) remitApplParametersMap.get("P_BENEFICIARY_FIRST_NAME"));
 		remittanceAppBenificary.setBeneficiarySecondName((String) remitApplParametersMap.get("P_BENEFICIARY_SECOND_NAME"));
 		remittanceAppBenificary.setBeneficiaryThirdName((String) remitApplParametersMap.get("P_BENEFICIARY_THIRD_NAME"));
 		remittanceAppBenificary.setBeneficiaryFourthName((String) remitApplParametersMap.get("P_BENEFICIARY_FOURTH_NAME"));
 		remittanceAppBenificary.setBeneficiaryFifthName((String) remitApplParametersMap.get("P_BENEFICIARY_FIFTH_NAME"));
-		remittanceAppBenificary.setBeneficiaryBank((String) remitApplParametersMap.get("P_BENEFICIARY_BANK_NAME"));
-		remittanceAppBenificary.setBeneficiaryBranch((String) remitApplParametersMap.get("P_BENEFICIARY_BRANCH_NAME"));
+		//remittanceAppBenificary.setBeneficiaryBank((String) remitApplParametersMap.get("P_BENEFICIARY_BANK_NAME"));
+		//remittanceAppBenificary.setBeneficiaryBranch((String) remitApplParametersMap.get("P_BENEFICIARY_BRANCH_NAME"));
 		remittanceAppBenificary.setBeneficiaryBranchStateId((BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_STATE_ID"));
 		remittanceAppBenificary
 				.setBeneficiaryBranchDistrictId((BigDecimal) remitApplParametersMap.get("P_BENEFICIARY_DISTRICT_ID"));
@@ -127,6 +135,10 @@ public class RemittanceAppBeneficiaryManager {
 		remittanceAppBenificary.setBeneficiaryBankBranchId(beneficiaryDT.getBranchId());
 		remittanceAppBenificary.setBeneficiaryAccountSeqId(beneficiaryDT.getBeneficiaryAccountSeqId());
 		remittanceAppBenificary.setBeneficiaryRelationShipSeqId(beneficiaryDT.getBeneficiaryRelationShipSeqId());
+		remittanceAppBenificary.setBeneficiaryBankSwift(beneficiaryDT.getSwiftBic());
+		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneficiaryDT.getDistrictId());
+		remittanceAppBenificary.setBeneficiaryBranchStateId(beneficiaryDT.getStateId());
+		remittanceAppBenificary.setBeneficiaryBranchCityId(beneficiaryDT.getBranchId());
 	}
 
 	private void setSwiftCodes(RemittanceAppBenificiary remittanceAppBenificary,

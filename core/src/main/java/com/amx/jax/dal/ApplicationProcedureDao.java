@@ -54,7 +54,7 @@ public class ApplicationProcedureDao {
 	@Transactional
 	public Map<String, Object> toFetchDetilaFromAddtionalBenficiaryDetails(Map<String, Object> inputValues) {
 
-		BigDecimal beneficaryMasterId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
+		BigDecimal beneficaryMasterId = (BigDecimal) inputValues.get("P_BENEFICIARY_MASTER_ID");
 		BigDecimal beneficaryBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
 		BigDecimal beneficaryBankBranchId = (BigDecimal) inputValues.get("P_BENEFICIARY_BRANCH_ID");
 		BigDecimal beneAccNumSeqId = (BigDecimal) inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
@@ -398,7 +398,7 @@ public class ApplicationProcedureDao {
 		BigDecimal appLicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal customerId = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
 		BigDecimal branchId = (BigDecimal) inputValues.get("P_BRANCH_ID");
-		BigDecimal beneId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
+		BigDecimal beneId = (BigDecimal) inputValues.get("P_BENEFICIARY_MASTER_ID");
 
 		BigDecimal beneCountryId = (BigDecimal) inputValues.get("P_BENEFICIARY_COUNTRY_ID");
 		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
@@ -972,7 +972,7 @@ public class ApplicationProcedureDao {
 	public Map<String, Object> getBannedBankCheckProcedure(Map<String, Object> inputValues) {
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal beneBankId = (BigDecimal) inputValues.get("P_BENEFICIARY_BANK_ID");
-		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_BENEFICIARY_ID");
+		BigDecimal beneMasSeqId = (BigDecimal) inputValues.get("P_BENEFICIARY_MASTER_ID");
 
 		logger.info("saveRemittance EX_P_BANNED_BANK_CHECK getCustomerNo():" + inputValues.toString());
 
