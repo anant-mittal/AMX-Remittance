@@ -332,11 +332,4 @@ public class RateAlert implements Serializable{
 	public void setRule(String rule) {
 		this.rule = rule;
 	}
-	
-	
-	
-	
-	
-	
-
 }

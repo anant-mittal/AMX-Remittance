@@ -181,7 +181,18 @@ public class RateAlertDTO extends AbstractModel {
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
-		return null;
+		return "rate-alert-dto";
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "RateAlertDTO [rateAlertId=" + rateAlertId + ", customerId=" + customerId + ", fromDate=" + fromDate
+				+ ", toDate=" + toDate + ", rule=" + rule + ", alertRate=" + alertRate + ", baseCurrencyId="
+				+ baseCurrencyId + ", baseCurrencyQuote=" + baseCurrencyQuote + ", foreignCurrencyId="
+				+ foreignCurrencyId + ", foreignCurrencyQuote=" + foreignCurrencyQuote + ", isActive=" + isActive + "]";
 	}
 	
 

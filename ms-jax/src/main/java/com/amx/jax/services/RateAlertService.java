@@ -4,27 +4,18 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RateAlert;
-import com.amx.jax.dbmodel.RemittanceTransactionView;
-import com.amx.jax.dbmodel.SourceOfIncomeView;
-import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.repository.IRateAlertDao;
-import com.amx.jax.repository.IRemittanceTransactionDao;
-import com.amx.jax.repository.ISourceOfIncomeDao;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.util.RateAlertUtil;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -35,8 +26,93 @@ public class RateAlertService extends AbstractService {
 	
 	@Autowired
 	CurrencyMasterService currencyService;
+	
+	public ApiResponse saveRateAlert(RateAlertDTO dto) {
+		
+		ApiResponse response = getBlackApiResponse();
+		RateAlert rateAlertModel = RateAlertUtil.getRateAlertModel(dto);
 
-	public ApiResponse saveRateAlert(Map<String,Object> paramMap) {
+		try {
+			rateAlertModel.setCreatedDate(new Date());
+			rateAlertModel.setIsActive("Y");
+			
+			rateAlertDao.save(rateAlertModel);
+			response.setResponseStatus(ResponseStatus.OK);
+
+			
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			throw new GlobalException("Error while saving rae alert.");
+		}
+		return response;
+	}
+	
+	public ApiResponse delteRateAlert(RateAlertDTO dto) {
+		
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<RateAlert> rateAlertList = rateAlertDao.getRateAlertDetails(dto.getRateAlertId());
+			
+			if (!rateAlertList.isEmpty()) {
+				RateAlert rec = rateAlertList.get(0);
+				rec.setIsActive("N");
+				rec.setUpdatedDate(new Date());
+				rateAlertDao.save(rec);
+			}else {
+				throw new GlobalException("No record found");
+			}
+			
+		    //rateAlertDao.delete(id);
+			response.setResponseStatus(ResponseStatus.OK);
+			return response;
+		} catch (Exception e) {
+			throw new GlobalException("Error while deleting rate alert record.");
+		}
+	}
+	
+	public ApiResponse<RateAlertDTO> getRateAlertForCustomer(BigDecimal customerId) {
+		
+		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
+		try {
+			List<RateAlert> rateAlertList = null;
+	        List<RateAlertDTO> dtoList= new ArrayList<RateAlertDTO>();
+	        
+			rateAlertList = rateAlertDao.getRateAlertForCustomer(customerId);
+			
+			if (!rateAlertList.isEmpty()) {
+				
+				for (RateAlert rec : rateAlertList) {
+					RateAlertDTO rateDTO = new RateAlertDTO();
+					
+					rateDTO.setAlertRate(rec.getAlertRate());
+					rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
+					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
+					rateDTO.setRule(rec.getRule());
+					rateDTO.setFromDate(rec.getFromDate());
+					rateDTO.setToDate(rec.getToDate());
+					rateDTO.setCustomerId(rec.getCustomerId());
+					rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
+					dtoList.add(rateDTO);
+				}
+				
+				response.getData().getValues().addAll(dtoList);
+				response.setResponseStatus(ResponseStatus.OK);
+				response.getData().setType("rate-alert-dto");
+			} else {
+				throw new GlobalException("No record found");
+			}
+
+			return response;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new GlobalException("Error while fetching rate alert records.");
+		}
+	}
+	
+
+/*	public ApiResponse saveRateAlert(Map<String,Object> paramMap) {
 		
 		ApiResponse response = getBlackApiResponse();
 		RateAlert rateAlertModel = new  RateAlert();
@@ -72,9 +148,9 @@ public class RateAlertService extends AbstractService {
 			throw new GlobalException("Error while update");
 		}
 		return response;
-	}
+	}*/
 	
-	public ApiResponse getRateAlertForCustomer(Map<String,Object> paramMap) {
+/*	public ApiResponse getRateAlertForCustomer(Map<String,Object> paramMap) {
 		
 		ApiResponse response = getBlackApiResponse();
 		try {
@@ -113,10 +189,10 @@ public class RateAlertService extends AbstractService {
 			e.printStackTrace();
 			throw new GlobalException("Error while fetching rate alert records.");
 		}
-	}
+	}*/
 	
 	
-	public ApiResponse delteRateAlert(Map<String,Object> paramMap) {
+/*	public ApiResponse delteRateAlert(Map<String,Object> paramMap) {
 		
 		ApiResponse response = getBlackApiResponse();
 		try {
@@ -139,7 +215,7 @@ public class RateAlertService extends AbstractService {
 		} catch (Exception e) {
 			throw new GlobalException("Error while deleting rate alert record.");
 		}
-	}
+	}*/
 
 
 	/* (non-Javadoc)
