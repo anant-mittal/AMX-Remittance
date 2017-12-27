@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
@@ -47,6 +49,11 @@ public class RemittanceController {
 
 	@Autowired
 	ReportManagerService reportManagerService;
+	
+	
+	@Autowired
+	RemittancePaymentManager remittancePaymentManager;
+	
 
 	@Autowired
 	HttpServletResponse httpServletResponse;
@@ -135,5 +142,25 @@ public class RemittanceController {
 		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);
 		return response;
 	}
+	
+	
+	@RequestMapping(value="/save-remittance/",method=RequestMethod.POST)
+	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		paymentResponse.setCustomerId(customerId);
+		paymentResponse.setApplicationCountryId(applicationCountryId);
+		paymentResponse.setCompanyId(companyId);
+		logger.info("Payment gateway response " + paymentResponse.toString());
+		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
+		return response;
+	}
+	
+	
+	
+	
+	
+	
 	
 }

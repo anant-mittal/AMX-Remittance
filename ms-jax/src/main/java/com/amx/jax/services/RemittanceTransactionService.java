@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -73,12 +74,6 @@ public class RemittanceTransactionService extends AbstractService {
 	}
 	
 
-	/*
-	 * public ApiResponse convert(List<RemittanceTransactionView> transctionDetail){
-	 * List<RemittanceReportBean> reportBean = new ArrayList<>();
-	 * 
-	 * }
-	 */
 
 	@Override
 	public String getModelType() {
@@ -124,6 +119,13 @@ public class RemittanceTransactionService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(responseModel.getModelType());
 		return response;
+	}
+	
+	public ApiResponse saveRemittance(PaymentResponseDto paymentResponseDto) {
+		ApiResponse response = getBlackApiResponse();
+		return response;
+		
+		
 	}
 
 }

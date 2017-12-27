@@ -23,4 +23,8 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			+ " and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
 
+	
+	
+	
+	
 }
