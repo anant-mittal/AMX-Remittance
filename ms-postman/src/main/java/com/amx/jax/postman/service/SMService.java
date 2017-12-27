@@ -1,10 +1,10 @@
-package com.amx.jax.postman.api;
+package com.amx.jax.postman.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.postman.SMS;
+import com.amx.jax.postman.model.SMS;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;

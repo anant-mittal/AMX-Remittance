@@ -1,5 +1,6 @@
 package com.amx.jax.ui.beans;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
@@ -11,21 +12,23 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.SMS;
-import com.amx.jax.postman.Templates;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.session.UserSession;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserBean {
+public class UserBean implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Logger log = Logger.getLogger(UserBean.class);
 
 	@Autowired
-	private PostManClient postManClient;
+	private PostManService postManService;
 
 	@Autowired
 	private UserSession userSession;
@@ -62,7 +65,7 @@ public class UserBean {
 			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
-			postManClient.sendSMS(sms);
+			postManService.sendSMS(sms);
 		} catch (Exception e) {
 			log.error("Error while sending OTP SMS to 7710072192", e);
 		}
@@ -80,7 +83,7 @@ public class UserBean {
 		email.getModel().put("data", model);
 
 		try {
-			postManClient.sendEmail(email);
+			postManService.sendEmail(email);
 		} catch (Exception e) {
 			log.error("Error while sending OTP Email to" + model.getEmail(), e);
 		}

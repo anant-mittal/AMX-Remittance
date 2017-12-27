@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.Message;
-import com.amx.jax.postman.Templates;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Templates;
 
 @Service
 public class HealthService {
@@ -20,7 +20,7 @@ public class HealthService {
 	private String appName;
 
 	@Autowired
-	private PostManClient postManClient;
+	private PostManService postManService;
 
 	@Autowired
 	AppEnvironment environment;
@@ -37,7 +37,7 @@ public class HealthService {
 
 		try {
 			msg.setMessage(appName + "\n is Up and Runnnig.");
-			postManClient.notifySlack(msg);
+			postManService.notifySlack(msg);
 		} catch (Exception e) {
 			log.error("Error while sending Notification to Slack", e);
 		}
@@ -51,7 +51,7 @@ public class HealthService {
 		email.setHtml(true);
 
 		try {
-			postManClient.sendEmail(email);
+			postManService.sendEmail(email);
 			log.info("Sending Server up emailt to admi");
 		} catch (Exception e) {
 			log.error("Error while sending UP Email to riddhi.madhu@almullagroup.com", e);

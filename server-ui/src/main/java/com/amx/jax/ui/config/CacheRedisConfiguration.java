@@ -1,18 +1,12 @@
 package com.amx.jax.ui.config;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import org.redisson.Redisson;
-import org.redisson.api.LocalCachedMapOptions;
-import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
-import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
-import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 import org.redisson.config.SingleServerConfig;
-import org.redisson.spring.session.config.EnableRedissonHttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -24,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 
 @Configuration
-@EnableRedissonHttpSession
+// @EnableRedissonHttpSession
 @ConditionalOnExpression(com.amx.jax.ui.WebApplication.USE_REDIS)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class CacheRedisConfiguration extends AbstractHttpSessionApplicationInitializer {

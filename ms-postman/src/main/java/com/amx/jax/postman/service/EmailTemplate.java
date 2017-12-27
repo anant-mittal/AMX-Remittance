@@ -1,4 +1,4 @@
-package com.amx.jax.postman;
+package com.amx.jax.postman.service;
 
 import java.io.File;
 import java.io.IOException;

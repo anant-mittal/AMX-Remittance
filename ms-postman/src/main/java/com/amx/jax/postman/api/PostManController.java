@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.SMS;
-import com.amx.jax.postman.Templates;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.service.PostManServiceImpl;
 import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 

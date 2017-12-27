@@ -1,4 +1,4 @@
-package com.amx.jax.postman;
+package com.amx.jax.postman.model;
 
 public enum Templates {
 

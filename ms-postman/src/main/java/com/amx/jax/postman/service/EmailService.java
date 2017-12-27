@@ -1,4 +1,4 @@
-package com.amx.jax.postman;
+package com.amx.jax.postman.service;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
@@ -9,6 +9,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.postman.model.Email;
 
 @Component
 public class EmailService {

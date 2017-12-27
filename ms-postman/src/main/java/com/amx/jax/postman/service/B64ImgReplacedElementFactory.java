@@ -1,4 +1,4 @@
-package com.amx.jax.postman.api;
+package com.amx.jax.postman.service;
 
 import com.lowagie.text.BadElementException;
 import com.lowagie.text.Image;

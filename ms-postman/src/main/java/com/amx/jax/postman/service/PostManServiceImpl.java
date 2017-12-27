@@ -1,22 +1,29 @@
-package com.amx.jax.postman.api;
+package com.amx.jax.postman.service;
 
+import java.io.IOException;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.EmailService;
-import com.amx.jax.postman.File;
-import com.amx.jax.postman.Message;
-import com.amx.jax.postman.SMS;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.SMS;
 import com.bootloaderjs.JsonUtil;
+import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManServiceImpl implements PostManService {
+
+	@Autowired
+	private HttpServletResponse response;
 
 	@Autowired
 	private EmailService emailService;
@@ -29,7 +36,7 @@ public class PostManServiceImpl implements PostManService {
 
 	@Autowired
 	private SMService smsService;
-	
+
 	@Autowired
 	private SlackService slackService;
 
@@ -69,6 +76,18 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public void notifySlack(Message msg) throws UnirestException {
 		slackService.sendNotification(msg);
+	}
+
+	@Override
+	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
+		File file = this.processTemplate(template, data, fileName);
+		file.donwload(response, true);
+	}
+
+	@Override
+	public void createPDF(String template, Object data) throws IOException, DocumentException {
+		File file = this.processTemplate(template, data, null);
+		file.donwload(response, false);
 	}
 
 }

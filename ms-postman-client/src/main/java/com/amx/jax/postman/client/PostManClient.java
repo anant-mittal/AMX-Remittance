@@ -7,23 +7,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.File;
-import com.amx.jax.postman.Message;
-import com.amx.jax.postman.SMS;
-import com.amx.jax.postman.api.PostManService;
-import com.amx.jax.postman.api.PostManServiceImpl;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.SMS;
 import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
-public class PostManClient implements PostManService {
+public class PostManClient {
 
 	@Autowired
 	private HttpServletResponse response;
 
 	@Autowired
-	private PostManServiceImpl postManService;
+	private PostManService postManService;
 
 	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
 		File file = postManService.processTemplate(template, data, fileName);
@@ -48,7 +47,6 @@ public class PostManClient implements PostManService {
 		postManService.sendEmail(email);
 	}
 
-	@Override
 	public void notifySlack(Message msg) throws UnirestException {
 		postManService.notifySlack(msg);
 

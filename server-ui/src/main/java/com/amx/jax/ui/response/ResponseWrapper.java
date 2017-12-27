@@ -5,21 +5,34 @@ import java.io.Serializable;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.ui.Constants;
+import com.bootloaderjs.ContextUtil;
 
 public class ResponseWrapper<T> implements Serializable {
 
 	public ResponseWrapper() {
 		super();
 		this.timestamp = System.currentTimeMillis();
+		this.traceId = ContextUtil.getTraceId();
 	}
 
 	public ResponseWrapper(T data) {
 		super();
 		this.data = data;
 		this.timestamp = System.currentTimeMillis();
+		this.traceId = ContextUtil.getTraceId();
 	}
 
 	private static final long serialVersionUID = 7545829974699803746L;
+
+	private Long traceId = null;
+
+	public Long getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(Long traceId) {
+		this.traceId = traceId;
+	}
 
 	private Long timestamp = null;
 	private String status = "200";

@@ -26,7 +26,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.XRateData;
@@ -53,7 +53,7 @@ public class RemittController {
 	private UserBean userBean;
 
 	@Autowired
-	private PostManClient postManClient;
+	private PostManService postManService;
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
@@ -67,7 +67,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
 			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper) throws IOException, DocumentException {
-		postManClient.downloadPDF("RemittanceStatment", wrapper, "RemittanceStatment.pdf");
+		postManService.downloadPDF("RemittanceStatment", wrapper, "RemittanceStatment.pdf");
 		return wrapper;
 	}
 
@@ -82,7 +82,7 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
-			postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
+			postManService.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
 					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
 		}
 		return JsonUtil.toJson(wrapper);
@@ -105,10 +105,10 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			postManClient.createPDF("RemittanceReceiptReport", wrapper);
+			postManService.createPDF("RemittanceReceiptReport", wrapper);
 			return null;
 		} else if ("html".equals(ext)) {
-			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport")
+			return postManService.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport")
 					.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
