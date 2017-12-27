@@ -123,6 +123,7 @@ public class RemittanceTransactionManager {
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
 		validateBlackListedBene(beneficiary);
 		validatedObjects.put("BENEFICIARY", beneficiary);
@@ -184,13 +185,14 @@ public class RemittanceTransactionManager {
 
 		BigDecimal maxLoyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
+		int todaysLoyalityPointsEncashedInt = todaysLoyalityPointsEncashed == null ? 0: todaysLoyalityPointsEncashed.intValue();
 		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
 				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
-		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashed.intValue() < 0) {
+		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashedInt < 0) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
@@ -212,7 +214,7 @@ public class RemittanceTransactionManager {
 
 	private void addRequestParameters(RemittanceTransactionRequestModel model) {
 		BigDecimal beneId = model.getBeneId();
-		remitApplParametersMap.put("P_BENEFICIARY_ID", beneId);
+		remitApplParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneId);
 		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
 		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
 
@@ -393,6 +395,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
+		logger.info("Application saved successfully, response: "+ remiteAppModel.toString());
 		return remiteAppModel;
 
 	}

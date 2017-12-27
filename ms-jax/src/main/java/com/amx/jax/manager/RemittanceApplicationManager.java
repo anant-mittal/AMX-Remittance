@@ -114,6 +114,7 @@ public class RemittanceApplicationManager {
 		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
 				.get(0);
+		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
 		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
 		remitApplParametersMap.put("P_DOCUMENT_CODE", document.getDocumentCode());
@@ -152,6 +153,8 @@ public class RemittanceApplicationManager {
 		// fin year
 		UserFinancialYear userFinancialYear = finanacialService.getUserFinancialYear();
 		remittanceApplication.setExUserFinancialYearByDocumentFinanceYear(userFinancialYear);
+		remittanceApplication.setTransactionFinancialyear(userFinancialYear.getFinancialYear());
+		remittanceApplication.setDocumentFinancialyear(userFinancialYear.getFinancialYear());
 		remitApplParametersMap.put("P_USER_FINANCIAL_YEAR", userFinancialYear.getFinancialYear());
 		// routing Country
 		CountryMaster bencountrymaster = new CountryMaster();
@@ -196,7 +199,7 @@ public class RemittanceApplicationManager {
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		remittanceApplication.setCreatedBy(customer.getIdentityInt());
+		remittanceApplication.setCreatedBy("JOMAX_ONLINE");// TODO get it from uiserver
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
@@ -209,6 +212,14 @@ public class RemittanceApplicationManager {
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
 		remittanceApplication.setInstruction("URGENT");
 		return remittanceApplication;
+	}
+
+	private BigDecimal getSelectedCurrency(BigDecimal foreignCurrencyId,
+			RemittanceTransactionRequestModel requestModel) {
+		if (requestModel.getForeignAmount() != null) {
+			return foreignCurrencyId;
+		}
+		return metaData.getDefaultCurrencyId();
 	}
 
 	private void validateDailyBeneficiaryTransactionLimit(BenificiaryListView beneDetails) {
@@ -272,22 +283,22 @@ public class RemittanceApplicationManager {
 	private void setApplicableRates(RemittanceApplication remittanceApplication,
 			RemittanceTransactionRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
-		BigDecimal loyalityPointsEncashed = null;
+		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
-		remittanceApplication.setExchangeRateApplied(breakup.getRate());
+		remittanceApplication.setExchangeRateApplied(breakup.getInverseRate());
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
-		remittanceApplication.setLocalChargeAmount(null);
+		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-
+		BigDecimal netAmount = breakup.getConvertedLCAmount();
+		netAmount = netAmount.add(validationResults.getTxnFee());
 		if (requestModel.isAvailLoyalityPoints()) {
 			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
 			BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new BigDecimal(1000), 10,
 					RoundingMode.HALF_UP);
-			breakup.setNetAmount(breakup.getConvertedLCAmount().subtract(loyalityVoucherAmount));
-		} else {
-			breakup.setNetAmount(breakup.getConvertedLCAmount());
+			netAmount = netAmount.subtract(loyalityVoucherAmount);
 		}
+		breakup.setNetAmount(netAmount);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 

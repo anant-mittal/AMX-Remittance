@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
@@ -43,44 +44,73 @@ public class RateAlertController {
 
 	@Autowired
 	MetaData metaData;
-
-	@RequestMapping(value = "/save/rate/alert/", method = RequestMethod.GET)
-	public ApiResponse handleUrlSaveRateAlert(@RequestParam("customerId") BigDecimal customerId,
-											  @RequestParam("fccur") BigDecimal fccur, 
-											  @RequestParam("basecur") BigDecimal basecur,
-											  @RequestParam("fromDate") Date fromDate, 
-											  @RequestParam("toDate") Date toDate,
-											  @RequestParam("alertRate") BigDecimal alertRate,
-											  @RequestParam("rule") String rule) {
+	
+	
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	public ApiResponse handleUrlSave(@RequestBody RateAlertDTO dto) {
+		logger.info("In save with parameters" + dto.toString());
 		
-		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("customerId", customerId);
-		paramMap.put("basecur", basecur);
-		paramMap.put("fccur",fccur);
-		paramMap.put("fromDate", fromDate);
-		paramMap.put("toDate", toDate);
-		paramMap.put("alertRate", alertRate);
-		paramMap.put("rule", rule);
-		
-		logger.info("Inside /save/rate/alert/ for customer : "+customerId);
 		ApiResponse response = null;
-		response = rateAlertService.saveRateAlert(paramMap);
+		response = rateAlertService.saveRateAlert(dto);
 		return response;
 	}
 	
-	@RequestMapping(value = "/get/rate/alert/for/customer", method = RequestMethod.GET)
-	public ApiResponse handleUrlGetRateAlertForCustomer(@RequestParam("customerId") String customerId) {
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public ApiResponse handleUrlDelete(@RequestBody RateAlertDTO dto) {
+		logger.info("In delete with parameters" + dto.toString());
 		
-		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("customerId", customerId);
-		
-		logger.info("customerId :" + customerId );
 		ApiResponse response = null;
-		response = rateAlertService.getRateAlertForCustomer(paramMap);
+		response = rateAlertService.delteRateAlert(dto);
 		return response;
 	}
 	
-	@RequestMapping(value = "/delete/rate/alert", method = RequestMethod.GET)
+	@RequestMapping(value = "/get/for/customer", method = RequestMethod.POST)
+	public ApiResponse handleUrlGetRateAlertForCustomer() {
+		BigDecimal customerId =metaData.getCustomerId();
+		logger.info("In /get/for/customer with customerId :" + customerId );
+		
+		ApiResponse response = null;
+		response = rateAlertService.getRateAlertForCustomer(customerId);
+		return response;
+	}
+	
+//	@RequestMapping(value = "/save", method = RequestMethod.GET)
+//	public ApiResponse handleUrlSaveRateAlert(@RequestParam("customerId") BigDecimal customerId,
+//											  @RequestParam("fccur") BigDecimal fccur, 
+//											  @RequestParam("basecur") BigDecimal basecur,
+//											  @RequestParam("fromDate") Date fromDate, 
+//											  @RequestParam("toDate") Date toDate,
+//											  @RequestParam("alertRate") BigDecimal alertRate,
+//											  @RequestParam("rule") String rule) {
+//		
+//		Map<String,Object> paramMap = new HashMap<String,Object>();
+//		paramMap.put("customerId", customerId);
+//		paramMap.put("basecur", basecur);
+//		paramMap.put("fccur",fccur);
+//		paramMap.put("fromDate", fromDate);
+//		paramMap.put("toDate", toDate);
+//		paramMap.put("alertRate", alertRate);
+//		paramMap.put("rule", rule);
+//		
+//		logger.info("Inside /save for customer : "+customerId);
+//		ApiResponse response = null;
+//		response = rateAlertService.saveRateAlert(paramMap);
+//		return response;
+//	}
+	
+//	@RequestMapping(value = "/get/for/customer", method = RequestMethod.GET)
+//	public ApiResponse handleUrlGetRateAlertForCustomer(@RequestParam("customerId") String customerId) {
+//		
+//		Map<String,Object> paramMap = new HashMap<String,Object>();
+//		paramMap.put("customerId", customerId);
+//		
+//		logger.info("customerId :" + customerId );
+//		ApiResponse response = null;
+//		response = rateAlertService.getRateAlertForCustomer(paramMap);
+//		return response;
+//	}
+	
+/*	@RequestMapping(value = "/delete", method = RequestMethod.GET)
 	public ApiResponse handleUrlDeleteRateAlert(@RequestParam("rateAlertId") BigDecimal onlineRateAlertId) {
 		
 		Map<String,Object> paramMap = new HashMap<String,Object>();
@@ -90,7 +120,7 @@ public class RateAlertController {
 		ApiResponse response = null;
 		response = rateAlertService.delteRateAlert(paramMap);
 		return response;
-	}
+	}*/
 
 
 }

@@ -36,8 +36,9 @@ public class BeneClientTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		BigDecimal beneId = new BigDecimal(88041);
 		ApiResponse<RemittancePageDto> response = null;
-		response = client.defaultBeneficiary(null,null);
+		response = client.defaultBeneficiary(beneId,null);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

@@ -25,6 +25,7 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.fasterxml.jackson.core.JsonParser;
@@ -162,6 +163,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "remittance-page-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittancePageDto>>(){});
 			break;
+			
+		case "rate-alert-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RateAlertDTO>>(){});
+			break;	
 	}
 		
 		
