@@ -38,6 +38,8 @@ public class WebAuthFilter implements Filter {
 
 		try {
 			if (sessionService.validatedUser() && !sessionService.indexedUser()) {
+				LOGGER.info("User is logged in somewhere else so logging out this one, traceid={}",
+						ContextUtil.getTraceId());
 				sessionService.unauthorize();
 				HttpServletResponse response = ((HttpServletResponse) resp);
 				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
