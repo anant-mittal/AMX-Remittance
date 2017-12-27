@@ -388,9 +388,11 @@ public class RemittanceTransactionManager {
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(remittanceApplication.getLocalNetTranxAmount());
-		remiteAppModel.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
+		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
+		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
+		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
+		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
-
 		return remiteAppModel;
 
 	}
@@ -398,6 +400,18 @@ public class RemittanceTransactionManager {
 	private void deactivatePreviousApplications() {
 		BigDecimal customerId = meta.getCustomerId();
 		remittanceApplicationService.deActivateApplication(customerId);
+	}
+
+	private BigDecimal getPaymentAmount(RemittanceApplication remittanceApplication,
+			RemittanceTransactionRequestModel model) {
+		boolean availLoyalityPoint = model.isAvailLoyalityPoints();
+		BigDecimal paymentAmount = remittanceApplication.getLocalNetTranxAmount();
+		if (availLoyalityPoint) {
+			BigDecimal loyalityPoints = remittanceApplication.getLoyaltyPointsEncashed();
+			BigDecimal loyalityVoucherAmount = loyalityPoints.divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
+			paymentAmount = remittanceApplication.getLocalNetTranxAmount().subtract(loyalityVoucherAmount);
+		}
+		return paymentAmount;
 	}
 
 	private void validateAdditionalBeneDetails() {

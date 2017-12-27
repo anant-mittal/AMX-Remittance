@@ -126,6 +126,7 @@ public class RemittanceApplicationManager {
 		CurrencyMasterModel foreignCurrency = new CurrencyMasterModel();
 		foreignCurrency.setCurrencyId(foreignCurrencyId);
 		localCurrency.setCurrencyId(localCurrencyId);
+		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setExCurrencyMasterByForeignCurrencyId(foreignCurrency);
 		// commission currency
 		remittanceApplication.setExCurrencyMasterByLocalCommisionCurrencyId(localCurrency);
@@ -199,8 +200,10 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
-		remittanceApplication.setApplInd(ConstantDocument.Individual);
+		remittanceApplication.setApplInd(ConstantDocument.Online);
 		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch()));
+		remittanceApplication.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
+				+ remittanceApplication.getDocumentNo().toString());
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
