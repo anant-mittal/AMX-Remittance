@@ -61,6 +61,11 @@ public class SessionService {
 			.cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE).syncStrategy(SyncStrategy.INVALIDATE)
 			.timeToLive(10000).maxIdle(10000);
 
+	@SuppressWarnings("unchecked")
+	private RLocalCachedMap<String, String> getLoggedInUsers() {
+		return redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+	}
+
 	public GuestSession getGuestSession() {
 		return guestSession;
 	}
@@ -104,7 +109,7 @@ public class SessionService {
 	public void indexUser() {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
-			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
 			String uuidToken = UUID.randomUUID().toString();
 			userSession.setUuidToken(uuidToken);
 			map.fastPut(userKeyString, uuidToken);
@@ -116,7 +121,7 @@ public class SessionService {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
 
-			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
 
 			String uuidToken = userSession.getUuidToken();
 			if (map.containsKey(userKeyString) && uuidToken != null) {
@@ -130,7 +135,7 @@ public class SessionService {
 	@SuppressWarnings("unchecked")
 	public void unauthorize() {
 		if (this.indexedUser()) {
-			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
 			String userKeyString = getUserKeyString();
 			map.fastRemove(userKeyString);
 		}
