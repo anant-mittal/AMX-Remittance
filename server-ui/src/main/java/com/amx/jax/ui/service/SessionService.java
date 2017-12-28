@@ -74,6 +74,12 @@ public class SessionService {
 		return userSession;
 	}
 
+	/**
+	 * authorize user based on customerModel
+	 * 
+	 * @param customerModel
+	 * @param valid
+	 */
 	public void authorize(CustomerModel customerModel, Boolean valid) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
 				customerModel.getIdentityId(), customerModel.getPassword());
@@ -88,10 +94,23 @@ public class SessionService {
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 	}
 
+	/**
+	 * Validates/Invalidates curent Session.
+	 * 
+	 * @param valid
+	 *            - true/false
+	 * 
+	 * 
+	 */
 	public void validate(Boolean valid) {
 		userSession.setValid(valid);
 	}
 
+	/**
+	 * True - if Current sesison is for validated user otherwise fasle.
+	 * 
+	 * @return
+	 */
 	public Boolean validatedUser() {
 		return userSession.isValid();
 	}
@@ -105,7 +124,11 @@ public class SessionService {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Creates Index for current user and session. which will be maintained across
+	 * multiple deployments.
+	 * 
+	 */
 	public void indexUser() {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
@@ -116,7 +139,13 @@ public class SessionService {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Check if user is index in SessionTable and his UUID key matches with Key in
+	 * SessionTable, It returns true if user is indexed and has not started another
+	 * session.
+	 * 
+	 * @return
+	 */
 	public Boolean indexedUser() {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
@@ -132,19 +161,24 @@ public class SessionService {
 		return Boolean.FALSE;
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * Unauthorizes current user & deletes current session completely.
+	 * 
+	 */
 	public void unauthorize() {
 		if (this.indexedUser()) {
 			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
 			String userKeyString = getUserKeyString();
 			map.fastRemove(userKeyString);
+			LOGGER.info("User is being unauthorized from current session");
 		}
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
 
 	/**
-	 * Clear Existing user session if any
+	 * Clear Existing user session if any. Does only cleaning part for compelte
+	 * un-authorization use {@link #unauthorize()}
 	 */
 	public void clear() {
 		userSession.setValid(Boolean.FALSE);
