@@ -11,6 +11,8 @@ import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
 import org.redisson.api.RedissonClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,10 @@ import com.amx.jax.ui.session.UserSession;
 
 @Component
 public class SessionService {
+
+	private static final String USER_KEY_FORMAT = "%s#%s";
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SessionService.class);
 
 	@Autowired
 	private HttpServletRequest request;
@@ -85,40 +91,49 @@ public class SessionService {
 		return userSession.isValid();
 	}
 
+	private String getUserKeyString() {
+		if (userSession.getCustomerModel() == null) {
+			return null;
+		}
+		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
+		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().getId(), customerId.toString());
+
+	}
+
 	@SuppressWarnings("unchecked")
 	public void indexUser() {
-
-		if (userSession.getCustomerModel() == null) {
-			return;
+		String userKeyString = getUserKeyString();
+		if (userKeyString != null) {
+			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+			String uuidToken = UUID.randomUUID().toString();
+			userSession.setUuidToken(uuidToken);
+			map.fastPut(userKeyString, uuidToken);
 		}
-
-		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
-		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
-		String userKeyString = String.format("{}#{}", TenantContextHolder.currentSite().getId(), customerId.toString());
-
-		String uuidToken = UUID.randomUUID().toString();
-		userSession.setUuidToken(uuidToken);
-		map.fastPut(userKeyString, uuidToken);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Boolean indexedUser() {
+		String userKeyString = getUserKeyString();
+		if (userKeyString != null) {
 
-		if (userSession.getCustomerModel() == null) {
-			return Boolean.FALSE;
-		}
-		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
-		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
-		String userKeyString = String.format("{}#{}", TenantContextHolder.currentSite().getId(), customerId.toString());
+			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
 
-		String uuidToken = userSession.getUuidToken();
-		if (map.containsKey(userKeyString) && uuidToken != null) {
-			String uuidTokenTemp = map.get(userKeyString);
-			return uuidToken.equals(uuidTokenTemp);
+			String uuidToken = userSession.getUuidToken();
+			if (map.containsKey(userKeyString) && uuidToken != null) {
+				String uuidTokenTemp = map.get(userKeyString);
+				return uuidToken.equals(uuidTokenTemp);
+			}
 		}
-		return false;
+		return Boolean.FALSE;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void unauthorize() {
+		if (this.indexedUser()) {
+			RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+			String userKeyString = getUserKeyString();
+			map.fastRemove(userKeyString);
+		}
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}
