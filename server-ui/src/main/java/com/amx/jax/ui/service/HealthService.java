@@ -45,7 +45,7 @@ public class HealthService {
 		Email email = new Email();
 		email.setSubject("UI Server is UP");
 		email.setFrom("amxjax@gmail.com");
-		email.setTo("riddhi.madhu@almullagroup.com");
+		email.addTo("riddhi.madhu@almullagroup.com");
 
 		email.setTemplate(Templates.SERVER_UP);
 		email.setHtml(true);

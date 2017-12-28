@@ -18,13 +18,13 @@ import io.swagger.annotations.Api;
 @Api(value = "Auth APIs")
 public class AuthController {
 
-	@RequestMapping(value = "/login", method = { RequestMethod.GET })
+	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 
 		return "login";
 	}
 
-	@RequestMapping(value = "/login", method = { RequestMethod.GET, RequestMethod.POST }, headers = {
+	@RequestMapping(value = "/login/**", method = { RequestMethod.GET, RequestMethod.POST }, headers = {
 			"Accept=application/json", "Accept=application/v0+json" })
 	@ResponseBody
 	public String loginPJson() {

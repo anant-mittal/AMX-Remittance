@@ -5,11 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.bootloaderjs.Utils;
-
 public class Message {
 
-	protected String message;
+	protected String message = null;
+	private List<String> to;
+	private String template = null;
+	private Map<String, Object> model = new HashMap<String, Object>();
 
 	public String getMessage() {
 		return message;
@@ -18,10 +19,6 @@ public class Message {
 	public void setMessage(String text) {
 		this.message = text;
 	}
-
-	private List<String> to;
-
-	private String template = null;
 
 	public String getTemplate() {
 		return template;
@@ -34,8 +31,6 @@ public class Message {
 	public void setTemplate(Templates template) {
 		this.template = template.getFileName();
 	}
-
-	private Map<String, Object> model = new HashMap<String, Object>();
 
 	public Map<String, Object> getModel() {
 		return model;
@@ -68,11 +63,7 @@ public class Message {
 	 * @param to
 	 *            the to to set
 	 */
-	public void setTo(String recieverId) {
+	public void addTo(String recieverId) {
 		this.to.add(recieverId);
-	}
-
-	public String getToAsList() {
-		return Utils.concatenate(this.to, ",");
 	}
 }

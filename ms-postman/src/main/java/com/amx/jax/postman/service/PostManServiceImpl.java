@@ -40,7 +40,7 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private SlackService slackService;
 
-	public void sendEmail(Email email) {
+	public Email sendEmail(Email email) {
 
 		if (email.getTemplate() != null) {
 			Context context = new Context();
@@ -51,9 +51,18 @@ public class PostManServiceImpl implements PostManService {
 				email.setMessage(textTemplateEngine.process(email.getTemplate(), context));
 			}
 		}
-		emailService.send(email);
+		return emailService.send(email);
 	}
 
+	public File processTemplate(String template, Map<String, Object> map, String fileName) {
+		File file = new File();
+		Context context = new Context();
+		context.setVariables(map);
+		file.setContent(templateEngine.process(template, context));
+		file.setName(fileName);
+		return file;
+	}
+	
 	public File processTemplate(String template, Object data, String fileName) {
 		File file = new File();
 		Map<String, Object> map = JsonUtil.toMap(data);
@@ -63,29 +72,30 @@ public class PostManServiceImpl implements PostManService {
 		file.setName(fileName);
 		return file;
 	}
-
-	public void sendSMS(SMS sms) throws UnirestException {
+	
+	public SMS sendSMS(SMS sms) throws UnirestException {
 		if (sms.getTemplate() != null) {
 			Context context = new Context();
 			context.setVariables(sms.getModel());
 			sms.setMessage(templateEngine.process(sms.getTemplate(), context));
 		}
-		this.smsService.sendSMS(sms);
+		return this.smsService.sendSMS(sms);
 	}
 
 	@Override
-	public void notifySlack(Message msg) throws UnirestException {
-		slackService.sendNotification(msg);
+	public Message notifySlack(Message msg) throws UnirestException {
+		return slackService.sendNotification(msg);
 	}
 
 	@Override
-	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException {
+	public void downloadPDF(String template, Object data, String fileName)
+			throws IOException, DocumentException, UnirestException {
 		File file = this.processTemplate(template, data, fileName);
 		file.donwload(response, true);
 	}
 
 	@Override
-	public void createPDF(String template, Object data) throws IOException, DocumentException {
+	public void createPDF(String template, Object data) throws IOException, DocumentException, UnirestException {
 		File file = this.processTemplate(template, data, null);
 		file.donwload(response, false);
 	}

@@ -136,6 +136,10 @@ public final class JsonUtil {
 		mapper.registerModule(module);
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
 	}
+	
+	public static ObjectMapper getMapper() {
+		return instance.mapper;
+	}
 
 	/**
 	 * From json.

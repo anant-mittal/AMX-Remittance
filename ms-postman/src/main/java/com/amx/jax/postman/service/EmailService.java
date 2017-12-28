@@ -11,6 +11,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.Email;
+import com.bootloaderjs.Utils;
 
 @Component
 public class EmailService {
@@ -20,18 +21,18 @@ public class EmailService {
 
 	private Logger log = Logger.getLogger(getClass());
 
-	public void send(Email eParams) {
+	public Email send(Email eParams) {
 
 		if (eParams.isHtml()) {
 			try {
 				sendHtmlMail(eParams);
 			} catch (MessagingException e) {
-				log.error("Could not send email to : " + eParams.getToAsList() + " Error = {}", e);
+				log.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
 			}
 		} else {
 			sendPlainTextMail(eParams);
 		}
-
+		return eParams;
 	}
 
 	private void sendHtmlMail(Email eParams) throws MessagingException {

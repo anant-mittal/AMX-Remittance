@@ -11,16 +11,17 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface PostManService {
 
-	public abstract void sendEmail(Email email);
+	public Email sendEmail(Email email) throws UnirestException;
 
-	public File processTemplate(String template, Object data, String fileName);
+	public File processTemplate(String template, Object data, String fileName) throws UnirestException;
 
-	public void sendSMS(SMS sms) throws UnirestException;
+	public SMS sendSMS(SMS sms) throws UnirestException;
 
-	public void notifySlack(Message msg) throws UnirestException;
+	public Message notifySlack(Message msg) throws UnirestException;
 
-	public void downloadPDF(String template, Object data, String fileName) throws IOException, DocumentException;
+	public void downloadPDF(String template, Object data, String fileName)
+			throws IOException, DocumentException, UnirestException;
 
-	void createPDF(String template, Object data) throws IOException, DocumentException;
+	void createPDF(String template, Object data) throws IOException, DocumentException, UnirestException;
 
 }

@@ -19,12 +19,13 @@ public class SlackService {
 	@Value("${msg91.sender.id}")
 	private String senderId;
 
-	public void sendNotification(Message msg) throws UnirestException {
+	public Message sendNotification(Message msg) throws UnirestException {
 
 		HttpResponse<String> response = Unirest
 				.post("https://hooks.slack.com/services/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")
 				.header("content-type", "application/json").body(String.format("{\"text\": \"%s\"}", msg.getMessage()))
 				.asString();
 		logger.info("SMS Sent   " + response.getBody());
+		return msg;
 	}
 }

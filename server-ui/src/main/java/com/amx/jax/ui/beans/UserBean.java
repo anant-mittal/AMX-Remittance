@@ -14,10 +14,12 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.session.UserSession;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -58,10 +60,17 @@ public class UserBean implements Serializable {
 	@Async
 	public void notifyResetOTP(CivilIdOtpModel model) {
 
-		SMS sms = new SMS();
-
+		Message msg = new Message();
+		msg.setMessage("Your OTP for Reset is " + model.getOtp());
 		try {
-			sms.setTo("7710072192");
+			postManService.notifySlack(msg);
+		} catch (UnirestException e1) {
+			log.error("Error while sending SlackMS", e1);
+		}
+
+		SMS sms = new SMS();
+		try {
+			sms.addTo("7710072192");
 			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
@@ -74,9 +83,9 @@ public class UserBean implements Serializable {
 		email.setSubject("Verify Your Account");
 		email.setFrom("amxjax@gmail.com");
 		if (model.getEmail() != null && !Constants.EMPTY.equals(model.getEmail())) {
-			email.setTo(model.getEmail());
+			email.addTo(model.getEmail());
 		} else {
-			email.setTo("riddhi.madhu@almullagroup.com");
+			email.addTo("riddhi.madhu@almullagroup.com");
 		}
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);

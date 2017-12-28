@@ -24,8 +24,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.jax.ui.config.JaxProperties;
 import com.amx.jax.ui.config.WebRequestFilter;
 import com.amx.jax.ui.config.WebRequestListener;
