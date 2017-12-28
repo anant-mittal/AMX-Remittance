@@ -290,14 +290,14 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
 		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-		BigDecimal netAmount = breakup.getConvertedLCAmount();
-		netAmount = netAmount.add(validationResults.getTxnFee());
-		if (requestModel.isAvailLoyalityPoints()) {
-			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
-			BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new BigDecimal(1000), 10,
-					RoundingMode.HALF_UP);
-			netAmount = netAmount.subtract(loyalityVoucherAmount);
-		}
+		BigDecimal netAmount = breakup.getNetAmount();
+//		netAmount = netAmount.add(validationResults.getTxnFee());
+//		if (requestModel.isAvailLoyalityPoints()) {
+//			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
+//			BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new BigDecimal(1000), 10,
+//					RoundingMode.HALF_UP);
+//			netAmount = netAmount.subtract(loyalityVoucherAmount);
+//		}
 		breakup.setNetAmount(netAmount);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);

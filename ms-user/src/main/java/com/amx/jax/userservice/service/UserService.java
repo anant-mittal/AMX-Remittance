@@ -2,6 +2,7 @@ package com.amx.jax.userservice.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,6 +14,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -32,6 +35,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
@@ -40,6 +44,7 @@ import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.jax.util.Util;
@@ -75,6 +80,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private StringUtil stringUtil;
+
+	@Autowired
+	private LoginLogoutHistoryRepository loginLogoutHistoryRepositoryRepo;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -119,6 +127,10 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
+			if (history != null) {
+				personinfo.setLastLoginTime(history.getLoginTime());
+			}
 			BeanUtils.copyProperties(personinfo, customer);
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
@@ -268,6 +280,7 @@ public class UserService extends AbstractUserService {
 	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
+		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
 		Map<String, Object> output = new HashMap<>();
 		return output;
 	}
@@ -339,6 +352,24 @@ public class UserService extends AbstractUserService {
 			onlineCustomer.setLockDt(null);
 			custDao.saveOnlineCustomer(onlineCustomer);
 		}
+	}
 
+	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+
+		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
+		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
+
+		return output;
+	}
+
+	protected void saveLoginLogoutHistoryByUserName(String userName) {
+		LoginLogoutHistory output = getLoginLogoutHistoryByUserName(userName);
+		if (output == null) {
+			output = new LoginLogoutHistory();
+			output.setLoginType("C");
+			output.setUserName(userName);
+		}
+		output.setLoginTime(new Timestamp(new Date().getTime()));
+		loginLogoutHistoryRepositoryRepo.save(output);
 	}
 }

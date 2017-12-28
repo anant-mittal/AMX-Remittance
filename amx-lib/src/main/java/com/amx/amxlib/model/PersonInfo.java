@@ -1,6 +1,7 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
 public class PersonInfo extends AbstractModel {
@@ -18,6 +19,7 @@ public class PersonInfo extends AbstractModel {
 	private String alterEmailId;
 	private String mobile;
 	private BigDecimal nationalityId;
+	private Timestamp lastLoginTime;
 
 	public String getTitle() {
 		return title;
@@ -121,6 +123,14 @@ public class PersonInfo extends AbstractModel {
 
 	public void setNationalityId(BigDecimal nationalityId) {
 		this.nationalityId = nationalityId;
+	}
+
+	public Timestamp getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	public void setLastLoginTime(Timestamp lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
 	}
 
 }

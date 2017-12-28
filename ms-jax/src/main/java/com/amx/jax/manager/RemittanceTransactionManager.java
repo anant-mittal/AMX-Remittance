@@ -168,9 +168,11 @@ public class RemittanceTransactionManager {
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		validateNumberOfTransactionLimits();
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model);
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, comission);
 		validateTransactionAmount(breakup.getConvertedLCAmount());
-		validateLoyalityPointsBalance(customer.getLoyaltyPoints());
+		if (model.isAvailLoyalityPoints()) {
+			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
+		}
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
@@ -185,7 +187,8 @@ public class RemittanceTransactionManager {
 
 		BigDecimal maxLoyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
-		int todaysLoyalityPointsEncashedInt = todaysLoyalityPointsEncashed == null ? 0: todaysLoyalityPointsEncashed.intValue();
+		int todaysLoyalityPointsEncashedInt = todaysLoyalityPointsEncashed == null ? 0
+				: todaysLoyalityPointsEncashed.intValue();
 		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
 				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
@@ -251,7 +254,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
-			RemittanceTransactionRequestModel model) {
+			RemittanceTransactionRequestModel model, BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
@@ -284,10 +287,11 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
+		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		if (model.isAvailLoyalityPoints()) {
-			breakup.setNetAmount(breakup.getConvertedLCAmount().subtract(new BigDecimal(1)));
+			breakup.setNetAmount(netAmount.subtract(new BigDecimal(1)));
 		} else {
-			breakup.setNetAmount(breakup.getConvertedLCAmount());
+			breakup.setNetAmount(netAmount);
 		}
 		return breakup;
 
@@ -395,7 +399,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
-		logger.info("Application saved successfully, response: "+ remiteAppModel.toString());
+		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		return remiteAppModel;
 
 	}
