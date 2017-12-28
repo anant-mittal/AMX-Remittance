@@ -21,8 +21,10 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.exception.GlobalException;
 
 @Component
 
@@ -60,7 +62,7 @@ public class ApplicationProcedureDao {
 		BigDecimal beneAccNumSeqId = (BigDecimal) inputValues.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
 		BigDecimal routingCountry = (BigDecimal) inputValues.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal routingBank = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
-		BigDecimal routingBranch = (BigDecimal) inputValues.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBranch = (BigDecimal) inputValues.get("P_ROUTING_BANK_BRANCH_ID");
 		BigDecimal serviceMasterId = (BigDecimal) inputValues.get("P_SERVICE_MASTER_ID");
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPLICATION_COUNTRY_ID");
 		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
@@ -111,9 +113,9 @@ public class ApplicationProcedureDao {
 					cs.setBigDecimal(12, deliveryMode);
 					cs.registerOutParameter(13, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(14, java.sql.Types.VARCHAR);
-					cs.registerOutParameter(15, java.sql.Types.INTEGER);
-					cs.registerOutParameter(16, java.sql.Types.INTEGER);
-					cs.registerOutParameter(17, java.sql.Types.INTEGER);
+					cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(16, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(17, java.sql.Types.NUMERIC);
 					cs.registerOutParameter(18, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(19, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(20, java.sql.Types.VARCHAR);
@@ -131,6 +133,9 @@ public class ApplicationProcedureDao {
 		} catch (DataAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if (output.get("P_ERROR_MESSAGE") != null) {
+			throw new GlobalException(output.get("P_ERROR_MESSAGE").toString(), JaxError.TRANSACTION_VALIDATION_FAIL);
 		}
 		return output;
 	}
