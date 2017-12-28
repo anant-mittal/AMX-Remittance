@@ -135,10 +135,7 @@ public class RemittanceAppBeneficiaryManager {
 		remittanceAppBenificary.setBeneficiaryBankBranchId(beneficiaryDT.getBranchId());
 		remittanceAppBenificary.setBeneficiaryAccountSeqId(beneficiaryDT.getBeneficiaryAccountSeqId());
 		remittanceAppBenificary.setBeneficiaryRelationShipSeqId(beneficiaryDT.getBeneficiaryRelationShipSeqId());
-		remittanceAppBenificary.setBeneficiaryBankSwift(beneficiaryDT.getSwiftBic());
-		remittanceAppBenificary.setBeneficiaryBranchDistrictId(beneficiaryDT.getDistrictId());
-		remittanceAppBenificary.setBeneficiaryBranchStateId(beneficiaryDT.getStateId());
-		remittanceAppBenificary.setBeneficiaryBranchCityId(beneficiaryDT.getBranchId());
+		//remittanceAppBenificary.setBeneficiaryBankSwift(beneficiaryDT.getSwiftBic());
 	}
 
 	private void setSwiftCodes(RemittanceAppBenificiary remittanceAppBenificary,
@@ -154,12 +151,14 @@ public class RemittanceAppBeneficiaryManager {
 			}
 		}
 		BenificiaryListView beneficiaryDT = (BenificiaryListView) remitApplParametersMap.get("BENEFICIARY");
+		BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal bankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		if (beneficiaryDT.getSwiftBic() != null) {
 			remittanceAppBenificary.setBeneficiaryBankSwift(beneficiaryDT.getSwiftBic());
 		} else {
 			remittanceAppBenificary.setBeneficiaryBankSwift(
-					bankService.getBranchSwiftCode(remittanceAppBenificary.getBeneficiaryBankId(),
-							remittanceAppBenificary.getBeneficiaryBankBranchId()));
+					bankService.getBranchSwiftCode(bankId,
+							bankBranchId));
 		}
 	}
 }
