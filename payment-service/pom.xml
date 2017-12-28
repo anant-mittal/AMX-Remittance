@@ -6,7 +6,7 @@
 	<groupId>com.amx.jax.payment</groupId>
 	<artifactId>payment-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 
 	<name>payment-service</name>
 	<description>Payment related services.</description>

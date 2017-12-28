@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.RATE_ALERT_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.ValidationException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -43,14 +45,19 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	public ApiResponse<RateAlertDTO> deleteRateAlert(RateAlertDTO rateAlertDTO) {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		try {
-
-			HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-			String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/delete";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-					});
-
-		} catch (Exception e) {
+			
+			if (rateAlertDTO.getRateAlertId() != null ) {
+				HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
+				String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/delete";
+				response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+						new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+						});
+			}else {
+				throw new ValidationException("RateAlert ID not provided.");
+			}
+		} catch (ValidationException ve) {
+		    log.error("RateAlert ID is null.", ve);
+		}catch (Exception e) {
 			log.error("exception while deleting rate alert", e);
 		}
 		return response.getBody();
