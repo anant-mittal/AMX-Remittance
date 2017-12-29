@@ -19,10 +19,12 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
@@ -139,7 +141,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
-	
 	public ApiResponse<RemittanceApplicationResponseModel> saveTransaction(
 			RemittanceTransactionRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
@@ -160,7 +161,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 		return response.getBody();
 
 	}
-	
 
 	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
@@ -172,18 +172,38 @@ public class RemitClient extends AbstractJaxServiceClient {
 			paymentResponseDto.setCustomerId(customerId);
 			paymentResponseDto.setApplicationCountryId(countryId);
 			paymentResponseDto.setCompanyId(companyId);
-			
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(paymentResponseDto),getHeader());
-			
-	
+
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(paymentResponseDto), getHeader());
+
 			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-remittance/";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>(){});
-			
-			} catch (Exception e) {
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
+					});
+
+		} catch (Exception e) {
 			log.error("exception in saveTransaction ", e);
 		}
-		
+
 		return response.getBody();
 	}
 
+	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
+			RemittanceTransactionStatusRequestModel request)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		ResponseEntity<ApiResponse<RemittanceTransactionStatusResponseModel>> response = null;
+		try {
+			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
+					request, getHeader());
+			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/status/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
+					});
+
+		} catch (Exception e) {
+			log.error("exception in fetchTransactionDetails ", e);
+		}
+		validateRemittanceDataValidation(response.getBody());
+		return response.getBody();
+
+	}
 }

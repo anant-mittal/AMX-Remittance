@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dal.ApplicationProcedureDao;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
@@ -37,6 +41,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -395,10 +400,10 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(remittanceApplication.getLocalNetTranxAmount());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
+		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setNetPayableAmount(getPaymentAmount(remittanceApplication, model));
-		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentFinancialyear().toString()
-				+ remittanceApplication.getDocumentNo().toString());
+		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		return remiteAppModel;
 
@@ -429,6 +434,45 @@ public class RemittanceTransactionManager {
 
 	private void validateAdditionalCheck() {
 		applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
+	}
+
+	public RemittanceTransactionStatusResponseModel getTransactionStatus(
+			RemittanceTransactionStatusRequestModel request) {
+		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
+		RemittanceTransactionView remittanceTransactionView = remitAppDao.getRemittanceTransactionView(
+				request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
+		RemittanceApplication remittanceApplication = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
+				request.getDocumentFinancialYear());
+		if (remittanceTransactionView != null) {
+			model.setCollectionDocumentNumber(remittanceTransactionView.getCollectionDocumentNo());
+			model.setAmountDeducted(remittanceTransactionView.getLocalNetTransactionAmount());
+		}
+		JaxTransactionStatus status = getJaxTransactionStatus(remittanceApplication,
+				model.getCollectionDocumentNumber());
+		model.setStatus(status);
+		return model;
+	}
+
+	private JaxTransactionStatus getJaxTransactionStatus(RemittanceApplication remittanceApplication,
+			BigDecimal collectionNo) {
+		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
+		String applicationStatus = remittanceApplication.getApplicaitonStatus();
+		if (StringUtils.isBlank(applicationStatus) && remittanceApplication.getPaymentId() != null) {
+			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
+		}
+		if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
+			if ("CAPTURED".equalsIgnoreCase(remittanceApplication.getResultCode())) {
+				if (collectionNo == null) {
+					status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
+				} else {
+					status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
+				}
+			} else {
+				status = JaxTransactionStatus.PAYMENT_FAIL;
+			}
+		}
+
+		return status;
 	}
 
 }

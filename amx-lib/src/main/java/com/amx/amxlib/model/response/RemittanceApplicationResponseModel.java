@@ -12,6 +12,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal remittanceAppId;
 	private String documentIdForPayment;
+	private BigDecimal documentFinancialYear;
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
 
@@ -57,6 +58,14 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
 				+ documentIdForPayment + ", netPayableAmount=" + netPayableAmount + ", merchantTrackId="
 				+ merchantTrackId + "]";
+	}
+
+	public BigDecimal getDocumentFinancialYear() {
+		return documentFinancialYear;
+	}
+
+	public void setDocumentFinancialYear(BigDecimal documentFinancialYear) {
+		this.documentFinancialYear = documentFinancialYear;
 	}
 
 

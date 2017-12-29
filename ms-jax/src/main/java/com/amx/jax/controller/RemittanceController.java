@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.websocket.server.PathParam;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.manager.RemittancePaymentManager;
@@ -43,41 +45,37 @@ public class RemittanceController {
 
 	@Autowired
 	RemittanceTransactionService remittanceTransactionService;
-	
+
 	@Autowired
 	PurposeOfTransactionService purposeOfTransactionService;
 
 	@Autowired
 	ReportManagerService reportManagerService;
-	
-	
+
 	@Autowired
 	RemittancePaymentManager remittancePaymentManager;
-	
 
 	@Autowired
 	HttpServletResponse httpServletResponse;
-	
+
 	@Autowired
 	MetaData metaData;
-	
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
 			@RequestParam(required=false,value="fromDate") String fromDate, @RequestParam(required=false,value="toDate") String toDate) {
 
-		
 		BigDecimal customerId = metaData.getCustomerId();
-		
+
 		logger.info("customerId :" + customerId + "\t docfyr :" + docfyr + "\t docNumber :" + docNumber
 				+ "\t fromDate :" + fromDate + "\t toDate :" + toDate);
 		ApiResponse response = null;
-		
-		
-		if (docNumber!=null && !docNumber.equals("null")) {
+
+		if (docNumber != null && !docNumber.equals("null")) {
 			response = transactionHistroyService.getTransactionHistroyByDocumentNumber(customerId, docfyr,
 					new BigDecimal(docNumber));
-		} else if ((fromDate !=null && !fromDate.equals("0") && !fromDate.equals("null"))||(toDate !=null && !toDate.equals("0") && !toDate.equals("null"))) {
+		} else if ((fromDate != null && !fromDate.equals("0") && !fromDate.equals("null"))
+				|| (toDate != null && !toDate.equals("0") && !toDate.equals("null"))) {
 			response = transactionHistroyService.getTransactionHistroyDateWise(customerId, docfyr, fromDate, toDate);
 		} else {
 			response = transactionHistroyService.getTransactionHistroy(customerId, docfyr);
@@ -111,19 +109,18 @@ public class RemittanceController {
 		return response;
 	}
 
-	
 	@RequestMapping(value = "/validate/", method = RequestMethod.POST)
 	public ApiResponse validateRemittanceTransaction(@RequestBody RemittanceTransactionRequestModel model) {
 		logger.info("In validate with parameters" + model.toString());
 		ApiResponse response = remittanceTransactionService.validateRemittanceTransaction(model);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/sourceofincome/", method = RequestMethod.POST)
 	public ApiResponse sourceofIncome() {
-		BigDecimal languageId=metaData.getLanguageId();
-		if(languageId==null || languageId.compareTo(BigDecimal.ZERO)==0) {
-			languageId=new BigDecimal(1);
+		BigDecimal languageId = metaData.getLanguageId();
+		if (languageId == null || languageId.compareTo(BigDecimal.ZERO) == 0) {
+			languageId = new BigDecimal(1);
 		}
 		ApiResponse response = remittanceTransactionService.getSourceOfIncome(languageId);
 		return response;
@@ -142,9 +139,8 @@ public class RemittanceController {
 		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);
 		return response;
 	}
-	
-	
-	@RequestMapping(value="/save-remittance/",method=RequestMethod.POST)
+
+	@RequestMapping(value = "/save-remittance/", method = RequestMethod.POST)
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
@@ -156,11 +152,13 @@ public class RemittanceController {
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;
 	}
-	
-	
-	
-	
-	
-	
-	
+
+	@RequestMapping(value = "/status/", method = RequestMethod.POST)
+	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request) {
+
+		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
+		return response;
+	}
+
 }

@@ -13,9 +13,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
@@ -34,10 +36,9 @@ public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
 	RemittanceTransactionManager remittanceTxnManger;
-	
+
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
-	
 
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -55,25 +56,20 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 
 	}
-	
-	
-	
-	
+
 	public ApiResponse getSourceOfIncome(BigDecimal languageId) {
-		
-		List<SourceOfIncomeView> sourceOfIncomeList  = sourceOfIncomeDao.getSourceofIncome(languageId);
+
+		List<SourceOfIncomeView> sourceOfIncomeList = sourceOfIncomeDao.getSourceofIncome(languageId);
 		ApiResponse response = getBlackApiResponse();
-		if(sourceOfIncomeList.isEmpty()) {
+		if (sourceOfIncomeList.isEmpty()) {
 			throw new GlobalException("No data found");
-		}else {
+		} else {
 			response.getData().getValues().addAll(convertSourceOfIncome(sourceOfIncomeList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("sourceofincome");
 		return response;
 	}
-	
-
 
 	@Override
 	public String getModelType() {
@@ -96,11 +92,10 @@ public class RemittanceTransactionService extends AbstractService {
 		return response;
 
 	}
-	
-	
-	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList){
+
+	public List<SourceOfIncomeDto> convertSourceOfIncome(List<SourceOfIncomeView> sourceOfIncomeList) {
 		List<SourceOfIncomeDto> list = new ArrayList<>();
-		for(SourceOfIncomeView model:sourceOfIncomeList) {
+		for (SourceOfIncomeView model : sourceOfIncomeList) {
 			SourceOfIncomeDto dto = new SourceOfIncomeDto();
 			dto.setSourceofIncomeId(model.getSourceofIncomeId());
 			dto.setShortDesc(model.getShortDesc());
@@ -109,7 +104,7 @@ public class RemittanceTransactionService extends AbstractService {
 			list.add(dto);
 		}
 		return list;
-		
+
 	}
 
 	public ApiResponse saveApplication(RemittanceTransactionRequestModel model) {
@@ -120,12 +115,20 @@ public class RemittanceTransactionService extends AbstractService {
 		response.getData().setType(responseModel.getModelType());
 		return response;
 	}
-	
+
 	public ApiResponse saveRemittance(PaymentResponseDto paymentResponseDto) {
 		ApiResponse response = getBlackApiResponse();
 		return response;
-		
-		
+
+	}
+
+	public ApiResponse getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
+		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionStatusResponseModel responseModel = remittanceTxnManger.getTransactionStatus(request);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
 	}
 
 }

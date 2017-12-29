@@ -167,6 +167,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "rate-alert-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RateAlertDTO>>(){});
 			break;	
+		case "remittance-transaction-status-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceTransactionStatusResponseModel>>(){});
+			break;
 	}
 		
 		

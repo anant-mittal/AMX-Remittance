@@ -10,6 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.RemittanceTransactionView;
+import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
 @Transactional
@@ -19,7 +21,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 
 	@Query("select ra from RemittanceApplication ra where ra.paymentId=:paymentId")
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByPayId(@Param("paymentId") String paymentId);
-	
+
 	@Query("select appl from RemittanceApplication appl where appl.fsCustomer=:customerId and trunc(sysdate)=trunc(createdDate) "
 			+ " and NVL(resultCode,' ') NOT IN('CAPTURED','APPROVED')")
 	public List<RemittanceApplication> deActivateNotUsedApplication(@Param("customerId") Customer customerId);
@@ -30,5 +32,13 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 			@Param("paymentId") String paymentId,
 			@Param("customerId") Customer customerId);
 	
-	
+	@Query("select rv from RemittanceTransactionView rv where rv.applicationDocumentNo=?1 and rv.documentFinancialYear = ?2"
+			+ " and rv.documentId=?3")
+	public RemittanceTransactionView fetchRemitApplTrnxView(BigDecimal applicationDocumentNo, BigDecimal docFinYear,
+			BigDecimal docCode);
+
+	@Query("select rv from RemittanceApplication rv where rv.documentNo=?1 and rv.documentFinancialyear = ?2"
+			+ " and rv.exDocument=?3")
+	public RemittanceApplication fetchRemitApplTrnx(BigDecimal applicationDocumentNo, BigDecimal docFinYear,
+			Document docId);
 }

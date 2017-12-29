@@ -705,7 +705,7 @@ public class ApplicationProcedureDao {
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call EX_INSERT_REMITTANCE_ONLINE(?,?,?,?,?,?,?,?,?,?,?,?)}";
+					String proc = "{call EX_INSERT_REMITTANCE_ONLINE (?,?,?,?,?,?,?,?,?,?,?,?)}";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, applicationCountryId);
 					cs.setBigDecimal(2, companyId);

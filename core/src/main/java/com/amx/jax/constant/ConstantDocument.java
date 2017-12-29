@@ -8,6 +8,9 @@ public class ConstantDocument {
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
 	public static String No = "N";
 	public static String Yes = "Y";
+	public static BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
+	public static BigDecimal COLLECTION_DOCUMENT_ID = new BigDecimal(2);
+	public static BigDecimal REMITTANCE_DOCUMENT_ID = new BigDecimal(3);
 	// peronsl remittancew
 	public static String Individual = "I";
 	public static String Online = "O";
