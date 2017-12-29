@@ -2,6 +2,8 @@
 
 source config/setvars.sh
 
+bash setup.sh
+
 # short command
 mvn -T 4 package -pl payment-service -am -DskipTests
 
