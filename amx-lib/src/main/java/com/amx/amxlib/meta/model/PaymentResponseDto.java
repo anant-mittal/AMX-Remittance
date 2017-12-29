@@ -32,6 +32,7 @@ public class PaymentResponseDto extends AbstractModel{
 	    BigDecimal collectionDocumentNumber;
 	    BigDecimal collectionDocumentCode;
 	    
+	    
 	   
 
 

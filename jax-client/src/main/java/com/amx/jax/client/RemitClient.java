@@ -162,9 +162,9 @@ public class RemitClient extends AbstractJaxServiceClient {
 	}
 	
 
-	public ApiResponse<TransactionHistroyDTO> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
+	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
+		ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
@@ -177,7 +177,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			
 	
 			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-remittance/";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>(){});
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>(){});
 			
 			} catch (Exception e) {
 			log.error("exception in saveTransaction ", e);

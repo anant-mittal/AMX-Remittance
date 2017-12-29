@@ -27,7 +27,6 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.exception.GlobalException;
 
 @Component
-
 public class ApplicationProcedureDao {
 
 	private Logger logger = Logger.getLogger(ApplicationProcedureDao.class);
@@ -575,7 +574,6 @@ public class ApplicationProcedureDao {
 					cs.setBigDecimal(8, deliveryId);
 					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
 					cs.execute();
-					cs.execute();
 					return cs;
 				}
 
@@ -664,24 +662,20 @@ public class ApplicationProcedureDao {
 	 * purpose : Move application to remittance after successfull knet
 	 * 
 	 * @param applicationCountryId
-	 * @param companyId
-	 * @param customerNo
-	 * @param userName
-	 * @param paymentId
-	 * @param authcode
-	 * @param tranId
-	 * @param refId
-	 * @return
-	 * 
 	 * 
 	 */
+	
+	
+	
+	
+	
 	@Transactional
-	public Map<String, Object> insertRemittanceOnline(HashMap<String, Object> inputValues) {
+	public Map<String, Object> insertRemittanceOnlineProcedure(HashMap<String, Object> inputValues) {
 
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
 		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
 		BigDecimal customerNo = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
-		String userName = inputValues.get("P_USER_NAME").toString();
+		String userName = inputValues.get("P_USER_NAME")==null?null:inputValues.get("P_USER_NAME").toString();
 		String paymentId = inputValues.get("P_PAYMENT_ID") == null ? "" : inputValues.get("P_PAYMENT_ID").toString();
 		String authcode = inputValues.get("P_AUTHCOD") == null ? "" : inputValues.get("P_AUTHCOD").toString();
 		String tranId = inputValues.get("P_TRANID") == null ? "" : inputValues.get("P_TRANID").toString();
@@ -690,9 +684,12 @@ public class ApplicationProcedureDao {
 		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + inputValues.toString());
 
 		Map<String, Object> output = null;
-
+		
+		
+		
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
+					new SqlParameter(Types.NUMERIC), // 1
 					new SqlParameter(Types.NUMERIC), // 2
 					new SqlParameter(Types.NUMERIC), // 3
 					new SqlParameter(Types.VARCHAR), // 4
@@ -700,10 +697,10 @@ public class ApplicationProcedureDao {
 					new SqlParameter(Types.VARCHAR), // 6
 					new SqlParameter(Types.VARCHAR), // 7
 					new SqlParameter(Types.VARCHAR), // 8
-					new SqlOutParameter("P_COLLECT_FINYR", Types.NUMERIC), // 9
-					new SqlOutParameter("P_COLLECTION_NO", Types.NUMERIC), // 10
-					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE", Types.NUMERIC), // 11
-					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));// 12
+					new SqlOutParameter("P_COLLECT_FINYR",Types.NUMERIC), // 9
+					new SqlOutParameter("P_COLLECTION_NO",Types.NUMERIC), // 10
+					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE",Types.NUMERIC), // 11
+					new SqlOutParameter("P_ERROR_MESG",Types.VARCHAR));// 12
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
@@ -718,12 +715,11 @@ public class ApplicationProcedureDao {
 					cs.setString(6, authcode);
 					cs.setString(7, tranId);
 					cs.setString(8, refId);
-
-					cs.registerOutParameter(9, java.sql.Types.NUMERIC);
-					cs.registerOutParameter(10, java.sql.Types.NUMERIC);
-					cs.registerOutParameter(11, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(9, java.sql.Types.BIGINT);
+					cs.registerOutParameter(10, java.sql.Types.BIGINT);
+					cs.registerOutParameter(11, java.sql.Types.BIGINT);
 					cs.registerOutParameter(12, java.sql.Types.VARCHAR);
-					cs.execute();
+					cs.executeQuery();
 					return cs;
 				}
 
@@ -731,7 +727,7 @@ public class ApplicationProcedureDao {
 
 			logger.info("EX_INSERT_REMITTANCE_ONLINE Out put Parameters :" + output.toString());
 
-		} catch (DataAccessException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			logger.info("Out put Parameters :" + e.getMessage());
 		}
@@ -767,7 +763,7 @@ public class ApplicationProcedureDao {
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call EX_INSERT_EMOS_TRANSFER_LIVE (?, ?, ?, ?, ?,?) }";
+					String proc = "{call EX_INSERT_EMOS_TRANSFER_LIVE(?, ?, ?, ?, ?,?)}";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, applicationCountryId);
 					cs.setBigDecimal(2, companyId);
