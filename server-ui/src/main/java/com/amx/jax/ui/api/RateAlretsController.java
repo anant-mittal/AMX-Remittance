@@ -16,7 +16,7 @@ import com.amx.jax.ui.service.JaxService;
 import io.swagger.annotations.Api;
 
 @RestController
-@Api(value = "Meta APIs")
+@Api(value = "Rate Alerts Apis")
 public class RateAlretsController {
 
 	@Autowired
