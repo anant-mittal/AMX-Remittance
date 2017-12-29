@@ -7,7 +7,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan("com.amx.jax.payment")
+@ComponentScan("com.amx.jax")
 public class PaymentServiceApplication extends SpringBootServletInitializer{
 
 	public static void main(String[] args) {
