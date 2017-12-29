@@ -68,5 +68,6 @@
 		<module>ms-postman</module>
 		<module>jax-client</module>
 		<module>server-ui</module>
+		<module>payment-service</module>
 	</modules>
 </project>
