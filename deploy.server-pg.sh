@@ -2,7 +2,7 @@
 
 source config/setvars.sh
 
-bash setup.sh
+bash payment-service/setup.sh
 
 mvn clean
 
