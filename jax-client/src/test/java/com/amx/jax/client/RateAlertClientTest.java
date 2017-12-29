@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.amxlib.constant.RuleEnum;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
@@ -52,7 +53,7 @@ public class RateAlertClientTest {
 		rateAlertDTO.setAlertRate(new BigDecimal(253.15));
 		rateAlertDTO.setBaseCurrencyId(new BigDecimal(1));
 		rateAlertDTO.setForeignCurrencyId(new BigDecimal(5));
-		rateAlertDTO.setRule("EQUAL");
+		rateAlertDTO.setRule(RuleEnum.EQUAL);
 		rateAlertDTO.setFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-28"));
 		rateAlertDTO.setToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-28"));
 		
@@ -74,7 +75,7 @@ public class RateAlertClientTest {
 		rateAlertDTO.setAlertRate(new BigDecimal(253.15));
 		rateAlertDTO.setBaseCurrencyId(new BigDecimal(1));
 		rateAlertDTO.setForeignCurrencyId(new BigDecimal(5));
-		rateAlertDTO.setRule("EQUAL");
+		rateAlertDTO.setRule(RuleEnum.EQUAL);
 		rateAlertDTO.setFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-01-28"));
 		rateAlertDTO.setToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-02-28"));
 		

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.constant.RuleEnum;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -89,7 +90,7 @@ public class RateAlertService extends AbstractService {
 					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
 					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
-					rateDTO.setRule(rec.getRule());
+					rateDTO.setRule(RuleEnum.valueOf(rec.getRule()));
 					rateDTO.setFromDate(rec.getFromDate());
 					rateDTO.setToDate(rec.getToDate());
 					rateDTO.setCustomerId(rec.getCustomerId());

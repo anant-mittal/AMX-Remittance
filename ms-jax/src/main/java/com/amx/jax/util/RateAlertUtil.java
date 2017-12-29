@@ -18,7 +18,7 @@ public class RateAlertUtil {
 		rateAlertModel.setForeignCurrencyId(dto.getForeignCurrencyId());
 		rateAlertModel.setForeignCurrencyCode(dto.getForeignCurrencyId().toString());
 		rateAlertModel.setAlertRate(dto.getAlertRate());
-		rateAlertModel.setRule(dto.getRule());
+		rateAlertModel.setRule(dto.getRule().name());
 		rateAlertModel.setFromDate(dto.getFromDate());
 		rateAlertModel.setToDate(dto.getToDate());
 		

@@ -3,6 +3,8 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.amx.amxlib.constant.RuleEnum;
+
 public class RateAlertDTO extends AbstractModel {
 
 	/**
@@ -13,7 +15,7 @@ public class RateAlertDTO extends AbstractModel {
 	private BigDecimal customerId;
 	private Date fromDate;
 	private Date toDate;
-	private String rule;
+	private RuleEnum rule;
 	private BigDecimal alertRate;
 	private BigDecimal baseCurrencyId;
 	private String baseCurrencyQuote;
@@ -94,14 +96,14 @@ public class RateAlertDTO extends AbstractModel {
 	/**
 	 * @return the rule
 	 */
-	public String getRule() {
+	public RuleEnum getRule() {
 		return rule;
 	}
 
 	/**
 	 * @param rule the rule to set
 	 */
-	public void setRule(String rule) {
+	public void setRule(RuleEnum rule) {
 		this.rule = rule;
 	}
 
