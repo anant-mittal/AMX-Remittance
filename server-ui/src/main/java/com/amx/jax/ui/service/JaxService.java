@@ -11,6 +11,7 @@ import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.bootloaderjs.ContextUtil;
@@ -47,6 +48,17 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private BeneClient beneClient;
+
+	@Autowired
+	private RateAlertClient rateAlertClient;
+
+	public RateAlertClient getRateAlertClient() {
+		return rateAlertClient;
+	}
+
+	public void setRateAlertClient(RateAlertClient rateAlertClient) {
+		this.rateAlertClient = rateAlertClient;
+	}
 
 	public BeneClient getBeneClient() {
 		return beneClient;
