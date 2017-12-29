@@ -22,6 +22,8 @@ public class RateAlertDTO extends AbstractModel {
 	private BigDecimal foreignCurrencyId;
 	private String foreignCurrencyQuote;
 	private String isActive;
+	private BigDecimal payAmount;
+	private BigDecimal receiveAmount;
 	
 	/**
 	 * @return the rateAlertId
@@ -177,6 +179,34 @@ public class RateAlertDTO extends AbstractModel {
 		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
+	/**
+	 * @return the payAmount
+	 */
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+
+	/**
+	 * @param payAmount the payAmount to set
+	 */
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
+	}
+
+	/**
+	 * @return the receiveAmount
+	 */
+	public BigDecimal getReceiveAmount() {
+		return receiveAmount;
+	}
+
+	/**
+	 * @param receiveAmount the receiveAmount to set
+	 */
+	public void setReceiveAmount(BigDecimal receiveAmount) {
+		this.receiveAmount = receiveAmount;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.amx.amxlib.model.AbstractModel#getModelType()
 	 */
@@ -194,8 +224,11 @@ public class RateAlertDTO extends AbstractModel {
 		return "RateAlertDTO [rateAlertId=" + rateAlertId + ", customerId=" + customerId + ", fromDate=" + fromDate
 				+ ", toDate=" + toDate + ", rule=" + rule + ", alertRate=" + alertRate + ", baseCurrencyId="
 				+ baseCurrencyId + ", baseCurrencyQuote=" + baseCurrencyQuote + ", foreignCurrencyId="
-				+ foreignCurrencyId + ", foreignCurrencyQuote=" + foreignCurrencyQuote + ", isActive=" + isActive + "]";
+				+ foreignCurrencyId + ", foreignCurrencyQuote=" + foreignCurrencyQuote + ", isActive=" + isActive
+				+ ", payAmount=" + payAmount + ", receiveAmount=" + receiveAmount + "]";
 	}
+
+
 	
 
 

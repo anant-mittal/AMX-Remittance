@@ -95,6 +95,8 @@ public class RateAlertService extends AbstractService {
 					rateDTO.setToDate(rec.getToDate());
 					rateDTO.setCustomerId(rec.getCustomerId());
 					rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
+					rateDTO.setPayAmount(rec.getPayAmount());
+					rateDTO.setReceiveAmount(rec.getReceiveAmount());
 					dtoList.add(rateDTO);
 				}
 				

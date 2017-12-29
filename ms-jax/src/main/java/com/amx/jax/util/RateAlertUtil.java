@@ -21,6 +21,8 @@ public class RateAlertUtil {
 		rateAlertModel.setRule(dto.getRule().name());
 		rateAlertModel.setFromDate(dto.getFromDate());
 		rateAlertModel.setToDate(dto.getToDate());
+		rateAlertModel.setPayAmount(dto.getPayAmount());
+		rateAlertModel.setReceiveAmount(dto.getReceiveAmount());
 		
 		return rateAlertModel;
 	}

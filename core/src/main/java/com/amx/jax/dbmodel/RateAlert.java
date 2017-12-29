@@ -50,6 +50,8 @@ public class RateAlert implements Serializable{
 	private Date fromDate;
 	private Date toDate;
 	private String rule;
+	private BigDecimal payAmount;
+	private BigDecimal receiveAmount;
 	
 	
 	public RateAlert() {
@@ -331,5 +333,35 @@ public class RateAlert implements Serializable{
 	 */
 	public void setRule(String rule) {
 		this.rule = rule;
+	}
+
+	/**
+	 * @return the payAmount
+	 */
+	@Column(name = "PAY_AMOUNT")
+	public BigDecimal getPayAmount() {
+		return payAmount;
+	}
+
+	/**
+	 * @param payAmount the payAmount to set
+	 */
+	public void setPayAmount(BigDecimal payAmount) {
+		this.payAmount = payAmount;
+	}
+
+	/**
+	 * @return the receiveAmount
+	 */
+	@Column(name = "RECEIVE_AMOUNT")
+	public BigDecimal getReceiveAmount() {
+		return receiveAmount;
+	}
+
+	/**
+	 * @param receiveAmount the receiveAmount to set
+	 */
+	public void setReceiveAmount(BigDecimal receiveAmount) {
+		this.receiveAmount = receiveAmount;
 	}
 }
