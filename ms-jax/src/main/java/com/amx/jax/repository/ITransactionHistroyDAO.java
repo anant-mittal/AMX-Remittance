@@ -12,8 +12,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 
 public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittanceTransactionView, Serializable> {
 
-	// and trunc(document_Date) between trunc(sysdate-6*30) and trunc(sysdate);
-	// documentDate --and th.documentFinanceYear=:docfyr
+	
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  "
 			+ "and trunc(th.documentDate) between  trunc(sysdate-6*30) and  trunc(sysdate)")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroy(@Param("customerId") BigDecimal customerId);

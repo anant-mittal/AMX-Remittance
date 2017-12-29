@@ -4,12 +4,14 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ITransactionHistroyDAO;
@@ -106,7 +108,10 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
-			list.add(model);
+			if(!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU))
+			{
+				list.add(model);
+			}
 		}
 		return list;
 	}

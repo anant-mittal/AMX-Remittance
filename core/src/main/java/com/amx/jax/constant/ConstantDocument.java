@@ -24,6 +24,8 @@ public class ConstantDocument {
 	public static String INDIC5 = new String("INDIC5");
 	public static String CAPTURED="CAPTURED";
 	public static String APPROVED="APPROVED";
+	public static String WU="WU";
+	
 	
 
 }
