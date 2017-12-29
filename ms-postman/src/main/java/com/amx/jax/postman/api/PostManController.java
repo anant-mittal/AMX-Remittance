@@ -32,10 +32,11 @@ public class PostManController {
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
 	public File processTemplate(@RequestParam String template, @RequestParam(required = false) String data,
 			@RequestParam(required = false) String fileName) {
-		
-		LOGGER.info("{} === {} \n ====",PostManUrls.PROCESS_TEMPLATE,data);
+
+		@SuppressWarnings("unchecked")
 		File file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileName);
 		return file;// file.getContent();
+
 	}
 
 	@RequestMapping(value = PostManUrls.SEND_SMS, method = RequestMethod.POST)

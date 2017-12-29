@@ -5,12 +5,15 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.api.PostManController;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
@@ -21,6 +24,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManServiceImpl implements PostManService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(PostManServiceImpl.class);
 
 	@Autowired
 	private HttpServletResponse response;
@@ -58,21 +63,20 @@ public class PostManServiceImpl implements PostManService {
 		File file = new File();
 		Context context = new Context();
 		context.setVariables(map);
-		file.setContent(templateEngine.process(template, context));
+		try {
+			file.setContent(templateEngine.process(template, context));
+		} catch (Exception e) {
+			LOGGER.error("Template {}", template, e);
+		}
 		file.setName(fileName);
 		return file;
 	}
-	
+
 	public File processTemplate(String template, Object data, String fileName) {
-		File file = new File();
 		Map<String, Object> map = JsonUtil.toMap(data);
-		Context context = new Context();
-		context.setVariables(map);
-		file.setContent(templateEngine.process(template, context));
-		file.setName(fileName);
-		return file;
+		return this.processTemplate(template, map, fileName);
 	}
-	
+
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		if (sms.getTemplate() != null) {
 			Context context = new Context();
