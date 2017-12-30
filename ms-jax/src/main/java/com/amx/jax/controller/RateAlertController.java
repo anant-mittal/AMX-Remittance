@@ -49,7 +49,9 @@ public class RateAlertController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse handleUrlSave(@RequestBody RateAlertDTO dto) {
 		logger.info("In save with parameters" + dto.toString());
+		BigDecimal customerId =metaData.getCustomerId();
 		
+		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = rateAlertService.saveRateAlert(dto);
 		return response;
@@ -57,8 +59,11 @@ public class RateAlertController {
 	
 	@RequestMapping(value = "/delete", method = RequestMethod.POST)
 	public ApiResponse handleUrlDelete(@RequestBody RateAlertDTO dto) {
-		logger.info("In delete with parameters" + dto.toString());
 		
+		logger.info("In delete with parameters" + dto.toString());
+		BigDecimal customerId =metaData.getCustomerId();
+		
+		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = rateAlertService.delteRateAlert(dto);
 		return response;
