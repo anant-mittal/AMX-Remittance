@@ -37,7 +37,6 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.bootloaderjs.JsonUtil;
-import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -73,8 +72,7 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
-			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper)
-			throws IOException, DocumentException, UnirestException {
+			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper) throws IOException, UnirestException {
 
 		File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
 		file.setName("RemittanceStatment.pdf");
@@ -91,7 +89,7 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
-			throws IOException, DocumentException, UnirestException {
+			throws IOException, UnirestException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
@@ -109,7 +107,7 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext)
-			throws IOException, DocumentException, UnirestException {
+			throws UnirestException, IOException {
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
