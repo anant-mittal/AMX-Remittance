@@ -90,7 +90,7 @@ public class RateAlertService extends AbstractService {
 					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
 					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
-					rateDTO.setRule(RuleEnum.valueOf(rec.getRule()));
+					rateDTO.setRule(RuleEnum.valueOf(rec.getRule().toUpperCase()));
 					rateDTO.setFromDate(rec.getFromDate());
 					rateDTO.setToDate(rec.getToDate());
 					rateDTO.setCustomerId(rec.getCustomerId());
