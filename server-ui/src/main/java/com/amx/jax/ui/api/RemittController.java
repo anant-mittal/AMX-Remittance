@@ -8,9 +8,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +38,7 @@ import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.service.PayGService;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -65,8 +64,8 @@ public class RemittController {
 	@Autowired
 	private PostManService postManService;
 
-	@Value("${jax.payment.url}")
-	private String paymentUrl;
+	@Autowired
+	private PayGService payGService;
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
@@ -225,16 +224,10 @@ public class RemittController {
 		try {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
+
 			wrapper.setData(respTxMdl);
+			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl));
 
-			URIBuilder builder = new URIBuilder();
-			builder.setScheme("http").setHost(paymentUrl).setPath("/app/payment")
-					.addParameter("country", jaxService.DEFAULT_COUNTRY_ID)
-					.addParameter("amount", respTxMdl.getNetPayableAmount().toString())
-					.addParameter("trckid", respTxMdl.getMerchantTrackId().toString()).addParameter("pg", "KNET")
-					.addParameter("docNo", respTxMdl.getDocumentIdForPayment().toString());
-
-			wrapper.setRedirectUrl(builder.build().toURL().toString());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
 		} catch (MalformedURLException | URISyntaxException e) {
