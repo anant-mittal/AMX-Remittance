@@ -132,7 +132,8 @@ public class PaymentService {
 		try {
 			
 			pipe.setAction((String)configMap.get("action"));
-			pipe.setCurrency((configMap.get("currency")).toString());
+			pipe.setCurrency((String)configMap.get("currency"));
+			//pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String)configMap.get("languageCode"));
 			pipe.setResponseURL((String)configMap.get("responseUrl"));
 			pipe.setErrorURL((String)configMap.get("responseUrl"));
