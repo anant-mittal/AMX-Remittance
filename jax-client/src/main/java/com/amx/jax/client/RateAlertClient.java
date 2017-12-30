@@ -63,7 +63,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
-	public ApiResponse<RateAlertDTO> getRateAlertForCustomer(BigDecimal customerId) {
+	public ApiResponse<RateAlertDTO> getRateAlertForCustomer() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		try {
 		

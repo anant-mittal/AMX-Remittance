@@ -26,7 +26,7 @@ public class RateAlretsController {
 	public ResponseWrapper<List<RateAlertDTO>> listOfAlerts() {
 		ResponseWrapper<List<RateAlertDTO>> wrapper = new ResponseWrapper<List<RateAlertDTO>>();
 
-		List<RateAlertDTO> results = jaxService.setDefaults().getRateAlertClient().getRateAlertForCustomer(null)
+		List<RateAlertDTO> results = jaxService.setDefaults().getRateAlertClient().getRateAlertForCustomer()
 				.getResults();
 		wrapper.setData(results);
 
