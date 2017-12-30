@@ -39,6 +39,15 @@ public class ResponseWrapper<T> implements Serializable {
 	private ResponseStatus statusKey = ResponseStatus.SUCCESS;
 	private String message = Constants.EMPTY;
 	private String messageKey = Constants.EMPTY;
+	private String redirectUrl = null;
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
 
 	public String getMessageKey() {
 		return messageKey;

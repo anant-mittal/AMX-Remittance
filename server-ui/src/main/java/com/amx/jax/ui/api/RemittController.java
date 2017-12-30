@@ -2,11 +2,15 @@ package com.amx.jax.ui.api;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +64,9 @@ public class RemittController {
 
 	@Autowired
 	private PostManService postManService;
+
+	@Value("${jax.payment.url}")
+	private String paymentUrl;
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
@@ -219,8 +226,19 @@ public class RemittController {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
 			wrapper.setData(respTxMdl);
+
+			URIBuilder builder = new URIBuilder();
+			builder.setScheme("http").setHost(paymentUrl).setPath("/app/payment")
+					.addParameter("country", jaxService.DEFAULT_COUNTRY_ID)
+					.addParameter("amount", respTxMdl.getNetPayableAmount().toString())
+					.addParameter("trckid", respTxMdl.getMerchantTrackId().toString()).addParameter("pg", "KNET")
+					.addParameter("docNo", respTxMdl.getDocumentIdForPayment().toString());
+
+			wrapper.setRedirectUrl(builder.build().toURL().toString());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
+		} catch (MalformedURLException | URISyntaxException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
 		return wrapper;
 	}
