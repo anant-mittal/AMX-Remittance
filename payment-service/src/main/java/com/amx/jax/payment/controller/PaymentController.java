@@ -47,7 +47,7 @@ public class PaymentController {
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam BigDecimal pgId, @RequestParam String docNo) {
+			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo) {
 
 		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + country
 				+ ", pg-" + pg + ", pg_id-" + pgId);

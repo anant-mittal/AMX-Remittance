@@ -110,8 +110,21 @@ public class PaymentService {
 	
 	public HashMap<String, String> knetInitialize(Map<String, Object> params){
  		
-		Map<String, Object> configMap = this.getPGConfig((BigDecimal)params.get("pgId"));
+		//Map<String, Object> configMap = this.getPGConfig((BigDecimal)params.get("pgId"));
+		//log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		
+		/////////////////// Temporary code ///////////////////////////////////////////////
+		
+		Map<String, Object> configMap = new HashMap<String, Object>();;
+		configMap.put("action", "1");
+		configMap.put("currency", "414");
+		configMap.put("languageCode", "ENG");
+		configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
+		configMap.put("aliasName", "mulla");
+		
 		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		///////////////////////////////////////////////////////////////////////////////////
 		
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
