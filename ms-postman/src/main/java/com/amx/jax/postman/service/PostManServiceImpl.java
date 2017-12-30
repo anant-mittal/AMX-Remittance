@@ -1,6 +1,5 @@
 package com.amx.jax.postman.service;
 
-import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -15,10 +14,10 @@ import org.thymeleaf.context.Context;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.bootloaderjs.JsonUtil;
-import com.lowagie.text.DocumentException;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
@@ -44,6 +43,9 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private SlackService slackService;
 
+	@Autowired
+	private PdfService pdfService;
+
 	public Email sendEmail(Email email) {
 
 		if (email.getTemplate() != null) {
@@ -58,7 +60,13 @@ public class PostManServiceImpl implements PostManService {
 		return emailService.send(email);
 	}
 
-	public File processTemplate(String template, Map<String, Object> map, String fileName) {
+	@Override
+	public File processTemplate(String template, Object data, Type fileType) throws UnirestException {
+		Map<String, Object> map = JsonUtil.toMap(data);
+		return this.processTemplate(template, map, fileType);
+	}
+
+	public File processTemplate(String template, Map<String, Object> map, Type fileType) {
 		File file = new File();
 		Context context = new Context();
 		context.setVariables(map);
@@ -67,13 +75,13 @@ public class PostManServiceImpl implements PostManService {
 		} catch (Exception e) {
 			LOGGER.error("Template {}", template, e);
 		}
-		file.setName(fileName);
+		if (fileType == Type.PDF) {
+			file.setName(template + ".pdf");
+			pdfService.convert(file);
+		} else {
+			file.setName(template + ".html");
+		}
 		return file;
-	}
-
-	public File processTemplate(String template, Object data, String fileName) {
-		Map<String, Object> map = JsonUtil.toMap(data);
-		return this.processTemplate(template, map, fileName);
 	}
 
 	public SMS sendSMS(SMS sms) throws UnirestException {
@@ -88,19 +96,6 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public Message notifySlack(Message msg) throws UnirestException {
 		return slackService.sendNotification(msg);
-	}
-
-	@Override
-	public void downloadPDF(String template, Object data, String fileName)
-			throws IOException, DocumentException, UnirestException {
-		File file = this.processTemplate(template, data, fileName);
-		file.donwload(response, true);
-	}
-
-	@Override
-	public void createPDF(String template, Object data) throws IOException, DocumentException, UnirestException {
-		File file = this.processTemplate(template, data, null);
-		file.donwload(response, false);
 	}
 
 }

@@ -1,5 +1,9 @@
 package com.amx.jax.postman.api;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +20,6 @@ import com.amx.jax.postman.service.PostManServiceImpl;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 @RestController
 public class PostManController {
 
@@ -31,11 +30,14 @@ public class PostManController {
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
 	public File processTemplate(@RequestParam String template, @RequestParam(required = false) String data,
-			@RequestParam(required = false) String fileName) {
+			@RequestParam(required = false) String fileName, @RequestParam(required = false) File.Type fileType) {
 
 		@SuppressWarnings("unchecked")
-		File file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileName);
-		return file;// file.getContent();
+		File file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileType);
+
+		LOGGER.info(" FILE {} : {} . {}", template, fileName, fileType);
+
+		return file;
 
 	}
 

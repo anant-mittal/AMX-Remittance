@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,6 +29,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.XRateData;
@@ -43,6 +46,9 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Remote APIs")
 public class RemittController {
+
+	@Autowired
+	HttpServletResponse response;
 
 	@Autowired
 	private JaxService jaxService;
@@ -69,7 +75,12 @@ public class RemittController {
 	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
 			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper)
 			throws IOException, DocumentException, UnirestException {
-		postManService.downloadPDF("RemittanceStatment", wrapper, "RemittanceStatment.pdf");
+
+		File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+		file.setName("RemittanceStatment.pdf");
+
+		file.create(response, true);
+
 		return wrapper;
 	}
 
@@ -84,8 +95,10 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
-			postManService.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
-					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
+			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+			file.setName("RemittanceReceiptReport" + tranxDTO.getCollectionDocumentFinYear() + "-"
+					+ tranxDTO.getCollectionDocumentNo() + ".pdf");
+			file.create(response, true);
 		}
 		return JsonUtil.toJson(wrapper);
 	}
@@ -107,11 +120,12 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			postManService.createPDF("RemittanceReceiptReport", wrapper);
+			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			return postManService.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport")
-					.getContent();
+			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, null);
+			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
 		}
