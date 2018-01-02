@@ -123,8 +123,8 @@ public class BankMasterDTO extends AbstractModel {
 		@Override
 		public int compare(BankMasterDTO o1, BankMasterDTO o2) {
 
-			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getInverseRate() : null;
-			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getInverseRate() : null;
+			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
+			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
 			if (o1Rate != null) {
 				return o1Rate.compareTo(o2Rate);
 			}
