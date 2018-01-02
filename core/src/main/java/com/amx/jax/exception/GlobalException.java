@@ -10,7 +10,7 @@ public class GlobalException extends AbstractException {
 	private static final long serialVersionUID = 1L;
 
 	public GlobalException(String errorMessage) {
-		super(errorMessage);
+		this(errorMessage, JaxError.UNKNOWN_JAX_ERROR);
 	}
 
 	public GlobalException(String errorMessage, String errorCode) {

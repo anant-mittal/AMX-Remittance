@@ -101,10 +101,10 @@ public class UserValidationService {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
 		if (cust.getMobile() == null) {
-			throw new InvalidCivilIdException("Mobile number is empty. Contact branch to update the same.");
+			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
 		}
 		if (cust.getEmail() == null) {
-			throw new InvalidCivilIdException("Email is empty. Contact branch to update the same.");
+			throw new GlobalException("Email is empty. Contact branch to update the same.");
 		}
 		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
