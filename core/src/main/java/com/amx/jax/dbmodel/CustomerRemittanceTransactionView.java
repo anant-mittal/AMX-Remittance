@@ -93,6 +93,12 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	private BigDecimal sourceOfIncomeId;
 	
 	
+	@Column(name = "PURPOSE_OF_TRNX_ID")
+	private String purposeOfTrnx;
+	
+	
+	
+	
 	
 	
 
@@ -294,5 +300,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
 		this.sourceOfIncomeId = sourceOfIncomeId;
+	}
+
+	public String getPurposeOfTrnx() {
+		return purposeOfTrnx;
+	}
+
+	public void setPurposeOfTrnx(String purposeOfTrnx) {
+		this.purposeOfTrnx = purposeOfTrnx;
 	}
 }

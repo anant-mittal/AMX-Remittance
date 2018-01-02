@@ -61,6 +61,8 @@ public class TransactionHistroyDTO {
 	
 	private BigDecimal sourceOfIncomeId;
 	
+	private String purposeOfTrnx;
+	
 
 	public BigDecimal getIdno() {
 		return idno;
@@ -292,6 +294,14 @@ public class TransactionHistroyDTO {
 
 	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
 		this.sourceOfIncomeId = sourceOfIncomeId;
+	}
+
+	public String getPurposeOfTrnx() {
+		return purposeOfTrnx;
+	}
+
+	public void setPurposeOfTrnx(String purposeOfTrnx) {
+		this.purposeOfTrnx = purposeOfTrnx;
 	}
 
 }
