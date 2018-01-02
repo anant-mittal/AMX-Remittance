@@ -126,7 +126,7 @@ public class BankMasterDTO extends AbstractModel {
 			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
 			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
 			if (o1Rate != null) {
-				return o1Rate.compareTo(o2Rate);
+				return o2Rate.compareTo(o1Rate);
 			}
 			return 0;
 		}
