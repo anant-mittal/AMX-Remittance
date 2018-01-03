@@ -124,9 +124,9 @@ public class ExchangeRateService extends AbstractService {
 
 	private Set<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
-		CurrencyMasterModel currency = currencyMasterDao.getCurrencyMasterByQuote("BDT");
+		//CurrencyMasterModel currency = currencyMasterDao.getCurrencyMasterByQuote("BDT");
 		Set<BankMasterDTO> bankWiseRates = new TreeSet<>(new BankMasterDTO.BankMasterDTOComparator());
-		if (currency != null && currency.getCurrencyId().equals(fromCurrency)) {
+		//if (currency != null && currency.getCurrencyId().equals(fromCurrency)) {
 			for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 				List<PipsMaster> piplist = entry.getValue();
 				ExchangeRateApprovalDetModel rate = entry.getKey();
@@ -134,7 +134,7 @@ public class ExchangeRateService extends AbstractService {
 				dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
 				bankWiseRates.add(dto);
 			}
-		}
+		//}
 		return bankWiseRates;
 	}
 
