@@ -4,7 +4,7 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
   <meta charset="UTF-8"/>
-  <title>Almulla Online</title>
+  <title th:text="applicationTitle" >Al Mulla Online</title>
 </head>
 <body>
 <div id="app"></div>
@@ -22,7 +22,7 @@
   window.CONST = {
     dev: false,
     remoteServerUrl: '',
-    remoteJsUrl: 'http://10.28.42.83/onlinewebapp',
+    remoteJsUrl: '<div th:text="${cdnUrl}" th:remove="tag"></div>', //
     dummyApi: false
   };
   var config = getJson(window.localStorage.getItem('debugConfig'));

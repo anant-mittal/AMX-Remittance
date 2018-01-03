@@ -1,6 +1,7 @@
 
 package com.amx.jax.ui.api;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,10 +19,17 @@ import io.swagger.annotations.Api;
 @Api(value = "Auth APIs")
 public class AuthController {
 
+	@Value("${jax.cdn.url}")
+	String cdnUrl;
+
+	@Value("${application.title}")
+	String applicationTitle;
+
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
-
-		return "login";
+		model.addAttribute("applicationTitle", applicationTitle);
+		model.addAttribute("cdnUrl", cdnUrl);
+		return "app";
 	}
 
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET, RequestMethod.POST }, headers = {
@@ -33,6 +41,13 @@ public class AuthController {
 		wrapper.setMessage(ResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 
 		return JsonUtil.toJson(wrapper);
+	}
+
+	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
+	public String defaultPage(Model model) {
+		model.addAttribute("applicationTitle", applicationTitle);
+		model.addAttribute("cdnUrl", cdnUrl);
+		return "app";
 	}
 
 }
