@@ -1,6 +1,7 @@
 {
 	"data": {
 		"otp": "ok",
-		"otpPrefix" : "ok"
+		"otpPrefix" : "ok",
+		"customerName" : "Riddhi Madhu"
 	}
 }
