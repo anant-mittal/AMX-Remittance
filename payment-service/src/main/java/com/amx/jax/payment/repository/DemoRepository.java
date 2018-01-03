@@ -3,7 +3,6 @@
   */
 package com.amx.jax.payment.repository;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,7 +10,6 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.payment.model.db.Customer;
 import com.amx.jax.payment.model.db.Demo;
 
 /**

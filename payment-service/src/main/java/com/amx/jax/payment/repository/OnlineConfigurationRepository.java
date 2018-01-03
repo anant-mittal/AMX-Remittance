@@ -11,8 +11,6 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.jax.payment.model.db.Customer;
-import com.amx.jax.payment.model.db.Demo;
 import com.amx.jax.payment.model.db.OnlineConfiguration;
 
 /**
