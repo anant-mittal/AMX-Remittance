@@ -24,26 +24,20 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal amount, BigDecimal bankId) throws ResourceNotFoundException, InvalidInputException {
 		ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
-		try {
-			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
-			StringBuilder sb = new StringBuilder();
-			sb.append("?").append("fromCurrency=").append(fromCurrency);
-			sb.append("&").append("toCurrency=").append(toCurrency);
-			sb.append("&").append("amount=").append(amount);
-			if (bankId != null) {
-				sb.append("&").append("bankId=").append(bankId);
-			}
-			String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
-			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
-			response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
-					});
-		} catch (Exception e) {
-			log.error("exception in getExchangeRate ", e);
+		String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
+		StringBuilder sb = new StringBuilder();
+		sb.append("?").append("fromCurrency=").append(fromCurrency);
+		sb.append("&").append("toCurrency=").append(toCurrency);
+		sb.append("&").append("amount=").append(amount);
+		if (bankId != null) {
+			sb.append("&").append("bankId=").append(bankId);
 		}
-		checkResourceNotFoundException(response.getBody());
-		//checkInvalidInputErrors(response.getBody());
+		String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
+		HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+		log.info("calling getExchangeRate api: " + getExchangeRateUrl);
+		response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
+				});
 		return response.getBody();
 	}
 }

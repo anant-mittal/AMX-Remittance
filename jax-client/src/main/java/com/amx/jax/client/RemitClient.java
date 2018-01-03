@@ -41,45 +41,36 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr, String docNumber, String fromDate,
 			String toDate) {
 		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
-		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			log.info("Transaction Histroy");
-			StringBuffer sb = new StringBuffer();
-			sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=")
-					.append(fromDate).append("&toDate=").append(toDate);
-			log.info("Input String :" + sb.toString());
-			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
-					});
-		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
-		}
+		BigDecimal countryId = jaxMetaInfo.getCountryId();
+		BigDecimal customerId = jaxMetaInfo.getCustomerId();
+		log.info("Transaction Histroy");
+		StringBuffer sb = new StringBuffer();
+		sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=")
+				.append(fromDate).append("&toDate=").append(toDate);
+		log.info("Input String :" + sb.toString());
+		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
+				});
 		return response.getBody();
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
 		ResponseEntity<ApiResponse<RemittanceReceiptSubreport>> response = null;
-		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			transactionHistroyDTO.setApplicationCountryId(countryId);
-			transactionHistroyDTO.setCompanyId(companyId);
-			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
-			transactionHistroyDTO.setCustomerId(customerId);
-			log.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
-					getHeader());
-			String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/remitReport/";
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
-					});
-		} catch (Exception e) {
-			log.error("exception in report ", e);
-		}
+		BigDecimal countryId = jaxMetaInfo.getCountryId();
+		BigDecimal companyId = jaxMetaInfo.getCompanyId();
+		BigDecimal customerId = jaxMetaInfo.getCustomerId();
+		transactionHistroyDTO.setApplicationCountryId(countryId);
+		transactionHistroyDTO.setCompanyId(companyId);
+		transactionHistroyDTO.setLanguageId(new BigDecimal(1));
+		transactionHistroyDTO.setCustomerId(customerId);
+		log.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
+		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO), getHeader());
+		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/remitReport/";
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
+				});
 		return response.getBody();
 	}
 
@@ -88,22 +79,17 @@ public class RemitClient extends AbstractJaxServiceClient {
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		ResponseEntity<ApiResponse<RemittanceTransactionResponsetModel>> response = null;
-		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			log.info("Remit Client validateTransaction :" + countryId + "\t companyId :" + companyId + "\t customerId :"
-					+ customerId);
-			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-					request, getHeader());
-			String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/validate/";
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
-					});
-		} catch (Exception e) {
-			log.error("exception in validateTransaction ", e);
-		}
-		validateRemittanceDataValidation(response.getBody());
+		BigDecimal countryId = jaxMetaInfo.getCountryId();
+		BigDecimal companyId = jaxMetaInfo.getCompanyId();
+		BigDecimal customerId = jaxMetaInfo.getCustomerId();
+		log.info("Remit Client validateTransaction :" + countryId + "\t companyId :" + companyId + "\t customerId :"
+				+ customerId);
+		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+				request, getHeader());
+		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/validate/";
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
+				});
 		return response.getBody();
 	}
 
@@ -145,19 +131,14 @@ public class RemitClient extends AbstractJaxServiceClient {
 			RemittanceTransactionRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<RemittanceApplicationResponseModel>> response = null;
-		try {
 
-			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-					transactionRequestModel, getHeader());
-			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-application/";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
-					});
+		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+				transactionRequestModel, getHeader());
+		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-application/";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
+				});
 
-		} catch (Exception e) {
-			log.error("exception in saveTransaction ", e);
-		}
-		validateRemittanceDataValidation(response.getBody());
 		return response.getBody();
 
 	}
@@ -191,18 +172,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 			RemittanceTransactionStatusRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<RemittanceTransactionStatusResponseModel>> response = null;
-		try {
-			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
-					request, getHeader());
-			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/status/";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
-					});
+		HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
+				request, getHeader());
+		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/status/";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
+				});
 
-		} catch (Exception e) {
-			log.error("exception in fetchTransactionDetails ", e);
-		}
-		validateRemittanceDataValidation(response.getBody());
 		return response.getBody();
 
 	}
