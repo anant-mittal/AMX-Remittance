@@ -23,6 +23,7 @@ import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.payment.util.PaymentUtil;
 import com.fss.plugin.iPayPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.RemitClient;
 
 /**
@@ -107,7 +108,7 @@ public class PaymentService {
 		}
 		return responseMap;
 	}
-	
+
 	public HashMap<String, String> knetInitialize(Map<String, Object> params){
  		
 		//Map<String, Object> configMap = this.getPGConfig((BigDecimal)params.get("pgId"));
@@ -188,6 +189,86 @@ public class PaymentService {
 		return responseMap;
 	}
 	
+	public HashMap<String, String> bahKnetInitialize(Map<String, Object> params){
+ 		
+		//Map<String, Object> configMap = this.getPGConfig((BigDecimal)params.get("pgId"));
+		//log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		
+		/////////////////// Temporary code ///////////////////////////////////////////////
+		
+		Map<String, Object> configMap = new HashMap<String, Object>();;
+		configMap.put("action", "1");
+		configMap.put("currency", "414");
+		configMap.put("languageCode", "ENG");
+		configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_bah/");
+		configMap.put("aliasName", "mulla");
+		
+		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		///////////////////////////////////////////////////////////////////////////////////
+		
+		e24PaymentPipe pipe = new e24PaymentPipe();
+		HashMap<String, String> responseMap = new HashMap<String, String>();
+		
+		try {
+			
+			pipe.setAction((String)configMap.get("action"));
+			pipe.setCurrency((String)configMap.get("currency"));
+			//pipe.setCurrency((configMap.get("currency")).toString());
+			pipe.setLanguage((String)configMap.get("languageCode"));
+			pipe.setResponseURL((String)configMap.get("responseUrl"));
+			pipe.setErrorURL((String)configMap.get("responseUrl"));
+			pipe.setResourcePath((String)configMap.get("resourcePath"));
+			pipe.setAlias((String)configMap.get("aliasName"));
+			pipe.setAmt((String)params.get("amount"));
+			pipe.setTrackId((String)params.get("trckid")); // Customer Reference.
+			
+			String udf1 = (String)params.get("udf1");
+			String udf2 = (String)params.get("udf2");
+			String udf3 = (String)params.get("docNo");
+			String udf4 = (String)params.get("udf4");
+			String udf5 = (String)params.get("udf5");
+		
+			if (udf1 != null) {
+				pipe.setUdf1(udf1);
+			}
+			if (udf2 != null) {
+				pipe.setUdf2(udf2);
+			}
+			if (udf3 != null) {
+				pipe.setUdf3(udf3);
+			}
+			if (udf4 != null) {
+				pipe.setUdf4(udf4);
+			}
+			if (udf5 != null) {
+				pipe.setUdf5(udf5);
+			}
+			Short pipeValue = pipe.performPaymentInitialization();
+			System.out.println("pipeValue :"+pipeValue);
+						 
+			if (pipeValue != e24PaymentPipe.SUCCESS) {
+				responseMap.put("errorMsg", pipe.getErrorMsg());
+				responseMap.put("debugMsg", pipe.getDebugMsg());
+				log.info(pipe.getErrorMsg());
+				log.info(pipe.getDebugMsg());
+				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
+			}
+			
+			// get results
+			String payID = pipe.getPaymentId();
+			String payURL = pipe.getPaymentPage();
+						
+			responseMap.put("payid", new String(payID));
+			responseMap.put("payurl", new String(payURL));
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		return responseMap;
+	}
+	
 	public PaymentResponse capturePayment(HashMap<String, String> paramMap){
 	
 		PaymentResponseData data = new PaymentResponseData();
@@ -197,7 +278,7 @@ public class PaymentService {
 			
 			PaymentResponseDto paymentResponseDto = generatePaymentResponseDTO(paramMap);
 			
-			remitClient.saveRemittanceTransaction(paymentResponseDto);
+			ApiResponse<PaymentResponseDto> paymentResponseDTO = remitClient.saveRemittanceTransaction(paymentResponseDto);
 			
 			StringBuilder sb = new StringBuilder();
 			

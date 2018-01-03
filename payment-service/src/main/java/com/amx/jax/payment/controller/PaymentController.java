@@ -80,6 +80,8 @@ public class PaymentController {
 			res = paymentService.knetInitialize(paramValueMap);
 		} else if (PGEnum.OMANNET.name().equalsIgnoreCase(pg)) {
 			res = paymentService.omanNetInitialize(paramValueMap);
+		} else if (PGEnum.BAHKNET.name().equalsIgnoreCase(pg)) {
+			res = paymentService.bahKnetInitialize(paramValueMap);
 		}
 
 		String payid = res.get("payid");

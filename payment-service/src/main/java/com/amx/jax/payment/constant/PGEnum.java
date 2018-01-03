@@ -9,7 +9,8 @@ package com.amx.jax.payment.constant;
  */
 public enum PGEnum {
 	
-	KNET("knet"), 
+	KNET("knet"),
+	BAHKNET("bahknet"), 
 	OMANNET("OmanNet");
 
 	private String pgEnum;
