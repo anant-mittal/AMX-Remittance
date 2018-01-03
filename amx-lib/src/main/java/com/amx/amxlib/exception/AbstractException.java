@@ -3,7 +3,7 @@ package com.amx.amxlib.exception;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
 
-public abstract class AbstractException extends Exception {
+public abstract class AbstractException extends RuntimeException {
 
 	/**
 	 * 

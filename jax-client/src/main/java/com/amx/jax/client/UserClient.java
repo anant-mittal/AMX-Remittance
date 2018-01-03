@@ -62,18 +62,15 @@ public class UserClient extends AbstractJaxServiceClient {
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
-		try {
-			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
-			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
-			log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
-			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-					});
-			log.info("responce from  sendOtpForCivilId api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in sendOtpForCivilId ", e);
-		}
-		checkInvalidInputErrors(response.getBody());
+		HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
+		log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+				});
+		log.info("responce from  sendOtpForCivilId api: " + util.marshall(response.getBody()));
+
+		// checkInvalidInputErrors(response.getBody());
 		checkCustomerValidationErrors(response.getBody());
 		return response.getBody();
 	}

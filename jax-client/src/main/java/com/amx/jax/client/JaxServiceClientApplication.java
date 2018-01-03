@@ -25,9 +25,11 @@ public class JaxServiceClientApplication {
 	protected JaxConfig jaxConfig;
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
 		builder.rootUri(jaxConfig.getSpServiceUrl());
-		return builder.build();
+		RestTemplate restTemplate = builder.build();
+		restTemplate.setErrorHandler(errorHandler);
+		return restTemplate;
 	}
 
 	@Bean("base_url")

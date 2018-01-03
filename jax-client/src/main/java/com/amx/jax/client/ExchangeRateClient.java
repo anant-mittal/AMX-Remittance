@@ -43,7 +43,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			log.error("exception in getExchangeRate ", e);
 		}
 		checkResourceNotFoundException(response.getBody());
-		checkInvalidInputErrors(response.getBody());
+		//checkInvalidInputErrors(response.getBody());
 		return response.getBody();
 	}
 }

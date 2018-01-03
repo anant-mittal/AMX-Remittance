@@ -53,7 +53,7 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		ApiResponse<CivilIdOtpModel> response = null;
 		try {
-			response = client.sendOtpForCivilId("289053104436");
+			response = client.sendOtpForCivilId("123455");
 		} catch (InvalidInputException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -63,23 +63,7 @@ public abstract class AbstractJaxServiceClient {
 		return headers;
 	}
 
-	protected void checkInvalidInputErrors(ApiResponse<?> response) throws InvalidInputException {
-		if (response.getError() != null) {
-			ApiError error = response.getError().get(0);
-			if (JaxError.INVALID_CIVIL_ID.getCode().equals(error.getErrorId())) {
-				throw new InvalidInputException(error);
-			}
-			if (JaxError.CUSTOMER_NOT_FOUND.getCode().equals(error.getErrorId())) {
-				throw new InvalidInputException(error);
-			}
-			if (JaxError.NULL_CUSTOMER_ID.getCode().equals(error.getErrorId())) {
-				throw new InvalidInputException(error);
-			}
-			if (JaxError.INVALID_EXCHANGE_AMOUNT.getCode().equals(error.getErrorId())) {
-				throw new InvalidInputException(error);
-			}
-		}
-	}
+	
 
 	protected void checkCustomerValidationErrors(ApiResponse<?> response)
 			throws CustomerValidationException, LimitExeededException {
