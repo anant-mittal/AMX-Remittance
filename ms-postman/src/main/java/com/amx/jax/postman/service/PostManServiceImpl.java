@@ -2,13 +2,11 @@ package com.amx.jax.postman.service;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.PostManService;
@@ -26,16 +24,7 @@ public class PostManServiceImpl implements PostManService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManServiceImpl.class);
 
 	@Autowired
-	private HttpServletResponse response;
-
-	@Autowired
 	private EmailService emailService;
-
-	@Autowired
-	private TemplateEngine templateEngine;
-
-	@Autowired
-	private TemplateEngine textTemplateEngine;
 
 	@Autowired
 	private SMService smsService;
@@ -46,15 +35,19 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private PdfService pdfService;
 
+	@Autowired
+	private TemplateService templateService;
+
+	@Async
 	public Email sendEmail(Email email) {
 
 		if (email.getTemplate() != null) {
 			Context context = new Context();
 			context.setVariables(email.getModel());
 			if (email.isHtml()) {
-				email.setMessage(templateEngine.process(email.getTemplate(), context));
+				email.setMessage(templateService.processHtml(email.getTemplate(), context));
 			} else {
-				email.setMessage(textTemplateEngine.process(email.getTemplate(), context));
+				email.setMessage(templateService.processText(email.getTemplate(), context));
 			}
 		}
 		return emailService.send(email);
@@ -71,7 +64,7 @@ public class PostManServiceImpl implements PostManService {
 		Context context = new Context();
 		context.setVariables(map);
 		try {
-			file.setContent(templateEngine.process(template, context));
+			file.setContent(templateService.processHtml(template, context));
 		} catch (Exception e) {
 			LOGGER.error("Template {}", template, e);
 		}
@@ -84,16 +77,18 @@ public class PostManServiceImpl implements PostManService {
 		return file;
 	}
 
+	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		if (sms.getTemplate() != null) {
 			Context context = new Context();
 			context.setVariables(sms.getModel());
-			sms.setMessage(templateEngine.process(sms.getTemplate(), context));
+			sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 		}
 		return this.smsService.sendSMS(sms);
 	}
 
 	@Override
+	@Async
 	public Message notifySlack(Message msg) throws UnirestException {
 		return slackService.sendNotification(msg);
 	}

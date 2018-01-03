@@ -1,5 +1,9 @@
 package com.amx.jax.postman.service;
 
+import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
@@ -16,17 +20,20 @@ import com.bootloaderjs.Utils;
 @Component
 public class EmailService {
 
+	private Logger log = Logger.getLogger(getClass());
+
+	@Autowired
+	private TemplateService templateService;
+
 	@Autowired
 	private JavaMailSender mailSender;
-
-	private Logger log = Logger.getLogger(getClass());
 
 	public Email send(Email eParams) {
 
 		if (eParams.isHtml()) {
 			try {
 				sendHtmlMail(eParams);
-			} catch (MessagingException e) {
+			} catch (MessagingException | IOException e) {
 				log.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
 			}
 		} else {
@@ -35,12 +42,12 @@ public class EmailService {
 		return eParams;
 	}
 
-	private void sendHtmlMail(Email eParams) throws MessagingException {
+	private void sendHtmlMail(Email eParams) throws MessagingException, IOException {
 
 		boolean isHtml = true;
 
 		MimeMessage message = mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(message);
+		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		helper.setReplyTo(eParams.getFrom());
 		helper.setFrom(eParams.getFrom());
@@ -49,6 +56,14 @@ public class EmailService {
 
 		if (eParams.getCc().size() > 0) {
 			helper.setCc(eParams.getCc().toArray(new String[eParams.getCc().size()]));
+		}
+
+		String str = eParams.getMessage();
+		Pattern p = Pattern.compile("src=\"cid:(.*?)\"");
+		Matcher m = p.matcher(str);
+		while (m.find()) {
+			String contentId = m.group(1);
+			helper.addInline(contentId, templateService.readAsResource(contentId));
 		}
 
 		mailSender.send(message);
