@@ -182,4 +182,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		return response.getBody();
 
 	}
+	
+	
+	
 }

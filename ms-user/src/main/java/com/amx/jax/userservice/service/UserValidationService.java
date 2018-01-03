@@ -9,8 +9,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
-import javax.naming.LimitExceededException;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -21,6 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -220,10 +219,10 @@ public class UserValidationService {
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
-			if (contact.getContactTypeId().equals(new BigDecimal(49))) {
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId().equals(ConstantDocument.CONTACT_TYPE_FOR_LOCAL)) {
 				islocal = true;
 			}
-			if (contact.getContactTypeId().equals(new BigDecimal(50))) {
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId().equals(ConstantDocument.CONTACT_TYPE_FOR_HOME)) {
 				ishome = true;
 			}
 		}

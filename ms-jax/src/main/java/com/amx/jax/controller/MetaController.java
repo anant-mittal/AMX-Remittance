@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CollectionDetailViewService;
@@ -95,6 +96,8 @@ public class MetaController implements Serializable{
 	@Autowired
 	MetaService metaService;
 	
+	@Autowired
+	MetaData metaData;
 
 	
 /*	@Autowired
@@ -379,6 +382,7 @@ public class MetaController implements Serializable{
 		ApiResponse response = metaService.getCityDescription(districtid, languageId, cityid);
 		return response;
 	}
+	
 	
 	
 }

@@ -12,6 +12,7 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -170,6 +171,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "remittance-transaction-status-model":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceTransactionStatusResponseModel>>(){});
 			break;
+		case "customer-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerDto>>(){});
+			break;
+			
 	}
 		
 		

@@ -28,6 +28,9 @@ public class ConstantDocument {
 	public static String CAPTURED="CAPTURED";
 	public static String APPROVED="APPROVED";
 	public static String WU="WU";
+	public static BigDecimal CONTACT_TYPE_FOR_LOCAL=new BigDecimal(49);
+	public static BigDecimal CONTACT_TYPE_FOR_HOME=new BigDecimal(50);
+	
 	
 	
 

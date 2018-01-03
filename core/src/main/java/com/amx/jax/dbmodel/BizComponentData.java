@@ -7,9 +7,11 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -65,8 +67,8 @@ public class BizComponentData implements java.io.Serializable {
 	//private List<Customer> fsCustomersForGroupId = new ArrayList<Customer>();
 	/*private List<CustomerEmploymentInfo> fsCustomerEmploymentInfosForOccupationId = new ArrayList<CustomerEmploymentInfo>();*/
 	//private List<Customer> fsCustomersForObjectiveId = new ArrayList<Customer>();
-	/*private List<ContactDetail> fsContactDetails = new ArrayList<ContactDetail>();
-	private List<CustomerEmploymentInfo> fsCustomerEmploymentInfosForEmploymentTypeId = new ArrayList<CustomerEmploymentInfo>();
+	private List<ContactDetail> fsContactDetails = new ArrayList<ContactDetail>();
+	/*private List<CustomerEmploymentInfo> fsCustomerEmploymentInfosForEmploymentTypeId = new ArrayList<CustomerEmploymentInfo>();
 	private List<CustCorporateAddlDetail> fsCustCorporateAddlDetails = new ArrayList<CustCorporateAddlDetail>();
 	private List<BankCharges> exbankcharge = new ArrayList<BankCharges>();
 */
@@ -285,7 +287,7 @@ public class BizComponentData implements java.io.Serializable {
 		this.fsCustomersForObjectiveId = fsCustomersForObjectiveId;
 	}*/
 
-	/*@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsBizComponentDataByContactTypeId")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsBizComponentDataByContactTypeId")
 	public List<ContactDetail> getFsContactDetails() {
 		return this.fsContactDetails;
 	}
@@ -293,7 +295,7 @@ public class BizComponentData implements java.io.Serializable {
 	public void setFsContactDetails(List<ContactDetail> fsContactDetails) {
 		this.fsContactDetails = fsContactDetails;
 	}
-
+/*
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "fsBizComponentDataByEmploymentTypeId")
 	public List<CustomerEmploymentInfo> getFsCustomerEmploymentInfosForEmploymentTypeId() {
 		return this.fsCustomerEmploymentInfosForEmploymentTypeId;

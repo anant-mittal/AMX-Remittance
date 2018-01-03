@@ -14,6 +14,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -21,6 +23,7 @@ import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -203,5 +206,21 @@ public class UserClient extends AbstractJaxServiceClient {
 		log.info("responce from  updatePassword api: " + util.marshall(response.getBody()));
 		return response.getBody();
 	}
+	
+	
+	public ApiResponse<CustomerDto> getMyProfileInfo(){
+		ResponseEntity<ApiResponse<CustomerDto>> response = null;
+		
+			try {
+				MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+				log.info("Bene Clinet to get bene list Input String :");
+				String url = baseUrl.toString() + USER_API_ENDPOINT + "/myprofile-info/"; 
+				HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+				response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerDto>>(){});
+			} catch (Exception e) {
+				log.debug("Bene country list ", e);
+			}
+			return response.getBody();
+		}
 
 }

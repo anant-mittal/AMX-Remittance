@@ -21,6 +21,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
@@ -33,14 +35,29 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
+import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.ViewDistrict;
+import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
+import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.ITransactionHistroyDAO;
+import com.amx.jax.repository.IViewCityDao;
+import com.amx.jax.repository.IViewDistrictDAO;
+import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
@@ -83,7 +100,32 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private LoginLogoutHistoryRepository loginLogoutHistoryRepositoryRepo;
+	
+	@Autowired
+	IViewCityDao cityDao;
 
+	@Autowired
+	IViewStateDao stateDao;
+
+	@Autowired
+	CountryRepository countryDao;
+
+	@Autowired
+	ICustomerRepository customerDao;
+
+	@Autowired
+	IContactDetailDao contactDao;
+
+	@Autowired
+	IViewDistrictDAO districtDao;
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	
+	@Autowired
+	ITransactionHistroyDAO tranxHistDao;
+
+	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -375,4 +417,103 @@ public class UserService extends AbstractUserService {
 		output.setLoginTime(new Timestamp(new Date().getTime()));
 		loginLogoutHistoryRepositoryRepo.save(output);
 	}
+	
+	
+	/**
+	 * My Profile Info
+	 */
+	
+	public ApiResponse getCustomerInfo(BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
+		CustomerDto customerInfo = new CustomerDto();
+		ApiResponse response = getBlackApiResponse();
+		BeneficiaryListDTO beneDto = null; 
+		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
+		BenificiaryListView defaultBene =beneficiaryOnlineDao.getDefaultBeneficiary(customerId, countryId);
+		List<CustomerRemittanceTransactionView> noOfTrnxList = tranxHistDao.getCustomerTotalTrnx(customerId);
+		List<ContactDetail> contactList = contactDao.getContactDetailForLocal(new Customer(customerId));
+		
+		
+	
+		if(customerList.isEmpty()) {
+			throw new GlobalException("Customer is not avaliable");
+		}else {
+			 customerInfo = convertCustomerDto(customerList);
+			if(defaultBene!=null) {
+				beneDto = convertBeneModelToDto(defaultBene);
+			}
+			if(!noOfTrnxList.isEmpty()) {
+				customerInfo.setTotalTrnxCount(new BigDecimal(noOfTrnxList.size()));
+			}
+			customerInfo.setDefaultBeneDto(beneDto);
+			
+			
+			if(!contactList.isEmpty()) {
+				customerInfo.setLocalContactBuilding(contactList.get(0).getBuildingNo());
+				customerInfo.setStreet(contactList.get(0).getStreet());
+				customerInfo.setBlockNo(contactList.get(0).getBlock());
+				customerInfo.setHouse(contactList.get(0).getFlat());
+				List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),contactList.get(0).getFsCountryMaster().getCountryId());
+				if(!countryMasterView.isEmpty()) {
+				customerInfo.setLocalContactCountry(countryMasterView.get(0).getCountryName());
+				List<ViewState> stateMasterView  = stateDao.getState(countryMasterView.get(0).getCountryId(), contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
+				if(!stateMasterView.isEmpty()) {
+					customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
+					List<ViewDistrict>  districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), contactList.get(0).getFsDistrictMaster().getDistrictId(),  new BigDecimal(1));
+					if(!districtMas.isEmpty()) {
+						customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+						List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(), contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+						if(!cityDetails.isEmpty()) {
+							customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+						}
+					}
+				}
+				
+			}
+			response.getData().getValues().add(customerInfo);
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		}
+		response.getData().setType("customer-dto");
+		return response;
+	}
+	
+	
+	public CustomerDto convertCustomerDto(List<Customer> customerList) {
+		CustomerDto dto = null;
+		for (Customer model : customerList) {
+			dto = new CustomerDto();
+			dto.setTitle(model.getTitle());
+			dto.setFirstName(model.getFirstName());
+			dto.setMiddleName(model.getMiddleName());
+			dto.setLastName(model.getLastName());
+			dto.setIdentityInt(model.getIdentityInt());
+			dto.setIdentityExpiredDate(model.getIdentityExpiredDate());
+			dto.setEmail(model.getEmail() == null ? "" : model.getEmail());
+			dto.setMobile(model.getMobile() == null ? "" : model.getMobile());
+			dto.setLoyaltyPoints(model.getLoyaltyPoints());
+			dto.setDateOfBirth(model.getDateOfBirth());
+			dto.setCustomerId(model.getCustomerId());
+			dto.setCustomerReference(model.getCustomerReference());
+			dto.setIsActive(model.getIsActive());
+			dto.setFirstNameLocal(model.getFirstNameLocal());
+			dto.setMiddleNameLocal(model.getMiddleNameLocal());
+			dto.setLastNameLocal(model.getLastNameLocal());
+			dto.setShortName(model.getShortName());
+			dto.setShortNameLocal(model.getShortNameLocal());
+		}
+
+		return dto;
+	}
+	
+	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+		BeneficiaryListDTO dto = new BeneficiaryListDTO();
+		try {
+			BeanUtils.copyProperties(dto, beneModel);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("bene list display", e);
+		}
+		return dto;
+	}
+
+	
 }
