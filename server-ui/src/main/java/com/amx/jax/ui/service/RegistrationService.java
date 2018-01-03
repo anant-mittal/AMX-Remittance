@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
@@ -65,7 +66,7 @@ public class RegistrationService {
 			}
 			userSessionInfo.setUserid(civilid);
 
-		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
+		} catch (AbstractException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
 		} catch (Exception e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
@@ -93,7 +94,7 @@ public class RegistrationService {
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 				}
-			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
+			} catch (AbstractException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
 			}
 		}

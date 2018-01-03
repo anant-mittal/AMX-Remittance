@@ -20,6 +20,7 @@ import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -41,7 +42,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	private ConverterUtility util;
 
 	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp)
-			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());

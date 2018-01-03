@@ -15,6 +15,7 @@ public enum ResponseStatus {
 	AUTH_FAILED("302"), AUTH_OK("200"), AUTH_DONE("200"), AUTH_BLOCKED_TEMP("200"), AUTH_BLOCKED("200"), UNAUTHORIZED(
 			"401"),
 
+	UNKNOWN_JAX_ERROR("500"),
 	// Registration - END ERROR
 	SUCCESS("200"), ERROR("500");
 

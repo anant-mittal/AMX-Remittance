@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.model.response.ApiError;
 
 @Component
@@ -45,12 +46,20 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		if (errorMessages != null && !errorMessages.isEmpty()) {
 			apiError.setErrorMessage(errorMessages.get(0));
 		}
+		checkUnknownJaxError(apiError);
 		checkInvalidInputErrors(apiError);
 		checkCustomerValidationErrors(apiError);
 		checkAlreadyExistsError(apiError);
 		checkIncorrectInputError(apiError);
 		checkResourceNotFoundException(apiError);
 		validateRemittanceDataValidation(apiError);
+
+	}
+
+	private void checkUnknownJaxError(ApiError apiError) {
+		if (JaxError.UNKNOWN_JAX_ERROR.getCode().equals(apiError.getErrorId())) {
+			throw new UnknownJaxError(apiError);
+		}
 
 	}
 

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
@@ -76,12 +77,10 @@ public class LoginService {
 
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 
-			} catch (IncorrectInputException e) {
-				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
-			} catch (CustomerValidationException e) {
-				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
 			} catch (LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
+			} catch( AbstractException e) {
+				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 		}
 
@@ -131,6 +130,8 @@ public class LoginService {
 				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
 			} catch (LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
+			} catch( AbstractException e) {
+				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 
 		}
@@ -160,6 +161,8 @@ public class LoginService {
 
 			} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+			} catch( AbstractException e) {
+				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			} catch (Exception e) {
 				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 			}
@@ -176,6 +179,8 @@ public class LoginService {
 				}
 			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
+			} catch( AbstractException e) {
+				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 		}
 		return wrapper;
@@ -190,6 +195,8 @@ public class LoginService {
 			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
+		} catch( AbstractException e) {
+			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 		}
 
 		return wrapper;
