@@ -212,10 +212,9 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CustomerDto>> response = null;
 		
 			try {
-				MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 				log.info("Bene Clinet to get bene list Input String :");
 				String url = baseUrl.toString() + USER_API_ENDPOINT + "/myprofile-info/"; 
-				HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+				HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 				response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerDto>>(){});
 			} catch (Exception e) {
 				log.debug("Bene country list ", e);
