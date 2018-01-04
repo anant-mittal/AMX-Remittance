@@ -67,6 +67,11 @@ public class ResponseWrapper<T> implements Serializable {
 		this.data = data;
 	}
 
+	public ResponseWrapper<T> updateData(T data) {
+		this.setData(data);
+		return this;
+	}
+
 	// public void setData(List<T> results) {
 	// this.data = results;
 	// }

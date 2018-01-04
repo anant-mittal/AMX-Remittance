@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
@@ -18,6 +19,7 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.service.UserService;
 import com.amx.jax.ui.session.UserSession;
 
 import io.swagger.annotations.Api;
@@ -35,6 +37,9 @@ public class UserController {
 
 	@Autowired
 	SessionService sessionService;
+
+	@Autowired
+	UserService userService;
 
 	/**
 	 * Asks for user login and password
@@ -94,6 +99,11 @@ public class UserController {
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> changePassword(String password) {
 		return loginService.updatepwd(password);
+	}
+
+	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerDto> profile() {
+		return userService.getProfileDetails();
 	}
 
 }

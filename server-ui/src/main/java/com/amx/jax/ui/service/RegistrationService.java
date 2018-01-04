@@ -7,16 +7,11 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.AlreadyExistsException;
-import com.amx.amxlib.exception.CustomerValidationException;
-import com.amx.amxlib.exception.IncorrectInputException;
-import com.amx.amxlib.exception.InvalidInputException;
-import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -37,7 +32,7 @@ public class RegistrationService {
 	private JaxService jaxClient;
 
 	@Autowired
-	private UserBean userBean;
+	private UserService userService;
 
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
 
@@ -57,7 +52,7 @@ public class RegistrationService {
 				userSessionInfo.setOtpPrefix();
 				model.setOtpPrefix(userSessionInfo.getOtpPrefix());
 
-				userBean.notifyResetOTP(model);
+				userService.notifyResetOTP(model);
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
 				wrapper.getData().setOtp(model.getOtp());

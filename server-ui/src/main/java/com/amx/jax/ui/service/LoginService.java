@@ -18,7 +18,6 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -40,7 +39,7 @@ public class LoginService {
 	private SessionService sessionService;
 
 	@Autowired
-	private UserBean userBean;
+	private UserService userService;
 
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
@@ -79,7 +78,7 @@ public class LoginService {
 
 			} catch (LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
-			} catch( AbstractException e) {
+			} catch (AbstractException e) {
 				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 		}
@@ -130,7 +129,7 @@ public class LoginService {
 				wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
 			} catch (LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
-			} catch( AbstractException e) {
+			} catch (AbstractException e) {
 				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 
@@ -155,13 +154,13 @@ public class LoginService {
 				wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
 				wrapper.getData().setOtp(model.getOtp());
 				userSession.setUserid(identity);
-				userBean.notifyResetOTP(model);
+				userService.notifyResetOTP(model);
 
 				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 
 			} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.INVALID_ID, e);
-			} catch( AbstractException e) {
+			} catch (AbstractException e) {
 				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			} catch (Exception e) {
 				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
@@ -179,7 +178,7 @@ public class LoginService {
 				}
 			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
-			} catch( AbstractException e) {
+			} catch (AbstractException e) {
 				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 			}
 		}
@@ -195,7 +194,7 @@ public class LoginService {
 			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
-		} catch( AbstractException e) {
+		} catch (AbstractException e) {
 			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 		}
 

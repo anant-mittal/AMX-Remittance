@@ -42,7 +42,8 @@ public class WebRequestFilter implements Filter {
 		}
 
 		/**
-		 * Not able to use session scoped bean here so using typical session attribute;
+		 * Not able to use session scoped bean here hence using typical session
+		 * attribute;
 		 */
 		if (siteId == null) {
 			siteId = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
