@@ -73,19 +73,11 @@
 			<version>1.0</version>
 		</dependency>
  -->		
-<!-- 		<dependency>
+		<dependency>
 			<groupId>com.knet.test</groupId>
 			<artifactId>knet.test</artifactId>
 			<version>1.0</version>
-		</dependency> -->
-		
-		<!-- BAH-KNET lib START -->
-		<dependency>
-			<groupId>com.knet.bah</groupId>
-			<artifactId>knet_bah</artifactId>
-			<version>1.0</version>
 		</dependency>
-		<!-- BAH-KNET lib END -->
 		
 		<!-- OMAN-NET lib START -->
 		<dependency>
