@@ -36,7 +36,7 @@ public class UserService {
 	private JaxService jaxService;
 
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
-		return new ResponseWrapper<CustomerDto>(jaxService.getUserclient().getMyProfileInfo().getResult());
+		return new ResponseWrapper<CustomerDto>(jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
 	}
 
 	@Async

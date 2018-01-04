@@ -19,6 +19,16 @@ public class JaxMetaInfo {
 	private BigDecimal languageId;
 	private BigDecimal countryBranchId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
+	private String referrer = null;
+
+	public String getReferrer() {
+		return referrer;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
+	}
+
 	private Long traceId;
 
 	public Long getTraceId() {
@@ -76,6 +86,5 @@ public class JaxMetaInfo {
 	public void setCountryBranchId(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
 	}
-
 
 }
