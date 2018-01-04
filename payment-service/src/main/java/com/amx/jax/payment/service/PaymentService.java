@@ -120,8 +120,8 @@ public class PaymentService {
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
-		configMap.put("responseUrl", "http://payg.dev.modernexchange.com/app/payment_capture/");
-		//configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		//configMap.put("responseUrl", "http://payg.dev.modernexchange.com/app/payment_capture/");
+		configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
 		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
 		configMap.put("aliasName", "mulla");
 		
