@@ -165,6 +165,20 @@ public class PaymentResponseDto extends AbstractModel{
 		public void setCollectionDocumentCode(BigDecimal collectionDocumentCode) {
 			this.collectionDocumentCode = collectionDocumentCode;
 		}
+		/* (non-Javadoc)
+		 * @see java.lang.Object#toString()
+		 */
+		@Override
+		public String toString() {
+			return "PaymentResponseDto [paymentId=" + paymentId + ", errorText=" + errorText + ", udf1=" + udf1
+					+ ", udf2=" + udf2 + ", udf3=" + udf3 + ", udf4=" + udf4 + ", udf5=" + udf5 + ", resultCode="
+					+ resultCode + ", auth_appNo=" + auth_appNo + ", trackId=" + trackId + ", referenceId="
+					+ referenceId + ", transactionId=" + transactionId + ", postDate=" + postDate + ", tranData="
+					+ tranData + ", customerId=" + customerId + ", applicationCountryId=" + applicationCountryId
+					+ ", companyId=" + companyId + ", userName=" + userName + ", collectionFinanceYear="
+					+ collectionFinanceYear + ", collectionDocumentNumber=" + collectionDocumentNumber
+					+ ", collectionDocumentCode=" + collectionDocumentCode + "]";
+		}
 	    
 	    
 	    

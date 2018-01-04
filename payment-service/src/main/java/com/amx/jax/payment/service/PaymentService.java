@@ -120,7 +120,8 @@ public class PaymentService {
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
-		configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		configMap.put("responseUrl", "http://payg.dev.modernexchange.com/app/payment_capture/");
+		//configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
 		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
 		configMap.put("aliasName", "mulla");
 		
@@ -278,7 +279,8 @@ public class PaymentService {
 			
 			PaymentResponseDto paymentResponseDto = generatePaymentResponseDTO(paramMap);
 			
-			ApiResponse<PaymentResponseDto> paymentResponseDTO = remitClient.saveRemittanceTransaction(paymentResponseDto);
+			log.info("Calling saveRemittanceTransaction with ...  "+paymentResponseDto.toString());
+			ApiResponse<PaymentResponseDto> resp = remitClient.saveRemittanceTransaction(paymentResponseDto);
 			
 			StringBuilder sb = new StringBuilder();
 			
