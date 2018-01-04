@@ -126,7 +126,7 @@ public class ExchangeRateService extends AbstractService {
 
 	private SortedSet<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
-		SortedSet<BankMasterDTO> bankWiseRates = new TreeSet<>(new BankMasterDTO.BankMasterDTOComparator());
+		SortedSet<BankMasterDTO> bankWiseRates = new TreeSet<>();
 		for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 			List<PipsMaster> piplist = entry.getValue();
 			ExchangeRateApprovalDetModel rate = entry.getKey();

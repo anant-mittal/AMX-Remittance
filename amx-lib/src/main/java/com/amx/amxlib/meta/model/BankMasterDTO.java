@@ -6,14 +6,14 @@ import java.util.Comparator;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 
-public class BankMasterDTO extends AbstractModel {
+public class BankMasterDTO extends AbstractModel implements Comparable<BankMasterDTO> {
 
 	private BigDecimal bankId;
 	private String bankCode;
 	private String bankFullName;
 	private String bankShortName;
 	private BigDecimal bankCountryId;
-	
+
 	private ExchangeRateBreakup exRateBreakup;
 
 	@Override
@@ -118,19 +118,16 @@ public class BankMasterDTO extends AbstractModel {
 		this.exRateBreakup = exRateBreakup;
 	}
 
-	public static class BankMasterDTOComparator implements Comparator<BankMasterDTO> {
-
-		@Override
-		public int compare(BankMasterDTO o1, BankMasterDTO o2) {
-
-			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
-			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
-			if (o1Rate != null) {
-				return o2Rate.compareTo(o1Rate);
-			}
-			return 0;
+	@Override
+	public int compareTo(BankMasterDTO arg0) {
+		BankMasterDTO o1 = this;
+		BankMasterDTO o2 = arg0;
+		BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
+		BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
+		if (o1Rate != null) {
+			return o2Rate.compareTo(o1Rate);
 		}
-
+		return 0;
 	}
 
 }
