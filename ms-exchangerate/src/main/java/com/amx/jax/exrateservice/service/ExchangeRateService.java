@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.slf4j.Logger;
@@ -91,7 +92,8 @@ public class ExchangeRateService extends AbstractService {
 			if (equivalentAmount == null) {
 				equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, lcAmount);
 			}
-			Set<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount, lcAmount);
+			SortedSet<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount,
+					lcAmount);
 			if (equivalentAmount == null && (bankWiseRates == null || bankWiseRates.isEmpty())) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -122,19 +124,16 @@ public class ExchangeRateService extends AbstractService {
 		return equivalentAmount;
 	}
 
-	private Set<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
+	private SortedSet<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
-		//CurrencyMasterModel currency = currencyMasterDao.getCurrencyMasterByQuote("BDT");
-		Set<BankMasterDTO> bankWiseRates = new TreeSet<>(new BankMasterDTO.BankMasterDTOComparator());
-		//if (currency != null && currency.getCurrencyId().equals(fromCurrency)) {
-			for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
-				List<PipsMaster> piplist = entry.getValue();
-				ExchangeRateApprovalDetModel rate = entry.getKey();
-				BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
-				dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
-				bankWiseRates.add(dto);
-			}
-		//}
+		SortedSet<BankMasterDTO> bankWiseRates = new TreeSet<>(new BankMasterDTO.BankMasterDTOComparator());
+		for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
+			List<PipsMaster> piplist = entry.getValue();
+			ExchangeRateApprovalDetModel rate = entry.getKey();
+			BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
+			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
+			bankWiseRates.add(dto);
+		}
 		return bankWiseRates;
 	}
 

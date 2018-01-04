@@ -1,27 +1,31 @@
 package com.amx.amxlib.model.response;
 
-import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.AbstractModel;
 
 public class ExchangeRateResponseModel extends AbstractModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	ExchangeRateBreakup exRateBreakup;
 
-	Set<BankMasterDTO> bankWiseRates;
+	SortedSet<BankMasterDTO> bankWiseRates;
 
 	@Override
 	public String getModelType() {
 		return "ex_rate";
 	}
 
-	public Set<BankMasterDTO> getBankWiseRates() {
+	public SortedSet<BankMasterDTO> getBankWiseRates() {
 		return bankWiseRates;
 	}
 
-	public void setBankWiseRates(Set<BankMasterDTO> bankWiseRates) {
+	public void setBankWiseRates(SortedSet<BankMasterDTO> bankWiseRates) {
 		this.bankWiseRates = bankWiseRates;
 	}
 
