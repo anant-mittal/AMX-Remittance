@@ -227,15 +227,12 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
 		if (onlineCust == null) {
-			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
-		}
-/*		if (onlineCust == null) {
 			onlineCust = new CustomerOnlineRegistration(cust);
 			onlineCust.setHresetBy(cust.getIdentityInt());
 			onlineCust.setHresetIp(webutil.getClientIp());
 			onlineCust.setHresetkDt(new Date());
 			onlineCust.setResetIp(webutil.getClientIp());
-		}*/
+		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
 		model.setIsActiveCustomer("Y".equals(onlineCust.getStatus()) ? true : false);
