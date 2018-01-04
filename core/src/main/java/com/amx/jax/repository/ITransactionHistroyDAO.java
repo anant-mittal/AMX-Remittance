@@ -35,7 +35,7 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.beneficiaryRelationSeqId=:beneRelationId "
 			+ " and TRUNC(th.documentDate)=(select MAX(TRUNC(thi.documentDate)) from CustomerRemittanceTransactionView thi "
-			+ " where thi.customerId=:customerid and thi.beneficiaryRelationSeqId=:beneRelationId)")
+			+ " where thi.customerId=:customerid and thi.beneficiaryRelationSeqId=:beneRelationId) and rownum=1" )
 	public CustomerRemittanceTransactionView getDefaultTrnxHist(@Param("customerid") BigDecimal customerid,
 			@Param("beneRelationId") BigDecimal beneRelationId);
 	

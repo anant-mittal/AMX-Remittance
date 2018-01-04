@@ -251,6 +251,7 @@ public class BeneficiaryService extends AbstractService {
 			throw new GlobalException("Not found");
 		}else {
 			beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
+			System.out.println("beneDto :"+beneDto.getBeneficiaryRelationShipSeqId());
 			if(beneDto!=null && !Util.isNullZeroBigDecimalCheck(transactionId) && (Util.isNullZeroBigDecimalCheck(beneRealtionId) || Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
 				trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
 			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId) && Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
