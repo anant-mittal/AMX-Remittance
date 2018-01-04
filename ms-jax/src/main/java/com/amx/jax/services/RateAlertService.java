@@ -79,10 +79,11 @@ public class RateAlertService extends AbstractService {
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer(BigDecimal customerId) {
 		
 		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
-		try {
+		
 			List<RateAlert> rateAlertList = null;
 	        List<RateAlertDTO> dtoList= new ArrayList<RateAlertDTO>();
 	        
+	        try {
 			rateAlertList = rateAlertDao.getRateAlertForCustomer(customerId);
 			
 			if (!rateAlertList.isEmpty()) {
@@ -105,17 +106,17 @@ public class RateAlertService extends AbstractService {
 					dtoList.add(rateDTO);
 				}
 				
-				response.getData().getValues().addAll(dtoList);
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().setType("rate-alert-dto");
-			} else {
+			} /*else {
 				throw new GlobalException("No record found");
-			}
+			}*/
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while fetching rate alerts");
 			e.printStackTrace();
 		}
+		response.getData().getValues().addAll(dtoList);
 		return response;
 	}
 
