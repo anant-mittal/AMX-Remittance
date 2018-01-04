@@ -262,7 +262,9 @@ public class BeneficiaryService extends AbstractService {
 		}
 		
 		remitPageDto.setBeneficiaryDto(beneDto);
-		remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+		if(trnxView!=null) {
+			remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+		}
 		response.getData().getValues().add(remitPageDto);
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
