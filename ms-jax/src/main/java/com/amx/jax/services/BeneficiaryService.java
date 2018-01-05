@@ -270,6 +270,7 @@ public class BeneficiaryService extends AbstractService {
 		response.getData().setType(remitPageDto.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		}catch (Exception e) {
+			logger.error("Error occured in getDefaultBeneficiary method", e);
 			throw new GlobalException("Default bene not found"+e.getMessage());
 		}
 		return response;

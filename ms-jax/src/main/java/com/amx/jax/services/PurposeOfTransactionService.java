@@ -264,7 +264,8 @@ public class PurposeOfTransactionService extends AbstractService {
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal remittanceModeId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryModeId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
-		BigDecimal bankId = beneficiary.getBankId();
+		BigDecimal bankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
+		
 		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,
 				remittanceModeId, deliveryModeId, bankId);
 		PurposeOfTransactionModel purposeOfTxnModel = new PurposeOfTransactionModel();
