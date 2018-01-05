@@ -54,7 +54,7 @@ public class UserService {
 		SMS sms = new SMS();
 		try {
 			String phoneNo = "7710072192";
-			phoneNo = model.getOtp();
+			phoneNo = model.getMobile();
 			sms.addTo(phoneNo);
 			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
