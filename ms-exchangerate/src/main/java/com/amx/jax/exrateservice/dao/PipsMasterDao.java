@@ -20,10 +20,10 @@ public class PipsMasterDao {
 	@Autowired
 	private PipsMasterRepository repo;
 
-	public List<PipsMaster> getPipsForOnline() {
+	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency) {
 		CountryBranch onlineBranch = new CountryBranch();
 		onlineBranch.setCountryBranchId(new BigDecimal(78));
-		return repo.getPipsMasterForBranch(onlineBranch);
+		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
 	}
 
 	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount) {

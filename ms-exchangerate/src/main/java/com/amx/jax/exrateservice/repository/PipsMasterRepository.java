@@ -17,9 +17,9 @@ import com.amx.jax.dbmodel.PipsMaster;
 @Transactional
 public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDecimal> {
 
-	@Query("select pips from PipsMaster pips where pips.countryBranch=?1 and pips.bankMaster is not null order by pips.currencyMaster,"
+	@Query("select pips from PipsMaster pips where pips.countryBranch=?1 and pips.currencyMaster=?2  order by pips.currencyMaster,"
 			+ "pips.bankMaster ")
-	public List<PipsMaster> getPipsMasterForBranch(CountryBranch branch);
+	public List<PipsMaster> getPipsMasterForBranch(CountryBranch branch, CurrencyMasterModel toCurrency);
 
 	@Query("select pips from PipsMaster pips where pips.countryBranch=?1 and pips.countryMaster=?2 and pips.bankMaster=?3 and"
 			+ " pips.currencyMaster=?4 and pips.fromAmount < ?5 and pips.toAmount > ?5")

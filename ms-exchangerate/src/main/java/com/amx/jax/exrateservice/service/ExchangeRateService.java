@@ -84,7 +84,7 @@ public class ExchangeRateService extends AbstractService {
 				+ lcAmount);
 		ApiResponse response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
-			List<PipsMaster> pips = pipsDao.getPipsForOnline();
+			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -172,7 +172,7 @@ public class ExchangeRateService extends AbstractService {
 		}
 
 		List<BankMasterDTO> output = new ArrayList<>(bankWiseRates);
-		Collections.sort(output, new BankMasterDTO.BankMasterDTOComparator() );
+		Collections.sort(output, new BankMasterDTO.BankMasterDTOComparator());
 		return output;
 	}
 
@@ -267,29 +267,31 @@ public class ExchangeRateService extends AbstractService {
 			}
 			for (PipsMaster pip : pips) {
 				BankMasterModel bankMaster = pip.getBankMaster();
-				// match the bankId passed
-				if (bankId != null && !bankMaster.getBankId().equals(bankId)) {
-					continue;
-				}
-				ExchangeRateApprovalDetModel value = map.get(bankMaster.getBankId());
-				if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())
-						&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
-					List<PipsMaster> piplist = output.get(value);
-					if (piplist == null) {
-						piplist = new ArrayList<>();
-						piplist.add(pip);
-						output.put(value, piplist);
-					} else {
-						piplist.add(pip);
+				if (bankMaster != null) {
+					// match the bankId passed
+					if (bankId != null && !bankMaster.getBankId().equals(bankId)) {
+						continue;
 					}
+					ExchangeRateApprovalDetModel value = map.get(bankMaster.getBankId());
+					if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())
+							&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
+						List<PipsMaster> piplist = output.get(value);
+						if (piplist == null) {
+							piplist = new ArrayList<>();
+							piplist.add(pip);
+							output.put(value, piplist);
+						} else {
+							piplist.add(pip);
+						}
 
+					}
 				}
 			}
-			// for (ExchangeRateApprovalDetModel key : allExchangeRates) {
-			// if (output.get(key) == null) {
-			// output.put(key, null);
-			// }
-			// }
+			for (ExchangeRateApprovalDetModel key : allExchangeRates) {
+				if (output.get(key) == null) {
+					output.put(key, pips);
+				}
+			}
 		}
 		return output;
 	}
