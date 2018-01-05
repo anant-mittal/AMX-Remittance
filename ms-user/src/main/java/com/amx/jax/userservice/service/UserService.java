@@ -249,6 +249,8 @@ public class UserService extends AbstractUserService {
 		onlineCust.setSmsToken(model.getHashedOtp());
 		onlineCust.setTokenDate(new Date());
 		custDao.saveOnlineCustomer(onlineCust);
+		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
+		model.setFirstName(customer.getFirstName());
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
