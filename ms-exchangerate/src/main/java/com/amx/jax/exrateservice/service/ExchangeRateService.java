@@ -3,7 +3,11 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +41,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.util.Util;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -56,6 +61,9 @@ public class ExchangeRateService extends AbstractService {
 
 	@Autowired
 	private MetaData meta;
+
+	@Autowired
+	Util util;
 
 	@Autowired
 	private CurrencyMasterDao currencyMasterDao;
@@ -85,6 +93,7 @@ public class ExchangeRateService extends AbstractService {
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
 					countryBranchId, toCurrencyMaster.getCountryId());
+			filterNonMinServiceIdRates(allExchangeRates);
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(
 					allExchangeRates, pips, bankId);
 			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,
@@ -92,8 +101,7 @@ public class ExchangeRateService extends AbstractService {
 			if (equivalentAmount == null) {
 				equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, lcAmount);
 			}
-			SortedSet<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount,
-					lcAmount);
+			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, applicableRatesWithDiscount, lcAmount);
 			if (equivalentAmount == null && (bankWiseRates == null || bankWiseRates.isEmpty())) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -105,6 +113,34 @@ public class ExchangeRateService extends AbstractService {
 		}
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	private void filterNonMinServiceIdRates(List<ExchangeRateApprovalDetModel> allExchangeRates) {
+
+		final Set<BigDecimal> bankIds = new HashSet<>();
+		allExchangeRates.forEach(i -> bankIds.add(i.getBankMaster().getBankId()));
+
+		for (BigDecimal bankId : bankIds) {
+			BigDecimal minServiceId = null;
+			for (ExchangeRateApprovalDetModel rate : allExchangeRates) {
+				if (rate.getBankMaster().getBankId().equals(bankId)) {
+					if (minServiceId == null) {
+						minServiceId = rate.getServiceId();
+					} else if (rate.getServiceId().intValue() < minServiceId.intValue()) {
+						minServiceId = rate.getServiceId();
+					}
+				}
+			}
+			Iterator<ExchangeRateApprovalDetModel> itr = allExchangeRates.iterator();
+			while (itr.hasNext()) {
+				ExchangeRateApprovalDetModel rate = itr.next();
+				if (rate.getBankMaster().getBankId().equals(bankId)) {
+					if (!rate.getServiceId().equals(minServiceId)) {
+						itr.remove();
+					}
+				}
+			}
+		}
 	}
 
 	private ExchangeRateBreakup checkAndApplyLowConversionRate(ExchangeRateBreakup equivalentAmount,
@@ -124,9 +160,9 @@ public class ExchangeRateService extends AbstractService {
 		return equivalentAmount;
 	}
 
-	private SortedSet<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
+	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
-		SortedSet<BankMasterDTO> bankWiseRates = new TreeSet<>();
+		Set<BankMasterDTO> bankWiseRates = new HashSet<>();
 		for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 			List<PipsMaster> piplist = entry.getValue();
 			ExchangeRateApprovalDetModel rate = entry.getKey();
@@ -134,7 +170,10 @@ public class ExchangeRateService extends AbstractService {
 			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
 			bankWiseRates.add(dto);
 		}
-		return bankWiseRates;
+
+		List<BankMasterDTO> output = new ArrayList<>(bankWiseRates);
+		Collections.sort(output, new BankMasterDTO.BankMasterDTOComparator() );
+		return output;
 	}
 
 	private ExchangeRateBreakup getExchangeRateFromPips(List<PipsMaster> piplist, ExchangeRateApprovalDetModel rate,
@@ -246,13 +285,12 @@ public class ExchangeRateService extends AbstractService {
 
 				}
 			}
-			for (ExchangeRateApprovalDetModel key : allExchangeRates) {
-				if (output.get(key) == null) {
-					output.put(key, null);
-				}
-			}
+			// for (ExchangeRateApprovalDetModel key : allExchangeRates) {
+			// if (output.get(key) == null) {
+			// output.put(key, null);
+			// }
+			// }
 		}
-
 		return output;
 	}
 

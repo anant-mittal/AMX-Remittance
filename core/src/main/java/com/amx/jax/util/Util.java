@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.springframework.stereotype.Component;
 
@@ -53,12 +54,25 @@ public class Util {
 		output.forEach(o -> result.add(new BigDecimal(o)));
 		return result;
 	}
-	
+
 	public static boolean isNullZeroBigDecimalCheck(BigDecimal value) {
-		if(value != null && value.compareTo(BigDecimal.ZERO)!=0) {
+		if (value != null && value.compareTo(BigDecimal.ZERO) != 0) {
 			return true;
-		}else {
+		} else {
 			return false;
 		}
+	}
+
+	public <T> T findElement(Set<T> set, T element) {
+		T output = null;
+		if (set.contains(element)) {
+			for (T t : set) {
+				if (t.equals(element)) {
+					output = t;
+					break;
+				}
+			}
+		}
+		return output;
 	}
 }
