@@ -39,6 +39,20 @@ public class AppController {
 	      
 	   }
 	   
+	   @RequestMapping(value = "/pg_fail", method = RequestMethod.GET)
+	   public String fail(Model model) {
+	      
+		   return "thymeleaf/pg_fail";
+	      
+	   }
+	   
+	   @RequestMapping(value = "/pg_cancel", method = RequestMethod.GET)
+	   public String cancel(Model model) {
+	      
+		   return "thymeleaf/pg_fail";
+	      
+	   }
+	   
 	   @RequestMapping("/jsp")
 	    String jspPage(Model model,@RequestParam String name) {
 	        model.addAttribute("name", name);
