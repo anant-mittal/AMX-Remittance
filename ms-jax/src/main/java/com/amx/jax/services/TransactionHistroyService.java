@@ -112,6 +112,10 @@ public class TransactionHistroyService extends AbstractService {
 			{
 				list.add(model);
 			}
+			
+			if(hist.getTransactionStatusDesc()!=null && !hist.getTransactionStatusDesc().equalsIgnoreCase("CANCELLED")) {
+				list.add(model);
+			}
 		}
 		return list;
 	}

@@ -368,6 +368,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 
 		}
+	
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(beneDto.getApplicationCountryId(), beneDto.getBenificaryCountry(),
 				beneDto.getCurrencyId());
 
