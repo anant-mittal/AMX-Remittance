@@ -104,30 +104,6 @@ public class PaymentController {
 
 	}
 
-	/*
-	 * @RequestMapping(value={ "/payment_capture/*", "/payment_capture/" }, method =
-	 * RequestMethod.GET,produces = {MediaType.APPLICATION_JSON_VALUE}) public
-	 * String paymentCaptureGet(@RequestParam String PaymentID,HttpServletRequest
-	 * request,Model model) {
-	 * 
-	 * Map<String, String[]> parameters = request.getParameterMap();
-	 * log.info("In Payment capture method with params : " +
-	 * PaymentUtil.getMapKeyValueAsString(parameters));
-	 * //log.info("payment id is  : " + PaymentID);
-	 * 
-	 * HashMap<String, String> paramMap =
-	 * generateParameterMapForPaymentCapture(parameters); PaymentResponse res =
-	 * paymentService.capturePayment(paramMap);
-	 * 
-	 * String jsonResponse=null; try { jsonResponse = JsonUtil.toJson(res); } catch
-	 * (JsonProcessingException e) { // TODO Auto-generated catch block
-	 * e.printStackTrace(); }
-	 * 
-	 * log.info("Generate json is : "+jsonResponse);
-	 * 
-	 * return "jsp/repback"; }
-	 */
-
 	@RequestMapping(value = { "/payment_capture/oman/*",
 			"/payment_capture/oman" }, method = RequestMethod.POST, produces = { MediaType.APPLICATION_JSON_VALUE })
 	public @ResponseBody String paymentCaptureOman(HttpServletRequest request) {
