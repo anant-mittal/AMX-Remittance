@@ -110,6 +110,9 @@ public class PaymentService {
 		}
 		return responseMap;
 	}
+	
+	@Value("${knet.certificate.path}")
+	String knetCertpath;
 
 	public HashMap<String, String> knetInitialize(Map<String, Object> params){
  		
