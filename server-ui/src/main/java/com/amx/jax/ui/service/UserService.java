@@ -36,7 +36,8 @@ public class UserService {
 	private JaxService jaxService;
 
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
-		return new ResponseWrapper<CustomerDto>(jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
+		return new ResponseWrapper<CustomerDto>(
+				jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
 	}
 
 	@Async
@@ -52,11 +53,14 @@ public class UserService {
 
 		SMS sms = new SMS();
 		try {
-			sms.addTo("7710072192");
+			String phoneNo = "7710072192";
+			phoneNo = model.getOtp();
+			sms.addTo(phoneNo);
 			sms.setMessage("Your OTP for Reset is " + model.getOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
 			postManService.sendSMS(sms);
+			LOG.info("Message Sent : OTP SMS to " + phoneNo);
 		} catch (Exception e) {
 			LOG.error("Error while sending OTP SMS to 7710072192", e);
 		}

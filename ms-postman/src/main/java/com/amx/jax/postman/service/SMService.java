@@ -25,13 +25,24 @@ public class SMService {
 
 	public SMS sendSMS(SMS sms) throws UnirestException {
 
-		HttpResponse<String> response = Unirest.post(remoteUrl).header("authkey", authKey)
-				.header("content-type", "application/json")
-				.body(String.format(
-						"{ \"sender\": \"%s\", \"route\": \"%s\", \"country\": \"91\", \"sms\": [ { \"message\": \"%s\", \"to\": [ \"%s\" ] } ] }",
-						senderId, route, sms.toText(), sms.getTo().get(0)))
-				.asString();
-		logger.info("SMS Sent   " + response.getBody());
+		String phone = sms.getTo().get(0);
+
+		if (phone != null & phone.length() == 10) {
+			HttpResponse<String> response = Unirest.post(remoteUrl).header("authkey", authKey)
+					.header("content-type", "application/json")
+					.body(String.format(
+							"{ \"sender\": \"%s\", \"route\": \"%s\", \"country\": \"91\", \"sms\": [ { \"message\": \"%s\", \"to\": [ \"%s\" ] } ] }",
+							senderId, route, sms.toText(), sms.getTo().get(0)))
+					.asString();
+			logger.info("SMS Sent   " + response.getBody());
+		} else if (phone != null & phone.length() == 8) {
+			HttpResponse<String> response = Unirest
+					.post("https://applications2.almullagroup.com/Login_Enhanced/LoginEnhancedServlet")
+					// .header("content-type", "application/json")
+					.field("destination_mobile", "965" + phone).field("message_to_send", sms.toText()).asString();
+			logger.info("SMS Sent   " + response.getBody());
+		}
+
 		return sms;
 	}
 }
