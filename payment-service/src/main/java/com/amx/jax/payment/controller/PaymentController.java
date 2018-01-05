@@ -92,8 +92,7 @@ public class PaymentController {
 		return "redirect:" + payurl + "?paymentId=" + payid;
 	}
 
-	@RequestMapping(value = { "/payment_capture/*", "/payment_capture/" }, method = RequestMethod.POST, produces = {
-			MediaType.APPLICATION_JSON_VALUE })
+	@RequestMapping(value = { "/payment_capture/*", "/payment_capture/" })
 	public String paymentCapture(HttpServletRequest request, Model model) {
 
 		Map<String, String[]> parameters = request.getParameterMap();
@@ -101,15 +100,6 @@ public class PaymentController {
 
 		HashMap<String, String> paramMap = generateParameterMapForPaymentCapture(parameters);
 		PaymentResponse res = paymentService.capturePayment(paramMap);
-
-		String jsonResponse = null;
-		try {
-			jsonResponse = JsonUtil.toJson(res);
-		} catch (JsonProcessingException e) {
-			e.printStackTrace();
-		}
-
-		log.info("Generate json is : " + jsonResponse);
 		return "jsp/repback";
 
 	}
