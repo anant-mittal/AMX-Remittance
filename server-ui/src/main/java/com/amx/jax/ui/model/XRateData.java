@@ -1,6 +1,7 @@
 package com.amx.jax.ui.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -16,13 +17,13 @@ public class XRateData {
 	BigDecimal domXRate = null;
 	BigDecimal domAmount = null;
 
-	Set<BankMasterDTO> beneBanks = null;
+	List<BankMasterDTO> beneBanks = null;
 
-	public Set<BankMasterDTO> getBeneBanks() {
+	public List<BankMasterDTO> getBeneBanks() {
 		return beneBanks;
 	}
 
-	public void setBeneBanks(Set<BankMasterDTO> set) {
+	public void setBeneBanks(List<BankMasterDTO> set) {
 		this.beneBanks = set;
 	}
 
