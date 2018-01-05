@@ -107,15 +107,15 @@ public class PaymentController {
 
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/knet_success.jsp?"
+			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/success?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
 		} else if ("CANCELED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/knet_cancelled.jsp?"
+			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/cancelled?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
 		} else {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/error.jsp?"
+			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/error?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
 		}
@@ -124,7 +124,7 @@ public class PaymentController {
 		// HashMap<String, String> paramMap =
 		// generateParameterMapForPaymentCapture(parameters);
 		// PaymentResponse res = paymentService.capturePayment(paramMap);
-		return "jsp/repback";
+		return "thymeleaf/repback";
 
 	}
 
