@@ -93,13 +93,37 @@ public class PaymentController {
 	}
 
 	@RequestMapping(value = { "/payment_capture/*", "/payment_capture/" })
-	public String paymentCapture(HttpServletRequest request, Model model) {
+	public String paymentCapture(HttpServletRequest request, Model model,
+			@RequestParam(required = false) String paymentid, @RequestParam(required = false) String result,
+			@RequestParam(required = false) String auth, @RequestParam(required = false) String ref,
+			@RequestParam(required = false) String postdate, @RequestParam(required = false) String trackid,
+			@RequestParam(required = false) String tranid, @RequestParam(required = false) String responsecode,
+			@RequestParam(required = false) String udf1, @RequestParam(required = false) String udf2,
+			@RequestParam(required = false) String udf3, @RequestParam(required = false) String udf4,
+			@RequestParam(required = false) String udf5) {
 
 		Map<String, String[]> parameters = request.getParameterMap();
 		log.info("In Payment capture method with params : " + PaymentUtil.getMapKeyValueAsString(parameters));
 
-		HashMap<String, String> paramMap = generateParameterMapForPaymentCapture(parameters);
-		PaymentResponse res = paymentService.capturePayment(paramMap);
+		String redirectUrl = null;
+		if ("CAPTURED".equalsIgnoreCase(result)) {
+			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/knet_success.jsp?"
+					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
+		} else if ("CANCELED".equalsIgnoreCase(result)) {
+			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/knet_cancelled.jsp?"
+					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
+		} else {
+			redirectUrl = String.format("https://applications2.almullagroup.com/payment-service/jsp/error.jsp?"
+					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s",
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5);
+		}
+
+		model.addAttribute("REDIRECT", redirectUrl);
+		// HashMap<String, String> paramMap =
+		// generateParameterMapForPaymentCapture(parameters);
+		// PaymentResponse res = paymentService.capturePayment(paramMap);
 		return "jsp/repback";
 
 	}

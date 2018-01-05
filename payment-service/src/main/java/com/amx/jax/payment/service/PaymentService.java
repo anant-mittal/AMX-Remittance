@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
@@ -122,9 +123,9 @@ public class PaymentService {
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
 		configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/payment_capture/");
-		//configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
-		configMap.put("resourcePath", "D:\\certificates\\amxremit_test\\");
-		//configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
+		// configMap.put("responseUrl",
+		// "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", "mulla");
 		
 		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
