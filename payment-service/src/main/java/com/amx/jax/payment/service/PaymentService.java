@@ -3,7 +3,6 @@
   */
 package com.amx.jax.payment.service;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,17 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.jax.payment.dao.DemoDao;
-import com.amx.jax.payment.dao.OnlineConfigurationDao;
-import com.amx.jax.payment.model.db.Demo;
-import com.amx.jax.payment.model.db.OnlineConfiguration;
+import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.payment.util.PaymentUtil;
 import com.fss.plugin.iPayPipe;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.client.RemitClient;
 
 /**
  * @author Viki Sangani
@@ -37,17 +32,23 @@ public class PaymentService {
 	private static Logger log = Logger.getLogger(PaymentService.class);
 	
 	@Autowired
-	private DemoDao demoDao;
-	
-	@Autowired
 	private RemitClient remitClient;
-	
-	@Autowired
-	private OnlineConfigurationDao onlineConfigurationDao;
 	
 	public HashMap<String, String> omanNetInitialize(Map<String, Object> params){
 		
-		Map<String, Object> configMap = this.getPGConfig((BigDecimal)params.get("pgId"));
+		/////////////////// Temporary code ///////////////////////////////////////////////
+				
+		Map<String, Object> configMap = new HashMap<String, Object>();;
+		configMap.put("action", "1");
+		configMap.put("currency", "414");
+		configMap.put("languageCode", "ENG");
+		configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/payment_capture/");
+		//configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
+		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
+		configMap.put("aliasName", "mulla");
+		
+		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		///////////////////////////////////////////////////////////////////////////////////
 		
 		iPayPipe pipe = new iPayPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -122,7 +123,8 @@ public class PaymentService {
 		configMap.put("languageCode", "ENG");
 		configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/payment_capture/");
 		//configMap.put("responseUrl", "https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
-		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
+		configMap.put("resourcePath", "D:\\certificates\\amxremit_test\\");
+		//configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_test/");
 		configMap.put("aliasName", "mulla");
 		
 		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
@@ -315,7 +317,8 @@ public class PaymentService {
 		try {
 			StringBuilder sb = new StringBuilder();
 			
-			Map<String, Object> configMap = this.getPGConfig(new BigDecimal(3));
+			//Map<String, Object> configMap = this.getPGConfig(new BigDecimal(3));
+			Map<String, Object> configMap = new HashMap<String, Object>();
 			
 
 			String ref = null;
@@ -382,13 +385,7 @@ public class PaymentService {
 		
 	}
 	
-	public void getDemo() {
-		Demo demo = demoDao.getCustomerByCivilId("AA01");
-		
-		log.info("Id : "+demo.getId()+"  name : "+demo.getName());
-	}
-	
-	public  Map<String,Object> getPGConfig(BigDecimal id) {
+/*	public  Map<String,Object> getPGConfig(BigDecimal id) {
 		
 		OnlineConfiguration pgConfig = onlineConfigurationDao.getPGConfig(id);
 		
@@ -401,7 +398,7 @@ public class PaymentService {
 		paramValueMap.put("responseUrl", pgConfig.getResponseUrl());
 		paramValueMap.put("aliasName", pgConfig.getAliasName());
 		return paramValueMap;
-	}
+	}*/
 	
 	public PaymentResponseDto  generatePaymentResponseDTO(HashMap<String, String> params){
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
