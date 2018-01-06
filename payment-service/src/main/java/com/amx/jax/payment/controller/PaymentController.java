@@ -102,11 +102,27 @@ public class PaymentController {
 			@RequestParam(required = false) String udf3, @RequestParam(required = false) String udf4,
 			@RequestParam(required = false) String udf5) {
 
-		Map<String, String[]> parameters = request.getParameterMap();
-		log.info("In Payment capture method with params : " + PaymentUtil.getMapKeyValueAsString(parameters));
+		//Map<String, String[]> parameters = request.getParameterMap();
+		//log.info("In Payment capture method with params : " + PaymentUtil.getMapKeyValueAsString(paramMap));
 		
-		 HashMap<String, String> paramMap = PaymentUtil.generateParameterMapForPaymentCapture(parameters);
-		 PaymentResponse res = paymentService.capturePayment(paramMap);
+		//HashMap<String, String> paramMap = PaymentUtil.generateParameterMapForPaymentCapture(parameters);
+		HashMap<String, String> paramMap = new HashMap<String, String>();
+		paramMap.put("paymentId", paymentid);
+		paramMap.put("result", result);
+		paramMap.put("auth_appNo", auth);
+		paramMap.put("referenceId", ref);
+		paramMap.put("postDate", postdate);
+		paramMap.put("trackId", trackid);
+		paramMap.put("tranId", tranid);
+		paramMap.put("responsecode", responsecode);
+		paramMap.put("udf1", udf1);
+		paramMap.put("udf2", udf2);
+		paramMap.put("udf3", udf3);
+		paramMap.put("udf4", udf4);
+		paramMap.put("udf5", udf5);
+		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
+		
+		PaymentResponse res = paymentService.capturePayment(paramMap);
 
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
