@@ -3,7 +3,12 @@ package com.amx.jax.payment.gateway;
 public interface PayGClient {
 
 	enum Services {
-		KNET("knet"), BAHKNET("bahknet"), OMANNET("OmanNet");
+		KNET("knet"), BAHKNET("bahknet"), OMANNET("OmanNet"),
+
+		/**
+		 * DOnt use this one.
+		 */
+		DEFAULT("default");
 
 		private String pgEnum;
 
@@ -31,7 +36,6 @@ public interface PayGClient {
 	 */
 	void initialize(PayGParams payGParams);
 
-	
 	/**
 	 * 
 	 * @param payGResponse

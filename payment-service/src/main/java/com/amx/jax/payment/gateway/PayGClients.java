@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.payment.gateway.PayGClient.Services;
+import com.amx.jax.scope.Tenant;
 
 /**
  * 
@@ -26,11 +27,15 @@ public class PayGClients {
 		}
 	}
 
-	public void register(Services clientCode, PayGClient service) {
-		this.servicesByCode.put(clientCode.toString().toLowerCase(), service);
+	public void register(Services serviceCode, PayGClient service) {
+		this.servicesByCode.put(serviceCode.toString().toLowerCase(), service);
 	}
 
-	public PayGClient getpayGClient(String clientCode, String countryCode) {
-		return this.servicesByCode.get(clientCode.toLowerCase());
+	public PayGClient getPayGClient(Services services, Tenant tenant) {
+		return this.servicesByCode.get(services.toString().toLowerCase());
+	}
+
+	public PayGClient getPayGClient(PayGParams payGParams) {
+		return this.getPayGClient(payGParams.getService(), payGParams.getCountryCode());
 	}
 }

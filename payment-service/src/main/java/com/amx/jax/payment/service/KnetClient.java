@@ -1,5 +1,6 @@
 package com.amx.jax.payment.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.payment.gateway.PayGClient;
@@ -13,6 +14,9 @@ import com.amx.jax.payment.gateway.PayGResponse;
  */
 @Component
 public class KnetClient implements PayGClient {
+
+	@Value("${knet.certificate.path}")
+	String knetCertpath;
 
 	@Override
 	public Services getClientCode() {
