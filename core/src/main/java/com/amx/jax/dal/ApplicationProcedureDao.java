@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -33,6 +35,9 @@ public class ApplicationProcedureDao {
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
+
+	@Autowired
+	DataSource dataSource;
 
 	/**
 	 * Purpose : toFetchDetilaFromAddtionalBenficiaryDetails
@@ -159,40 +164,39 @@ public class ApplicationProcedureDao {
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO processIn :" + processIn);
 		logger.info("EX_TO_GEN_NEXT_DOC_SERIAL_NO branchId :" + branchId);
 
-		Map<String, Object> output = null;
+		Map<String, Object> output = new HashMap<>();
+		Connection connection = null;
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
-					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
-					new SqlParameter(Types.NUMERIC), new SqlParameter(Types.VARCHAR),
-					new SqlOutParameter("P_DOC_NO", Types.NUMERIC), new SqlOutParameter("P_ERROR_FLAG", Types.VARCHAR),
-					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));
-
-			output = jdbcTemplate.call(new CallableStatementCreator() {
-				@Override
-				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call EX_TO_GEN_NEXT_DOC_SERIAL_NO(?,?,?,?,?,?,?,?,?)}";
-					CallableStatement cs = con.prepareCall(proc);
-					cs.setBigDecimal(1, applCountryId);
-					cs.setBigDecimal(2, branchId);
-					cs.setBigDecimal(3, companyId);
-					cs.setBigDecimal(4, documentId);
-					cs.setBigDecimal(5, financialYear);
-					cs.setString(6, processIn);
-					cs.registerOutParameter(7, java.sql.Types.NUMERIC);
-					cs.registerOutParameter(8, java.sql.Types.VARCHAR);
-					cs.registerOutParameter(9, java.sql.Types.VARCHAR);
-					cs.execute();
-					return cs;
-
-				}
-
-			}, declareInAndOutputParameters);
+			connection = dataSource.getConnection();
+			String proc = "{call EX_TO_GEN_NEXT_DOC_SERIAL_NO(?,?,?,?,?,?,?,?,?)}";
+			CallableStatement cs = connection.prepareCall(proc);
+			cs.setBigDecimal(1, applCountryId);
+			cs.setBigDecimal(2, branchId);
+			cs.setBigDecimal(3, companyId);
+			cs.setBigDecimal(4, documentId);
+			cs.setBigDecimal(5, financialYear);
+			cs.setString(6, processIn);
+			cs.registerOutParameter(7, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(8, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(9, java.sql.Types.VARCHAR);
+			cs.execute();
+			output.put("P_DOC_NO", cs.getBigDecimal(7));
+			output.put("P_ERROR_FLAG", cs.getString(8));
+			output.put("P_ERROR_MESG", cs.getString(9));
 
 			logger.info("Out put Parameters :" + output.toString());
 
-		} catch (DataAccessException e) {
-			e.printStackTrace();
+		} catch (DataAccessException | SQLException e) {
+			logger.error("error in generate docNo", e);
 			logger.info("Out put Parameters :" + e.getMessage());
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 		return output;
 	}
@@ -664,18 +668,14 @@ public class ApplicationProcedureDao {
 	 * @param applicationCountryId
 	 * 
 	 */
-	
-	
-	
-	
-	
+
 	@Transactional
 	public Map<String, Object> insertRemittanceOnlineProcedure(HashMap<String, Object> inputValues) {
 
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
 		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
 		BigDecimal customerNo = (BigDecimal) inputValues.get("P_CUSTOMER_ID");
-		String userName = inputValues.get("P_USER_NAME")==null?null:inputValues.get("P_USER_NAME").toString();
+		String userName = inputValues.get("P_USER_NAME") == null ? null : inputValues.get("P_USER_NAME").toString();
 		String paymentId = inputValues.get("P_PAYMENT_ID") == null ? "" : inputValues.get("P_PAYMENT_ID").toString();
 		String authcode = inputValues.get("P_AUTHCOD") == null ? "" : inputValues.get("P_AUTHCOD").toString();
 		String tranId = inputValues.get("P_TRANID") == null ? "" : inputValues.get("P_TRANID").toString();
@@ -684,12 +684,9 @@ public class ApplicationProcedureDao {
 		logger.info("saveRemittance EX_INSERT_REMITTANCE_ONLINE getCustomerNo():" + inputValues.toString());
 
 		Map<String, Object> output = null;
-		
-		
-		
+
 		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(
-					new SqlParameter(Types.NUMERIC), // 1
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
 					new SqlParameter(Types.NUMERIC), // 2
 					new SqlParameter(Types.NUMERIC), // 3
 					new SqlParameter(Types.VARCHAR), // 4
@@ -697,10 +694,10 @@ public class ApplicationProcedureDao {
 					new SqlParameter(Types.VARCHAR), // 6
 					new SqlParameter(Types.VARCHAR), // 7
 					new SqlParameter(Types.VARCHAR), // 8
-					new SqlOutParameter("P_COLLECT_FINYR",Types.NUMERIC), // 9
-					new SqlOutParameter("P_COLLECTION_NO",Types.NUMERIC), // 10
-					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE",Types.NUMERIC), // 11
-					new SqlOutParameter("P_ERROR_MESG",Types.VARCHAR));// 12
+					new SqlOutParameter("P_COLLECT_FINYR", Types.NUMERIC), // 9
+					new SqlOutParameter("P_COLLECTION_NO", Types.NUMERIC), // 10
+					new SqlOutParameter("P_COLLECTION_DOCUMENT_CODE", Types.NUMERIC), // 11
+					new SqlOutParameter("P_ERROR_MESG", Types.VARCHAR));// 12
 
 			output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
@@ -1000,7 +997,6 @@ public class ApplicationProcedureDao {
 					cs.execute();
 					return cs;
 				}
-
 
 			}, declareInAndOutputParameters);
 			logger.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());

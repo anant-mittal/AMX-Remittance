@@ -100,7 +100,7 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private LoginLogoutHistoryRepository loginLogoutHistoryRepositoryRepo;
-	
+
 	@Autowired
 	IViewCityDao cityDao;
 
@@ -118,14 +118,13 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	IViewDistrictDAO districtDao;
-	
+
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
-	
+
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
 
-	
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -300,7 +299,7 @@ public class UserService extends AbstractUserService {
 	public ApiResponse loginUser(String userId, String password) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new UserNotFoundException("User with userId: " + userId + " not found or not active");
+			throw new UserNotFoundException("User with userId: " + userId + " is not registered or not active");
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerLockCount(onlineCustomer);
@@ -417,67 +416,66 @@ public class UserService extends AbstractUserService {
 		output.setLoginTime(new Timestamp(new Date().getTime()));
 		loginLogoutHistoryRepositoryRepo.save(output);
 	}
-	
-	
+
 	/**
 	 * My Profile Info
 	 */
-	
-	public ApiResponse getCustomerInfo(BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
+
+	public ApiResponse getCustomerInfo(BigDecimal countryId, BigDecimal companyId, BigDecimal customerId) {
 		CustomerDto customerInfo = new CustomerDto();
 		ApiResponse response = getBlackApiResponse();
-		BeneficiaryListDTO beneDto = null; 
+		BeneficiaryListDTO beneDto = null;
 		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
-		BenificiaryListView defaultBene =beneficiaryOnlineDao.getDefaultBeneficiary(customerId, countryId);
+		BenificiaryListView defaultBene = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, countryId);
 		List<CustomerRemittanceTransactionView> noOfTrnxList = tranxHistDao.getCustomerTotalTrnx(customerId);
 		List<ContactDetail> contactList = contactDao.getContactDetailForLocal(new Customer(customerId));
-		
-		
-	
-		if(customerList.isEmpty()) {
+
+		if (customerList.isEmpty()) {
 			throw new GlobalException("Customer is not avaliable");
-		}else {
-			 customerInfo = convertCustomerDto(customerList);
-			if(defaultBene!=null) {
+		} else {
+			customerInfo = convertCustomerDto(customerList);
+			if (defaultBene != null) {
 				beneDto = convertBeneModelToDto(defaultBene);
 			}
-			if(!noOfTrnxList.isEmpty()) {
+			if (!noOfTrnxList.isEmpty()) {
 				customerInfo.setTotalTrnxCount(new BigDecimal(noOfTrnxList.size()));
 			}
 			customerInfo.setDefaultBeneDto(beneDto);
-			
-			
-			if(!contactList.isEmpty()) {
+
+			if (!contactList.isEmpty()) {
 				customerInfo.setLocalContactBuilding(contactList.get(0).getBuildingNo());
 				customerInfo.setStreet(contactList.get(0).getStreet());
 				customerInfo.setBlockNo(contactList.get(0).getBlock());
 				customerInfo.setHouse(contactList.get(0).getFlat());
-				List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),contactList.get(0).getFsCountryMaster().getCountryId());
-				if(!countryMasterView.isEmpty()) {
-				customerInfo.setLocalContactCountry(countryMasterView.get(0).getCountryName());
-				List<ViewState> stateMasterView  = stateDao.getState(countryMasterView.get(0).getCountryId(), contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
-				if(!stateMasterView.isEmpty()) {
-					customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
-					List<ViewDistrict>  districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(), contactList.get(0).getFsDistrictMaster().getDistrictId(),  new BigDecimal(1));
-					if(!districtMas.isEmpty()) {
-						customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-						List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(), contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-						if(!cityDetails.isEmpty()) {
-							customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+				List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),
+						contactList.get(0).getFsCountryMaster().getCountryId());
+				if (!countryMasterView.isEmpty()) {
+					customerInfo.setLocalContactCountry(countryMasterView.get(0).getCountryName());
+					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),
+							contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
+					if (!stateMasterView.isEmpty()) {
+						customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
+						List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(),
+								contactList.get(0).getFsDistrictMaster().getDistrictId(), new BigDecimal(1));
+						if (!districtMas.isEmpty()) {
+							customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+							List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),
+									contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+							if (!cityDetails.isEmpty()) {
+								customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+							}
 						}
 					}
+
 				}
-				
+				response.getData().getValues().add(customerInfo);
+				response.setResponseStatus(ResponseStatus.OK);
 			}
-			response.getData().getValues().add(customerInfo);
-			response.setResponseStatus(ResponseStatus.OK);
-		}
 		}
 		response.getData().setType("customer-dto");
 		return response;
 	}
-	
-	
+
 	public CustomerDto convertCustomerDto(List<Customer> customerList) {
 		CustomerDto dto = null;
 		for (Customer model : customerList) {
@@ -504,7 +502,7 @@ public class UserService extends AbstractUserService {
 
 		return dto;
 	}
-	
+
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		try {
@@ -515,5 +513,4 @@ public class UserService extends AbstractUserService {
 		return dto;
 	}
 
-	
 }
