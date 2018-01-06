@@ -1,4 +1,4 @@
-package com.amx.jax.payment.service;
+package com.amx.jax.payment.gateway;
 
 import java.util.HashMap;
 import java.util.List;
