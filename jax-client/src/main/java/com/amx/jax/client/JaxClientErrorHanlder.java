@@ -94,6 +94,9 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.USER_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
+			if (JaxError.USER_NOT_REGISTERED.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
 			if (JaxError.ID_PROOF_EXPIRED.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}

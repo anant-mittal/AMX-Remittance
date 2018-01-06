@@ -299,7 +299,8 @@ public class UserService extends AbstractUserService {
 	public ApiResponse loginUser(String userId, String password) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new UserNotFoundException("User with userId: " + userId + " is not registered or not active");
+			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerLockCount(onlineCustomer);
