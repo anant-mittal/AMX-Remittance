@@ -49,16 +49,11 @@ public class RemittanceApplicationDao {
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
-		BigDecimal documentNumber = remitApplManager.generateDocumentNumber(app.getExCountryBranch(),
-				ConstantDocument.Update);
-		logger.info("Final Document number generated is " + documentNumber);
-		app.setDocumentNo(documentNumber);
-		appBene.setDocumentNo(documentNumber);
-		additionalInstrumentData.forEach(i -> i.setDocumentNo(documentNumber));
+
 		appRepo.save(app);
 		appBeneRepo.save(appBene);
 		addlInstDataRepo.save(additionalInstrumentData);
-		logger.info("Application saved in the database, docNo: " + documentNumber);
+		logger.info("Application saved in the database, docNo: " + app.getDocumentNo());
 	}
 
 	public RemittanceTransactionView getRemittanceTransactionView(BigDecimal documentNumber, BigDecimal finYear) {

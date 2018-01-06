@@ -205,7 +205,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
 		remittanceApplication.setDocumentNo(
-				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Yes));
+				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
 		validateAdditionalErrorMessages(requestModel);
@@ -270,7 +270,7 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	public BigDecimal generateDocumentNumber(CountryBranch countryBranch,  String processInd) {
+	public BigDecimal generateDocumentNumber(CountryBranch countryBranch, String processInd) {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
@@ -292,13 +292,15 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
 		BigDecimal netAmount = breakup.getNetAmount();
-//		netAmount = netAmount.add(validationResults.getTxnFee());
-//		if (requestModel.isAvailLoyalityPoints()) {
-//			loyalityPointsEncashed = validationResults.getMaxLoyalityPointsAvailableForTxn();
-//			BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new BigDecimal(1000), 10,
-//					RoundingMode.HALF_UP);
-//			netAmount = netAmount.subtract(loyalityVoucherAmount);
-//		}
+		// netAmount = netAmount.add(validationResults.getTxnFee());
+		// if (requestModel.isAvailLoyalityPoints()) {
+		// loyalityPointsEncashed =
+		// validationResults.getMaxLoyalityPointsAvailableForTxn();
+		// BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new
+		// BigDecimal(1000), 10,
+		// RoundingMode.HALF_UP);
+		// netAmount = netAmount.subtract(loyalityVoucherAmount);
+		// }
 		breakup.setNetAmount(netAmount);
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
