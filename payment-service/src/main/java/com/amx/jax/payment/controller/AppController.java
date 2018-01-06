@@ -26,41 +26,13 @@ public class AppController {
 	@ApiOperation(value = "Index page")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
-
 		return "thymeleaf/index";
-
 	}
 
 	@RequestMapping(value = "callback/{page}", method = RequestMethod.GET)
 	public String success(Model model, @PathVariable("page") String page) {
 
 		return "thymeleaf/pg_" + page;
-	}
-
-	@RequestMapping(value = "/pg_fail", method = RequestMethod.GET)
-	public String fail(Model model) {
-
-		return "thymeleaf/pg_fail";
-
-	}
-
-	@RequestMapping(value = "/pg_cancel", method = RequestMethod.GET)
-	public String cancel(Model model) {
-
-		return "thymeleaf/pg_fail";
-
-	}
-
-	@RequestMapping("/jsp")
-	String jspPage(Model model, @RequestParam String name) {
-		model.addAttribute("name", name);
-		return "jsp/sample";
-	}
-
-	@RequestMapping("/thymeleaf")
-	String thymeleafPage(Model model, @RequestParam String name) {
-		model.addAttribute("name", name);
-		return "thymeleaf/sample";
 	}
 
 }
