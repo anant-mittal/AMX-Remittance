@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -24,20 +25,21 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RemittanceClientTest {
 
 	@Autowired
 	RemitClient client;
-	
+
 	@Autowired
 	MetaClient metaclient;
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	//@Test
+	// @Test
 	public void getPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -45,15 +47,16 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new  BigDecimal(1424));
-		response = client.getPurposeOfTransactions(new  BigDecimal(1424));
+		request.setBeneId(new BigDecimal(1424));
+		response = client.getPurposeOfTransactions(new BigDecimal(1424));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
-	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+	// @Test
+	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -69,9 +72,10 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-//	@Test
-	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+
+	// @Test
+	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -80,13 +84,35 @@ public class RemittanceClientTest {
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(88041));
 		request.setLocalAmount(new BigDecimal(100));
-//		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
-//		request.setSrlId(new BigDecimal(48));
+		// request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+		// request.setSrlId(new BigDecimal(48));
 		response = client.validateTransaction(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
+
+	@Test
+	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<PaymentResponseDto> response = null;
+		PaymentResponseDto request = new PaymentResponseDto();
+		request.setAuth_appNo("646613");
+		request.setPaymentId("3944754581380060");
+		request.setUdf3("27000325");
+		request.setResultCode("CAPTURED");
+		request.setTrackId("238");
+		request.setReferenceId("800613807774");
+		request.setTransactionId("7696937581380060");
+		request.setPostDate("0107");
+		response = client.saveRemittanceTransaction(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
 
 }
