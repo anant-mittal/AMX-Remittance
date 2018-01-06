@@ -420,6 +420,7 @@ public class PaymentService {
 		paymentResponseDto.setUdf3(params.get("udf3"));
 		paymentResponseDto.setUdf4(params.get("udf4"));
 		paymentResponseDto.setUdf5(params.get("udf5"));
+		paymentResponseDto.setPaymentId(params.get("paymentId"));
 		
 		return paymentResponseDto;
 	}
