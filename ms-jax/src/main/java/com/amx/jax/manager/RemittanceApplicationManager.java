@@ -204,7 +204,8 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch()));
+		remittanceApplication.setDocumentNo(
+				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Yes));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
 				+ remittanceApplication.getDocumentNo().toString());
 		validateAdditionalErrorMessages(requestModel);
@@ -269,14 +270,14 @@ public class RemittanceApplicationManager {
 		}
 	}
 
-	private BigDecimal generateDocumentNumber(CountryBranch countryBranch) {
+	public BigDecimal generateDocumentNumber(CountryBranch countryBranch,  String processInd) {
 		BigDecimal appCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
 		BigDecimal documentId = (BigDecimal) remitApplParametersMap.get("P_DOCUMENT_ID");
 		BigDecimal finYear = (BigDecimal) remitApplParametersMap.get("P_USER_FINANCIAL_YEAR");
 		BigDecimal branchId = countryBranch.getBranchId();
 		Map<String, Object> output = applicationProcedureDao.getDocumentSeriality(appCountryId, companyId, documentId,
-				finYear, ConstantDocument.Yes, branchId);
+				finYear, processInd, branchId);
 		return (BigDecimal) output.get("P_DOC_NO");
 	}
 

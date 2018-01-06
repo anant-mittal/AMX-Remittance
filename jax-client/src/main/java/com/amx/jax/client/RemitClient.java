@@ -154,7 +154,8 @@ public class RemitClient extends AbstractJaxServiceClient {
 			paymentResponseDto.setApplicationCountryId(countryId);
 			paymentResponseDto.setCompanyId(companyId);
 
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(paymentResponseDto), getHeader());
+			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
+					getHeader());
 
 			String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-remittance/";
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
@@ -182,7 +183,5 @@ public class RemitClient extends AbstractJaxServiceClient {
 		return response.getBody();
 
 	}
-	
-	
-	
+
 }
