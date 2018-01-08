@@ -23,8 +23,8 @@ table {
 	<br/><br/><br/>
 
 	<div class="form">
-		<form action="app/payment" method="get">
-		<!-- <form action="/payment-service/app/payment" method="post"> -->
+		<!-- <form action="app/pay" method="get"> -->
+		<form action="/payment-service/app/pay" method="get">
 
 			<table>
 				<tr>
@@ -32,12 +32,15 @@ table {
 					<td><input id="name" name="name" /></td>
 
 				</tr>
-
 				<tr>
-					<td>Country</td>
-					<td><input id="country" name="country" /></td>
-
+					<td>Tenant</td>
+					<td><select name="tnt">
+							<option value="KWT" selected="selected">KWT</option>
+							<option value="OMN">OMAN</option>
+							<option value="BRN">BAHRAIN</option>
+					</select></td>
 				</tr>
+
 				<tr>
 					<td>Payment Gateway</td>
 					<td><select name="pg">
