@@ -100,7 +100,7 @@ public class RemittancePaymentManager extends AbstractService{
 					logger.info("EX_INSERT_REMITTANCE_ONLINE collectionFinanceYear : " + collectionFinanceYear);
 					logger.info("collectionDocumentNumber : " + collectionDocumentNumber);
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
-					logger.info("errorMsg : " + errorMsg);
+					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 				
 				/** Calling stored procedure  to move remittance to old emos **/
 				if(Util.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
@@ -120,27 +120,25 @@ public class RemittancePaymentManager extends AbstractService{
 				}
 					
 				}else {
+					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					
-				
 					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),new Customer(paymentResponse.getCustomerId()));
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
 						remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 					}
-					throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
-					
 				}
 
 				
 			}else{
-				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode());
+				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 				
 				
 				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				}
-				throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
+				//throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
 			}
 			
 		}catch(Exception e) {
