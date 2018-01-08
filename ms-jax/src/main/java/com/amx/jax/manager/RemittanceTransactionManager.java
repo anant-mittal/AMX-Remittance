@@ -46,6 +46,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.dbmodel.remittance.VwLoyalityEncash;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
@@ -293,8 +294,9 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedLCAmount(lcAmount);
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
+		breakup.setNetAmountWithoutLoyality(netAmount);
 		if (model.isAvailLoyalityPoints()) {
-			breakup.setNetAmount(netAmount.subtract(new BigDecimal(1)));
+			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
 		}
@@ -420,7 +422,9 @@ public class RemittanceTransactionManager {
 		BigDecimal paymentAmount = remittanceApplication.getLocalNetTranxAmount();
 		if (availLoyalityPoint) {
 			BigDecimal loyalityPoints = remittanceApplication.getLoyaltyPointsEncashed();
-			BigDecimal loyalityVoucherAmount = loyalityPoints.divide(new BigDecimal(1000), 10, RoundingMode.HALF_UP);
+			VwLoyalityEncash loyalityPointConversionView = loyalityPointService.getVwLoyalityEncash();
+			BigDecimal loyalityVoucherAmount = loyalityPoints.divide(loyalityPointConversionView.getLoyalityPoint(), 10,
+					RoundingMode.HALF_UP);
 			paymentAmount = remittanceApplication.getLocalNetTranxAmount().subtract(loyalityVoucherAmount);
 		}
 		return paymentAmount;

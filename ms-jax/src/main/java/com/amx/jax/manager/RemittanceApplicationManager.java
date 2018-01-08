@@ -46,6 +46,7 @@ import com.amx.jax.repository.IDocumentDao;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.util.DateUtil;
@@ -55,6 +56,9 @@ import com.amx.jax.util.DateUtil;
 public class RemittanceApplicationManager {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+
+	@Autowired
+	private LoyalityPointService loyalityPointService;
 
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
@@ -283,25 +287,18 @@ public class RemittanceApplicationManager {
 	private void setApplicableRates(RemittanceApplication remittanceApplication,
 			RemittanceTransactionRequestModel requestModel, RemittanceTransactionResponsetModel validationResults) {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
+		if (requestModel.isAvailLoyalityPoints()) {
+			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
+		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
 		remittanceApplication.setExchangeRateApplied(breakup.getInverseRate());
 		remittanceApplication.setLocalCommisionAmount(validationResults.getTxnFee());
 		remittanceApplication.setLocalChargeAmount(BigDecimal.ZERO);
 		remittanceApplication.setLocalDeliveryAmount(BigDecimal.ZERO);
-		BigDecimal netAmount = breakup.getNetAmount();
-		// netAmount = netAmount.add(validationResults.getTxnFee());
-		// if (requestModel.isAvailLoyalityPoints()) {
-		// loyalityPointsEncashed =
-		// validationResults.getMaxLoyalityPointsAvailableForTxn();
-		// BigDecimal loyalityVoucherAmount = loyalityPointsEncashed.divide(new
-		// BigDecimal(1000), 10,
-		// RoundingMode.HALF_UP);
-		// netAmount = netAmount.subtract(loyalityVoucherAmount);
-		// }
-		breakup.setNetAmount(netAmount);
-		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmount());
+		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 
 	}
