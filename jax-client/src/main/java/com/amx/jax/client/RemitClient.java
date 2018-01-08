@@ -147,12 +147,8 @@ public class RemitClient extends AbstractJaxServiceClient {
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			paymentResponseDto.setCustomerId(customerId);
-			paymentResponseDto.setApplicationCountryId(countryId);
-			paymentResponseDto.setCompanyId(companyId);
+			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
+			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
 					getHeader());
