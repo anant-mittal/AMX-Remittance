@@ -149,8 +149,8 @@ public class RemittanceTransactionManager {
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId,
-				remittanceMode, deliveryMode);
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId,
+				currencyId, remittanceMode, deliveryMode);
 		if (rules == null || rules.isEmpty()) {
 			throw new GlobalException("Routing Rules not defined for Routing Bank Id:- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
@@ -460,16 +460,16 @@ public class RemittanceTransactionManager {
 		if (StringUtils.isBlank(applicationStatus) && remittanceApplication.getPaymentId() != null) {
 			status = JaxTransactionStatus.PAYMENT_IN_PROCESS;
 		}
-		if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
-			if ("CAPTURED".equalsIgnoreCase(remittanceApplication.getResultCode())) {
-				if (collectionNo == null) {
-					status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
-				} else {
-					status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
-				}
+		String resultCode = remittanceApplication.getResultCode();
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			if ("S".equals(applicationStatus) || "T".equals(applicationStatus)) {
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_SUCCESS;
 			} else {
-				status = JaxTransactionStatus.PAYMENT_FAIL;
+				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
 			}
+		}
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_FAIL;
 		}
 
 		return status;
