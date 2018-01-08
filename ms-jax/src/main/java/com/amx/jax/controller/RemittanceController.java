@@ -141,7 +141,7 @@ public class RemittanceController {
 
 	@RequestMapping(value = "/save-remittance/", method = RequestMethod.POST)
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
-		logger.info("save -Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
 		
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
@@ -149,7 +149,7 @@ public class RemittanceController {
 		paymentResponse.setCustomerId(customerId);
 		paymentResponse.setApplicationCountryId(applicationCountryId);
 		paymentResponse.setCompanyId(companyId);
-		logger.info("save -Remittance before payment capture :" + customerId+"\t country ID :"+applicationCountryId+"\t Compa Id:"+companyId);
+		logger.info("save-Remittance before payment capture :" + customerId+"\t country ID :"+applicationCountryId+"\t Compa Id:"+companyId);
 		
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;

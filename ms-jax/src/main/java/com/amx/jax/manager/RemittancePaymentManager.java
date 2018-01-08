@@ -85,7 +85,10 @@ public class RemittancePaymentManager extends AbstractService{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				
-				logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId());
+				logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
+				
+				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
+				
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
