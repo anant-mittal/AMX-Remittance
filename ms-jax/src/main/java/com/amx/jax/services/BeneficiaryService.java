@@ -62,14 +62,13 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	CustomerDao custDao;
-	
+
 	@Autowired
 	BeneficiaryDao beneDao;
-	
+
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
 
-	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
@@ -92,12 +91,6 @@ public class BeneficiaryService extends AbstractService {
 		response.getData().setType("beneList");
 		return response;
 	}
-	
-	
-	
-	
-	
-	
 
 	public class BenificiaryListViewOnlineComparator implements Comparator<BenificiaryListView> {
 
@@ -220,63 +213,62 @@ public class BeneficiaryService extends AbstractService {
 
 		return response;
 	}
-	
-	
-	
+
 	/**
 	 * to get default beneficiary.
+	 * 
 	 * @param beneocountryList
-	 * @return
-	 * Transaction Id: idno
-	 * And Beneficiary Id :idNo
+	 * @return Transaction Id: idno And Beneficiary Id :idNo
 	 */
-	
+
 	public ApiResponse getDefaultBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,
-			BigDecimal beneRealtionId,BigDecimal transactionId) {
+			BigDecimal beneRealtionId, BigDecimal transactionId) {
 		ApiResponse response = getBlackApiResponse();
 		try {
-		BenificiaryListView beneList = null;
-		BeneficiaryListDTO beneDto =null;
-		CustomerRemittanceTransactionView trnxView = null;
-		RemittancePageDto remitPageDto = new RemittancePageDto();
-		
-		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
-			beneList = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId, beneRealtionId);
-		} else {
-			beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
-		
-		}
-		
-		if(beneList ==null) {
-			throw new GlobalException("Not found");
-		}else {
-			beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
-			System.out.println("beneDto :"+beneDto.getBeneficiaryRelationShipSeqId());
-			if(beneDto!=null && !Util.isNullZeroBigDecimalCheck(transactionId) && (Util.isNullZeroBigDecimalCheck(beneRealtionId) || Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
-				trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
-			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId) && Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
-				trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId,transactionId);
-			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId)){
-				trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
+			BenificiaryListView beneList = null;
+			BeneficiaryListDTO beneDto = null;
+			CustomerRemittanceTransactionView trnxView = null;
+			RemittancePageDto remitPageDto = new RemittancePageDto();
+
+			if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+				beneList = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,
+						beneRealtionId);
+			} else {
+				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
+
 			}
-			
-		}
-		
-		remitPageDto.setBeneficiaryDto(beneDto);
-		if(trnxView!=null) {
-			remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
-		}
-		response.getData().getValues().add(remitPageDto);
-		response.getData().setType(remitPageDto.getModelType());
-		response.setResponseStatus(ResponseStatus.OK);
-		}catch (Exception e) {
+
+			if (beneList == null) {
+				throw new GlobalException("Not found");
+			} else {
+				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
+				System.out.println("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
+				if (beneDto != null && !Util.isNullZeroBigDecimalCheck(transactionId)
+						&& (Util.isNullZeroBigDecimalCheck(beneRealtionId)
+								|| Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
+					trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
+				} else if (beneDto != null && Util.isNullZeroBigDecimalCheck(transactionId)
+						&& Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
+					trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId, transactionId);
+				} else if (beneDto != null && Util.isNullZeroBigDecimalCheck(transactionId)) {
+					trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
+				}
+
+			}
+
+			remitPageDto.setBeneficiaryDto(beneDto);
+			if (trnxView != null) {
+				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+			}
+			response.getData().getValues().add(remitPageDto);
+			response.getData().setType(remitPageDto.getModelType());
+			response.setResponseStatus(ResponseStatus.OK);
+		} catch (Exception e) {
 			logger.error("Error occured in getDefaultBeneficiary method", e);
-			throw new GlobalException("Default bene not found"+e.getMessage());
+			throw new GlobalException("Default bene not found" + e.getMessage());
 		}
 		return response;
 	}
-	
-	
 
 	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();
@@ -310,7 +302,6 @@ public class BeneficiaryService extends AbstractService {
 		return dto;
 	}
 
-	
 	private TransactionHistroyDTO convertTranHistDto(CustomerRemittanceTransactionView tranView) {
 		TransactionHistroyDTO tranDto = new TransactionHistroyDTO();
 		try {
@@ -319,10 +310,9 @@ public class BeneficiaryService extends AbstractService {
 			logger.error("bene list display", e);
 		}
 		return tranDto;
-		
+
 	}
-	
-	
+
 	public String getBeneficiaryContactNumber(BigDecimal beneMasterId) {
 		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
 		BeneficaryContact beneContact = beneContactList.get(0);
@@ -336,18 +326,15 @@ public class BeneficiaryService extends AbstractService {
 		}
 		return contactNumber;
 	}
-	
+
 	public SwiftMasterView getSwiftMasterBySwiftBic(String swiftBic) {
 		return beneDao.getSwiftMasterBySwiftBic(swiftBic);
 	}
-	
-	
-	
+
 	public Integer getTodaysTransactionForBene(BigDecimal customerId, BigDecimal benRelationId) {
+		logger.info("in getTodaysTransactionForBene, customerId: " + customerId + " benRelationId: " + benRelationId);
 		return tranxHistDao.getTodaysTransactionForBeneficiary(customerId, benRelationId);
 	}
-	
-	
 
 	@Override
 	public String getModelType() {

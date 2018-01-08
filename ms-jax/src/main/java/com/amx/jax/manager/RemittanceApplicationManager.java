@@ -206,8 +206,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setApplInd(ConstantDocument.Online);
 		remittanceApplication.setDocumentNo(
 				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
-		remittanceApplication.setPaymentId(remittanceApplication.getDocumentFinancialyear().toString()
-				+ remittanceApplication.getDocumentNo().toString());
+		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
