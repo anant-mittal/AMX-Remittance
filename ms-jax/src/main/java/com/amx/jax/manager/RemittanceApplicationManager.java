@@ -290,7 +290,7 @@ public class RemittanceApplicationManager {
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
 		if (requestModel.isAvailLoyalityPoints()) {
-			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
+			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
 		remittanceApplication.setLocalTranxAmount(breakup.getConvertedLCAmount());
