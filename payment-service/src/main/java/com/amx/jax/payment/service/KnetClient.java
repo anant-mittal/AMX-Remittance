@@ -19,8 +19,8 @@ public class KnetClient implements PayGClient {
 	String knetCertpath;
 
 	@Override
-	public Services getClientCode() {
-		return Services.KNET;
+	public ServiceCode getClientCode() {
+		return ServiceCode.KNET;
 	}
 
 	@Override

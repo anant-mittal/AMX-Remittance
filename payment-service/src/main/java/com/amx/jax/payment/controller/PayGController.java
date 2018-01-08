@@ -7,30 +7,24 @@ import static com.amx.jax.payment.constant.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amx.jax.payment.constant.PGEnum;
+import com.amx.jax.payment.gateway.PayGClient;
+import com.amx.jax.payment.gateway.PayGClient.ServiceCode;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGParams;
-import com.amx.jax.payment.model.url.PaymentResponse;
-import com.amx.jax.payment.service.PaymentService;
-import com.amx.jax.payment.util.PaymentUtil;
+import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.scope.Tenant;
-import com.bootloaderjs.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.swagger.annotations.Api;
 
@@ -47,6 +41,9 @@ public class PayGController {
 	@Autowired
 	private PayGClients payGClients;
 
+	@Autowired
+	private PayGSession payGSession;
+
 	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
 	public String pay(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
@@ -55,9 +52,7 @@ public class PayGController {
 		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + country
 				+ ", pg-" + pg + ", pg_id-" + pgId);
 
-		payGClients.getPayGClient(pg, tnt);
-
-		PayGParams payGParams = new PayGParams();
+		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
 		if (amount != null && !(amount.isEmpty())) {
 			try {
@@ -73,30 +68,27 @@ public class PayGController {
 			log.error("Track Id is empty.");
 		}
 
-		Map<String, Object> paramValueMap = new HashMap<>();
-		paramValueMap.put("name", name);
-		paramValueMap.put("country", country);
-		paramValueMap.put("amount", amount);
-		paramValueMap.put("trckid", trckid);
-		paramValueMap.put("pgId", pgId);
-		paramValueMap.put("docNo", docNo);
+		PayGParams payGParams = new PayGParams();
+		payGParams.setName(name);
+		payGParams.setAmount(amount);
+		payGParams.setTrackId(trckid);
+		payGParams.setDockNo(docNo);
 
-		HashMap<String, String> res = null;
+		payGSession.setPayGParams(payGParams);
+		payGClient.initialize(payGParams);
 
-		// if (PGEnum.KNET.name().equalsIgnoreCase(pg)) {
-		// res = paymentService.knetInitialize(paramValueMap);
-		// } else if (PGEnum.OMANNET.name().equalsIgnoreCase(pg)) {
-		// res = paymentService.omanNetInitialize(paramValueMap);
-		// } else if (PGEnum.BAHKNET.name().equalsIgnoreCase(pg)) {
-		// res = paymentService.bahKnetInitialize(paramValueMap);
-		// }
+		if (payGParams.getRedirectUrl() != null) {
+			return "redirect:" + payGParams.getRedirectUrl();
+		}
+		return null;
+	}
 
-		String payid = res.get("payid");
-		String payurl = res.get("payurl");
+	@RequestMapping(value = { "/capture/{tenant}/{paygCode}/*", "/payment_capture/{tenant}/{paygCode}/" })
+	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
+			@PathVariable("paygCode") ServiceCode paygCode) {
+		PayGClient payGClient = payGClients.getPayGClient(paygCode, tnt);
 
-		log.info("KNET is initialted for doc number : " + trckid + "  and payid is : " + payid
-				+ "  and url formed is : " + payurl);
-		return "redirect:" + payurl + "?paymentId=" + payid;
+		return null;
 	}
 
 }

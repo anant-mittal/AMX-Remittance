@@ -2,7 +2,7 @@ package com.amx.jax.payment.gateway;
 
 public interface PayGClient {
 
-	enum Services {
+	enum ServiceCode {
 		KNET("knet"), BAHKNET("bahknet"), OMANNET("OmanNet"),
 
 		/**
@@ -12,7 +12,7 @@ public interface PayGClient {
 
 		private String pgEnum;
 
-		Services(String pgEnum) {
+		ServiceCode(String pgEnum) {
 			this.pgEnum = pgEnum;
 		}
 
@@ -26,7 +26,7 @@ public interface PayGClient {
 	 * 
 	 * @return
 	 */
-	public Services getClientCode();
+	public ServiceCode getClientCode();
 
 	/**
 	 * To initiate PaymentGateway Client for payment, this method is called before
