@@ -2,16 +2,23 @@ package com.amx.jax.scope;
 
 public enum Tenant {
 
-	DEFAULT("default"), KUWAIT("kw"), OMAN("om"), BAHRAIN("bhr"), INDIA("in"),KUWAIT_WITH_CODE("kw","91");
+	DEFAULT("default", "0"),
+	/** Kuwait */
+	KWT("kw", "91"),
+
+	/** Oman */
+	OMN("om", "84"),
+
+	/** Baharain */
+	BRN("bhr", "83"),
+
+	/** India */
+	IND("in", "94");
 
 	private String id;
 	private String code;
 
-	Tenant(String id) {
-		this.id = id;
-	}
-
-	Tenant(String id,String code) {
+	Tenant(String id, String code) {
 		this.id = id;
 		this.code = code;
 	}
@@ -19,7 +26,7 @@ public enum Tenant {
 	public String getId() {
 		return id;
 	}
-	
+
 	public String getCode() {
 		return code;
 	}

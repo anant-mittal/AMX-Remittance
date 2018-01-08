@@ -15,13 +15,13 @@ public class TenantContextHolder {
 	}
 
 	public static void setDefault() {
-		ContextUtil.map().put(TENANT, Tenant.KUWAIT);
+		ContextUtil.map().put(TENANT, Tenant.KWT);
 	}
 
 	public static Tenant currentSite() {
 		Object site = ContextUtil.map().get(TENANT);
 		if (site == null) {
-			return Tenant.KUWAIT;
+			return Tenant.KWT;
 		}
 		return (Tenant) site;
 	}
@@ -32,7 +32,7 @@ public class TenantContextHolder {
 				return site;
 			}
 		}
-		return Tenant.KUWAIT;
+		return Tenant.KWT;
 	}
 
 }

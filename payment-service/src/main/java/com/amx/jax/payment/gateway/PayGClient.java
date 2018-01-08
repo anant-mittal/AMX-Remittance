@@ -1,5 +1,7 @@
 package com.amx.jax.payment.gateway;
 
+import org.springframework.ui.Model;
+
 public interface PayGClient {
 
 	enum ServiceCode {
@@ -40,6 +42,6 @@ public interface PayGClient {
 	 * 
 	 * @param payGResponse
 	 */
-	void capture(PayGResponse payGResponse);
+	String capture(Model model);
 
 }

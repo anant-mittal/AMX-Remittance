@@ -1,7 +1,12 @@
 package com.amx.jax.payment.service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.ui.Model;
 
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -18,6 +23,12 @@ public class KnetClient implements PayGClient {
 	@Value("${knet.certificate.path}")
 	String knetCertpath;
 
+	@Autowired
+	HttpServletResponse response;
+
+	@Autowired
+	HttpServletRequest request;
+
 	@Override
 	public ServiceCode getClientCode() {
 		return ServiceCode.KNET;
@@ -30,8 +41,8 @@ public class KnetClient implements PayGClient {
 	}
 
 	@Override
-	public void capture(PayGResponse payGResponse) {
-		// TODO Auto-generated method stub
+	public String capture(Model model) {
+		return null;
 	}
 
 }

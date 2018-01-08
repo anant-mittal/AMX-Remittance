@@ -23,6 +23,7 @@ import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClient.ServiceCode;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGParams;
+import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.scope.Tenant;
 
@@ -83,12 +84,11 @@ public class PayGController {
 		return null;
 	}
 
-	@RequestMapping(value = { "/capture/{tenant}/{paygCode}/*", "/payment_capture/{tenant}/{paygCode}/" })
+	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
 	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") ServiceCode paygCode) {
 		PayGClient payGClient = payGClients.getPayGClient(paygCode, tnt);
-
-		return null;
+		return payGClient.capture(model);
 	}
 
 }
