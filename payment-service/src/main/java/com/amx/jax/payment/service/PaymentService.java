@@ -18,10 +18,6 @@ import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.RemitClient;
-import com.amx.jax.payment.gateway.PayGClient;
-import com.amx.jax.payment.gateway.PayGClients;
-import com.amx.jax.payment.gateway.PayGParams;
-import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.payment.util.PaymentUtil;
@@ -31,43 +27,12 @@ import com.fss.plugin.iPayPipe;
  * @author Viki Sangani 14-Dec-2017 PaymentService.java
  */
 @Component
-public class PaymentService implements PayGClient {
+public class PaymentService {
 
 	private static Logger LOG = Logger.getLogger(PaymentService.class);
 
 	@Autowired
 	private RemitClient remitClient;
-
-	@Autowired
-	PayGClients payGClients;
-	@Autowired
-	PayGSession payGSession;
-
-	@Override
-	public void initialize(PayGParams payGParams) {
-		PayGClient payGClient = payGClients.getPayGClient(payGParams);
-		if (payGClient.getClientCode() != this.getClientCode()) {
-			payGClient.initialize(payGParams);
-		} else {
-			LOG.info("No Client Found");
-		}
-	}
-
-	@Override
-	public Services getClientCode() {
-		return Services.DEFAULT;
-	}
-
-	@Override
-	public void capture(PayGResponse payGResponse) {
-		PayGParams payGParams = payGSession.getPayGParams();
-		PayGClient payGClient = payGClients.getPayGClient(payGParams);
-		if (payGClient.getClientCode() != this.getClientCode()) {
-			payGClient.capture(payGResponse);
-		} else {
-			LOG.info("No Client Found");
-		}
-	}
 
 	public HashMap<String, String> omanNetInitialize(Map<String, Object> params) {
 

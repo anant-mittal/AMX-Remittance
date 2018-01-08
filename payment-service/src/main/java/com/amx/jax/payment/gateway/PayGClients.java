@@ -31,11 +31,11 @@ public class PayGClients {
 		this.servicesByCode.put(serviceCode.toString().toLowerCase(), service);
 	}
 
-	public PayGClient getPayGClient(Services services, Tenant tenant) {
-		return this.servicesByCode.get(services.toString().toLowerCase());
+	public PayGClient getPayGClient(Services service, Tenant tenant) {
+		return this.servicesByCode.get(service.toString().toLowerCase());
 	}
 
-	public PayGClient getPayGClient(PayGParams payGParams) {
-		return this.getPayGClient(payGParams.getService(), payGParams.getCountryCode());
+	public PayGClient getPayGClient(String service, Tenant tenant) {
+		return this.servicesByCode.get(service.toLowerCase());
 	}
 }

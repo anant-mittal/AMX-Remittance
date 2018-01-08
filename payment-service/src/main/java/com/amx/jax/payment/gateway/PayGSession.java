@@ -1,10 +1,8 @@
-package com.amx.jax.payment.service;
+package com.amx.jax.payment.gateway;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-
-import com.amx.jax.payment.gateway.PayGParams;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)

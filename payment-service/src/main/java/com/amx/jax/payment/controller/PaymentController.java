@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.payment.constant.PGEnum;
+import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.service.PaymentService;
 import com.amx.jax.payment.util.PaymentUtil;
@@ -41,6 +42,9 @@ import io.swagger.annotations.Api;
 public class PaymentController {
 
 	private Logger log = Logger.getLogger(PaymentController.class);
+
+	@Autowired
+	private PayGClients payGClients;
 
 	@Autowired
 	private PaymentService paymentService;
@@ -103,10 +107,12 @@ public class PaymentController {
 			@RequestParam(required = false) String udf3, @RequestParam(required = false) String udf4,
 			@RequestParam(required = false) String udf5) {
 
-		//Map<String, String[]> parameters = request.getParameterMap();
-		//log.info("In Payment capture method with params : " + PaymentUtil.getMapKeyValueAsString(paramMap));
-		
-		//HashMap<String, String> paramMap = PaymentUtil.generateParameterMapForPaymentCapture(parameters);
+		// Map<String, String[]> parameters = request.getParameterMap();
+		// log.info("In Payment capture method with params : " +
+		// PaymentUtil.getMapKeyValueAsString(paramMap));
+
+		// HashMap<String, String> paramMap =
+		// PaymentUtil.generateParameterMapForPaymentCapture(parameters);
 		HashMap<String, String> paramMap = new HashMap<String, String>();
 		paramMap.put("paymentId", paymentid);
 		paramMap.put("result", result);
@@ -125,7 +131,7 @@ public class PaymentController {
 		paramMap.put("applicationCountryId",Tenant.KUWAIT_WITH_CODE.getCode() );
 		
 		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
-		
+
 		PaymentResponse res = paymentService.capturePayment(paramMap);
 
 		String redirectUrl = null;
@@ -149,7 +155,7 @@ public class PaymentController {
 
 	}
 
-	@RequestMapping(value = { "/payment_capture/oman/*","/payment_capture/oman" })
+	@RequestMapping(value = { "/payment_capture/oman/*", "/payment_capture/oman" })
 	public @ResponseBody String paymentCaptureOman(HttpServletRequest request, Model model,
 			@RequestParam(required = false) String paymentid, @RequestParam(required = false) String result,
 			@RequestParam(required = false) String auth, @RequestParam(required = false) String ref,
