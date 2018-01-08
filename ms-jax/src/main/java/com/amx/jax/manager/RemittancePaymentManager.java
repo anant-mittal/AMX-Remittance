@@ -67,6 +67,14 @@ public class RemittancePaymentManager extends AbstractService{
 		String errorMsg = null;
 		Map<String,Object> remitanceMap  = null;
 		
+		logger.info("Customer Id :"+paymentResponse.getCustomerId());
+		logger.info("Result code :"+paymentResponse.getResultCode()+"\t Auth Code :"+paymentResponse.getAuth_appNo());
+		logger.info("Application country Id :"+paymentResponse.getApplicationCountryId());
+		logger.info("Company Id:"+paymentResponse.getCompanyId());
+		logger.info("UDF 1:"+paymentResponse.getUdf1()+"\t UDF 2 :"+paymentResponse.getUdf2()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t UDF4 :"+paymentResponse.getUdf4());
+		
+		
+		
 		
 		
 		try {
