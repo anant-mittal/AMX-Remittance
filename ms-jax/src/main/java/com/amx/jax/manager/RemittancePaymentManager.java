@@ -66,7 +66,7 @@ public class RemittancePaymentManager extends AbstractService{
 		BigDecimal collectionDocumentCode = null;
 		String errorMsg = null;
 		Map<String,Object> remitanceMap  = null;
-		Customer customer = new Customer();
+		
 		
 		
 		try {
@@ -74,8 +74,8 @@ public class RemittancePaymentManager extends AbstractService{
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
 			&& (paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.CAPTURED)|| paymentResponse.getResultCode().equalsIgnoreCase(ConstantDocument.APPROVED))) 
 			{
-				customer.setCustomerId(paymentResponse.getCustomerId());
-				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),customer);
+				
+				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				
 				logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId());
 				remittanceApplicationService.updatePaymentDetails(lstPayIdDetails, paymentResponse);
@@ -113,8 +113,8 @@ public class RemittancePaymentManager extends AbstractService{
 					
 				}else {
 					
-					customer.setCustomerId(paymentResponse.getCustomerId());
-					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),customer);
+				
+					lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getPaymentId(),new Customer(paymentResponse.getCustomerId()));
 					if(!lstPayIdDetails.isEmpty()) {
 						paymentResponse.setErrorText(errorMsg);
 						remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
@@ -126,9 +126,9 @@ public class RemittancePaymentManager extends AbstractService{
 				
 			}else{
 				logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode());
-				customer.setCustomerId(paymentResponse.getCustomerId());
 				
-				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),customer);
+				
+				lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				}
@@ -137,8 +137,8 @@ public class RemittancePaymentManager extends AbstractService{
 			
 		}catch(Exception e) {
 			e.printStackTrace();
-			customer.setCustomerId(paymentResponse.getCustomerId());
-			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),customer);
+			
+			lstPayIdDetails =applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 			if(!lstPayIdDetails.isEmpty()) {
 				remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 			}
