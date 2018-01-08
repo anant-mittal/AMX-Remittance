@@ -3,6 +3,7 @@
   */
 package com.amx.jax.payment.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -451,12 +452,12 @@ public class PaymentService implements PayGClient {
 	public PaymentResponseDto generatePaymentResponseDTO(HashMap<String, String> params) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
 
-		// paymentResponseDto.setApplicationCountryId(params.get(""));
+		paymentResponseDto.setApplicationCountryId(new BigDecimal(params.get("applicationCountryId")));
 		paymentResponseDto.setAuth_appNo(params.get("auth_appNo"));
 		paymentResponseDto.setTransactionId(params.get("tranId"));
 		paymentResponseDto.setResultCode(params.get("result"));
 		paymentResponseDto.setPostDate(params.get("postDate"));
-		// paymentResponseDto.setCustomerId(params.get(""));
+		paymentResponseDto.setCustomerId(new BigDecimal(params.get("trackId")));
 		paymentResponseDto.setTrackId(params.get("trackId"));
 		paymentResponseDto.setReferenceId(params.get("referenceId"));
 		paymentResponseDto.setUdf1(params.get("udf1"));

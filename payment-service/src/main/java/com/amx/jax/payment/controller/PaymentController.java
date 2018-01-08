@@ -26,6 +26,7 @@ import com.amx.jax.payment.constant.PGEnum;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.service.PaymentService;
 import com.amx.jax.payment.util.PaymentUtil;
+import com.amx.jax.scope.Tenant;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -120,6 +121,9 @@ public class PaymentController {
 		paramMap.put("udf3", udf3);
 		paramMap.put("udf4", udf4);
 		paramMap.put("udf5", udf5);
+		paramMap.put("udf5", udf5);
+		paramMap.put("applicationCountryId",Tenant.KUWAIT_WITH_CODE.getCode() );
+		
 		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
 		
 		PaymentResponse res = paymentService.capturePayment(paramMap);
