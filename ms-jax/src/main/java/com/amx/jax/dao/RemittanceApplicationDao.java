@@ -64,8 +64,7 @@ public class RemittanceApplicationDao {
 	}
 
 	public RemittanceApplication getApplication(BigDecimal documentNumber, BigDecimal finYear) {
-		RemittanceApplication remittanceTransactionView = appRepo.fetchRemitApplTrnx(documentNumber, finYear,
-				new Document(ConstantDocument.APPLICATION_DOCUMENT_ID));
+		RemittanceApplication remittanceTransactionView = appRepo.fetchRemitApplTrnx(documentNumber, finYear);
 		return remittanceTransactionView;
 
 	}
