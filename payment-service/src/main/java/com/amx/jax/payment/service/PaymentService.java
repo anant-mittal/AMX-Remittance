@@ -126,7 +126,7 @@ public class PaymentService {
 		/////////////////// ///////////////////////////////////////////////
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
-		;
+		
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
@@ -298,6 +298,8 @@ public class PaymentService {
 			LOG.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
 			ApiResponse<PaymentResponseDto> resp = remitClient.saveRemittanceTransaction(paymentResponseDto);
 
+			PaymentResponseDto respDTO= (PaymentResponseDto)resp.getData().getValues().get(0);
+			
 			StringBuilder sb = new StringBuilder();
 
 			for (Map.Entry<String, String> entry : paramMap.entrySet()) {
@@ -307,6 +309,7 @@ public class PaymentService {
 			}
 
 			data.setMsg(sb.toString());
+			data.setResponseDTO(respDTO);
 			response.setResponseCode("SUCCESS");
 			response.setResponseMessage("Payment is captured successfully.");
 			response.setData(data);

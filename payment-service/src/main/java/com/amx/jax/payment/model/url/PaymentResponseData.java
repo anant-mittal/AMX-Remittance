@@ -3,6 +3,7 @@
   */
 package com.amx.jax.payment.model.url;
 
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.payment.response.AResponseDataModel;
 
 /**
@@ -20,6 +21,8 @@ public class PaymentResponseData extends AResponseDataModel{
 	}
 
 	private String msg;
+	
+	private PaymentResponseDto responseDTO;
 
 	/**
 	 * @return the msg
@@ -33,5 +36,19 @@ public class PaymentResponseData extends AResponseDataModel{
 	 */
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+
+	/**
+	 * @return the responseDTO
+	 */
+	public PaymentResponseDto getResponseDTO() {
+		return responseDTO;
+	}
+
+	/**
+	 * @param responseDTO the responseDTO to set
+	 */
+	public void setResponseDTO(PaymentResponseDto responseDTO) {
+		this.responseDTO = responseDTO;
 	}
 }

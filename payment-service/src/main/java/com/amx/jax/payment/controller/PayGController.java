@@ -46,11 +46,11 @@ public class PayGController {
 	private PayGSession payGSession;
 
 	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
-	public String pay(@RequestParam(required = false) String name, @RequestParam String country,
+	public String pay(@RequestParam(required = false) String name,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
 			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam Tenant tnt) {
 
-		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + country
+		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode()
 				+ ", pg-" + pg + ", pg_id-" + pgId);
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
@@ -73,10 +73,12 @@ public class PayGController {
 		payGParams.setName(name);
 		payGParams.setAmount(amount);
 		payGParams.setTrackId(trckid);
-		payGParams.setDockNo(docNo);
+		payGParams.setDocNo(docNo);
 
-		payGSession.setPayGParams(payGParams);
 		payGClient.initialize(payGParams);
+		
+		payGSession.setPayGParams(payGParams);
+		
 
 		if (payGParams.getRedirectUrl() != null) {
 			return "redirect:" + payGParams.getRedirectUrl();

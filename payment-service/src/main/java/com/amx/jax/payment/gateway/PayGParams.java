@@ -3,7 +3,7 @@ package com.amx.jax.payment.gateway;
 public class PayGParams {
 	String amount = null;
 	String trackId = null;
-	String dockNo = null;
+	String docNo = null;
 	String name = null;
 	String redirectUrl = null;
 
@@ -39,12 +39,12 @@ public class PayGParams {
 		this.trackId = trackId;
 	}
 
-	public String getDockNo() {
-		return dockNo;
+	public String getDocNo() {
+		return docNo;
 	}
 
-	public void setDockNo(String dockNo) {
-		this.dockNo = dockNo;
+	public void setDocNo(String docNo) {
+		this.docNo = docNo;
 	}
 
 }
