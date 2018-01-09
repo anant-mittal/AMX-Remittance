@@ -60,6 +60,7 @@ public class PayGController {
 //			          @RequestParam Tenant tnt) {
 		
 		Tenant tnt = Tenant.KWT;
+		pg = "KNET";
 		
 		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode()+ ", pg-" + pg);
 
