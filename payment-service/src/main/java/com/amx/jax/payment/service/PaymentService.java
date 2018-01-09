@@ -298,7 +298,16 @@ public class PaymentService {
 			LOG.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
 			ApiResponse<PaymentResponseDto> resp = remitClient.saveRemittanceTransaction(paymentResponseDto);
 
-			PaymentResponseDto respDTO= (PaymentResponseDto)resp.getData().getValues().get(0);
+			PaymentResponseDto respDTO=null;
+			
+			if (resp.getData()!=null) {		
+				if (resp.getData().getValues().size() != 0) {
+					respDTO= (PaymentResponseDto)resp.getData().getValues().get(0);
+			        LOG.info("PaymentResponseDto values -- CollectionDocumentCode : "+respDTO.getCollectionDocumentCode()+
+			        		 " CollectionDocumentNumber : "+respDTO.getCollectionDocumentNumber()+
+			        		 " CollectionFinanceYear : "+respDTO.getCollectionFinanceYear());
+				}    
+			}
 			
 			StringBuilder sb = new StringBuilder();
 
@@ -313,14 +322,13 @@ public class PaymentService {
 			response.setResponseCode("SUCCESS");
 			response.setResponseMessage("Payment is captured successfully.");
 			response.setData(data);
+			response.setError(null);
 		} catch (Exception e) {
-			LOG.error("Exception while making FROM address : " + e.getMessage());
+			e.printStackTrace();
 			// response.setError(e.getMessage());
 			response.setResponseCode("FAIL");
 			response.setResponseMessage("Exception while capturing payment.");
 		}
-
-		response.setError(null);
 		return response;
 
 	}
