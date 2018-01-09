@@ -28,17 +28,20 @@ public class PostManController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManController.class);
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
 	public File processTemplate(@RequestParam String template, @RequestParam(required = false) String data,
 			@RequestParam(required = false) String fileName, @RequestParam(required = false) File.Type fileType) {
-
-		@SuppressWarnings("unchecked")
-		File file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileType);
+		File file = null;
+		try {
+			file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileType);
+		} catch (Exception e) {
+			LOGGER.error(" Template Error {}", data, e);
+		}
 
 		LOGGER.info(" FILE {} : {} . {}", template, fileName, fileType);
 
 		return file;
-
 	}
 
 	@RequestMapping(value = PostManUrls.SEND_SMS, method = RequestMethod.POST)

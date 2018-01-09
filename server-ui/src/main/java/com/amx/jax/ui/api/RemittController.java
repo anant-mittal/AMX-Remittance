@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -77,10 +78,10 @@ public class RemittController {
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
-	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
-			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper) throws IOException, UnirestException {
+	public ResponseWrapper<List<Map<String, Object>>> printHistory(
+			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
 
-		File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+		File file = postManService.processTemplate("RemittanceStatment", wrapper, File.Type.PDF);
 		file.setName("RemittanceStatment.pdf");
 
 		file.create(response, true);

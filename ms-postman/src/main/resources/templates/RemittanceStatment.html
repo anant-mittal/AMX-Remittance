@@ -156,15 +156,14 @@ html, body {
 	<table class="table  table-horizontal col-3 table-odd ">
 		<tr>
 			<th>Date</th>
-			<th>Txn. Id Number</th>
-			<th>Transaction Type Desc</th>
-			<th>Branch</th>
-			<th>Beneficary Name</th>
+			<th>Transaction ID</th>
+			<th>Type</th>
+			<th>Channel</th>
+			<th>Beneficiary Name</th>
 			<th>Account Number</th>
 			<th>Bank Name</th>
 			<th>Branch Name</th>
 			<th>Amount</th>
-			<th>Currency Name</th>
 			<th>Status</th>
 		</tr>			
 		<tr th:each="transaction : ${data}">
@@ -177,7 +176,6 @@ html, body {
 			<td th:text="${transaction.beneficaryCorespondingBankName}"></td>
 			<td th:text="${transaction.beneficaryBranchName}"></td>
 			<td th:text="${transaction.foreignTransactionAmount}"></td>
-			<td th:text="${transaction.currencyQuoteName}"></td>
 			<td th:text="${transaction.transactionStatusDesc}"></td>
 		</tr>
 	</table> <!--customer table end-->
