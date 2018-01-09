@@ -47,11 +47,13 @@ public class PayGController {
 
 	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
 	public String pay(@RequestParam(required = false) String name,
-			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam Tenant tnt) {
+					  @RequestParam String amount, 
+					  @RequestParam String trckid, 
+					  @RequestParam String pg,
+			          @RequestParam String docNo, 
+			          @RequestParam Tenant tnt) {
 
-		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode()
-				+ ", pg-" + pg + ", pg_id-" + pgId);
+		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode()+ ", pg-" + pg);
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
