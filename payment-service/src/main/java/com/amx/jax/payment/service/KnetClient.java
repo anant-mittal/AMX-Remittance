@@ -58,8 +58,8 @@ public class KnetClient implements PayGClient {
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
-		//configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/capture/KNET/KWT/");
-		configMap.put("responseUrl", "https://payg-dev.modernexchange.com/app/capture/KNET/KWT/");
+		configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/capture/KNET/KWT/");
+		//configMap.put("responseUrl", "https://payg-dev.modernexchange.com/app/capture/KNET/KWT/");
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", "mulla");
 
