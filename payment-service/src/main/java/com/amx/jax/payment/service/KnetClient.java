@@ -163,15 +163,18 @@ public class KnetClient implements PayGClient {
 		
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/success?"
+			//redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/success?"
+			redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/success?"		
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5,doccode,docno,finyear);
 		} else if ("CANCELED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/cancelled?"
+			//redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/cancelled?"
+			redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/cancelled?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,docno,finyear);
 		} else {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/error?"
+			//redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/error?"
+			redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/error?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,docno,finyear);
 		}
