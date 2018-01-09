@@ -8,6 +8,7 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -221,17 +222,15 @@ public class RemittController {
 
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
-			@RequestBody RemittanceTransactionRequestModel transactionRequestModel) {
+			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
 		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
 		try {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
 
 			wrapper.setData(respTxMdl);
-			String originalUrl = payGService.getPaymentUrl(respTxMdl);
-			String originalUrld = Base64.getEncoder().encodeToString(originalUrl.getBytes());
-
-			wrapper.setRedirectUrl("/api/redirect/" + originalUrld);
+			wrapper.setRedirectUrl(
+					payGService.getPaymentUrl(respTxMdl, request.getServerName() + "/app/landing/remittance"));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);

@@ -3,6 +3,8 @@ package com.amx.jax.ui.api;
 
 import java.util.Base64;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -51,15 +53,6 @@ public class AuthController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cdnUrl);
 		return "app";
-	}
-
-	@RequestMapping(value = { "/api/redirect/{redirectUrld}" }, method = { RequestMethod.GET })
-	public String redirect(Model model, @PathVariable("redirectUrld") String redirectUrld) {
-		
-		byte[] decodedBytes = Base64.getDecoder().decode(redirectUrld);
-		String decodedString = new String(decodedBytes);
-		
-		return "redirect:"+decodedString;
 	}
 
 }

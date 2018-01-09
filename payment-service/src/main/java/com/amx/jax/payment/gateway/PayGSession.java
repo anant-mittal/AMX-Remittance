@@ -8,6 +8,16 @@ import org.springframework.stereotype.Component;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PayGSession {
 
+	String callback = null;
+
+	public String getCallback() {
+		return callback;
+	}
+
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
+
 	PayGParams payGParams = null;
 
 	public PayGParams getPayGParams() {

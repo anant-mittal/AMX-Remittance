@@ -7,6 +7,7 @@ import static com.amx.jax.payment.constant.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,24 +46,28 @@ public class PayGController {
 	@Autowired
 	private PayGSession payGSession;
 
-	
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo) {
-	
-	
-//	public String pay(@RequestParam(required = false) String name,
-//					  @RequestParam String amount, 
-//					  @RequestParam String trckid, 
-//					  @RequestParam String pg,
-//			          @RequestParam String docNo, 
-//			          @RequestParam Tenant tnt) {
-		
+			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo,
+			@RequestParam String callbackd) {
+
+		// public String pay(@RequestParam(required = false) String name,
+		// @RequestParam String amount,
+		// @RequestParam String trckid,
+		// @RequestParam String pg,
+		// @RequestParam String docNo,
+		// @RequestParam Tenant tnt) {
+
+		byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
+		String callback = new String(decodedBytes);
+		payGSession.setCallback(callback);
+
 		Tenant tnt = Tenant.KWT;
 		pg = "KNET";
-		
-		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode()+ ", pg-" + pg);
+
+		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode() + ", pg-"
+				+ pg);
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
@@ -87,9 +92,8 @@ public class PayGController {
 		payGParams.setDocNo(docNo);
 
 		payGClient.initialize(payGParams);
-		
+
 		payGSession.setPayGParams(payGParams);
-		
 
 		if (payGParams.getRedirectUrl() != null) {
 			return "redirect:" + payGParams.getRedirectUrl();
