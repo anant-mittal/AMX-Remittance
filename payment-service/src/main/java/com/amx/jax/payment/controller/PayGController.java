@@ -45,7 +45,8 @@ public class PayGController {
 	@Autowired
 	private PayGSession payGSession;
 
-	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
+	
+	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String pay(@RequestParam(required = false) String name,
 					  @RequestParam String amount, 
 					  @RequestParam String trckid, 

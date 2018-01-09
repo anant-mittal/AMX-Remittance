@@ -49,7 +49,7 @@ public class PaymentController {
 	@Autowired
 	private PaymentService paymentService;
 
-	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
 			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo) {
