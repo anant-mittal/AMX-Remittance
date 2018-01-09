@@ -7,7 +7,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dal.ApplicationProcedureDao;
@@ -18,6 +21,7 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 
 @Service
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemittanceApplicationService {
 	
 

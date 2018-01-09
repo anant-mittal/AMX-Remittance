@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -12,6 +15,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 
 @Service
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ContactDetailService {
 
 	@Autowired

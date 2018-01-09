@@ -92,23 +92,25 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
 		request.setAuth_appNo("646613");
-		request.setPaymentId("3944754581380060");
-		request.setUdf3("27000325");
+		request.setPaymentId("353535353330");
+		request.setUdf3("27000415");
 		request.setResultCode("CAPTURED");
-		request.setTrackId("238");
+		request.setTrackId("5218");
 		request.setReferenceId("800613807774");
 		request.setTransactionId("7696937581380060");
 		request.setPostDate("0107");
+		request.setCustomerId(new BigDecimal(5218));
+		request.setApplicationCountryId(new BigDecimal(91));
 		response = client.saveRemittanceTransaction(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
