@@ -297,17 +297,13 @@ public class PaymentService {
 
 			LOG.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
 			ApiResponse<PaymentResponseDto> resp = remitClient.saveRemittanceTransaction(paymentResponseDto);
-
-			PaymentResponseDto respDTO=null;
-			
-			if (resp.getData()!=null) {		
-				if (resp.getData().getValues().size() != 0) {
-					respDTO= (PaymentResponseDto)resp.getData().getValues().get(0);
-			        LOG.info("PaymentResponseDto values -- CollectionDocumentCode : "+respDTO.getCollectionDocumentCode()+
-			        		 " CollectionDocumentNumber : "+respDTO.getCollectionDocumentNumber()+
-			        		 " CollectionFinanceYear : "+respDTO.getCollectionFinanceYear());
-				}    
-			}
+		
+			if (resp.getResult()!=null) {	
+			        LOG.info("PaymentResponseDto values -- CollectionDocumentCode : "+resp.getResult().getCollectionDocumentCode()+
+			        		 " CollectionDocumentNumber : "+resp.getResult().getCollectionDocumentNumber()+
+			        		 " CollectionFinanceYear : "+resp.getResult().getCollectionFinanceYear());
+					data.setResponseDTO(resp.getResult());
+ 			}
 			
 			StringBuilder sb = new StringBuilder();
 
@@ -318,7 +314,6 @@ public class PaymentService {
 			}
 
 			data.setMsg(sb.toString());
-			data.setResponseDTO(respDTO);
 			response.setResponseCode("SUCCESS");
 			response.setResponseMessage("Payment is captured successfully.");
 			response.setData(data);
