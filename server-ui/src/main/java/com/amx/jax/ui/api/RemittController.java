@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -227,7 +228,10 @@ public class RemittController {
 					.saveTransaction(transactionRequestModel).getResult();
 
 			wrapper.setData(respTxMdl);
-			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl));
+			String originalUrl = payGService.getPaymentUrl(respTxMdl);
+			String originalUrld = Base64.getEncoder().encodeToString(originalUrl.getBytes());
+
+			wrapper.setRedirectUrl("/api/redirect/" + originalUrld);
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
