@@ -30,18 +30,21 @@ import com.amx.jax.scope.Tenant;
  */
 @Component
 public class KnetClient implements PayGClient {
-	
+
 	private Logger log = Logger.getLogger(KnetClient.class);
 
 	@Value("${knet.certificate.path}")
 	String knetCertpath;
+
+	@Value("${knet.callback.url}")
+	String knetCallbackUrl;
 
 	@Autowired
 	HttpServletResponse response;
 
 	@Autowired
 	HttpServletRequest request;
-	
+
 	@Autowired
 	private PaymentService paymentService;
 
@@ -54,12 +57,11 @@ public class KnetClient implements PayGClient {
 	public void initialize(PayGParams payGParams) {
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
-	
+
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
-		configMap.put("responseUrl", "https://applications2.almullagroup.com/payg/app/capture/KNET/KWT/");
-		//configMap.put("responseUrl", "https://payg-dev.modernexchange.com/app/capture/KNET/KWT/");
+		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/KWT/");
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", "mulla");
 
@@ -82,7 +84,7 @@ public class KnetClient implements PayGClient {
 			pipe.setTrackId((String) payGParams.getTrackId());
 
 			pipe.setUdf3(payGParams.getDocNo());
-			
+
 			Short pipeValue = pipe.performPaymentInitialization();
 			System.out.println("pipeValue :" + pipeValue);
 
@@ -100,7 +102,7 @@ public class KnetClient implements PayGClient {
 
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
-			
+
 			String url = payURL + "?paymentId=" + payID;
 			payGParams.setRedirectUrl(url);
 
@@ -113,7 +115,7 @@ public class KnetClient implements PayGClient {
 
 	@Override
 	public String capture(Model model) {
-		
+
 		String paymentid = request.getParameter("paymentid");
 		String result = request.getParameter("result");
 		String auth = request.getParameter("auth");
@@ -127,10 +129,9 @@ public class KnetClient implements PayGClient {
 		String udf3 = request.getParameter("udf3");
 		String udf4 = request.getParameter("udf4");
 		String udf5 = request.getParameter("udf5");
-		
-		
+
 		HashMap<String, String> paramMap = new HashMap<String, String>();
-		
+
 		paramMap.put("paymentId", paymentid);
 		paramMap.put("result", result);
 		paramMap.put("auth_appNo", auth);
@@ -149,35 +150,34 @@ public class KnetClient implements PayGClient {
 		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
 
 		PaymentResponse res = paymentService.capturePayment(paramMap);
-		
-		
-		String doccode=null;
-		String docno=null;
-		String finyear=null;
-		
-		if (res.getData()!=null) {
-			PaymentResponseData data = (PaymentResponseData)res.getData();
+
+		String doccode = null;
+		String docno = null;
+		String finyear = null;
+
+		if (res.getData() != null) {
+			PaymentResponseData data = (PaymentResponseData) res.getData();
 			doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
 			docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
 			finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
 		}
-		
+
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/success?"
-			//redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/success?"		
+			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
-					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5,doccode,docno,finyear);
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
+					docno, finyear);
 		} else if ("CANCELED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/cancelled?"
-			//redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/cancelled?"
+			redirectUrl = String.format(knetCallbackUrl + "/callback/cancelled?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
-					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,docno,finyear);
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
+					docno, finyear);
 		} else {
-			redirectUrl = String.format("https://applications2.almullagroup.com/payg/callback/error?"
-			//redirectUrl = String.format("https://payg-dev.modernexchange.com/callback/error?"
+			redirectUrl = String.format(knetCallbackUrl + "/callback/error?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
-					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,docno,finyear);
+					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
+					docno, finyear);
 		}
 
 		model.addAttribute("REDIRECT", redirectUrl);

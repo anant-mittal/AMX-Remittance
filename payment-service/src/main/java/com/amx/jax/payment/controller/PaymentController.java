@@ -14,7 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,13 +22,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.payment.constant.PGEnum;
-import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.service.PaymentService;
 import com.amx.jax.payment.util.PaymentUtil;
 import com.amx.jax.scope.Tenant;
-import com.bootloaderjs.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.swagger.annotations.Api;
 
@@ -42,9 +38,6 @@ import io.swagger.annotations.Api;
 public class PaymentController {
 
 	private Logger log = Logger.getLogger(PaymentController.class);
-
-	@Autowired
-	private PayGClients payGClients;
 
 	@Autowired
 	private PaymentService paymentService;
