@@ -26,22 +26,31 @@ table {
 		</tr>
 		<tr>
 			<td>Result</td>
-			<td><div th:text="${result}"></div></td>
+			<td>"${param.result}"</td>
 		</tr>
 		<tr>
 			<td>Payment Id</td>
-			<td><label th:text="${PaymentID}" /></td>
-
+			<td>${#request.getParameter('PaymentID')}</td>
 		</tr>
-
 		<tr>
 			<td>Track Id</td>
-			<td>${trackid}</td>
-
+			<td>${#request.getParameter('trackid')}</td>
 		</tr>
 		<tr>
 			<td>Ref Id</td>
-			<td>${ref}</td>
+			<td>"${param.ref}"</td>
+		</tr>
+		<tr>
+			<td>Date</td>
+			<td>"${param.postdate}"</td>
+		</tr>
+				<tr>
+			<td>Auth No</td>
+			<td>"${param.auth}"</td>
+		</tr>
+		<tr>
+			<td>Transaction Id</td>
+			<td>"${param.tranid}"</td>
 
 		</tr>
 	</table>
