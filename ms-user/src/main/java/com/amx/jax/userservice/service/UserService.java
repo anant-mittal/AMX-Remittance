@@ -35,6 +35,7 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -50,6 +51,7 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -125,6 +127,9 @@ public class UserService extends AbstractUserService {
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
 
+	@Autowired
+	MetaData metaData;
+
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
 		UserModel kwUserModel = (UserModel) userModel;
@@ -157,7 +162,7 @@ public class UserService extends AbstractUserService {
 		model.setImageUrl(cust.getImageUrl());
 		model.setMobile(cust.getMobileNumber());
 		model.setCustomerId(cust.getCustomerId());
-		model.setIsActive("Y".equals(cust.getStatus()));
+		model.setIsActive(ConstantDocument.Yes.equals(cust.getStatus()));
 		List<SecurityQuestionModel> securityquestions = new ArrayList<>();
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion1(), cust.getSecurityAnswer1()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion2(), cust.getSecurityAnswer2()));
@@ -234,7 +239,7 @@ public class UserService extends AbstractUserService {
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
-		model.setIsActiveCustomer("Y".equals(onlineCust.getStatus()) ? true : false);
+		model.setIsActiveCustomer(ConstantDocument.Yes.equals(onlineCust.getStatus()) ? true : false);
 		return onlineCust;
 	}
 
@@ -512,6 +517,47 @@ public class UserService extends AbstractUserService {
 			logger.error("bene list display", e);
 		}
 		return dto;
+	}
+
+	/**
+	 * Unlocks the customer account
+	 */
+	public ApiResponse unlockCustomer() {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
+		}
+		this.unlockCustomer(onlineCustomer);
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+
+	}
+
+	/**
+	 * Deactivates the customer
+	 */
+	public ApiResponse deactivateCustomer() {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer != null) {
+			onlineCustomer.setStatus(ConstantDocument.No);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+
 	}
 
 }

@@ -30,7 +30,7 @@ public class CustomerController {
 	private UserService userSerivce;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody String json) {
 		logger.debug("saveCust Request:" + json);
@@ -79,6 +79,20 @@ public class CustomerController {
 	public ApiResponse updatePassword(@PathVariable("customer-id") Integer customerId, @RequestParam String password) {
 		logger.debug("updatePassword Request:  pssword: " + password);
 		ApiResponse response = userSerivce.updatePassword(customerId, password);
+		return response;
+	}
+
+	@RequestMapping(value = "/unlock/", method = RequestMethod.GET)
+	public ApiResponse unlockCustomer() {
+		logger.debug("in unlockCustomer Request ");
+		ApiResponse response = userSerivce.unlockCustomer();
+		return response;
+	}
+
+	@RequestMapping(value = "/deactivate/", method = RequestMethod.GET)
+	public ApiResponse deActivateCustomer() {
+		logger.debug("in deActivateCustomer Request ");
+		ApiResponse response = userSerivce.deactivateCustomer();
 		return response;
 	}
 }

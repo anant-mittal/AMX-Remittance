@@ -206,20 +206,40 @@ public class UserClient extends AbstractJaxServiceClient {
 		log.info("responce from  updatePassword api: " + util.marshall(response.getBody()));
 		return response.getBody();
 	}
-	
-	
-	public ApiResponse<CustomerDto> getMyProfileInfo(){
+
+	public ApiResponse<CustomerDto> getMyProfileInfo() {
 		ResponseEntity<ApiResponse<CustomerDto>> response = null;
-		
-			try {
-				log.info("Bene Clinet to get bene list Input String :");
-				String url = baseUrl.toString() + USER_API_ENDPOINT + "/myprofile-info/"; 
-				HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-				response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<CustomerDto>>(){});
-			} catch (Exception e) {
-				log.debug("Bene country list ", e);
-			}
-			return response.getBody();
+		try {
+			log.info("Bene Clinet to get bene list Input String :");
+			String url = baseUrl.toString() + USER_API_ENDPOINT + "/myprofile-info/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
+					});
+		} catch (Exception e) {
+			log.debug("Bene country list ", e);
 		}
+		return response.getBody();
+	}
+
+	public ApiResponse<BooleanResponse> unLockCustomer() {
+		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/unlock/";
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+				});
+		return response.getBody();
+	}
+
+	public ApiResponse<BooleanResponse> deActivateCustomer() {
+		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/deactivate/";
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+				});
+		return response.getBody();
+	}
 
 }

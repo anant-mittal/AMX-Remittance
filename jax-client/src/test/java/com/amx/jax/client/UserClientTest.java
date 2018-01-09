@@ -17,6 +17,7 @@ import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -30,7 +31,7 @@ public class UserClientTest {
 	@Autowired
 	UserClient client;
 	
-	@Test
+	//@Test
 	public void getMyProfileInfo() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -38,6 +39,19 @@ public class UserClientTest {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerDto> response = null;
 		response = client.getMyProfileInfo();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	
+	@Test
+	public void deactivate() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		ApiResponse<BooleanResponse> response = null;
+		response = client.deActivateCustomer();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

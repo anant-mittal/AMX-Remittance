@@ -49,9 +49,6 @@ public class UserValidationService {
 	private static final int WRONG_PASSWORD_ATTEMPTS_ALLOWED = 3;
 
 	@Autowired
-	private PatternValidator patternValidator;
-
-	@Autowired
 	private CustomerValidation custValidation;
 
 	@Autowired
@@ -84,10 +81,6 @@ public class UserValidationService {
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-		// boolean userNameValid = patternValidator.validateUserName(loginId);
-		// if (!userNameValid) {
-		// throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-		// }
 		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
 		if (existingCust != null) {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
@@ -219,10 +212,12 @@ public class UserValidationService {
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
-			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId().equals(ConstantDocument.CONTACT_TYPE_FOR_LOCAL)) {
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId()
+					.equals(ConstantDocument.CONTACT_TYPE_FOR_LOCAL)) {
 				islocal = true;
 			}
-			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId().equals(ConstantDocument.CONTACT_TYPE_FOR_HOME)) {
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId()
+					.equals(ConstantDocument.CONTACT_TYPE_FOR_HOME)) {
 				ishome = true;
 			}
 		}

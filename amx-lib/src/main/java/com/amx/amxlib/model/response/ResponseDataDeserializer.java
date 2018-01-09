@@ -174,7 +174,6 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "customer-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerDto>>(){});
 			break;
-			
 	}
 		
 		

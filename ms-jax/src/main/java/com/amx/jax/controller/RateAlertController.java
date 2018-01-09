@@ -3,32 +3,18 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.RATE_ALERT_ENDPOINT;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.RateAlertService;
-import com.amx.jax.services.RemittanceTransactionService;
-import com.amx.jax.services.ReportManagerService;
-import com.amx.jax.services.TransactionHistroyService;
-import com.amx.jax.util.ConverterUtil;
 
 @RestController
 @RequestMapping(RATE_ALERT_ENDPOINT)

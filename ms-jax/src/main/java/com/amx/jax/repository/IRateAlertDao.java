@@ -9,7 +9,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.RateAlert;
-import com.amx.jax.dbmodel.SwiftMasterView;
 
 public interface IRateAlertDao extends JpaRepository<RateAlert, Serializable> {
 

@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
-import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 
 @Transactional
