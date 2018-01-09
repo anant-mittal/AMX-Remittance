@@ -105,5 +105,4 @@ public class UserController {
 	public ResponseWrapper<CustomerDto> profile() {
 		return userService.getProfileDetails();
 	}
-
 }

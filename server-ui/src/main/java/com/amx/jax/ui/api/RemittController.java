@@ -229,8 +229,8 @@ public class RemittController {
 					.saveTransaction(transactionRequestModel).getResult();
 
 			wrapper.setData(respTxMdl);
-			wrapper.setRedirectUrl(
-					payGService.getPaymentUrl(respTxMdl, request.getServerName() + "/app/landing/remittance"));
+			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
+					"https://" + request.getServerName() + "/app/landing/remittance"));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);

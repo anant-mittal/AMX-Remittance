@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +52,32 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site,
-			HttpSession httpSession) {
+			HttpSession httpSession, HttpServletRequest request) {
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
 
 		Integer hits = guestSession.hitCounter();
 
+		String remoteAddr = "";
+
+		if (request != null) {
+			remoteAddr = request.getHeader("X-FORWARDED-FOR");
+			if (remoteAddr == null || "".equals(remoteAddr)) {
+				remoteAddr = request.getRemoteAddr();
+			}
+		}
+
 		wrapper.getData().put("debug", env.isDebug());
 		wrapper.getData().put("id", httpSession.getId());
 		wrapper.getData().put("hits-s", hits);
+		wrapper.getData().put("domain", request.getRequestURL().toString());
+		wrapper.getData().put("getServerName", request.getServerName());
+		wrapper.getData().put("getRequestURI", request.getRequestURI());
+		wrapper.getData().put("getRemoteHost", request.getRemoteHost());
+		wrapper.getData().put("getLocalAddr", request.getLocalAddr());
+		wrapper.getData().put("getRemoteAddr", request.getRemoteAddr());
+		wrapper.getData().put("scheme", request.getScheme());
+		wrapper.getData().put("remoteAddr", remoteAddr);
 
 		/*
 		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
