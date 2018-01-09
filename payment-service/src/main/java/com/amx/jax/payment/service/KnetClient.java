@@ -147,19 +147,19 @@ public class KnetClient implements PayGClient {
 
 		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
 
-		PaymentResponse res = paymentService.capturePayment(paramMap);
+		//PaymentResponse res = paymentService.capturePayment(paramMap);
 		
 		
 		String doccode=null;
 		String docno=null;
 		String finyear=null;
 		
-		if (res.getData()!=null) {
-			PaymentResponseData data = (PaymentResponseData)res.getData();
-			doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
-			docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
-			finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
-		}
+//		if (res.getData()!=null) {
+//			PaymentResponseData data = (PaymentResponseData)res.getData();
+//			doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
+//			docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
+//			finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
+//		}
 		
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
