@@ -243,7 +243,7 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
+	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })
 	public ResponseWrapper<List<PurposeOfTransactionModel>> appStatus(@RequestParam BigDecimal beneId) {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
 		// wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResults());
