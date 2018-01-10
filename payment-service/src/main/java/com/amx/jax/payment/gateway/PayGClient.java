@@ -2,33 +2,16 @@ package com.amx.jax.payment.gateway;
 
 import org.springframework.ui.Model;
 
+import com.amx.jax.payment.PayGServiceCode;
+
 public interface PayGClient {
-
-	enum ServiceCode {
-		KNET("knet"), BAHKNET("bahknet"), OMANNET("OmanNet"),
-
-		/**
-		 * DOnt use this one.
-		 */
-		DEFAULT("default");
-
-		private String pgEnum;
-
-		ServiceCode(String pgEnum) {
-			this.pgEnum = pgEnum;
-		}
-
-		public String getPgEnum() {
-			return this.pgEnum;
-		}
-	}
 
 	/**
 	 * This should return the Client Code identifier
 	 * 
 	 * @return
 	 */
-	public ServiceCode getClientCode();
+	public PayGServiceCode getClientCode();
 
 	/**
 	 * To initiate PaymentGateway Client for payment, this method is called before

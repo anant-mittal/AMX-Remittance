@@ -20,11 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
-import com.amx.jax.payment.gateway.PayGClient.ServiceCode;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGParams;
-import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.scope.Tenant;
 
@@ -49,8 +48,8 @@ public class PayGController {
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo,
-			@RequestParam String callbackd) {
+			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam String callbackd,
+			@RequestParam Tenant tnt) {
 
 		// public String pay(@RequestParam(required = false) String name,
 		// @RequestParam String amount,
@@ -62,9 +61,6 @@ public class PayGController {
 		byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 		String callback = new String(decodedBytes);
 		payGSession.setCallback(callback);
-
-		Tenant tnt = Tenant.KWT;
-		pg = "KNET";
 
 		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode() + ", pg-"
 				+ pg);
@@ -103,7 +99,7 @@ public class PayGController {
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
 	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") ServiceCode paygCode) {
+			@PathVariable("paygCode") PayGServiceCode paygCode) {
 		PayGClient payGClient = payGClients.getPayGClient(paygCode, tnt);
 		return payGClient.capture(model);
 	}

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
+import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.controller.PayGController;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -49,8 +50,8 @@ public class KnetClient implements PayGClient {
 	private PaymentService paymentService;
 
 	@Override
-	public ServiceCode getClientCode() {
-		return ServiceCode.KNET;
+	public PayGServiceCode getClientCode() {
+		return PayGServiceCode.KNET;
 	}
 
 	@Override

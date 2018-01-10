@@ -33,8 +33,10 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.scope.Tenant;
 import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.beans.UserBean;
 import com.amx.jax.ui.model.XRateData;
@@ -230,13 +232,21 @@ public class RemittController {
 
 			wrapper.setData(respTxMdl);
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
-					"https://" + request.getServerName() + "/app/landing/remittance"));
+					"https://" + request.getServerName() + "/app/landing/remittance", Tenant.KWT,
+					PayGServiceCode.KNET));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
 		} catch (MalformedURLException | URISyntaxException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<PurposeOfTransactionModel>> appStatus(@RequestParam BigDecimal beneId) {
+		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
+		// wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResults());
 		return wrapper;
 	}
 }

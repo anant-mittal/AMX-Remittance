@@ -7,7 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.payment.gateway.PayGClient.ServiceCode;
+import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.scope.Tenant;
 
 /**
@@ -27,11 +27,11 @@ public class PayGClients {
 		}
 	}
 
-	public void register(ServiceCode serviceCode, PayGClient service) {
+	public void register(PayGServiceCode serviceCode, PayGClient service) {
 		this.servicesByCode.put(serviceCode.toString().toLowerCase(), service);
 	}
 
-	public PayGClient getPayGClient(ServiceCode service, Tenant tenant) {
+	public PayGClient getPayGClient(PayGServiceCode service, Tenant tenant) {
 		return this.servicesByCode.get(service.toString().toLowerCase());
 	}
 
