@@ -48,8 +48,8 @@ public class PayGController {
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
 			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam String callbackd,
-			@RequestParam Tenant tnt) {
+			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam String callbackd, @RequestParam Tenant tnt) {
 
 		// public String pay(@RequestParam(required = false) String name,
 		// @RequestParam String amount,
