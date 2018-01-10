@@ -39,7 +39,7 @@ public class OnlineConfiguration {
 	public void setOnlineConfigId(BigDecimal onlineConfigId) {
 		this.onlineConfigId = onlineConfigId;
 	}
-	@Column(name="COUNTRY_ID")
+	@Column(name="APPLICATION_COUNTRY_ID")
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
