@@ -27,6 +27,7 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
@@ -177,6 +178,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "pg_remit_response":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PaymentResponseDto>>(){});
+			break;
+		case "online-config":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<OnlineConfigurationDto>>(){});
 			break;
 	}
 		
