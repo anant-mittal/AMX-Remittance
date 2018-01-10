@@ -29,10 +29,12 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
@@ -244,9 +246,10 @@ public class RemittController {
 	}
 
 	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })
-	public ResponseWrapper<List<PurposeOfTransactionModel>> appStatus(@RequestParam BigDecimal beneId) {
-		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
-		// wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResults());
+	public ResponseWrapper<RemittanceTransactionStatusResponseModel> appStatus(
+			@RequestBody RemittanceTransactionStatusRequestModel request) {
+		ResponseWrapper<RemittanceTransactionStatusResponseModel> wrapper = new ResponseWrapper<RemittanceTransactionStatusResponseModel>();
+		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResult());
 		return wrapper;
 	}
 }
