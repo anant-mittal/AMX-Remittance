@@ -28,6 +28,7 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -532,7 +533,22 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
-	
+	public ApiResponse<OnlineConfigurationDto> getOnlineConfig(String ind) {
+		ResponseEntity<ApiResponse<OnlineConfigurationDto>> response = null;
+		try {
+
+			log.info("In getOnlineConfig :");
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/onlineconfig/" + ind;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
+					});
+		} catch (Exception e) {
+			log.debug("exception in getOnlineConfig ", e);
+
+		}
+		return response.getBody();
+	}
 	
 
 }

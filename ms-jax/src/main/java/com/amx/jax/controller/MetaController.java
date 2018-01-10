@@ -383,6 +383,11 @@ public class MetaController implements Serializable{
 		return response;
 	}
 	
+	@RequestMapping(value = "/onlineconfig/{applInd}/", method = RequestMethod.GET)
+	public ApiResponse getOnlineConfig(@PathVariable("applInd") String applInd){
+		ApiResponse response = metaService.getOnlineConfig(applInd);
+		return response;
+	}
 	
 	
 }
