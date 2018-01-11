@@ -14,8 +14,16 @@
 		<p th:case="*">Your payment is unsuccessful !!!</p>
 	</div>
 	<br />
+	<center>
+		Redirecting to <a th:href="${callback}"> <span
+			th:text="${callback}">Redirecting...</span>
+		</a>
+	</center>
 	<script>
-		window.location = '<div th:text="${callback}" th:remove="tag">Redirecting</div>';
+		var uRL = '<div th:text="${callback}" th:remove="tag">Redirecting</div>';
+		if (uRL) {
+			window.location = uRL;
+		}
 	</script>
 </body>
 </html>
