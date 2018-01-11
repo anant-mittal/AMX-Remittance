@@ -1,8 +1,9 @@
 package com.amx.jax.scope;
 
+import java.math.BigDecimal;
+
 public enum Tenant {
 
-	DEFAULT("default", "0"),
 	/** Kuwait */
 	KWT("kw", "91"),
 
@@ -14,6 +15,8 @@ public enum Tenant {
 
 	/** India */
 	IND("in", "94");
+
+	public static final Tenant DEFAULT = KWT;
 
 	private String id;
 	private String code;
@@ -30,4 +33,9 @@ public enum Tenant {
 	public String getCode() {
 		return code;
 	}
+
+	public BigDecimal getBDCode() {
+		return new BigDecimal(code);
+	}
+
 }

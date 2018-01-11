@@ -20,9 +20,4 @@ public class PayGService extends AbstractPayGService {
 		return paymentUrl;
 	}
 
-	@Override
-	public String getCountryId() {
-		return jaxService.DEFAULT_COUNTRY_ID;
-	}
-
 }

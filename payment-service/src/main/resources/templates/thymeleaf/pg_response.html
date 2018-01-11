@@ -4,7 +4,6 @@
 <!-- Static content -->
 
 <title>PayG Service</title>
-
 </head>
 <body>
 
@@ -22,6 +21,7 @@
 	<script>
 		var uRL = '<div th:text="${callback}" th:remove="tag">Redirecting</div>';
 		if (uRL) {
+			console.log("uRL=",uRL);
 			window.location = uRL;
 		}
 	</script>

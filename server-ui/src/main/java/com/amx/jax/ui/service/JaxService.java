@@ -2,7 +2,6 @@ package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,16 +13,12 @@ import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
+import com.amx.jax.dict.Language;
+import com.amx.jax.scope.Tenant;
 import com.bootloaderjs.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
-
-	private Logger log = Logger.getLogger(JaxService.class);
-
-	public static final String DEFAULT_LANGUAGE_ID = "1";
-
-	public static final String DEFAULT_COUNTRY_ID = "91";
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 
@@ -109,11 +104,11 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public JaxService setDefaults() {
 
-		jaxMetaInfo.setCountryId(new BigDecimal(JaxService.DEFAULT_COUNTRY_ID));
-		jaxMetaInfo.setLanguageId(new BigDecimal(JaxService.DEFAULT_LANGUAGE_ID));
+		jaxMetaInfo.setCountryId(Tenant.DEFAULT.getBDCode());
+		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
-		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
+		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
