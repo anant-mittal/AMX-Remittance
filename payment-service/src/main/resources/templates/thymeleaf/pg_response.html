@@ -19,7 +19,7 @@
 		</a>
 	</center>
 	<script>
-		var uRL = '<div th:text="${callback}" th:remove="tag">Redirecting</div>';
+		var uRL = '<div th:utext="${callback}" th:remove="tag">Redirecting</div>';
 		if (uRL) {
 			console.log("uRL=",uRL);
 			window.location = uRL;
