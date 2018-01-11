@@ -2,6 +2,7 @@ package com.amx.jax.ui.service;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,8 +11,13 @@ import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Templates;
+import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -21,6 +27,8 @@ import com.amx.jax.ui.session.UserSession;
 
 @Service
 public class RegistrationService {
+
+	private Logger LOG = Logger.getLogger(UserService.class);
 
 	@Autowired
 	private UserSession userSessionInfo;
@@ -33,6 +41,9 @@ public class RegistrationService {
 
 	@Autowired
 	private UserService userService;
+
+	@Autowired
+	private PostManService postManService;
 
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
 
@@ -137,6 +148,25 @@ public class RegistrationService {
 		try {
 			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+
+			String emailId = userSessionInfo.getCustomerModel().getEmail();
+
+			if (emailId != null && !Constants.EMPTY.equals(emailId)) {
+				PersonInfo personInfo = userSessionInfo.getCustomerModel().getPersoninfo();
+				Email email = new Email();
+				email.setSubject(Constants.REG_SUC);
+				email.addTo(emailId);
+				email.setTemplate(Templates.RESET_OTP);
+				email.setHtml(true);
+				email.getModel().put(Constants.RESP_DATA_KEY, personInfo);
+
+				try {
+					postManService.sendEmail(email);
+				} catch (Exception e) {
+					LOG.error("Error while sending OTP Email to" + emailId, e);
+				}
+			}
+
 		} catch (AlreadyExistsException e) {
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}

@@ -67,7 +67,6 @@ public class UserService {
 
 		Email email = new Email();
 		email.setSubject("Verify Your Account");
-		email.setFrom("amxjax@gmail.com");
 		if (model.getEmail() != null && !Constants.EMPTY.equals(model.getEmail())) {
 			email.addTo(model.getEmail());
 		} else {
@@ -75,7 +74,7 @@ public class UserService {
 		}
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
-		email.getModel().put("data", model);
+		email.getModel().put(Constants.RESP_DATA_KEY, model);
 
 		try {
 			postManService.sendEmail(email);

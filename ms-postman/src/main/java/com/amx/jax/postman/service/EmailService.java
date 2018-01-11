@@ -9,12 +9,14 @@ import javax.mail.internet.MimeMessage;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.Email;
+import com.bootloaderjs.Constants;
 import com.bootloaderjs.Utils;
 
 @Component
@@ -27,6 +29,9 @@ public class EmailService {
 
 	@Autowired
 	private JavaMailSender mailSender;
+
+	@Value("${spring.mail.from}")
+	private String defaultSender;
 
 	public Email send(Email eParams) {
 
@@ -50,7 +55,13 @@ public class EmailService {
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		helper.setReplyTo(eParams.getFrom());
-		helper.setFrom(eParams.getFrom());
+
+		if (eParams.getFrom() != null && !Constants.defaultString.equals(eParams.getFrom())) {
+			helper.setFrom(eParams.getFrom());
+		} else {
+			helper.setFrom(defaultSender);
+		}
+
 		helper.setSubject(eParams.getSubject());
 		helper.setText(eParams.getMessage(), isHtml);
 
