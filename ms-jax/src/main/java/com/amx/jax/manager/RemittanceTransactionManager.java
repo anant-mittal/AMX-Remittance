@@ -448,6 +448,9 @@ public class RemittanceTransactionManager {
 				request.getDocumentFinancialYear());
 		if (remittanceTransactionView != null) {
 			model.setCollectionDocumentNumber(remittanceTransactionView.getCollectionDocumentNo());
+			model.setDocumentFinanceYear(remittanceTransactionView.getDocumentFinancialYear());
+			model.setCollectionDocumentCode(remittanceTransactionView.getCollectionDocCode());
+			model.setCustomerReference(remittanceTransactionView.getCustomerReference());
 			model.setAmountDeducted(remittanceTransactionView.getLocalNetTransactionAmount());
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(remittanceApplication,

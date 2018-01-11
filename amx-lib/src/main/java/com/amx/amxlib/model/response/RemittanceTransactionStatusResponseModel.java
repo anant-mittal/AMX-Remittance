@@ -15,6 +15,9 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	JaxTransactionStatus status;
 	BigDecimal collectionDocumentNumber;
 	BigDecimal amountDeducted;
+	private BigDecimal documentFinanceYear;
+	private BigDecimal collectionDocumentCode;
+	private BigDecimal customerReference;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -43,6 +46,30 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "remittance-transaction-status-model";
+	}
+
+	public BigDecimal getDocumentFinanceYear() {
+		return documentFinanceYear;
+	}
+
+	public void setDocumentFinanceYear(BigDecimal documentFinanceYear) {
+		this.documentFinanceYear = documentFinanceYear;
+	}
+
+	public BigDecimal getCollectionDocumentCode() {
+		return collectionDocumentCode;
+	}
+
+	public void setCollectionDocumentCode(BigDecimal collectionDocumentCode) {
+		this.collectionDocumentCode = collectionDocumentCode;
+	}
+
+	public BigDecimal getCustomerReference() {
+		return customerReference;
+	}
+
+	public void setCustomerReference(BigDecimal customerReference) {
+		this.customerReference = customerReference;
 	}
 
 }
