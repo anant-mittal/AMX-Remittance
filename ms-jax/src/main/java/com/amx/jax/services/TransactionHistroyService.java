@@ -23,67 +23,66 @@ import com.amx.jax.repository.ITransactionHistroyDAO;
 @SuppressWarnings("rawtypes")
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TransactionHistroyService extends AbstractService {
-	
-	
-	
+
 	@Autowired
 	ITransactionHistroyDAO transactionHistroyDao;
-	
-	
-	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference,BigDecimal docfyr){ 
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference); 
+
+	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
+				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
-		if(trnxHisList.isEmpty()) {
+		if (trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found");
-		}else {
-		response.getData().getValues().addAll(convert(trnxHisList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convert(trnxHisList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
-		
+
 		response.getData().setType("trnxHist");
 		return response;
 	}
 
-	
-	public ApiResponse getTransactionHistroyByDocumentNumber(BigDecimal cutomerReference,BigDecimal docfyr, BigDecimal docNumber){ //, String fromDate,String  toDate
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); //, fromDate, toDate
-		ApiResponse response = getBlackApiResponse();
-		if(trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found");
-		}else {
-		response.getData().getValues().addAll(convert(trnxHisList));
-		response.setResponseStatus(ResponseStatus.OK);
-		}
-		
-		response.getData().setType("trnxHist");
-		return response;
-	}
-	
-	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal docfyr,
-			BigDecimal docNumber) {
+	public ApiResponse getTransactionHistroyByDocumentNumber(BigDecimal cutomerReference, BigDecimal docfyr,
+			BigDecimal docNumber) { // , String fromDate,String toDate
 		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
 				.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); // , fromDate, toDate
-		return convert(trnxHisList).get(0);
-	}
-	
-	
-	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference,BigDecimal docfyr,String fromDate,String  toDate) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, docfyr,fromDate, toDate);
 		ApiResponse response = getBlackApiResponse();
-		if(trnxHisList.isEmpty()) {
+		if (trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found");
-		}else {
-		response.getData().getValues().addAll(convert(trnxHisList));
-		response.setResponseStatus(ResponseStatus.OK);
+		} else {
+			response.getData().getValues().addAll(convert(trnxHisList));
+			response.setResponseStatus(ResponseStatus.OK);
 		}
-		
+
 		response.getData().setType("trnxHist");
 		return response;
 	}
-	
 
-	
-	
+	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal remittanceDocfyr,
+			BigDecimal remittancedocNumber) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
+				.getTransactionHistroyByDocumnet(cutomerReference, remittanceDocfyr, remittancedocNumber); // ,
+																											// fromDate,
+																											// toDate
+		return convert(trnxHisList).get(0);
+	}
+
+	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference, BigDecimal docfyr, String fromDate,
+			String toDate) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
+				.getTransactionHistroyDateWise(cutomerReference, docfyr, fromDate, toDate);
+		ApiResponse response = getBlackApiResponse();
+		if (trnxHisList.isEmpty()) {
+			throw new GlobalException("Transaction histroy not found");
+		} else {
+			response.getData().getValues().addAll(convert(trnxHisList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+
+		response.getData().setType("trnxHist");
+		return response;
+	}
+
 	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist) {
 		List<TransactionHistroyDTO> list = new ArrayList<>();
 		for (CustomerRemittanceTransactionView hist : trnxHist) {
@@ -92,19 +91,19 @@ public class TransactionHistroyService extends AbstractService {
 			model.setForeignTransactionAmount(hist.getForeignTransactionAmount());
 			model.setTransactionStatusDesc(hist.getTransactionStatusDesc());
 			model.setTransactionTypeDesc(hist.getTransactionTypeDesc());
-			
+
 			model.setBeneficaryBankName(hist.getBeneficaryBankName());
 			model.setBeneficaryBranchName(hist.getBeneficaryBranchName());
 			model.setBeneficaryCorespondingBankName(hist.getBeneficaryCorespondingBankName());
 			model.setBeneficaryName(hist.getBeneficaryName());
-			
+
 			model.setCollectionDocumentCode(hist.getCollectionDocumentCode());
 			model.setCollectionDocumentFinYear(hist.getCollectionDocumentFinYear());
 			model.setCollectionDocumentNo(hist.getCollectionDocumentNo());
 			model.setCurrencyQuoteName(hist.getCurrencyQuoteName());
 			model.setCustomerReference(hist.getCustomerReference());
 			model.setForeignCurrencyCode(hist.getForeignCurrencyCode());
-			
+
 			model.setDocumentDate(hist.getDocumentDate());
 			model.setDocumentFinanceYear(hist.getDocumentFinanceYear());
 			model.setDocumentNumber(hist.getDocumentNumber());
@@ -112,24 +111,23 @@ public class TransactionHistroyService extends AbstractService {
 			model.setServiceDescription(hist.getServiceDescription());
 			model.setForeignTransactionAmount(hist.getForeignTransactionAmount());
 			model.setIdno(hist.getIdno());
-			model.setTrnxIdNumber(hist.getDocumentFinanceYear()+"/"+hist.getDocumentNumber());
+			model.setTrnxIdNumber(hist.getDocumentFinanceYear() + "/" + hist.getDocumentNumber());
 			model.setCustomerId(hist.getCustomerId());
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
-			if(!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) && !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU))
-			{
+			if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName())
+					&& !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU)) {
 				list.add(model);
 			}
-			
-			if(hist.getTransactionStatusDesc()!=null && !hist.getTransactionStatusDesc().equalsIgnoreCase("CANCELLED")) {
+
+			if (hist.getTransactionStatusDesc() != null
+					&& !hist.getTransactionStatusDesc().equalsIgnoreCase("CANCELLED")) {
 				list.add(model);
 			}
 		}
 		return list;
 	}
-	
-	
 
 	@Override
 	public String getModelType() {

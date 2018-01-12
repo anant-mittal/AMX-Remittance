@@ -445,20 +445,19 @@ public class RemittanceTransactionManager {
 				request.getDocumentFinancialYear());
 		if (remittanceTransaction != null) {
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
-			BigDecimal docfyr = remittanceTransaction.getCollectionDocumentFinancialyear();
-			BigDecimal docNumber = remittanceTransaction.getCollectionDocumentNo();
+			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
+			BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
-					.getTransactionHistoryDto(cutomerReference, docfyr, docNumber);
+					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
 			model.setNetAmount(application.getLocalNetTranxAmount());
 		}
-		JaxTransactionStatus status = getJaxTransactionStatus(application, model.getCollectionDocumentNumber());
+		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
 		return model;
 	}
 
-	private JaxTransactionStatus getJaxTransactionStatus(RemittanceApplication remittanceApplication,
-			BigDecimal collectionNo) {
+	private JaxTransactionStatus getJaxTransactionStatus(RemittanceApplication remittanceApplication) {
 		JaxTransactionStatus status = JaxTransactionStatus.APPLICATION_CREATED;
 		String applicationStatus = remittanceApplication.getApplicaitonStatus();
 		if (StringUtils.isBlank(applicationStatus) && remittanceApplication.getPaymentId() != null) {

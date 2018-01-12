@@ -25,8 +25,8 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerId  and th.documentFinanceYear=:docfyr and th.documentNumber=:docNumber  ")
 	public List<CustomerRemittanceTransactionView> getTransactionHistroyByDocumnet(
-			@Param("customerId") BigDecimal customerId, @Param("docfyr") BigDecimal docfyr,
-			@Param("docNumber") BigDecimal docNumber);
+			@Param("customerId") BigDecimal customerId, @Param("docfyr") BigDecimal remittancedocfyr,
+			@Param("docNumber") BigDecimal remittancedocNumber);
 
 	@Query(value = " select * from JAX_VW_EX_TRANSACTION_INQUIRY where CUSTOMER_ID=?1 and DOCUMENT_FINANCE_YEAR=?2 "
 			+ "and DOCUMENT_DATE between to_date(?3,'dd/mm/yyyy') and to_date(?4,'dd/mm/yyyy') ", nativeQuery = true)

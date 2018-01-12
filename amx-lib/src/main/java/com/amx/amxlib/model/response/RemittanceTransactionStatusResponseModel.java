@@ -14,7 +14,6 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	private static final long serialVersionUID = 1L;
 
 	JaxTransactionStatus status;
-	BigDecimal collectionDocumentNumber;
 	BigDecimal netAmount;
 	TransactionHistroyDTO transactionHistroyDTO;
 
@@ -24,14 +23,6 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 
 	public void setStatus(JaxTransactionStatus status) {
 		this.status = status;
-	}
-
-	public BigDecimal getCollectionDocumentNumber() {
-		return collectionDocumentNumber;
-	}
-
-	public void setCollectionDocumentNumber(BigDecimal collectionDocumentNumber) {
-		this.collectionDocumentNumber = collectionDocumentNumber;
 	}
 
 	@Override
