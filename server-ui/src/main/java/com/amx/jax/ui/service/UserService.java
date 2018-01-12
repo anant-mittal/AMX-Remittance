@@ -13,7 +13,7 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
-import com.amx.jax.ui.beans.UserBean;
+import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 

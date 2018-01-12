@@ -38,13 +38,13 @@ import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.Tenant;
-import com.amx.jax.ui.beans.TenantBean;
-import com.amx.jax.ui.beans.UserBean;
+import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
+import com.amx.jax.ui.service.TenantContext;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -62,7 +62,7 @@ public class RemittController {
 	private JaxService jaxService;
 
 	@Autowired
-	private TenantBean tenantBean;
+	private TenantContext tenantContext;
 
 	@Autowired
 	private UserBean userBean;
@@ -96,11 +96,7 @@ public class RemittController {
 
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
-	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
-			@RequestParam(required = false) BigDecimal collectionDocumentNo,
-			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
-			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
+	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO, Boolean skipd)
 			throws IOException, UnirestException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
@@ -146,7 +142,7 @@ public class RemittController {
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
-		CurrencyMasterDTO domCur = tenantBean.getDomCurrency();
+		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
 		CurrencyMasterDTO forCurcy = null;
 
 		wrapper.getData().setDomCur(domCur);
@@ -154,7 +150,7 @@ public class RemittController {
 		if (forCur == null) {
 			forCurcy = userBean.getDefaultForCurrency();
 		} else {
-			for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
 				if (currency.getCurrencyId().equals(forCur)) {
 					forCurcy = currency;
 					break;
@@ -190,13 +186,13 @@ public class RemittController {
 
 		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
 
-		for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
+		for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
 			if (currency.getCurrencyId().equals(forCurId)) {
 				remittancePageDto.setForCur(currency);
 				break;
 			}
 		}
-		remittancePageDto.setDomCur(tenantBean.getDomCurrency());
+		remittancePageDto.setDomCur(tenantContext.getDomCurrency());
 
 		wrapper.setData(remittancePageDto);
 		return wrapper;

@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
+import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
 
 import io.swagger.annotations.Api;
@@ -37,7 +37,7 @@ public class MetaController {
 	AppEnvironment env;
 
 	@Autowired
-	TenantBean tenantBean;
+	TenantContext tenantContext;
 
 	@Autowired
 	GuestSession guestSession;
@@ -92,7 +92,7 @@ public class MetaController {
 
 	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantBean.getOnlineCurrencies());
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
 	@RequestMapping(value = "/api/meta/income_sources", method = { RequestMethod.POST })

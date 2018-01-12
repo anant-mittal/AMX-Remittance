@@ -1,4 +1,4 @@
-package com.amx.jax.ui.beans;
+package com.amx.jax.ui.service;
 
 import java.util.List;
 
@@ -6,16 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.jax.scope.Tenant;
-import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.scope.AbstractTenantContext;
 import com.amx.jax.scope.TenantScoped;
-import com.amx.jax.ui.service.JaxService;
 
 import groovy.transform.Synchronized;
 
 @Component
 @TenantScoped
-public class TenantBean {
+public class TenantContext extends AbstractTenantContext {
 
 	@Autowired
 	private JaxService jaxService;
@@ -23,10 +21,6 @@ public class TenantBean {
 	CurrencyMasterDTO domCurrency = null;
 
 	List<CurrencyMasterDTO> onlineCurrencies = null;
-
-	public Tenant getTenant() {
-		return TenantContextHolder.currentSite();
-	}
 
 	@Synchronized
 	public void loadDomCurrency() {

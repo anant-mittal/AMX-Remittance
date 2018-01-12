@@ -14,7 +14,7 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.dict.Language;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 import com.bootloaderjs.ContextUtil;
 
 @Component
@@ -103,8 +103,8 @@ public class JaxService extends AbstractJaxServiceClient {
 	}
 
 	public JaxService setDefaults() {
-
-		jaxMetaInfo.setCountryId(Tenant.DEFAULT.getBDCode());
+		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
+		
 		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));

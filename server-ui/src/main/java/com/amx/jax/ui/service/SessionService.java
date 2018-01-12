@@ -22,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.ui.beans.TenantBean;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserSession;
@@ -47,10 +46,10 @@ public class SessionService {
 	private UserSession userSession;
 
 	@Autowired
-	private TenantBean tenantBean;
+	private TenantContext tenantContext;
 
-	public TenantBean getTenantBean() {
-		return tenantBean;
+	public TenantContext getTenantContext() {
+		return tenantContext;
 	}
 
 	@Autowired

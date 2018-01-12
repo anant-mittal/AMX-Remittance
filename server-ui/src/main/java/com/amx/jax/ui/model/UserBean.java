@@ -1,4 +1,4 @@
-package com.amx.jax.ui.beans;
+package com.amx.jax.ui.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.UserSession;
 
 import groovy.transform.Synchronized;
@@ -26,7 +27,7 @@ public class UserBean implements Serializable {
 	private UserSession userSession;
 
 	@Autowired
-	private TenantBean tenantBean;
+	private TenantContext tenantContext;
 
 	CurrencyMasterDTO defaultForCurrency;
 
@@ -41,9 +42,9 @@ public class UserBean implements Serializable {
 	public void loadDefaultForCurrency() {
 		BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
 		if (nationalityId == null) {
-			defaultForCurrency = tenantBean.getOnlineCurrencies().get(0);
+			defaultForCurrency = tenantContext.getOnlineCurrencies().get(0);
 		} else {
-			for (CurrencyMasterDTO currency : tenantBean.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
 				if (nationalityId.equals(currency.getCountryId())) {
 					defaultForCurrency = currency;
 					break;
