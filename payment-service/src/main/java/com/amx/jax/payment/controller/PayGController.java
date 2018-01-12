@@ -46,23 +46,19 @@ public class PayGController {
 	private PayGSession payGSession;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
-			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo, @RequestParam String docFy,
-			@RequestParam String callbackd, @RequestParam Tenant tnt) {
-
-		// public String pay(@RequestParam(required = false) String name,
-		// @RequestParam String amount,
-		// @RequestParam String trckid,
-		// @RequestParam String pg,
-		// @RequestParam String docNo,
-		// @RequestParam Tenant tnt) {
+	public String handleUrlPaymentRemit(@RequestParam String amount, 
+										@RequestParam String trckid, 
+										@RequestParam String pg,
+										@RequestParam String docNo, 
+										@RequestParam String docFy,
+										@RequestParam String callbackd, 
+										@RequestParam Tenant tnt) {
 
 		byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 		String callback = new String(decodedBytes);
 		payGSession.setCallback(callback);
 
-		log.info("Inside pay method with   name-" + name + ", amount-" + amount + ", country-" + tnt.getCode() + ", pg-"
+		log.info("Inside pay method with  amount-" + amount + ", country-" + tnt.getCode() + ", pg-"
 				+ pg);
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
@@ -82,10 +78,10 @@ public class PayGController {
 		}
 
 		PayGParams payGParams = new PayGParams();
-		payGParams.setName(name);
 		payGParams.setAmount(amount);
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
+		payGParams.setTenant(tnt);
 
 		payGClient.initialize(payGParams);
 

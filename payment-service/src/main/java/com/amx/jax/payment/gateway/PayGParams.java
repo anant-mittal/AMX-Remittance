@@ -1,11 +1,14 @@
 package com.amx.jax.payment.gateway;
 
+import com.amx.jax.scope.Tenant;
+
 public class PayGParams {
 	String amount = null;
 	String trackId = null;
 	String docNo = null;
 	String name = null;
 	String redirectUrl = null;
+	Tenant tenant = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;
@@ -46,5 +49,21 @@ public class PayGParams {
 	public void setDocNo(String docNo) {
 		this.docNo = docNo;
 	}
+
+	/**
+	 * @return the tenant
+	 */
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	/**
+	 * @param tenant the tenant to set
+	 */
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
+	}
+
+
 
 }
