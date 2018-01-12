@@ -58,8 +58,10 @@ public class EmailService {
 
 		if (eParams.getFrom() != null && !Constants.defaultString.equals(eParams.getFrom())) {
 			helper.setFrom(eParams.getFrom());
+			helper.setReplyTo(eParams.getFrom());
 		} else {
 			helper.setFrom(defaultSender);
+			helper.setReplyTo(defaultSender);
 		}
 
 		helper.setSubject(eParams.getSubject());
