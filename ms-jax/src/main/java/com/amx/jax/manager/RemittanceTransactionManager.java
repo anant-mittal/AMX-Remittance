@@ -441,7 +441,7 @@ public class RemittanceTransactionManager {
 		if (remittanceTransactionView != null) {
 			BigDecimal cutomerReference = remittanceTransactionView.getCustomerReference();
 			BigDecimal docfyr = remittanceTransactionView.getDocumentFinancialYear();
-			BigDecimal docNumber = remittanceTransactionView.getApplicationDocumentNo();
+			BigDecimal docNumber = remittanceTransactionView.getCollectionDocumentNo();
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
 					.getTransactionHistoryDto(cutomerReference, docfyr, docNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);

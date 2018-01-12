@@ -367,7 +367,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal stateId,BigDecimal districtId) {
+	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal stateId, BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
@@ -484,8 +484,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		}
 		return response.getBody();
 	}
-	
-	
+
 	public ApiResponse<ViewCityDto> getCitytList(BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
 		try {
@@ -501,44 +500,49 @@ public class MetaClient extends AbstractJaxServiceClient {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/citylist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
+					});
 		} catch (Exception e) {
 			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
 	}
-	
-	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId,BigDecimal cityId) {
+
+	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
 		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			
+
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId).append("&cityId=").append(cityId);
+			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId).append("&cityId=")
+					.append(cityId);
 			log.info("City Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String url = baseUrl.toString() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
+					});
 		} catch (Exception e) {
 			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<OnlineConfigurationDto> getOnlineConfig(String ind) {
 		ResponseEntity<ApiResponse<OnlineConfigurationDto>> response = null;
 		try {
 
 			log.info("In getOnlineConfig :");
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/onlineconfig/" + ind;
+			String url = baseUrl.toString() + META_API_ENDPOINT + "/onlineconfig/" + ind + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
@@ -549,6 +553,5 @@ public class MetaClient extends AbstractJaxServiceClient {
 		}
 		return response.getBody();
 	}
-	
 
 }
