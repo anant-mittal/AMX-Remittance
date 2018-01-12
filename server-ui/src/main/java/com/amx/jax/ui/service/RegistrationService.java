@@ -156,7 +156,7 @@ public class RegistrationService {
 				Email email = new Email();
 				email.setSubject(Constants.REG_SUC);
 				email.addTo(emailId);
-				email.setTemplate(Templates.RESET_OTP);
+				email.setTemplate(Templates.REG_SUC);
 				email.setHtml(true);
 				email.getModel().put(Constants.RESP_DATA_KEY, personInfo);
 
