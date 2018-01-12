@@ -19,6 +19,7 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.service.UserService;
 import com.amx.jax.ui.session.UserSession;
 
@@ -40,6 +41,9 @@ public class UserController {
 
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	TenantContext tenantContext;
 
 	/**
 	 * Asks for user login and password
@@ -90,6 +94,7 @@ public class UserController {
 		if (userSession.getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setInfo(userSession.getCustomerModel().getPersoninfo());
+			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 		}
 
 		return wrapper;
