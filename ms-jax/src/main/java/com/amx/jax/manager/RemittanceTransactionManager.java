@@ -22,6 +22,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -56,6 +57,7 @@ import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 
 @Component
@@ -116,6 +118,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private LoyalityPointService loyalityPointService;
+
+	@Autowired
+	private TransactionHistroyService transactionHistroyService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
@@ -434,10 +439,12 @@ public class RemittanceTransactionManager {
 		RemittanceApplication remittanceApplication = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
 		if (remittanceTransactionView != null) {
-			model.setCollectionDocumentNumber(remittanceTransactionView.getCollectionDocumentNo());
-			model.setDocumentFinanceYear(remittanceTransactionView.getDocumentFinancialYear());
-			model.setCollectionDocumentCode(remittanceTransactionView.getCollectionDocCode());
-			model.setCustomerReference(remittanceTransactionView.getCustomerReference());
+			BigDecimal cutomerReference = remittanceTransactionView.getCustomerReference();
+			BigDecimal docfyr = remittanceTransactionView.getDocumentFinancialYear();
+			BigDecimal docNumber = remittanceTransactionView.getApplicationDocumentNo();
+			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
+					.getTransactionHistoryDto(cutomerReference, docfyr, docNumber);
+			model.setTransactionHistroyDTO(transactionHistoryDto);
 			model.setAmountDeducted(remittanceTransactionView.getLocalNetTransactionAmount());
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(remittanceApplication,

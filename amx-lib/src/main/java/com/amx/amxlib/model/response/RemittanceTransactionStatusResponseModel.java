@@ -3,6 +3,7 @@ package com.amx.amxlib.model.response;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.constant.JaxTransactionStatus;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.AbstractModel;
 
 public class RemittanceTransactionStatusResponseModel extends AbstractModel {
@@ -15,9 +16,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	JaxTransactionStatus status;
 	BigDecimal collectionDocumentNumber;
 	BigDecimal amountDeducted;
-	private BigDecimal documentFinanceYear;
-	private BigDecimal collectionDocumentCode;
-	private BigDecimal customerReference;
+	TransactionHistroyDTO transactionHistroyDTO;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -48,28 +47,12 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 		return "remittance-transaction-status-model";
 	}
 
-	public BigDecimal getDocumentFinanceYear() {
-		return documentFinanceYear;
+	public TransactionHistroyDTO getTransactionHistroyDTO() {
+		return transactionHistroyDTO;
 	}
 
-	public void setDocumentFinanceYear(BigDecimal documentFinanceYear) {
-		this.documentFinanceYear = documentFinanceYear;
-	}
-
-	public BigDecimal getCollectionDocumentCode() {
-		return collectionDocumentCode;
-	}
-
-	public void setCollectionDocumentCode(BigDecimal collectionDocumentCode) {
-		this.collectionDocumentCode = collectionDocumentCode;
-	}
-
-	public BigDecimal getCustomerReference() {
-		return customerReference;
-	}
-
-	public void setCustomerReference(BigDecimal customerReference) {
-		this.customerReference = customerReference;
+	public void setTransactionHistroyDTO(TransactionHistroyDTO transactionHistroyDTO) {
+		this.transactionHistroyDTO = transactionHistroyDTO;
 	}
 
 }

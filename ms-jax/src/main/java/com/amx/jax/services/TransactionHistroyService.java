@@ -59,7 +59,12 @@ public class TransactionHistroyService extends AbstractService {
 		return response;
 	}
 	
-	
+	public TransactionHistroyDTO getTransactionHistoryDto(BigDecimal cutomerReference, BigDecimal docfyr,
+			BigDecimal docNumber) {
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
+				.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); // , fromDate, toDate
+		return convert(trnxHisList).get(0);
+	}
 	
 	
 	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference,BigDecimal docfyr,String fromDate,String  toDate) {
