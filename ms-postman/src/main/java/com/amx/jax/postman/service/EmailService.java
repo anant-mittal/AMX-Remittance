@@ -54,7 +54,7 @@ public class EmailService {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
-		helper.setReplyTo(eParams.getFrom());
+		//helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() != null && !Constants.defaultString.equals(eParams.getFrom())) {
 			helper.setFrom(eParams.getFrom());
