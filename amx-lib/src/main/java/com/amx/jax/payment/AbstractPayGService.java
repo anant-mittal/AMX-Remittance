@@ -18,7 +18,7 @@ public abstract class AbstractPayGService {
 		String callbackUrl = callback + "?docNo=" + remittanceApplicationResponseModel.getDocumentIdForPayment()
 				+ "&docFy=" + remittanceApplicationResponseModel.getDocumentFinancialYear();
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
-		builder.setPath("app/payment").addParameter("country", tnt.getCode())
+		builder.setPath("app/payment")
 				.addParameter("amount", remittanceApplicationResponseModel.getNetPayableAmount())
 				.addParameter("trckid", remittanceApplicationResponseModel.getMerchantTrackId())
 				.addParameter("pg", code)
