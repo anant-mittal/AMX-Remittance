@@ -57,7 +57,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -77,7 +77,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -96,7 +96,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -113,7 +113,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -131,7 +131,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -149,7 +149,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -173,7 +173,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -196,7 +196,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -217,7 +217,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -239,7 +239,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -261,7 +261,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -278,7 +278,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -295,7 +295,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -312,7 +312,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -329,7 +329,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -346,7 +346,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in getAllOnlineCurrency ", e);
+			log.error("exception in getAllOnlineCurrency ", e);
 		}
 		return response.getBody();
 	}
@@ -362,7 +362,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in getAllOnlineCurrency ", e);
+			log.error("exception in getAllOnlineCurrency ", e);
 		}
 		return response.getBody();
 	}
@@ -387,7 +387,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
@@ -407,7 +407,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.debug("exception in getBankListForCountry ", e);
+			log.error("exception in getBankListForCountry ", e);
 		}
 		return response.getBody();
 	}
@@ -430,7 +430,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
@@ -455,7 +455,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -480,7 +480,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 		}
 		return response.getBody();
 	}
@@ -503,7 +503,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
@@ -527,7 +527,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {});
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
+			log.error("exception in registeruser ", e);
 
 		}
 		return response.getBody();
@@ -544,7 +544,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
 		} catch (Exception e) {
-			log.debug("exception in getOnlineConfig ", e);
+			log.error("exception in getOnlineConfig ", e);
 
 		}
 		return response.getBody();
