@@ -174,24 +174,4 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public void sendRegSuccessEmail() {
-		String emailId = userSessionInfo.getCustomerModel().getEmail();
-
-		if (emailId != null && !Constants.EMPTY.equals(emailId)) {
-			PersonInfo personInfo = userSessionInfo.getCustomerModel().getPersoninfo();
-			Email email = new Email();
-			email.setSubject(Constants.REG_SUC);
-			email.addTo(emailId);
-			email.setTemplate(Templates.REG_SUC);
-			email.setHtml(true);
-			email.getModel().put(Constants.RESP_DATA_KEY, personInfo);
-
-			try {
-				postManService.sendEmail(email);
-			} catch (Exception e) {
-				LOG.error("Error while sending OTP Email to" + emailId, e);
-			}
-		}
-	}
-
 }
