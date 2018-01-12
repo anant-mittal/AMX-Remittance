@@ -27,7 +27,7 @@ public interface RemittanceApplicationRepository extends CrudRepository<Remittan
 	public List<RemittanceApplication> fetchRemitApplTrnxRecordsByCustomerPayId(@Param("paymentId") String paymentId,
 			@Param("customerId") Customer customerId);
 
-	@Query("select rv from RemittanceTransactionView rv where rv.applicationDocumentNo=?1 and rv.documentFinancialYear = ?2")
+	@Query("select rv from RemittanceTransactionView rv where rv.applicationDocumentNo=?1 and rv.applicationFinancialYear = ?2")
 	public RemittanceTransactionView fetchRemitApplTrnxView(BigDecimal applicationDocumentNo, BigDecimal docFinYear);
 
 	@Query("select rv from RemittanceApplication rv where rv.documentNo=?1 and rv.documentFinancialyear = ?2")

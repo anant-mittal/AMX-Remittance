@@ -15,7 +15,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 
 	JaxTransactionStatus status;
 	BigDecimal collectionDocumentNumber;
-	BigDecimal amountDeducted;
+	BigDecimal netAmount;
 	TransactionHistroyDTO transactionHistroyDTO;
 
 	public JaxTransactionStatus getStatus() {
@@ -34,14 +34,6 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 		this.collectionDocumentNumber = collectionDocumentNumber;
 	}
 
-	public BigDecimal getAmountDeducted() {
-		return amountDeducted;
-	}
-
-	public void setAmountDeducted(BigDecimal amountDeducted) {
-		this.amountDeducted = amountDeducted;
-	}
-
 	@Override
 	public String getModelType() {
 		return "remittance-transaction-status-model";
@@ -53,6 +45,14 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 
 	public void setTransactionHistroyDTO(TransactionHistroyDTO transactionHistroyDTO) {
 		this.transactionHistroyDTO = transactionHistroyDTO;
+	}
+
+	public BigDecimal getNetAmount() {
+		return netAmount;
+	}
+
+	public void setNetAmount(BigDecimal netAmount) {
+		this.netAmount = netAmount;
 	}
 
 }

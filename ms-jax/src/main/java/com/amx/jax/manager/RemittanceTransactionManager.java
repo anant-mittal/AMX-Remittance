@@ -46,6 +46,7 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.dbmodel.remittance.VwLoyalityEncash;
 import com.amx.jax.exception.GlobalException;
@@ -434,21 +435,24 @@ public class RemittanceTransactionManager {
 	public RemittanceTransactionStatusResponseModel getTransactionStatus(
 			RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
-		RemittanceTransactionView remittanceTransactionView = remitAppDao.getRemittanceTransactionView(
-				request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
-		RemittanceApplication remittanceApplication = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
+		// RemittanceTransactionView remittanceTransactionView =
+		// remitAppDao.getRemittanceTransactionView(
+		// request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
+
+		RemittanceTransaction remittanceTransaction = remitAppDao
+				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
+		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
-		if (remittanceTransactionView != null) {
-			BigDecimal cutomerReference = remittanceTransactionView.getCustomerReference();
-			BigDecimal docfyr = remittanceTransactionView.getDocumentFinancialYear();
-			BigDecimal docNumber = remittanceTransactionView.getCollectionDocumentNo();
+		if (remittanceTransaction != null) {
+			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
+			BigDecimal docfyr = remittanceTransaction.getCollectionDocumentFinancialyear();
+			BigDecimal docNumber = remittanceTransaction.getCollectionDocumentNo();
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
 					.getTransactionHistoryDto(cutomerReference, docfyr, docNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
-			model.setAmountDeducted(remittanceTransactionView.getLocalNetTransactionAmount());
+			model.setNetAmount(application.getLocalNetTranxAmount());
 		}
-		JaxTransactionStatus status = getJaxTransactionStatus(remittanceApplication,
-				model.getCollectionDocumentNumber());
+		JaxTransactionStatus status = getJaxTransactionStatus(application, model.getCollectionDocumentNumber());
 		model.setStatus(status);
 		return model;
 	}

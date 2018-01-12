@@ -16,10 +16,12 @@ import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.FinancialService;
 
 @Component
@@ -43,6 +45,9 @@ public class RemittanceApplicationDao {
 	@Autowired
 	FinancialService finanacialService;
 
+	@Autowired
+	RemittanceTransactionRepository remittanceTransactionRepository;
+
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
@@ -62,6 +67,13 @@ public class RemittanceApplicationDao {
 	public RemittanceApplication getApplication(BigDecimal documentNumber, BigDecimal finYear) {
 		RemittanceApplication remittanceTransactionView = appRepo.fetchRemitApplTrnx(documentNumber, finYear);
 		return remittanceTransactionView;
+	}
 
+	public RemittanceTransaction getRemittanceTransaction(BigDecimal applicationDocumentNumber,
+			BigDecimal applicationfinYear) {
+		RemittanceTransaction remittanceTransactionView = remittanceTransactionRepository
+				.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
+						applicationfinYear);
+		return remittanceTransactionView;
 	}
 }
