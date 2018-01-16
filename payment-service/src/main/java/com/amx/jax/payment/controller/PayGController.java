@@ -58,24 +58,9 @@ public class PayGController {
 		String callback = new String(decodedBytes);
 		payGSession.setCallback(callback);
 
-		log.info("Inside pay method with  amount-" + amount + ", country-" + tnt.getCode() + ", pg-"
-				+ pg);
+		log.info(String.format("Inside pay method with  amount-%s, country-%s, pg-" + amount,tnt.getCode(),pg));
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
-
-		if (amount != null && !(amount.isEmpty())) {
-			try {
-				BigDecimal bd = new BigDecimal(amount);
-				bd = bd.setScale(3, RoundingMode.HALF_UP);
-				amount = bd.toPlainString();
-			} catch (Exception e) {
-				log.error("Amount is not null or empty.");
-				e.getMessage();
-			}
-
-		} else if (trckid != null && trckid.isEmpty()) {
-			log.error("Track Id is empty.");
-		}
 
 		PayGParams payGParams = new PayGParams();
 		payGParams.setAmount(amount);
