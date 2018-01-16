@@ -290,9 +290,9 @@ public class UserService extends AbstractUserService {
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenDate(onlineCust);
-		String emailTokenHash = onlineCust.getEmailToken();
+		String tokenHash = (onlineCust.getEmailToken() == null) ? onlineCust.getSmsToken() : onlineCust.getEmailToken();
 		String otpHash = cryptoUtil.getHash(civilId, otp);
-		if (!otpHash.equals(emailTokenHash)) {
+		if (!otpHash.equals(tokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
 			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
 		}

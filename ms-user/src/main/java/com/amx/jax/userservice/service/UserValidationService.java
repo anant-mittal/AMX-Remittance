@@ -371,7 +371,8 @@ public class UserValidationService {
 		Customer customer = custDao.getCustById(custId);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getOtp());
-		String dbotp = onlineCustomer.getEmailToken();
+		String dbotp = (onlineCustomer.getEmailToken() == null) ? onlineCustomer.getSmsToken()
+				: onlineCustomer.getEmailToken();
 		if (!hashedotp.equals(dbotp)) {
 			throw new InvalidOtpException("Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
