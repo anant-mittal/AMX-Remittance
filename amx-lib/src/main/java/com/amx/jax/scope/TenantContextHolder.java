@@ -27,12 +27,7 @@ public class TenantContextHolder {
 	}
 
 	public static Tenant fromString(String siteId) {
-		for (Tenant site : Tenant.values()) {
-			if (site.getId().equalsIgnoreCase(siteId)) {
-				return site;
-			}
-		}
-		return Tenant.KWT;
+		return Tenant.fromString(siteId);
 	}
 
 }
