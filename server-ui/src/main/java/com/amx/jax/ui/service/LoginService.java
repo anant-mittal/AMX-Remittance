@@ -185,10 +185,10 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updatepwd(String password) {
+	public ResponseWrapper<UserUpdateData> updatepwd(String password, String otp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
-			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password).getResult();
+			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, otp).getResult();
 			if (model.isSuccess()) {
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			}

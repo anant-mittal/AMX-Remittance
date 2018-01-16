@@ -119,12 +119,12 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
+	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String otp) {
 
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		CustomerModel customerModel = jaxClient.setDefaults().getUserclient().saveSecurityQuestions(securityquestions)
-				.getResult();
+		CustomerModel customerModel = jaxClient.setDefaults().getUserclient()
+				.saveSecurityQuestions(securityquestions, otp).getResult();
 
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
@@ -132,21 +132,21 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption) {
+	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String otp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl).getResult();
+		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, otp).getResult();
 
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password) {
+	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password, String otp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		try {
-			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password).getResult();
+			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, otp).getResult();
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 
 			String emailId = userSessionInfo.getCustomerModel().getEmail();
