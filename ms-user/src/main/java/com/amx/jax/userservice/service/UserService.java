@@ -252,7 +252,7 @@ public class UserService extends AbstractUserService {
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateCustomerLockCount(onlineCust);
-		userValidationService.validateTokenSentCountAndTokenDate(onlineCust);
+		userValidationService.validateTokenSentCount(onlineCust);
 		generateToken(civilId, model);
 		onlineCust.setEmailToken(model.getHashedOtp());
 		onlineCust.setSmsToken(model.getHashedOtp());
@@ -289,6 +289,7 @@ public class UserService extends AbstractUserService {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
+		userValidationService.validateTokenDate(onlineCust);
 		String emailTokenHash = onlineCust.getEmailToken();
 		String otpHash = cryptoUtil.getHash(civilId, otp);
 		if (!otpHash.equals(emailTokenHash)) {

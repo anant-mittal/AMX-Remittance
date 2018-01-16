@@ -393,9 +393,16 @@ public class UserValidationService {
 		return required;
 	}
 
-	public void validateTokenSentCountAndTokenDate(CustomerOnlineRegistration onlineCust) {
+	public void validateTokenSentCount(CustomerOnlineRegistration onlineCust) {
 
 		Integer limit = otpSettings.getMaxSendOtpAttempts();
+		if (onlineCust.getTokenSentCount() != null && onlineCust.getTokenSentCount().intValue() >= limit) {
+			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		}
+	}
+
+	public void validateTokenDate(CustomerOnlineRegistration onlineCust) {
+
 		long otpValidTimeInMins = otpSettings.getOtpValidityTime().longValue();
 		Date tokenDate = onlineCust.getTokenDate();
 		long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
@@ -403,9 +410,7 @@ public class UserValidationService {
 		if (tokenTimeinMins > otpValidTimeInMins) {
 			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIERED.getCode());
 		}
-		if (onlineCust.getTokenSentCount().intValue() >= limit) {
-			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
-		}
+
 	}
 
 }
