@@ -185,7 +185,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
-		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
+		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : model.getCustomerId();
 		if (customerId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
