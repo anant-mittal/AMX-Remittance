@@ -53,7 +53,14 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		checkIncorrectInputError(apiError);
 		checkResourceNotFoundException(apiError);
 		validateRemittanceDataValidation(apiError);
+		validateLimitExeededException(apiError);
 
+	}
+
+	private void validateLimitExeededException(ApiError error) {
+		if (JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode().equals(error.getErrorId())) {
+			throw new LimitExeededException(error);
+		}
 	}
 
 	private void checkUnknownJaxError(ApiError apiError) {
@@ -133,6 +140,9 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.ID_PROOFS_IMAGES_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
+			if (JaxError.OTP_EXPIERED.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
 
 			if (iscustValidationError) {
 				throw new CustomerValidationException(error);
@@ -161,6 +171,9 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 				throw new IncorrectInputException(error);
 			}
 			if (JaxError.INCORRECT_SECURITY_QUESTION_ANSWER.getCode().equals(error.getErrorId())) {
+				throw new IncorrectInputException(error);
+			}
+			if (JaxError.MISSING_OTP.getCode().equals(error.getErrorId())) {
 				throw new IncorrectInputException(error);
 			}
 		}
