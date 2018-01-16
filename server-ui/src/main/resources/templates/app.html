@@ -14,7 +14,7 @@ window.CONST = {
 	    remoteServerUrl: '',
 	    remoteJsUrl: '<div th:text="${cdnUrl}" th:remove="tag"></div>', //
 	    dummyApi: false,
-	    fpath : "/pub/track/fingerprint.js",
+	    fpath : '<div th:text="${cdnUrl}" th:remove="tag"></div>/dist/fingerprint.js',
 	    did : '<div th:text="${did}" th:remove="tag"></div>'
 	  };
 </script>
