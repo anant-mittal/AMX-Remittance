@@ -18,6 +18,15 @@ public class UserSession implements Serializable {
 	private String otpPrefix = null;
 	private String uuidToken = null;
 	private String referrer = null;
+	private String deviceId = null;
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
 
 	public void setReferrer(String referrer) {
 		this.referrer = referrer;
