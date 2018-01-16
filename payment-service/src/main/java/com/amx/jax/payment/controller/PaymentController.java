@@ -43,12 +43,13 @@ public class PaymentController {
 	private PaymentService paymentService;
 
 	@RequestMapping(value = { "/pay/*", "/pay" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(@RequestParam(required = false) String name, @RequestParam String country,
-			@RequestParam String amount, @RequestParam String trckid, @RequestParam String pg,
-			@RequestParam(required = false) BigDecimal pgId, @RequestParam String docNo) {
+	public String handleUrlPaymentRemit(@RequestParam String amount, 
+										@RequestParam String trckid, 
+										@RequestParam String pg,
+										@RequestParam String docNo,
+										@RequestParam Tenant tnt) {
 
-		log.info("Inside handleUrlPaymentRemit with   name-" + name + ", amount-" + amount + ", country-" + country
-				+ ", pg-" + pg + ", pg_id-" + pgId);
+		log.info(String.format("Inside handleUrlPaymentRemit with   amount-%s, country-%s, pg-%s",amount,tnt.getCode() ,pg));
 
 		if (amount != null && !(amount.isEmpty())) {
 			try {
@@ -65,11 +66,9 @@ public class PaymentController {
 		}
 
 		Map<String, Object> paramValueMap = new HashMap<>();
-		paramValueMap.put("name", name);
-		paramValueMap.put("country", country);
-		paramValueMap.put("amount", amount);
+
+    	paramValueMap.put("amount", amount);
 		paramValueMap.put("trckid", trckid);
-		paramValueMap.put("pgId", pgId);
 		paramValueMap.put("docNo", docNo);
 
 		HashMap<String, String> res = null;
@@ -78,7 +77,7 @@ public class PaymentController {
 			res = paymentService.knetInitialize(paramValueMap);
 		} else if (PGEnum.OMANNET.name().equalsIgnoreCase(pg)) {
 			res = paymentService.omanNetInitialize(paramValueMap);
-		} else if (PGEnum.BAHKNET.name().equalsIgnoreCase(pg)) {
+		} else if (PGEnum.BENEFIT.name().equalsIgnoreCase(pg)) {
 			res = paymentService.bahKnetInitialize(paramValueMap);
 		}
 

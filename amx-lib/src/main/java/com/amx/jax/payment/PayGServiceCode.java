@@ -1,7 +1,7 @@
 package com.amx.jax.payment;
 
 public enum PayGServiceCode {
-	KNET("knet"), BAHKNET("bahknet"), OMANNET("OmanNet"),
+	KNET("knet"), BENEFIT("benefit"), OMANNET("OmanNet"),
 
 	/**
 	 * DOnt use this one.
