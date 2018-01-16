@@ -69,6 +69,20 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
+	
+	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId()
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+		HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
+		log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+				});
+		log.info("responce from  sendOtpForCivilId api: " + util.marshall(response.getBody()));
+
+		return response.getBody();
+	}
 
 	public ApiResponse<CustomerModel> saveCustomer(String json)
 			throws CustomerValidationException, LimitExeededException {
@@ -83,10 +97,11 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
+	public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions, String otp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
+			custModel.setOtp(otp);
 			custModel.setSecurityquestions(securityquestions);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
@@ -102,10 +117,11 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl) {
+	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl, String otp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
+			custModel.setOtp(otp);
 			custModel.setCaption(caption);
 			custModel.setImageUrl(imageUrl);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
@@ -122,12 +138,13 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password)
+	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password ,String otp)
 			throws AlreadyExistsException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		CustomerModel custModel = new CustomerModel();
 		custModel.setLoginId(loginId);
 		custModel.setPassword(password);
+		custModel.setOtp(otp);
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 		String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
@@ -191,14 +208,15 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<BooleanResponse> updatePassword(String password)
+	public ApiResponse<BooleanResponse> updatePassword(String password, String otp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
 		String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
-		endpoint = endpoint.replaceAll("\\{customer\\-id\\}", jaxMetaInfo.getCustomerId().toPlainString());
-
+		CustomerModel custModel = new CustomerModel();
+		custModel.setPassword(password);
+		custModel.setOtp(otp);
 		String updatePasswordUrl = baseUrl.toString() + endpoint + "?password=" + password;
-		HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		log.info("calling updatePassword api: " + updatePasswordUrl);
 		response = restTemplate.exchange(updatePasswordUrl, HttpMethod.PUT, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {

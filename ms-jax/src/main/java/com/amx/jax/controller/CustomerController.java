@@ -45,6 +45,13 @@ public class CustomerController {
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
 		return response;
 	}
+	
+	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
+	public ApiResponse sendOtp() {
+		logger.debug("in sendOtp Request");
+		ApiResponse response = userSerivce.sendOtpForCivilId(null);
+		return response;
+	}
 
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("otp") String otp) {
@@ -76,9 +83,9 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
-	public ApiResponse updatePassword(@PathVariable("customer-id") Integer customerId, @RequestParam String password) {
-		logger.debug("updatePassword Request:  pssword: " + password);
-		ApiResponse response = userSerivce.updatePassword(customerId, password);
+	public ApiResponse updatePassword(@RequestBody CustomerModel model) {
+		logger.debug("updatePassword Request: "+ model.toString());
+		ApiResponse response = userSerivce.updatePassword(model);
 		return response;
 	}
 

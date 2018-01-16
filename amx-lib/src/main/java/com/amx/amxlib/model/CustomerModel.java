@@ -27,6 +27,8 @@ public class CustomerModel extends AbstractModel {
 	private Boolean isActive;
 	
 	private PersonInfo personinfo;
+	
+	private String otp;
 
 	public String getEmail() {
 		return email;
@@ -119,6 +121,22 @@ public class CustomerModel extends AbstractModel {
 
 	public void setPersoninfo(PersonInfo personinfo) {
 		this.personinfo = personinfo;
+	}
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
+		this.otp = otp;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerModel [identityId=" + identityId + ", email=" + email + ", mobile=" + mobile + ", loginId="
+				+ loginId + ", password=" + password + ", securityquestions=" + securityquestions + ", caption="
+				+ caption + ", imageUrl=" + imageUrl + ", customerId=" + customerId + ", isActive=" + isActive
+				+ ", personinfo=" + personinfo + ", otp=" + otp + "]";
 	}
 
 }

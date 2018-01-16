@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
@@ -32,6 +35,7 @@ import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
+import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -40,13 +44,10 @@ import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.validation.CustomerValidation;
-import com.amx.jax.util.validation.PatternValidator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
-
-	private static final int WRONG_PASSWORD_ATTEMPTS_ALLOWED = 3;
 
 	@Autowired
 	private CustomerValidation custValidation;
@@ -77,6 +78,9 @@ public class UserValidationService {
 
 	@Autowired
 	private DmsDocumentDao dmsDocDao;
+
+	@Autowired
+	OtpSettings otpSettings;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -300,6 +304,7 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
+		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			Date midnightTomorrow = getMidnightToday();
@@ -310,7 +315,7 @@ public class UserValidationService {
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
 				}
-				if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+				if (lockCnt >= MAX_OTP_ATTEMPTS) {
 					throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 							JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 				}
@@ -323,16 +328,17 @@ public class UserValidationService {
 	 */
 	public void incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
 		int lockCnt = 0;
+		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			lockCnt = onlineCustomer.getLockCnt().intValue();
 		}
 		lockCnt++;
-		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			onlineCustomer.setLockDt(new Date());
 		}
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 		}
@@ -354,6 +360,52 @@ public class UserValidationService {
 			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
 		}
 		return onlineCustomer;
+	}
+
+	public void validateOtpFlow(CustomerModel model) {
+		boolean isOtpFlowRequired = isOtpFlowRequired(model);
+		if (isOtpFlowRequired && model.getOtp() == null) {
+			throw new GlobalException("Otp field is mandatory", JaxError.MISSING_OTP.getCode());
+		}
+		BigDecimal custId = meta.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
+		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getOtp());
+		String dbotp = onlineCustomer.getEmailToken();
+		if (!hashedotp.equals(dbotp)) {
+			throw new InvalidOtpException("Otp is incorrect for identity int: " + customer.getIdentityInt());
+		}
+
+	}
+
+	private boolean isOtpFlowRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getSecurityquestions() != null) {
+			required = true;
+		}
+		if (model.getPassword() != null) {
+			required = true;
+		}
+		if (model.getImageUrl() != null) {
+			required = true;
+		}
+		return required;
+	}
+
+	public void validateTokenSentCountAndTokenDate(CustomerOnlineRegistration onlineCust) {
+
+		Integer limit = otpSettings.getMaxSendOtpAttempts();
+		long otpValidTimeInMins = otpSettings.getOtpValidityTime().longValue();
+		Date tokenDate = onlineCust.getTokenDate();
+		long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
+		long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
+		if (tokenTimeinMins > otpValidTimeInMins) {
+			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIERED.getCode());
+		}
+		if (onlineCust.getTokenSentCount().intValue() >= limit) {
+			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		}
 	}
 
 }

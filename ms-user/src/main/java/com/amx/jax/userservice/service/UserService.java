@@ -185,18 +185,18 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
-		// userValidationService.validateCustomerForOnlineFlow(model.getCustomerId());
-		if (model.getCustomerId() == null) {
+		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
+		if (customerId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
 		}
 		if (model.getLoginId() != null) {
 			userValidationService.validateLoginId(model.getLoginId());
 		}
-
+		userValidationService.validateOtpFlow(model);
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
@@ -244,14 +244,22 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
+		BigDecimal customerId = metaData.getCustomerId();
+		if (customerId != null) {
+			civilId = custDao.getCustById(customerId).getIdentityInt();
+		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateCustomerLockCount(onlineCust);
+		userValidationService.validateTokenSentCountAndTokenDate(onlineCust);
 		generateToken(civilId, model);
 		onlineCust.setEmailToken(model.getHashedOtp());
 		onlineCust.setSmsToken(model.getHashedOtp());
 		onlineCust.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
+		onlineCust.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(onlineCust);
 		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		model.setFirstName(customer.getFirstName());
@@ -378,12 +386,14 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
-	public ApiResponse updatePassword(Integer custId, String password) {
+	public ApiResponse updatePassword(CustomerModel model) {
+		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
 		if (custId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(custId));
-		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), password));
+		userValidationService.validateOtpFlow(model);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
+		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		ApiResponse response = getBlackApiResponse();
 		BooleanResponse responseModel = new BooleanResponse(true);
