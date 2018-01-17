@@ -1,12 +1,9 @@
 package com.amx.jax.payment;
 
 public enum PayGServiceCode {
-	KNET("knet"), BENEFIT("benefit"), OMANNET("OmanNet"),
+	KNET("knet"), BENEFIT("benefit"), OMANNET("OmanNet");
 
-	/**
-	 * DOnt use this one.
-	 */
-	DEFAULT("default");
+	public static final PayGServiceCode DEFAULT = KNET;
 
 	private String pgEnum;
 

@@ -3,6 +3,7 @@ package com.amx.amxlib.model.response;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.payment.PayGServiceCode;
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 
@@ -15,6 +16,16 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal documentFinancialYear;
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
+
+	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
+
+	public PayGServiceCode getPgCode() {
+		return pgCode;
+	}
+
+	public void setPgCode(PayGServiceCode pgCode) {
+		this.pgCode = pgCode;
+	}
 
 	@Override
 	public String getModelType() {
@@ -67,6 +78,5 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	public void setDocumentFinancialYear(BigDecimal documentFinancialYear) {
 		this.documentFinancialYear = documentFinancialYear;
 	}
-
 
 }

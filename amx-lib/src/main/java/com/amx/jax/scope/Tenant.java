@@ -6,7 +6,8 @@ import java.util.Map;
 
 public enum Tenant {
 
-	KWTDEV("kw", "91"),
+	/** Dev Environments **/
+	KWTDEV("kw", "91"), BRNDEV("bhr", "83"), OMNDEV("om", "84"),
 
 	/** Kuwait */
 	KWT("kw", "91"),
@@ -26,7 +27,8 @@ public enum Tenant {
 
 	static {
 		// Additional Mappings
-		mapping.put("app-dev", KWTDEV);
+		mapping.put("app-dev", KWT);
+		mapping.put("app-devb", BRN);
 	}
 
 	private String id;
