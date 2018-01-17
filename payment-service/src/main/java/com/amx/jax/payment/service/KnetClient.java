@@ -174,12 +174,21 @@ public class KnetClient implements PayGClient {
 		String doccode = null;
 		String docno = null;
 		String finyear = null;
+		PaymentResponseData data = null;
+		
+		if (res.getData() != null  ) {
+			data = (PaymentResponseData) res.getData();
+			
+			if (data.getResponseDTO()!=null && 
+				data.getResponseDTO().getCollectionDocumentCode() != null && 
+				data.getResponseDTO().getCollectionDocumentNumber() != null && 
+				data.getResponseDTO().getCollectionFinanceYear() != null ) {
+				
+				doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
+				docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
+				finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
+			}
 
-		if (res.getData() != null) {
-			PaymentResponseData data = (PaymentResponseData) res.getData();
-			doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
-			docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
-			finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
 		}
 
 		String redirectUrl = null;
