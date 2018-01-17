@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -15,6 +16,11 @@ public class JaxConfig {
 	
 	
 
+	public JaxConfig() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	public JaxConfig(String type, String value) {
 		super();
 		this.type = type;
@@ -22,7 +28,8 @@ public class JaxConfig {
 	}
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator="JAX_CONFIG_SEQ")
+	@SequenceGenerator(name="JAX_CONFIG_SEQ", sequenceName="JAX_CONFIG_SEQ", allocationSize=1)
 	@Column(name = "ID")
 	BigDecimal id;
 

@@ -46,11 +46,11 @@ public class JaxConfigService extends AbstractService {
 		return jaxConfig;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "rawtypes" })
 	public ApiResponse saveOtpSettings(OtpSettings settings) {
 		ApiResponse response = getBlackApiResponse();
 		this.saveConfig(OtpSettings.getType(), converterUtil.marshall(settings));
-		response.getResults().add(new BooleanResponse());
+		response.getData().getValues().add(new BooleanResponse());
 		return response;
 	}
 }
