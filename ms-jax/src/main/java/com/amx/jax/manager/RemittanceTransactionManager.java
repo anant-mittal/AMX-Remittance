@@ -471,7 +471,7 @@ public class RemittanceTransactionManager {
 				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
 			}
 		}
-		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode) || "CANCELED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_FAIL;
 		}
 
