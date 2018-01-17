@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -44,6 +45,9 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
+		if(StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
+			return validateOtp(otp);
+		}
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
