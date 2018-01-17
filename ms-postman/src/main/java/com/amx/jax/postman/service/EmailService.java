@@ -16,6 +16,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.File;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Utils;
 
@@ -26,6 +27,9 @@ public class EmailService {
 
 	@Autowired
 	private TemplateService templateService;
+
+	@Autowired
+	private FileService fileService;
 
 	@Autowired
 	private JavaMailSender mailSender;
@@ -54,7 +58,7 @@ public class EmailService {
 		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
-		//helper.setReplyTo(eParams.getFrom());
+		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() != null && !Constants.defaultString.equals(eParams.getFrom())) {
 			helper.setFrom(eParams.getFrom());
@@ -74,9 +78,16 @@ public class EmailService {
 		String str = eParams.getMessage();
 		Pattern p = Pattern.compile("src=\"cid:(.*?)\"");
 		Matcher m = p.matcher(str);
+
 		while (m.find()) {
 			String contentId = m.group(1);
 			helper.addInline(contentId, templateService.readAsResource(contentId));
+		}
+
+		if (eParams.getFiles() != null && eParams.getFiles().size() > 0) {
+			for (File file : eParams.getFiles()) {
+				helper.addAttachment(file.getName(), fileService.toDataSource(file));
+			}
 		}
 
 		mailSender.send(message);

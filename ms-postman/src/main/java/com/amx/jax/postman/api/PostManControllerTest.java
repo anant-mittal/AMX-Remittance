@@ -55,10 +55,8 @@ public class PostManControllerTest {
 			@RequestBody(required = false) Map<String, Object> data)
 			throws IOException, DocumentException, UnirestException {
 
-		
-		
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template + ".json");
-		
+
 		if ("pdf".equals(ext)) {
 			File file = this.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
@@ -74,6 +72,14 @@ public class PostManControllerTest {
 				eml.setHtml(true);
 				eml.setModel(map);
 				this.readImageWithObjectMapper(null);
+
+				File file2 = new File();
+				file2.setTemplate(template);
+				file2.setType(File.Type.PDF);
+				file2.setModel(map);
+
+				eml.addFile(file2);
+
 				postManClient.sendEmail(eml);
 			}
 			return file.getContent();

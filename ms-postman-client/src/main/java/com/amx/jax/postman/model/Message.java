@@ -63,7 +63,9 @@ public class Message {
 	 * @param to
 	 *            the to to set
 	 */
-	public void addTo(String recieverId) {
-		this.to.add(recieverId);
+	public void addTo(String... recieverIds) {
+		for (String recieverId : recieverIds) {
+			this.to.add(recieverId);
+		}
 	}
 }

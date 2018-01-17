@@ -137,52 +137,60 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> reset(String identity, String otp) {
-
-		sessionService.clear();
-
+	public ResponseWrapper<LoginData> sendOTP(String identity) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
-		if (otp == null) {
-			try {
-				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity)
-						.getResult();
-
-				// Check if response was successful
-				// append info in response data
-				userSession.setOtpPrefix();
-				model.setOtpPrefix(userSession.getOtpPrefix());
-				wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
-				wrapper.getData().setOtp(model.getOtp());
+		try {
+			CivilIdOtpModel model;
+			if (identity == null) {
+				model = jaxService.setDefaults().getUserclient().sendOtpForCivilId().getResult();
+			} else {
+				model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity).getResult();
 				userSession.setUserid(identity);
-				userService.notifyResetOTP(model);
-
-				wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
-
-			} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
-				wrapper.setMessage(ResponseStatus.INVALID_ID, e);
-			} catch (AbstractException e) {
-				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
-			} catch (Exception e) {
-				wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 			}
-
-		} else {
-			try {
-				CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
-				// Check if otp is valid
-				if (model != null) {
-					sessionService.authorize(model, true);
-					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
-				} else { // Use is cannot be validated
-					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
-				}
-			} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
-			} catch (AbstractException e) {
-				wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
-			}
+			// Check if response was successful
+			// append info in response data
+			userSession.setOtpPrefix();
+			model.setOtpPrefix(userSession.getOtpPrefix());
+			wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
+			wrapper.getData().setOtp(model.getOtp());
+			userService.notifyResetOTP(model);
+			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
+		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
+		} catch (Exception e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
 		return wrapper;
+	}
+
+	public ResponseWrapper<LoginData> verifyOTP(String identity, String otp) {
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+		try {
+			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
+			// Check if otp is valid
+			if (model != null) {
+				sessionService.authorize(model, true);
+				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+			} else { // Use is cannot be validated
+				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
+			}
+		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<LoginData> reset(String identity, String otp) {
+		sessionService.clear();
+		if (otp == null) {
+			return this.sendOTP(identity);
+		} else {
+			return this.verifyOTP(identity, otp);
+		}
 	}
 
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String otp) {

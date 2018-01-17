@@ -2,19 +2,50 @@ package com.amx.jax.postman.model;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
 public class File {
 
 	public enum Type {
-		PDF, CSV, PNG
+		PDF("application/pdf"), CSV("text/csv"), PNG("image/png");
+
+		String contentType;
+
+		Type(String contentType) {
+			this.contentType = contentType;
+		}
 	}
 
 	private String content;
 	private String name;
-
 	private Type type;
+	private String template = null;
+	private Map<String, Object> model = new HashMap<String, Object>();
+
+	public Map<String, Object> getModel() {
+		return model;
+	}
+
+	public void setModel(Map<String, Object> model) {
+		this.model = model;
+	}
+
+	public String getTemplate() {
+		return template;
+	}
+
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
+	public void setTemplate(Templates template) {
+		this.template = template.getFileName();
+	}
+
+	private byte[] body;
 
 	public Type getType() {
 		return type;
@@ -31,8 +62,6 @@ public class File {
 	public void setBody(byte[] body) {
 		this.body = body;
 	}
-
-	private byte[] body;
 
 	public String getName() {
 		return name;

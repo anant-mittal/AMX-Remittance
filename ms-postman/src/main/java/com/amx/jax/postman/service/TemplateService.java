@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.File.Type;
 import com.bootloaderjs.IoUtils;
 
 @Component
@@ -48,6 +50,20 @@ public class TemplateService {
 		}
 
 		return rawStr;
+	}
+
+	/**
+	 * Parses file.template and creates content;
+	 * 
+	 * @param file
+	 * @return
+	 */
+	public File process(File file) {
+		Context context = new Context();
+		context.setVariables(file.getModel());
+		String content = this.processHtml(file.getTemplate(), context);
+		file.setContent(content);
+		return file;
 	}
 
 	public String processText(String template, Context context) {

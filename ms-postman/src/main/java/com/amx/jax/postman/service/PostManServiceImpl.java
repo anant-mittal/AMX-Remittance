@@ -36,6 +36,9 @@ public class PostManServiceImpl implements PostManService {
 	private PdfService pdfService;
 
 	@Autowired
+	private FileService fileService;
+
+	@Autowired
 	private TemplateService templateService;
 
 	@Async
@@ -50,6 +53,13 @@ public class PostManServiceImpl implements PostManService {
 				email.setMessage(templateService.processText(email.getTemplate(), context));
 			}
 		}
+
+		if (email.getFiles() != null && email.getFiles().size() > 0) {
+			for (File file : email.getFiles()) {
+				fileService.create(file);
+			}
+		}
+
 		return emailService.send(email);
 	}
 

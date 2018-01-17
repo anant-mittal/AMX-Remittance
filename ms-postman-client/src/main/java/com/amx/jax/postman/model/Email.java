@@ -16,9 +16,26 @@ public class Email extends Message {
 
 	private boolean isHtml;
 
+	private List<File> files;
+
+	public List<File> getFiles() {
+		return files;
+	}
+
+	public void setFiles(List<File> files) {
+		this.files = files;
+	}
+
+	public void addFile(File... files) {
+		for (File file : files) {
+			this.files.add(file);
+		}
+	}
+
 	public Email() {
 		this.to = new ArrayList<String>();
 		this.cc = new ArrayList<String>();
+		this.files = new ArrayList<File>();
 	}
 
 	public Email(String from, String toList, String subject) {

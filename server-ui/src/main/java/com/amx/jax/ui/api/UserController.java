@@ -110,4 +110,13 @@ public class UserController {
 	public ResponseWrapper<CustomerDto> profile() {
 		return userService.getProfileDetails();
 	}
+
+	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
+	public ResponseWrapper<LoginData> sendOTP(@RequestParam(required = false) String otp) {
+		if (otp == null) {
+			return loginService.sendOTP(null);
+		} else {
+			return loginService.verifyOTP(null, otp);
+		}
+	}
 }
