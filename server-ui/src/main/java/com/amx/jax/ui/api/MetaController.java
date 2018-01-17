@@ -16,12 +16,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
+import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Templates;
+import com.amx.jax.ui.model.SampleModel;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +46,9 @@ public class MetaController {
 	TenantContext tenantContext;
 
 	@Autowired
+	PostManClient postManClient;
+
+	@Autowired
 	GuestSession guestSession;
 
 	@ApiOperation(value = "List of All Possible Codes")
@@ -52,7 +61,7 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site,
-			HttpSession httpSession, HttpServletRequest request) {
+			HttpSession httpSession, HttpServletRequest request) throws UnirestException {
 		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
 				new HashMap<String, Object>());
 
@@ -78,6 +87,24 @@ public class MetaController {
 		wrapper.getData().put("getRemoteAddr", request.getRemoteAddr());
 		wrapper.getData().put("scheme", request.getScheme());
 		wrapper.getData().put("remoteAddr", remoteAddr);
+
+		ResponseWrapper<SampleModel> mod = new ResponseWrapper<SampleModel>(new SampleModel());
+
+		Email email = new Email();
+		email.addTo("lalit.tanwar07@gmail.com");
+		email.setObject(mod);
+
+		email.setSubject("Test");
+		email.setTemplate(Templates.RESET_OTP);
+		email.setHtml(true);
+
+		File file = new File();
+		file.setTemplate(Templates.RESET_OTP);
+		file.setObject(mod);
+		file.setType(File.Type.PDF);
+		email.addFile(file);
+
+		postManClient.sendEmail(email);
 
 		/*
 		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");

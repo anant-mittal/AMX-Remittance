@@ -5,12 +5,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Null;
+
+import com.bootloaderjs.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class Message {
 
 	protected String message = null;
 	private List<String> to;
 	private String template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
+	@Null
+	@JsonIgnore
+	private String object;
+
+	public Map<String, Object> getModel() {
+		return model;
+	}
+
+	public void setModel(Map<String, Object> model) {
+		this.model = model;
+	}
+
+	@JsonIgnore
+	public void setObject(Object object) {
+		this.model = JsonUtil.toMap(object);
+	}
 
 	public String getMessage() {
 		return message;
@@ -30,14 +51,6 @@ public class Message {
 
 	public void setTemplate(Templates template) {
 		this.template = template.getFileName();
-	}
-
-	public Map<String, Object> getModel() {
-		return model;
-	}
-
-	public void setModel(Map<String, Object> model) {
-		this.model = model;
 	}
 
 	public Message() {

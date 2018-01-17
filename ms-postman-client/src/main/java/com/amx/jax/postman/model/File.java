@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.Null;
+
+import com.bootloaderjs.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class File {
 
@@ -24,6 +28,9 @@ public class File {
 	private Type type;
 	private String template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
+	@Null
+	@JsonIgnore
+	private String object;
 
 	public Map<String, Object> getModel() {
 		return model;
@@ -31,6 +38,11 @@ public class File {
 
 	public void setModel(Map<String, Object> model) {
 		this.model = model;
+	}
+
+	@JsonIgnore
+	public void setObject(Object object) {
+		this.model = JsonUtil.toMap(object);
 	}
 
 	public String getTemplate() {
