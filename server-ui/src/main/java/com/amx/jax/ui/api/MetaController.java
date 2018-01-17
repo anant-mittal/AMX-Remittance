@@ -1,9 +1,7 @@
 
 package com.amx.jax.ui.api;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -20,7 +18,7 @@ import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.model.SampleModel;
+import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
@@ -60,13 +58,10 @@ public class MetaController {
 
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<Map<String, Object>> status(@RequestParam(required = false) String site,
-			HttpSession httpSession, HttpServletRequest request) throws UnirestException {
-		ResponseWrapper<Map<String, Object>> wrapper = new ResponseWrapper<Map<String, Object>>(
-				new HashMap<String, Object>());
-
+	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String site, HttpSession httpSession,
+			HttpServletRequest request) throws UnirestException {
+		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-
 		String remoteAddr = "";
 
 		if (request != null) {
@@ -76,31 +71,29 @@ public class MetaController {
 			}
 		}
 
-		wrapper.getData().put("debug", env.isDebug());
-		wrapper.getData().put("id", httpSession.getId());
-		wrapper.getData().put("hits-s", hits);
-		wrapper.getData().put("domain", request.getRequestURL().toString());
-		wrapper.getData().put("getServerName", request.getServerName());
-		wrapper.getData().put("getRequestURI", request.getRequestURI());
-		wrapper.getData().put("getRemoteHost", request.getRemoteHost());
-		wrapper.getData().put("getLocalAddr", request.getLocalAddr());
-		wrapper.getData().put("getRemoteAddr", request.getRemoteAddr());
-		wrapper.getData().put("scheme", request.getScheme());
-		wrapper.getData().put("remoteAddr", remoteAddr);
-
-		ResponseWrapper<SampleModel> mod = new ResponseWrapper<SampleModel>(new SampleModel());
+		wrapper.getData().debug = env.isDebug();
+		wrapper.getData().id = httpSession.getId();
+		wrapper.getData().hits = hits;
+		wrapper.getData().domain = request.getRequestURL().toString();
+		wrapper.getData().serverName = request.getServerName();
+		wrapper.getData().requestUri = request.getRequestURI();
+		wrapper.getData().remoteHost = request.getRemoteHost();
+		wrapper.getData().localAddress = request.getLocalAddr();
+		wrapper.getData().remoteAddr = request.getRemoteAddr();
+		wrapper.getData().scheme = request.getScheme();
+		wrapper.getData().remoteAddr = remoteAddr;
 
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");
-		email.setObject(mod);
+		email.setObject(wrapper);
 
-		email.setSubject("Test");
+		email.setSubject("Test Email");
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
 
 		File file = new File();
 		file.setTemplate(Templates.RESET_OTP);
-		file.setObject(mod);
+		file.setObject(wrapper);
 		file.setType(File.Type.PDF);
 		email.addFile(file);
 
