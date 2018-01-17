@@ -56,7 +56,7 @@ import io.swagger.annotations.ApiOperation;
 public class RemittController {
 
 	@Autowired
-	HttpServletResponse response;
+	private HttpServletResponse response;
 
 	@Autowired
 	private JaxService jaxService;
