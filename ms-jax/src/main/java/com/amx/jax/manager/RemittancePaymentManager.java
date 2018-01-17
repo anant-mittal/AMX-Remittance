@@ -117,9 +117,9 @@ public class RemittancePaymentManager extends AbstractService{
 					
 					/** For Receipt Print **/
 					
-					response.getData().getValues().add(paymentResponse);
+					//response.getData().getValues().add(paymentResponse);
 					response.setResponseStatus(ResponseStatus.OK);
-				    response.getData().setType("pg_remit_response");
+				    //response.getData().setType("pg_remit_response");
 				}
 					
 				}else {
@@ -141,6 +141,7 @@ public class RemittancePaymentManager extends AbstractService{
 				if(!lstPayIdDetails.isEmpty()) {
 					remittanceApplicationService.updatePayTokenNull(lstPayIdDetails, paymentResponse);
 				}
+				response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 				//throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
 			}
 			
@@ -154,6 +155,9 @@ public class RemittancePaymentManager extends AbstractService{
 			
 			throw new GlobalException("Remittance error :"+errorMsg,JaxError.PG_ERROR);
 		}
+		
+		response.getData().getValues().add(paymentResponse);
+	    response.getData().setType("pg_remit_response");
 		
 		return response;
 	}
