@@ -59,6 +59,13 @@ public class CustomerController {
 		ApiResponse response = userSerivce.validateOtp(civilId, otp);
 		return response;
 	}
+	
+	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
+	public ApiResponse validateOtp( @RequestParam("otp") String otp) {
+		logger.debug("validateOtp Request: otp:" + otp);
+		ApiResponse response = userSerivce.validateOtp(null, otp);
+		return response;
+	}
 
 	@RequestMapping(value = "/{civil-id}/checklist/", method = RequestMethod.GET)
 	public ApiResponse getCheckList(@PathVariable("civil-id") String civilId) {

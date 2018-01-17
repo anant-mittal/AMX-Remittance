@@ -54,6 +54,19 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	public ApiResponse<CustomerModel> validateOtp(String otp)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		log.info("calling validateOtp api: ");
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-otp/?otp=" + otp;
+		response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+				});
+		return response.getBody();
+	}
+
+	
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;

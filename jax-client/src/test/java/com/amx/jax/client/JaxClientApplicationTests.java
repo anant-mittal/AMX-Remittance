@@ -50,7 +50,7 @@ public class JaxClientApplicationTests {
 
 	private String otp;
 
-	@Test
+	//@Test
 	public void testSendotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -75,7 +75,7 @@ public class JaxClientApplicationTests {
 		otp = response.getResult().getOtp();
 	}
 
-	// @Test
+	 @Test
 	public void testvalidateotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

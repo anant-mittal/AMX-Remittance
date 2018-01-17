@@ -281,7 +281,18 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse validateOtp(String civilId, String otp) {
 		logger.debug("in validateopt of civilid: " + civilId);
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(civilId);
+		Customer customer = null;
+		if (civilId != null) {
+			customer = custDao.getCustomerByCivilId(civilId);
+		}
+		if (metaData.getCustomerId() != null) {
+			customer = custDao.getCustById(metaData.getCustomerId());
+			civilId = customer.getIdentityInt();
+		}
+		if (customer == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCust == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
