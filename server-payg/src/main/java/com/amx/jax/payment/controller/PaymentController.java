@@ -84,8 +84,8 @@ public class PaymentController {
 		String payid = res.get("payid");
 		String payurl = res.get("payurl");
 
-		log.info("KNET is initialted for doc number : " + trckid + "  and payid is : " + payid
-				+ "  and url formed is : " + payurl);
+		log.info("payment is initialted for doc number : " + trckid + "  and payid : " + payid
+				+ "  and url : " + payurl);
 		return "redirect:" + payurl + "?paymentId=" + payid;
 	}
 

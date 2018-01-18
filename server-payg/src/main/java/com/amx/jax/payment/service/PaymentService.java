@@ -208,8 +208,8 @@ public class PaymentService {
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
 		configMap.put("action", "1");
-		configMap.put("currency", "414");
-		configMap.put("languageCode", "ENG");
+		configMap.put("currency", "048");
+		configMap.put("languageCode", "USA");
 		configMap.put("responseUrl",
 				"https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
 		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_bah_prd/");
