@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cd payment-service/ext-jars
+cd server-payg/ext-jars
 
 mvn install:install-file -Dfile=KNET_WinEPTS_API.jar -DgroupId=com.knet -DartifactId=KNET_WinEPTS_API -Dversion=1.0 -Dpackaging=jar
 mvn install:install-file -Dfile=knet.jar -DgroupId=com.knet -DartifactId=knet -Dversion=1.0 -Dpackaging=jar
