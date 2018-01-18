@@ -176,23 +176,19 @@ public class KnetClient implements PayGClient {
 		String finyear = null;
 		PaymentResponseData data = null;
 		
-		if (res.getData() != null  ) {
-			data = (PaymentResponseData) res.getData();
+		String redirectUrl = null;
+		if ("CAPTURED".equalsIgnoreCase(result)) {
 			
-			if (data.getResponseDTO()!=null && 
-				data.getResponseDTO().getCollectionDocumentCode() != null && 
-				data.getResponseDTO().getCollectionDocumentNumber() != null && 
-				data.getResponseDTO().getCollectionFinanceYear() != null ) {
-				
+			try {
+				data = (PaymentResponseData) res.getData();
 				doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
 				docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
 				finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
+			} catch (NullPointerException e) {
+				log.error("Error while fetching doccode, docno, finyear.");
+				e.printStackTrace();
 			}
-
-		}
-
-		String redirectUrl = null;
-		if ("CAPTURED".equalsIgnoreCase(result)) {
+			
 			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
