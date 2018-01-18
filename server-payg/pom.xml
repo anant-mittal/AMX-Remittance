@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.amx.jax.payment</groupId>
-	<artifactId>payment-service</artifactId>
+	<artifactId>server-payg</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>payment-service</name>
+	<name>server-payg</name>
 	<description>Payment related services.</description>
 
 	<parent>
@@ -36,7 +36,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- Swagger infos -->
 		<dependency>
 			<groupId>io.springfox</groupId>
@@ -48,56 +48,52 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 			<version>2.6.1</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
 
-<!-- 		<dependency>
-			<groupId>com.knet</groupId>
-			<artifactId>knet</artifactId>
-			<version>1.0</version>
-		</dependency>
- -->		
+		<!-- <dependency> <groupId>com.knet</groupId> <artifactId>knet</artifactId> 
+			<version>1.0</version> </dependency> -->
 		<dependency>
 			<groupId>com.knet.test</groupId>
 			<artifactId>knet.test</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 		<!-- OMAN-NET lib START -->
 		<dependency>
 			<groupId>com.e24Pipe</groupId>
 			<artifactId>e24Pipe</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>bouncycastle-1.20</groupId>
 			<artifactId>bouncycastle-1.20</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>cryptix32</groupId>
 			<artifactId>cryptix32</artifactId>
 			<version>1.0</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>bcprov-jdk15-145</groupId>
 			<artifactId>bcprov-jdk15-145</artifactId>
 			<version>1.0</version>
-		</dependency>		
+		</dependency>
 		<!-- OMAN-NET lib END -->
-		
-    <dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
-		
+
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>

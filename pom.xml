@@ -42,12 +42,9 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-<!-- 			<plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>3.3.0.603</version>
-			</plugin>
- -->		</plugins>
+			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
+				<version>3.3.0.603</version> </plugin> -->
+		</plugins>
 	</build>
 
 	<parent>
@@ -60,7 +57,7 @@
 		<module>boot-utils</module>
 		<module>amx-lib</module>
 		<module>core</module>
-		<module>ms-admin</module>
+		<module>ms-logger</module>
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
@@ -69,6 +66,7 @@
 		<module>ms-postman</module>
 		<module>jax-client</module>
 		<module>server-ui</module>
-		<module>payment-service</module>
+		<module>server-payg</module>
+		<module>server-admin</module>
 	</modules>
 </project>
