@@ -218,8 +218,8 @@ public class PaymentService {
 		configMap.put("languageCode", "ENG");
 		configMap.put("responseUrl",
 				"https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
-		//configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_bah/");
-		configMap.put("resourcePath", "D:\\certificates\\amxremit_bah\\");
+		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_bah/");
+		//configMap.put("resourcePath", "D:\\certificates\\amxremit_bah\\");
 		//configMap.put("aliasName", "PROD_MEC");
 		configMap.put("aliasName", "test_MEC");
 

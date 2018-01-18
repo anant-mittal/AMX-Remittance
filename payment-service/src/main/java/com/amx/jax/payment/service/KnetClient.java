@@ -1,6 +1,5 @@
 package com.amx.jax.payment.service;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,14 +14,11 @@ import org.springframework.ui.Model;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.payment.PayGServiceCode;
-import com.amx.jax.payment.controller.PayGController;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
-import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.payment.util.PaymentUtil;
