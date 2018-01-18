@@ -214,8 +214,8 @@ public class PaymentService {
 				"https://applications2.almullagroup.com:8080/payment-service/app/payment_capture/");
 		configMap.put("resourcePath", "/home/devenvironment/certificates/amxremit_bah/");
 		//configMap.put("resourcePath", "D:\\certificates\\amxremit_bah\\");
-		//configMap.put("aliasName", "PROD_MEC");
-		configMap.put("aliasName", "test_MEC");
+		configMap.put("aliasName", "PROD_MEC");
+		//configMap.put("aliasName", "test_MEC");
 
 		LOG.info("Benefit payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 		///////////////////////////////////////////////////////////////////////////////////
