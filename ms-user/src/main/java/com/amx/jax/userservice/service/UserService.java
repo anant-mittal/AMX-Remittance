@@ -251,6 +251,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
+		try {
+			userValidationService.validateTokenDate(onlineCust);
+		} catch (GlobalException e) {
+			// reset sent token count
+			onlineCust.setTokenSentCount(BigDecimal.ZERO);
+		}
 		userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
 		generateToken(civilId, model);

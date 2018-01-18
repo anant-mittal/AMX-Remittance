@@ -411,7 +411,6 @@ public class UserValidationService {
 		if (tokenTimeinMins > otpValidTimeInMins) {
 			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIERED.getCode());
 		}
-
 	}
 
 }
