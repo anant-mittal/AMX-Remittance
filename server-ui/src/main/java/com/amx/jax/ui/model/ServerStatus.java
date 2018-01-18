@@ -1,5 +1,7 @@
 package com.amx.jax.ui.model;
 
+import org.springframework.mobile.device.Device;
+
 public class ServerStatus {
 	public Boolean debug = null;
 	public String id = null;
@@ -12,4 +14,5 @@ public class ServerStatus {
 	public String remoteAddress = null;
 	public String scheme = null;
 	public String remoteAddr = null;
+	public Device device = null;
 }

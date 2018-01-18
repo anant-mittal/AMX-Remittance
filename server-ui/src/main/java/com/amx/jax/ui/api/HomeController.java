@@ -1,13 +1,8 @@
 
 package com.amx.jax.ui.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringWriter;
-
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +24,7 @@ import io.swagger.annotations.Api;
 
 @Controller
 @Api(value = "Auth APIs")
-public class AuthController {
+public class HomeController {
 
 	@Value("${jax.cdn.url}")
 	private String cdnUrl;
@@ -67,9 +62,7 @@ public class AuthController {
 	@ResponseBody
 	public String loginPJson() {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
-
 		wrapper.setMessage(ResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
-
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -79,23 +72,5 @@ public class AuthController {
 		model.addAttribute("cdnUrl", cdnUrl);
 		model.addAttribute(Constants.DEVICE_ID_KEY, getDeviceId());
 		return "app";
-	}
-
-	String fingerprint = null;
-	String fingerprintFound = null;
-
-	@ResponseBody
-	@RequestMapping(value = "/pub/track/**", method = { RequestMethod.GET })
-	public String track(Model model) throws IOException {
-
-		if (fingerprint == null) {
-			StringWriter writer = new StringWriter();
-			InputStream is = context.getResource("classpath:static/fingerprint.js").getInputStream();
-			IOUtils.copy(is, writer);
-			fingerprint = writer.toString();
-		}
-		return fingerprint;
-
-		// return writer.toString().replace("{fingerprint}", fingerprint);
 	}
 }

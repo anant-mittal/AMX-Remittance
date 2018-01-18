@@ -91,6 +91,7 @@ public class SessionService {
 		this.indexUser();
 		userSession.setValid(true);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 	}
 
 	/**

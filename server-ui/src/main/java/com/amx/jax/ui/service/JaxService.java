@@ -104,7 +104,7 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public JaxService setDefaults() {
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-		
+
 		jaxMetaInfo.setLanguageId(Language.DEFAULT.getBDCode());
 		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));

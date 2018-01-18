@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mobile.device.Device;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +50,9 @@ public class MetaController {
 	@Autowired
 	GuestSession guestSession;
 
+	@Autowired
+	Device device;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -82,6 +86,7 @@ public class MetaController {
 		wrapper.getData().remoteAddr = request.getRemoteAddr();
 		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = remoteAddr;
+		wrapper.getData().device = device;
 
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");

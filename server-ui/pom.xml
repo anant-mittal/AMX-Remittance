@@ -139,6 +139,10 @@
 			<version>2.54</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mobile</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>
