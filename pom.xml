@@ -60,6 +60,7 @@
 		<module>boot-utils</module>
 		<module>amx-lib</module>
 		<module>core</module>
+		<module>ms-admin</module>
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>

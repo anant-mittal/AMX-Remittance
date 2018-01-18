@@ -3,7 +3,7 @@ package com.amx.jax.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.config.OtpSettings;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.services.AbstractService;
 
 @Service

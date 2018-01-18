@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.config.OtpSettings;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;

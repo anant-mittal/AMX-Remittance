@@ -203,16 +203,10 @@ public class PaymentService {
 
 	public HashMap<String, String> bahKnetInitialize(Map<String, Object> params) {
 
-		// Map<String, Object> configMap =
-		// this.getPGConfig((BigDecimal)params.get("pgId"));
-		// log.info("KNET payment configuration : " +
-		// PaymentUtil.getMapKeyValue(configMap));
-
-		/////////////////// Temporary code
-		/////////////////// ///////////////////////////////////////////////
+		/////////////////// Temporary code ///////////////////
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
-		;
+
 		configMap.put("action", "1");
 		configMap.put("currency", "414");
 		configMap.put("languageCode", "ENG");
@@ -223,7 +217,7 @@ public class PaymentService {
 		//configMap.put("aliasName", "PROD_MEC");
 		configMap.put("aliasName", "test_MEC");
 
-		LOG.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		LOG.info("Benefit payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 		///////////////////////////////////////////////////////////////////////////////////
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
@@ -269,10 +263,9 @@ public class PaymentService {
 			if (pipeValue != e24PaymentPipe.SUCCESS) {
 				responseMap.put("errorMsg", pipe.getErrorMsg());
 				responseMap.put("debugMsg", pipe.getDebugMsg());
-				LOG.info(pipe.getErrorMsg());
-				LOG.info(pipe.getDebugMsg());
-				//throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
-			}
+				LOG.error(pipe.getErrorMsg());
+				LOG.debug(pipe.getDebugMsg());
+		}
 
 			// get results
 			String payID = pipe.getPaymentId();

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.config.OtpSettings;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.services.JaxConfigService;
 
 @RestController

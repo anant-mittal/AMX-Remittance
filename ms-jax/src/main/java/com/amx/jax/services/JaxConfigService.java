@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.config.OtpSettings;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.repository.JaxConfigRepository;
 import com.amx.jax.util.ConverterUtil;

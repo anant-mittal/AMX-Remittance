@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.config.OtpSettings;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.repository.JaxConfigRepository;
