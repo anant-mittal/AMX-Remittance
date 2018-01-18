@@ -549,6 +549,14 @@ public List<RemittanceReportBean> calculateCollectionMode(RemittanceTransactionV
 			return null;
 		}
 
+		public List<RemittanceReceiptSubreport> getRemittanceReceiptSubreportList() {
+			return remittanceReceiptSubreportList;
+		}
+
+		public void setRemittanceReceiptSubreportList(List<RemittanceReceiptSubreport> remittanceReceiptSubreportList) {
+			this.remittanceReceiptSubreportList = remittanceReceiptSubreportList;
+		}
+
 		
 
 

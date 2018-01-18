@@ -35,7 +35,9 @@
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="FILE" />
 	</root>
-    <logger  name="org.hibernate"  level="info"/>	
-    <logger  name="org.springframework"  level="info"/>
+	<logger name="org.hibernate" level="info" />
+	<logger name="org.springframework" level="info" />
+	<logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager"
+		level="info" />
 
 </configuration>

@@ -435,10 +435,6 @@ public class RemittanceTransactionManager {
 	public RemittanceTransactionStatusResponseModel getTransactionStatus(
 			RemittanceTransactionStatusRequestModel request) {
 		RemittanceTransactionStatusResponseModel model = new RemittanceTransactionStatusResponseModel();
-		// RemittanceTransactionView remittanceTransactionView =
-		// remitAppDao.getRemittanceTransactionView(
-		// request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
-
 		RemittanceTransaction remittanceTransaction = remitAppDao
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
@@ -450,8 +446,8 @@ public class RemittanceTransactionManager {
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
 					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
-			model.setNetAmount(application.getLocalNetTranxAmount());
 		}
+		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
 		return model;

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
+
 public class PersonInfo extends AbstractModel {
 
 	private String title;

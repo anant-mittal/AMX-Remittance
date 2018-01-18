@@ -15,20 +15,28 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.ReportManagerService;
+import com.amx.jax.services.TransactionHistroyService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.Util;
 
 
@@ -52,7 +60,20 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	RemittanceProcedureDao remittanceDao;
 	
+	@Autowired
+	JaxNotificationService notificationService;
 	
+	@Autowired
+	CustomerDao customerDao;
+	
+	@Autowired
+	TransactionHistroyService transactionHistroyService;
+	
+	@Autowired
+	private RemittanceApplicationDao remitAppDao;
+	
+	@Autowired
+	private ReportManagerService reportManagerService;
 	
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
@@ -121,6 +142,15 @@ public class RemittancePaymentManager extends AbstractService{
 					response.setResponseStatus(ResponseStatus.OK);
 				    //response.getData().setType("pg_remit_response");
 				}
+					RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
+							lstPayIdDetails.get(0).getDocumentNo(), lstPayIdDetails.get(0).getDocumentFinancialyear());
+					TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(paymentResponse.getCustomerId(),
+							remittanceTransaction.getDocumentFinancialyear(), remittanceTransaction.getDocumentNo());
+					Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
+					setMetaInfo(trxnDto, paymentResponse);
+					reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+					List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
+					notificationService.sendTransactionNotification(rrsrl.get(0), customer);
 					
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
@@ -160,6 +190,16 @@ public class RemittancePaymentManager extends AbstractService{
 	    response.getData().setType("pg_remit_response");
 		
 		return response;
+	}
+
+
+
+
+	private void setMetaInfo(TransactionHistroyDTO transactionHistroyDTO, PaymentResponseDto paymentResponse) {
+		transactionHistroyDTO.setApplicationCountryId(paymentResponse.getApplicationCountryId());
+		transactionHistroyDTO.setCompanyId(paymentResponse.getCompanyId());
+		transactionHistroyDTO.setLanguageId(new BigDecimal(1));
+		transactionHistroyDTO.setCustomerId(paymentResponse.getCustomerId());		
 	}
 
 

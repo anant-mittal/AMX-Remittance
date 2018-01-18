@@ -424,6 +424,7 @@ public class UserService extends AbstractUserService {
 			onlineCustomer.setLockDt(null);
 			custDao.saveOnlineCustomer(onlineCustomer);
 		}
+		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
 
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {

@@ -1,9 +1,15 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class TransactionHistroyDTO {
+public class TransactionHistroyDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private BigDecimal idno;
 
 	private BigDecimal customerReference;
