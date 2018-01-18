@@ -15,6 +15,11 @@ public class OtpSettings {
 		this.otpValidityTime=otpValidityTime;
 	}
 	
+	//default
+	public OtpSettings() {
+
+	}
+	
 	public Integer getMaxValidateOtpAttempts() {
 		return maxValidateOtpAttempts;
 	}
