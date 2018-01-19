@@ -11,10 +11,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
-import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
@@ -58,35 +59,48 @@ public class JaxNotificationService {
 			logger.error("error in sendTransactionNotification", e);
 		}
 	}
-	
-	//to send Password change Email
-	@Async
-	public void sendPasswordChangedNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, Customer customer) {
 
-		logger.info("Sending password change notification to customer");
+	// to send profile (password, security question, image, mobile) change notification
+	@Async
+	public void sendProfileChangedNotification(CustomerModel customerModel, Customer customer) {
+
+		logger.info("Sending Profile change notification to customer : "+customer.getFirstName());
 		PersonInfo pinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(pinfo, customer);
 		} catch (Exception e1) {
+			logger.error("Error while copying Customer to PersonInfo.");
+			e1.printStackTrace();
 		}
 		Email email = new Email();
-		email.setSubject("Your transaction on AMX is successful");
+		
+		if ( customerModel.getPassword() != null ) {
+			email.setSubject("Change Password Success");
+			email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
+			
+		}else if( customerModel.getSecurityquestions() != null ) {
+			email.setSubject("Update Security Credentials Success");
+			email.getModel().put("change_type", ChangeType.SECURITY_QUESTION_CHANGE);
+			
+		}else if(customerModel.getImageUrl() != null ) {
+			email.setSubject("Update Security Credentials Success");
+			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
+			
+		}else if(customerModel.getMobile() != null ) {
+			email.setSubject("Your password changed successfuly");
+			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
+		}
+		
 		email.addTo(customer.getEmail());
-		email.setTemplate(Templates.TXN_CRT_SUCC);
+		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
-		email.getModel().put("data", pinfo);
-
-		File file = new File();
-		file.setTemplate(Templates.REMIT_RECEIPT);
-		file.setType(File.Type.PDF);
-		file.getModel().put("data", remittanceReceiptSubreport);
-
-		email.addFile(file);
+		email.getModel().put("pinfo", pinfo);
+		
 
 		try {
 			postManService.sendEmail(email);
 		} catch (UnirestException e) {
-			logger.error("error in sendTransactionNotification", e);
+			logger.error("error in sendProfileChangedNotification", e);
 		}
 	}
 

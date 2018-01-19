@@ -211,20 +211,12 @@ public class UserService extends AbstractUserService {
 				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
 			}
 		}
+		Customer customer = custDao.getCustById(customerId);
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		
-		if (model.getPassword() != null) {
-			
-		}else if (model.getImageUrl() != null) {
-			
-		}else if (model.getSecurityquestions() != null ) {
-			
-		}else if (model.getMobile() != null) {
-			
-		}
-		
+		jaxNotificationService.sendProfileChangedNotification(model, customer);
+
 		return response;
 	}
 
