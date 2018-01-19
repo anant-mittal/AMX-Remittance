@@ -129,6 +129,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -211,6 +214,17 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		
+		if (model.getPassword() != null) {
+			
+		}else if (model.getImageUrl() != null) {
+			
+		}else if (model.getSecurityquestions() != null ) {
+			
+		}else if (model.getMobile() != null) {
+			
+		}
+		
 		return response;
 	}
 
