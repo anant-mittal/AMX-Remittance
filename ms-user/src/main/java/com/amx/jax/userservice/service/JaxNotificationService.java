@@ -18,6 +18,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -62,7 +63,7 @@ public class JaxNotificationService {
 
 	// to send profile (password, security question, image, mobile) change notification
 	@Async
-	public void sendProfileChangedNotification(CustomerModel customerModel, Customer customer) {
+	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, Customer customer) {
 
 		logger.info("Sending Profile change notification to customer : "+customer.getFirstName());
 		PersonInfo pinfo = new PersonInfo();
@@ -102,6 +103,31 @@ public class JaxNotificationService {
 		} catch (UnirestException e) {
 			logger.error("error in sendProfileChangedNotification", e);
 		}
-	}
+	} //end of sendProfileChangeNotificationEmail
+	
+	@Async
+	public void sendOtpSms(Customer customer,String otp) {
+
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  "+customer.getFirstName(),customer.getMobile()));
+		PersonInfo pinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(pinfo, customer);
+		} catch (Exception e1) {
+			logger.error("Error while copying Customer to PersonInfo.");
+			e1.printStackTrace();
+		}
+
+		SMS sms = new SMS();
+		sms.addTo(customer.getMobile());
+		sms.getModel().put("pinfo", pinfo);
+		sms.getModel().put("otp", otp);
+		sms.setTemplate(Templates.RESET_OTP_SMS);
+
+		try {
+			postManService.sendSMS(sms);
+		} catch (UnirestException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	} // end of sendOtpSms
 
 }

@@ -215,7 +215,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		jaxNotificationService.sendProfileChangedNotification(model, customer);
+		jaxNotificationService.sendProfileChangeNotificationEmail(model, customer);
 
 		return response;
 	}
@@ -280,6 +280,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		jaxNotificationService.sendOtpSms(customer,model.getOtp());
 		return response;
 	}
 
