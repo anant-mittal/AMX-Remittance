@@ -282,6 +282,7 @@ public class UserService extends AbstractUserService {
 		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
 		model.setFirstName(customer.getFirstName());
 		model.setLastName(customer.getLastName());
+		model.setCustomerId(onlineCust.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
