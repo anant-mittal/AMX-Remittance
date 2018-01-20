@@ -189,8 +189,8 @@ public class LoginService {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
 					.getResult();
 			userSession.setUserid(identity);
-			model.setmOtpPrefix(model.getmOtpPrefix());
-			model.seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);

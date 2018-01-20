@@ -50,9 +50,6 @@ public class MetaController {
 	@Autowired
 	GuestSession guestSession;
 
-	@Autowired
-	Device device;
-
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -63,7 +60,7 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String site, HttpSession httpSession,
-			HttpServletRequest request) throws UnirestException {
+			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 		String remoteAddr = "";
