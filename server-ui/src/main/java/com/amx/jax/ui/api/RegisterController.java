@@ -73,18 +73,19 @@ public class RegisterController {
 	 */
 	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody UserUpdateData userUpdateData) {
-		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getOtp());
+		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
+				userUpdateData.geteOtp());
 	}
 
 	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
-			@RequestParam String otp) {
-		return registrationService.updatePhising(imageUrl, caption, otp);
+			@RequestParam String mOtp, @RequestParam String eOtp) {
+		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
 	}
 
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
-			@RequestParam String password, @RequestParam String otp) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, otp);
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam String eOtp) {
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
 	}
 }

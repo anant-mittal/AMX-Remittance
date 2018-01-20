@@ -7,14 +7,23 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 
 public class UserUpdateData {
 
-	private String otp = null;
+	private String mOtp = null;
+	private String eOtp = null;
 
-	public String getOtp() {
-		return otp;
+	public String geteOtp() {
+		return eOtp;
 	}
 
-	public void setOtp(String otp) {
-		this.otp = otp;
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
+
+	public String getmOtp() {
+		return mOtp;
+	}
+
+	public void setmOtp(String mOtp) {
+		this.mOtp = mOtp;
 	}
 
 	private List<QuestModelDTO> secQuesMeta = null;

@@ -106,8 +106,9 @@ public class UserController {
 
 	@ApiOperation(value = "Resets password")
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam String password, @RequestParam String otp) {
-		return loginService.updatepwd(password, otp);
+	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam String password, @RequestParam String mOtp,
+			@RequestParam String eOtp) {
+		return loginService.updatepwd(password, mOtp, eOtp);
 	}
 
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })

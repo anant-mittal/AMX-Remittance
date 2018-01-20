@@ -40,9 +40,6 @@ public class RegistrationService {
 	private JaxService jaxClient;
 
 	@Autowired
-	private UserService userService;
-
-	@Autowired
 	private PostManService postManService;
 
 	public ResponseWrapper<LoginData> verifyId(String civilid) {
@@ -113,12 +110,13 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String otp) {
+	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
+			String eOtp) {
 
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		CustomerModel customerModel = jaxClient.setDefaults().getUserclient()
-				.saveSecurityQuestions(securityquestions, otp).getResult();
+				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
@@ -126,21 +124,22 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String otp) {
+	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, otp).getResult();
+		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
 
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password, String otp) {
+	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password, String mOtp,
+			String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		try {
-			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, otp).getResult();
+			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, mOtp, eOtp).getResult();
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 
 			String emailId = userSessionInfo.getCustomerModel().getEmail();
