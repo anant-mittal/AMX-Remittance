@@ -57,6 +57,7 @@
 		<module>boot-utils</module>
 		<module>amx-lib</module>
 		<module>core</module>
+		<module>client-logger</module>
 		<module>ms-logger</module>
 		<module>ms-meta</module>
 		<module>ms-user</module>
