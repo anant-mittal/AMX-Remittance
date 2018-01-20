@@ -359,7 +359,7 @@ public class UserService extends AbstractUserService {
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
 		String eOtpHash = null;
-		if (eOtp != null) {
+		if (org.apache.commons.lang.StringUtils.isNotBlank(eOtp)) {
 			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
 		}
 		if (!mOtpHash.equals(mtokenHash)) {
