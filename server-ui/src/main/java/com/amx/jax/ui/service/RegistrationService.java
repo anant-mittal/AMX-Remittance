@@ -60,15 +60,9 @@ public class RegistrationService {
 			if (model.getIsActiveCustomer()) {
 				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 			} else {
-				userSessionInfo.setOtpPrefix();
-				model.setOtpPrefix(userSessionInfo.getOtpPrefix());
-
-				userService.notifyResetOTP(model);
+				wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+				wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
-				// append info in response data
-				wrapper.getData().setOtp(model.getmOtp());
-
-				wrapper.getData().setOtpPrefix(userSessionInfo.getOtpPrefix());
 			}
 			userSessionInfo.setUserid(civilid);
 

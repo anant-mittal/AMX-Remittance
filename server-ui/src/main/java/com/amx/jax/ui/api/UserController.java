@@ -68,9 +68,13 @@ public class UserController {
 
 	@ApiOperation(value = "Sends OTP and resets password")
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<LoginData> reset(@RequestParam String identity, @RequestParam(required = false) String otp) {
-		ResponseWrapper<LoginData> wrapper = loginService.reset(identity, otp);
-		return wrapper;
+	public ResponseWrapper<LoginData> reset(@RequestParam String identity, @RequestParam(required = false) String mOtp,
+			@RequestParam(required = false) String eOtp) {
+		if (mOtp == null && eOtp == null) {
+			return loginService.reset(identity);
+		} else {
+			return loginService.verifyOTP(identity, mOtp, eOtp);
+		}
 	}
 
 	@ApiOperation(value = "Logout User & Terminates session")
@@ -116,7 +120,7 @@ public class UserController {
 		if (otp == null) {
 			return loginService.sendOTP(null);
 		} else {
-			return loginService.verifyOTP(null, otp);
+			return loginService.verifyOTP(null, otp, null);
 		}
 	}
 }

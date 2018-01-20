@@ -149,11 +149,8 @@ public class LoginService {
 			}
 			// Check if response was successful
 			// append info in response data
-			userSession.setOtpPrefix();
-			model.setOtpPrefix(userSession.getOtpPrefix());
-			wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
-			wrapper.getData().setOtp(model.getmOtp());
-			userService.notifyResetOTP(model);
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
@@ -165,10 +162,11 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> verifyOTP(String identity, String otp) {
+	public ResponseWrapper<LoginData> verifyOTP(String identity, String motp, String eotp) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		try {
-			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, otp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp)
+					.getResult();
 			// Check if otp is valid
 			if (model != null) {
 				sessionService.authorize(model, true);
@@ -184,13 +182,24 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> reset(String identity, String otp) {
+	public ResponseWrapper<LoginData> reset(String identity) {
 		sessionService.clear();
-		if (otp == null) {
-			return this.sendOTP(identity);
-		} else {
-			return this.verifyOTP(identity, otp);
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+		try {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
+					.getResult();
+			userSession.setUserid(identity);
+			model.setmOtpPrefix(model.getmOtpPrefix());
+			model.seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
+		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
+		} catch (Exception e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
 		}
+		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String otp) {

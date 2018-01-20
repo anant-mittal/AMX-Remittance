@@ -6,6 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7991527354328804802L;
+
 	private String mOtp;
 
 	private String eOtp;
@@ -17,7 +22,7 @@ public class CivilIdOtpModel extends AbstractModel {
 	private String eHashedOtp;
 
 	private String mOtpPrefix = null;
-	
+
 	private String eOtpPrefix = null;
 
 	private String email;
