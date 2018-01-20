@@ -125,6 +125,9 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMS(sms);
+			sms.setMessage(String.format("%s-%s  %s-%s", model.getmOtpPrefix(), model.getmOtp(), model.geteOtpPrefix(),
+					model.geteOtp()));
+			postManService.notifySlack(sms);
 		} catch (UnirestException e) {
 			logger.error("error in sendOtpSms", e);
 		}

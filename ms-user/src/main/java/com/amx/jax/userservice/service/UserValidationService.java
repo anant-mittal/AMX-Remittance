@@ -371,12 +371,18 @@ public class UserValidationService {
 		Customer customer = custDao.getCustById(custId);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
-		String dbotp = (onlineCustomer.getEmailToken() == null) ? onlineCustomer.getSmsToken()
-				: onlineCustomer.getEmailToken();
-		if (!hashedotp.equals(dbotp)) {
-			throw new InvalidOtpException("Otp is incorrect for identity int: " + customer.getIdentityInt());
+		String dbmOtp = onlineCustomer.getSmsToken();
+		if (!hashedotp.equals(dbmOtp)) {
+			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
-
+		if (onlineCustomer.getEmailToken() != null) {
+			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
+			String dbeOtp = onlineCustomer.getEmailToken();
+			if (!hashedEotp.equals(dbeOtp)) {
+				throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
+			}
+			throw new InvalidOtpException("Email Otp is incorrect for identity int: " + customer.getIdentityInt());
+		}
 	}
 
 	private boolean isOtpFlowRequired(CustomerModel model) {
