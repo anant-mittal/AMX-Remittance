@@ -107,7 +107,7 @@ public class UserController {
 	@ApiOperation(value = "Resets password")
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam String password, @RequestParam String mOtp,
-			@RequestParam String eOtp) {
+			@RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
 	}
 
@@ -117,11 +117,12 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> sendOTP(@RequestParam(required = false) String otp) {
-		if (otp == null) {
+	public ResponseWrapper<LoginData> sendOTP(@RequestParam(required = false) String mOtp,
+			@RequestParam(required = false) String eOtp) {
+		if (mOtp == null) {
 			return loginService.sendOTP(null);
 		} else {
-			return loginService.verifyOTP(null, otp, null);
+			return loginService.verifyOTP(null, mOtp, null);
 		}
 	}
 }

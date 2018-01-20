@@ -52,8 +52,8 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String otp) {
-		return registrationService.loginWithOtp(civilid, otp);
+	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
+		return registrationService.loginWithOtp(civilid, mOtp);
 	}
 
 	/**
@@ -79,13 +79,13 @@ public class RegisterController {
 
 	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
-			@RequestParam String mOtp, @RequestParam String eOtp) {
+			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
 	}
 
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam String eOtp) {
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
 	}
 }

@@ -72,7 +72,7 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> loginWithOtp(String idnetity, String otp) {
+	public ResponseWrapper<LoginData> loginWithOtp(String idnetity, String mOtp) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 
 		if (userSessionInfo.isValid()) {
@@ -82,10 +82,10 @@ public class RegistrationService {
 
 			try {
 				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity,
-						otp);
+						mOtp, null);
 				CustomerModel model = response.getResult();
 				// Check if otp is valid
-				if (model != null && userSessionInfo.isValid(idnetity, otp)) {
+				if (model != null && userSessionInfo.isValid(idnetity, mOtp)) {
 					sessionService.authorize(model, true);
 					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
