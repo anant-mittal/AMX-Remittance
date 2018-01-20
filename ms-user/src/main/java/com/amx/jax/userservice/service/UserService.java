@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
@@ -129,7 +130,7 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	JaxNotificationService jaxNotificationService;
 
@@ -250,6 +251,10 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
+		return sendOtpForCivilId(civilId, null);
+	}
+
+	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels) {
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
@@ -265,9 +270,9 @@ public class UserService extends AbstractUserService {
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
-		generateToken(civilId, model);
-		onlineCust.setEmailToken(model.getHashedOtp());
-		onlineCust.setSmsToken(model.getHashedOtp());
+		generateToken(civilId, model, channels);
+		onlineCust.setEmailToken(model.getHashedeOtp());
+		onlineCust.setSmsToken(model.getHashedmOtp());
 		onlineCust.setTokenDate(new Date());
 		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
 				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
@@ -280,19 +285,33 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		jaxNotificationService.sendOtpSms(customer,model.getOtp());
+		jaxNotificationService.sendOtpSms(customer, model.getmOtp());
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			jaxNotificationService.sendOtpEmail(customer, model.geteOtp());
+		}
 		return response;
 	}
 
-	private void generateToken(String userId, CivilIdOtpModel model) {
-		String randOtp = util.createRandomPassword(6);
-		String hashedOtp = cryptoUtil.getHash(userId, randOtp);
-		model.setHashedOtp(hashedOtp);
-		model.setOtp(randOtp);
-		logger.info("Generated otp for civilid- " + userId + " is " + randOtp);
+	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+		String randmOtp = util.createRandomPassword(6);
+		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
+		String randeOtp = util.createRandomPassword(6);
+		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
+		model.setHashedmOtp(hashedmOtp);
+		model.setmOtp(randmOtp);
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			model.setHashedeOtp(hashedeOtp);
+			model.seteOtp(randeOtp);
+			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
+		}
+		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 
-	public ApiResponse validateOtp(String civilId, String otp) {
+	public ApiResponse validateOtp(String civilId, String mOtp) {
+		return validateOtp(civilId, mOtp, null);
+	}
+
+	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
 		logger.debug("in validateopt of civilid: " + civilId);
 		Customer customer = null;
 		if (civilId != null) {
@@ -309,16 +328,25 @@ public class UserService extends AbstractUserService {
 		if (onlineCust == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
-		if (StringUtils.isEmpty(otp)) {
+		if (StringUtils.isEmpty(mOtp)) {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenDate(onlineCust);
-		String tokenHash = (onlineCust.getEmailToken() == null) ? onlineCust.getSmsToken() : onlineCust.getEmailToken();
-		String otpHash = cryptoUtil.getHash(civilId, otp);
-		if (!otpHash.equals(tokenHash)) {
+		String etokenHash = onlineCust.getEmailToken();
+		String mtokenHash = onlineCust.getSmsToken();
+		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
+		String eOtpHash = null;
+		if (eOtp != null) {
+			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
+		}
+		if (!mOtpHash.equals(mtokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
-			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
+			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
+		}
+		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
+			userValidationService.incrementLockCount(onlineCust);
+			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
 		}
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		this.unlockCustomer(onlineCust);

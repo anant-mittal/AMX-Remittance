@@ -3,6 +3,9 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.userservice.service.UserService;
@@ -45,7 +49,17 @@ public class CustomerController {
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId);
 		return response;
 	}
-	
+
+	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
+	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
+		logger.debug("send Request:civilId" + civilId);
+		List<CommunicationChannel> channel = new ArrayList<>();
+		channel.add(CommunicationChannel.EMAIL);
+		channel.add(CommunicationChannel.MOBILE);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel);
+		return response;
+	}
+
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
 		logger.debug("in sendOtp Request");
@@ -54,16 +68,17 @@ public class CustomerController {
 	}
 
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
-	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("otp") String otp) {
-		logger.debug("validateOtp Request:civilId" + civilId + " otp:" + otp);
-		ApiResponse response = userSerivce.validateOtp(civilId, otp);
+	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
+			@RequestParam(name="eOtp", required=false) String eOtp) {
+		logger.debug("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		ApiResponse response = userSerivce.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
-	public ApiResponse validateOtp( @RequestParam("otp") String otp) {
-		logger.debug("validateOtp Request: otp:" + otp);
-		ApiResponse response = userSerivce.validateOtp(null, otp);
+	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp, @RequestParam(name="eOtp", required=false) String eOtp) {
+		logger.debug("validateOtp Request:" + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		ApiResponse response = userSerivce.validateOtp(null, mOtp, eOtp);
 		return response;
 	}
 
@@ -91,7 +106,7 @@ public class CustomerController {
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public ApiResponse updatePassword(@RequestBody CustomerModel model) {
-		logger.debug("updatePassword Request: "+ model.toString());
+		logger.debug("updatePassword Request: " + model.toString());
 		ApiResponse response = userSerivce.updatePassword(model);
 		return response;
 	}

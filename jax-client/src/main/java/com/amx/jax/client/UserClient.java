@@ -116,7 +116,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
-			custModel.setOtp(otp);
+			custModel.setMotp(otp);
 			custModel.setSecurityquestions(securityquestions);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
@@ -136,7 +136,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
-			custModel.setOtp(otp);
+			custModel.setMotp(otp);
 			custModel.setCaption(caption);
 			custModel.setImageUrl(imageUrl);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
@@ -159,7 +159,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		CustomerModel custModel = new CustomerModel();
 		custModel.setLoginId(loginId);
 		custModel.setPassword(password);
-		custModel.setOtp(otp);
+		custModel.setMotp(otp);
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 		String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
@@ -229,7 +229,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 		CustomerModel custModel = new CustomerModel();
 		custModel.setPassword(password);
-		custModel.setOtp(otp);
+		custModel.setMotp(otp);
 		String updatePasswordUrl = baseUrl.toString() + endpoint + "?password=" + password;
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		log.info("calling updatePassword api: " + updatePasswordUrl);

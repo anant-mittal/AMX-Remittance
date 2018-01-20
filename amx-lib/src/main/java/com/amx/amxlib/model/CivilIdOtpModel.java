@@ -4,10 +4,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
 
-	private String otp;
+	private String mOtp;
+
+	private String eOtp;
 
 	@JsonIgnore
-	private String hashedOtp;
+	private String mHashedOtp;
+
+	@JsonIgnore
+	private String eHashedOtp;
 
 	private String otpPrefix = null;
 
@@ -45,12 +50,12 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	private String lastName;
 
-	public String getOtp() {
-		return otp;
+	public String getmOtp() {
+		return mOtp;
 	}
 
-	public void setOtp(String otp) {
-		this.otp = otp;
+	public void setmOtp(String otp) {
+		this.mOtp = otp;
 	}
 
 	public String getEmail() {
@@ -69,12 +74,12 @@ public class CivilIdOtpModel extends AbstractModel {
 		this.mobile = mobile;
 	}
 
-	public String getHashedOtp() {
-		return hashedOtp;
+	public String getHashedmOtp() {
+		return mHashedOtp;
 	}
 
-	public void setHashedOtp(String hashedOtp) {
-		this.hashedOtp = hashedOtp;
+	public void setHashedmOtp(String hashedOtp) {
+		this.mHashedOtp = hashedOtp;
 	}
 
 	public Boolean getIsActiveCustomer() {
@@ -88,6 +93,22 @@ public class CivilIdOtpModel extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "otp";
+	}
+
+	public String geteOtp() {
+		return eOtp;
+	}
+
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
+
+	public String getHashedeOtp() {
+		return eHashedOtp;
+	}
+
+	public void setHashedeOtp(String eHashedOtp) {
+		this.eHashedOtp = eHashedOtp;
 	}
 
 }

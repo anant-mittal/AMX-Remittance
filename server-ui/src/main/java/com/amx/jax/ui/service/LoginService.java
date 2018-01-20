@@ -152,7 +152,7 @@ public class LoginService {
 			userSession.setOtpPrefix();
 			model.setOtpPrefix(userSession.getOtpPrefix());
 			wrapper.getData().setOtpPrefix(userSession.getOtpPrefix());
-			wrapper.getData().setOtp(model.getOtp());
+			wrapper.getData().setOtp(model.getmOtp());
 			userService.notifyResetOTP(model);
 			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {

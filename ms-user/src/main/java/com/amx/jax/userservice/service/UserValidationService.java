@@ -364,13 +364,13 @@ public class UserValidationService {
 
 	public void validateOtpFlow(CustomerModel model) {
 		boolean isOtpFlowRequired = isOtpFlowRequired(model);
-		if (isOtpFlowRequired && model.getOtp() == null) {
+		if (isOtpFlowRequired && model.getMotp() == null) {
 			throw new GlobalException("Otp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
 		BigDecimal custId = meta.getCustomerId();
 		Customer customer = custDao.getCustById(custId);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
-		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getOtp());
+		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
 		String dbotp = (onlineCustomer.getEmailToken() == null) ? onlineCustomer.getSmsToken()
 				: onlineCustomer.getEmailToken();
 		if (!hashedotp.equals(dbotp)) {

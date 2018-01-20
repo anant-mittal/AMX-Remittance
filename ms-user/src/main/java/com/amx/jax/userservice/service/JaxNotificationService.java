@@ -108,7 +108,7 @@ public class JaxNotificationService {
 	@Async
 	public void sendOtpSms(Customer customer,String otp) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  "+customer.getFirstName(),customer.getMobile()));
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ",customer.getFirstName(),customer.getMobile()));
 		PersonInfo pinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(pinfo, customer);
@@ -129,5 +129,11 @@ public class JaxNotificationService {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
+
+	@Async
+	public void sendOtpEmail(Customer customer, String geteOtp) {
+
+		
+	}
 
 }

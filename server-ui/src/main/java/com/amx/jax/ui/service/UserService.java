@@ -44,7 +44,7 @@ public class UserService {
 	public void notifyResetOTP(CivilIdOtpModel model) {
 
 		Message msg = new Message();
-		msg.setMessage("Your OTP for Reset is " + model.getOtp());
+		msg.setMessage("Your OTP for Reset is " + model.getmOtp());
 		try {
 			postManService.notifySlack(msg);
 		} catch (UnirestException e1) {
@@ -56,7 +56,7 @@ public class UserService {
 			String phoneNo = "7710072192";
 			phoneNo = model.getMobile();
 			sms.addTo(phoneNo);
-			sms.setMessage("Your OTP for Reset is " + model.getOtp());
+			sms.setMessage("Your OTP for Reset is " + model.getmOtp());
 			sms.setTemplate(Templates.RESET_OTP_SMS);
 			sms.getModel().put("data", model);
 			postManService.sendSMS(sms);

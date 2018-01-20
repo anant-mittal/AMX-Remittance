@@ -71,8 +71,8 @@ public class JaxClientApplicationTests {
 		logger.info("response of testSendotpapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
-		assertNotNull(response.getResult().getOtp());
-		otp = response.getResult().getOtp();
+		assertNotNull(response.getResult().getmOtp());
+		otp = response.getResult().getmOtp();
 	}
 
 	 @Test

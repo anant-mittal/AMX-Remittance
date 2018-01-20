@@ -66,7 +66,7 @@ public class RegistrationService {
 				userService.notifyResetOTP(model);
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
 				// append info in response data
-				wrapper.getData().setOtp(model.getOtp());
+				wrapper.getData().setOtp(model.getmOtp());
 
 				wrapper.getData().setOtpPrefix(userSessionInfo.getOtpPrefix());
 			}
