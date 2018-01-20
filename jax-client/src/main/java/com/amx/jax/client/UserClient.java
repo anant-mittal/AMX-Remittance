@@ -15,6 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
@@ -51,8 +52,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp=" + mOtp;
-		response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
+		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
+				.queryParam("eOtp", eOtp);
+		response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 				});
 		return response.getBody();
@@ -63,8 +66,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-otp/?otp=" + mOtp;
-		response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
+		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-otp/";
+		UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
+				.queryParam("eOtp", eOtp);
+		response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 				});
 		return response.getBody();
