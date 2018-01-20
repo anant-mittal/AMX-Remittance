@@ -38,9 +38,6 @@ public class LoginService {
 	@Autowired
 	private SessionService sessionService;
 
-	@Autowired
-	private UserService userService;
-
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
