@@ -87,7 +87,7 @@ public class JaxNotificationService {
 		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
-		email.getModel().put("pinfo", pinfo);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		try {
 			postManService.sendEmail(email);
@@ -118,9 +118,23 @@ public class JaxNotificationService {
 	} // end of sendOtpSms
 
 	@Async
-	public void sendOtpEmail(Customer customer, String geteOtp) {
+	public void sendOtpEmail(PersonInfo pinfo, CivilIdOtpModel civilIdOtpModel) {
+	
+		logger.info("Sending OTP Email to customer : " + pinfo.getFirstName());
 
-	}
+		Email email = new Email();
+		email.setSubject("OTP Email");
+		email.addTo(pinfo.getEmail());
+		email.setTemplate(Templates.PROFILE_CHANGE);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+
+		try {
+			postManService.sendEmail(email);
+		} catch (UnirestException e) {
+			logger.error("error in sendOtpEmail", e);
+		}		
+	}// end of sendOtpEmail
 
 	@Async
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {

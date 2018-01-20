@@ -307,7 +307,7 @@ public class UserService extends AbstractUserService {
 		}
 		jaxNotificationService.sendOtpSms(personinfo, model);
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			jaxNotificationService.sendOtpEmail(customer, model.geteOtp());
+			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
 	}
