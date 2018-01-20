@@ -43,27 +43,27 @@ public class UserClient extends AbstractJaxServiceClient {
 	@Autowired
 	private ConverterUtility util;
 
-	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp)
+	public ApiResponse<CustomerModel> validateOtp(String identityId, String mOtp, String eOtp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
 		if (StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
-			return validateOtp(otp);
+			return validateOtp(mOtp, eOtp);
 		}
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp=" + otp;
+		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/?otp=" + mOtp;
 		response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 				});
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> validateOtp(String otp)
+	public ApiResponse<CustomerModel> validateOtp(String mOtp, String eOtp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		log.info("calling validateOtp api: ");
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-otp/?otp=" + otp;
+		String validateOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-otp/?otp=" + mOtp;
 		response = restTemplate.exchange(validateOtpUrl, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 				});
