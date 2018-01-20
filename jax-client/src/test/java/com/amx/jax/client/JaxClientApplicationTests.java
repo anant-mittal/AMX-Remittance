@@ -50,7 +50,7 @@ public class JaxClientApplicationTests {
 
 	private String otp;
 
-	//@Test
+	// @Test
 	public void testSendotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -75,7 +75,7 @@ public class JaxClientApplicationTests {
 		otp = response.getResult().getmOtp();
 	}
 
-	 @Test
+	@Test
 	public void testvalidateotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -103,7 +103,7 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp);
+			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp, null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -117,14 +117,14 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
-		ApiResponse<BooleanResponse> response = client.updatePassword("Amx@123456", otp);
+		ApiResponse<BooleanResponse> response = client.updatePassword("Amx@123456", otp, null);
 		logger.info("response of updatepasswordapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 		assertNotNull("\"Response is null", response.getResult());
 		assertTrue("Response is not successful", response.getResult().isSuccess());
 	}
 
-	//@Test
+	// @Test
 	public void testSendotpAndupdatepasswordapi()
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, IOException {
 		this.testSendotpapi();

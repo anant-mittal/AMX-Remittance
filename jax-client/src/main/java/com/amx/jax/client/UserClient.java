@@ -130,11 +130,13 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions, String otp) {
+	public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions, String mOtp,
+			String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
-			custModel.setMotp(otp);
+			custModel.setMotp(mOtp);
+			custModel.setEotp(eOtp);
 			custModel.setSecurityquestions(securityquestions);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
@@ -150,11 +152,12 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl, String otp) {
+	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			CustomerModel custModel = new CustomerModel();
-			custModel.setMotp(otp);
+			custModel.setMotp(mOtp);
+			custModel.setEotp(eOtp);
 			custModel.setCaption(caption);
 			custModel.setImageUrl(imageUrl);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
@@ -171,13 +174,14 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String otp)
+	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String mOtp, String eOtp)
 			throws AlreadyExistsException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		CustomerModel custModel = new CustomerModel();
 		custModel.setLoginId(loginId);
 		custModel.setPassword(password);
-		custModel.setMotp(otp);
+		custModel.setMotp(mOtp);
+		custModel.setEotp(eOtp);
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
 		String saveCustUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
@@ -241,13 +245,14 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<BooleanResponse> updatePassword(String password, String otp)
+	public ApiResponse<BooleanResponse> updatePassword(String password, String mOtp, String eOtp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
 		String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 		CustomerModel custModel = new CustomerModel();
 		custModel.setPassword(password);
-		custModel.setMotp(otp);
+		custModel.setMotp(mOtp);
+		custModel.setEotp(eOtp);
 		String updatePasswordUrl = baseUrl.toString() + endpoint + "?password=" + password;
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		log.info("calling updatePassword api: " + updatePasswordUrl);

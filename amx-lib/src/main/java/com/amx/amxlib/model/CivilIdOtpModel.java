@@ -1,5 +1,7 @@
 package com.amx.amxlib.model;
 
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
@@ -25,6 +27,8 @@ public class CivilIdOtpModel extends AbstractModel {
 	private Boolean isActiveCustomer;
 
 	private String firstName;
+	
+	private BigDecimal customerId;
 
 	public String getFirstName() {
 		return firstName;
@@ -119,6 +123,14 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void seteOtpPrefix(String eOtpPrefix) {
 		this.eOtpPrefix = eOtpPrefix;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }
