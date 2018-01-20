@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dbmodel.Customer;
@@ -61,54 +62,54 @@ public class JaxNotificationService {
 		}
 	}
 
-	// to send profile (password, security question, image, mobile) change notification
+	// to send profile (password, security question, image, mobile) change
+	// notification
 	@Async
 	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, Customer customer) {
 
-		logger.info("Sending Profile change notification to customer : "+customer.getFirstName());
+		logger.info("Sending Profile change notification to customer : " + customer.getFirstName());
 		PersonInfo pinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(pinfo, customer);
-		} catch (Exception e1) {
-			logger.error("Error while copying Customer to PersonInfo.");
-			e1.printStackTrace();
+		} catch (Exception e) {
+			logger.error("Error while copying Customer to PersonInfo.", e);
 		}
 		Email email = new Email();
-		
-		if ( customerModel.getPassword() != null ) {
+
+		if (customerModel.getPassword() != null) {
 			email.setSubject("Change Password Success");
 			email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
-			
-		}else if( customerModel.getSecurityquestions() != null ) {
+
+		} else if (customerModel.getSecurityquestions() != null) {
 			email.setSubject("Update Security Credentials Success");
 			email.getModel().put("change_type", ChangeType.SECURITY_QUESTION_CHANGE);
-			
-		}else if(customerModel.getImageUrl() != null ) {
+
+		} else if (customerModel.getImageUrl() != null) {
 			email.setSubject("Update Security Credentials Success");
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
-			
-		}else if(customerModel.getMobile() != null ) {
+
+		} else if (customerModel.getMobile() != null) {
 			email.setSubject("Your password changed successfuly");
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 		}
-		
+
 		email.addTo(customer.getEmail());
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
 		email.getModel().put("pinfo", pinfo);
-		
 
 		try {
 			postManService.sendEmail(email);
 		} catch (UnirestException e) {
 			logger.error("error in sendProfileChangedNotification", e);
 		}
-	} //end of sendProfileChangeNotificationEmail
-	
-	@Async
-	public void sendOtpSms(Customer customer,String otp) {
+	} // end of sendProfileChangeNotificationEmail
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ",customer.getFirstName(),customer.getMobile()));
+	@Async
+	public void sendOtpSms(Customer customer, CivilIdOtpModel model) {
+
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", customer.getFirstName(),
+				customer.getMobile()));
 		PersonInfo pinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(pinfo, customer);
@@ -119,8 +120,7 @@ public class JaxNotificationService {
 
 		SMS sms = new SMS();
 		sms.addTo(customer.getMobile());
-		sms.getModel().put("pinfo", pinfo);
-		sms.getModel().put("otp", otp);
+		sms.getModel().put("data", model);
 		sms.setTemplate(Templates.RESET_OTP_SMS);
 
 		try {
@@ -133,7 +133,6 @@ public class JaxNotificationService {
 	@Async
 	public void sendOtpEmail(Customer customer, String geteOtp) {
 
-		
 	}
 
 }

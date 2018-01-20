@@ -14,15 +14,9 @@ public class CivilIdOtpModel extends AbstractModel {
 	@JsonIgnore
 	private String eHashedOtp;
 
-	private String otpPrefix = null;
-
-	public String getOtpPrefix() {
-		return otpPrefix;
-	}
-
-	public void setOtpPrefix(String otpPrefix) {
-		this.otpPrefix = otpPrefix;
-	}
+	private String mOtpPrefix = null;
+	
+	private String eOtpPrefix = null;
 
 	private String email;
 
@@ -109,6 +103,22 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void setHashedeOtp(String eHashedOtp) {
 		this.eHashedOtp = eHashedOtp;
+	}
+
+	public String getmOtpPrefix() {
+		return mOtpPrefix;
+	}
+
+	public void setmOtpPrefix(String mOtpPrefix) {
+		this.mOtpPrefix = mOtpPrefix;
+	}
+
+	public String geteOtpPrefix() {
+		return eOtpPrefix;
+	}
+
+	public void seteOtpPrefix(String eOtpPrefix) {
+		this.eOtpPrefix = eOtpPrefix;
 	}
 
 }

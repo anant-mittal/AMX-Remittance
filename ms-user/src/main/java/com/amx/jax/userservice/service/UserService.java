@@ -69,6 +69,7 @@ import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.StringUtil;
 import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
+import com.bootloaderjs.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -285,7 +286,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		jaxNotificationService.sendOtpSms(customer, model.getmOtp());
+		jaxNotificationService.sendOtpSms(customer, model);
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(customer, model.geteOtp());
 		}
@@ -299,9 +300,11 @@ public class UserService extends AbstractUserService {
 		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
 		model.setHashedmOtp(hashedmOtp);
 		model.setmOtp(randmOtp);
+		model.setmOtpPrefix(Random.randomAlpha(3));
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			model.setHashedeOtp(hashedeOtp);
 			model.seteOtp(randeOtp);
+			model.seteOtpPrefix(Random.randomAlpha(3));
 			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
