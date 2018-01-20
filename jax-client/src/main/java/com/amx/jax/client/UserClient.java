@@ -45,7 +45,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<CustomerModel> validateOtp(String identityId, String otp)
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
-		if(StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
+		if (StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
 			return validateOtp(otp);
 		}
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
@@ -70,7 +70,6 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
@@ -84,7 +83,21 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
-	
+
+	public ApiResponse<CivilIdOtpModel> sendResetOtpForCivilId(String identityId)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+		HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-reset-otp/";
+		log.info("calling sendResetOtpForCivilId api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+				});
+		log.info("responce from  sendResetOtpForCivilId api: " + util.marshall(response.getBody()));
+
+		return response.getBody();
+	}
+
 	public ApiResponse<CivilIdOtpModel> sendOtpForCivilId()
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
@@ -153,7 +166,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
-	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password ,String otp)
+	public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String otp)
 			throws AlreadyExistsException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		CustomerModel custModel = new CustomerModel();
