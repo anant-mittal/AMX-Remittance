@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
@@ -144,13 +146,19 @@ public class RemittancePaymentManager extends AbstractService{
 				}
 					RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
 							lstPayIdDetails.get(0).getDocumentNo(), lstPayIdDetails.get(0).getDocumentFinancialyear());
-					TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(paymentResponse.getCustomerId(),
-							remittanceTransaction.getDocumentFinancialyear(), remittanceTransaction.getDocumentNo());
+					TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
+							paymentResponse.getCustomerId(), remittanceTransaction.getDocumentFinancialyear(),
+							remittanceTransaction.getDocumentNo());
 					Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 					setMetaInfo(trxnDto, paymentResponse);
 					reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
 					List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
-					notificationService.sendTransactionNotification(rrsrl.get(0), customer);
+					PersonInfo personinfo = new PersonInfo();
+					try {
+						BeanUtils.copyProperties(personinfo, customer);
+					} catch (Exception e) {
+					}
+					notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 					
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());

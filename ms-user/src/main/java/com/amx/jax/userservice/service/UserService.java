@@ -213,13 +213,26 @@ public class UserService extends AbstractUserService {
 				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
 			}
 		}
-		Customer customer = custDao.getCustById(customerId);
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		jaxNotificationService.sendProfileChangeNotificationEmail(model, customer);
+
+		if (isNewUserRegistrationSuccess(model, onlineCust)) {
+			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
+					onlineCust.getEmail());
+		} else {
+			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+		}
 
 		return response;
+	}
+
+	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
+
+		if (model.getPassword() != null && ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+			return true;
+		}
+		return false;
 	}
 
 	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
@@ -287,7 +300,12 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		jaxNotificationService.sendOtpSms(customer, model);
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		}
+		jaxNotificationService.sendOtpSms(personinfo, model);
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(customer, model.geteOtp());
 		}

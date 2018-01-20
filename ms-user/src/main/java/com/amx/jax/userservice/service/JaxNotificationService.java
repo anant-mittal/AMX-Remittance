@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import static com.amx.amxlib.constant.NotificationConstants.*;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -33,25 +34,20 @@ public class JaxNotificationService {
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Async
-	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, Customer customer) {
+	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
 		logger.info("Sending txn notification to customer");
-		PersonInfo pinfo = new PersonInfo();
-		try {
-			BeanUtils.copyProperties(pinfo, customer);
-		} catch (Exception e1) {
-		}
 		Email email = new Email();
 		email.setSubject("Your transaction on AMX is successful");
-		email.addTo(customer.getEmail());
+		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.TXN_CRT_SUCC);
 		email.setHtml(true);
-		email.getModel().put("data", pinfo);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		File file = new File();
 		file.setTemplate(Templates.REMIT_RECEIPT);
 		file.setType(File.Type.PDF);
-		file.getModel().put("data", remittanceReceiptSubreport);
+		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
 
@@ -65,15 +61,10 @@ public class JaxNotificationService {
 	// to send profile (password, security question, image, mobile) change
 	// notification
 	@Async
-	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, Customer customer) {
+	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, PersonInfo pinfo) {
 
-		logger.info("Sending Profile change notification to customer : " + customer.getFirstName());
-		PersonInfo pinfo = new PersonInfo();
-		try {
-			BeanUtils.copyProperties(pinfo, customer);
-		} catch (Exception e) {
-			logger.error("Error while copying Customer to PersonInfo.", e);
-		}
+		logger.info("Sending Profile change notification to customer : " + pinfo.getFirstName());
+
 		Email email = new Email();
 
 		if (customerModel.getPassword() != null) {
@@ -93,7 +84,7 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 		}
 
-		email.addTo(customer.getEmail());
+		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
 		email.getModel().put("pinfo", pinfo);
@@ -106,21 +97,14 @@ public class JaxNotificationService {
 	} // end of sendProfileChangeNotificationEmail
 
 	@Async
-	public void sendOtpSms(Customer customer, CivilIdOtpModel model) {
+	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 
-		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", customer.getFirstName(),
-				customer.getMobile()));
-		PersonInfo pinfo = new PersonInfo();
-		try {
-			BeanUtils.copyProperties(pinfo, customer);
-		} catch (Exception e1) {
-			logger.error("Error while copying Customer to PersonInfo.");
-			e1.printStackTrace();
-		}
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
+				pinfo.getMobile()));
 
 		SMS sms = new SMS();
-		sms.addTo(customer.getMobile());
-		sms.getModel().put("data", model);
+		sms.addTo(pinfo.getMobile());
+		sms.getModel().put(RESP_DATA_KEY, model);
 		sms.setTemplate(Templates.RESET_OTP_SMS);
 
 		try {
@@ -138,4 +122,13 @@ public class JaxNotificationService {
 
 	}
 
+	@Async
+	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
+		Email email = new Email();
+		email.setSubject(REG_SUC);
+		email.addTo(emailid);
+		email.setTemplate(Templates.REG_SUC);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, pinfo);
+	}
 }

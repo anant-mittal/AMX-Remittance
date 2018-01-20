@@ -19,6 +19,7 @@ public class PersonInfo extends AbstractModel {
 	private Date dateOfBirth;
 	private String alterEmailId;
 	private String mobile;
+	private String email;
 	private BigDecimal nationalityId;
 	private Timestamp lastLoginTime;
 
@@ -132,6 +133,14 @@ public class PersonInfo extends AbstractModel {
 
 	public void setLastLoginTime(Timestamp lastLoginTime) {
 		this.lastLoginTime = lastLoginTime;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 }
