@@ -365,31 +365,31 @@ public class UserValidationService {
 	public void validateOtpFlow(CustomerModel model) {
 		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
 		boolean isEOtpFlowRequired = isEOtpFlowRequired(model);
-		
-		
+
 		if (isMOtpFlowRequired && model.getMotp() == null) {
 			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
-		
+
 		if (isEOtpFlowRequired && model.getEotp() == null) {
 			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
-		
+
 		BigDecimal custId = meta.getCustomerId();
 		Customer customer = custDao.getCustById(custId);
+		// mobile otp validation
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
 		String dbmOtp = onlineCustomer.getSmsToken();
 		if (!hashedotp.equals(dbmOtp)) {
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
+		// email otp validation
 		if (onlineCustomer.getEmailToken() != null) {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
 			String dbeOtp = onlineCustomer.getEmailToken();
 			if (!hashedEotp.equals(dbeOtp)) {
-				throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
+				throw new InvalidOtpException("Email Otp is incorrect for identity int:  " + customer.getIdentityInt());
 			}
-			throw new InvalidOtpException("Email Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
 	}
 
@@ -414,11 +414,11 @@ public class UserValidationService {
 	private boolean isEOtpFlowRequired(CustomerModel model) {
 
 		boolean required = false;
-		
+
 		if (model.getEmail() != null) {
 			required = true;
 		}
-		
+
 		if (model.getMobile() != null) {
 			required = true;
 		}
