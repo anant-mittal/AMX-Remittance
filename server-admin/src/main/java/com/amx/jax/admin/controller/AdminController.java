@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.admin.service.AdminService;
@@ -22,7 +23,7 @@ import io.swagger.annotations.Api;
 /**
  * @author Viki Sangani 13-Dec-2017 Appcontroller.java
  */
-@Controller
+@RestController
 @RequestMapping(ADMIN_API_ENDPOINT)
 @Api(value = "Admin APIs")
 @SuppressWarnings("rawtypes")
