@@ -12,6 +12,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
@@ -67,7 +68,7 @@ public class PostManClient implements PostManService {
 	}
 
 	@Override
-	public File processTemplate(String template, Object data, Type fileType) throws UnirestException {
+	public File processTemplate(Templates template, Object data, Type fileType) throws UnirestException {
 		HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
 				// .header("content-type", "application/json")
 				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(data))

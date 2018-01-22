@@ -37,6 +37,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.Tenant;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
@@ -86,7 +87,7 @@ public class RemittController {
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
 
-		File file = postManService.processTemplate("RemittanceStatment", wrapper, File.Type.PDF);
+		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
 		file.setName("RemittanceStatment.pdf");
 
 		file.create(response, true);
@@ -101,7 +102,7 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
-			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
 			file.setName("RemittanceReceiptReport" + tranxDTO.getCollectionDocumentFinYear() + "-"
 					+ tranxDTO.getCollectionDocumentNo() + ".pdf");
 			file.create(response, true);
@@ -126,11 +127,11 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, File.Type.PDF);
+			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManService.processTemplate("RemittanceReceiptReport", wrapper, null);
+			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, null);
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);

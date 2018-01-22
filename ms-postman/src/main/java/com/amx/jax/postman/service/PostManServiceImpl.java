@@ -65,7 +65,7 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	public File processTemplate(String template, Object data, Type fileType) throws UnirestException {
+	public File processTemplate(Templates template, Object data, Type fileType) throws UnirestException {
 		Map<String, Object> map = JsonUtil.toMap(data);
 		return this.processTemplate(template, map, fileType);
 	}

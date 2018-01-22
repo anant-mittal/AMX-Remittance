@@ -4,6 +4,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface PostManService {
@@ -14,6 +15,6 @@ public interface PostManService {
 
 	public Message notifySlack(Message msg) throws UnirestException;
 
-	public File processTemplate(String template, Object data, File.Type fileType) throws UnirestException;
+	public File processTemplate(Templates template, Object data, File.Type fileType) throws UnirestException;
 
 }
