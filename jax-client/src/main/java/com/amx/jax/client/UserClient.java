@@ -297,5 +297,56 @@ public class UserClient extends AbstractJaxServiceClient {
 				});
 		return response.getBody();
 	}
+	
+	public ApiResponse<CustomerModel> updateCustomerEmail(String json)
+			throws CustomerValidationException, LimitExeededException {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
+		HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
+		log.info("calling saveCustomer api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+				});
+		log.info("responce from  saveCustomer api: " + util.marshall(response.getBody()));
+		return response.getBody();
+	}
+	
+	public ApiResponse<CivilIdOtpModel> sendOtpForEmailUpdate(String email)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+
+		CustomerModel custModel = new CustomerModel();
+		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+		custModel.setEmail(email);
+		
+		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
+		log.info("calling sendOtp for email update api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+				});
+		log.info("responce from  sendOtpForEmailUpdate api: " + util.marshall(response.getBody()));
+
+		return response.getBody();
+	}
+	
+	public ApiResponse<CivilIdOtpModel> sendOtpForMobileUpdate(String mobile)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+
+		CustomerModel custModel = new CustomerModel();
+		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+		custModel.setMobile(mobile);
+		
+		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
+		log.info("calling sendOtp for email update api: " + sendOtpUrl);
+		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+				});
+		log.info("responce from  sendOtpForMobileUpdate api: " + util.marshall(response.getBody()));
+
+		return response.getBody();
+	}
 
 }

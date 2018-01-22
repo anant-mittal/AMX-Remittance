@@ -56,7 +56,7 @@ public class CustomerController {
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
-		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel, null);
 		return response;
 	}
 
@@ -122,6 +122,16 @@ public class CustomerController {
 	public ApiResponse deActivateCustomer() {
 		logger.debug("in deActivateCustomer Request ");
 		ApiResponse response = userSerivce.deactivateCustomer();
+		return response;
+	}
+	
+	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
+	public ApiResponse sendResetEmailCredentialsOtp(@RequestBody CustomerModel custModel) {
+		logger.debug("send Request:civilId" + custModel.toString());
+		List<CommunicationChannel> channel = new ArrayList<>();
+		channel.add(CommunicationChannel.EMAIL);
+		channel.add(CommunicationChannel.MOBILE);
+		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel);
 		return response;
 	}
 }

@@ -82,6 +82,10 @@ public class JaxNotificationService {
 		} else if (customerModel.getMobile() != null) {
 			email.setSubject("Change mobile Success");
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
+			
+		}else if (customerModel.getEmail() != null) {
+			email.setSubject("Change email Success");
+			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 		}
 
 		email.addTo(pinfo.getEmail());

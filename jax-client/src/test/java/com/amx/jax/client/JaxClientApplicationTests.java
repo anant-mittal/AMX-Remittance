@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -20,6 +22,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
@@ -75,7 +78,7 @@ public class JaxClientApplicationTests {
 		otp = response.getResult().getmOtp();
 	}
 
-	@Test
+	//@Test
 	public void testvalidateotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -130,4 +133,57 @@ public class JaxClientApplicationTests {
 		this.testSendotpapi();
 		this.updatepasswordapi();
 	}
+	
+	//@Test
+	public void saveSecurityQuestions() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		String mOtp = "381834";
+		
+		SecurityQuestionModel m0 =new SecurityQuestionModel(new BigDecimal(0),"test");
+		SecurityQuestionModel m1 =new SecurityQuestionModel(new BigDecimal(1),"test");
+		SecurityQuestionModel m2 =new SecurityQuestionModel(new BigDecimal(2),"test");
+		SecurityQuestionModel m3 =new SecurityQuestionModel(new BigDecimal(3),"test");
+		SecurityQuestionModel m4 =new SecurityQuestionModel(new BigDecimal(4),"test");
+		
+		List<SecurityQuestionModel> list = new ArrayList<SecurityQuestionModel>();
+		list.add(m0);
+		list.add(m1);
+		list.add(m2);
+		list.add(m3);
+		list.add(m4);
+		
+		ApiResponse<CustomerModel> response = client.saveSecurityQuestions(list, mOtp,null);
+		logger.info("response of updatepasswordapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+		assertNotNull("\"Response is null", response.getResult());
+	}
+	
+	@Test
+	public void sendOtpForEmailUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		String email = "viki.sangani@gmail.com";
+		
+		ApiResponse<CivilIdOtpModel> response = client.sendOtpForEmailUpdate(email);
+		logger.info("response of updatepasswordapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+		assertNotNull("\"Response is null", response.getResult());
+	}
+	
+	@Test
+	public void sendOtpForMobileUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		String mobile = "9920027200";
+		
+		ApiResponse<CivilIdOtpModel> response = client.sendOtpForMobileUpdate(mobile);
+		logger.info("response of updatepasswordapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+		assertNotNull("\"Response is null", response.getResult());
+	}
+	
 }

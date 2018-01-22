@@ -2,10 +2,11 @@ package com.amx.jax.postman.model;
 
 public enum ChangeType {
 
-	PASSWORD_CHANGE("reset-otp"), 
-	SECURITY_QUESTION_CHANGE("reset-otp-sms"), 
-	IMAGE_CHANGE("health-server-up"), 
-	MOBILE_CHANGE("RemittanceReceiptReport");
+	PASSWORD_CHANGE("password_change"), 
+	SECURITY_QUESTION_CHANGE("secutiry_que_change"), 
+	IMAGE_CHANGE("image_change"), 
+	MOBILE_CHANGE("mobile_change"),
+	EMAIL_CHANGE("email_change"),;
 
 	String fileName;
 

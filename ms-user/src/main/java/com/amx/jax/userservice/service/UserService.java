@@ -222,8 +222,6 @@ public class UserService extends AbstractUserService {
 					onlineCust.getEmail());
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
-			
-			//send email notification to old email id
 		}
 
 		return response;
@@ -267,11 +265,12 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
-		return sendOtpForCivilId(civilId, null);
+		return sendOtpForCivilId(civilId, null, null);
 	}
 
-	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels) {
-		BigDecimal customerId = metaData.getCustomerId();
+		
+		public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels, CustomerModel customerModel) {
+			BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
@@ -308,6 +307,12 @@ public class UserService extends AbstractUserService {
 		} catch (Exception e) {
 		}
 		jaxNotificationService.sendOtpSms(personinfo, model);
+		if(customerModel != null && customerModel.getEmail() != null) {
+			personinfo.setEmail(customerModel.getEmail());
+		}
+		if(customerModel != null && customerModel.getMobile() != null) {
+			personinfo.setMobile(customerModel.getMobile());
+		}
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
