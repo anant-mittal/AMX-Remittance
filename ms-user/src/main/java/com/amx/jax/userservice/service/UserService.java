@@ -375,7 +375,7 @@ public class UserService extends AbstractUserService {
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		this.unlockCustomer(onlineCust);
 		onlineCust.setEmailToken(null);
-		onlineCust.setMobileNumber(null);
+		onlineCust.setSmsToken(null);
 		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
