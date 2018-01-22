@@ -7,7 +7,6 @@ import static com.amx.jax.admin.constant.AdminConstant.ADMIN_API_ENDPOINT;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,11 +29,10 @@ import io.swagger.annotations.Api;
 public class AdminController {
 
 	private Logger logger = Logger.getLogger(AdminController.class);
-	
+
 	@Autowired
 	private AdminService adminService;
-	
-	
+
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in unlockCustomer Request ");
@@ -51,11 +49,11 @@ public class AdminController {
 
 	@RequestMapping(value = "/config", method = RequestMethod.GET)
 	public ApiResponse createorUpdateOtpSettings(@RequestParam Integer maxValidateOtpAttempts,
-												 @RequestParam Integer maxSendOtpAttempts,
-												 @RequestParam Integer otpValidityTime	) {
+			@RequestParam Integer maxSendOtpAttempts, @RequestParam Integer otpValidityTime) {
 		logger.debug("in createorUpdateOtpSettings Request ");
-		
-		ApiResponse response = adminService.createorUpdateOtpSettings(new OtpSettings(maxValidateOtpAttempts,maxSendOtpAttempts,otpValidityTime));
+
+		ApiResponse response = adminService.createorUpdateOtpSettings(
+				new OtpSettings(maxValidateOtpAttempts, maxSendOtpAttempts, otpValidityTime));
 		return response;
 	}
 
