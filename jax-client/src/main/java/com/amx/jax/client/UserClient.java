@@ -340,7 +340,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
-		log.info("calling sendOtp for email update api: " + sendOtpUrl);
+		log.info("calling sendOtp for mobile update api: " + sendOtpUrl);
 		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 				});
