@@ -162,6 +162,7 @@ public class RegistrationService {
 
 		} catch (AlreadyExistsException e) {
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
+			e.getStackTrace();
 		}
 
 		return wrapper;

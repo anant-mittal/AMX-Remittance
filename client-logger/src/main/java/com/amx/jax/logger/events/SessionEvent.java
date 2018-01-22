@@ -1,6 +1,6 @@
 package com.amx.jax.logger.events;
 
-public class SessionEvent extends AuditEvent {
+public class SessionEvent extends AbstractAuditEvent {
 
 	public String deviceId = null;
 

@@ -1,6 +1,6 @@
 package com.amx.jax.logger.events;
 
-public class AuditEvent {
+public interface AuditLogEvent {
 
 	public static enum Type {
 		DEFAULT_EVENT,
@@ -12,13 +12,12 @@ public class AuditEvent {
 		}
 	}
 
-	private Type type;
+	abstract public long getTimestamp();
 
-	public Type getType() {
-		return type;
-	}
+	abstract public Type getType();
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+	abstract public String getMessage();
+
+	abstract public String getModuleName();
+
 }
