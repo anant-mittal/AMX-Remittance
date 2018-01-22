@@ -2,16 +2,6 @@ package com.amx.jax.logger.events;
 
 public class SessionEvent extends AuditEvent {
 
-	private AuditEventType event;
-
-	public AuditEventType getEvent() {
-		return event;
-	}
-
-	public void setEvent(AuditEventType event) {
-		this.event = event;
-	}
-
 	public String deviceId = null;
 
 	public String getDeviceId() {
