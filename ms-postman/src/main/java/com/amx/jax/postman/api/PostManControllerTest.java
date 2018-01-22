@@ -23,6 +23,7 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,7 +51,7 @@ public class PostManControllerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
-	public String processTemplate(@PathVariable("template") String template, @PathVariable("ext") String ext,
+	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data)
 			throws IOException, DocumentException, UnirestException {
@@ -89,7 +90,8 @@ public class PostManControllerTest {
 
 	}
 
-	public File processTemplate(String template, Map<String, Object> map, File.Type fileType) throws UnirestException {
+	public File processTemplate(Templates template, Map<String, Object> map, File.Type fileType)
+			throws UnirestException {
 		HttpResponse<File> response = Unirest.post(postmanUrl + PostManUrls.PROCESS_TEMPLATE)
 				// .header("content-type", "application/json")
 				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(map))

@@ -15,6 +15,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -69,7 +70,7 @@ public class PostManServiceImpl implements PostManService {
 		return this.processTemplate(template, map, fileType);
 	}
 
-	public File processTemplate(String template, Map<String, Object> map, Type fileType) {
+	public File processTemplate(Templates template, Map<String, Object> map, Type fileType) {
 		File file = new File();
 		Context context = new Context();
 		context.setVariables(map);

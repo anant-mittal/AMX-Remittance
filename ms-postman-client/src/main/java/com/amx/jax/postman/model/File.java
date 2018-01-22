@@ -26,7 +26,7 @@ public class File {
 	private String content;
 	private String name;
 	private Type type;
-	private String template = null;
+	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	@Null
 	@JsonIgnore
@@ -45,16 +45,12 @@ public class File {
 		this.model = JsonUtil.toMap(object);
 	}
 
-	public String getTemplate() {
+	public Templates getTemplate() {
 		return template;
 	}
 
-	public void setTemplate(String template) {
-		this.template = template;
-	}
-
 	public void setTemplate(Templates template) {
-		this.template = template.getFileName();
+		this.template = template;
 	}
 
 	private byte[] body;

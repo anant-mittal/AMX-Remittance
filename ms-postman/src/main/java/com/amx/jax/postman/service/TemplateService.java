@@ -18,6 +18,7 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 
 @Component
@@ -34,8 +35,8 @@ public class TemplateService {
 	@Autowired
 	private TemplateEngine textTemplateEngine;
 
-	public String processHtml(String template, Context context) {
-		String rawStr = templateEngine.process(template, context);
+	public String processHtml(Templates template, Context context) {
+		String rawStr = templateEngine.process(template.getFileName(), context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
 		Matcher m = p.matcher(rawStr);
@@ -66,8 +67,8 @@ public class TemplateService {
 		return file;
 	}
 
-	public String processText(String template, Context context) {
-		return textTemplateEngine.process(template, context);
+	public String processText(Templates template, Context context) {
+		return textTemplateEngine.process(template.getFileName(), context);
 	}
 
 	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {

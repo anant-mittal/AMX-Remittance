@@ -14,7 +14,7 @@ public class Message {
 
 	protected String message = null;
 	private List<String> to;
-	private String template = null;
+	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	@Null
 	@JsonIgnore
@@ -41,16 +41,12 @@ public class Message {
 		this.message = text;
 	}
 
-	public String getTemplate() {
+	public Templates getTemplate() {
 		return template;
 	}
 
-	public void setTemplate(String template) {
-		this.template = template;
-	}
-
 	public void setTemplate(Templates template) {
-		this.template = template.getFileName();
+		this.template = template;
 	}
 
 	public Message() {

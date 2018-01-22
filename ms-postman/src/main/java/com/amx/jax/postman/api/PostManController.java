@@ -16,6 +16,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -30,7 +31,7 @@ public class PostManController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
-	public File processTemplate(@RequestParam String template, @RequestParam(required = false) String data,
+	public File processTemplate(@RequestParam Templates template, @RequestParam(required = false) String data,
 			@RequestParam(required = false) String fileName, @RequestParam(required = false) File.Type fileType) {
 		File file = null;
 		try {
