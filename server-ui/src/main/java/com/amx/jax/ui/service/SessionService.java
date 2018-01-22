@@ -89,7 +89,7 @@ public class SessionService {
 		Authentication authentication = this.customerAuthProvider.authenticate(token);
 		userSession.setCustomerModel(customerModel);
 		this.indexUser();
-		userSession.setValid(true);
+		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
 	}

@@ -38,9 +38,30 @@ public class LoginService {
 	@Autowired
 	private SessionService sessionService;
 
+	private LoginData getRandomSecurityQuestion(CustomerModel customerModel) {
+		LoginData loginData = new LoginData();
+		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+				customerModel.getSecurityquestions());
+
+		SecurityQuestionModel answer = listmgr.pickRandom();
+		sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
+
+		List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
+
+		for (QuestModelDTO questModelDTO : questModel) {
+			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
+				loginData.setQuestion(questModelDTO.getDescription());
+			}
+		}
+		loginData.setImageId(customerModel.getImageUrl());
+		loginData.setImageCaption(customerModel.getCaption());
+		loginData.setAnswer(answer);
+		return loginData;
+	}
+
 	public ResponseWrapper<LoginData> login(String identity, String password) {
 
-		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(null);
 		sessionService.clear();
 		if (userSession.isValid()) {
 			// Check if use is already logged in;
@@ -51,26 +72,7 @@ public class LoginService {
 				customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
 
 				sessionService.getGuestSession().setCustomerModel(customerModel);
-
-				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-						customerModel.getSecurityquestions());
-
-				SecurityQuestionModel answer = listmgr.pickRandom();
-				sessionService.getGuestSession().setQuesIndex(listmgr.getIndex());
-
-				List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
-
-				for (QuestModelDTO questModelDTO : questModel) {
-					System.out.println(questModelDTO.getQuestNumber() + "===" + answer.getQuestionSrNo());
-					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-						wrapper.getData().setQuestion(questModelDTO.getDescription());
-					}
-				}
-
-				wrapper.getData().setAnswer(answer);
-				wrapper.getData().setImageId(customerModel.getImageUrl());
-				wrapper.getData().setImageCaption(customerModel.getCaption());
-
+				wrapper.setData(getRandomSecurityQuestion(customerModel));
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 
 			} catch (LimitExeededException e) {
@@ -159,27 +161,23 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> verifyOTP(String identity, String motp, String eotp) {
-		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
-			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp)
+			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
 					.getResult();
-			// Check if otp is valid
-			if (model != null) {
-				sessionService.authorize(model, true);
-				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
-			} else { // Use is cannot be validated
-				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
+			if (model.isSuccess()) {
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		} catch (AbstractException e) {
 			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 		}
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> reset(String identity) {
+	public ResponseWrapper<LoginData> initResetPassword(String identity) {
 		sessionService.clear();
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		try {
@@ -199,20 +197,24 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
-		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+	public ResponseWrapper<LoginData> verifyResetPassword(String identity, String motp, String eotp) {
+		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(null);
 		try {
-			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
+			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp)
 					.getResult();
-			if (model.isSuccess()) {
-				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			// Check if otp is valid
+			if (model != null) {
+				wrapper.setData(getRandomSecurityQuestion(model));
+				sessionService.authorize(model, false);
+				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+			} else { // Use is cannot be validated
+				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
+			wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
 		} catch (AbstractException e) {
 			wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, e);
 		}
-
 		return wrapper;
 	}
 

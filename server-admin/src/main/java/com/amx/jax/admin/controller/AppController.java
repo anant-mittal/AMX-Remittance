@@ -24,7 +24,7 @@ public class AppController {
 	@ApiOperation(value = "Index page")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
-		return "thymeleaf/index";
+		return "index";
 	}
 
 }

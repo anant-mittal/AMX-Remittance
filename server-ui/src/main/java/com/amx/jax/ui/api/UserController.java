@@ -24,7 +24,6 @@ import com.amx.jax.ui.service.UserService;
 import com.amx.jax.ui.session.UserSession;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(value = "User APIs")
@@ -52,32 +51,28 @@ public class UserController {
 	 * @param password
 	 * @return
 	 */
-	@ApiOperation(value = "Validates login/pass but does not creates session")
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
 			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}
 
-	@ApiOperation(value = "Logins User & creates session")
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
 			HttpServletRequest request) {
 		return loginService.loginSecQues(guestanswer, request);
 	}
 
-	@ApiOperation(value = "Sends OTP and resets password")
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<LoginData> reset(@RequestParam String identity, @RequestParam(required = false) String mOtp,
-			@RequestParam(required = false) String eOtp) {
+	public ResponseWrapper<LoginData> initReset(@RequestParam String identity,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		if (mOtp == null && eOtp == null) {
-			return loginService.reset(identity);
+			return loginService.initResetPassword(identity);
 		} else {
-			return loginService.verifyOTP(identity, mOtp, eOtp);
+			return loginService.verifyResetPassword(identity, mOtp, eOtp);
 		}
 	}
 
-	@ApiOperation(value = "Logout User & Terminates session")
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -88,7 +83,6 @@ public class UserController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Get UserMeta Data")
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -104,10 +98,9 @@ public class UserController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Resets password")
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam String password, @RequestParam String mOtp,
-			@RequestParam(required = false) String eOtp) {
+	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam(required = false) String oldPassword,
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
 	}
 
@@ -122,7 +115,7 @@ public class UserController {
 		if (mOtp == null) {
 			return loginService.sendOTP(null);
 		} else {
-			return loginService.verifyOTP(null, mOtp, null);
+			return loginService.verifyResetPassword(null, mOtp, null);
 		}
 	}
 }
