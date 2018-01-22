@@ -35,6 +35,9 @@ public class CustomerDao {
 	private OnlineCustomerRepository onlineCustRepo;
 
 	@Autowired
+	private CustomerRepository customerRepo;
+	
+	@Autowired
 	private UserVerificationCheckListModelRepository checkListrepo;
 
 	@Autowired
@@ -110,11 +113,33 @@ public class CustomerDao {
 		if (model.getLoginId() != null) {
 			onlineCust.setLoginId(model.getLoginId());
 		}
+		
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));
 			onlineCust.setStatus(ConstantDocument.Yes);
 		}
+		
+		//update new email id
+		if (model.getEmail() != null) {
+			onlineCust.setEmail(model.getEmail());
+		}
+		
+		//update new mobile number
+		if (model.getMobile() != null) {
+			onlineCust.setMobileNumber(model.getMobile());
+		}
 		onlineCustRepo.save(onlineCust);
+		
+		if (model.getEmail() != null || model.getMobile() != null) {
+			Customer cust = getCustomerByCountryAndUserId(onlineCust.getCountryId(), userId);
+			if (model.getEmail() != null) {
+				cust.setEmail(model.getEmail());
+			}else {
+				cust.setMobile(model.getMobile());
+			}
+			customerRepo.save(cust);
+		}
+		
 		return onlineCust;
 	}
 
@@ -190,5 +215,14 @@ public class CustomerDao {
 		BigDecimal loyalityPoints = loyaltyPointRepo.getLoyaltyPoints(customer.getCustomerReference());
 		customer.setLoyaltyPoints(loyalityPoints);
 		repo.save(customer);
+	}
+	
+	public Customer getCustomerByCountryAndUserId(BigDecimal countryId,String userId) {
+		List<Customer> list = customerRepo.getCustomerbyuser(countryId, userId);
+		Customer customer = null;
+		if (list != null) {
+			customer = list.get(0);
+		}
+		return customer;
 	}
 }

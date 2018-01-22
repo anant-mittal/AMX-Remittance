@@ -222,6 +222,8 @@ public class UserService extends AbstractUserService {
 					onlineCust.getEmail());
 		} else {
 			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+			
+			//send email notification to old email id
 		}
 
 		return response;

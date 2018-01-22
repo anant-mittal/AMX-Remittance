@@ -80,7 +80,7 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject("Your password changed successfuly");
+			email.setSubject("Change mobile Success");
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 		}
 

@@ -363,10 +363,18 @@ public class UserValidationService {
 	}
 
 	public void validateOtpFlow(CustomerModel model) {
-		boolean isOtpFlowRequired = isOtpFlowRequired(model);
-		if (isOtpFlowRequired && model.getMotp() == null) {
-			throw new GlobalException("Otp field is mandatory", JaxError.MISSING_OTP.getCode());
+		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
+		boolean isEOtpFlowRequired = isEOtpFlowRequired(model);
+		
+		
+		if (isMOtpFlowRequired && model.getMotp() == null) {
+			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
+		
+		if (isEOtpFlowRequired && model.getEotp() == null) {
+			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
+		}
+		
 		BigDecimal custId = meta.getCustomerId();
 		Customer customer = custDao.getCustById(custId);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
@@ -385,7 +393,7 @@ public class UserValidationService {
 		}
 	}
 
-	private boolean isOtpFlowRequired(CustomerModel model) {
+	private boolean isMOtpFlowRequired(CustomerModel model) {
 
 		boolean required = false;
 		if (model.getSecurityquestions() != null) {
@@ -395,6 +403,23 @@ public class UserValidationService {
 			required = true;
 		}
 		if (model.getImageUrl() != null) {
+			required = true;
+		}
+		if (model.getEmail() != null) {
+			required = true;
+		}
+		return required;
+	}
+
+	private boolean isEOtpFlowRequired(CustomerModel model) {
+
+		boolean required = false;
+		
+		if (model.getEmail() != null) {
+			required = true;
+		}
+		
+		if (model.getMobile() != null) {
 			required = true;
 		}
 		return required;
