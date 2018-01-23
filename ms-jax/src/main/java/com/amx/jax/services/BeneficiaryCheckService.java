@@ -361,13 +361,13 @@ public class BeneficiaryCheckService extends AbstractService {
 				errorListDto.add(errorStatusDto);
 
 			}
-		} else {
+		}/* else {
 			beneDto.setUpdateNeeded(true);
 			errorDesc = "Invalid beneficiary city";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
 
-		}
+		}*/
 	
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(beneDto.getApplicationCountryId(), beneDto.getBenificaryCountry(),
 				beneDto.getCurrencyId());
