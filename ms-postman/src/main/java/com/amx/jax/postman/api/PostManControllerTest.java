@@ -56,7 +56,7 @@ public class PostManControllerTest {
 			@RequestBody(required = false) Map<String, Object> data)
 			throws IOException, DocumentException, UnirestException {
 
-		Map<String, Object> map = readJsonWithObjectMapper("json/" + template + ".json");
+		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
 		if ("pdf".equals(ext)) {
 			File file = this.processTemplate(template, map, File.Type.PDF);

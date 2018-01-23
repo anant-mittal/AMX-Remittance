@@ -17,7 +17,7 @@ public enum Templates {
 	public String getFileName() {
 		return fileName;
 	}
-
+	
 	Templates(String fileName) {
 		this.fileName = fileName;
 	}

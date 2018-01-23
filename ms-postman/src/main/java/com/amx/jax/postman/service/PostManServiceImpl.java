@@ -77,13 +77,13 @@ public class PostManServiceImpl implements PostManService {
 		try {
 			file.setContent(templateService.processHtml(template, context));
 		} catch (Exception e) {
-			LOGGER.error("Template {}", template, e);
+			LOGGER.error("Template {}", template.getFileName(), e);
 		}
 		if (fileType == Type.PDF) {
-			file.setName(template + ".pdf");
+			file.setName(template.getFileName() + ".pdf");
 			pdfService.convert(file);
 		} else {
-			file.setName(template + ".html");
+			file.setName(template.getFileName() + ".html");
 		}
 		return file;
 	}

@@ -46,7 +46,7 @@ public class TemplateService {
 				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
 						"src=\"" + this.readAsBase64String(contentId) + "\"");
 			} catch (IOException e) {
-				log.error("Template parsing Error : " + template, e);
+				log.error("Template parsing Error : " + template.getFileName(), e);
 			}
 		}
 
