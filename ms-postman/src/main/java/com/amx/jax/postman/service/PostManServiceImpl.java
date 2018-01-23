@@ -43,25 +43,29 @@ public class PostManServiceImpl implements PostManService {
 	private TemplateService templateService;
 
 	@Async
-	public Email sendEmail(Email email) {
+	public Email sendEmail(Email email) throws UnirestException {
 
-		if (email.getTemplate() != null) {
-			Context context = new Context();
-			context.setVariables(email.getModel());
-			if (email.isHtml()) {
-				email.setMessage(templateService.processHtml(email.getTemplate(), context));
-			} else {
-				email.setMessage(templateService.processText(email.getTemplate(), context));
+		try {
+			if (email.getTemplate() != null) {
+				Context context = new Context();
+				context.setVariables(email.getModel());
+				if (email.isHtml()) {
+					email.setMessage(templateService.processHtml(email.getTemplate(), context));
+				} else {
+					email.setMessage(templateService.processText(email.getTemplate(), context));
+				}
 			}
-		}
 
-		if (email.getFiles() != null && email.getFiles().size() > 0) {
-			for (File file : email.getFiles()) {
-				fileService.create(file);
+			if (email.getFiles() != null && email.getFiles().size() > 0) {
+				for (File file : email.getFiles()) {
+					fileService.create(file);
+				}
 			}
+			emailService.send(email);
+		} catch (Exception e) {
+			this.notifySlack(e);
 		}
-
-		return emailService.send(email);
+		return email;
 	}
 
 	@Override
@@ -80,12 +84,17 @@ public class PostManServiceImpl implements PostManService {
 			LOGGER.error("Template {}", template.getFileName(), e);
 			this.notifySlack(e);
 		}
-		if (fileType == Type.PDF) {
-			file.setName(template.getFileName() + ".pdf");
-			pdfService.convert(file);
-		} else {
-			file.setName(template.getFileName() + ".html");
+		try {
+			if (fileType == Type.PDF) {
+				file.setName(template.getFileName() + ".pdf");
+				pdfService.convert(file);
+			} else {
+				file.setName(template.getFileName() + ".html");
+			}
+		} catch (Exception e) {
+			this.notifySlack(e);
 		}
+
 		return file;
 	}
 
