@@ -29,5 +29,5 @@ public interface SessionLogRepository
 
 	List<SessionLog> findAllByOrderByScoreDesc(TextCriteria criteria);
 
-	List<SessionLog> findByCustomerId(String customerId);
+	List<SessionLog> findByUserId(String userId);
 }

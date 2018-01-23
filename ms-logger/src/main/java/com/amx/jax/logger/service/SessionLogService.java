@@ -87,12 +87,12 @@ public class SessionLogService {
 	 * @param customerId
 	 * @return
 	 */
-	public List<SessionLog> findByCustomerId(String customerId) {
-		return sessionLogRepository.findByCustomerId(customerId);
+	public List<SessionLog> findByUserId(String userId) {
+		return sessionLogRepository.findByUserId(userId);
 	}
 
 	@Async
-	public void saveCustomerLog(SessionLog sessionLog) {
+	public void saveSessionLog(SessionLog sessionLog) {
 		sessionLogRepository.save(sessionLog);
 	}
 }

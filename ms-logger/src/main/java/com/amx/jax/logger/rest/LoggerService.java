@@ -68,7 +68,7 @@ public class LoggerService {
 	public SessionLog sessionLog(@RequestParam("level") String level, @RequestBody SessionEvent sessionEvent) {
 		SessionLog sessionLog = new SessionLog(sessionEvent);
 		logger.debug("Logging customer log message [" + sessionEvent + "]");
-		sessionLogService.saveCustomerLog(sessionLog);
+		sessionLogService.saveSessionLog(sessionLog);
 		return sessionLog;
 	}
 
