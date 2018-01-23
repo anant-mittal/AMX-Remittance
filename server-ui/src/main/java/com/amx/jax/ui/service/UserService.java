@@ -52,6 +52,7 @@ public class UserService {
 						.getResult();
 				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
 			} else {
 				jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
@@ -70,6 +71,7 @@ public class UserService {
 						.getResult();
 				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
 			} else {
 				jaxService.setDefaults().getUserclient().saveMobile(email, mOtp, eOtp).getResult();
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
