@@ -128,7 +128,7 @@ public class JaxNotificationService {
 		Email email = new Email();
 		email.setSubject("OTP Email");
 		email.addTo(pinfo.getEmail());
-		email.setTemplate(Templates.PROFILE_CHANGE);
+		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
 
