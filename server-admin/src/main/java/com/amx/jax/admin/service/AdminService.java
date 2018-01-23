@@ -25,19 +25,19 @@ public class AdminService {
 	private JaxConfigClient jaxConfigClient;
 	
 	public ApiResponse<BooleanResponse> unlockCustomer(String civilId) {
-		logger.debug("inside AdminService : unlockCustomer");
+		logger.info("inside AdminService : unlockCustomer fro civilId : "+civilId);
 		ApiResponse<BooleanResponse> response = userClient.unLockCustomer();
 		return response;
 	}
 	
     public ApiResponse<BooleanResponse> deactivateCustomer(String civilId) {
-    	logger.debug("inside AdminService : deactivateCustomer");
+    	logger.info("inside AdminService : deactivateCustomer for civilId : "+civilId);
 		ApiResponse<BooleanResponse> response = userClient.deActivateCustomer();
 		return response;
 	}
     
     public ApiResponse<BooleanResponse> createorUpdateOtpSettings(OtpSettings otpSettings) {	
-    	logger.debug("inside AdminService : createorUpdateOtpSettings");
+    	logger.info(String.format("inside AdminService : createorUpdateOtpSettings maxAttempts : %s, maxValidateAttempts : %s, validityTime : %s",otpSettings.getMaxSendOtpAttempts(),otpSettings.getMaxValidateOtpAttempts(),otpSettings.getOtpValidityTime()));
 		ApiResponse<BooleanResponse> response = jaxConfigClient.createorUpdateOtpSettings(otpSettings);
 		return response;
 	}
