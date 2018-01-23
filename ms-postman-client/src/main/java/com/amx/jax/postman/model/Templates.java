@@ -10,7 +10,7 @@ public enum Templates {
 	REG_SUC("RegistrationSuccessEmail"), 
 	SERVER_PING("server-ping"),
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
-	PROFILE_CHANGE("ProfileChangeEmail");
+	PROFILE_CHANGE("AccoutDetailsUpdate");
 
 	String fileName;
 
