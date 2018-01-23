@@ -119,6 +119,50 @@ public class RateAlertService extends AbstractService {
 		response.getData().getValues().addAll(dtoList);
 		return response;
 	}
+	
+	public ApiResponse<RateAlertDTO> getAllRateAlert() {
+		
+		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
+		
+			List<RateAlert> rateAlertList = null;
+	        List<RateAlertDTO> dtoList= new ArrayList<RateAlertDTO>();
+	        
+	        try {
+			rateAlertList = rateAlertDao.getAllRateAlert();
+			
+			if (!rateAlertList.isEmpty()) {
+				
+				for (RateAlert rec : rateAlertList) {
+					RateAlertDTO rateDTO = new RateAlertDTO();
+					
+					rateDTO.setAlertRate(rec.getAlertRate());
+					rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
+					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
+					rateDTO.setRule(RuleEnum.valueOf(rec.getRule().toUpperCase()));
+					rateDTO.setFromDate(rec.getFromDate());
+					rateDTO.setToDate(rec.getToDate());
+					rateDTO.setCustomerId(rec.getCustomerId());
+					rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
+					rateDTO.setPayAmount(rec.getPayAmount());
+					rateDTO.setReceiveAmount(rec.getReceiveAmount());
+					dtoList.add(rateDTO);
+				}
+				
+				response.setResponseStatus(ResponseStatus.OK);
+				response.getData().setType("rate-alert-dto");
+			} /*else {
+				throw new GlobalException("No record found");
+			}*/
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("Error while fetching rate alerts");
+			e.printStackTrace();
+		}
+		response.getData().getValues().addAll(dtoList);
+		return response;
+	}
 
 	/* (non-Javadoc)
 	 * @see com.amx.jax.services.AbstractService#getModelType()

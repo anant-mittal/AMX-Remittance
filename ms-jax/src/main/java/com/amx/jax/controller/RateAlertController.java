@@ -65,6 +65,14 @@ public class RateAlertController {
 		return response;
 	}
 	
+	@RequestMapping(value = "/getAll", method = RequestMethod.GET)
+	public ApiResponse getAllRateAlerts() {
+		logger.info("In /getAll rate alerts ");
+		ApiResponse response = null;
+		response = rateAlertService.getAllRateAlert();
+		return response;
+	}
+	
 //	@RequestMapping(value = "/save", method = RequestMethod.GET)
 //	public ApiResponse handleUrlSaveRateAlert(@RequestParam("customerId") BigDecimal customerId,
 //											  @RequestParam("fccur") BigDecimal fccur, 
