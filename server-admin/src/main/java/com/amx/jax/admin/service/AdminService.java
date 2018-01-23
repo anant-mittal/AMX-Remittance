@@ -32,7 +32,7 @@ public class AdminService {
 	
     public ApiResponse<BooleanResponse> deactivateCustomer(String civilId) {
     	logger.info("inside AdminService : deactivateCustomer for civilId : "+civilId);
-		ApiResponse<BooleanResponse> response = userClient.deActivateCustomer();
+		ApiResponse<BooleanResponse> response = userClient.deActivateCustomer(civilId);
 		return response;
 	}
     
