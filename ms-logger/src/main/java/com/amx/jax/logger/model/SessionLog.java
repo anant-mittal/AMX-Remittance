@@ -5,53 +5,36 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.amx.jax.logger.events.SessionEvent;
 
-/**
- * 
- */
 @Document
 public class SessionLog extends AbstractLogMessage {
 
-	@TextIndexed
-	private String customerId;
+	private String userType;
 
-	@TextIndexed(weight = 2)
-	private String searchTerm;
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
 
 	@TextIndexed
-	private String currentPage;
+	private String userId;
 
 	public SessionLog(SessionEvent sessionEvent) {
 		super(sessionEvent);
 	}
 
-	public String getCurrentPage() {
-		return currentPage;
+	public String getUserId() {
+		return userId;
 	}
 
-	public void setCurrentPage(String currentPage) {
-		this.currentPage = currentPage;
-	}
-
-	public String getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(String customerId) {
-		this.customerId = customerId;
-	}
-
-	public String getSearchTerm() {
-		return searchTerm;
-	}
-
-	public void setSearchTerm(String searchTerm) {
-		this.searchTerm = searchTerm;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	@Override
 	public String toString() {
-		return "CustomerLog{" + "customerId='" + customerId + '\'' + ", moduleName='" + this.getModuleName() + '\''
-				+ ", searchTerm='" + searchTerm + '\'' + ", currentPage='" + currentPage + '\'' + "} "
-				+ super.toString();
+		return "SessionLog{" + "customerId='" + userId + "'" + "} " + super.toString();
 	}
 }

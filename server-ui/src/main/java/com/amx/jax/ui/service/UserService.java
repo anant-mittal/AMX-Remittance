@@ -13,7 +13,9 @@ import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserBean;
+import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -38,6 +40,28 @@ public class UserService {
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
 		return new ResponseWrapper<CustomerDto>(
 				jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
+	}
+
+	public ResponseWrapper<UserUpdateData> updateEmail(String email, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		if (mOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+		} else {
+		}
+		return wrapper;
+	}
+
+	public ResponseWrapper<UserUpdateData> updatePhone(String email, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		if (mOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+		} else {
+		}
+		return wrapper;
 	}
 
 	@Async

@@ -1,19 +1,54 @@
 package com.amx.jax.logger.model;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.TextIndexed;
+import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import com.amx.jax.logger.events.AuditLogEvent;
 
 public class AbstractLogMessage implements AuditLogEvent {
 
+	@Id
+	private String id;
+
 	public long timestamp;
+
+	private Type type;
 
 	@TextIndexed
 	private String moduleName;
 
-	private Type type;
-
+	@TextIndexed
 	private String message;
+
+	@TextScore
+	private Float score;
+
+	private String loggerName;
+
+	public String getLoggerName() {
+		return loggerName;
+	}
+
+	public void setLoggerName(String loggerName) {
+		this.loggerName = loggerName;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public Float getScore() {
+		return score;
+	}
+
+	public void setScore(Float score) {
+		this.score = score;
+	}
 
 	public AbstractLogMessage(AuditLogEvent event) {
 		this.timestamp = event.getTimestamp();
@@ -52,6 +87,12 @@ public class AbstractLogMessage implements AuditLogEvent {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	@Override
+	public String toString() {
+		return "AbstractLogMessage{" + "id=" + id + ", message='" + message + '\'' + ", time=" + timestamp + ", moduleName='"
+				+ moduleName + '\'' + ", loggerName='" + loggerName + '\'' + ", score=" + score + '}';
 	}
 
 }

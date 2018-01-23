@@ -32,7 +32,7 @@ public class CivilIdOtpModel extends AbstractModel {
 	private Boolean isActiveCustomer;
 
 	private String firstName;
-	
+
 	private BigDecimal customerId;
 
 	public String getFirstName() {

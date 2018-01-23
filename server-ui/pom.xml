@@ -143,6 +143,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mobile</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>client-logger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -2,7 +2,10 @@ package com.amx.jax.logger.client;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.logger.AuditLoggerResponse;
@@ -18,6 +21,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class AuditLoggerClient implements AuditLoggerService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuditLoggerClient.class);
 
 	{
 		Unirest.setObjectMapper(new ObjectMapper() {
@@ -43,9 +48,18 @@ public class AuditLoggerClient implements AuditLoggerService {
 	@Value("${jax.logger.url}")
 	private String loggerUrl;
 
-	public AuditLoggerResponse log(SessionEvent event) throws UnirestException {
-		HttpResponse<AuditLoggerResponse> response = Unirest.post(loggerUrl + AuditLoggerUrls.SESSION_LOG)
-				.header("content-type", "application/json").body(event).asObject(AuditLoggerResponse.class);
+	@Async
+	public AuditLoggerResponse log(SessionEvent event) {
+		HttpResponse<AuditLoggerResponse> response = null;
+		try {
+			response = Unirest.post(loggerUrl + AuditLoggerUrls.SESSION_LOG).header("content-type", "application/json")
+					.body(event).asObject(AuditLoggerResponse.class);
+		} catch (UnirestException e) {
+			LOGGER.error("Audit Log Error : ", e);
+		}
+		if (response == null) {
+			return null;
+		}
 		return response.getBody();
 	}
 

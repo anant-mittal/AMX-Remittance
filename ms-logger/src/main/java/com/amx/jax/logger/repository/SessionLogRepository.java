@@ -11,9 +11,6 @@ import com.amx.jax.logger.model.SessionLog;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 
-/**
- * 
- */
 public interface SessionLogRepository
 		extends MongoRepository<SessionLog, BigInteger>, QueryDslPredicateExecutor<SessionLog> {
 	@Override
