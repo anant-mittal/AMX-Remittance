@@ -130,7 +130,7 @@ public class JaxNotificationService {
 		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, pinfo);
+		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
 
 		try {
 			postManService.sendEmail(email);

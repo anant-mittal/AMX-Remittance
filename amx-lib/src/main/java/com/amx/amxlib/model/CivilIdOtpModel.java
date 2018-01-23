@@ -32,7 +32,9 @@ public class CivilIdOtpModel extends AbstractModel {
 	private Boolean isActiveCustomer;
 
 	private String firstName;
-
+	
+	private String middleName;
+	
 	private BigDecimal customerId;
 
 	public String getFirstName() {
@@ -136,6 +138,20 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	/**
+	 * @return the middleName
+	 */
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	/**
+	 * @param middleName the middleName to set
+	 */
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
 	}
 
 }
