@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Message {
 
+	protected String subject;
 	protected String message = null;
 	private List<String> to;
 	private Templates template = null;
@@ -31,6 +32,21 @@ public class Message {
 	@JsonIgnore
 	public void setObject(Object object) {
 		this.model = JsonUtil.toMap(object);
+	}
+
+	/**
+	 * @return the subject
+	 */
+	public String getSubject() {
+		return subject;
+	}
+
+	/**
+	 * @param subject
+	 *            the subject to set
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
 	}
 
 	public String getMessage() {

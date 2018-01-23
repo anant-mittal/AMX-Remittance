@@ -78,6 +78,7 @@ public class PostManServiceImpl implements PostManService {
 			file.setContent(templateService.processHtml(template, context));
 		} catch (Exception e) {
 			LOGGER.error("Template {}", template.getFileName(), e);
+			this.notifySlack(e);
 		}
 		if (fileType == Type.PDF) {
 			file.setName(template.getFileName() + ".pdf");
@@ -90,18 +91,29 @@ public class PostManServiceImpl implements PostManService {
 
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
-		if (sms.getTemplate() != null) {
-			Context context = new Context();
-			context.setVariables(sms.getModel());
-			sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
+
+		try {
+			if (sms.getTemplate() != null) {
+				Context context = new Context();
+				context.setVariables(sms.getModel());
+				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
+			}
+			this.smsService.sendSMS(sms);
+		} catch (Exception e) {
+			this.notifySlack(e);
 		}
-		return this.smsService.sendSMS(sms);
+		return sms;
 	}
 
 	@Override
 	@Async
 	public Message notifySlack(Message msg) throws UnirestException {
 		return slackService.sendNotification(msg);
+	}
+
+	@Async
+	public Message notifySlack(Exception e) {
+		return slackService.sendNotification(e);
 	}
 
 }
