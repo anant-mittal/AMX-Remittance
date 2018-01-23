@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -132,6 +133,20 @@ public class CustomerController {
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
 		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel);
+		return response;
+	}
+	
+	@RequestMapping(value = "/unlock/{civilid}", method = RequestMethod.GET)
+	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
+		logger.debug("in unlockCustomer Request ");
+		ApiResponse response = userSerivce.unlockCustomer(civilid);
+		return response;
+	}	
+	
+	@RequestMapping(value = "/deactivate/{civilid}", method = RequestMethod.GET)
+	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
+		logger.debug("in deActivateCustomer Request ");
+		ApiResponse response = userSerivce.deactivateCustomer(civilid);
 		return response;
 	}
 }

@@ -26,7 +26,7 @@ public class AdminService {
 	
 	public ApiResponse<BooleanResponse> unlockCustomer(String civilId) {
 		logger.info("inside AdminService : unlockCustomer fro civilId : "+civilId);
-		ApiResponse<BooleanResponse> response = userClient.unLockCustomer();
+		ApiResponse<BooleanResponse> response = userClient.unLockCustomer(civilId);
 		return response;
 	}
 	

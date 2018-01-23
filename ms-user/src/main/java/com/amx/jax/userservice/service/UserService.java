@@ -650,5 +650,57 @@ public class UserService extends AbstractUserService {
 		return response;
 
 	}
+	
+	/**
+	 * Unlocks the customer account
+	 */
+	public ApiResponse unlockCustomer(String civilid) {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		//BigDecimal customerId = metaData.getCustomerId();
+		
+		Customer cust= custDao.getCustomerByCivilId(civilid);
+		BigDecimal customerId = null;
+	    if (cust != null)
+	    	customerId = cust.getCustomerId();
+	    
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
+		}
+		this.unlockCustomer(onlineCustomer);
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
+	
+	/**
+	 * Deactivates the customer
+	 */
+	public ApiResponse deactivateCustomer(String civilid) {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		//BigDecimal customerId = metaData.getCustomerId();
+		
+		Customer cust= custDao.getCustomerByCivilId(civilid);
+		BigDecimal customerId = null;
+	    if (cust != null)
+	    	customerId = cust.getCustomerId();
+	    
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer != null) {
+			onlineCustomer.setStatus(ConstantDocument.No);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+
+	}
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.admin.service.AdminService;
+import com.amx.jax.admin.service.JaxService;
 import com.amx.jax.amxlib.config.OtpSettings;
 
 import io.swagger.annotations.Api;
@@ -31,11 +32,15 @@ public class AdminController {
 	private Logger logger = Logger.getLogger(AdminController.class);
 
 	@Autowired
+	private JaxService jaxService;
+	
+	@Autowired
 	private AdminService adminService;
 
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in unlockCustomer Request ");
+		jaxService.setDefaults();
 		ApiResponse response = adminService.unlockCustomer(civilid);
 		return response;
 	}
@@ -43,6 +48,7 @@ public class AdminController {
 	@RequestMapping(value = "/customer/deactivate/{civilid}", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in deActivateCustomer Request ");
+		jaxService.setDefaults();
 		ApiResponse response = adminService.deactivateCustomer(civilid);
 		return response;
 	}

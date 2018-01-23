@@ -348,5 +348,25 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
+	
+	public ApiResponse<BooleanResponse> unLockCustomer(String civilId) {
+		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/unlock/"+civilId;
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+				});
+		return response.getBody();
+	}
+	
+	public ApiResponse<BooleanResponse> deActivateCustomer(String civilId) {
+		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/deactivate/"+civilId;
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+				});
+		return response.getBody();
+	}
 
 }
