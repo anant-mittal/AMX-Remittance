@@ -5,8 +5,6 @@ package com.amx.jax.payment.controller;
 
 import static com.amx.jax.payment.constant.PaymentConstant.PAYMENT_API_ENDPOINT;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Base64;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +24,7 @@ import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGSession;
 import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 
 import io.swagger.annotations.Api;
 
@@ -46,19 +45,17 @@ public class PayGController {
 	private PayGSession payGSession;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(@RequestParam String amount, 
-										@RequestParam String trckid, 
-										@RequestParam String pg,
-										@RequestParam String docNo, 
-										@RequestParam String docFy,
-										@RequestParam String callbackd, 
-										@RequestParam Tenant tnt) {
+	public String handleUrlPaymentRemit(@RequestParam String amount, @RequestParam String trckid,
+			@RequestParam String pg, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam String callbackd, @RequestParam Tenant tnt) {
+
+		TenantContextHolder.setCurrent(tnt);
 
 		byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 		String callback = new String(decodedBytes);
 		payGSession.setCallback(callback);
 
-		log.info(String.format("Inside pay method with  amount-%s, country-%s, pg-" + amount,tnt.getCode(),pg));
+		log.info(String.format("Inside pay method with  amount-%s, country-%s, pg-" + amount, tnt.getCode(), pg));
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
@@ -81,6 +78,7 @@ public class PayGController {
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
 	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode) {
+		TenantContextHolder.setCurrent(tnt);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode, tnt);
 		return payGClient.capture(model);
 	}

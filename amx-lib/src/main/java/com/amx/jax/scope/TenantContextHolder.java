@@ -6,7 +6,7 @@ public class TenantContextHolder {
 
 	public static final String TENANT = "tnt";
 
-	public static void setDefault(Tenant site) {
+	public static void setCurrent(Tenant site) {
 		ContextUtil.map().put(TENANT, site);
 	}
 
