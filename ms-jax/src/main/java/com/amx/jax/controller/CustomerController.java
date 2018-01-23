@@ -43,6 +43,13 @@ public class CustomerController {
 		ApiResponse response = userSerivce.saveCustomer(model);
 		return response;
 	}
+	
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	public ApiResponse save(@RequestBody CustomerModel customerModel) {
+		logger.debug("saveCust Request:" + customerModel.toString());
+		ApiResponse response = userSerivce.saveCustomer(customerModel);
+		return response;
+	}
 
 	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp(@PathVariable("civil-id") String civilId) {
