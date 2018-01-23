@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.service.SessionService;
 import com.bootloaderjs.ContextUtil;
@@ -71,7 +72,8 @@ public class WebAuthFilter implements Filter {
 			}
 		} finally {
 			time = System.currentTimeMillis() - time;
-			LOGGER.info("Trace Id in filter end {} time taken was {}", ContextUtil.getTraceId(), time);
+			LOGGER.info("{} : Trace Id in filter end {} time taken was {}", TenantContextHolder.currentSite(),
+					ContextUtil.getTraceId(), time);
 		}
 
 	}

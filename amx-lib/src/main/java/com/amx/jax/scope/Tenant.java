@@ -7,7 +7,7 @@ import java.util.Map;
 public enum Tenant {
 
 	/** Dev Environments **/
-	KWTDEV("kw", "91"), BRNDEV("bhr", "83"), OMNDEV("om", "84"),
+	KWT2("kw", "91"), BRNDEV("bhr", "83"), OMNDEV("om", "84"),
 
 	/** Kuwait */
 	KWT("kw", "91"),
@@ -28,8 +28,14 @@ public enum Tenant {
 	static {
 		// Additional Mappings
 		mapping.put("app-dev", KWT);
-		mapping.put("app-devq", KWTDEV);
+		mapping.put("app-devq", KWT2);
 		mapping.put("app-devb", BRN);
+
+		for (Tenant site : Tenant.values()) {
+			mapping.put(site.toString().toLowerCase(), site);
+			mapping.put("app-" + site.toString().toLowerCase(), site);
+		}
+
 	}
 
 	private String id;
@@ -53,12 +59,15 @@ public enum Tenant {
 	}
 
 	public static Tenant fromString(String siteId) {
-		if (mapping.containsKey(siteId)) {
-			return mapping.get(siteId);
-		}
-		for (Tenant site : Tenant.values()) {
-			if (site.toString().equalsIgnoreCase(siteId)) {
-				return site;
+		if (siteId != null) {
+			String siteIdStr = siteId.toLowerCase();
+			if (mapping.containsKey(siteIdStr)) {
+				return mapping.get(siteIdStr);
+			}
+			for (Tenant site : Tenant.values()) {
+				if (site.toString().equalsIgnoreCase(siteIdStr)) {
+					return site;
+				}
 			}
 		}
 		return Tenant.DEFAULT;
