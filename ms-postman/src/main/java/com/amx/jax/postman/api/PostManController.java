@@ -52,7 +52,7 @@ public class PostManController {
 	}
 
 	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.POST)
-	public Email sendEmail(@RequestBody Email email) {
+	public Email sendEmail(@RequestBody Email email) throws UnirestException {
 		postManService.sendEmail(email);
 		return email;
 	}
