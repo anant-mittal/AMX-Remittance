@@ -127,7 +127,7 @@ public class SessionService {
 			return null;
 		}
 		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
-		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().getId(), customerId.toString());
+		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), customerId.toString());
 
 	}
 
