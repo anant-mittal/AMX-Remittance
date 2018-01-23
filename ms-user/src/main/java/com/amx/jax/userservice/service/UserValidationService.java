@@ -216,6 +216,9 @@ public class UserValidationService {
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
+			if (contact.getFsCustomer().getCountryId().equals(meta.getCountryId())) {
+				ishome = true;
+			}
 			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId()
 					.equals(ConstantDocument.CONTACT_TYPE_FOR_LOCAL)) {
 				islocal = true;

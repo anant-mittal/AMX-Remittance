@@ -1,5 +1,7 @@
 package com.amx.jax.scheduler.task;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -37,25 +39,47 @@ public class RateAlertTask implements Runnable {
 
 	Tenant tenant;
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Override
 	public void run() {
-		initialize();
+		setMetaInfo();
+		initializeRateAlertData();
+		executeTask();
+	}
+
+	private void executeTask() {
+		RateAlertData data = RATE_ALERT_DATA.get(tenant);
+		Map<CurrencyMasterDTO, List<BankMasterDTO>> oldExchangeRates = data.getExchangeRates();
+		loadExchangeRates(data);
+		Map<CurrencyMasterDTO, List<BankMasterDTO>> newExchangeRates = data.getExchangeRates();
+		List<CurrencyMasterDTO> currencyList = data.getForeignCurrencyList();
+		for(CurrencyMasterDTO currency: currencyList) {
+			
+		}
+	}
+
+	private void setMetaInfo() {
+		jaxMetaInfo.setCountryId(tenant.getBDCode());
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setTenant(tenant);
 	}
 
 	/**
 	 * Initializes the rate alert task
 	 */
-	public void initialize() {
-		jaxMetaInfo.setCountryId(tenant.getBDCode());
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+	public void initializeRateAlertData() {
+
 		RateAlertData data = RATE_ALERT_DATA.get(tenant);
 		if (data == null) {
+			logger.info("Initializing rate alert data");
 			data = new RateAlertData();
 			data.setForeignCurrencyList(metaClient.getAllOnlineCurrency().getResults());
 			CurrencyMasterDTO domCurrency = metaClient.getCurrencyByCountryId(tenant.getBDCode()).getResult();
 			data.setDomesticCurrency(domCurrency);
 			loadExchangeRates(data);
-
+			data.setRateAlerts(rateAlertClient.getAllRateAlert().getResults());
+			logger.info("Initialized rate alert data");
 		}
 	}
 
