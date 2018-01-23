@@ -48,10 +48,10 @@ public class KnetClient implements PayGClient {
 
 	@Autowired
 	private PaymentService paymentService;
-	
+
 	@Autowired
 	private MetaClient metaClient;
-	
+
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
@@ -64,14 +64,15 @@ public class KnetClient implements PayGClient {
 	public void initialize(PayGParams payGParams) {
 
 		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-		OnlineConfigurationDto configDTO= metaClient.getOnlineConfig("J").getResult();
-		
-		if (configDTO!=null) {
+		OnlineConfigurationDto configDTO = metaClient.getOnlineConfig("J").getResult();
+
+		if (configDTO != null) {
 			log.info(" ###### Config from DB START ############## ");
-			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s",configDTO.getAliasName(),configDTO.getResourcePath(),configDTO.getResponseUrl()));
+			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s", configDTO.getAliasName(),
+					configDTO.getResourcePath(), configDTO.getResponseUrl()));
 			log.info(" ###### Config from DB END ############## ");
 		}
-		
+
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
 		configMap.put("action", "1");
@@ -171,10 +172,10 @@ public class KnetClient implements PayGClient {
 		String docno = null;
 		String finyear = null;
 		PaymentResponseData data = null;
-		
+
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
-			
+
 			try {
 				data = (PaymentResponseData) res.getData();
 				doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
@@ -184,7 +185,7 @@ public class KnetClient implements PayGClient {
 				log.error("Error while fetching doccode, docno, finyear.");
 				e.printStackTrace();
 			}
-			
+
 			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
