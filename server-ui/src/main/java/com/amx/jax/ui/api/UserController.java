@@ -110,13 +110,13 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/email", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> updateEmail(@RequestParam(required = false) String email,
+	public ResponseWrapper<UserUpdateData> updateEmail(@RequestParam String email,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updateEmail(email, mOtp, eOtp);
 	}
 
 	@RequestMapping(value = "/api/user/phone", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> updatePhone(@RequestParam(required = false) String phone,
+	public ResponseWrapper<UserUpdateData> updatePhone(@RequestParam String phone,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
