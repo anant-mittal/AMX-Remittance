@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Message;
@@ -15,6 +17,7 @@ import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
+import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -43,22 +46,36 @@ public class UserService {
 
 	public ResponseWrapper<UserUpdateData> updateEmail(String email, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-		if (mOtp == null) {
-			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
-			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		} else {
+		try {
+			if (mOtp == null) {
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email)
+						.getResult();
+				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+			} else {
+				jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
+			}
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}
 		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateData> updatePhone(String email, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-		if (mOtp == null) {
-			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
-			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-		} else {
+		try {
+			if (mOtp == null) {
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email)
+						.getResult();
+				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+			} else {
+				jaxService.setDefaults().getUserclient().saveMobile(email, mOtp, eOtp).getResult();
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
+			}
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}
 		return wrapper;
 	}
