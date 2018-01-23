@@ -1,6 +1,8 @@
 package com.amx.jax.userservice.service;
 
-import org.apache.commons.beanutils.BeanUtils;
+import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +12,15 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import static com.amx.amxlib.constant.NotificationConstants.*;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -82,8 +83,8 @@ public class JaxNotificationService {
 		} else if (customerModel.getMobile() != null) {
 			email.setSubject("Change mobile Success");
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
-			
-		}else if (customerModel.getEmail() != null) {
+
+		} else if (customerModel.getEmail() != null) {
 			email.setSubject("Change email Success");
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 		}
@@ -113,9 +114,7 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMS(sms);
-			sms.setMessage(String.format("%s-%s  %s-%s", model.getmOtpPrefix(), model.getmOtp(), model.geteOtpPrefix(),
-					model.geteOtp()));
-			postManService.notifySlack(sms);
+			sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
 		} catch (UnirestException e) {
 			logger.error("error in sendOtpSms", e);
 		}
@@ -123,7 +122,7 @@ public class JaxNotificationService {
 
 	@Async
 	public void sendOtpEmail(PersonInfo pinfo, CivilIdOtpModel civilIdOtpModel) {
-	
+
 		logger.info("Sending OTP Email to customer : " + pinfo.getFirstName());
 
 		Email email = new Email();
@@ -135,9 +134,10 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendEmail(email);
+			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
 		} catch (UnirestException e) {
 			logger.error("error in sendOtpEmail", e);
-		}		
+		}
 	}// end of sendOtpEmail
 
 	@Async
@@ -149,4 +149,16 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 	}
+
+	@Async
+	public void sendToSlack(String channel, String prefix, String otp) {
+		Message msg = new Message();
+		msg.setMessage(String.format("%s = %s-%s", channel, prefix, otp));
+		try {
+			postManService.notifySlack(msg);
+		} catch (UnirestException e) {
+			logger.error("error in SlackNotify", e);
+		}
+	}
+
 }
