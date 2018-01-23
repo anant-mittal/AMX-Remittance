@@ -54,7 +54,7 @@ public class AuditLoggerClient implements AuditLoggerService {
 		try {
 			response = Unirest.post(loggerUrl + AuditLoggerUrls.SESSION_LOG).header("content-type", "application/json")
 					.body(event).asObject(AuditLoggerResponse.class);
-		} catch (UnirestException e) {
+		} catch (Exception e) {
 			LOGGER.error("Audit Log Error : ", e);
 		}
 		if (response == null) {
