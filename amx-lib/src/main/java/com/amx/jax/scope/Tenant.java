@@ -28,6 +28,7 @@ public enum Tenant {
 	static {
 		// Additional Mappings
 		mapping.put("app-dev", KWT);
+		mapping.put("app-devq", KWTDEV);
 		mapping.put("app-devb", BRN);
 	}
 
@@ -56,7 +57,7 @@ public enum Tenant {
 			return mapping.get(siteId);
 		}
 		for (Tenant site : Tenant.values()) {
-			if (site.getId().equalsIgnoreCase(siteId)) {
+			if (site.toString().equalsIgnoreCase(siteId)) {
 				return site;
 			}
 		}
