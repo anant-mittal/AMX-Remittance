@@ -8,12 +8,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
+import com.amx.jax.scope.Tenant;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JaxMetaInfo {
 
 	private BigDecimal countryId;
+	private Tenant tenant = Tenant.DEFAULT;
+
 	private BigDecimal customerId;
 	private BigDecimal companyId;
 	private BigDecimal languageId;
@@ -69,6 +72,14 @@ public class JaxMetaInfo {
 
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
+	}
+
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
 	}
 
 	public JaxChannel getChannel() {
