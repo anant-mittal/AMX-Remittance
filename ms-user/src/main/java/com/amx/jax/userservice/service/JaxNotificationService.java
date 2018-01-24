@@ -6,6 +6,7 @@ import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Async;
@@ -34,6 +35,8 @@ public class JaxNotificationService {
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
+	private final String SUBJECT_ACCOUNT_UPDATE="Account Update";
+	
 	@Async
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
@@ -73,19 +76,19 @@ public class JaxNotificationService {
 			email.getModel().put("change_type", ChangeType.PASSWORD_CHANGE);
 
 		} else if (customerModel.getSecurityquestions() != null) {
-			email.setSubject("Update Security Credentials Success");
+			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.SECURITY_QUESTION_CHANGE);
 
 		} else if (customerModel.getImageUrl() != null) {
-			email.setSubject("Update Security Credentials Success");
+			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.IMAGE_CHANGE);
 
 		} else if (customerModel.getMobile() != null) {
-			email.setSubject("Change mobile Success");
+			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.MOBILE_CHANGE);
 
 		} else if (customerModel.getEmail() != null) {
-			email.setSubject("Change email Success");
+			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 		}
 
