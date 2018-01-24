@@ -37,9 +37,9 @@ public class FileService {
 
 			if (file.getName() == null) {
 				if (file.getType() == Type.PDF) {
-					file.setName(file.getTemplate() + ".pdf");
+					file.setName(file.getTemplate().getFileName() + ".pdf");
 				} else {
-					file.setName(file.getTemplate() + ".html");
+					file.setName(file.getTemplate().getFileName() + ".html");
 				}
 			}
 		}
