@@ -5,10 +5,10 @@ public enum Templates {
 	RESET_OTP("reset-otp"), 
 	RESET_OTP_SMS("reset-otp-sms"), 
 	SERVER_UP("health-server-up"), 
-	REMIT_RECEIPT("RemittanceReceiptReport"), 
-	REMIT_STATMENT("RemittanceStatment"), 
+	REMIT_RECEIPT("TransactionReceipt"), 
+	REMIT_STATMENT("TransactionList"), 
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
-	REMIT_STATMENT_EMAIL_FILE("RemittanceStatmentServer"),
+	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"),
 	REG_SUC("RegistrationSuccessEmail"), 
 	SERVER_PING("server-ping"),
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
@@ -25,4 +25,3 @@ public enum Templates {
 		this.fileName = fileName;
 	}
 }
-
