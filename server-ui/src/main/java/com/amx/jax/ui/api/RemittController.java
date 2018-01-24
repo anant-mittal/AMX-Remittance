@@ -105,11 +105,12 @@ public class RemittController {
 		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
 		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
-		email.getModel().put(Constants.RESP_DATA_KEY, sessionService.getUserSession().getCustomerModel());
+		email.getModel().put(Constants.RESP_DATA_KEY,
+				sessionService.getUserSession().getCustomerModel().getPersoninfo());
 		email.addFile(file);
 		email.setHtml(true);
 		postManService.sendEmailAsync(email);
-		wrapper.setData(data);
+		// wrapper.setData(data);
 		return wrapper;
 	}
 
