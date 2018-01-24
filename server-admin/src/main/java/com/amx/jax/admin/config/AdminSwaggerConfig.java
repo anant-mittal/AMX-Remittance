@@ -22,7 +22,7 @@ public class AdminSwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
-				"{\"tenant\":\"KWT2\"}")
+				"{\"tenant\":\"KWT\"}")
 				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
 		List<Parameter> globalParams = Arrays.asList(headerParam);
 
