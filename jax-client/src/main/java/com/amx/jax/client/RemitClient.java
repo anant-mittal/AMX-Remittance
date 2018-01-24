@@ -41,8 +41,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr, String docNumber, String fromDate,
 			String toDate) {
 		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
-		BigDecimal countryId = jaxMetaInfo.getCountryId();
-		BigDecimal customerId = jaxMetaInfo.getCustomerId();
 		log.info("Transaction Histroy");
 		StringBuffer sb = new StringBuffer();
 		sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=")
