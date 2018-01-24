@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -32,7 +33,7 @@ public class TransactionHistroyService extends AbstractService {
 				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found");
+			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(trnxHisList));
 			response.setResponseStatus(ResponseStatus.OK);

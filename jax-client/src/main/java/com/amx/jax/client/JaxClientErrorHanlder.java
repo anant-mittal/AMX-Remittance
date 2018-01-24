@@ -202,6 +202,9 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED.getCode().equals(error.getErrorId())) {
 				throw new LimitExeededException(error);
 			}
+			if (JaxError.TRANSACTION_HISTORY_NOT_FOUND.getCode().equals(error.getErrorId())) {
+				throw new RemittanceTransactionValidationException(error);
+			}
 
 		}
 	}
