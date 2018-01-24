@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
@@ -45,7 +45,7 @@ public class MetaController {
 	TenantContext tenantContext;
 
 	@Autowired
-	PostManClient postManClient;
+	PostManService postManService;
 
 	@Autowired
 	GuestSession guestSession;
@@ -99,7 +99,7 @@ public class MetaController {
 		file.setType(File.Type.PDF);
 		email.addFile(file);
 
-		postManClient.sendEmail(email);
+		postManService.sendEmail(email);
 
 		/*
 		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");

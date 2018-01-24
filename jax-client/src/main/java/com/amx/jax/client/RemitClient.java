@@ -159,12 +159,12 @@ public class RemitClient extends AbstractJaxServiceClient {
 					});
 
 			log.info("#####################");
-			log.info("PaymentResponseDto values -- CollectionDocumentCode : "+response.getBody().getResult().getCollectionDocumentCode()+
-	        		 " CollectionDocumentNumber : "+response.getBody().getResult().getCollectionDocumentNumber()+
-	        		 " CollectionFinanceYear : "+response.getBody().getResult().getCollectionFinanceYear());
+			log.info("PaymentResponseDto values -- CollectionDocumentCode : "
+					+ response.getBody().getResult().getCollectionDocumentCode() + " CollectionDocumentNumber : "
+					+ response.getBody().getResult().getCollectionDocumentNumber() + " CollectionFinanceYear : "
+					+ response.getBody().getResult().getCollectionFinanceYear());
 			log.info("#####################");
-			
-			
+
 		} catch (Exception e) {
 			log.error("exception in saveTransaction ", e);
 		}

@@ -3,6 +3,7 @@ package com.amx.jax.postman.client;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.PostManService;
@@ -53,10 +54,22 @@ public class PostManClient implements PostManService {
 		return response.getBody();
 	}
 
+	@Override
+	@Async
+	public SMS sendSMSAsync(SMS sms) throws UnirestException {
+		return sendSMS(sms);
+	}
+
 	public Email sendEmail(Email email) throws UnirestException {
 		HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
 				.header("content-type", "application/json").body(email).asObject(Email.class);
 		return response.getBody();
+	}
+
+	@Override
+	@Async
+	public Email sendEmailAsync(Email email) throws UnirestException {
+		return sendEmail(email);
 	}
 
 	public Message notifySlack(Message msg) throws UnirestException {
@@ -65,6 +78,12 @@ public class PostManClient implements PostManService {
 
 				.body(msg).asObject(Message.class);
 		return response.getBody();
+	}
+
+	@Override
+	@Async
+	public Message notifySlackAsync(Message msg) throws UnirestException {
+		return notifySlack(msg);
 	}
 
 	@Override

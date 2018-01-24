@@ -7,11 +7,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
@@ -21,7 +18,6 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.model.url.PaymentResponse;
 import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.scope.TenantContextHolder;
-import com.fss.plugin.iPayPipe;
 
 /**
  * @author Viki Sangani 14-Dec-2017 PaymentService.java

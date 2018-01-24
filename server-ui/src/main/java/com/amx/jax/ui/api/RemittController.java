@@ -36,6 +36,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.Tenant;
@@ -45,7 +46,9 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
+import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.Constants;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -74,6 +77,9 @@ public class RemittController {
 	@Autowired
 	private PayGService payGService;
 
+	@Autowired
+	private SessionService sessionService;
+
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
@@ -83,15 +89,37 @@ public class RemittController {
 	}
 
 	@ApiOperation(value = "Returns transaction history")
+	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
+	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
+			@RequestParam String toDate) throws IOException, UnirestException {
+
+		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>();
+		// postManService.processTemplate(Templates.REMIT_STATMENT_EMAIL_FILE, wrapper,
+		// File.Type.PDF);
+		List<TransactionHistroyDTO> data = jaxService.setDefaults().getRemitClient()
+				.getTransactionHistroy("2017", null, fromDate, toDate).getResults();
+		File file = new File();
+		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
+		file.setType(File.Type.PDF);
+		file.getModel().put(Constants.RESP_DATA_KEY, data);
+		file.setName("RemittanceStatment.pdf");
+		Email email = new Email();
+		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
+		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
+		email.addFile(file);
+		email.setHtml(true);
+		postManService.sendEmailAsync(email);
+		wrapper.setData(data);
+		return wrapper;
+	}
+
+	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
-
 		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
 		file.setName("RemittanceStatment.pdf");
-
 		file.create(response, true);
-
 		return wrapper;
 	}
 

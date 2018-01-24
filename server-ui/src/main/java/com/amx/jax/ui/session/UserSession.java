@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.bootloaderjs.Random;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -15,7 +14,6 @@ public class UserSession implements Serializable {
 
 	private static final long serialVersionUID = -6354887590466374869L;
 	private boolean valid = false;
-	private String otpPrefix = null;
 	private String uuidToken = null;
 	private String referrer = null;
 	private String deviceId = null;
@@ -42,14 +40,6 @@ public class UserSession implements Serializable {
 
 	public void setUuidToken(String uuidToken) {
 		this.uuidToken = uuidToken;
-	}
-
-	public void setOtpPrefix() {
-		this.otpPrefix = Random.randomAlpha(3);
-	}
-
-	public String getOtpPrefix() {
-		return otpPrefix;
 	}
 
 	private String userid = null;

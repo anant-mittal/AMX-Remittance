@@ -47,12 +47,17 @@ public class AuditLoggerClient implements AuditLoggerService {
 	@Value("${jax.logger.url}")
 	private String loggerUrl;
 
+	@Value("${app.enabled.logger}")
+	private Boolean loggerEnable;
+
 	@Async
 	public AuditLoggerResponse log(SessionEvent event) {
 		HttpResponse<AuditLoggerResponse> response = null;
 		try {
-			response = Unirest.post(loggerUrl + AuditLoggerUrls.SESSION_LOG).header("content-type", "application/json")
-					.body(event).asObject(AuditLoggerResponse.class);
+			if (loggerEnable) {
+				response = Unirest.post(loggerUrl + AuditLoggerUrls.SESSION_LOG)
+						.header("content-type", "application/json").body(event).asObject(AuditLoggerResponse.class);
+			}
 		} catch (Exception e) {
 			LOGGER.error("Audit Log Error : ", e);
 		}

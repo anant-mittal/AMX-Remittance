@@ -7,6 +7,8 @@ public enum Templates {
 	SERVER_UP("health-server-up"), 
 	REMIT_RECEIPT("RemittanceReceiptReport"), 
 	REMIT_STATMENT("RemittanceStatment"), 
+	REMIT_STATMENT_EMAIL("RemittanceStatment"),
+	REMIT_STATMENT_EMAIL_FILE("RemittanceStatment"),
 	REG_SUC("RegistrationSuccessEmail"), 
 	SERVER_PING("server-ping"),
 	TXN_CRT_SUCC("TransactionCreationSuccess"),

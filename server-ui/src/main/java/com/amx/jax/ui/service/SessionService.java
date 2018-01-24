@@ -97,8 +97,9 @@ public class SessionService {
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		SessionEvent sessionEvent = new SessionEvent();
-		auditLoggerService.log(sessionEvent);
-
+		if (valid) {
+			auditLoggerService.log(sessionEvent);
+		}
 	}
 
 	/**

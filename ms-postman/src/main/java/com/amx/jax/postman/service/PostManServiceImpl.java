@@ -125,4 +125,22 @@ public class PostManServiceImpl implements PostManService {
 		return slackService.sendNotification(e);
 	}
 
+	@Override
+	@Async
+	public Email sendEmailAsync(Email email) throws UnirestException {
+		return this.sendEmail(email);
+	}
+
+	@Override
+	@Async
+	public SMS sendSMSAsync(SMS sms) throws UnirestException {
+		return this.sendSMS(sms);
+	}
+
+	@Override
+	@Async
+	public Message notifySlackAsync(Message msg) throws UnirestException {
+		return this.notifySlack(msg);
+	}
+
 }
