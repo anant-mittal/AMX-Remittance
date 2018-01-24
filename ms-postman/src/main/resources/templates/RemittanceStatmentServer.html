@@ -169,12 +169,12 @@ html, body {
 		<tr th:each="transaction : ${data}">
 			<td th:text="${#dates.format(new java.util.Date(transaction.documentDate), 'dd-MMM-yy')}"></td>
 			<td th:text="${transaction.trnxIdNumber}"></td>
-			<td th:text="${transaction.transactionTypeDesc}"></td>
-			<td th:text="${transaction.branchDesc}"></td>
-			<td th:text="${transaction.beneficaryName}"></td>
+			<td th:text="${#strings.toLowerCase(transaction.transactionTypeDesc)}" style="text-transform: capitalize;"></td>
+			<td th:text="${#strings.toLowerCase(transaction.branchDesc)}" style="text-transform: capitalize;"></td>
+			<td th:text="${#strings.toLowerCase(transaction.beneficaryName)}" style="text-transform: capitalize;"></td>
 			<td th:text="${transaction.beneficaryAccountNumber}"></td>
 			<td th:text="${transaction.beneficaryCorespondingBankName}"></td>
-			<td th:text="${transaction.beneficaryBranchName}"></td>
+			<td th:text="${#strings.toLowerCase(transaction.beneficaryBranchName)}" style="text-transform: capitalize;"></td>
 			<td th:text="${transaction.currencyQuoteName +' ' + #numbers.formatDecimal(transaction.foreignTransactionAmount, 0, 'COMMA', 2, 'POINT')}"></td>
 			<td th:text="${transaction.transactionStatusDesc}"></td>
 		</tr>
