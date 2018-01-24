@@ -68,6 +68,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
 	@Override
 	public boolean supportsAggressiveRelease() {
-		return true;
+		return false;
 	}
 }
