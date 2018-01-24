@@ -88,7 +88,6 @@ public class RemittController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
 			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
