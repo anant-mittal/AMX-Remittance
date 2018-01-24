@@ -61,7 +61,7 @@ public class RemittanceController {
 	MetaData metaData;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam("docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
+	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
 			@RequestParam(required=false,value="fromDate") String fromDate, @RequestParam(required=false,value="toDate") String toDate) {
 
 		BigDecimal customerId = metaData.getCustomerId();

@@ -96,6 +96,11 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	}
 
 	@Bean
+	public com.amx.jax.postman.client.PostManClient PostManClient() {
+		return new com.amx.jax.postman.client.PostManClient();
+	}
+	
+	@Bean
 	public MetaClient metaClient() {
 		return new MetaClient();
 	}

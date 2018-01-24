@@ -13,37 +13,41 @@ import com.amx.amxlib.constant.RuleEnum;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.RateAlert;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IRateAlertDao;
 import com.amx.jax.service.CurrencyMasterService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.RateAlertUtil;
 
 @Service
 @SuppressWarnings("rawtypes")
 public class RateAlertService extends AbstractService {
-	
+
 	private Logger logger = Logger.getLogger(RateAlertService.class);
 
 	@Autowired
 	IRateAlertDao rateAlertDao;
-	
+
 	@Autowired
 	CurrencyMasterService currencyService;
-	
+
+	@Autowired
+	CustomerDao customerDao;
+
 	public ApiResponse saveRateAlert(RateAlertDTO dto) {
-		
+
 		ApiResponse response = getBlackApiResponse();
 		RateAlert rateAlertModel = RateAlertUtil.getRateAlertModel(dto);
 
 		try {
 			rateAlertModel.setCreatedDate(new Date());
 			rateAlertModel.setIsActive("Y");
-			
+
 			rateAlertDao.save(rateAlertModel);
 			response.setResponseStatus(ResponseStatus.OK);
 
-			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while saving rae alert.");
@@ -51,19 +55,19 @@ public class RateAlertService extends AbstractService {
 		}
 		return response;
 	}
-	
+
 	public ApiResponse delteRateAlert(RateAlertDTO dto) {
-		
+
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<RateAlert> rateAlertList = rateAlertDao.getRateAlertDetails(dto.getRateAlertId());
-			
+
 			if (!rateAlertList.isEmpty()) {
 				RateAlert rec = rateAlertList.get(0);
 				rec.setIsActive("N");
 				rec.setUpdatedDate(new Date());
 				rateAlertDao.save(rec);
-			}else {
+			} else {
 				throw new GlobalException("No record found");
 			}
 			response.setResponseStatus(ResponseStatus.OK);
@@ -75,27 +79,29 @@ public class RateAlertService extends AbstractService {
 		}
 		return response;
 	}
-	
+
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer(BigDecimal customerId) {
-		
+
 		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
-		
-			List<RateAlert> rateAlertList = null;
-	        List<RateAlertDTO> dtoList= new ArrayList<RateAlertDTO>();
-	        
-	        try {
+
+		List<RateAlert> rateAlertList = null;
+		List<RateAlertDTO> dtoList = new ArrayList<RateAlertDTO>();
+
+		try {
 			rateAlertList = rateAlertDao.getRateAlertForCustomer(customerId);
-			
+
 			if (!rateAlertList.isEmpty()) {
-				
+
 				for (RateAlert rec : rateAlertList) {
 					RateAlertDTO rateDTO = new RateAlertDTO();
-					
+
 					rateDTO.setAlertRate(rec.getAlertRate());
 					rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
-					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
+					rateDTO.setBaseCurrencyQuote(
+							currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
 					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
-					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
+					rateDTO.setForeignCurrencyQuote(
+							currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
 					rateDTO.setRule(RuleEnum.valueOf(rec.getRule().toUpperCase()));
 					rateDTO.setFromDate(rec.getFromDate());
 					rateDTO.setToDate(rec.getToDate());
@@ -105,12 +111,12 @@ public class RateAlertService extends AbstractService {
 					rateDTO.setReceiveAmount(rec.getReceiveAmount());
 					dtoList.add(rateDTO);
 				}
-				
+
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().setType("rate-alert-dto");
-			} /*else {
-				throw new GlobalException("No record found");
-			}*/
+			} /*
+				 * else { throw new GlobalException("No record found"); }
+				 */
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while fetching rate alerts");
@@ -119,23 +125,24 @@ public class RateAlertService extends AbstractService {
 		response.getData().getValues().addAll(dtoList);
 		return response;
 	}
-	
-	public ApiResponse<RateAlertDTO> getAllRateAlert() {
-		
-		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
-		
-			List<RateAlert> rateAlertList = null;
-	        List<RateAlertDTO> dtoList= new ArrayList<RateAlertDTO>();
-	        
-	        try {
-			rateAlertList = rateAlertDao.getAllRateAlert();
-			
-			if (!rateAlertList.isEmpty()) {
-				
-				for (RateAlert rec : rateAlertList) {
-					try {
-						RateAlertDTO rateDTO = new RateAlertDTO();
 
+	public ApiResponse<RateAlertDTO> getAllRateAlert() {
+
+		ApiResponse<RateAlertDTO> response = getBlackApiResponse();
+
+		List<RateAlert> rateAlertList = null;
+		List<RateAlertDTO> dtoList = new ArrayList<RateAlertDTO>();
+
+		try {
+			rateAlertList = rateAlertDao.getAllRateAlert();
+
+			if (!rateAlertList.isEmpty()) {
+
+				for (RateAlert rec : rateAlertList) {
+
+					RateAlertDTO rateDTO = new RateAlertDTO();
+					try {
+						Customer customer = customerDao.getCustById(rec.getCustomerId());
 						rateDTO.setAlertRate(rec.getAlertRate());
 						rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
 						rateDTO.setBaseCurrencyQuote(
@@ -150,16 +157,25 @@ public class RateAlertService extends AbstractService {
 						rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
 						rateDTO.setPayAmount(rec.getPayAmount());
 						rateDTO.setReceiveAmount(rec.getReceiveAmount());
+						rateDTO.setAlertSms(rec.getAlertSms());
+						if (rec.getAlertEmail() == null) {
+							rateDTO.setAlertEmail(customer.getEmail());
+						} else {
+							rateDTO.setAlertEmail(rec.getAlertEmail());
+						}
+						rateDTO.setCustomerFirstName(customer.getFirstName());
+						rateDTO.setCustomerMiddleName(customer.getMiddleName());
+						rateDTO.setCustomerLastName(customer.getLastName());
 						dtoList.add(rateDTO);
 					} catch (Exception e) {
 					}
 				}
-				
+
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().setType("rate-alert-dto");
-			} /*else {
-				throw new GlobalException("No record found");
-			}*/
+			} /*
+				 * else { throw new GlobalException("No record found"); }
+				 */
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while fetching rate alerts");
@@ -169,7 +185,9 @@ public class RateAlertService extends AbstractService {
 		return response;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.amx.jax.services.AbstractService#getModelType()
 	 */
 	@Override
@@ -178,7 +196,9 @@ public class RateAlertService extends AbstractService {
 		return null;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see com.amx.jax.services.AbstractService#getModelClass()
 	 */
 	@Override

@@ -70,8 +70,13 @@ public class TransactionHistroyService extends AbstractService {
 
 	public ApiResponse getTransactionHistroyDateWise(BigDecimal cutomerReference, BigDecimal docfyr, String fromDate,
 			String toDate) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
-				.getTransactionHistroyDateWise(cutomerReference, docfyr, fromDate, toDate);
+		List<CustomerRemittanceTransactionView> trnxHisList;
+		if (docfyr != null) {
+			trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, docfyr, fromDate,
+					toDate);
+		} else {
+			trnxHisList = transactionHistroyDao.getTransactionHistroyDateWise(cutomerReference, fromDate, toDate);
+		}
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found");

@@ -1,6 +1,10 @@
 package com.amx.jax.scheduler.ratealert;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+
+import com.amx.amxlib.model.RateAlertDTO;
 
 public class RateAlertNotificationDTO {
 
@@ -9,6 +13,24 @@ public class RateAlertNotificationDTO {
 	String middleName;
 	String lastName;
 	String email;
+	String inputCur;
+	String outputCur;
+	BigDecimal inputAmount;
+	BigDecimal outputAmount;
+	Date date;
+
+	public RateAlertNotificationDTO(RateAlertDTO rateAlert, BigDecimal rate) {
+		this.setEmail(rateAlert.getAlertEmail());
+		this.setFirstName(rateAlert.getCustomerFirstName());
+		this.setMiddleName(rateAlert.getCustomerMiddleName());
+		this.setLastName(rateAlert.getCustomerLastName());
+		this.setInputCur(rateAlert.getBaseCurrencyQuote());
+		this.setOutputCur(rateAlert.getForeignCurrencyQuote());
+		this.setInputAmount(rateAlert.getPayAmount());
+		this.setOutputAmount(rateAlert.getReceiveAmount());
+		this.setRate(rate);
+		this.setDate(Calendar.getInstance().getTime());
+	}
 
 	public BigDecimal getRate() {
 		return rate;
@@ -48,5 +70,45 @@ public class RateAlertNotificationDTO {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getInputCur() {
+		return inputCur;
+	}
+
+	public void setInputCur(String inputCur) {
+		this.inputCur = inputCur;
+	}
+
+	public String getOutputCur() {
+		return outputCur;
+	}
+
+	public void setOutputCur(String outputCur) {
+		this.outputCur = outputCur;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
+	public BigDecimal getInputAmount() {
+		return inputAmount;
+	}
+
+	public void setInputAmount(BigDecimal inputAmount) {
+		this.inputAmount = inputAmount;
+	}
+
+	public BigDecimal getOutputAmount() {
+		return outputAmount;
+	}
+
+	public void setOutputAmount(BigDecimal outputAmount) {
+		this.outputAmount = outputAmount;
 	}
 }

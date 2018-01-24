@@ -24,6 +24,11 @@ public class RateAlertDTO extends AbstractModel {
 	private String isActive;
 	private BigDecimal payAmount;
 	private BigDecimal receiveAmount;
+	private String alertEmail;
+	private String alertSms;
+	private String customerFirstName;
+	private String customerMiddleName;
+	private String customerLastName;
 	
 	/**
 	 * @return the rateAlertId
@@ -226,6 +231,46 @@ public class RateAlertDTO extends AbstractModel {
 				+ baseCurrencyId + ", baseCurrencyQuote=" + baseCurrencyQuote + ", foreignCurrencyId="
 				+ foreignCurrencyId + ", foreignCurrencyQuote=" + foreignCurrencyQuote + ", isActive=" + isActive
 				+ ", payAmount=" + payAmount + ", receiveAmount=" + receiveAmount + "]";
+	}
+
+	public String getAlertEmail() {
+		return alertEmail;
+	}
+
+	public void setAlertEmail(String alertEmail) {
+		this.alertEmail = alertEmail;
+	}
+
+	public String getAlertSms() {
+		return alertSms;
+	}
+
+	public void setAlertSms(String alertSms) {
+		this.alertSms = alertSms;
+	}
+
+	public String getCustomerFirstName() {
+		return customerFirstName;
+	}
+
+	public void setCustomerFirstName(String customerFirstName) {
+		this.customerFirstName = customerFirstName;
+	}
+
+	public String getCustomerMiddleName() {
+		return customerMiddleName;
+	}
+
+	public void setCustomerMiddleName(String customerMiddleName) {
+		this.customerMiddleName = customerMiddleName;
+	}
+
+	public String getCustomerLastName() {
+		return customerLastName;
+	}
+
+	public void setCustomerLastName(String customerLastName) {
+		this.customerLastName = customerLastName;
 	}
 
 
