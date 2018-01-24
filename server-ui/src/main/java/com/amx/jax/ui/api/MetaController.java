@@ -84,7 +84,9 @@ public class MetaController {
 		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = remoteAddr;
 		wrapper.getData().device = device;
-
+		
+		jaxService.setDefaults().getMetaClient().getOnlineConfig(tenantContext.getTenant().getId());
+		
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");
 		email.setObject(wrapper);

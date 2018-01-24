@@ -100,7 +100,7 @@ public class RemittController {
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Constants.RESP_DATA_KEY, data);
-		file.setName("RemittanceStatment.pdf");
+		//file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
@@ -119,7 +119,7 @@ public class RemittController {
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
 		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
-		file.setName("RemittanceStatment.pdf");
+		//file.setName("RemittanceStatment.pdf");
 		file.create(response, true);
 		return wrapper;
 	}
@@ -132,8 +132,8 @@ public class RemittController {
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if (skipd == null || skipd.booleanValue() == false) {
 			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
-			file.setName("RemittanceReceiptReport" + tranxDTO.getCollectionDocumentFinYear() + "-"
-					+ tranxDTO.getCollectionDocumentNo() + ".pdf");
+//			file.setName("RemittanceReceiptReport" + tranxDTO.getCollectionDocumentFinYear() + "-"
+//					+ tranxDTO.getCollectionDocumentNo() + ".pdf");
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(wrapper);
