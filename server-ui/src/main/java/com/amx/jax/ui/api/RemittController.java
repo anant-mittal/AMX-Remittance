@@ -34,12 +34,11 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -48,7 +47,6 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
-import com.amx.jax.ui.Constants;
 import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
@@ -104,8 +102,10 @@ public class RemittController {
 		file.getModel().put(Constants.RESP_DATA_KEY, data);
 		file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
+		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
 		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
+		email.getModel().put(Constants.RESP_DATA_KEY, sessionService.getUserSession().getCustomerModel());
 		email.addFile(file);
 		email.setHtml(true);
 		postManService.sendEmailAsync(email);
@@ -258,8 +258,7 @@ public class RemittController {
 
 			wrapper.setData(respTxMdl);
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
-					"https://" + request.getServerName() + "/app/landing/remittance", Tenant.KWT,
-					PayGServiceCode.KNET));
+					"https://" + request.getServerName() + "/app/landing/remittance", tenantContext.getTenant()));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);

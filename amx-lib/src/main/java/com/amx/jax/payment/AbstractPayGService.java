@@ -13,15 +13,14 @@ public abstract class AbstractPayGService {
 	public abstract String getPayGServiceHost();
 
 	public String getPaymentUrl(RemittanceApplicationResponseModel remittanceApplicationResponseModel, String callback,
-			Tenant tnt, PayGServiceCode code) throws MalformedURLException, URISyntaxException {
+			Tenant tnt) throws MalformedURLException, URISyntaxException {
 		URLBuilder builder = new URLBuilder(getPayGServiceHost());
 		String callbackUrl = callback + "?docNo=" + remittanceApplicationResponseModel.getDocumentIdForPayment()
 				+ "&docFy=" + remittanceApplicationResponseModel.getDocumentFinancialYear();
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
-		builder.setPath("app/payment")
-				.addParameter("amount", remittanceApplicationResponseModel.getNetPayableAmount())
+		builder.setPath("app/payment").addParameter("amount", remittanceApplicationResponseModel.getNetPayableAmount())
 				.addParameter("trckid", remittanceApplicationResponseModel.getMerchantTrackId())
-				.addParameter("pg", code)
+				.addParameter("pg", remittanceApplicationResponseModel.getPgCode())
 				.addParameter("docFy", remittanceApplicationResponseModel.getDocumentFinancialYear())
 				.addParameter("docNo", remittanceApplicationResponseModel.getDocumentIdForPayment())
 				.addParameter("tnt", tnt).addParameter("callbackd", callbackd);
