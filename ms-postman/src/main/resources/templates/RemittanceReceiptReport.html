@@ -268,7 +268,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>Transaction No</td>
-						<td th:text="${remittance.transactionNo}">--</td>
+						<td><span th:text="${remittance.transactionNo}"></span> <span th:text="${(remittance.pinNo != null) ? 'Pin No: ' + remittance.pinNo : '' }" style="padding-left:100px; font-weight: bold"></span></td>
 						<td>الصفقة لا</td>
 					</tr>
 					<tr>
