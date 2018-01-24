@@ -5,6 +5,8 @@ package com.amx.jax.admin.controller;
 
 import static com.amx.jax.admin.constant.AdminConstant.ADMIN_API_ENDPOINT;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.admin.service.AdminService;
 import com.amx.jax.admin.service.JaxService;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.scope.Tenant;
 
 import io.swagger.annotations.Api;
 
@@ -36,9 +40,15 @@ public class AdminController {
 	
 	@Autowired
 	private AdminService adminService;
+	
+	@Autowired
+	JaxMetaInfo metaData;
 
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
+		Tenant tenant = metaData.getTenant();
+		logger.info(String.format("Tenant is : %s",tenant.getCode()));
+		
 		logger.debug("in unlockCustomer Request ");
 		jaxService.setDefaults();
 		ApiResponse response = adminService.unlockCustomer(civilid);
