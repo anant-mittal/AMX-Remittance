@@ -91,13 +91,14 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
-			@RequestParam String toDate) throws IOException, UnirestException {
+			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
+			throws IOException, UnirestException {
 
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>();
 		// postManService.processTemplate(Templates.REMIT_STATMENT_EMAIL_FILE, wrapper,
 		// File.Type.PDF);
 		List<TransactionHistroyDTO> data = jaxService.setDefaults().getRemitClient()
-				.getTransactionHistroy("2017", null, fromDate, toDate).getResults();
+				.getTransactionHistroy(docfyr, null, fromDate, toDate).getResults();
 		File file = new File();
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
