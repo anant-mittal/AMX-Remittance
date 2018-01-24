@@ -79,6 +79,7 @@ public class RateAlertTask implements Runnable {
 			data.setDomesticCurrency(domCurrency);
 			loadExchangeRates(data);
 			data.setRateAlerts(rateAlertClient.getAllRateAlert().getResults());
+			RATE_ALERT_DATA.put(tenant, data);
 			logger.info("Initialized rate alert data");
 		}
 	}

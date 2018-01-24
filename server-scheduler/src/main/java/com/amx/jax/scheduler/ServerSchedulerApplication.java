@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,8 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 			logger.info("Configuring Rate alert task, for tenant " + tenant);
 			RateAlertTask rateAlertTask = rateAlertTask();
 			rateAlertTask.setTenant(tenant);
-			threadPoolTaskScheduler().schedule(rateAlertTask, rateAlertTrigger());
+			ScheduledFuture<?> future = threadPoolTaskScheduler().schedule(rateAlertTask, rateAlertTrigger());
+			rateAlertTrigger().setFuture(future);
 		}
 		logger.info("End of configureTasks");
 	}

@@ -133,21 +133,26 @@ public class RateAlertService extends AbstractService {
 			if (!rateAlertList.isEmpty()) {
 				
 				for (RateAlert rec : rateAlertList) {
-					RateAlertDTO rateDTO = new RateAlertDTO();
-					
-					rateDTO.setAlertRate(rec.getAlertRate());
-					rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
-					rateDTO.setBaseCurrencyQuote(currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
-					rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
-					rateDTO.setForeignCurrencyQuote(currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
-					rateDTO.setRule(RuleEnum.valueOf(rec.getRule().toUpperCase()));
-					rateDTO.setFromDate(rec.getFromDate());
-					rateDTO.setToDate(rec.getToDate());
-					rateDTO.setCustomerId(rec.getCustomerId());
-					rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
-					rateDTO.setPayAmount(rec.getPayAmount());
-					rateDTO.setReceiveAmount(rec.getReceiveAmount());
-					dtoList.add(rateDTO);
+					try {
+						RateAlertDTO rateDTO = new RateAlertDTO();
+
+						rateDTO.setAlertRate(rec.getAlertRate());
+						rateDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+						rateDTO.setBaseCurrencyQuote(
+								currencyService.getCurrencyMasterById(rec.getBaseCurrencyId()).getQuoteName());
+						rateDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+						rateDTO.setForeignCurrencyQuote(
+								currencyService.getCurrencyMasterById(rec.getForeignCurrencyId()).getQuoteName());
+						rateDTO.setRule(RuleEnum.valueOf(rec.getRule().toUpperCase()));
+						rateDTO.setFromDate(rec.getFromDate());
+						rateDTO.setToDate(rec.getToDate());
+						rateDTO.setCustomerId(rec.getCustomerId());
+						rateDTO.setRateAlertId(rec.getOnlineRateAlertId());
+						rateDTO.setPayAmount(rec.getPayAmount());
+						rateDTO.setReceiveAmount(rec.getReceiveAmount());
+						dtoList.add(rateDTO);
+					} catch (Exception e) {
+					}
 				}
 				
 				response.setResponseStatus(ResponseStatus.OK);

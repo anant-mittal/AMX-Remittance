@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.scheduling.TriggerContext;
 
 public class RateAlertTrigger implements Trigger {
 
+	private ScheduledFuture<?> future;
+	
 	private Logger log = Logger.getLogger(getClass());
 	DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
@@ -29,6 +32,14 @@ public class RateAlertTrigger implements Trigger {
 		}
 		log.info("Next execution of RateAlertTask " + df.format(val.getTime()));
 		return val.getTime();
+	}
+
+	public ScheduledFuture<?> getFuture() {
+		return future;
+	}
+
+	public void setFuture(ScheduledFuture<?> future) {
+		this.future = future;
 	}
 
 }
