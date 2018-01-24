@@ -43,7 +43,10 @@ public class RemitClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
 		log.info("Transaction Histroy");
 		StringBuffer sb = new StringBuffer();
-		sb.append("?docfyr=").append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=")
+		if(docfyr != null) {
+			sb.append("?docfyr=");
+		}
+		sb.append(docfyr).append("&docNumber=").append(docNumber).append("&fromDate=")
 				.append(fromDate).append("&toDate=").append(toDate);
 		log.info("Input String :" + sb.toString());
 		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
