@@ -1,6 +1,5 @@
 package com.amx.jax.scheduler;
 
-import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.concurrent.Executor;
@@ -99,7 +98,7 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	public com.amx.jax.postman.client.PostManClient PostManClient() {
 		return new com.amx.jax.postman.client.PostManClient();
 	}
-	
+
 	@Bean
 	public MetaClient metaClient() {
 		return new MetaClient();
