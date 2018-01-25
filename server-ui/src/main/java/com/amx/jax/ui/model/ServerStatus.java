@@ -2,6 +2,8 @@ package com.amx.jax.ui.model;
 
 import org.springframework.mobile.device.Device;
 
+import com.amx.amxlib.meta.model.ApplicationSetupDTO;
+
 public class ServerStatus {
 	public Boolean debug = null;
 	public String id = null;
@@ -15,4 +17,5 @@ public class ServerStatus {
 	public String scheme = null;
 	public String remoteAddr = null;
 	public Device device = null;
+	public ApplicationSetupDTO onlineConfigurationDto = null;
 }

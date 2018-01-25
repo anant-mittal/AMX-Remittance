@@ -59,7 +59,7 @@ public class MetaController {
 
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String site, HttpSession httpSession,
+	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
@@ -84,9 +84,9 @@ public class MetaController {
 		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = remoteAddr;
 		wrapper.getData().device = device;
-		
-		jaxService.setDefaults().getMetaClient().getOnlineConfig(tenantContext.getTenant().getId());
-		
+		wrapper.getData().onlineConfigurationDto = jaxService.setDefaults().getMetaClient()
+				.getApplicationCountry().getResult();
+
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");
 		email.setObject(wrapper);
