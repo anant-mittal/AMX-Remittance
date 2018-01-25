@@ -18,6 +18,8 @@ public class RateAlertTrigger implements Trigger {
 
 	private ScheduledFuture<?> future;
 
+	private boolean runNow;
+
 	@Autowired
 	SchedulerConfig config;
 
@@ -28,7 +30,7 @@ public class RateAlertTrigger implements Trigger {
 	public Date nextExecutionTime(TriggerContext triggerContext) {
 		Date scheduledTime = triggerContext.lastScheduledExecutionTime();
 		Calendar val = Calendar.getInstance();
-		if (scheduledTime != null) {
+		if (scheduledTime != null && !runNow) {
 			Date now = Calendar.getInstance().getTime();
 			long durationMs = now.getTime() - scheduledTime.getTime();
 			int durationInMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(durationMs);
@@ -46,6 +48,14 @@ public class RateAlertTrigger implements Trigger {
 
 	public void setFuture(ScheduledFuture<?> future) {
 		this.future = future;
+	}
+
+	public boolean isRunNow() {
+		return runNow;
+	}
+
+	public void setRunNow(boolean runNow) {
+		this.runNow = runNow;
 	}
 
 }

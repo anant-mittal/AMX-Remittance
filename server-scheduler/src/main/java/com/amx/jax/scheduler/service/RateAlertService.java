@@ -40,7 +40,8 @@ public class RateAlertService {
 		BooleanResponse model = new BooleanResponse();
 		rateAlertTrigger.getFuture().cancel(true);
 		rateAlertTask.setTenant(jaxMetaInfo.getTenant());
-		threadPoolTaskScheduler.schedule(rateAlertTask, Calendar.getInstance().getTime());
+		rateAlertTrigger.setRunNow(true);
+		threadPoolTaskScheduler.schedule(rateAlertTask, rateAlertTrigger);
 		model.setSuccess(true);
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
