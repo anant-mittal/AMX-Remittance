@@ -16,6 +16,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -83,7 +84,7 @@ public class BeneficiaryService extends AbstractService {
 		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found");
+			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -133,7 +134,7 @@ public class BeneficiaryService extends AbstractService {
 
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found");
+			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -146,7 +147,7 @@ public class BeneficiaryService extends AbstractService {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForOnline(customerId);
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found");
+			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -159,7 +160,7 @@ public class BeneficiaryService extends AbstractService {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForBranch(customerId);
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found");
+			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -191,7 +192,7 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
 			} else {
-				throw new GlobalException("No record found");
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 
 			return response;

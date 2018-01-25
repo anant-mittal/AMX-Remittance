@@ -1,9 +1,12 @@
 package com.amx.jax.services;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -12,25 +15,41 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 
 @Service
 @SuppressWarnings("rawtypes")
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TransactionHistroyService extends AbstractService {
+	
+	
 
 	@Autowired
 	ITransactionHistroyDAO transactionHistroyDao;
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	
+	@Autowired
+	BeneficiaryCheckService beneCheckService;
+	
+	
+	@Autowired
+	MetaData metaData;
 
 	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
-				.getTransactionHistroy(cutomerReference);
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
@@ -49,7 +68,7 @@ public class TransactionHistroyService extends AbstractService {
 				.getTransactionHistroyByDocumnet(cutomerReference, docfyr, docNumber); // , fromDate, toDate
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found");
+			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(trnxHisList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -79,7 +98,7 @@ public class TransactionHistroyService extends AbstractService {
 		}
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
-			throw new GlobalException("Transaction histroy not found");
+			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(trnxHisList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -90,8 +109,10 @@ public class TransactionHistroyService extends AbstractService {
 	}
 
 	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist) {
+		System.out.println("Application country Id :"+metaData.getCountryId());
 		List<TransactionHistroyDTO> list = new ArrayList<>();
 		for (CustomerRemittanceTransactionView hist : trnxHist) {
+			BeneficiaryListDTO beneDtoCheck = null; 
 			TransactionHistroyDTO model = new TransactionHistroyDTO();
 			model.setBeneficaryAccountNumber(hist.getBeneficaryAccountNumber());
 			model.setForeignTransactionAmount(hist.getForeignTransactionAmount());
@@ -122,18 +143,39 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
+			if(beneViewModel!=null){
+				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
+			}
+			if(beneDtoCheck != null){
+				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
+			}
 			if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName())
 					&& !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU)) {
 				list.add(model);
 			}
 
-			if (hist.getTransactionStatusDesc() != null
-					&& !hist.getTransactionStatusDesc().equalsIgnoreCase("CANCELLED")) {
-				list.add(model);
-			}
 		}
 		return list;
 	}
+	
+	
+	
+	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+		BeneficiaryListDTO dto = new BeneficiaryListDTO();
+		try {
+			BeanUtils.copyProperties(dto, beneModel);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			System.out.println("Exception e:"+e.getMessage());
+		}
+		return dto;
+	}
+	
+	
+	
+	
+	
+	
 
 	@Override
 	public String getModelType() {
