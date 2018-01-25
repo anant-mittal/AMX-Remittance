@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
@@ -22,7 +23,7 @@ public class NotificationService {
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	PostManClient postManClient;
+	private PostManService postManService;
 
 	@Async
 	public void sendBatchNotification(List<RateAlertNotificationDTO> subList) {
@@ -34,7 +35,7 @@ public class NotificationService {
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, alert);
 			try {
-				postManClient.sendEmail(email);
+				postManService.sendEmail(email);
 			} catch (UnirestException e) {
 				logger.error("error in sendBatchNotification", e);
 			}

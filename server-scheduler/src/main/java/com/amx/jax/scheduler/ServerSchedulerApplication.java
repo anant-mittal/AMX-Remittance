@@ -28,6 +28,7 @@ import com.amx.jax.client.JaxClientErrorHanlder;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.scheduler.ratealert.RateAlertConfig;
 import com.amx.jax.scheduler.task.RateAlertTask;
 import com.amx.jax.scheduler.task.trigger.RateAlertTrigger;
@@ -95,11 +96,6 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	}
 
 	@Bean
-	public com.amx.jax.postman.client.PostManClient PostManClient() {
-		return new com.amx.jax.postman.client.PostManClient();
-	}
-
-	@Bean
 	public MetaClient metaClient() {
 		return new MetaClient();
 	}
@@ -139,5 +135,10 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	@Bean
 	public RateAlertTrigger rateAlertTrigger() {
 		return new RateAlertTrigger();
+	}
+
+	@Bean
+	public PostManService PostManClient() {
+		return new com.amx.jax.postman.client.PostManClient();
 	}
 }

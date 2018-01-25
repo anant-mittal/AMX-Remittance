@@ -59,6 +59,7 @@ public class RateAlertTask implements Runnable {
 
 	private void executeTask() {
 		RateAlertData data = RATE_ALERT_DATA.get(tenant);
+		loadRateAlerts(data);
 		Map<CurrencyMasterDTO, List<BankMasterDTO>> modifiedRates = getModifiedRates(data);
 		List<RateAlertNotificationDTO> applicableRateAlerts = getApplicableRateAlerts(modifiedRates,
 				data.getRateAlerts());
@@ -196,10 +197,14 @@ public class RateAlertTask implements Runnable {
 			CurrencyMasterDTO domCurrency = metaClient.getCurrencyByCountryId(tenant.getBDCode()).getResult();
 			data.setDomesticCurrency(domCurrency);
 			loadExchangeRates(data);
-			data.setRateAlerts(rateAlertClient.getAllRateAlert().getResults());
+			loadRateAlerts(data);
 			RATE_ALERT_DATA.put(tenant, data);
 			logger.info("Initialized rate alert data");
 		}
+	}
+
+	private void loadRateAlerts(RateAlertData data) {
+		data.setRateAlerts(rateAlertClient.getAllRateAlert().getResults());
 	}
 
 	public void loadExchangeRates(RateAlertData data) {
