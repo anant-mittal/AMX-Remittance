@@ -82,9 +82,9 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	public ApiResponse<RateAlertDTO> getAllRateAlert() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		try {
-
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/getAll";
+			log.info("calling " + url + " for getAllRateAlert");
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 					});

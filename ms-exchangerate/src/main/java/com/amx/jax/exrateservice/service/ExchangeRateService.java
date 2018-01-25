@@ -168,6 +168,8 @@ public class ExchangeRateService extends AbstractService {
 			ExchangeRateApprovalDetModel rate = entry.getKey();
 			BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
 			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
+			logger.debug("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
+					+ rate.getCurrencyId());
 			bankWiseRates.add(dto);
 		}
 

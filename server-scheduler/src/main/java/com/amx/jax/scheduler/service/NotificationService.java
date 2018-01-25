@@ -28,6 +28,7 @@ public class NotificationService {
 	@Async
 	public void sendBatchNotification(List<RateAlertNotificationDTO> subList) {
 		for (RateAlertNotificationDTO alert : subList) {
+			logger.info("Sending rate alert to "+ alert.getEmail());
 			Email email = new Email();
 			email.setSubject("AMX Rate Alert");
 			email.addTo(alert.getEmail());

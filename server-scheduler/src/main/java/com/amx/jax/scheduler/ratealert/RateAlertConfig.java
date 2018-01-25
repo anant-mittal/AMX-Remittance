@@ -13,7 +13,6 @@ public class RateAlertConfig {
 
 	static {
 		tenants.add(Tenant.KWT);
-		tenants.add(Tenant.KWT2);
 	}
 
 	public static Map<Tenant, RateAlertData> RATE_ALERT_DATA = new HashMap<Tenant, RateAlertData>();

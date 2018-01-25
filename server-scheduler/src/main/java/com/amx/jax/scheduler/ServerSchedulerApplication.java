@@ -29,6 +29,7 @@ import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.scheduler.config.SchedulerConfig;
 import com.amx.jax.scheduler.ratealert.RateAlertConfig;
 import com.amx.jax.scheduler.task.RateAlertTask;
 import com.amx.jax.scheduler.task.trigger.RateAlertTrigger;
@@ -43,6 +44,9 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 
 	@Autowired
 	JaxConfig jaxConfig;
+	
+	@Autowired
+	SchedulerConfig schedulerConfig;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ServerSchedulerApplication.class, args);
@@ -62,7 +66,7 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		logger.info("In configureTasks");
 		taskRegistrar.setScheduler(threadPoolTaskScheduler());
-		for (Tenant tenant : RateAlertConfig.tenants) {
+		for (Tenant tenant : schedulerConfig.getTenants()) {
 			logger.info("Configuring Rate alert task, for tenant " + tenant);
 			RateAlertTask rateAlertTask = rateAlertTask();
 			rateAlertTask.setTenant(tenant);

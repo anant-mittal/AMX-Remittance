@@ -8,13 +8,19 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
+
+import com.amx.jax.scheduler.config.SchedulerConfig;
 
 public class RateAlertTrigger implements Trigger {
 
 	private ScheduledFuture<?> future;
-	
+
+	@Autowired
+	SchedulerConfig config;
+
 	private Logger log = Logger.getLogger(getClass());
 	DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
@@ -26,8 +32,8 @@ public class RateAlertTrigger implements Trigger {
 			Date now = Calendar.getInstance().getTime();
 			long durationMs = now.getTime() - scheduledTime.getTime();
 			int durationInMinutes = (int) TimeUnit.MILLISECONDS.toMinutes(durationMs);
-			if (durationInMinutes < 5) {
-				val.add(Calendar.MINUTE, 5 - durationInMinutes);
+			if (durationInMinutes < config.getRateAlertTaskPollingTime()) {
+				val.add(Calendar.MINUTE, config.getRateAlertTaskPollingTime() - durationInMinutes);
 			}
 		}
 		log.info("Next execution of RateAlertTask " + df.format(val.getTime()));
