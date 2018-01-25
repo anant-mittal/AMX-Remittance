@@ -34,7 +34,7 @@ public class PipsMaster {
 	private String approvedBy;
 	private Date approvedDate;
 
-	private String pipsTypeCode;
+	//private String pipsTypeCode;
 
 	public PipsMaster() {
 	}
@@ -193,13 +193,13 @@ public class PipsMaster {
 		this.approvedDate = approvedDate;
 	}
 
-	@Column(name = "PIPS_TYPE_CODE")
-	public String getPipsTypeCode() {
-		return pipsTypeCode;
-	}
-
-	public void setPipsTypeCode(String pipsTypeCode) {
-		this.pipsTypeCode = pipsTypeCode;
-	}
+//	@Column(name = "PIPS_TYPE_CODE")
+//	public String getPipsTypeCode() {
+//		return pipsTypeCode;
+//	}
+//
+//	public void setPipsTypeCode(String pipsTypeCode) {
+//		this.pipsTypeCode = pipsTypeCode;
+//	}
 
 }
