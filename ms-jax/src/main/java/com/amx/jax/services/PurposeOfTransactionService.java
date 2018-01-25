@@ -22,7 +22,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dal.ApplicationProcedureDao;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;

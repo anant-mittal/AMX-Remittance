@@ -22,7 +22,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dal.ApplicationProcedureDao;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CompanyMaster;

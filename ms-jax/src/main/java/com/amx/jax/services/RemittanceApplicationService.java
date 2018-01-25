@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.jax.dal.ApplicationProcedureDao;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;

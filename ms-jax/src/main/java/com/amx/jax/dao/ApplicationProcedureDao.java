@@ -1,4 +1,4 @@
-package com.amx.jax.dal;
+package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
@@ -27,6 +27,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 
 @Component
 public class ApplicationProcedureDao {
@@ -37,7 +38,7 @@ public class ApplicationProcedureDao {
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	DataSource dataSource;
+	MultiTenantConnectionProviderImpl connectionProvider;
 
 	/**
 	 * Purpose : toFetchDetilaFromAddtionalBenficiaryDetails
@@ -167,7 +168,7 @@ public class ApplicationProcedureDao {
 		Map<String, Object> output = new HashMap<>();
 		Connection connection = null;
 		try {
-			connection = dataSource.getConnection();
+			connection = connectionProvider.getDataSource().getConnection();
 			String proc = "{call EX_TO_GEN_NEXT_DOC_SERIAL_NO(?,?,?,?,?,?,?,?,?)}";
 			CallableStatement cs = connection.prepareCall(proc);
 			cs.setBigDecimal(1, applCountryId);

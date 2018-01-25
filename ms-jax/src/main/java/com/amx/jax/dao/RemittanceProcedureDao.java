@@ -7,8 +7,6 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.sql.DataSource;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -16,6 +14,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+
+import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 
 
 
@@ -31,7 +31,7 @@ public class RemittanceProcedureDao implements Serializable{
 	private Logger logger = Logger.getLogger(RemittanceProcedureDao.class);
 
 	@Autowired
-	DataSource dataSource;
+	MultiTenantConnectionProviderImpl connectionProvider;
 		
 	@Transactional
 	public Map<String, Object> insertRemittanceForOnline(HashMap<String, Object> inputValues) {
@@ -52,7 +52,7 @@ public class RemittanceProcedureDao implements Serializable{
 		  Connection connection =null;
 		 
 		try {
-			 connection =dataSource.getConnection();
+			 connection =connectionProvider.getDataSource().getConnection();
 			 CallableStatement cs = connection.prepareCall("{call EX_INSERT_REMITTANCE_ONLINE(?,?,?,?,?,?,?,?,?,?,?,?)}");
 			 
 			    cs.setBigDecimal(1, applicationCountryId);
@@ -114,7 +114,7 @@ public class RemittanceProcedureDao implements Serializable{
 		  Connection connection =null;
 	
 		try {
-			    connection =dataSource.getConnection();
+			    connection =connectionProvider.getDataSource().getConnection();
 			    CallableStatement cs = connection.prepareCall("{call EX_INSERT_EMOS_TRANSFER_LIVE(?, ?, ?, ?, ?,?)}");
 				cs.setBigDecimal(1, applicationCountryId);
 				cs.setBigDecimal(2, companyId);

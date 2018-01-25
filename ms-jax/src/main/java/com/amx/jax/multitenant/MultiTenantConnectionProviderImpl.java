@@ -50,6 +50,12 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 		return connection;
 	}
 
+	public DataSource getDataSource() {
+		String tenantIdentifier = TenantContext.getCurrentTenant();
+		DataSource ds = dataSourcesJax.get(tenantIdentifier);
+		return ds;
+	}
+	
 	@Override
 	public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
 		connection.close();

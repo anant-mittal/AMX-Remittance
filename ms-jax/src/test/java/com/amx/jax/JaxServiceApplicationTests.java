@@ -13,9 +13,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.dal.ApplicationProcedureDao;
 import com.amx.jax.dal.CryptoDao;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;

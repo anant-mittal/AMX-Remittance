@@ -3,7 +3,6 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
