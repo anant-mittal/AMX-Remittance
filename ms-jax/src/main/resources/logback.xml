@@ -12,7 +12,7 @@
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>ms-jax.log</file>
+		<file>${LOG_PATH}/ms-jax.log</file>
 
 		<encoder>
 			<Pattern>
