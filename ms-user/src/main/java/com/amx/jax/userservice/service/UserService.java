@@ -704,4 +704,10 @@ public class UserService extends AbstractUserService {
 
 	}
 
+	public void validateMobile(CustomerModel custModel) {
+		Customer cust= custDao.getCustById(custModel.getCustomerId());
+		userValidationService.validateMobileNumberLength(cust, custModel.getMobile());
+		userValidationService.isMobileExist(cust, custModel.getMobile());
+		
+	} // end of validateMobile
 }

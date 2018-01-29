@@ -38,10 +38,13 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.scope.Tenant;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.validation.ValidationClient;
+import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.validation.CustomerValidation;
 
@@ -81,6 +84,9 @@ public class UserValidationService {
 
 	@Autowired
 	OtpSettings otpSettings;
+	
+	@Autowired
+	private ValidationClients validationClients;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -448,5 +454,27 @@ public class UserValidationService {
 			}
 		}
 	}
+	
+	protected void validateMobileNumberLength(Customer customer, String mobile) {
+		
+		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+		if (!validationClient.isValidMobileNumber(mobile)) {
+			throw new GlobalException("Mobile Number length is not correct.", JaxError.WRONG_PASSWORD);
+		}
+	}
+	
+	protected void isMobileExist(Customer customer, String mobile) {
+		
+		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+		if (!validationClient.isMobileExist(mobile)) {
+			throw new GlobalException("Mobile Number already exist.", JaxError.WRONG_PASSWORD);
+		}
+	}
+
 
 }
+
+
+
+
+

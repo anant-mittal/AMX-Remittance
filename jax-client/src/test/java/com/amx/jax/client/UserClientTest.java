@@ -16,6 +16,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
@@ -72,7 +73,7 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void saveMobile() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -86,4 +87,20 @@ public class UserClientTest {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
+	
+	@Test
+	public void sendOtpForMobileUpdate() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(239));
+		ApiResponse<CivilIdOtpModel> response = null;
+		String mobile = "9920027200";
+
+		response = client.sendOtpForMobileUpdate(mobile);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	
 }

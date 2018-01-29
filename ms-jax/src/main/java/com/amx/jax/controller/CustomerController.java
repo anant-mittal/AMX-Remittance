@@ -138,6 +138,11 @@ public class CustomerController {
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
+		
+		if (custModel.getMobile()!=null) {
+		    userSerivce.validateMobile(custModel);
+		}
+		
 		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel);
 		return response;
 	}

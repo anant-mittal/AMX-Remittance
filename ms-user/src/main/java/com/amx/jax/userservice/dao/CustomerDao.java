@@ -225,4 +225,14 @@ public class CustomerDao {
 		}
 		return customer;
 	}
+	
+	public Customer getCustomerByMobile(String mobile) {
+		List<Customer> list = customerRepo.getCustomerByMobile(mobile);
+		Customer customer = null;
+		if (list != null) {
+			customer = list.get(0);
+		}
+		return customer;
+	}
+	
 }
