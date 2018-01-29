@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.exception.GlobalException;
@@ -29,6 +30,9 @@ public class CurrencyMasterService extends AbstractService {
 
 	@Autowired
 	ICurrencyDao currencyDao;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
 	ViewOnlineCurrencyRepository viewOnlineCurrencyRepo;
@@ -59,6 +63,11 @@ public class CurrencyMasterService extends AbstractService {
 		if (currencyList != null && !currencyList.isEmpty()) {
 			currencymaster = currencyList.get(0);
 		}
+		return currencymaster;
+	}
+	
+	public CurrencyMasterModel getCurrencyMasterById(String quoteName) {
+		CurrencyMasterModel currencymaster = currencyMasterDao.getCurrencyMasterByQuote(quoteName);
 		return currencymaster;
 	}
 

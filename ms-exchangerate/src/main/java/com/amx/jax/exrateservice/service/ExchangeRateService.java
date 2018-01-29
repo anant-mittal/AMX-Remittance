@@ -27,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -49,6 +50,8 @@ import com.amx.jax.util.Util;
 public class ExchangeRateService extends AbstractService {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	static Map<BigDecimal, BigDecimal> currencyIdVsExchId = new HashMap<>();
 
 	@Autowired
 	private PipsMasterDao pipsDao;
@@ -170,6 +173,7 @@ public class ExchangeRateService extends AbstractService {
 			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
 			logger.debug("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
 					+ rate.getCurrencyId());
+			currencyIdVsExchId.put(rate.getCurrencyId(),  rate.getExchangeRateMasterAprDetId());
 			bankWiseRates.add(dto);
 		}
 
@@ -296,6 +300,19 @@ public class ExchangeRateService extends AbstractService {
 			}
 		}
 		return output;
+	}
+
+	public ApiResponse setOnlineExchangeRates(String quoteName, BigDecimal value) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		value  = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
+		BigDecimal toCurrency = currencyMasterDao.getCurrencyMasterByQuote(quoteName).getCurrencyId();
+		this.getExchangeRatesForOnline( BigDecimal.ONE, toCurrency,  BigDecimal.ONE, null);
+		BigDecimal exRateId = currencyIdVsExchId.get(toCurrency);
+		ExchangeRateApprovalDetModel exRateModel = exchangeRateDao.getExchangeRateApprovalDetModelById(exRateId);
+		exRateModel.setSellRateMax(value);
+		exchangeRateDao.saveOrUpdate(exRateModel);
+		apiResponse.getData().getValues().add(new BooleanResponse(true));
+		return apiResponse;
 	}
 
 }

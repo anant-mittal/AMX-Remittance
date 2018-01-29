@@ -16,13 +16,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.admin.service.AdminService;
 import com.amx.jax.admin.service.JaxService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.scope.Tenant;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiParam;
 
 /**
  * @author Viki Sangani 13-Dec-2017 Appcontroller.java
@@ -40,6 +43,9 @@ public class AdminController {
 	
 	@Autowired
 	private AdminService adminService;
+	
+	@Autowired
+	private ExchangeRateClient exchangeRateClient;
 	
 	@Autowired
 	JaxMetaInfo metaData;
@@ -70,6 +76,14 @@ public class AdminController {
 
 		ApiResponse response = adminService.createorUpdateOtpSettings(
 				new OtpSettings(maxValidateOtpAttempts, maxSendOtpAttempts, otpValidityTime));
+		return response;
+	}
+	
+	@RequestMapping(value = "/exrate", method = RequestMethod.POST)
+	public ApiResponse<BooleanResponse> setOnlineExchangeRates(
+			@ApiParam(required = true, allowableValues = "INR, AED, AUD, BDT, BAM, GBP, EURO, PKR, USD, ZAR, LKR,BHD,CAD,EGP,MUR,NPR,OMR,SAR", value = "Select quote", name = "quoteName") @RequestParam(required = true) String quoteName,
+			@RequestParam BigDecimal value) {
+		ApiResponse<BooleanResponse> response = exchangeRateClient.setExchangeRate(quoteName, value);
 		return response;
 	}
 

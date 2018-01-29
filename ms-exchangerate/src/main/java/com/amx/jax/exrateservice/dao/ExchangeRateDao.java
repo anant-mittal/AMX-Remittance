@@ -23,13 +23,21 @@ public class ExchangeRateDao {
 		return exchangeRates;
 	}
 
-	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBank(BigDecimal currencyId, BigDecimal countryBranchId,
-			BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
+	public List<ExchangeRateApprovalDetModel> getExchangeRatesForRoutingBank(BigDecimal currencyId,
+			BigDecimal countryBranchId, BigDecimal countryId, BigDecimal applicationCountryId, BigDecimal routingBankId,
 			BigDecimal serviceIndicatorId) {
 
 		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRatesForRoutingBank(currencyId,
 				countryBranchId, countryId, applicationCountryId, routingBankId, serviceIndicatorId);
 		return exchangeRates;
+	}
+
+	public ExchangeRateApprovalDetModel getExchangeRateApprovalDetModelById(BigDecimal id) {
+		return repo.findOne(id);
+	}
+
+	public void saveOrUpdate(ExchangeRateApprovalDetModel exchangeRateApprovalDetModel) {
+		repo.save(exchangeRateApprovalDetModel);
 	}
 
 }

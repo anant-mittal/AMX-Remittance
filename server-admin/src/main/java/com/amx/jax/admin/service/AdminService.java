@@ -3,15 +3,23 @@
   */
 package com.amx.jax.admin.service;
 
+import java.math.BigDecimal;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxConfigClient;
 import com.amx.jax.client.UserClient;
+
+import io.swagger.annotations.ApiParam;
 
 @Component
 public class AdminService {

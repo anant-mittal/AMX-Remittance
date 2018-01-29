@@ -38,6 +38,7 @@ public class RateAlertTrigger implements Trigger {
 				val.add(Calendar.MINUTE, config.getRateAlertTaskPollingTime() - durationInMinutes);
 			}
 		}
+		runNow = false;
 		log.info("Next execution of RateAlertTask " + df.format(val.getTime()));
 		return val.getTime();
 	}

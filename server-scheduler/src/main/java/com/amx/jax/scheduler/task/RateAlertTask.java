@@ -74,7 +74,7 @@ public class RateAlertTask implements Runnable {
 			if (endIndex >= applicableRateAlerts.size()) {
 				endIndex = applicableRateAlerts.size() - 1;
 			}
-			notificationService.sendBatchNotification(applicableRateAlerts.subList(i, endIndex));
+			notificationService.sendBatchNotification(applicableRateAlerts.subList(i, endIndex+1));
 		}
 
 	}

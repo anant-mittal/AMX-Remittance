@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
 
+import io.swagger.annotations.ApiParam;
+
 @RestController
 @RequestMapping(EXCHANGE_RATE_ENDPOINT)
 @SuppressWarnings("rawtypes")
@@ -31,6 +33,13 @@ public class ExchangeRateController {
 		logger.debug("getExchangeRates Request: fromCurrency" + fromCurrency + " toCurrency " + toCurrency + " amount: "
 				+ amount);
 		ApiResponse response = service.getExchangeRatesForOnline(fromCurrency, toCurrency, amount, bankId);
+		return response;
+	}
+
+	@RequestMapping(value = "/online/", method = RequestMethod.POST)
+	public ApiResponse setOnlineExchangeRates(@RequestParam(required = true) String quoteName,
+			@RequestParam BigDecimal value) {
+		ApiResponse response = service.setOnlineExchangeRates(quoteName, value);
 		return response;
 	}
 }
