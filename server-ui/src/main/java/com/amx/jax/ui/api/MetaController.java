@@ -19,6 +19,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -84,8 +85,8 @@ public class MetaController {
 		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = remoteAddr;
 		wrapper.getData().device = device;
-		wrapper.getData().onlineConfigurationDto = jaxService.setDefaults().getMetaClient()
-				.getApplicationCountry().getResult();
+		wrapper.getData().onlineConfigurationDto = jaxService.setDefaults().getMetaClient().getApplicationCountry()
+				.getResult();
 
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");
@@ -112,6 +113,23 @@ public class MetaController {
 		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
 		 */
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
+	public ResponseWrapper<Email> contactUs() throws UnirestException {
+		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
+
+		Email email = new Email();
+		email.addTo("lalit.tanwar07@gmail.com");
+		email.getModel().put(Constants.RESP_DATA_KEY, null);
+		email.setSubject("Contact Us");
+		email.setTemplate(Templates.RESET_OTP);
+		email.setHtml(true);
+
+		postManService.sendEmail(email);
+		wrapper.setData(email);
+		return wrapper;
+
 	}
 
 	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST })

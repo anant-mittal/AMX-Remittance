@@ -1,8 +1,9 @@
 #!/bin/bash
 
-TOMCAT_USER=amxtomcatuser
-TOMCAT_PASSWORD="amxtomcatpass"
-TOMCAT_HOST="10.28.42.83:8080"
+#80
+WEB_USER="devenvironment"
+WEB_PASSWORD="amx@123"
+WEB_HOST="10.28.42.83"
 
 # 80
 CDN_USER="devenvironment"
@@ -25,7 +26,6 @@ JAX_PORT=8081
 PM_HOST=10.28.42.83
 PM_USER=devenvironment
 PM_PASS=amx@123
-
 
 # 8083
 PG_HOST=10.28.42.83
