@@ -134,6 +134,7 @@ public class MetaController {
 		map.put("cemail", cemail);
 		map.put("message", message);
 		Email email = new Email();
+		email.setFrom("exch-online1@almullagroup.com");
 		email.setReplyTo("exch-online1@almullagroup.com");
 		email.addTo("lalit.tanwar07@gmail.com");
 		email.getModel().put(Constants.RESP_DATA_KEY, map);

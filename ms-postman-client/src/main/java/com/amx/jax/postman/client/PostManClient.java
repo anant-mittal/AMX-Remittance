@@ -104,13 +104,15 @@ public class PostManClient implements PostManService {
 	@Override
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException {
 		// TODO Auto-generated method stub
-		HttpResponse<JsonNode> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
+		HttpResponse<JsonNode> response = Unirest.post("https://www.google.com/recaptcha/api/siteverify")
 				// .header("content-type", "application/json")
 				.header("accept", "application/json").field("secret", googleSecret).field("response", responseKey)
 				.field("remoteip", remoteIP).asJson();
 
-		log.debug("message" + response.getBody());
-		return true;
+		if (response != null) {
+			return response.getBody().getObject().getBoolean("success");
+		}
+		return false;
 	}
 
 }
