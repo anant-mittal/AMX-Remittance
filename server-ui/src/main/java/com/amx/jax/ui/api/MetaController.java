@@ -29,6 +29,8 @@ import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
+import com.fasterxml.jackson.core.sym.Name;
+import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -118,22 +120,25 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
-	public ResponseWrapper<Email> contactUs(@RequestParam String message, @RequestParam String contact)
-			throws UnirestException {
+	public ResponseWrapper<Email> contactUs(@RequestParam String message, @RequestParam String contact,
+			@RequestParam(name = "g-recaptcha-response") String gRecaptchaResponse) throws UnirestException {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
 
+		
+		Unirest.post("https://www.google.com/recaptcha/api/siteverify").
+		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("contact", contact);
 		map.put("message", message);
 		Email email = new Email();
-		email.set
+		email.setReplyTo("exch-online1@almullagroup.com");
 		email.addTo("lalit.tanwar07@gmail.com");
 		email.getModel().put(Constants.RESP_DATA_KEY, map);
 		email.setSubject("Contact Us");
 		email.setTemplate(Templates.CONTACT_US);
 		email.setHtml(true);
-
 		postManService.sendEmail(email);
+
 		wrapper.setData(email);
 		return wrapper;
 

@@ -143,4 +143,9 @@ public class PostManServiceImpl implements PostManService {
 		return this.notifySlack(msg);
 	}
 
+	@Override
+	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException {
+		return null;
+	}
+
 }

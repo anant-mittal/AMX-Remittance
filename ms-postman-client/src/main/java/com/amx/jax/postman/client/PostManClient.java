@@ -2,6 +2,7 @@ package com.amx.jax.postman.client;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -17,12 +18,15 @@ import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManClient implements PostManService {
+
+	private Logger log = Logger.getLogger(getClass());
 
 	{
 		Unirest.setObjectMapper(new ObjectMapper() {
@@ -47,6 +51,8 @@ public class PostManClient implements PostManService {
 
 	@Value("${jax.postman.url}")
 	private String postManUrl;
+
+	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
@@ -93,6 +99,18 @@ public class PostManClient implements PostManService {
 				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(data))
 				.field("fileType", fileType).asObject(File.class);
 		return response.getBody();
+	}
+
+	@Override
+	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException {
+		// TODO Auto-generated method stub
+		HttpResponse<JsonNode> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
+				// .header("content-type", "application/json")
+				.header("accept", "application/json").field("secret", googleSecret).field("response", responseKey)
+				.field("remoteip", remoteIP).asJson();
+
+		log.debug("message" + response.getBody());
+		return true;
 	}
 
 }

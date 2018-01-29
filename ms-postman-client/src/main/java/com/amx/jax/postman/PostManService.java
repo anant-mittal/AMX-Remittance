@@ -23,4 +23,6 @@ public interface PostManService {
 
 	public File processTemplate(Templates template, Object data, File.Type fileType) throws UnirestException;
 
+	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException;
+
 }
