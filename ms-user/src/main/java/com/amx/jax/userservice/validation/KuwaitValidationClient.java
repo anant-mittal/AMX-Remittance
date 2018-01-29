@@ -3,6 +3,7 @@
   */
 package com.amx.jax.userservice.validation;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,8 @@ import com.amx.jax.userservice.dao.CustomerDao;
  */
 @Component
 public class KuwaitValidationClient implements ValidationClient {
+	
+	Logger logger = Logger.getLogger(KuwaitValidationClient.class);
 	
 	@Autowired
 	private CustomerDao custDao;

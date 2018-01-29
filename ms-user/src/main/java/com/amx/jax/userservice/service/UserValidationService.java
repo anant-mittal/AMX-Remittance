@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -38,7 +39,6 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
@@ -51,6 +51,8 @@ import com.amx.jax.util.validation.CustomerValidation;
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
+	
+	Logger logger = Logger.getLogger(UserValidationService.class);
 
 	@Autowired
 	private CustomerValidation custValidation;

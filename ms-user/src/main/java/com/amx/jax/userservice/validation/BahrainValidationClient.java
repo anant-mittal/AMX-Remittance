@@ -3,6 +3,7 @@
   */
 package com.amx.jax.userservice.validation;
 
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class BahrainValidationClient implements ValidationClient {
+	
+	Logger logger = Logger.getLogger(BahrainValidationClient.class);
 
 	/* (non-Javadoc)
 	 * @see com.amx.jax.validation.ValidationClient#getClientCode()

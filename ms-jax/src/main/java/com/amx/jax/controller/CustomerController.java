@@ -140,6 +140,7 @@ public class CustomerController {
 		channel.add(CommunicationChannel.MOBILE);
 		
 		if (custModel.getMobile()!=null) {
+			logger.info("Validating mobile for client id : "+custModel.getCustomerId());
 		    userSerivce.validateMobile(custModel);
 		}
 		
