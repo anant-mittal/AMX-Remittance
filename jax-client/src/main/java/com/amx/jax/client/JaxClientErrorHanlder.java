@@ -143,7 +143,9 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.OTP_EXPIERED.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
-
+			if (JaxError.INCORRECT_LENGTH.getCode().equals(error.getErrorId())) {
+				iscustValidationError = true;
+			}
 			if (iscustValidationError) {
 				throw new CustomerValidationException(error);
 			}
@@ -155,6 +157,10 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		if (error != null) {
 
 			if (JaxError.USERNAME_ALREADY_EXISTS.getCode().equals(error.getErrorId())) {
+				throw new AlreadyExistsException(error);
+			}
+			
+			if (JaxError.ALREADY_EXIST.getCode().equals(error.getErrorId())) {
 				throw new AlreadyExistsException(error);
 			}
 		}

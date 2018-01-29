@@ -459,7 +459,7 @@ public class UserValidationService {
 		
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (!validationClient.isValidMobileNumber(mobile)) {
-			throw new GlobalException("Mobile Number length is not correct.", JaxError.WRONG_PASSWORD);
+			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
 		}
 	}
 	
@@ -467,7 +467,7 @@ public class UserValidationService {
 		
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (!validationClient.isMobileExist(mobile)) {
-			throw new GlobalException("Mobile Number already exist.", JaxError.WRONG_PASSWORD);
+			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
 		}
 	}
 
