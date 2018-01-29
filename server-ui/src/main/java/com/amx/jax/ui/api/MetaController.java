@@ -127,23 +127,24 @@ public class MetaController {
 			throws UnirestException {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
 
-		postManService.verifyCaptcha(verify, httpService.getIPAddress());
+		if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("name", name);
+			map.put("cphone", cphone);
+			map.put("cemail", cemail);
+			map.put("message", message);
+			Email email = new Email();
+			email.setFrom("exch-online1@almullagroup.com");
+			email.setReplyTo(cemail);
+			email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com");
+			email.getModel().put(Constants.RESP_DATA_KEY, map);
+			email.setSubject("Inquiry");
+			email.setTemplate(Templates.CONTACT_US);
+			email.setHtml(true);
+			postManService.sendEmail(email);
+			wrapper.setData(email);
+		}
 
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("cphone", cphone);
-		map.put("cemail", cemail);
-		map.put("message", message);
-		Email email = new Email();
-		email.setFrom("exch-online1@almullagroup.com");
-		email.setReplyTo("exch-online1@almullagroup.com");
-		email.addTo("lalit.tanwar07@gmail.com");
-		email.getModel().put(Constants.RESP_DATA_KEY, map);
-		email.setSubject("Contact Us");
-		email.setTemplate(Templates.CONTACT_US);
-		email.setHtml(true);
-		postManService.sendEmail(email);
-
-		wrapper.setData(email);
 		return wrapper;
 
 	}
