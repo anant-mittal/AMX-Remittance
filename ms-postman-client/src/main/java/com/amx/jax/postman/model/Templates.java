@@ -2,6 +2,7 @@ package com.amx.jax.postman.model;
 
 public enum Templates {
 
+	CONTACT_US("contact-us"),
 	RESET_OTP("reset-otp"), 
 	RESET_OTP_SMS("reset-otp-sms"), 
 	SERVER_UP("health-server-up"), 

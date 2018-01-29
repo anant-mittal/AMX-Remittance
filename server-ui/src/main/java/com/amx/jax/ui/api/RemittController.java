@@ -100,7 +100,7 @@ public class RemittController {
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(Constants.RESP_DATA_KEY, data);
-		//file.setName("RemittanceStatment.pdf");
+		// file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
@@ -119,27 +119,29 @@ public class RemittController {
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
 		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
-		//file.setName("RemittanceStatment.pdf");
+		// file.setName("RemittanceStatment.pdf");
 		file.create(response, true);
 		return wrapper;
 	}
 
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
-	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO, Boolean skipd)
+	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
+			@RequestParam(required = false) Boolean duplicate, @RequestParam(required = false) Boolean skipd)
 			throws IOException, UnirestException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
+		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+
 		if (skipd == null || skipd.booleanValue() == false) {
-			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
-//			file.setName("RemittanceReceiptReport" + tranxDTO.getCollectionDocumentFinYear() + "-"
-//					+ tranxDTO.getCollectionDocumentNo() + ".pdf");
+			File file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(wrapper);
 	}
 
-	@ApiOperation(value = "Returns transaction reciept")
+	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
