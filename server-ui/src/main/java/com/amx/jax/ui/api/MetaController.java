@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
+import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.HttpService;
@@ -38,6 +40,8 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Meta APIs")
 public class MetaController {
+
+	private Logger log = Logger.getLogger(getClass());
 
 	@Autowired
 	private JaxService jaxService;
@@ -123,26 +127,31 @@ public class MetaController {
 
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
 	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
-			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify)
-			throws UnirestException {
+			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
 
-		if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("name", name);
-			map.put("cphone", cphone);
-			map.put("cemail", cemail);
-			map.put("message", message);
-			Email email = new Email();
-			email.setFrom("exch-online1@almullagroup.com");
-			email.setReplyTo(cemail);
-			email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com");
-			email.getModel().put(Constants.RESP_DATA_KEY, map);
-			email.setSubject("Inquiry");
-			email.setTemplate(Templates.CONTACT_US);
-			email.setHtml(true);
-			postManService.sendEmail(email);
-			wrapper.setData(email);
+		try {
+			if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("name", name);
+				map.put("cphone", cphone);
+				map.put("cemail", cemail);
+				map.put("message", message);
+				Email email = new Email();
+				email.setFrom("exch-online1@almullagroup.com");
+				email.setReplyTo(cemail);
+				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com");
+				email.getModel().put(Constants.RESP_DATA_KEY, map);
+				email.setSubject("Inquiry");
+				email.setTemplate(Templates.CONTACT_US);
+				email.setHtml(true);
+				postManService.sendEmail(email);
+				wrapper.setData(email);
+			} else {
+				wrapper.setStatusKey(ResponseStatus.ERROR);
+			}
+		} catch (Exception e) {
+			log.error("/pub/contact", e);
 		}
 
 		return wrapper;
