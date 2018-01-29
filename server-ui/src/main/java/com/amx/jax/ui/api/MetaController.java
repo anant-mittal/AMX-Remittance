@@ -26,11 +26,10 @@ import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
+import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
-import com.fasterxml.jackson.core.sym.Name;
-import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -54,6 +53,9 @@ public class MetaController {
 
 	@Autowired
 	GuestSession guestSession;
+
+	@Autowired
+	HttpService httpService;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -87,7 +89,7 @@ public class MetaController {
 		wrapper.getData().localAddress = request.getLocalAddr();
 		wrapper.getData().remoteAddr = request.getRemoteAddr();
 		wrapper.getData().scheme = request.getScheme();
-		wrapper.getData().remoteAddr = remoteAddr;
+		wrapper.getData().remoteAddr = httpService.getIPAddress();
 		wrapper.getData().device = device;
 		wrapper.getData().onlineConfigurationDto = jaxService.setDefaults().getMetaClient().getApplicationCountry()
 				.getResult();
@@ -120,15 +122,16 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
-	public ResponseWrapper<Email> contactUs(@RequestParam String message, @RequestParam String contact,
-			@RequestParam(name = "g-recaptcha-response") String gRecaptchaResponse) throws UnirestException {
+	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
+			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify)
+			throws UnirestException {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
 
-		
-		Unirest.post("https://www.google.com/recaptcha/api/siteverify").
-		
+		postManService.verifyCaptcha(verify, httpService.getIPAddress());
+
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("contact", contact);
+		map.put("cphone", cphone);
+		map.put("cemail", cemail);
 		map.put("message", message);
 		Email email = new Email();
 		email.setReplyTo("exch-online1@almullagroup.com");
