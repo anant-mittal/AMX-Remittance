@@ -1,7 +1,9 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -116,14 +118,19 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
-	public ResponseWrapper<Email> contactUs() throws UnirestException {
+	public ResponseWrapper<Email> contactUs(@RequestParam String message, @RequestParam String contact)
+			throws UnirestException {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
 
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("contact", contact);
+		map.put("message", message);
 		Email email = new Email();
+		email.set
 		email.addTo("lalit.tanwar07@gmail.com");
-		email.getModel().put(Constants.RESP_DATA_KEY, null);
+		email.getModel().put(Constants.RESP_DATA_KEY, map);
 		email.setSubject("Contact Us");
-		email.setTemplate(Templates.RESET_OTP);
+		email.setTemplate(Templates.CONTACT_US);
 		email.setHtml(true);
 
 		postManService.sendEmail(email);

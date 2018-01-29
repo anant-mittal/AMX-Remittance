@@ -7,6 +7,15 @@ import java.util.List;
 public class Email extends Message {
 
 	private String from;
+	private String replyTo;
+
+	public String getReplyTo() {
+		return replyTo;
+	}
+
+	public void setReplyTo(String replyTo) {
+		this.replyTo = replyTo;
+	}
 
 	private List<String> to;
 

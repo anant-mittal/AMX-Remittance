@@ -60,13 +60,16 @@ public class EmailService {
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
-		if (eParams.getFrom() != null && !Constants.defaultString.equals(eParams.getFrom())) {
-			helper.setFrom(eParams.getFrom());
-			helper.setReplyTo(eParams.getFrom());
-		} else {
-			helper.setFrom(defaultSender);
-			helper.setReplyTo(defaultSender);
+		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
+			eParams.setFrom(defaultSender);
 		}
+
+		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
+			eParams.setReplyTo(eParams.getFrom());
+		}
+
+		helper.setFrom(eParams.getFrom());
+		helper.setReplyTo(eParams.getReplyTo());
 
 		helper.setSubject(eParams.getSubject());
 		helper.setText(eParams.getMessage(), isHtml);
