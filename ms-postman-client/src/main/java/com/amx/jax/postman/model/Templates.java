@@ -6,6 +6,7 @@ public enum Templates {
 	RESET_OTP_SMS("reset-otp-sms"), 
 	SERVER_UP("health-server-up"), 
 	REMIT_RECEIPT("TransactionReceipt"), 
+	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), 
 	REMIT_STATMENT("TransactionList"), 
 	REMIT_STATMENT_EMAIL("RemittanceStatmentEmail"),
 	REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"),
