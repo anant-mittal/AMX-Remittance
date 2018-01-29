@@ -25,7 +25,7 @@ Created	:		Rabil
 
 
 @Entity
-@Table(name = "VIEW_EX_COMPANY")
+@Table(name = "JAX_VIEW_EX_COMPANY")
 public class ViewCompanyDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal companyId;
