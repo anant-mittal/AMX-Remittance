@@ -133,7 +133,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions, String mOtp,
 			String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		try {
+		
 			CustomerModel custModel = new CustomerModel();
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
@@ -146,15 +146,14 @@ public class UserClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  saveSecurityQuestions api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in saveSecurityQuestions ", e);
-		}
+
+		
 		return response.getBody();
 	}
 
 	public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		try {
+
 			CustomerModel custModel = new CustomerModel();
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
@@ -168,9 +167,7 @@ public class UserClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  savePhishiingImage api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in savePhishiingImage ", e);
-		}
+		
 		return response.getBody();
 	}
 
@@ -199,7 +196,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<CustomerModel> fetchRandomQuestoins(int size) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		try {
+
 			BigDecimal customerId = jaxMetaInfo.getCustomerId();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			String randQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/" + customerId
@@ -209,9 +206,7 @@ public class UserClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  fetchRandomQuestoins api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in fetchRandomQuestoins ", e);
-		}
+
 		return response.getBody();
 	}
 
@@ -265,16 +260,14 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<CustomerDto> getMyProfileInfo() {
 		ResponseEntity<ApiResponse<CustomerDto>> response = null;
-		try {
+
 			log.info("Bene Clinet to get bene list Input String :");
 			String url = baseUrl.toString() + USER_API_ENDPOINT + "/myprofile-info/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
 					});
-		} catch (Exception e) {
-			log.debug("Bene country list ", e);
-		}
+
 		return response.getBody();
 	}
 
@@ -371,7 +364,7 @@ public class UserClient extends AbstractJaxServiceClient {
 	
 	public ApiResponse<CustomerModel> saveEmail(String email, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		try {
+
 			CustomerModel custModel = new CustomerModel();
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
@@ -384,15 +377,13 @@ public class UserClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  saveEmail api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in saveEmail ", e);
-		}
+
 		return response.getBody();
 	}
 	
 	public ApiResponse<CustomerModel> saveMobile(String mobile, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		try {
+
 			CustomerModel custModel = new CustomerModel();
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
@@ -405,9 +396,7 @@ public class UserClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			log.info("responce from  saveMobile api: " + util.marshall(response.getBody()));
-		} catch (Exception e) {
-			log.error("exception in saveMobile ", e);
-		}
+
 		return response.getBody();
 	}
 
