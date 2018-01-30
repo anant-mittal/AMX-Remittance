@@ -28,17 +28,12 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<RateAlertDTO> saveRateAlert(RateAlertDTO rateAlertDTO) {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		try {
+		HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
+		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/save";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+				});
 
-			HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-			String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/save";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-					});
-
-		} catch (Exception e) {
-			log.error("exception while saving rate alert ", e);
-		}
 		return response.getBody();
 	}
 
@@ -57,41 +52,30 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 			}
 		} catch (ValidationException ve) {
 			log.error("RateAlert ID is null.", ve);
-		} catch (Exception e) {
-			log.error("exception while deleting rate alert", e);
 		}
 		return response.getBody();
 	}
 
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		try {
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/get/for/customer";
+		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+				});
 
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/get/for/customer";
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-					});
-
-		} catch (Exception e) {
-			log.error("exception while fetching rate alert", e);
-		}
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<RateAlertDTO> getAllRateAlert() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/getAll";
-			log.info("calling " + url + " for getAllRateAlert");
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-					});
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/getAll";
+		log.info("calling " + url + " for getAllRateAlert");
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+				});
 
-		} catch (Exception e) {
-			log.error("exception while fetching rate alert", e);
-		}
 		return response.getBody();
 	}
 

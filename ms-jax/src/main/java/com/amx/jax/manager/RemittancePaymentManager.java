@@ -144,6 +144,7 @@ public class RemittancePaymentManager extends AbstractService{
 					response.setResponseStatus(ResponseStatus.OK);
 				    //response.getData().setType("pg_remit_response");
 				}
+				try {
 					RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
 							lstPayIdDetails.get(0).getDocumentNo(), lstPayIdDetails.get(0).getDocumentFinancialyear());
 					TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
@@ -159,6 +160,9 @@ public class RemittancePaymentManager extends AbstractService{
 					} catch (Exception e) {
 					}
 					notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+					} catch (Exception e) {
+						logger.error("error while sending transaction notification", e);
+					}
 					
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
