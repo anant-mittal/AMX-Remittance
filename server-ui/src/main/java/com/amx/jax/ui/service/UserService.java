@@ -63,17 +63,17 @@ public class UserService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> updatePhone(String email, String mOtp, String eOtp) {
+	public ResponseWrapper<UserUpdateData> updatePhone(String phone, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
 			if (mOtp == null) {
-				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email)
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(phone)
 						.getResult();
 				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
 			} else {
-				jaxService.setDefaults().getUserclient().saveMobile(email, mOtp, eOtp).getResult();
+				jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
 			}
 		} catch (AbstractException e) {
