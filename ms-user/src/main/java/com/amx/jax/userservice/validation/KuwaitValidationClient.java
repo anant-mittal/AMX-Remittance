@@ -23,7 +23,7 @@ public class KuwaitValidationClient implements ValidationClient {
 	@Autowired
 	private CustomerDao custDao;
 	
-	private static Integer MOBILE_LENGTH = new Integer(10);
+	private static Integer MOBILE_LENGTH = new Integer(8);
 
 	/* (non-Javadoc)
 	 * @see com.amx.jax.validation.ValidationClient#getClientCode()
