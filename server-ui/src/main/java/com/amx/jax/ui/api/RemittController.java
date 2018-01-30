@@ -146,8 +146,10 @@ public class RemittController {
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext)
-			throws UnirestException, IOException {
+			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
+			@RequestParam(required = false) Boolean duplicate) throws UnirestException, IOException {
+
+		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
@@ -158,11 +160,13 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+			File file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManService.processTemplate(Templates.REMIT_RECEIPT, wrapper, null);
+			File file = postManService
+					.processTemplate(duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, null);
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);

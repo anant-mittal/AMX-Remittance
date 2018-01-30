@@ -228,7 +228,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		CustomerModel custModel = new CustomerModel();
+		log.info("validateSecurityQuestions for customer id " + jaxMetaInfo.getCustomerId());
+
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+
 		custModel.setSecurityquestions(securityquestions);
 		String validatSecurityQuestionstUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/validate-random-questions/";
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
@@ -290,27 +293,27 @@ public class UserClient extends AbstractJaxServiceClient {
 				});
 		return response.getBody();
 	}
-	
-/*	public ApiResponse<CustomerModel> updateCustomerEmail(String json)
-			throws CustomerValidationException, LimitExeededException {
-		ResponseEntity<ApiResponse<CustomerModel>> response = null;
-		HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
-		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
-		log.info("calling saveCustomer api: " + sendOtpUrl);
-		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-				});
-		log.info("responce from  saveCustomer api: " + util.marshall(response.getBody()));
-		return response.getBody();
-	}*/
-	
+
+	/*
+	 * public ApiResponse<CustomerModel> updateCustomerEmail(String json) throws
+	 * CustomerValidationException, LimitExeededException {
+	 * ResponseEntity<ApiResponse<CustomerModel>> response = null;
+	 * HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
+	 * String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
+	 * log.info("calling saveCustomer api: " + sendOtpUrl); response =
+	 * restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity, new
+	 * ParameterizedTypeReference<ApiResponse<CustomerModel>>() { });
+	 * log.info("responce from  saveCustomer api: " +
+	 * util.marshall(response.getBody())); return response.getBody(); }
+	 */
+
 	public ApiResponse<CivilIdOtpModel> sendOtpForEmailUpdate(String email)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 
 		CustomerModel custModel = new CustomerModel();
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 		custModel.setEmail(email);
-		
+
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
@@ -322,14 +325,14 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<CivilIdOtpModel> sendOtpForMobileUpdate(String mobile)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 
 		CustomerModel custModel = new CustomerModel();
 		custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 		custModel.setMobile(mobile);
-		
+
 		ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
 		HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 		String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/send-otp/";
@@ -341,27 +344,27 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<BooleanResponse> unLockCustomer(String civilId) {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
-		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/unlock/"+civilId;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/unlock/" + civilId;
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 				});
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<BooleanResponse> deActivateCustomer(String civilId) {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
-		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/deactivate/"+civilId;
+		String url = baseUrl.toString() + CUSTOMER_ENDPOINT + "/deactivate/" + civilId;
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 				});
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<CustomerModel> saveEmail(String email, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 
@@ -371,7 +374,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setEmail(email);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
-			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT+"/save";
+			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/save";
 			log.info("calling saveEmail api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
@@ -380,7 +383,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<CustomerModel> saveMobile(String mobile, String mOtp, String eOtp) {
 		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 
@@ -390,7 +393,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setMobile(mobile);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
-			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT+"/save";
+			String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT + "/save";
 			log.info("calling saveMobile api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {

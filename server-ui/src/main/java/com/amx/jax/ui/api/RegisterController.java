@@ -31,7 +31,6 @@ public class RegisterController {
 	private RegistrationService registrationService;
 
 	/**
-	 * 
 	 * @param civilid
 	 * @return
 	 */
@@ -42,9 +41,7 @@ public class RegisterController {
 	}
 
 	/**
-	 * 
 	 * Verifies OTP for civilID
-	 * 
 	 * 
 	 * @param civilid
 	 * @param otp
@@ -57,7 +54,6 @@ public class RegisterController {
 	}
 
 	/**
-	 * 
 	 * @param request
 	 * @return
 	 */
@@ -67,7 +63,6 @@ public class RegisterController {
 	}
 
 	/**
-	 * 
 	 * @param securityquestions
 	 * @return
 	 */
@@ -77,12 +72,28 @@ public class RegisterController {
 				userUpdateData.geteOtp());
 	}
 
+	/**
+	 * 
+	 * @param imageUrl
+	 * @param caption
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
 	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
 			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
 	}
 
+	/**
+	 * 
+	 * @param loginId
+	 * @param password
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
