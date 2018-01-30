@@ -468,7 +468,7 @@ public class UserValidationService {
 	protected void isMobileExist(Customer customer, String mobile) {
 		
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
-		if (!validationClient.isMobileExist(mobile)) {
+		if (validationClient.isMobileExist(mobile)) {
 			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
 		}
 	}

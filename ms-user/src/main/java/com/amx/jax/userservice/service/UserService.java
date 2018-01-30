@@ -307,13 +307,16 @@ public class UserService extends AbstractUserService {
 			BeanUtils.copyProperties(personinfo, customer);
 		} catch (Exception e) {
 		}
-		jaxNotificationService.sendOtpSms(personinfo, model);
+		
 		if(customerModel != null && customerModel.getEmail() != null) {
 			personinfo.setEmail(customerModel.getEmail());
 		}
 		if(customerModel != null && customerModel.getMobile() != null) {
 			personinfo.setMobile(customerModel.getMobile());
 		}
+		
+		jaxNotificationService.sendOtpSms(personinfo, model);
+		
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}

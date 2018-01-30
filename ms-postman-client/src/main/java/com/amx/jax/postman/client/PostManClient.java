@@ -54,6 +54,7 @@ public class PostManClient implements PostManService {
 
 	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
+	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
 				.header("content-type", "application/json").body(sms).asObject(SMS.class);
