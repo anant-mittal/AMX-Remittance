@@ -2,7 +2,7 @@ package com.amx.jax.postman.model;
 
 public enum Templates {
 
-	CONTACT_US("contact-us"),
+	CONTACT_US("ContactForm"),
 	RESET_OTP("reset-otp"), 
 	RESET_OTP_SMS("reset-otp-sms"), 
 	SERVER_UP("health-server-up"), 
@@ -15,8 +15,7 @@ public enum Templates {
 	SERVER_PING("server-ping"),
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
-	RATE_ALERT("RateAlert"),
-	CONTACT_FORM("ContactForm");
+	RATE_ALERT("RateAlert");
 
 	String fileName;
 
