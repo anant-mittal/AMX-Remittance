@@ -151,6 +151,7 @@ public class MetaController {
 				wrapper.setStatusKey(ResponseStatus.ERROR);
 			}
 		} catch (Exception e) {
+			wrapper.setStatusKey(ResponseStatus.ERROR);
 			log.error("/pub/contact", e);
 		}
 
