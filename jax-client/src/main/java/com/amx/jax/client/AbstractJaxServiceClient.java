@@ -57,6 +57,7 @@ public abstract class AbstractJaxServiceClient {
 			info.setLanguageId(jaxMetaInfo.getLanguageId());
 			info.setCountryBranchId(jaxMetaInfo.getCountryBranchId());
 			info.setTenant(jaxMetaInfo.getTenant());
+			log.info("device ip" + jaxMetaInfo.getDeviceIp());
 			info.setDeviceId(jaxMetaInfo.getDeviceId());
 			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
