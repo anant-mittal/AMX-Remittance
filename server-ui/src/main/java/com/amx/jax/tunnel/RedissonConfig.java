@@ -1,4 +1,4 @@
-package com.amx.jax.ui.config;
+package com.amx.jax.tunnel;
 
 import java.io.IOException;
 
@@ -10,7 +10,6 @@ import org.redisson.config.SingleServerConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,9 +18,8 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 
 @Configuration
 // @EnableRedissonHttpSession
-@ConditionalOnExpression(com.amx.jax.ui.WebApplication.USE_REDIS)
 @AutoConfigureAfter(RedisAutoConfiguration.class)
-public class CacheRedisConfiguration extends AbstractHttpSessionApplicationInitializer {
+public class RedissonConfig extends AbstractHttpSessionApplicationInitializer {
 	// @Bean
 	// public LettuceConnectionFactory connectionFactory() {
 	// return new LettuceConnectionFactory(); // <2>
