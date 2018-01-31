@@ -123,6 +123,8 @@ public class KnetClient implements PayGClient {
 				log.info(pipe.getErrorMsg());
 				log.info(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
+			} else {
+				log.info(pipe.getDebugMsg());
 			}
 
 			// get results
