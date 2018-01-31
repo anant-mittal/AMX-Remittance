@@ -24,6 +24,26 @@ public class JaxMetaInfo {
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private String referrer = null;
 
+	private String deviceId;
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+
+	private String deviceIp;
+
 	public String getReferrer() {
 		return referrer;
 	}

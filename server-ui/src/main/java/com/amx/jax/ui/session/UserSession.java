@@ -17,6 +17,15 @@ public class UserSession implements Serializable {
 	private String uuidToken = null;
 	private String referrer = null;
 	private String deviceId = null;
+	private String deviceIp = null;
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
 
 	public String getDeviceId() {
 		return deviceId;

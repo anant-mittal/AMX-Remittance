@@ -17,6 +17,7 @@ import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.session.UserSession;
 import com.bootloaderjs.JsonUtil;
 
@@ -41,11 +42,20 @@ public class HomeController {
 	@Autowired
 	private UserSession userSession;
 
+	@Autowired
+	HttpService httpService;
+
 	public String getDeviceId() {
 		if (userSession.getDeviceId() != null) {
 			String deviceId = WebUtils.getCookie(request, Constants.DEVICE_ID_KEY).getValue();
 			userSession.setDeviceId(deviceId);
 		}
+
+		if (userSession.getDeviceIp() != null) {
+			String deviceIp = httpService.getIPAddress();
+			userSession.setDeviceIp(deviceIp);
+		}
+
 		return userSession.getDeviceId();
 	}
 

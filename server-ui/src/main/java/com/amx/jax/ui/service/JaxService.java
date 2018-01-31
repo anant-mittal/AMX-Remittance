@@ -103,7 +103,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	}
 
 	public JaxService setDefaults() {
-		
+
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 
@@ -112,6 +112,8 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
+		jaxMetaInfo.setDeviceId(sessionService.getUserSession().getDeviceId());
+		jaxMetaInfo.setDeviceIp(sessionService.getUserSession().getDeviceIp());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
