@@ -1,6 +1,7 @@
 
 package com.amx.jax.ui.api;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,12 +47,16 @@ public class HomeController {
 	HttpService httpService;
 
 	public String getDeviceId() {
-		if (userSession.getDeviceId() != null) {
-			String deviceId = WebUtils.getCookie(request, Constants.DEVICE_ID_KEY).getValue();
-			userSession.setDeviceId(deviceId);
+
+		if (userSession.getDeviceId() == null) {
+			Cookie cookie = WebUtils.getCookie(request, Constants.DEVICE_ID_KEY);
+			if (cookie != null) {
+				String deviceId = cookie.getValue();
+				userSession.setDeviceId(deviceId);
+			}
 		}
 
-		if (userSession.getDeviceIp() != null) {
+		if (userSession.getDeviceIp() == null) {
 			String deviceIp = httpService.getIPAddress();
 			userSession.setDeviceIp(deviceIp);
 		}
