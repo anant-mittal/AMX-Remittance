@@ -295,13 +295,13 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				if (Util.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
 					List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
-					if (accLengthList.isEmpty()) {
+					/*if (accLengthList.isEmpty()) {
 						errorDesc = "Invalid Beneficiary Account Number length";
 						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
 						errorListDto.add(errorStatusDto);
 
 					}
-					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
+*/					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
 						errorDesc = "Invalid Beneficiary Account Number length";
 						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
 
