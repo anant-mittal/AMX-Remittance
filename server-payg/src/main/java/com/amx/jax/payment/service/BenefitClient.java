@@ -34,11 +34,23 @@ public class BenefitClient implements PayGClient {
 
 	private Logger log = Logger.getLogger(BenefitClient.class);
 
-	@Value("${bahrain.knet.certificate.path}")
-	String bahKnetCertpath;
+	@Value("${benefit.certificate.path}")
+	String benefitCertpath;
 
-	@Value("${knet.callback.url}")
-	String knetCallbackUrl;
+	@Value("${benefit.callback.url}")
+	String benefitCallbackUrl;
+	
+	@Value("${benefit.alias.name}")
+	String benefitAliasName;
+	
+	@Value("${benefit.action}")
+	String benefitAction;
+	
+	@Value("${benefit.currency}")
+	String benefitCurrency;
+
+	@Value("${benefit.language.code}")
+	String benefitLanguageCode;
 
 	@Autowired
 	HttpServletResponse response;
@@ -63,23 +75,23 @@ public class BenefitClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams payGParams) {
 
-		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-		OnlineConfigurationDto configDTO= metaClient.getOnlineConfig("J").getResult();
-		
-		if (configDTO!=null) {
-			log.info(" ###### Config from DB ############## ");
-			log.info(String.format("alias name=%s,  resource_path=%s,  response_url=%s",configDTO.getAliasName(),configDTO.getResourcePath(),configDTO.getResponseUrl()));
-		}
+//		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
+//		OnlineConfigurationDto configDTO= metaClient.getOnlineConfig("J").getResult();
+//		
+//		if (configDTO!=null) {
+//			log.info(" ###### Config from DB ############## ");
+//			log.info(String.format("alias name=%s,  resource_path=%s,  response_url=%s",configDTO.getAliasName(),configDTO.getResourcePath(),configDTO.getResponseUrl()));
+//		}
 		
 		
 		Map<String, Object> configMap = new HashMap<String, Object>();
 		
-		configMap.put("action", "1");
-		configMap.put("currency", "414");
-		configMap.put("languageCode", "ENG");
-		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/BRN/");
-		configMap.put("resourcePath", bahKnetCertpath);
-		configMap.put("aliasName", "test_MEC");
+		configMap.put("action", benefitAction);
+		configMap.put("currency", benefitCurrency);
+		configMap.put("languageCode", benefitLanguageCode);
+		configMap.put("responseUrl", benefitCallbackUrl + "/app/capture/KNET/BRN/");
+		configMap.put("resourcePath", benefitCertpath);
+		configMap.put("aliasName", benefitAliasName);
 
 		log.info("Baharain KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 		
@@ -180,17 +192,17 @@ public class BenefitClient implements PayGClient {
 
 		String redirectUrl = null;
 		if ("CAPTURED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"
+			redirectUrl = String.format(benefitCallbackUrl + "/callback/success?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
 		} else if ("CANCELED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format(knetCallbackUrl + "/callback/cancelled?"
+			redirectUrl = String.format(benefitCallbackUrl + "/callback/cancelled?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
 		} else {
-			redirectUrl = String.format(knetCallbackUrl + "/callback/error?"
+			redirectUrl = String.format(benefitCallbackUrl + "/callback/error?"
 					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
