@@ -39,6 +39,18 @@ public class KnetClient implements PayGClient {
 
 	@Value("${knet.callback.url}")
 	String knetCallbackUrl;
+	
+	@Value("${knet.alias.name}")
+	String knetAliasName;
+	
+	@Value("${knet.action}")
+	String knetAction;
+	
+	@Value("${knet.currency}")
+	String knetCurrency;
+
+	@Value("${knet.language.code}")
+	String knetLanguageCode;
 
 	@Autowired
 	HttpServletResponse response;
@@ -63,24 +75,24 @@ public class KnetClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams payGParams) {
 
-		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-		OnlineConfigurationDto configDTO = metaClient.getOnlineConfig("J").getResult();
-
-		if (configDTO != null) {
-			log.info(" ###### Config from DB START ############## ");
-			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s", configDTO.getAliasName(),
-					configDTO.getResourcePath(), configDTO.getResponseUrl()));
-			log.info(" ###### Config from DB END ############## ");
-		}
+//		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
+//		OnlineConfigurationDto configDTO = metaClient.getOnlineConfig("J").getResult();
+//
+//		if (configDTO != null) {
+//			log.info(" ###### Config from DB START ############## ");
+//			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s", configDTO.getAliasName(),
+//					configDTO.getResourcePath(), configDTO.getResponseUrl()));
+//			log.info(" ###### Config from DB END ############## ");
+//		}
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
-		configMap.put("action", "1");
-		configMap.put("currency", "414");
-		configMap.put("languageCode", "ENG");
+		configMap.put("action", knetAction);
+		configMap.put("currency", knetCurrency);
+		configMap.put("languageCode", knetLanguageCode);
 		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/KWT/");
 		configMap.put("resourcePath", knetCertpath);
-		configMap.put("aliasName", "mulla");
+		configMap.put("aliasName", knetAliasName);
 
 		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 
