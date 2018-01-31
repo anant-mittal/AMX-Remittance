@@ -39,6 +39,10 @@ public class MetaData implements IMetaData {
 	private BigDecimal countryBranchId;
 	
 	private Tenant tenant = Tenant.DEFAULT;
+	
+	private String deviceIp;
+	
+	private String deviceId;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -124,5 +128,21 @@ public class MetaData implements IMetaData {
 
 	public void setTenant(Tenant tenant) {
 		this.tenant = tenant;
+	}
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 }
