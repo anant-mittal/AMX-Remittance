@@ -273,6 +273,31 @@ public class RateAlertDTO extends AbstractModel {
 		this.customerLastName = customerLastName;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((rateAlertId == null) ? 0 : rateAlertId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RateAlertDTO other = (RateAlertDTO) obj;
+		if (rateAlertId == null) {
+			if (other.rateAlertId != null)
+				return false;
+		} else if (!rateAlertId.equals(other.rateAlertId))
+			return false;
+		return true;
+	}
+
 
 	
 

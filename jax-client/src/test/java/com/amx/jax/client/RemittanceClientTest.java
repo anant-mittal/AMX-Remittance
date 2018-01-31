@@ -62,11 +62,11 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		jaxMetaInfo.setTenant(Tenant.KWT2);
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(1424));
+		request.setBeneId(new BigDecimal(132053));
 		request.setLocalAmount(new BigDecimal(100));
 		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
 		request.setSrlId(new BigDecimal(48));

@@ -21,7 +21,6 @@ import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,18 +62,36 @@ public class RateAlertTask implements Runnable {
 		Map<CurrencyMasterDTO, List<BankMasterDTO>> modifiedRates = getModifiedRates(data);
 		List<RateAlertNotificationDTO> applicableRateAlerts = getApplicableRateAlerts(modifiedRates,
 				data.getRateAlerts());
+
+		List<RateAlertDTO> modifiedRateAlerts = getModifiedRateAlerts(data);
+		applicableRateAlerts.addAll(getApplicableRateAlerts(data.getExchangeRates(), modifiedRateAlerts));
+
 		sendNotifications(applicableRateAlerts);
+	}
+
+	private List<RateAlertDTO> getModifiedRateAlerts(RateAlertData data) {
+
+		List<RateAlertDTO> oldAlerts = data.getRateAlerts();
+		loadRateAlerts(data);
+		List<RateAlertDTO> newAlerts = data.getRateAlerts();
+		List<RateAlertDTO> modifiedAlerts = new ArrayList<>();
+		newAlerts.forEach(ra -> {
+			if (!oldAlerts.contains(ra)) {
+				modifiedAlerts.add(ra);
+			}
+		});
+		return modifiedAlerts;
 	}
 
 	private void sendNotifications(List<RateAlertNotificationDTO> applicableRateAlerts) {
 
 		int batchSize = 10;
 		for (int i = 0; i < applicableRateAlerts.size(); i += batchSize) {
-			int endIndex = (i + batchSize) % applicableRateAlerts.size();
+			int endIndex = (i + batchSize);
 			if (endIndex >= applicableRateAlerts.size()) {
 				endIndex = applicableRateAlerts.size() - 1;
 			}
-			notificationService.sendBatchNotification(applicableRateAlerts.subList(i, endIndex+1));
+			notificationService.sendBatchNotification(applicableRateAlerts.subList(i, endIndex + 1));
 		}
 
 	}

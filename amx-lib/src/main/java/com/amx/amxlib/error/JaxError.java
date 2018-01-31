@@ -55,6 +55,8 @@ public enum JaxError {
     
     /* Maximum amount allowed for transaction*/
     TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,
+    /* Maximum amount allowed for transaction for perticular bene*/
+    TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE,
     PG_ERROR, 
     UNKNOWN_JAX_ERROR,
     MISSING_OTP,
