@@ -254,9 +254,9 @@ public class UserService extends AbstractUserService {
 		if (onlineCust == null) {
 			onlineCust = new CustomerOnlineRegistration(cust);
 			onlineCust.setHresetBy(cust.getIdentityInt());
-			onlineCust.setHresetIp(webutil.getClientIp());
+			onlineCust.setHresetIp(metaData.getDeviceIp());
 			onlineCust.setHresetkDt(new Date());
-			onlineCust.setResetIp(webutil.getClientIp());
+			onlineCust.setResetIp(metaData.getDeviceIp());
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
