@@ -74,14 +74,6 @@ public class MetaController {
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-		String remoteAddr = "";
-
-		if (request != null) {
-			remoteAddr = request.getHeader("X-FORWARDED-FOR");
-			if (remoteAddr == null || "".equals(remoteAddr)) {
-				remoteAddr = request.getRemoteAddr();
-			}
-		}
 
 		wrapper.getData().debug = env.isDebug();
 		wrapper.getData().id = httpSession.getId();
@@ -90,10 +82,13 @@ public class MetaController {
 		wrapper.getData().serverName = request.getServerName();
 		wrapper.getData().requestUri = request.getRequestURI();
 		wrapper.getData().remoteHost = request.getRemoteHost();
-		wrapper.getData().localAddress = request.getLocalAddr();
-		wrapper.getData().remoteAddr = request.getRemoteAddr();
-		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = httpService.getIPAddress();
+		wrapper.getData().remoteAddr = request.getRemoteAddr();
+
+		wrapper.getData().localAddress = request.getLocalAddr();
+
+		wrapper.getData().scheme = request.getScheme();
+
 		wrapper.getData().device = device;
 		wrapper.getData().onlineConfigurationDto = null;
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();

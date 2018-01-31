@@ -126,6 +126,7 @@ public class JaxService extends AbstractJaxServiceClient {
 			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
 			log.info("Customer Model Found in Guest Session : {}", jaxMetaInfo.getCustomerId());
 		}
+		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
 		return this;
 	}
 

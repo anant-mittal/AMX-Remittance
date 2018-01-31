@@ -189,6 +189,7 @@ public class SessionService {
 	 * un-authorization use {@link #unauthorize()}
 	 */
 	public void clear() {
+		LOGGER.info("Session is being cleared");
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
