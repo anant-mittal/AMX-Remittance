@@ -95,8 +95,8 @@ public class MetaController {
 		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = httpService.getIPAddress();
 		wrapper.getData().device = device;
-		wrapper.getData().onlineConfigurationDto = jaxService.setDefaults().getMetaClient().getApplicationCountry()
-				.getResult();
+		wrapper.getData().onlineConfigurationDto = null;
+		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
 
 		Email email = new Email();
 		email.addTo("lalit.tanwar07@gmail.com");
