@@ -146,6 +146,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 				getHeader());
 
 		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-remittance/";
+		log.info("calling jax url: " + url);
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
 				});
