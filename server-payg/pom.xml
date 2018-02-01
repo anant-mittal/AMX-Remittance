@@ -56,8 +56,8 @@
 		</dependency>
 
 		<dependency> 
-			<groupId>com.knet.test</groupId> 
-			<artifactId>knet.test</artifactId> 
+			<groupId>com.knet</groupId> 
+			<artifactId>knet</artifactId> 
 			<version>1.0</version> 
 		</dependency>
 
