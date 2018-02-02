@@ -17,6 +17,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal totalLoyalityPoints;
 	private BigDecimal maxLoyalityPointsAvailableForTxn;
 	private ExchangeRateBreakup exRateBreakup;
+	private Boolean canRedeemLoyalityPoints;
 
 	/*
 	 * (non-Javadoc)
@@ -58,6 +59,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
+	}
+
+	public Boolean getCanRedeemLoyalityPoints() {
+		return canRedeemLoyalityPoints;
+	}
+
+	public void setCanRedeemLoyalityPoints(Boolean canRedeemLoyalityPoints) {
+		this.canRedeemLoyalityPoints = canRedeemLoyalityPoints;
 	}
 
 }

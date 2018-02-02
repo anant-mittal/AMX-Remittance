@@ -190,8 +190,20 @@ public class RemittanceTransactionManager {
 		responseModel
 				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
+		setLoyalityPointIndicaters(responseModel);
 		return responseModel;
 
+	}
+
+	private void setLoyalityPointIndicaters(RemittanceTransactionResponsetModel responseModel) {
+
+		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
+		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
+		if (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue()) {
+			responseModel.setCanRedeemLoyalityPoints(false);
+		} else {
+			responseModel.setCanRedeemLoyalityPoints(true);
+		}
 	}
 
 	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
