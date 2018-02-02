@@ -497,8 +497,11 @@ public class RemittanceTransactionManager {
 				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
 			}
 		}
-		if ("NOT CAPTURED".equalsIgnoreCase(resultCode) || "CANCELED".equalsIgnoreCase(resultCode)) {
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_FAIL;
+		}
+		if ("CANCELED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
 		}
 
 		return status;
