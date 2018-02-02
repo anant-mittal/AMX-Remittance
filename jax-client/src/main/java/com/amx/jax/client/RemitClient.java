@@ -49,7 +49,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			sb.append("&docfyr=").append(docfyr);
 		}
 		log.info("Input String :" + sb.toString());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
@@ -68,7 +68,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		transactionHistroyDTO.setCustomerId(customerId);
 		log.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO), getHeader());
-		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/remitReport/";
+		String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
 		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 				});
@@ -87,7 +87,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 				+ customerId);
 		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
 				request, getHeader());
-		String sendOtpUrl = baseUrl.toString() + REMIT_API_ENDPOINT + "/validate/";
+		String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/validate/";
 		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
 				});
@@ -97,7 +97,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 	public ApiResponse<SourceOfIncomeDto> getSourceOfIncome() {
 		ResponseEntity<ApiResponse<SourceOfIncomeDto>> response = null;
 		HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/sourceofincome/";
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/sourceofincome/";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
 				});
@@ -111,7 +111,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		request.setBeneId(beneId);
 		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
 				request, getHeader());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
 				});
@@ -127,7 +127,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
 				transactionRequestModel, getHeader());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-application/";
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
 				});
@@ -145,7 +145,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
 				getHeader());
 
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/save-remittance/";
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-remittance/";
 		log.info("calling jax url: " + url);
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
@@ -167,7 +167,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<RemittanceTransactionStatusResponseModel>> response = null;
 		HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 				request, getHeader());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT + "/status/";
+		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 				});

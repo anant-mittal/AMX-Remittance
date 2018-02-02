@@ -3,7 +3,7 @@
   */
 package com.amx.jax.payment.controller;
 
-import static com.amx.jax.payment.constant.PaymentConstant.PAYMENT_API_ENDPOINT;
+import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.util.Base64;
 

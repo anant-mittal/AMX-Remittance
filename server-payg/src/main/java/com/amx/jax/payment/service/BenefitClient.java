@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.MetaClient;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -39,13 +36,13 @@ public class BenefitClient implements PayGClient {
 
 	@Value("${benefit.callback.url}")
 	String benefitCallbackUrl;
-	
+
 	@Value("${benefit.alias.name}")
 	String benefitAliasName;
-	
+
 	@Value("${benefit.action}")
 	String benefitAction;
-	
+
 	@Value("${benefit.currency}")
 	String benefitCurrency;
 
@@ -60,12 +57,6 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	private PaymentService paymentService;
-	
-	@Autowired
-	private MetaClient metaClient;
-	
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
 
 	@Override
 	public PayGServiceCode getClientCode() {
@@ -75,17 +66,8 @@ public class BenefitClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams payGParams) {
 
-//		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-//		OnlineConfigurationDto configDTO= metaClient.getOnlineConfig("J").getResult();
-//		
-//		if (configDTO!=null) {
-//			log.info(" ###### Config from DB ############## ");
-//			log.info(String.format("alias name=%s,  resource_path=%s,  response_url=%s",configDTO.getAliasName(),configDTO.getResourcePath(),configDTO.getResponseUrl()));
-//		}
-		
-		
 		Map<String, Object> configMap = new HashMap<String, Object>();
-		
+
 		configMap.put("action", benefitAction);
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
@@ -94,7 +76,7 @@ public class BenefitClient implements PayGClient {
 		configMap.put("aliasName", benefitAliasName);
 
 		log.info("Baharain KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
-		
+
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 

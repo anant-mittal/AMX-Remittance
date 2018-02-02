@@ -29,7 +29,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	public ApiResponse<RateAlertDTO> saveRateAlert(RateAlertDTO rateAlertDTO) {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/save";
+		String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/save";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 				});
@@ -43,7 +43,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 
 			if (rateAlertDTO.getRateAlertId() != null) {
 				HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-				String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/delete";
+				String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/delete";
 				response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 						new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 						});
@@ -59,7 +59,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/get/for/customer";
+		String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/get/for/customer";
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 				});
@@ -70,7 +70,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 	public ApiResponse<RateAlertDTO> getAllRateAlert() {
 		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
 		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/getAll";
+		String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/getAll";
 		log.info("calling " + url + " for getAllRateAlert");
 		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {

@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.MetaClient;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -61,12 +58,6 @@ public class KnetClient implements PayGClient {
 	@Autowired
 	private PaymentService paymentService;
 
-	@Autowired
-	private MetaClient metaClient;
-
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.KNET;
@@ -74,16 +65,6 @@ public class KnetClient implements PayGClient {
 
 	@Override
 	public void initialize(PayGParams payGParams) {
-
-//		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-//		OnlineConfigurationDto configDTO = metaClient.getOnlineConfig("J").getResult();
-//
-//		if (configDTO != null) {
-//			log.info(" ###### Config from DB START ############## ");
-//			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s", configDTO.getAliasName(),
-//					configDTO.getResourcePath(), configDTO.getResponseUrl()));
-//			log.info(" ###### Config from DB END ############## ");
-//		}
 
 		Map<String, Object> configMap = new HashMap<String, Object>();
 

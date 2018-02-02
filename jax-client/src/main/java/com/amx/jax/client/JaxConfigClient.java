@@ -28,7 +28,7 @@ public class JaxConfigClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<BooleanResponse> createorUpdateOtpSettings(OtpSettings otpSettings) {
 		ResponseEntity<ApiResponse<BooleanResponse>> response = null;
-		String url = baseUrl.toString() + "/config/";
+		String url = this.getBaseUrl() + "/config/";
 		HttpEntity<OtpSettings> requestEntity = new HttpEntity<OtpSettings>(otpSettings, getHeader());
 		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 				new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {

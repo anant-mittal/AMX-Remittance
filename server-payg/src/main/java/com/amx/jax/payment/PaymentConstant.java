@@ -1,7 +1,7 @@
 /**  AlMulla Exchange
   *  
   */
-package com.amx.jax.payment.constant;
+package com.amx.jax.payment;
 
 /**
  * @author Viki Sangani

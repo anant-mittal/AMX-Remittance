@@ -33,7 +33,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 		if (bankId != null) {
 			sb.append("&").append("bankId=").append(bankId);
 		}
-		String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
+		String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 		HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 		log.info("calling getExchangeRate api: " + getExchangeRateUrl);
 		response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.GET, requestEntity,
@@ -49,7 +49,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 		sb.append("?").append("quoteName=").append(toCurrency);
 		sb.append("&").append("value=").append(amount);
 		
-		String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
+		String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 		HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 		log.info("calling getExchangeRate api: " + getExchangeRateUrl);
 		response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.POST, requestEntity,
