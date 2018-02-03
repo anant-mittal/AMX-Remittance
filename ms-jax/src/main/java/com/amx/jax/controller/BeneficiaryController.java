@@ -118,7 +118,7 @@ public class BeneficiaryController {
 	 * @return : Customer Id,application country Id
 	 */
 	
-	@RequestMapping(value = "/favouritebenelist/", method = RequestMethod.POST)
+	@RequestMapping(value = "/favouritebenelist/", method = RequestMethod.GET)
 	public ApiResponse favouriteBeneficiary() {
 		logger.info("getFavouriteBeneficiaryList controller :");
 		ApiResponse response = null;
