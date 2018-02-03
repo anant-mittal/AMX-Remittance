@@ -13,6 +13,8 @@ import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 
 import com.amx.jax.scheduler.config.SchedulerConfig;
+import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 
 public class RateAlertTrigger implements Trigger {
 
@@ -39,7 +41,9 @@ public class RateAlertTrigger implements Trigger {
 			}
 		}
 		runNow = false;
+		Tenant tenant = TenantContextHolder.currentSite();
 		log.info("Next execution of RateAlertTask " + df.format(val.getTime()));
+		log.info("Tenant: "+ tenant);
 		return val.getTime();
 	}
 

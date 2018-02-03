@@ -20,6 +20,8 @@ import com.amx.jax.scheduler.service.NotificationService;
 import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -135,8 +137,10 @@ public class RateAlertTask implements Runnable {
 
 	private boolean isRateApplicable(RateAlertDTO rateAlert, BankMasterDTO rate) {
 
-		BigDecimal marketAmount = rate.getExRateBreakup().getRate().multiply(rateAlert.getPayAmount());
-		BigDecimal alertAmount = rateAlert.getReceiveAmount();
+		MathContext myContext = new MathContext(2, RoundingMode.HALF_UP);
+		BigDecimal marketAmount = rate.getExRateBreakup().getRate().multiply(rateAlert.getPayAmount()).round(myContext);
+		BigDecimal alertAmount = rateAlert.getReceiveAmount().round(myContext);
+
 		switch (rateAlert.getRule()) {
 		case EQUAL:
 			if (marketAmount.equals(alertAmount)) {
