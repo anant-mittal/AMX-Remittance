@@ -118,7 +118,7 @@ public class RateAlertTask implements Runnable {
 					BigDecimal forCurrencyId = rateAlert.getForeignCurrencyId();
 					if (forCurrencyId.equals(forCurrencyKey.getCurrencyId())) {
 						for (BankMasterDTO rate : rates) {
-							if (isRateApplicable(rateAlert, rate)) {
+							if (isRateApplicable(rateAlert, rate, forCurrencyKey)) {
 								RateAlertNotificationDTO dto = new RateAlertNotificationDTO(rateAlert,
 										rate.getExRateBreakup().getRate());
 								output.add(dto);
@@ -135,11 +135,12 @@ public class RateAlertTask implements Runnable {
 		return output;
 	}
 
-	private boolean isRateApplicable(RateAlertDTO rateAlert, BankMasterDTO rate) {
+	private boolean isRateApplicable(RateAlertDTO rateAlert, BankMasterDTO rate, CurrencyMasterDTO currencyMaster) {
 
-		MathContext myContext = new MathContext(2, RoundingMode.HALF_UP);
-		BigDecimal marketAmount = rate.getExRateBreakup().getRate().multiply(rateAlert.getPayAmount()).round(myContext);
-		BigDecimal alertAmount = rateAlert.getReceiveAmount().round(myContext);
+		BigDecimal marketAmount = rate.getExRateBreakup().getRate().multiply(rateAlert.getPayAmount());
+		BigDecimal alertAmount = rateAlert.getReceiveAmount();
+		marketAmount= marketAmount.setScale(currencyMaster.getDecinalNumber().intValue(), RoundingMode.HALF_UP);
+		alertAmount = alertAmount.setScale(currencyMaster.getDecinalNumber().intValue(), RoundingMode.HALF_UP);
 
 		switch (rateAlert.getRule()) {
 		case EQUAL:
