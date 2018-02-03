@@ -311,11 +311,11 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse getFavouriteBeneficiaryList(BigDecimal customerId, BigDecimal applicationCountryId) {
 		List<BenificiaryListView> beneList = null;
-		beneList = beneficiaryOnlineDao.getFavouriteBeneListFromViewForCountry(customerId, applicationCountryId);
-		BigDecimal nationalityId = custDao.getCustById(customerId).getNationalityId();
-		BenificiaryListViewOnlineComparator comparator = new BenificiaryListViewOnlineComparator(nationalityId);
-		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
+		beneList = beneficiaryOnlineDao.getFavouriteBeneListFromViewForCountry(customerId, applicationCountryId);
+		if(beneList.isEmpty()){
+			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
+		}
 		if (beneList.isEmpty()) {
 			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
