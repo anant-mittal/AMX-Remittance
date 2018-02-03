@@ -78,9 +78,9 @@ public class BeneController {
 
 	@ApiOperation(value = "get List Of Favorite Beneficiary ")
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.GET })
-	public ResponseWrapper<BeneficiaryListDTO> beneFavGet() {
-		ResponseWrapper<BeneficiaryListDTO> wrapper = new ResponseWrapper<BeneficiaryListDTO>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResult());
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneFavGet() {
+		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
 		return wrapper;
 	}
 
