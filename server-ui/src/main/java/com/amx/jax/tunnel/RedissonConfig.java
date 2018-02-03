@@ -65,4 +65,5 @@ public class RedissonConfig extends AbstractHttpSessionApplicationInitializer {
 		config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);
 	}
+
 }

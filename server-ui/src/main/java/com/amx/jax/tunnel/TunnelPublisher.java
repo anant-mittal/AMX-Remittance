@@ -1,5 +1,5 @@
 package com.amx.jax.tunnel;
 
-public class TunnelPublisher {
-	
+public interface TunnelPublisher {
+	void publish(final String message);
 }
