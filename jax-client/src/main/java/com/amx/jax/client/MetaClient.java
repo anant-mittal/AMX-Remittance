@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -57,8 +59,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getApplicationCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -77,8 +84,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getApplicationCountryByCountryAndCompany ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -96,8 +108,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -113,8 +130,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountryByLanguageId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -131,8 +153,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountryByLanguageId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -149,8 +176,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getBusinessCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -173,8 +205,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getSequrityQuestion ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -196,8 +233,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getSequrityQuestionById ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -217,8 +259,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getTermsAndCondition ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -239,8 +286,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getTermsAndConditionAsPerCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -261,8 +313,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getWhyAskInfo ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -278,8 +335,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getFinancialYear ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -295,8 +357,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getContactUsTime ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -312,8 +379,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getHelpDeskNo ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -329,8 +401,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getMultiCountryList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -346,8 +423,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in getAllOnlineCurrency ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllOnlineCurrency ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -362,8 +444,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in getAllOnlineCurrency ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCurrencyByCountryId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -387,9 +474,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getDistricDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -407,8 +498,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in getBankListForCountry ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getBankListForCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -430,9 +526,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getDistrictList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -455,8 +555,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getStateList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -480,8 +585,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getStateDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -504,17 +614,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCitytList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
 	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
 		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
@@ -531,9 +643,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCitytDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -548,9 +664,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in getOnlineConfig ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getOnlineConfig ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
