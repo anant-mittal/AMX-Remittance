@@ -12,6 +12,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
@@ -40,140 +42,206 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<TransactionHistroyDTO> getTransactionHistroy(String docfyr, String docNumber, String fromDate,
 			String toDate) {
-		ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
-		log.info("Transaction Histroy");
-		StringBuffer sb = new StringBuffer();
-		sb.append("?docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=")
-				.append(toDate);
-		if (docfyr != null) {
-			sb.append("&docfyr=").append(docfyr);
-		}
-		log.info("Input String :" + sb.toString());
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
-		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
-				});
-		return response.getBody();
+		try {
+			ResponseEntity<ApiResponse<TransactionHistroyDTO>> response = null;
+			log.info("Transaction Histroy");
+			StringBuffer sb = new StringBuffer();
+			sb.append("?docNumber=").append(docNumber).append("&fromDate=").append(fromDate).append("&toDate=")
+					.append(toDate);
+			if (docfyr != null) {
+				sb.append("&docfyr=").append(docfyr);
+			}
+			log.info("Input String :" + sb.toString());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/trnxHist/" + sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<TransactionHistroyDTO>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
-		ResponseEntity<ApiResponse<RemittanceReceiptSubreport>> response = null;
-		BigDecimal countryId = jaxMetaInfo.getCountryId();
-		BigDecimal companyId = jaxMetaInfo.getCompanyId();
-		BigDecimal customerId = jaxMetaInfo.getCustomerId();
-		transactionHistroyDTO.setApplicationCountryId(countryId);
-		transactionHistroyDTO.setCompanyId(companyId);
-		transactionHistroyDTO.setLanguageId(new BigDecimal(1));
-		transactionHistroyDTO.setCustomerId(customerId);
-		log.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
-		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO), getHeader());
-		String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
-		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
-				});
-		return response.getBody();
+		try {
+			ResponseEntity<ApiResponse<RemittanceReceiptSubreport>> response = null;
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			transactionHistroyDTO.setApplicationCountryId(countryId);
+			transactionHistroyDTO.setCompanyId(companyId);
+			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
+			transactionHistroyDTO.setCustomerId(customerId);
+			log.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
+					getHeader());
+			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
 	}
 
 	public ApiResponse<RemittanceTransactionResponsetModel> validateTransaction(
 			RemittanceTransactionRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-
-		ResponseEntity<ApiResponse<RemittanceTransactionResponsetModel>> response = null;
-		BigDecimal countryId = jaxMetaInfo.getCountryId();
-		BigDecimal companyId = jaxMetaInfo.getCompanyId();
-		BigDecimal customerId = jaxMetaInfo.getCustomerId();
-		log.info("Remit Client validateTransaction :" + countryId + "\t companyId :" + companyId + "\t customerId :"
-				+ customerId);
-		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-				request, getHeader());
-		String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/validate/";
-		response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
-				});
-		return response.getBody();
+		try {
+			ResponseEntity<ApiResponse<RemittanceTransactionResponsetModel>> response = null;
+			BigDecimal countryId = jaxMetaInfo.getCountryId();
+			BigDecimal companyId = jaxMetaInfo.getCompanyId();
+			BigDecimal customerId = jaxMetaInfo.getCustomerId();
+			log.info("Remit Client validateTransaction :" + countryId + "\t companyId :" + companyId + "\t customerId :"
+					+ customerId);
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/validate/";
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 	public ApiResponse<SourceOfIncomeDto> getSourceOfIncome() {
-		ResponseEntity<ApiResponse<SourceOfIncomeDto>> response = null;
-		HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/sourceofincome/";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<SourceOfIncomeDto>> response = null;
+			HttpEntity<SourceOfIncomeDto> requestEntity = new HttpEntity<SourceOfIncomeDto>(getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/sourceofincome/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<SourceOfIncomeDto>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
-		ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
-		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(beneId);
-		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-				request, getHeader());
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<PurposeOfTransactionModel>> response = null;
+			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+			request.setBeneId(beneId);
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 
 	}
 
 	public ApiResponse<RemittanceApplicationResponseModel> saveTransaction(
 			RemittanceTransactionRequestModel transactionRequestModel)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		ResponseEntity<ApiResponse<RemittanceApplicationResponseModel>> response = null;
+		try {
+			ResponseEntity<ApiResponse<RemittanceApplicationResponseModel>> response = null;
 
-		HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
-				transactionRequestModel, getHeader());
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
-				});
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					transactionRequestModel, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-application/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceApplicationResponseModel>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 
 	}
 
 	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
-		jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
-		jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
+		try {
+			ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
+			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
+			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
 
-		HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
-				getHeader());
+			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
+					getHeader());
 
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-remittance/";
-		log.info("calling jax url: " + url);
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
-				});
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-remittance/";
+			log.info("calling jax url: " + url);
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
+					});
 
-		log.info("#####################");
-		log.info("PaymentResponseDto values -- CollectionDocumentCode : "
-				+ response.getBody().getResult().getCollectionDocumentCode() + " CollectionDocumentNumber : "
-				+ response.getBody().getResult().getCollectionDocumentNumber() + " CollectionFinanceYear : "
-				+ response.getBody().getResult().getCollectionFinanceYear());
-		log.info("#####################");
+			log.info("#####################");
+			log.info("PaymentResponseDto values -- CollectionDocumentCode : "
+					+ response.getBody().getResult().getCollectionDocumentCode() + " CollectionDocumentNumber : "
+					+ response.getBody().getResult().getCollectionDocumentNumber() + " CollectionFinanceYear : "
+					+ response.getBody().getResult().getCollectionFinanceYear());
+			log.info("#####################");
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
 	}
 
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
 			RemittanceTransactionStatusRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
-		ResponseEntity<ApiResponse<RemittanceTransactionStatusResponseModel>> response = null;
-		HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
-				request, getHeader());
-		String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<RemittanceTransactionStatusResponseModel>> response = null;
+			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
+					request, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
+					});
 
-		return response.getBody();
-
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 }
