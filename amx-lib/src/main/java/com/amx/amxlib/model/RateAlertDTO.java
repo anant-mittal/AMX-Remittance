@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.amx.amxlib.constant.RuleEnum;
 
-public class RateAlertDTO extends AbstractModel {
+public class RateAlertDTO extends AbstractModel implements Cloneable {
 
 	/**
 	 * 
@@ -296,6 +296,11 @@ public class RateAlertDTO extends AbstractModel {
 		} else if (!rateAlertId.equals(other.rateAlertId))
 			return false;
 		return true;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 

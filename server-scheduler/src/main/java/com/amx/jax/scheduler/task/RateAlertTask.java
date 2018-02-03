@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 
 public class RateAlertTask implements Runnable {
 
@@ -58,12 +59,11 @@ public class RateAlertTask implements Runnable {
 
 	private void executeTask() {
 		RateAlertData data = RATE_ALERT_DATA.get(tenant);
-		loadRateAlerts(data);
+		List<RateAlertDTO> modifiedRateAlerts = getModifiedRateAlerts(data);
 		Map<CurrencyMasterDTO, List<BankMasterDTO>> modifiedRates = getModifiedRates(data);
 		List<RateAlertNotificationDTO> applicableRateAlerts = getApplicableRateAlerts(modifiedRates,
 				data.getRateAlerts());
 
-		List<RateAlertDTO> modifiedRateAlerts = getModifiedRateAlerts(data);
 		applicableRateAlerts.addAll(getApplicableRateAlerts(data.getExchangeRates(), modifiedRateAlerts));
 
 		sendNotifications(applicableRateAlerts);
@@ -71,7 +71,13 @@ public class RateAlertTask implements Runnable {
 
 	private List<RateAlertDTO> getModifiedRateAlerts(RateAlertData data) {
 
-		List<RateAlertDTO> oldAlerts = data.getRateAlerts();
+		List<RateAlertDTO> oldAlerts = new ArrayList<>();
+		data.getRateAlerts().forEach(i -> {
+			try {
+				oldAlerts.add((RateAlertDTO) i.clone());
+			} catch (CloneNotSupportedException e) {
+			}
+		});
 		loadRateAlerts(data);
 		List<RateAlertDTO> newAlerts = data.getRateAlerts();
 		List<RateAlertDTO> modifiedAlerts = new ArrayList<>();
@@ -196,9 +202,10 @@ public class RateAlertTask implements Runnable {
 	}
 
 	private void setMetaInfo() {
-		jaxMetaInfo.setCountryId(tenant.getBDCode());
+		// jaxMetaInfo.setCountryId(tenant.getBDCode());
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setTenant(tenant);
+		// jaxMetaInfo.setTenant(tenant);
+		TenantContextHolder.setCurrent(tenant);
 	}
 
 	/**

@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -47,6 +50,12 @@ public abstract class AbstractJaxServiceClient {
 			log.info("device ip" + jaxMetaInfo.getDeviceIp());
 			info.setDeviceId(jaxMetaInfo.getDeviceId());
 			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
+			Tenant tenant = TenantContextHolder.currentSite();
+			if (tenant != null) {
+				info.setTenant(tenant);
+			} else {
+				info.setTenant(jaxMetaInfo.getTenant());
+			}
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 			log.error("error in getheader of jaxclient", e);
