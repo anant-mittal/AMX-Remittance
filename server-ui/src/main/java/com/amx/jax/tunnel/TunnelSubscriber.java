@@ -10,13 +10,9 @@ public abstract class TunnelSubscriber<T> implements MessageListener<T> {
 		return TunnelClient.TEST_TOPIC;
 	}
 
-	public void addListener(RedissonClient redisson) {
-		RTopic<T> topic = redisson.getTopic(this.getTopic());
-		topic.addListener(this);
-	}
-
-	public TunnelSubscriber(RedissonClient redisson) {
-		this.addListener(redisson);
+	public void addListener(String topic, RedissonClient redisson) {
+		RTopic<T> topicQueue = redisson.getTopic(topic);
+		topicQueue.addListener(this);
 	}
 
 }

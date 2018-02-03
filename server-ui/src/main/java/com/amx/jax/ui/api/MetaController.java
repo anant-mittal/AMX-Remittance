@@ -22,6 +22,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.tunnel.TunnelPublisherImpl;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
@@ -61,6 +62,9 @@ public class MetaController {
 	@Autowired
 	HttpService httpService;
 
+	@Autowired
+	TunnelPublisherImpl tunnelPublisher;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -75,6 +79,8 @@ public class MetaController {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 		String remoteAddr = "";
+
+		tunnelPublisher.sayHello();
 
 		if (request != null) {
 			remoteAddr = request.getHeader("X-FORWARDED-FOR");

@@ -3,20 +3,19 @@ package com.amx.jax.tunnel;
 import java.util.List;
 
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TunnelClientFactory {
 
-	@Autowired
-	RedissonClient redisson;
-
-	@Autowired
-	public TunnelClientFactory(List<TunnelSubscriber> listeners) {
+	@SuppressWarnings("rawtypes")
+	public TunnelClientFactory(List<TunnelSubscriber> listeners, RedissonClient redisson) {
 		for (TunnelSubscriber listener : listeners) {
-			RTopic<listener.getClass()> topic = redisson.getTopic(listener.getTopic());
-			topic.addListener(listener);
+			Class<?> c = listener.getClass();
+			TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
+			String eventTopic = tunnelEvent.topic();
+			listener.addListener(eventTopic, redisson);
 		}
 	}
+
 }
