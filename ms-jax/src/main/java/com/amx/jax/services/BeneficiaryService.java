@@ -1,5 +1,8 @@
 package com.amx.jax.services;
 
+/**
+ * Author :Rabil
+ */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -202,6 +205,38 @@ public class BeneficiaryService extends AbstractService {
 
 	}
 
+	
+	public ApiResponse updateFavoriteBeneficiary(BeneficiaryListDTO beneDetails) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<BeneficaryRelationship> beneRelationList = null;
+
+			BeneficaryRelationship beneRelation = null;
+
+			// beneRelation =
+			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
+
+			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
+					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+
+			if (!beneRelationList.isEmpty()) {
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+				beneRelationModel.setModifiedDate(new Date());
+				beneRelationModel.setMyFavouriteBene("Y");
+				beneRelationShipDao.save(beneRelationModel);
+				response.setResponseStatus(ResponseStatus.OK);
+			} else {
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+			}
+
+			return response;
+		} catch (Exception e) {
+			throw new GlobalException("Error while update");
+		}
+
+	}
+	
 	public ApiResponse beneficiaryUpdate(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
@@ -270,6 +305,28 @@ public class BeneficiaryService extends AbstractService {
 		}
 		return response;
 	}
+	
+	
+	/** My fovorite Bene List **/
+	
+	public ApiResponse getFavouriteBeneficiaryList(BigDecimal customerId, BigDecimal applicationCountryId) {
+		List<BenificiaryListView> beneList = null;
+		beneList = beneficiaryOnlineDao.getFavouriteBeneListFromViewForCountry(customerId, applicationCountryId);
+		BigDecimal nationalityId = custDao.getCustById(customerId).getNationalityId();
+		BenificiaryListViewOnlineComparator comparator = new BenificiaryListViewOnlineComparator(nationalityId);
+		Collections.sort(beneList, comparator);
+		ApiResponse response = getBlackApiResponse();
+		if (beneList.isEmpty()) {
+			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertBeneList(beneList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("beneList");
+		return response;
+	}
+	
+	
 
 	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();

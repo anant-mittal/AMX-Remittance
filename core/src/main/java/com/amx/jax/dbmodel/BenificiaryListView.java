@@ -90,6 +90,7 @@ public class BenificiaryListView implements Serializable {
 	private BigDecimal totalTrnx;
 	private BigDecimal orsStatus;
 	private String serviceGroupName;
+	private String myFavouriteBene;
 	
 	
 
@@ -657,5 +658,12 @@ public class BenificiaryListView implements Serializable {
 	}
 	public void setServiceGroupName(String serviceGroupName) {
 		this.serviceGroupName = serviceGroupName;
+	}
+	@Column(name="MY_FAVOURITE_BENE")
+	public String getMyFavouriteBene() {
+		return myFavouriteBene;
+	}
+	public void setMyFavouriteBene(String myFavouriteBene) {
+		this.myFavouriteBene = myFavouriteBene;
 	}
 }

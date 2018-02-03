@@ -144,13 +144,50 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	public ApiResponse<BeneficiaryListDTO> beneFav(BigDecimal beneMasSeqId) {
-		return this.beneDisable(beneMasSeqId, "No Remoarks");
+	public ApiResponse<BeneficiaryListDTO> beneFavoriteUpdate(BigDecimal beneMasSeqId) {
+		try {
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+
+			log.info("bene client beneFavoriteUpdate ");
+
+			StringBuffer sb = new StringBuffer();
+			sb.append("?beneMasSeqId=").append(beneMasSeqId);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/favoritebeneupdate/" + sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
-	public ApiResponse<BeneficiaryListDTO> beneFav() {
-		return this.getBeneficiaryList(new BigDecimal(0));
+	/** favouritebene **/
+	public ApiResponse<BeneficiaryListDTO> beneFavoriteList() {
+		try{
+		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+		MultiValueMap<String, String> headers = getHeader();
+		log.info("beneFavList  Clinet to get bene list Input String :");
+		String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/favouritebenelist/";
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {});
+		return response.getBody();
+	} catch (Exception e) {
+		if (e instanceof AbstractException) {
+			throw e;
+		} else {
+			throw new JaxSystemError();
+		}
+	} // end of try-catch
 	}
+	
+	
 
 	public ApiResponse<BeneficiaryListDTO> beneUpdate(BeneficiaryListDTO beneficiarydto) {
 		try {
@@ -196,6 +233,27 @@ public class BeneClient extends AbstractJaxServiceClient {
 				throw new JaxSystemError();
 			}
 		} // end of try-catch
+	}
+	
+	
+	/**
+	 * sdsd
+	 * 
+	 * @param beneCountryId
+	 * @return
+	 */
+	public ApiResponse<BeneficiaryListDTO> getFavoriteBeneficiaryList() {
+		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+		MultiValueMap<String, String> headers = getHeader();
+		StringBuffer sb = new StringBuffer();
+		log.info("Bene Clinet to get bene list Input String :" + sb.toString());
+		String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/beneList/"; 
+		HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+				});
+
+		return response.getBody();
 	}
 
 }

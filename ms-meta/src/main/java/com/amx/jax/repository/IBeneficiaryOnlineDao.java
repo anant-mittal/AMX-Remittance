@@ -48,5 +48,8 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 			@Param("beneRelationId") BigDecimal beneRelationId);
 	
 	
+	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and myFavouriteBene='Y' and orsStatus <> 0  ORDER BY bl.totalTrnx desc")
+	public List<BenificiaryListView> getFavouriteBeneListFromViewForCountry(@Param("customerId") BigDecimal customerId,@Param("applicationCountryId") BigDecimal applicationCountryId);
+	
 	
 }

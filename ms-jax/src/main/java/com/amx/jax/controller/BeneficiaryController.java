@@ -113,9 +113,28 @@ public class BeneficiaryController {
 		return response;
 	}
 	
+	/**
+	 * Author : FavouriteBeneficiaryList
+	 * @return : Customer Id,application country Id
+	 */
+	
+	@RequestMapping(value = "/favouritebenelist/", method = RequestMethod.POST)
+	public ApiResponse favouriteBeneficiary() {
+		logger.info("getFavouriteBeneficiaryList controller :");
+		ApiResponse response = null;
+		try {
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		logger.info("favouritebene customerId Id :" + customerId);
+		logger.info("favouritebene applicationCountryId  :" + applicationCountryId);
+		response= beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return response;
+	}
 	
 	
-
 	
 	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
 	public ApiResponse beneDisable(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,@RequestParam("remarks") String remarks) {
@@ -137,6 +156,22 @@ public class BeneficiaryController {
 		return response;
 	}
 
+	@RequestMapping(value = "/favoritebeneupdate/", method = RequestMethod.POST)
+	public ApiResponse favoriteBeneUpdate(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId) {
+		logger.info("Bene disable method Trnx Report:");
+		ApiResponse response = null;
+		BigDecimal customerId = metaData.getCustomerId();
+		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
+		//beneDetails.setBeneficiaryRelationShipSeqId(beneRelSeqId);
+		beneDetails.setCustomerId(customerId);
+		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
+		logger.info("Relation ship Id :" + beneDetails.getCustomerId());
+		logger.info("Relation ship Id :" + beneDetails.getBeneficiaryRelationShipSeqId());
+		logger.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
+		logger.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
+		response= beneService.updateFavoriteBeneficiary(beneDetails);
+		return response;
+	}
 	
 	
 	

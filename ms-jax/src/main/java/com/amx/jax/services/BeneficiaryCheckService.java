@@ -295,13 +295,8 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				if (Util.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
 					List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
-					/*if (accLengthList.isEmpty()) {
-						errorDesc = "Invalid Beneficiary Account Number length";
-						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
-						errorListDto.add(errorStatusDto);
+					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
 
-					}
-*/					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
 						errorDesc = "Invalid Beneficiary Account Number length";
 						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
 
@@ -334,6 +329,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
+		
 		if (Util.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(), beneDto.getLanguageId());
 			if (districtList.isEmpty()) {
@@ -344,13 +340,14 @@ public class BeneficiaryCheckService extends AbstractService {
 
 			}
 		} else {
-			beneDto.setUpdateNeeded(true);
-			errorDesc = "Invalid beneficiary district";
-			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_DISTRICT.toString(), errorDesc);
-
-			errorListDto.add(errorStatusDto);
+			if(beneDto.getCountryName()!=null && (!beneDto.getCountryName().equals("INDIA"))){
+				beneDto.setUpdateNeeded(true);
+				errorDesc = "Invalid beneficiary district";
+				errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_DISTRICT.toString(), errorDesc);
+				errorListDto.add(errorStatusDto);
+			}
 		}
-
+	
 		if (Util.isNullZeroBigDecimalCheck(beneDto.getCityId())) {
 			List<ViewCity> cityList = cityDao.getCityDescription(beneDto.getDistrictId(), beneDto.getCityId(), beneDto.getLanguageId());
 
@@ -395,10 +392,8 @@ public class BeneficiaryCheckService extends AbstractService {
 					errorListDto.add(errorStatusDto);
 				}
 			}
-
 		}
 		beneDto.setBeneficiaryErrorStatus(errorListDto);
-
 		return beneDto;
 	}
 
