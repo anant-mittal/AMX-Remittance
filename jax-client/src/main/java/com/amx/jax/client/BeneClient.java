@@ -144,6 +144,14 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	public ApiResponse<BeneficiaryListDTO> beneFav(BigDecimal beneMasSeqId) {
+		return this.beneDisable(beneMasSeqId, "No Remoarks");
+	}
+
+	public ApiResponse<BeneficiaryListDTO> beneFav() {
+		return this.getBeneficiaryList(new BigDecimal(0));
+	}
+
 	public ApiResponse<BeneficiaryListDTO> beneUpdate(BeneficiaryListDTO beneficiarydto) {
 		try {
 			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
