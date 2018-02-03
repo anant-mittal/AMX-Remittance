@@ -1,12 +1,16 @@
 package com.amx.jax.tunnel;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.stereotype.Service;
-
-@Service
+@TunnelEvent(topic = TunnelClient.TEST_TOPIC)
 public class TunnelSubscriberImpl extends TunnelSubscriber<String> {
 
-	public static List<String> messageList = new ArrayList<String>();
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+	@Override
+	public void onMessage(String channel, String msg) {
+		LOGGER.info("======onMessage==={}", msg);
+	}
+
 }
