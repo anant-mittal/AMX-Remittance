@@ -72,7 +72,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneficiaryListDTO> beneFav(@RequestParam BigDecimal beneficaryMasterSeqId) {
 		ResponseWrapper<BeneficiaryListDTO> wrapper = new ResponseWrapper<BeneficiaryListDTO>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFav(beneficaryMasterSeqId).getResult());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteUpdate(beneficaryMasterSeqId).getResult());
 		return wrapper;
 	}
 
@@ -80,7 +80,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.GET })
 	public ResponseWrapper<BeneficiaryListDTO> beneFavGet() {
 		ResponseWrapper<BeneficiaryListDTO> wrapper = new ResponseWrapper<BeneficiaryListDTO>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFav().getResult());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResult());
 		return wrapper;
 	}
 
