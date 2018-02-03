@@ -67,9 +67,8 @@ public enum JaxError {
     BENEFICIARY_COUNTRY_LIST_NOT_FOUND,
     NO_RECORD_FOUND,
     INCORRECT_LENGTH,
-    ALREADY_EXIST;
-
-
+    ALREADY_EXIST,
+    JAX_SYSTEM_ERROR;
 
 	public String getCode() {
 		return this.toString();
