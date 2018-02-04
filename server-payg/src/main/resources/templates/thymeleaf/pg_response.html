@@ -14,14 +14,12 @@
 	</div>
 	<br />
 	<center>
-		Redirecting to <a th:href="@{callback}"> <span
-			th:text="${callback}">Redirecting...</span>
-		</a>
+		<a th:href="@{callback}"><span>Redirecting...</span> </a>
 	</center>
 	<script>
 		var uRL = '<div th:utext="${callback}" th:remove="tag">Redirecting</div>';
 		if (uRL) {
-			console.log("uRL=",uRL);
+			console.log("uRL=", uRL);
 			window.location = uRL;
 		}
 	</script>
