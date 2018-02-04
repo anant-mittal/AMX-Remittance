@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -223,7 +224,11 @@ public class BeneficiaryService extends AbstractService {
 				BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
 				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
 				beneRelationModel.setModifiedDate(new Date());
-				beneRelationModel.setMyFavouriteBene("Y");
+				if(StringUtils.isBlank(beneRelationModel.getMyFavouriteBene()) || beneRelationModel.getMyFavouriteBene().equalsIgnoreCase("N")){
+					beneRelationModel.setMyFavouriteBene("Y");
+				}else{
+					beneRelationModel.setMyFavouriteBene("N");
+				}
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
 			} else {
