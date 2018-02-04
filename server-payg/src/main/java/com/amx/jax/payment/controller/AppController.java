@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.payment.gateway.PayGSession;
+import com.bootloaderjs.Constants;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -40,6 +41,9 @@ public class AppController {
 
 		model.addAttribute("page", page);
 		model.addAttribute("callback", payGSession.getCallback());
+		if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
+			return "redirect:" + payGSession.getCallback();
+		}
 
 		return "thymeleaf/pg_response";
 	}
