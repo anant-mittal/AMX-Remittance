@@ -33,6 +33,7 @@ import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.jax.ui.session.UserDevice;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -65,6 +66,9 @@ public class MetaController {
 	@Autowired
 	TunnelPublisherImpl tunnelPublisher;
 
+	@Autowired
+	UserDevice userDevice;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -78,16 +82,9 @@ public class MetaController {
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-		String remoteAddr = "";
-
+		
+		userDevice.getDeviceType();
 		tunnelPublisher.sayHello();
-
-		if (request != null) {
-			remoteAddr = request.getHeader("X-FORWARDED-FOR");
-			if (remoteAddr == null || "".equals(remoteAddr)) {
-				remoteAddr = request.getRemoteAddr();
-			}
-		}
 
 		wrapper.getData().debug = env.isDebug();
 		wrapper.getData().id = httpSession.getId();
@@ -96,11 +93,14 @@ public class MetaController {
 		wrapper.getData().serverName = request.getServerName();
 		wrapper.getData().requestUri = request.getRequestURI();
 		wrapper.getData().remoteHost = request.getRemoteHost();
-		wrapper.getData().localAddress = request.getLocalAddr();
-		wrapper.getData().remoteAddr = request.getRemoteAddr();
-		wrapper.getData().scheme = request.getScheme();
 		wrapper.getData().remoteAddr = httpService.getIPAddress();
-		wrapper.getData().device = device;
+		wrapper.getData().remoteAddr = request.getRemoteAddr();
+
+		wrapper.getData().localAddress = request.getLocalAddr();
+
+		wrapper.getData().scheme = request.getScheme();
+
+		wrapper.getData().device = userDevice.toMap();
 		wrapper.getData().onlineConfigurationDto = null;
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
 

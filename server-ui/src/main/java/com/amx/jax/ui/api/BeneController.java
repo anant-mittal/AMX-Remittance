@@ -68,4 +68,20 @@ public class BeneController {
 		return wrapper;
 	}
 
+	@ApiOperation(value = "Set Beneficiary As Favorite")
+	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.POST })
+	public ResponseWrapper<BeneficiaryListDTO> beneFav(@RequestParam BigDecimal beneficaryMasterSeqId) {
+		ResponseWrapper<BeneficiaryListDTO> wrapper = new ResponseWrapper<BeneficiaryListDTO>();
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteUpdate(beneficaryMasterSeqId).getResult());
+		return wrapper;
+	}
+
+	@ApiOperation(value = "get List Of Favorite Beneficiary ")
+	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.GET })
+	public ResponseWrapper<List<BeneficiaryListDTO>> beneFavGet() {
+		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
+		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
+		return wrapper;
+	}
+
 }

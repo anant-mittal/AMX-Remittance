@@ -55,6 +55,8 @@ public enum JaxError {
     
     /* Maximum amount allowed for transaction*/
     TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,
+    /* Maximum amount allowed for transaction for perticular bene*/
+    TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE,
     PG_ERROR, 
     UNKNOWN_JAX_ERROR,
     MISSING_OTP,
@@ -65,9 +67,8 @@ public enum JaxError {
     BENEFICIARY_COUNTRY_LIST_NOT_FOUND,
     NO_RECORD_FOUND,
     INCORRECT_LENGTH,
-    ALREADY_EXIST;
-
-
+    ALREADY_EXIST,
+    JAX_SYSTEM_ERROR;
 
 	public String getCode() {
 		return this.toString();

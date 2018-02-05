@@ -2,39 +2,42 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.RATE_ALERT_ENDPOINT;
 
-import java.math.BigDecimal;
-
 import javax.validation.ValidationException;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @Component
 public class RateAlertClient extends AbstractJaxServiceClient {
 
 	private Logger log = Logger.getLogger(getClass());
 
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
 	public ApiResponse<RateAlertDTO> saveRateAlert(RateAlertDTO rateAlertDTO) {
-		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/save";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
+			HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
+			String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/save";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 	public ApiResponse<RateAlertDTO> deleteRateAlert(RateAlertDTO rateAlertDTO) {
@@ -43,7 +46,7 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 
 			if (rateAlertDTO.getRateAlertId() != null) {
 				HttpEntity<RateAlertDTO> requestEntity = new HttpEntity<RateAlertDTO>(rateAlertDTO, getHeader());
-				String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/delete";
+				String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/delete";
 				response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 						new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
 						});
@@ -52,31 +55,54 @@ public class RateAlertClient extends AbstractJaxServiceClient {
 			}
 		} catch (ValidationException ve) {
 			log.error("RateAlert ID is null.", ve);
-		}
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
 		return response.getBody();
 	}
 
 	public ApiResponse<RateAlertDTO> getRateAlertForCustomer() {
-		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/get/for/customer";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/get/for/customer";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 	public ApiResponse<RateAlertDTO> getAllRateAlert() {
-		ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
-		HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-		String url = baseUrl.toString() + RATE_ALERT_ENDPOINT + "/getAll";
-		log.info("calling " + url + " for getAllRateAlert");
-		response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-				new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
-				});
+		try {
+			ResponseEntity<ApiResponse<RateAlertDTO>> response = null;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + RATE_ALERT_ENDPOINT + "/getAll";
+			log.info("calling " + url + " for getAllRateAlert");
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RateAlertDTO>>() {
+					});
 
-		return response.getBody();
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 }

@@ -55,38 +55,13 @@
 			<version>2.6</version>
 		</dependency>
 
-		<!-- <dependency> <groupId>com.knet</groupId> <artifactId>knet</artifactId> 
-			<version>1.0</version> </dependency> -->
-		<dependency>
-			<groupId>com.knet.test</groupId>
-			<artifactId>knet.test</artifactId>
-			<version>1.0</version>
-		</dependency>
-
 		<!-- OMAN-NET lib START -->
-		<dependency>
-			<groupId>com.e24Pipe</groupId>
-			<artifactId>e24Pipe</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>bouncycastle-1.20</groupId>
-			<artifactId>bouncycastle-1.20</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>cryptix32</groupId>
-			<artifactId>cryptix32</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
-			<groupId>bcprov-jdk15-145</groupId>
-			<artifactId>bcprov-jdk15-145</artifactId>
-			<version>1.0</version>
-		</dependency>
+		<!-- <dependency> <groupId>com.e24Pipe</groupId> <artifactId>e24Pipe</artifactId> 
+			<version>1.0</version> </dependency> <dependency> <groupId>bouncycastle-1.20</groupId> 
+			<artifactId>bouncycastle-1.20</artifactId> <version>1.0</version> </dependency> 
+			<dependency> <groupId>cryptix32</groupId> <artifactId>cryptix32</artifactId> 
+			<version>1.0</version> </dependency> <dependency> <groupId>bcprov-jdk15-145</groupId> 
+			<artifactId>bcprov-jdk15-145</artifactId> <version>1.0</version> </dependency> -->
 		<!-- OMAN-NET lib END -->
 
 		<dependency>
@@ -101,6 +76,39 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+
+
+	<profiles>
+		<profile>
+			<id>dev</id>
+			<dependencies>
+				<dependency>
+					<groupId>com.knet.test</groupId>
+					<artifactId>knet.test</artifactId>
+					<version>1.0</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<finalName>${artifactId}-${version}-dev</finalName>
+			</build>
+		</profile>
+		<profile>
+			<id>prod</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.knet</groupId>
+					<artifactId>knet</artifactId>
+					<version>1.0</version>
+				</dependency>
+			</dependencies>
+			<build>
+				<finalName>${artifactId}-${version}-prod</finalName>
+			</build>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>

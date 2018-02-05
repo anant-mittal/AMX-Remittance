@@ -13,9 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.MetaClient;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -39,6 +36,18 @@ public class KnetClient implements PayGClient {
 
 	@Value("${knet.callback.url}")
 	String knetCallbackUrl;
+	
+	@Value("${knet.alias.name}")
+	String knetAliasName;
+	
+	@Value("${knet.action}")
+	String knetAction;
+	
+	@Value("${knet.currency}")
+	String knetCurrency;
+
+	@Value("${knet.language.code}")
+	String knetLanguageCode;
 
 	@Autowired
 	HttpServletResponse response;
@@ -49,12 +58,6 @@ public class KnetClient implements PayGClient {
 	@Autowired
 	private PaymentService paymentService;
 
-	@Autowired
-	private MetaClient metaClient;
-
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.KNET;
@@ -63,24 +66,14 @@ public class KnetClient implements PayGClient {
 	@Override
 	public void initialize(PayGParams payGParams) {
 
-		jaxMetaInfo.setCountryId(payGParams.getTenant().getBDCode());
-		OnlineConfigurationDto configDTO = metaClient.getOnlineConfig("J").getResult();
-
-		if (configDTO != null) {
-			log.info(" ###### Config from DB START ############## ");
-			log.info(String.format("alias name = %s,  resource path = %s,  response url = %s", configDTO.getAliasName(),
-					configDTO.getResourcePath(), configDTO.getResponseUrl()));
-			log.info(" ###### Config from DB END ############## ");
-		}
-
 		Map<String, Object> configMap = new HashMap<String, Object>();
 
-		configMap.put("action", "1");
-		configMap.put("currency", "414");
-		configMap.put("languageCode", "ENG");
+		configMap.put("action", knetAction);
+		configMap.put("currency", knetCurrency);
+		configMap.put("languageCode", knetLanguageCode);
 		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/KWT/");
 		configMap.put("resourcePath", knetCertpath);
-		configMap.put("aliasName", "mulla");
+		configMap.put("aliasName", knetAliasName);
 
 		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 
@@ -111,6 +104,8 @@ public class KnetClient implements PayGClient {
 				log.info(pipe.getErrorMsg());
 				log.info(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
+			} else {
+				log.info(pipe.getDebugMsg());
 			}
 
 			// get results

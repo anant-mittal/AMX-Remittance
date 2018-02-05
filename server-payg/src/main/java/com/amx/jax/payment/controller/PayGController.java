@@ -3,7 +3,7 @@
   */
 package com.amx.jax.payment.controller;
 
-import static com.amx.jax.payment.constant.PaymentConstant.PAYMENT_API_ENDPOINT;
+import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.util.Base64;
 
@@ -45,15 +45,17 @@ public class PayGController {
 	private PayGSession payGSession;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(@RequestParam String amount, @RequestParam String trckid,
-			@RequestParam String pg, @RequestParam String docNo, @RequestParam String docFy,
-			@RequestParam String callbackd, @RequestParam Tenant tnt) {
+	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
+			@RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam(required = false) String callbackd) {
 
 		TenantContextHolder.setCurrent(tnt);
 
-		byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
-		String callback = new String(decodedBytes);
-		payGSession.setCallback(callback);
+		if (callbackd != null) {
+			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
+			String callback = new String(decodedBytes);
+			payGSession.setCallback(callback);
+		}
 
 		log.info(String.format("Inside pay method with  amount-%s, country-%s, pg-" + amount, tnt.getCode(), pg));
 

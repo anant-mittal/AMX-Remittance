@@ -5,7 +5,7 @@ import java.util.Date;
 
 import com.amx.amxlib.constant.RuleEnum;
 
-public class RateAlertDTO extends AbstractModel {
+public class RateAlertDTO extends AbstractModel implements Cloneable {
 
 	/**
 	 * 
@@ -271,6 +271,36 @@ public class RateAlertDTO extends AbstractModel {
 
 	public void setCustomerLastName(String customerLastName) {
 		this.customerLastName = customerLastName;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((rateAlertId == null) ? 0 : rateAlertId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RateAlertDTO other = (RateAlertDTO) obj;
+		if (rateAlertId == null) {
+			if (other.rateAlertId != null)
+				return false;
+		} else if (!rateAlertId.equals(other.rateAlertId))
+			return false;
+		return true;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 

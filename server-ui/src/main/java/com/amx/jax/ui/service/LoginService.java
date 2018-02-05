@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,8 @@ import com.bootloaderjs.ListManager;
 
 @Service
 public class LoginService {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private UserSession userSession;
@@ -70,6 +74,8 @@ public class LoginService {
 			CustomerModel customerModel;
 			try {
 				customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
+
+				log.info("Login Started for user : customer id : {}", customerModel.getCustomerId());
 
 				sessionService.getGuestSession().setCustomerModel(customerModel);
 				wrapper.setData(getRandomSecurityQuestion(customerModel));

@@ -252,11 +252,13 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
 		if (onlineCust == null) {
+			logger.info("registering new customer for online device IP: " + metaData.getDeviceIp());
+			logger.info("device id: " + metaData.getDeviceId());
 			onlineCust = new CustomerOnlineRegistration(cust);
 			onlineCust.setHresetBy(cust.getIdentityInt());
-			onlineCust.setHresetIp(webutil.getClientIp());
+			onlineCust.setHresetIp(metaData.getDeviceIp());
 			onlineCust.setHresetkDt(new Date());
-			onlineCust.setResetIp(webutil.getClientIp());
+			onlineCust.setResetIp(metaData.getDeviceIp());
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
@@ -265,18 +267,19 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
-		return sendOtpForCivilId(civilId, null, null);
+		return sendOtpForCivilId(civilId, null, null,null);
 	}
 
-		
-		public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels, CustomerModel customerModel) {
-			BigDecimal customerId = metaData.getCustomerId();
+	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
+			CustomerModel customerModel,Boolean initRegistration) {
+		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
+		
 		try {
 			userValidationService.validateTokenDate(onlineCust);
 		} catch (GlobalException e) {
@@ -302,21 +305,30 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		
+		//if user is already registered do not send OTP
+		if (initRegistration != null && initRegistration && onlineCust != null
+				&& ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+			logger.info(String.format("Customer %s -- %s is already registred.", model.getCustomerId(),
+					model.getFirstName()));
+			return response;
+		}		
+		
 		PersonInfo personinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(personinfo, customer);
 		} catch (Exception e) {
 		}
-		
-		if(customerModel != null && customerModel.getEmail() != null) {
+
+		if (customerModel != null && customerModel.getEmail() != null) {
 			personinfo.setEmail(customerModel.getEmail());
 		}
-		if(customerModel != null && customerModel.getMobile() != null) {
+		if (customerModel != null && customerModel.getMobile() != null) {
 			personinfo.setMobile(customerModel.getMobile());
 		}
-		
+
 		jaxNotificationService.sendOtpSms(personinfo, model);
-		
+
 		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
@@ -654,20 +666,20 @@ public class UserService extends AbstractUserService {
 		return response;
 
 	}
-	
+
 	/**
 	 * Unlocks the customer account
 	 */
 	public ApiResponse unlockCustomer(String civilid) {
 		ApiResponse response = getBlackApiResponse();
 		BooleanResponse responseModel = new BooleanResponse();
-		//BigDecimal customerId = metaData.getCustomerId();
-		
-		Customer cust= custDao.getCustomerByCivilId(civilid);
+		// BigDecimal customerId = metaData.getCustomerId();
+
+		Customer cust = custDao.getCustomerByCivilId(civilid);
 		BigDecimal customerId = null;
-	    if (cust != null)
-	    	customerId = cust.getCustomerId();
-	    
+		if (cust != null)
+			customerId = cust.getCustomerId();
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer == null) {
 			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
@@ -680,20 +692,20 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-	
+
 	/**
 	 * Deactivates the customer
 	 */
 	public ApiResponse deactivateCustomer(String civilid) {
 		ApiResponse response = getBlackApiResponse();
 		BooleanResponse responseModel = new BooleanResponse();
-		//BigDecimal customerId = metaData.getCustomerId();
-		
-		Customer cust= custDao.getCustomerByCivilId(civilid);
+		// BigDecimal customerId = metaData.getCustomerId();
+
+		Customer cust = custDao.getCustomerByCivilId(civilid);
 		BigDecimal customerId = null;
-	    if (cust != null)
-	    	customerId = cust.getCustomerId();
-	    
+		if (cust != null)
+			customerId = cust.getCustomerId();
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer != null) {
 			onlineCustomer.setStatus(ConstantDocument.No);
@@ -708,9 +720,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public void validateMobile(CustomerModel custModel) {
-		Customer cust= custDao.getCustById(custModel.getCustomerId());
+		Customer cust = custDao.getCustById(custModel.getCustomerId());
 		userValidationService.validateMobileNumberLength(cust, custModel.getMobile());
 		userValidationService.isMobileExist(cust, custModel.getMobile());
-		
+
 	} // end of validateMobile
 }

@@ -34,6 +34,7 @@ import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -177,6 +178,7 @@ public class RemittanceTransactionManager {
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		validateNumberOfTransactionLimits();
+		validateBeneficiaryTransactionLimit(beneficiary);
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, comission);
 		validateTransactionAmount(breakup.getConvertedLCAmount());
 		if (model.isAvailLoyalityPoints()) {
@@ -188,8 +190,37 @@ public class RemittanceTransactionManager {
 		responseModel
 				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
+		setLoyalityPointIndicaters(responseModel);
 		return responseModel;
 
+	}
+
+	private void setLoyalityPointIndicaters(RemittanceTransactionResponsetModel responseModel) {
+
+		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
+		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
+		if (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue()) {
+			responseModel.setCanRedeemLoyalityPoints(false);
+		} else {
+			responseModel.setCanRedeemLoyalityPoints(true);
+		}
+	}
+
+	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
+		BigDecimal beneficiaryPerDayLimit = parameterService.getAuthenticationViewRepository(new BigDecimal(13))
+				.getAuthLimit();
+		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(beneficiary.getCustomerId(),
+				beneficiary.getBankCode(), beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(),
+				new BigDecimal(90));
+		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
+				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
+		if (transfers != null && transfers.size() >= beneficiaryPerDayLimit.intValue()) {
+			throw new GlobalException(
+					"Dear Customer, you have already done 1 transaction to this beneficiary within the last "
+							+ "24 hours. In the interest of safety, we do not allow a customer to repeat the same "
+							+ "transaction to the same beneficiary more than once in 24 hours.",
+					JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
+		}
 	}
 
 	private void validateLoyalityPointsBalance(BigDecimal availableLoyaltyPoints) {
@@ -260,6 +291,7 @@ public class RemittanceTransactionManager {
 				throw new GlobalException(limitView.getAuthMessage(), JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
 			}
 		}
+
 	}
 
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates,
@@ -465,8 +497,11 @@ public class RemittanceTransactionManager {
 				status = JaxTransactionStatus.PAYMENT_SUCCESS_APPLICATION_FAIL;
 			}
 		}
-		if ("NOT CAPTURED".equalsIgnoreCase(resultCode) || "CANCELED".equalsIgnoreCase(resultCode)) {
+		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_FAIL;
+		}
+		if ("CANCELED".equalsIgnoreCase(resultCode)) {
+			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
 		}
 
 		return status;

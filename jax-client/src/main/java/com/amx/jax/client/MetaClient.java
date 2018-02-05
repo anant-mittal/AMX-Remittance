@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankMasterDTO;
@@ -50,15 +52,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/applcountry/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getApplicationCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -70,15 +77,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/applcountry/" + countryId + "/" + companyId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/" + countryId + "/" + companyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getApplicationCountryByCountryAndCompany ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -89,15 +101,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Get all the applciation country ");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -106,15 +123,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/" + languageId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountryByLanguageId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -123,7 +145,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/" + languageId + "/" + countryId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId + "/" + countryId;
 
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -131,8 +153,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllCountryByLanguageId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -142,15 +169,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			log.info("Get all the applciation country " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/country/bc/" + languageId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/bc/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getBusinessCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -166,15 +198,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getSequrityQuestion ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -188,7 +225,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
 					+ questionId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -196,8 +233,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getSequrityQuestionById ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -210,15 +252,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getTermsAndCondition ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -232,15 +279,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getTermsAndConditionAsPerCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -254,15 +306,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 			log.info("Terms and Condition " + languageId);
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getWhyAskInfo ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -271,15 +328,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Financial Year");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/fyear/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/fyear/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getFinancialYear ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -288,15 +350,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/helpdtime/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdtime/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getContactUsTime ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -305,15 +372,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/helpdno/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdno/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getHelpDeskNo ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -322,15 +394,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("Contact Us time");
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/multicountry/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/multicountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getMultiCountryList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -339,15 +416,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("in getAllOnlineCurrency");
 			MultiValueMap<String, String> headers = getHeader();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/online/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/online/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in getAllOnlineCurrency ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getAllOnlineCurrency ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -356,14 +438,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			log.info("in getAllOnlineCurrency");
 			MultiValueMap<String, String> headers = getHeader();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/currency/bycountry/" + countryId;
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/bycountry/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in getAllOnlineCurrency ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCurrencyByCountryId ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -381,15 +468,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.append(districtId);
 			log.info("District Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/districtdesc/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtdesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getDistricDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -400,15 +491,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			String endpoint = META_API_ENDPOINT + BANK_MASTER_BY_COUNTRY_API_ENDPOINT;
 			endpoint = endpoint.replaceAll("\\{country\\-id\\}", countryId.toPlainString());
-			String url = baseUrl.toString() + endpoint;
+			String url = this.getBaseUrl() + endpoint;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<BankMasterDTO>>() {
 					});
 
 		} catch (Exception e) {
-			log.error("exception in getBankListForCountry ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getBankListForCountry ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -424,15 +520,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId);
 			log.info("District Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/districtlist/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getDistrictList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -449,14 +549,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId);
 			log.info("State Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/statelist/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getStateList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -474,14 +579,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.append(stateId);
 			log.info("State Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/statedesc/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statedesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getStateDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -498,23 +608,25 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId);
 			log.info("City Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/citylist/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citylist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCitytList ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
 	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
 		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 
 			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
@@ -525,15 +637,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.append(cityId);
 			log.info("City Input :" + sb.toString());
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in registeruser ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getCitytDesc ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -542,15 +658,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 
 			log.info("In getOnlineConfig :");
-			String url = baseUrl.toString() + META_API_ENDPOINT + "/onlineconfig/" + ind + "/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/onlineconfig/" + ind + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
 		} catch (Exception e) {
-			log.error("exception in getOnlineConfig ", e);
-
-		}
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getOnlineConfig ", e);
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 		return response.getBody();
 	}
 

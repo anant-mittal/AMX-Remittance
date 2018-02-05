@@ -1,32 +1,18 @@
 package com.amx.jax.client;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AlreadyExistsException;
-import com.amx.amxlib.exception.CustomerValidationException;
-import com.amx.amxlib.exception.IncorrectInputException;
-import com.amx.amxlib.exception.InvalidInputException;
-import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.model.response.ApiError;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.scope.Tenant;
+import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +27,11 @@ public abstract class AbstractJaxServiceClient {
 
 	@Autowired
 	@Qualifier("base_url")
-	protected URL baseUrl;
+	private URL baseUrl;
+
+	public String getBaseUrl() {
+		return baseUrl.toString();
+	}
 
 	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
 
@@ -57,11 +47,20 @@ public abstract class AbstractJaxServiceClient {
 			info.setLanguageId(jaxMetaInfo.getLanguageId());
 			info.setCountryBranchId(jaxMetaInfo.getCountryBranchId());
 			info.setTenant(jaxMetaInfo.getTenant());
+			log.info("device ip" + jaxMetaInfo.getDeviceIp());
+			info.setDeviceId(jaxMetaInfo.getDeviceId());
+			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
+			Tenant tenant = TenantContextHolder.currentSite();
+			if (tenant != null) {
+				info.setTenant(tenant);
+			} else {
+				info.setTenant(jaxMetaInfo.getTenant());
+			}
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 			log.error("error in getheader of jaxclient", e);
 		}
 		return headers;
 	}
-	
+
 }

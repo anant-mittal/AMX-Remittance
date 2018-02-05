@@ -5,26 +5,18 @@ import java.io.Serializable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerModel;
 
 @Component
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserSession implements Serializable {
 
 	private static final long serialVersionUID = -6354887590466374869L;
 	private boolean valid = false;
 	private String uuidToken = null;
 	private String referrer = null;
-	private String deviceId = null;
-
-	public String getDeviceId() {
-		return deviceId;
-	}
-
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
-	}
 
 	public void setReferrer(String referrer) {
 		this.referrer = referrer;

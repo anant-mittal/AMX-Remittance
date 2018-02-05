@@ -198,19 +198,19 @@ html, body {
 				<!--customer table-->
 				<table class="table  table-horizontal col-3 table-odd ">
 					<tr>
-						<td>Senders Details</td>
+						<td>Sender Details</td>
 						<td></td>
-						<td>بيانات المرسل</td>
+						<td>بيانات الراسل</td>
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
 						<td th:text="${remittance.firstName}">--</td>
-						<td>الاسم</td>
+						<td>اسم / رقم البطاقة المدنية للعميل</td>
 					</tr>
 					<tr>
 						<td>Contact No</td>
 						<td th:text="${remittance.mobileNo}">--</td>
-						<td>رقم الاتصال</td>
+						<td>رقم الهاتف</td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
@@ -220,7 +220,7 @@ html, body {
 					<tr>
 						<td>ID Expiry Date</td>
 						<td th:text="${remittance.idExpiryDate}">--</td>
-						<td>تاريخ انتهاء المدنية</td>
+						<td>تاريخ انتهاء البطاقة المدنية</td>
 					</tr>
 				</table> <!--customer table end-->
 				</td></tr>
@@ -233,9 +233,9 @@ html, body {
 						<td>تاريخ انتهاء سريان النقاط</td>
 					</tr>
 					<tr>
-						<td>Insurance 1</td>
+						<td>Insurance</td>
 						<td th:text="${remittance.insurence1}">--</td>
-						<td>تأمين ١</td>
+						<td>التأمين</td>
 					</tr>
 				
 				</table> <!--loyalty insurance table end--> 
@@ -256,41 +256,41 @@ html, body {
 					<tr>
 						<td>Receipt No / Date</td>
 						<td th:text="${remittance.receiptNo} +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; '+  ${remittance.date} +''">2017 / 27000003 / 24/05/2017</td>
-						<td>استلام رقم / تاريخ</td>
+						<td>رقم / تاريخ الإيصال</td>
 					</tr>
 				</table> <!--transaction detail table end-->
 				</td></tr>
 				<tr><td class="mainTable-border"> <!--Beneficiary's Details table-->
 				<table class="table table-horizontal  col-3 ">
 					<tr>
-						<td>Beneficiary's Details</td>
+						<td>Beneficiary Details</td>
 						<td></td>
-						<td>المستفيد تفاصيل</td>
+						<td>بيانات المستفيد</td>
 					</tr>
 					<tr>
 						<td>Transaction No</td>
-						<td><span th:text="${remittance.transactionNo}"></span> <span th:text="${(remittance.pinNo != null) ? 'Pin No: ' + remittance.pinNo : '' }" style="padding-left:100px; font-weight: bold"></span></td>
-						<td>الصفقة لا</td>
+						<td><span th:text="${remittance.transactionNo}"></span> <span th:text="${(remittance.pinNo != null) ? 'Pin No: ' + remittance.pinNo : 'Pin No:' }" style="padding-left:100px; font-weight: bold"></span></td>
+						<td>رقم المعاملة</td>
 					</tr>
 					<tr>
 						<td>Name</td>
 						<td th:text="${remittance.beneficiaryName}">--</td>
-						<td>الإسم:</td>
+						<td>الاسم</td>
 					</tr>
 					<tr>
 						<td>Bank Name</td>
 						<td th:text="${remittance.benefeciaryBankName}">--</td>
-						<td>إسم البنك:</td>
+						<td> اسم البنك</td>
 					</tr>
 					<tr>
 						<td>Branch Name</td>
 						<td th:text="${remittance.benefeciaryBranchName}">--</td>
-						<td>إسم البنك:</td>
+						<td>اسم الفرع</td>
 					</tr>
 					<tr>
 						<td>Account No</td>
 						<td th:text="${remittance.benefeciaryAccountNumber}">--</td>
-						<td>إسم البنك:</td>
+						<td>رقم الحساب</td>
 					</tr>
 					<tr>
 						<td>Payment Channel</td>
@@ -300,7 +300,7 @@ html, body {
 					<tr>
 						<td>Currency &amp; Amount</td>
 						<td th:text="${remittance.currencyAndAmount}">--</td>
-						<td>العملات و المبلغ</td>
+						<td>العُملة والمبلغ</td>
 					</tr>
 					<tr>
 						<td>Exchange Rate</td>
@@ -308,29 +308,29 @@ html, body {
 						<td>سعر الصرف</td>
 					</tr>
 					<tr>
-						<td>Amount</td>
+						<td>KWD Amount</td>
 						<td th:text="${remittance.localTransactionAmount}">--</td>
-						<td>لجنة</td>
+						<td>المبلغ بالدينار الكويتى</td>
 					</tr>
 					<tr>
 						<td>Commission</td>
 						<td th:text="${remittance.commision}">--</td>
-						<td>رسوم أخرى</td>
+						<td>العمولة</td>
 					</tr>
 					<tr>
 						<td>Other Charges</td>
 						<td th:text="${remittance.otherCharges}">--</td>
-						<td>رسوم أخرى</td>
+						<td>رسوم أُخرى</td>
 					</tr>
 					<tr>
 						<td>Total Amount</td>
 						<td th:text="${remittance.totalAmount}">--</td>
-						<td>المبلغ الإجمالي</td>
+						<td>إجمالي المبلغ</td>
 					</tr>
 					<tr>
 						<td>Further Instructions</td>
 						<td th:text="${remittance.futherInstructions}">--</td>
-						<td>مزيد من التعليمات</td>
+						<td>تعليمات إضافية</td>
 					</tr>
 					<tr>
 						<td>Source Of Income</td>
@@ -338,14 +338,14 @@ html, body {
 						<td>مصدر الدخل</td>
 					</tr>
 					<tr>
-						<td>Intermeditary Bank</td>
+						<td>Intermediary Bank</td>
 						<td th:text="${remittance.intermediataryBank}">--</td>
 						<td>البنك الوسيط</td>
 					</tr>
 					<tr>
 						<td>Address</td>
 						<td th:text="${remittance.address}">--</td>
-						<td>عنوان</td>
+						<td>العنوان</td>
 					</tr>
 					<tr>
 						<td colspan="3" th:text="${remittance.purposeOfRemitTrList[0].purposeOfTrField} + '&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;' + ${remittance.purposeOfRemitTrList[0].purposeOfTrValue}">--</td>
@@ -358,7 +358,7 @@ html, body {
 						<td>Payment Details</td>
 						<td></td>
 						<td></td>
-						<td>دفع التفاصيل</td>
+						<td>تفاصيل الدفع</td>
 					</tr>
 					<tr>
 						<td>Amount Paid</td>
@@ -370,13 +370,13 @@ html, body {
 						<td>Amount Refund</td>
 						<td th:text="${remittance.refundedAmount}">--</td>
 						<td></td>
-						<td>استرداد المبلغ</td>
+						<td>المبلغ المُسترد</td>
 					</tr>
 					<tr>
 						<td>Amount Payable</td>
 						<td th:text="${remittance.amountPayable}">--</td>
 						<td></td>
-						<td></td>
+						<td>المبلغ المُسدد</td>
 					</tr>
 					<tr>
 						<td>Net Paid Amount</td>
@@ -388,21 +388,21 @@ html, body {
 						<td>Payment Mode</td>
 						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
 						<td th:text="${mode.approvalNo}">Approved No : 1234</td>
-						<td>دفع الوضع</td>
+						<td>طريقة الدفع</td>
 					</tr>
 				</table> <!--Payment Details table end--> 
 				</td></tr>
 				<tr><td class="mainTable-border"><!--Cashier table-->
 				<table class="table col-3 height100">
 					<tr>
-						<td>Cashier's Name</td>
+						<td>Cashier Name</td>
 						<td th:text="${remittance.userName}">KANMANI1</td>
-						<td>أمين الصندوق اسم</td>
+						<td>اسم الكاشير </td>
 					</tr>
 					<tr>
-						<td>Cashier's Signature</td>
+						<td>Cashier Signature</td>
 						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
-						<td>التوقيع أمين الصندوق</td>
+						<td>توقيع الكاشير</td>
 					</tr>
 				</table>
 		<!--Cashier table end-->
@@ -410,12 +410,14 @@ html, body {
 				<tr><td>
 		<table class="table noborder">
 			<tr>
-				<td valign="top">I / We confirm that the beneficiary details furnished above
-					are correct. I/ We have read the terms and conditions overleaf and
-					confirm to have fully understood and accepted the same without any</td>
-				<td valign="top" align="right">I / نؤكد أن تفاصيل المستفيد مفروشة أعلاه صحيح. I / لقد قرأت
-					الشروط والأحكام الوارد في الصفحة التالية و تأكيد لقد فهمت تماما
-					وقبلت نفسه دون</td>
+				<td valign="top">
+					<div>I /We confirm that the beneficiary details furnished above are correct.</div>
+					<div>I / We have read the terms and conditions overleaf and confirm to have fully understood and accepted the same without any reservations</div>
+				</td>
+				<td valign="top" align="right">
+					<div>أقر أنا/ نحن بأن بيانات المستفيد المذكورة أعلاه صحيحة</div>
+					<div>أقر أنا/ نحن بالاطلاع على البنود والشروط المذكورة بالخلف ونؤكد بأننا فهمنا ما بها وقبلناها بدون أى تحفُظات.</div>
+				</td>
 			</tr>
 			<tr>
 				<td align="center"><img height="50"  th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
@@ -423,8 +425,8 @@ html, body {
 			</tr>
 			
 			<tr>
-				<td align="center"><strong>(Signature Of )</strong></td>
-				<td align="center"><strong>(التوقيع على المحول)</strong></td>
+				<td align="center"><strong>(Signature Of Remitter)</strong></td>
+				<td align="center"><strong>(توقيع الراسل)</strong></td>
 			</tr>
 		</table>
 		</td>

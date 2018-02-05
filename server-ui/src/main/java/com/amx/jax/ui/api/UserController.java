@@ -21,7 +21,6 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.service.UserService;
-import com.amx.jax.ui.session.UserSession;
 
 import io.swagger.annotations.Api;
 
@@ -30,19 +29,16 @@ import io.swagger.annotations.Api;
 public class UserController {
 
 	@Autowired
-	private UserSession userSession;
-
-	@Autowired
 	private LoginService loginService;
 
 	@Autowired
-	SessionService sessionService;
+	private SessionService sessionService;
 
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@Autowired
-	TenantContext tenantContext;
+	private TenantContext tenantContext;
 
 	/**
 	 * Asks for user login and password
@@ -87,11 +83,11 @@ public class UserController {
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
-		wrapper.getData().setValidSession(userSession.isValid());
+		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
-		if (userSession.getCustomerModel() != null) {
+		if (sessionService.getUserSession().getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
-			wrapper.getData().setInfo(userSession.getCustomerModel().getPersoninfo());
+			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 		}
 

@@ -42,7 +42,7 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name = "CORRESPONDING_BANK")
 	private String beneficaryCorespondingBankName;
 	
-	@Temporal(TemporalType.DATE)
+	//@Temporal(TemporalType.DATE)
 	@Column(name = "DOCUMENT_DATE")
 	private Date documentDate;
 	

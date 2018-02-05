@@ -32,6 +32,7 @@ public class BeneficaryRelationship implements Serializable {
 	private BigDecimal mapSequenceId;
 	private String remarks ;
 	private BigDecimal orsSatus;
+	private String myFavouriteBene;
 	
 	
 	@Id
@@ -181,6 +182,13 @@ public class BeneficaryRelationship implements Serializable {
 
 	public void setOrsSatus(BigDecimal orsSatus) {
 		this.orsSatus = orsSatus;
+	}
+	@Column(name="MY_FAVOURITE_BENE")
+	public String getMyFavouriteBene() {
+		return myFavouriteBene;
+	}
+	public void setMyFavouriteBene(String myFavouriteBene) {
+		this.myFavouriteBene = myFavouriteBene;
 	}
 	 
 }

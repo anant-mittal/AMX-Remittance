@@ -2,6 +2,8 @@ package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,8 @@ import com.bootloaderjs.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 
@@ -103,7 +107,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	}
 
 	public JaxService setDefaults() {
-		
+
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 
@@ -112,12 +116,18 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
+		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getDeviceId());
+		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getDeviceIp());
+		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getDeviceType().toString());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
+			log.info("Customer Model Found in User Session : {}", jaxMetaInfo.getCustomerId());
 		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
+			log.info("Customer Model Found in Guest Session : {}", jaxMetaInfo.getCustomerId());
 		}
+		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
 		return this;
 	}
 

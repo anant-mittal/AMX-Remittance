@@ -29,7 +29,10 @@ public class MultiTenantJpaConfiguration {
 			DataSourceBuilder factory = DataSourceBuilder.create().url(dsProperties.getUrl())
 					.username(dsProperties.getUsername()).password(dsProperties.getPassword())
 					.driverClassName(dsProperties.getDriverClassName());
-			result.put(dsProperties.getTenantId(), factory.build());
+			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
+					.build();
+			tomcatDataSource.setTestOnBorrow(true);
+			result.put(dsProperties.getTenantId(), tomcatDataSource);
 		}
 		return result;
 	}

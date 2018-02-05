@@ -1,6 +1,6 @@
 package com.amx.jax.ui.model;
 
-import org.springframework.mobile.device.Device;
+import java.util.Map;
 
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 
@@ -16,6 +16,6 @@ public class ServerStatus {
 	public String remoteAddress = null;
 	public String scheme = null;
 	public String remoteAddr = null;
-	public Device device = null;
+	public Map<String, Object> device = null;
 	public ApplicationSetupDTO onlineConfigurationDto = null;
 }

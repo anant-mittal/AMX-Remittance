@@ -1,23 +1,19 @@
 
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.session.UserSession;
+import com.amx.jax.ui.session.UserDevice;
 import com.bootloaderjs.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -33,27 +29,13 @@ public class HomeController {
 	private String applicationTitle;
 
 	@Autowired
-	private ApplicationContext context;
-
-	@Autowired
-	private HttpServletRequest request;
-
-	@Autowired
-	private UserSession userSession;
-
-	public String getDeviceId() {
-		if (userSession.getDeviceId() != null) {
-			String deviceId = WebUtils.getCookie(request, Constants.DEVICE_ID_KEY).getValue();
-			userSession.setDeviceId(deviceId);
-		}
-		return userSession.getDeviceId();
-	}
+	private UserDevice userDevice;
 
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cdnUrl);
-		model.addAttribute(Constants.DEVICE_ID_KEY, getDeviceId());
+		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
 
@@ -70,7 +52,7 @@ public class HomeController {
 	public String defaultPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cdnUrl);
-		model.addAttribute(Constants.DEVICE_ID_KEY, getDeviceId());
+		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
 }
