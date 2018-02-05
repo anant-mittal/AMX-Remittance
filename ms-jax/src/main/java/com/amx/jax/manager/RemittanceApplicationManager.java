@@ -257,6 +257,7 @@ public class RemittanceApplicationManager {
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
+			logger.info("Srl Id received: "+ srlId);
 			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId);
 			if (additionaBnankDetail != null) {
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());

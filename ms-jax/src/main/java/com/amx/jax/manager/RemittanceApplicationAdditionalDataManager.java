@@ -65,6 +65,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal additionalBankRuleId = (BigDecimal) remitApplParametersMap.get(params.pruleId);
 			String amiecCode = (String) remitApplParametersMap.get(params.pamieCode);
 			String flexFieldValue = (String) remitApplParametersMap.get(params.pflexField);
+			logger.info("flexFieldValue: "+ flexFieldValue);
 			String indicator = (String) remitApplParametersMap.get("P_FLEX_FIELD_CODE_1");
 			if (indicator == null) {
 				indicator = params.indic;
