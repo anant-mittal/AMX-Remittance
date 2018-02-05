@@ -63,7 +63,7 @@ public class CustomerController {
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
-		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel, null);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel, null,null);
 		return response;
 	}
 
@@ -144,7 +144,7 @@ public class CustomerController {
 		    userSerivce.validateMobile(custModel);
 		}
 		
-		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel);
+		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel,null);
 		return response;
 	}
 	
@@ -159,6 +159,13 @@ public class CustomerController {
 	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in deActivateCustomer Request ");
 		ApiResponse response = userSerivce.deactivateCustomer(civilid);
+		return response;
+	}
+	
+	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
+	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,@PathVariable("init-registration") Boolean init) {
+		logger.debug("verifyCivilId Request:civilId" + civilId);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId,null,null,init);
 		return response;
 	}
 }

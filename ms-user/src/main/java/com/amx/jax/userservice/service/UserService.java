@@ -267,11 +267,11 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
-		return sendOtpForCivilId(civilId, null, null);
+		return sendOtpForCivilId(civilId, null, null,null);
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
-			CustomerModel customerModel) {
+			CustomerModel customerModel,Boolean initRegistration) {
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
@@ -279,6 +279,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
+		
 		try {
 			userValidationService.validateTokenDate(onlineCust);
 		} catch (GlobalException e) {
@@ -304,6 +305,12 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		
+		//if user is already registered do not send OTP
+		if (initRegistration) {
+			return response;
+		}		
+		
 		PersonInfo personinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(personinfo, customer);

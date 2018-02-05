@@ -595,5 +595,28 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
+	
+	public ApiResponse<CivilIdOtpModel> initRegistration(String identityId)
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+		try {
+			Boolean initRegistration= new Boolean(true);
+			ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId +  "/" + initRegistration + "/send-otp/";
+			log.info("calling sendOtpForCivilId api: " + sendOtpUrl);
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+			log.info("responce from  sendOtpForCivilId api: " + util.marshall(response.getBody()));
+
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+	}
 
 }
