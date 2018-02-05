@@ -8,6 +8,13 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 
+/**
+ * To Save Values to Session Use this class, only if these values are not
+ * related to Valid user Request
+ * 
+ * @author lalittanwar
+ *
+ */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GuestSession implements Serializable {
@@ -36,16 +43,6 @@ public class GuestSession implements Serializable {
 
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
-	}
-
-	private boolean valid = false;
-
-	public boolean isValid() {
-		return valid;
-	}
-
-	public void setValid(boolean valid) {
-		this.valid = valid;
 	}
 
 	public Integer quesIndex = 0;

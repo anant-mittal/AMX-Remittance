@@ -26,6 +26,16 @@ public class JaxMetaInfo {
 
 	private String deviceId;
 
+	private String deviceType;
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
+	}
+
 	public String getDeviceId() {
 		return deviceId;
 	}

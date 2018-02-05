@@ -32,6 +32,7 @@ import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.jax.ui.session.UserDevice;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -61,6 +62,9 @@ public class MetaController {
 	@Autowired
 	HttpService httpService;
 
+	@Autowired
+	UserDevice userDevice;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -74,6 +78,8 @@ public class MetaController {
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
+		
+		userDevice.getDeviceType();
 
 		wrapper.getData().debug = env.isDebug();
 		wrapper.getData().id = httpSession.getId();
@@ -89,7 +95,7 @@ public class MetaController {
 
 		wrapper.getData().scheme = request.getScheme();
 
-		wrapper.getData().device = device;
+		wrapper.getData().device = userDevice.toMap();
 		wrapper.getData().onlineConfigurationDto = null;
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
 

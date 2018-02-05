@@ -26,6 +26,7 @@ import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.jax.ui.session.UserDevice;
 import com.amx.jax.ui.session.UserSession;
 
 @Component
@@ -46,6 +47,17 @@ public class SessionService {
 
 	@Autowired
 	private UserSession userSession;
+
+	@Autowired
+	private UserDevice appDevice;
+
+	public UserDevice getAppDevice() {
+		return appDevice;
+	}
+
+	public void setAppDevice(UserDevice appDevice) {
+		this.appDevice = appDevice;
+	}
 
 	@Autowired
 	private TenantContext tenantContext;
@@ -193,7 +205,6 @@ public class SessionService {
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
-		guestSession.setValid(Boolean.FALSE);
 		guestSession.setCustomerModel(null);
 	}
 
