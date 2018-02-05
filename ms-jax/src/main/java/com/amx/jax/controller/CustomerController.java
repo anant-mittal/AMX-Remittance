@@ -164,7 +164,7 @@ public class CustomerController {
 	
 	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,@PathVariable("init-registration") Boolean init) {
-		logger.debug("verifyCivilId Request:civilId" + civilId);
+		logger.debug("initRegistrationSendOtp Request:civilId" + civilId);
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId,null,null,init);
 		return response;
 	}

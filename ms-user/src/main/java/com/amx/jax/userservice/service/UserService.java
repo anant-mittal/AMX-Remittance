@@ -307,7 +307,8 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		
 		//if user is already registered do not send OTP
-		if (initRegistration) {
+		if (initRegistration!= null && initRegistration) {
+			logger.info(String.format("Customer %s -- %s is already registred.",model.getCustomerId(),model.getFirstName()));
 			return response;
 		}		
 		
