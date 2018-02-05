@@ -93,6 +93,7 @@ public class RemittanceApplicationManager {
 	private BankMetaService bankMetaService;
 
 	/**
+	 * @param remitApplParametersMap2
 	 * @param validatedObjects:
 	 *            - contains objects obtained after being passed through beneficiary
 	 *            validation process, validationResults- validation result like
@@ -100,7 +101,8 @@ public class RemittanceApplicationManager {
 	 * @return
 	 **/
 	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
-			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults) {
+			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
+			Map<String, Object> remitApplParametersMap) {
 
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
@@ -257,9 +259,20 @@ public class RemittanceApplicationManager {
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
-			logger.info("Srl Id received: "+ srlId);
-			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId);
+			logger.info("Srl Id received: " + srlId);
+			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+			// BigDecimal countryId = (BigDecimal)
+			// remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
+					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
+			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
+						+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());

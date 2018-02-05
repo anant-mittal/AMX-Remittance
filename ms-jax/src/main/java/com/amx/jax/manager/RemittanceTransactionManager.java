@@ -429,7 +429,7 @@ public class RemittanceTransactionManager {
 		validateAdditionalCheck();
 		validateAdditionalBeneDetails();
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
-				validatedObjects, validationResults);
+				validatedObjects, validationResults, remitApplParametersMap);
 
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
