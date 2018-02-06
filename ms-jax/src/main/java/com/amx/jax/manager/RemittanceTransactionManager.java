@@ -182,9 +182,10 @@ public class RemittanceTransactionManager {
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		}
-		recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
+
 		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)) {
 			commission = reCalculateComission(routingDetails, breakup);
+			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		if (commission == null) {
 			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId,
