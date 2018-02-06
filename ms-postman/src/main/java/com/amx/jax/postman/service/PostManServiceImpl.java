@@ -44,8 +44,9 @@ public class PostManServiceImpl implements PostManService {
 
 	@Async
 	public Email sendEmail(Email email) throws UnirestException {
-
+		String to = null;
 		try {
+			to = email.getTo().get(0);
 			if (email.getTemplate() != null) {
 				Context context = new Context();
 				context.setVariables(email.getModel());
@@ -63,7 +64,7 @@ public class PostManServiceImpl implements PostManService {
 			}
 			emailService.send(email);
 		} catch (Exception e) {
-			this.notifySlack(e);
+			this.notifySlack(to, e);
 		}
 		return email;
 	}
@@ -100,8 +101,9 @@ public class PostManServiceImpl implements PostManService {
 
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
-
+		String to = null;
 		try {
+			to = sms.getTo().get(0);
 			if (sms.getTemplate() != null) {
 				Context context = new Context();
 				context.setVariables(sms.getModel());
@@ -109,7 +111,7 @@ public class PostManServiceImpl implements PostManService {
 			}
 			this.smsService.sendSMS(sms);
 		} catch (Exception e) {
-			this.notifySlack(e);
+			this.notifySlack(to, e);
 		}
 		return sms;
 	}
@@ -122,7 +124,12 @@ public class PostManServiceImpl implements PostManService {
 
 	@Async
 	public Message notifySlack(Exception e) {
-		return slackService.sendNotification(e);
+		return slackService.sendNotification(null, e);
+	}
+
+	@Async
+	public Message notifySlack(String to, Exception e) {
+		return slackService.sendNotification(to, e);
 	}
 
 	@Override

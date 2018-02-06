@@ -78,7 +78,7 @@ public class MetaController {
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-		
+
 		userDevice.getDeviceType();
 
 		wrapper.getData().debug = env.isDebug();
@@ -141,7 +141,8 @@ public class MetaController {
 				Email email = new Email();
 				email.setFrom("exch-online1@almullagroup.com");
 				email.setReplyTo(cemail);
-				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com");
+				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com",
+						"exch-online1@almullagroup.com", "exch-amx@almullagroup.com");
 				email.getModel().put(Constants.RESP_DATA_KEY, map);
 				email.setSubject("Inquiry");
 				email.setTemplate(Templates.CONTACT_US);

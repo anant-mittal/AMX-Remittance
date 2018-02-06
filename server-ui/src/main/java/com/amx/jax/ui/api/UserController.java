@@ -90,7 +90,8 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 		}
-
+		
+		
 		return wrapper;
 	}
 
