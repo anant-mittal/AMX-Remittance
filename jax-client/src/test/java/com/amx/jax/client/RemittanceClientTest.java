@@ -67,7 +67,7 @@ public class RemittanceClientTest {
 			ApiResponse<RemittanceApplicationResponseModel> response = null;
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 			request.setBeneId(new BigDecimal(132053));
-			request.setLocalAmount(new BigDecimal(100));
+			request.setLocalAmount(new BigDecimal(3000));
 			request.setAdditionalBankRuleFiledId(new BigDecimal(101));
 			request.setSrlId(new BigDecimal(48));
 			response = client.saveTransaction(request);

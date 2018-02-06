@@ -161,23 +161,7 @@ public class RemittanceTransactionManager {
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId,
-				currencyId, remittanceMode, deliveryMode);
-		if (rules == null || rules.isEmpty()) {
-			throw new GlobalException("Routing Rules not defined for Routing Bank Id:- " + routingBankId,
-					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
-		}
-		BankServiceRule appliedRule = rules.get(0);
-		List<BankCharges> charges = appliedRule.getBankCharges();
-		BankCharges bankCharge = getApplicableCharge(charges);
-		if (bankCharge == null) {
-			throw new GlobalException("Routing Bank Charges not defined for Routing Bank Id:- " + routingBankId,
-					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
-		}
-		BigDecimal comission = bankCharge.getChargeAmount();
 
-		// commission
-		responseModel.setTxnFee(comission);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
@@ -186,12 +170,30 @@ public class RemittanceTransactionManager {
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, comission);
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId,
+				currencyId, remittanceMode, deliveryMode);
+		BankServiceRule appliedRule = rules.get(0);
+		List<BankCharges> charges = appliedRule.getBankCharges();
+		BankCharges bankCharge = getApplicableCharge(charges);
+		BigDecimal commission = bankCharge.getChargeAmount();
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		validateTransactionAmount(breakup.getConvertedLCAmount());
+
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		}
 		recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
+		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)) {
+			commission = reCalculateComission(routingDetails, breakup);
+		}
+		if (commission == null) {
+			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId,
+					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		} else {
+			breakup = getExchangeRateBreakup(exchangeRates, model, commission);
+		}
+		// commission
+		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
@@ -201,6 +203,18 @@ public class RemittanceTransactionManager {
 		setLoyalityPointIndicaters(responseModel);
 		return responseModel;
 
+	}
+
+	private BigDecimal reCalculateComission(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+		BigDecimal comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
+		if (comission == null) {
+			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+			comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
+		}
+		return comission;
 	}
 
 	private void recalculateDeliveryAndRemittanceModeId(Map<String, Object> routingDetails,
