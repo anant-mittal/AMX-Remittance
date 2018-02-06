@@ -32,7 +32,7 @@ public class SlackService {
 
 		HttpResponse<String> response = Unirest.post(sendNotificationApi).header("content-type", "application/json")
 				.body(String.format("{\"text\": \"%s\"}", msg.getMessage())).asString();
-		LOGGER.info("Slack Sent   {}", response.getBody());
+		LOGGER.info("Slack Sent", response.getBody());
 		return msg;
 	}
 
