@@ -2,7 +2,8 @@ package com.amx.jax.postman.service;
 
 import java.net.URLEncoder;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +15,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 @Component
 public class SlackService {
 
-	private Logger logger = Logger.getLogger(SlackService.class);
+	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Value("${msg91.remote.url}")
 	private String remoteUrl;
@@ -31,18 +32,18 @@ public class SlackService {
 
 		HttpResponse<String> response = Unirest.post(sendNotificationApi).header("content-type", "application/json")
 				.body(String.format("{\"text\": \"%s\"}", msg.getMessage())).asString();
-		logger.info("Slack Sent   " + response.getBody());
+		LOGGER.info("Slack Sent   {}", response.getBody());
 		return msg;
 	}
 
 	public Message sendNotification(String to, Exception e) {
-		logger.error("Exception ", e);
+		LOGGER.error("Exception to=" + to, e);
 		try {
 			HttpResponse<String> response = Unirest.post(sendException).header("content-type", "application/json")
 					.body(String.format("{\"text\": \"%s = %s\"}", to, URLEncoder.encode(e.getMessage(), "UTF-8")))
 					.asString();
 		} catch (Exception e1) {
-			logger.error("NestedException ", e1);
+			LOGGER.error("NestedException ", e1);
 		}
 		return null;
 	}

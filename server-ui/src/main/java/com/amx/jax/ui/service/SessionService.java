@@ -190,7 +190,7 @@ public class SessionService {
 			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
 			String userKeyString = getUserKeyString();
 			map.fastRemove(userKeyString);
-			LOGGER.info("User is being unauthorized from current session");
+			LOGGER.info("User is being unauthorized from current session userKeyString={}", userKeyString);
 		}
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
@@ -201,7 +201,7 @@ public class SessionService {
 	 * un-authorization use {@link #unauthorize()}
 	 */
 	public void clear() {
-		LOGGER.info("Session is being cleared");
+		LOGGER.info("Session is being cleared userId={}", userSession.getUserid());
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
