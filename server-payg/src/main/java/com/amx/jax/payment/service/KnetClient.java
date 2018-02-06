@@ -1,5 +1,7 @@
 package com.amx.jax.payment.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -80,8 +82,20 @@ public class KnetClient implements PayGClient {
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
 
+		String amount = (String) payGParams.getAmount();
+		
 		try {
+				BigDecimal bd = new BigDecimal(amount);
+				
+				if (!(bd.signum() > 0)) {
+					throw new NumberFormatException("Negative value not allowed.");
+				}
+				
+			    bd = bd.setScale(3, RoundingMode.HALF_UP);
+	     	    amount = bd.toPlainString();
 
+	     	log.info("Amount to remit is --> "+amount);
+	     	
 			pipe.setAction((String) configMap.get("action"));
 			pipe.setCurrency((String) configMap.get("currency"));
 			// pipe.setCurrency((configMap.get("currency")).toString());
@@ -90,13 +104,13 @@ public class KnetClient implements PayGClient {
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
-			pipe.setAmt((String) payGParams.getAmount());
+			pipe.setAmt(amount);
 			pipe.setTrackId((String) payGParams.getTrackId());
 
 			pipe.setUdf3(payGParams.getDocNo());
 
 			Short pipeValue = pipe.performPaymentInitialization();
-			System.out.println("pipeValue :" + pipeValue);
+			log.info("pipeValue : " + pipeValue);
 
 			if (pipeValue != e24PaymentPipe.SUCCESS) {
 				responseMap.put("errorMsg", pipe.getErrorMsg());
@@ -116,9 +130,12 @@ public class KnetClient implements PayGClient {
 			responseMap.put("payurl", new String(payURL));
 
 			String url = payURL + "?paymentId=" + payID;
+			log.info("Generated url is ---> "+url);
 			payGParams.setRedirectUrl(url);
 
-		} catch (Exception e) {
+		} catch(NumberFormatException e) {
+			log.error(String.format("Amount entered --> %s ,is not correct number.",amount),e);
+		}catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}

@@ -52,6 +52,7 @@ public class PaymentUtil {
 				String s = bd.toString();
 				sbuf.append(" "+k).append(" = ").append(s.length() > 0 ? s : "null");
 			}
+			sbuf.append(",");
 		}
 		return sbuf.toString();
 	}

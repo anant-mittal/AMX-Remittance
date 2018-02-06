@@ -57,7 +57,7 @@ public class PayGController {
 			payGSession.setCallback(callback);
 		}
 
-		log.info(String.format("Inside pay method with  amount-%s, country-%s, pg-" + amount, tnt.getCode(), pg));
+		log.info(String.format("Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",trckid,amount,docNo,tnt.getCode(),pg));
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
