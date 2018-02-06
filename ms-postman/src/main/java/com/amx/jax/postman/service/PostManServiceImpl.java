@@ -63,6 +63,7 @@ public class PostManServiceImpl implements PostManService {
 				}
 			}
 			emailService.send(email);
+			LOGGER.info("Email sent to {}", to);
 		} catch (Exception e) {
 			this.notifySlack(to, e);
 		}
@@ -95,7 +96,7 @@ public class PostManServiceImpl implements PostManService {
 		} catch (Exception e) {
 			this.notifySlack(template.toString(), e);
 		}
-
+		LOGGER.info("Template Generated sent to {}", template.toString());
 		return file;
 	}
 
@@ -110,6 +111,7 @@ public class PostManServiceImpl implements PostManService {
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}
 			this.smsService.sendSMS(sms);
+			LOGGER.info("SMS sent to {}", to);
 		} catch (Exception e) {
 			this.notifySlack(to, e);
 		}
