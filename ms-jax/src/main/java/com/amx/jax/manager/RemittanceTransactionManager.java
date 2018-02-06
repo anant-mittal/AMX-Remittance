@@ -184,7 +184,9 @@ public class RemittanceTransactionManager {
 		}
 
 		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)) {
+			logger.info("recalculating comission for TT and routing countyr india");
 			commission = reCalculateComission(routingDetails, breakup);
+			logger.info("commission: " + commission);
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		if (commission == null) {
