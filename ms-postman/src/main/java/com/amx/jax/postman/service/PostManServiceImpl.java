@@ -150,4 +150,9 @@ public class PostManServiceImpl implements PostManService {
 		return null;
 	}
 
+	@Override
+	public <T> Map<String, T> getMap(String url) throws UnirestException {
+		return null;
+	}
+
 }

@@ -1,6 +1,8 @@
 package com.amx.jax.postman.client;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
@@ -114,6 +116,18 @@ public class PostManClient implements PostManService {
 			return response.getBody().getObject().getBoolean("success");
 		}
 		return false;
+	}
+
+	@Override
+	public Map<String, Object> getMap(String url) throws UnirestException {
+		// TODO Auto-generated method stub
+		HttpResponse<Map<String, Object>> response = Unirest.get(url)
+				// .header("content-type", "application/json")
+				.header("accept", "application/json").asObject(Map.class);
+		if (response != null) {
+			return response.getBody();
+		}
+		return new HashMap<String, Object>();
 	}
 
 }

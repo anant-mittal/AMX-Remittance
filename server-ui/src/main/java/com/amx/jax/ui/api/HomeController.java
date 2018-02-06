@@ -1,6 +1,10 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -9,18 +13,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserDevice;
+import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.JsonUtil;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
 
 @Controller
 @Api(value = "Auth APIs")
 public class HomeController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
 	@Value("${jax.cdn.url}")
 	private String cdnUrl;
@@ -31,10 +40,33 @@ public class HomeController {
 	@Autowired
 	private UserDevice userDevice;
 
+	private long checkTime = 0L;
+	private String versionNew = "_";
+
+	@Autowired
+	private PostManService postManService;
+
+	public String getVersion() {
+		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 30);
+		if (checkTimeNew != checkTime) {
+			try {
+				Map<String, Object> map = postManService.getMap(cdnUrl + "/dist/build.json?_" + checkTimeNew);
+				if (map.containsKey("version")) {
+					versionNew = ArgUtil.parseAsString(map.get("version"));
+				}
+				checkTime = checkTimeNew;
+			} catch (UnirestException e) {
+				LOGGER.error("getVersion Exception", e);
+			}
+		}
+		return versionNew;
+	}
+
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cdnUrl);
+		model.addAttribute(Constants.CDN_VERSION, getVersion());
 		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
@@ -52,6 +84,7 @@ public class HomeController {
 	public String defaultPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cdnUrl);
+		model.addAttribute(Constants.CDN_VERSION, getVersion());
 		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
