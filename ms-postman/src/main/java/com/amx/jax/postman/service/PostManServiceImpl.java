@@ -83,7 +83,7 @@ public class PostManServiceImpl implements PostManService {
 			file.setContent(templateService.processHtml(template, context));
 		} catch (Exception e) {
 			LOGGER.error("Template {}", template.getFileName(), e);
-			this.notifySlack(e);
+			this.notifySlack(template.toString(), e);
 		}
 		try {
 			if (fileType == Type.PDF) {
@@ -93,7 +93,7 @@ public class PostManServiceImpl implements PostManService {
 				file.setName(template.getFileName() + ".html");
 			}
 		} catch (Exception e) {
-			this.notifySlack(e);
+			this.notifySlack(template.toString(), e);
 		}
 
 		return file;
@@ -120,11 +120,6 @@ public class PostManServiceImpl implements PostManService {
 	@Async
 	public Message notifySlack(Message msg) throws UnirestException {
 		return slackService.sendNotification(msg);
-	}
-
-	@Async
-	public Message notifySlack(Exception e) {
-		return slackService.sendNotification(null, e);
 	}
 
 	@Async
