@@ -45,7 +45,7 @@ public class HomeController {
 	private String cleanCDNUrl;
 
 	public String getVersion() {
-		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 30);
+		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
 			try {
 				JSONObject map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
