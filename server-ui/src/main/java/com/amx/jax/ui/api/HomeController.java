@@ -1,8 +1,7 @@
 
 package com.amx.jax.ui.api;
 
-import java.util.Map;
-
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserDevice;
 import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.JsonUtil;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
 
@@ -50,12 +48,12 @@ public class HomeController {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 30);
 		if (checkTimeNew != checkTime) {
 			try {
-				Map<String, Object> map = postManService.getMap(cdnUrl + "/dist/build.json?_" + checkTimeNew);
-				if (map.containsKey("version")) {
-					versionNew = ArgUtil.parseAsString(map.get("version"));
+				JSONObject map = postManService.getMap(cdnUrl + "/dist/build.json?_=" + checkTimeNew);
+				if (map.has("version")) {
+					versionNew = ArgUtil.parseAsString(map.getLong("version"));
 				}
 				checkTime = checkTimeNew;
-			} catch (UnirestException e) {
+			} catch (Exception e) {
 				LOGGER.error("getVersion Exception", e);
 			}
 		}

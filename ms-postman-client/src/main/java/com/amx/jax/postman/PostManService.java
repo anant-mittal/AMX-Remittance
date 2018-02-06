@@ -1,6 +1,6 @@
 package com.amx.jax.postman;
 
-import java.util.Map;
+import org.json.JSONObject;
 
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
@@ -27,6 +27,6 @@ public interface PostManService {
 
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException;
 
-	public <T> Map<String, T> getMap(String url) throws UnirestException;
+	public JSONObject getMap(String url) throws UnirestException;
 
 }

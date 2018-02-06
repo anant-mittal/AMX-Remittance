@@ -2,6 +2,7 @@ package com.amx.jax.postman.service;
 
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -153,7 +154,7 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	public <T> Map<String, T> getMap(String url) throws UnirestException {
+	public JSONObject getMap(String url) throws UnirestException {
 		return null;
 	}
 
