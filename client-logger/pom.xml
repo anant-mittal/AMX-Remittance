@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>client-logger</artifactId>
+	<artifactId>client-tunnel</artifactId>
 	<packaging>jar</packaging>
-	<name>client-logger</name>
+	<name>client-tunnel</name>
 	<url>http://maven.apache.org</url>
 
 	<parent>
@@ -23,26 +23,12 @@
 	<dependencies>
 
 		<!-- UNIREST DEPENDCY -->
-<!-- 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpasyncclient</artifactId>
-			<version>4.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20140107</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<version>4.3.6</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
+			<artifactId>httpasyncclient</artifactId> <version>4.0.2</version> </dependency> 
+			<dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpmime</artifactId> 
+			<version>4.3.6</version> </dependency> <dependency> <groupId>org.json</groupId> 
+			<artifactId>json</artifactId> <version>20140107</version> </dependency> -->
 		<dependency>
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
@@ -55,7 +41,6 @@
 			<artifactId>boot-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
 
 
 	</dependencies>
