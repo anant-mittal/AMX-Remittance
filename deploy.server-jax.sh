@@ -4,7 +4,7 @@ source config/setvars.sh
 
 echo $JAX_PASS
 
-bash setup.sh
+#bash setup.sh
 
 mvn clean
 
@@ -19,7 +19,7 @@ mvn clean
 #mvn -pl jax-client clean install -DskipTests
 
 mvn -T 4 package -pl ms-jax -am -DskipTests
-mvn -T 4 package -pl jax-client -am -DskipTests
+#mvn -T 4 package -pl jax-client -am -DskipTests
 
 sshpass -p $JAX_PASS scp ms-jax/target/ms-jax-0.0.1-SNAPSHOT.jar $JAX_USER@$JAX_HOST:~/jax/ms-jax
 

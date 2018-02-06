@@ -52,7 +52,7 @@
 			<artifactId>amx-lib</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>ms-postman-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
