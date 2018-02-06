@@ -29,9 +29,6 @@ public class HomeController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-	@Value("${jax.cdn.url}")
-	private String cdnUrl;
-
 	@Value("${application.title}")
 	private String applicationTitle;
 
@@ -44,11 +41,14 @@ public class HomeController {
 	@Autowired
 	private PostManService postManService;
 
+	@Value("${jax.cdn.url}")
+	private String cleanCDNUrl;
+
 	public String getVersion() {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 30);
 		if (checkTimeNew != checkTime) {
 			try {
-				JSONObject map = postManService.getMap(cdnUrl + "/dist/build.json?_=" + checkTimeNew);
+				JSONObject map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
 				if (map.has("version")) {
 					versionNew = ArgUtil.parseAsString(map.getLong("version"));
 				}
@@ -63,7 +63,7 @@ public class HomeController {
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
-		model.addAttribute("cdnUrl", cdnUrl);
+		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(Constants.CDN_VERSION, getVersion());
 		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
@@ -81,7 +81,7 @@ public class HomeController {
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
-		model.addAttribute("cdnUrl", cdnUrl);
+		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(Constants.CDN_VERSION, getVersion());
 		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";

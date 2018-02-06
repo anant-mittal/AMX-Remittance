@@ -2,8 +2,9 @@ package com.amx.jax.postman.client;
 
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,7 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 @Component
 public class PostManClient implements PostManService {
 
-	private Logger log = Logger.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PostManClient.class);
 
 	{
 		Unirest.setObjectMapper(new ObjectMapper() {
@@ -57,6 +58,7 @@ public class PostManClient implements PostManService {
 
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
+		LOGGER.error("Sending SMS to", sms.getTo().get(0));
 		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
 				.header("content-type", "application/json").body(sms).asObject(SMS.class);
 		return response.getBody();
@@ -69,6 +71,7 @@ public class PostManClient implements PostManService {
 	}
 
 	public Email sendEmail(Email email) throws UnirestException {
+		LOGGER.error("Sending email to", email.getTo().get(0));
 		HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
 				.header("content-type", "application/json").body(email).asObject(Email.class);
 		return response.getBody();

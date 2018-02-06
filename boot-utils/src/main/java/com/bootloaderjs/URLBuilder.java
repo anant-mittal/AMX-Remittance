@@ -42,7 +42,7 @@ public class URLBuilder {
 	public String getURL() throws URISyntaxException, MalformedURLException {
 		URI uri;
 		if (connType == null) {
-			//uri = new URI(null, null, folders.toString(), params.toString(), null);
+			// uri = new URI(null, null, folders.toString(), params.toString(), null);
 			return host + folders.toString() + "?" + params.toString();
 		} else {
 			uri = new URI(connType, host, folders.toString(), params.toString(), null);
