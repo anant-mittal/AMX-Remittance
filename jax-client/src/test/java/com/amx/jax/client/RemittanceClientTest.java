@@ -57,24 +57,24 @@ public class RemittanceClientTest {
 	}
 
 	 @Test
-	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
-			RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
-		jaxMetaInfo.setTenant(Tenant.KWT2);
-		ApiResponse<RemittanceApplicationResponseModel> response = null;
-		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(318967));
-		request.setLocalAmount(new BigDecimal(100));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
-		request.setSrlId(new BigDecimal(48));
-		response = client.saveTransaction(request);
-		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
-		assertNotNull(response.getResult().getModelType());
-	}
+		public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
+				RemittanceTransactionValidationException, LimitExeededException {
+			jaxMetaInfo.setCountryId(new BigDecimal(91));
+			jaxMetaInfo.setCompanyId(new BigDecimal(1));
+			jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+			jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+			jaxMetaInfo.setTenant(Tenant.KWT);
+			ApiResponse<RemittanceApplicationResponseModel> response = null;
+			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+			request.setBeneId(new BigDecimal(132053));
+			request.setLocalAmount(new BigDecimal(100));
+			request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+			request.setSrlId(new BigDecimal(48));
+			response = client.saveTransaction(request);
+			assertNotNull("Response is null", response);
+			assertNotNull(response.getResult());
+			assertNotNull(response.getResult().getModelType());
+		}
 
 	// @Test
 	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,

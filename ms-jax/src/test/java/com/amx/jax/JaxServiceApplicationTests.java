@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.CryptoDao;
 import com.amx.jax.dal.LoyaltyInsuranceProDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -45,6 +46,9 @@ public class JaxServiceApplicationTests {
 	
 	@Autowired
 	VwLoyalityEncashRepository loyalityRepo;
+	
+	@Autowired
+	BizcomponentDao bizcomponentDao ; 
 	
 
 	// @Test
@@ -100,11 +104,15 @@ public class JaxServiceApplicationTests {
 	
 	/** Generate document seriality **/
 	
-	@Test
+	//@Test
 	public void getDocumentSeriality() {
 		System.out.println(beneSerive.getTodaysTransactionForBene(new BigDecimal(5218), new BigDecimal(1424)));
 	}
 	
+	@Test
+	public void bizcomponentDaoTest() {
+		System.out.println(bizcomponentDao.findCustomerTypeId("I"));
+	}
 	
 	
 	@Autowired
