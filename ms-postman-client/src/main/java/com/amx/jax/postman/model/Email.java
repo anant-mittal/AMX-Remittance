@@ -119,12 +119,4 @@ public class Email extends Message {
 		return toSplit;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "Email [from=" + from + ", replyTo=" + replyTo + ", to=" + to.toString() + ", cc=" + cc.toString() + ", isHtml=" + isHtml
-				+ ", files=" + files.toString() + "]";
-	}
 }
