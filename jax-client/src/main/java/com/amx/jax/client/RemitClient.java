@@ -117,6 +117,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			if (e instanceof AbstractException) {
 				throw e;
 			} else {
+				log.error("error in validateTransaction" , e);
 				throw new JaxSystemError();
 			}
 		} // end of try-catch

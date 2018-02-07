@@ -221,6 +221,8 @@ public class RemittanceTransactionManager {
 		exRatebreakUp
 				.setLcDecimalNumber(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber());
 		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
+		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedFCAmount(), 
+				exRatebreakUp.getFcDecimalNumber().intValue()));
 		exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setNetAmount(
