@@ -183,6 +183,8 @@ public class UserService extends AbstractUserService {
 				personinfo.setLastLoginTime(history.getLoginTime());
 			}
 			BeanUtils.copyProperties(personinfo, customer);
+			personinfo.setEmail(customer.getEmail());
+			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
 		}
@@ -208,10 +210,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
-			Map<String, Object> output = afterLoginSteps(onlineCust);
-			if (output.get("PERSON_INFO") != null) {
-				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-			}
+			 afterLoginSteps(onlineCust);
 		}
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
@@ -278,6 +277,9 @@ public class UserService extends AbstractUserService {
 		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
+		
+		userValidationService.validateCustomerLockCount(custDao.getOnlineCustByCustomerId(new BigDecimal(civilId)));
+		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		
 		try {
@@ -286,7 +288,7 @@ public class UserService extends AbstractUserService {
 			// reset sent token count
 			onlineCust.setTokenSentCount(BigDecimal.ZERO);
 		}
-		userValidationService.validateCustomerLockCount(onlineCust);
+		//userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());

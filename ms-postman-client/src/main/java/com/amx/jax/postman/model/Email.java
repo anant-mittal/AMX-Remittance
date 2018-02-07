@@ -118,4 +118,13 @@ public class Email extends Message {
 		String[] toSplit = toMultiple.split(",");
 		return toSplit;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Email [from=" + from + ", replyTo=" + replyTo + ", to=" + to + ", cc=" + cc + ", isHtml=" + isHtml
+				+ ", files=" + files + "]";
+	}
 }

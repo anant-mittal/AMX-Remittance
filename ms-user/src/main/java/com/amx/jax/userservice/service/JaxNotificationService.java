@@ -146,7 +146,7 @@ public class JaxNotificationService {
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
 		Email email = new Email();
 		email.setSubject(REG_SUC);
-		email.addTo(emailid);
+		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.REG_SUC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
