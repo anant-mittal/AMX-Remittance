@@ -275,10 +275,13 @@ public class UserService extends AbstractUserService {
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
+		if (customerId == null && civilId != null){
+			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
+		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		
-		logger.info("customerId is +"+customerId);
+		logger.info("customerId is --> "+customerId);
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustReg!=null) {
 			logger.info("validating customer lock count.");
