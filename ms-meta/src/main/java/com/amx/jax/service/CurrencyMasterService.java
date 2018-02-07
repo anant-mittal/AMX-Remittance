@@ -40,8 +40,6 @@ public class CurrencyMasterService extends AbstractService {
 	@Autowired
 	ConverterUtil converterUtil;
 	
-	public static List<CurrencyMasterModel> ALL_CURRENCY_LIST;
-
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
 	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
@@ -59,22 +57,6 @@ public class CurrencyMasterService extends AbstractService {
 
 	}
 
-	public void initializeCurrencyMaster() {
-		ALL_CURRENCY_LIST = currencyDao.findByisactive(ConstantDocument.Yes);
-	}
-
-	public CurrencyMasterModel getCurrencyMasterFromCache(BigDecimal currencyId) {
-		if (ALL_CURRENCY_LIST == null || ALL_CURRENCY_LIST.size() == 0) {
-			initializeCurrencyMaster();
-		}
-		CurrencyMasterModel output = null;
-		for (CurrencyMasterModel cm : ALL_CURRENCY_LIST) {
-			if (cm.getCurrencyId().equals(currencyId)) {
-				output = cm;
-			}
-		}
-		return output;
-	}
 
 	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
