@@ -43,6 +43,7 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private TemplateService templateService;
 
+	@Override
 	@Async
 	public Email sendEmail(Email email) throws UnirestException {
 		String to = null;
@@ -101,6 +102,7 @@ public class PostManServiceImpl implements PostManService {
 		return file;
 	}
 
+	@Override
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		String to = null;
@@ -125,9 +127,16 @@ public class PostManServiceImpl implements PostManService {
 		return slackService.sendNotification(msg);
 	}
 
+	@Override
 	@Async
-	public Message notifySlack(String to, Exception e) {
-		return slackService.sendNotification(to, e);
+	public Exception notifyException(String title, Exception e) {
+		return slackService.sendException(title, e);
+	}
+
+	@Override
+	@Async
+	public Message notifySlackAsync(Message msg) throws UnirestException {
+		return this.notifySlack(msg);
 	}
 
 	@Override
@@ -144,8 +153,8 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	@Async
-	public Message notifySlackAsync(Message msg) throws UnirestException {
-		return this.notifySlack(msg);
+	public Exception notifyExceptionAsync(String title, Exception e) {
+		return this.notifyException(title, e);
 	}
 
 	@Override
@@ -156,17 +165,6 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public JSONObject getMap(String url) throws UnirestException {
 		return null;
-	}
-
-	@Override
-	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(title, e);
-	}
-
-	@Override
-	@Async
-	public Exception notifyExceptionAsync(String title, Exception e) {
-		return this.notifyException(title, e);
 	}
 
 }
