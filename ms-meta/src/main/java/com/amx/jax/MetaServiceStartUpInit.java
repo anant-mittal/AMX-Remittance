@@ -4,14 +4,12 @@ import java.math.BigDecimal;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.dbmodel.JaxConfig;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.util.ConverterUtil;

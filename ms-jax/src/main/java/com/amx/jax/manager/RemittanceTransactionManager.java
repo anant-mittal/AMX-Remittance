@@ -36,7 +36,6 @@ import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
-import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;

@@ -1,6 +1,14 @@
 package com.amx.jax.logger.util;
 
-import static com.amx.jax.logger.util.ParameterName.*;
+import static com.amx.jax.logger.util.ParameterName.APP_NAME;
+import static com.amx.jax.logger.util.ParameterName.CURRENT_PAGE;
+import static com.amx.jax.logger.util.ParameterName.CUSTOMER_ID;
+import static com.amx.jax.logger.util.ParameterName.LOG_TYPE;
+import static com.amx.jax.logger.util.ParameterName.MESSAGE;
+import static com.amx.jax.logger.util.ParameterName.MODULE_NAME;
+import static com.amx.jax.logger.util.ParameterName.PRODUCT_ID;
+import static com.amx.jax.logger.util.ParameterName.SEARCH_TERM;
+import static com.amx.jax.logger.util.ParameterName.THREAD_NO;
 
 import java.util.ArrayList;
 import java.util.Arrays;

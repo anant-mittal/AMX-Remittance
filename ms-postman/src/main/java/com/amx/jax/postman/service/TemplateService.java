@@ -17,7 +17,6 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 

@@ -1,7 +1,5 @@
 package com.amx.jax.userservice.repository;
 
-import java.math.BigDecimal;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.repository.CrudRepository;

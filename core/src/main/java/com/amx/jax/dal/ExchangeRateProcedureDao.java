@@ -11,11 +11,7 @@ import javax.transaction.Transactional;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-
-import com.amx.amxlib.error.JaxError;
-import com.amx.jax.exception.GlobalException;
 
 @Component
 public class ExchangeRateProcedureDao {

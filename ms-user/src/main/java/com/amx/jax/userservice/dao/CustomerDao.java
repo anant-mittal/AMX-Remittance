@@ -14,7 +14,6 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;

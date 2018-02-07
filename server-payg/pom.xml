@@ -58,7 +58,7 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-ext-jar</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- OMAN-NET lib START -->
@@ -79,7 +79,7 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -95,7 +95,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${artifactId}-${version}-dev</finalName>
+				<finalName>${project.version}-dev</finalName>
 			</build>
 		</profile>
 		<profile>
@@ -111,7 +111,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${artifactId}-${version}-prod</finalName>
+				<finalName>${project.version}-prod</finalName>
 			</build>
 		</profile>
 	</profiles>

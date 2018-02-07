@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Message;

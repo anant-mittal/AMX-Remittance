@@ -6,6 +6,7 @@
 	<packaging>jar</packaging>
 	<name>client-logger</name>
 	<url>http://maven.apache.org</url>
+	<description>Common utils library for boot projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -23,26 +24,12 @@
 	<dependencies>
 
 		<!-- UNIREST DEPENDCY -->
-<!-- 		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpasyncclient</artifactId>
-			<version>4.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>4.3.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20140107</version>
-		</dependency> -->
+		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
+			<version>4.3.6</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
+			<artifactId>httpasyncclient</artifactId> <version>4.0.2</version> </dependency> 
+			<dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpmime</artifactId> 
+			<version>4.3.6</version> </dependency> <dependency> <groupId>org.json</groupId> 
+			<artifactId>json</artifactId> <version>20140107</version> </dependency> -->
 		<dependency>
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
@@ -56,8 +43,6 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-
-
 	</dependencies>
-	<description>Common utils library for boot projects</description>
+
 </project>

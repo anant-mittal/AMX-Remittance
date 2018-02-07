@@ -20,7 +20,6 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)

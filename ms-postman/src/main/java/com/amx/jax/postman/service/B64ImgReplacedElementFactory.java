@@ -1,8 +1,5 @@
 package com.amx.jax.postman.service;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
-
 import java.io.IOException;
 
 import org.w3c.dom.Element;
@@ -15,6 +12,9 @@ import org.xhtmlrenderer.pdf.ITextFSImage;
 import org.xhtmlrenderer.pdf.ITextImageElement;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
+
+import com.lowagie.text.BadElementException;
+import com.lowagie.text.Image;
 
 public class B64ImgReplacedElementFactory implements ReplacedElementFactory {
 

@@ -4,7 +4,6 @@
 
 	<artifactId>ms-postman</artifactId>
 	<packaging>jar</packaging>
-
 	<name>ms-postman</name>
 	<url>http://maven.apache.org</url>
 	<description>Common Notificationa nd Templating Service</description>

@@ -1,7 +1,5 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.exception.AbstractException;
-
 public class UserNotFoundException extends AbstractException {
 
 	public UserNotFoundException(String errorMessage) {

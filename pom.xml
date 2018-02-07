@@ -10,6 +10,12 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.5.8.RELEASE</version>
+	</parent>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
@@ -48,29 +54,31 @@
 		</plugins>
 	</build>
 
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.8.RELEASE</version>
-	</parent>
-
 	<modules>
 		<module>boot-utils</module>
 		<module>lib-ext-jar</module>
-		<module>amx-lib</module>
-		<module>core</module>
+
 		<module>client-logger</module>
 		<module>ms-logger</module>
+
+		<module>ms-postman-client</module>
+		<module>ms-postman</module>
+
+		<module>amx-lib</module>
+		<module>core</module>
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
 		<module>ms-jax</module>
-		<module>ms-postman-client</module>
-		<module>ms-postman</module>
 		<module>jax-client</module>
-		<module>server-ui</module>
-		<module>server-payg</module>
-		<module>server-admin</module>
+
 		<module>server-scheduler</module>
+
+		<module>server-payg</module>
+
+		<module>server-ui</module>
+
+		<module>server-admin</module>
+
 	</modules>
 </project>
