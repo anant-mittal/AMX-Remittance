@@ -66,7 +66,7 @@ public class PostManServiceImpl implements PostManService {
 			emailService.send(email);
 			LOGGER.info("Email sent to {}", to);
 		} catch (Exception e) {
-			this.notifySlack(to, e);
+			this.notifyException(to, e);
 		}
 		return email;
 	}
@@ -85,7 +85,7 @@ public class PostManServiceImpl implements PostManService {
 			file.setContent(templateService.processHtml(template, context));
 		} catch (Exception e) {
 			LOGGER.error("Template {}", template.getFileName(), e);
-			this.notifySlack(template.toString(), e);
+			this.notifyException(template.toString(), e);
 		}
 		try {
 			if (fileType == Type.PDF) {
@@ -95,7 +95,7 @@ public class PostManServiceImpl implements PostManService {
 				file.setName(template.getFileName() + ".html");
 			}
 		} catch (Exception e) {
-			this.notifySlack(template.toString(), e);
+			this.notifyException(template.toString(), e);
 		}
 		LOGGER.info("Template Generated sent to {}", template.toString());
 		return file;
@@ -114,7 +114,7 @@ public class PostManServiceImpl implements PostManService {
 			this.smsService.sendSMS(sms);
 			LOGGER.info("SMS sent to {}", to);
 		} catch (Exception e) {
-			this.notifySlack(to, e);
+			this.notifyException(to, e);
 		}
 		return sms;
 	}
