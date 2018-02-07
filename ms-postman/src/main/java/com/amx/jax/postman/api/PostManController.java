@@ -63,4 +63,10 @@ public class PostManController {
 		return msg;
 	}
 
+	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
+	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title)
+			throws UnirestException {
+		postManService.notifyException(title, eMsg);
+		return eMsg;
+	}
 }

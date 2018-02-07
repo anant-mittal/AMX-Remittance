@@ -1,6 +1,9 @@
 package com.amx.jax.postman.service;
 
 import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,5 +49,36 @@ public class SlackService {
 			LOGGER.error("NestedException ", e1);
 		}
 		return null;
+	}
+
+	public Exception sendException(String to, Exception e) {
+		LOGGER.error("Exception to=" + to, e);
+		try {
+			StackTraceElement[] traces = e.getStackTrace();
+
+			Map<String, Object> message = new HashMap<>();
+			message.put("text", String.format("%s = %s", to, URLEncoder.encode(e.getMessage(), "UTF-8")));
+
+			if (traces.length > 0 && traces[0].toString().length() > 0) {
+				Map<String, String> attachment = new HashMap<>();
+
+				StringBuilder tracetext = new StringBuilder();
+
+				for (StackTraceElement trace : traces) {
+					tracetext.append("\n" + trace.toString());
+				}
+
+				attachment.put("text", tracetext.toString());
+				attachment.put("color", "danger");
+				message.put("attachments", Collections.singletonList(attachment));
+			}
+
+			HttpResponse<String> response = Unirest.post(sendException).header("content-type", "application/json")
+					.body(message).asString();
+
+		} catch (Exception e1) {
+			LOGGER.error("NestedException ", e1);
+		}
+		return e;
 	}
 }

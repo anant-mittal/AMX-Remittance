@@ -17,11 +17,15 @@ public interface PostManService {
 
 	public Message notifySlack(Message msg) throws UnirestException;
 
+	public Exception notifyException(String title, Exception e);
+
 	public Email sendEmailAsync(Email email) throws UnirestException;
 
 	public SMS sendSMSAsync(SMS sms) throws UnirestException;
 
 	public Message notifySlackAsync(Message msg) throws UnirestException;
+
+	public Exception notifyExceptionAsync(String title, Exception e);
 
 	public File processTemplate(Templates template, Object data, File.Type fileType) throws UnirestException;
 

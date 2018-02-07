@@ -23,6 +23,7 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 import com.bootloaderjs.JsonUtil;
@@ -49,6 +50,17 @@ public class PostManControllerTest {
 	private ApplicationContext context;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
+
+	@RequestMapping(value = "exception")
+	public Message notifySlack() throws UnirestException {
+
+		try {
+			throw new Exception("Some Error");
+		} catch (Exception e) {
+			postManClient.notifyExceptionAsync("My Error", e);
+		}
+		return null;
+	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,

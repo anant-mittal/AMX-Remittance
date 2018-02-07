@@ -58,7 +58,7 @@ public class PostManClient implements PostManService {
 
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
-		LOGGER.error("Sending SMS to", sms.getTo().get(0));
+		LOGGER.info("Sending SMS to {} ", sms.getTo().get(0));
 		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
 				.header("content-type", "application/json").body(sms).asObject(SMS.class);
 		return response.getBody();
@@ -71,7 +71,7 @@ public class PostManClient implements PostManService {
 	}
 
 	public Email sendEmail(Email email) throws UnirestException {
-		LOGGER.error("Sending email to", email.getTo().get(0));
+		LOGGER.info("Sending email to {} ", email.getTo().get(0));
 		HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
 				.header("content-type", "application/json").body(email).asObject(Email.class);
 		return response.getBody();
@@ -129,6 +129,25 @@ public class PostManClient implements PostManService {
 			return response.getBody().getObject();
 		}
 		return null;
+	}
+
+	@Override
+	public Exception notifyException(String title, Exception e) {
+		LOGGER.info("Sending exception = {} ", title);
+		try {
+			HttpResponse<Exception> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK_EXCEP)
+					.header("content-type", "application/json").queryString("title", title).body(e)
+					.asObject(Exception.class);
+		} catch (UnirestException e1) {
+			LOGGER.error("title", e1);
+		}
+		return e;
+	}
+
+	@Override
+	@Async
+	public Exception notifyExceptionAsync(String title, Exception e) {
+		return this.notifyException(title, e);
 	}
 
 }
