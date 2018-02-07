@@ -217,10 +217,9 @@ public class RemittanceTransactionManager {
 		ExchangeRateBreakup exRatebreakUp = responseModel.getExRateBreakup();
 		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
-		exRatebreakUp.setFcDecimalNumber(
-				new BigDecimal(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecimalName()));
-		exRatebreakUp.setLcDecimalNumber(
-				new BigDecimal(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecimalName()));
+		exRatebreakUp.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecinalNumber());
+		exRatebreakUp
+				.setLcDecimalNumber(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber());
 		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
 		exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),
 				exRatebreakUp.getLcDecimalNumber().intValue()));
