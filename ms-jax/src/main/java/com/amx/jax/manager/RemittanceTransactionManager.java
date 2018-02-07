@@ -55,11 +55,13 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.RoundUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -129,6 +131,9 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private BizcomponentDao bizcomponentDao;
 
+	@Autowired
+	private CurrencyMasterService currencyMasterService;
+
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
@@ -182,6 +187,7 @@ public class RemittanceTransactionManager {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		}
 
+		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)) {
 			logger.info("recalculating comission for TT and routing countyr india");
 			commission = reCalculateComission(routingDetails, breakup);
@@ -202,8 +208,26 @@ public class RemittanceTransactionManager {
 				.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
 		setLoyalityPointIndicaters(responseModel);
+		applyRoudingLogic(responseModel);
 		return responseModel;
 
+	}
+
+	private void applyRoudingLogic(RemittanceTransactionResponsetModel responseModel) {
+		ExchangeRateBreakup exRatebreakUp = responseModel.getExRateBreakup();
+		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
+		exRatebreakUp.setFcDecimalNumber(
+				new BigDecimal(currencyMasterService.getCurrencyMasterFromCache(fcurrencyId).getDecimalName()));
+		exRatebreakUp.setLcDecimalNumber(
+				new BigDecimal(currencyMasterService.getCurrencyMasterFromCache(localCurrencyId).getDecimalName()));
+		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
+		exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),
+				exRatebreakUp.getLcDecimalNumber().intValue()));
+		exRatebreakUp.setNetAmount(
+				RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmount(), exRatebreakUp.getLcDecimalNumber().intValue()));
+		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
+				exRatebreakUp.getLcDecimalNumber().intValue()));
 	}
 
 	private BigDecimal reCalculateComission(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
@@ -412,7 +436,7 @@ public class RemittanceTransactionManager {
 
 		HashMap<String, Object> beneBankDetails = new HashMap<>();
 		beneBankDetails.put("P_APPLICATION_COUNTRY_ID", meta.getCountryId());
-		beneBankDetails.put("P_USER_TYPE", "I");
+		beneBankDetails.put("P_USER_TYPE", "ONLINE");
 		beneBankDetails.put("P_BENEFICIARY_COUNTRY_ID", beneficiary.getBenificaryCountry());
 		beneBankDetails.put("P_BENEFICIARY_BANK_ID", beneficiary.getBankId());
 		beneBankDetails.put("P_BENEFICIARY_BRANCH_ID", beneficiary.getBranchId());

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
@@ -38,6 +39,8 @@ public class CurrencyMasterService extends AbstractService {
 
 	@Autowired
 	ConverterUtil converterUtil;
+	
+	public static List<CurrencyMasterModel> ALL_CURRENCY_LIST;
 
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -54,6 +57,23 @@ public class CurrencyMasterService extends AbstractService {
 		response.getData().setType("currencyMaster");
 		return response;
 
+	}
+
+	public void initializeCurrencyMaster() {
+		ALL_CURRENCY_LIST = currencyDao.findByisactive(ConstantDocument.Yes);
+	}
+
+	public CurrencyMasterModel getCurrencyMasterFromCache(BigDecimal currencyId) {
+		if (ALL_CURRENCY_LIST == null || ALL_CURRENCY_LIST.size() == 0) {
+			initializeCurrencyMaster();
+		}
+		CurrencyMasterModel output = null;
+		for (CurrencyMasterModel cm : ALL_CURRENCY_LIST) {
+			if (cm.getCurrencyId().equals(currencyId)) {
+				output = cm;
+			}
+		}
+		return output;
 	}
 
 	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {

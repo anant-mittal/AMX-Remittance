@@ -22,6 +22,10 @@ public class ExchangeRateBreakup {
 	
 	BigDecimal netAmountWithoutLoyality;
 	
+	BigDecimal lcDecimalNumber;
+	
+	BigDecimal fcDecimalNumber;
+	
 	public BigDecimal getRate() {
 		return rate;
 	}
@@ -68,6 +72,22 @@ public class ExchangeRateBreakup {
 
 	public void setNetAmountWithoutLoyality(BigDecimal netAmountWithoutLoyality) {
 		this.netAmountWithoutLoyality = netAmountWithoutLoyality;
+	}
+
+	public BigDecimal getFcDecimalNumber() {
+		return fcDecimalNumber;
+	}
+
+	public void setFcDecimalNumber(BigDecimal fcDecimalNumber) {
+		this.fcDecimalNumber = fcDecimalNumber;
+	}
+
+	public BigDecimal getLcDecimalNumber() {
+		return lcDecimalNumber;
+	}
+
+	public void setLcDecimalNumber(BigDecimal lcDecimalNumber) {
+		this.lcDecimalNumber = lcDecimalNumber;
 	}
 
 }
