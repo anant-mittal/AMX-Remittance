@@ -124,7 +124,7 @@ public class Email extends Message {
 	 */
 	@Override
 	public String toString() {
-		return "Email [from=" + from + ", replyTo=" + replyTo + ", to=" + to + ", cc=" + cc + ", isHtml=" + isHtml
-				+ ", files=" + files + "]";
+		return "Email [from=" + from + ", replyTo=" + replyTo + ", to=" + to.toString() + ", cc=" + cc.toString() + ", isHtml=" + isHtml
+				+ ", files=" + files.toString() + "]";
 	}
 }
