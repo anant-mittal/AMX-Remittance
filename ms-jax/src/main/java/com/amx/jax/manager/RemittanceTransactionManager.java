@@ -188,12 +188,11 @@ public class RemittanceTransactionManager {
 			commission = reCalculateComission(routingDetails, breakup);
 			logger.info("commission: " + commission);
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
+			breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		}
 		if (commission == null) {
 			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
-		} else {
-			breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		}
 		// commission
 		responseModel.setTxnFee(commission);
