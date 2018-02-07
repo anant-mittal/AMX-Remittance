@@ -55,6 +55,7 @@ public class JaxNotificationService {
 		email.addFile(file);
 
 		try {
+			logger.info("Email parameters are : "+email.toString());
 			postManService.sendEmail(email);
 		} catch (UnirestException e) {
 			logger.error("error in sendTransactionNotification", e);
@@ -97,6 +98,7 @@ public class JaxNotificationService {
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		try {
+			logger.info("Email parameters are : "+email.toString());
 			postManService.sendEmail(email);
 		} catch (UnirestException e) {
 			logger.error("error in sendProfileChangedNotification", e);
@@ -135,6 +137,7 @@ public class JaxNotificationService {
 		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
 
 		try {
+			logger.info("Email parameters are : "+email.toString());
 			postManService.sendEmail(email);
 			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
 		} catch (UnirestException e) {
@@ -150,6 +153,13 @@ public class JaxNotificationService {
 		email.setTemplate(Templates.REG_SUC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
+		
+		try {
+			logger.info("Email parameters are : "+email.toString());
+			postManService.sendEmail(email);
+		} catch (UnirestException e) {
+			logger.error("error in sendOtpEmail", e);
+		}
 	}
 
 	@Async
