@@ -278,10 +278,13 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		
+		logger.info("customerId is +"+customerId);
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustReg!=null) {
 			logger.info("validating customer lock count.");
 			userValidationService.validateCustomerLockCount(onlineCustReg);
+		}else {
+			logger.info("onlineCustReg is null");
 		}
 		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
