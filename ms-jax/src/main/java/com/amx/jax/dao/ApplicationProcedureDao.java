@@ -292,75 +292,7 @@ public class ApplicationProcedureDao {
 		return addtionalProcValues;
 	}
 
-	/**
-	 * 
-	 * @param inputValue
-	 * @return
-	 */
-	@Transactional
-	public Map<String, Object> getRoutingBankSetupDetails(HashMap<String, String> inputValue) {
-
-		logger.info("EX_GET_ROUTING_SET_UP_OTH IN VALUES :" + inputValue.toString());
-
-		Map<String, Object> output = null;
-
-		try {
-			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
-					new SqlParameter(Types.VARCHAR), // 2
-					new SqlParameter(Types.NUMERIC), // 3
-					new SqlParameter(Types.NUMERIC), // 4
-					new SqlParameter(Types.NUMERIC), // 5
-					new SqlParameter(Types.VARCHAR), // 6
-					new SqlParameter(Types.NUMERIC), // 7
-					new SqlParameter(Types.VARCHAR), // 8
-					new SqlParameter(Types.NUMERIC), // 9
-					new SqlOutParameter("P_SERVICE_MASTER_ID", Types.NUMERIC), // 10
-					new SqlOutParameter("P_ROUTING_COUNTRY_ID", Types.NUMERIC), // 11
-					new SqlOutParameter("P_ROUTING_BANK_ID", Types.NUMERIC), // 12
-					new SqlOutParameter("P_ROUTING_BANK_BRANCH_ID", Types.NUMERIC), // 13
-					new SqlOutParameter("P_REMITTANCE_MODE_ID", Types.NUMERIC), // 14
-					new SqlOutParameter("P_DELIVERY_MODE_ID", Types.NUMERIC), // 15
-					new SqlOutParameter("P_BENEFICIARY_SWIFT_BANK1", Types.VARCHAR), // 16
-					new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR) // 17
-			);
-
-			output = jdbcTemplate.call(new CallableStatementCreator() {
-				@Override
-				public CallableStatement createCallableStatement(Connection con) throws SQLException {
-					String proc = "{call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}";
-					CallableStatement cs = con.prepareCall(proc);
-					cs.setBigDecimal(1, new BigDecimal(inputValue.get("P_APPLICATION_COUNTRY_ID")));
-					cs.setString(2, inputValue.get("P_USER_TYPE"));
-					cs.setBigDecimal(3, new BigDecimal(inputValue.get("P_BENE_COUNTRY_ID")));
-					cs.setBigDecimal(4, new BigDecimal(inputValue.get("P_BENE_BANK_ID")));
-					cs.setBigDecimal(5, new BigDecimal(inputValue.get("P_BENE_BANK_BRANCH_ID")));
-					cs.setString(6, inputValue.get("P_BENE_BANK_ACCOUNT"));
-					cs.setBigDecimal(7, new BigDecimal(inputValue.get("P_CUSTOMER_ID")));
-					cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE"));
-					cs.setBigDecimal(9, new BigDecimal(inputValue.get("P_CURRENCY_ID")));
-					// Out Parameters
-					cs.registerOutParameter(10, java.sql.Types.INTEGER);
-					cs.registerOutParameter(11, java.sql.Types.INTEGER);
-					cs.registerOutParameter(12, java.sql.Types.INTEGER);
-					cs.registerOutParameter(13, java.sql.Types.INTEGER);
-					cs.registerOutParameter(14, java.sql.Types.INTEGER);
-					cs.registerOutParameter(15, java.sql.Types.INTEGER);
-					cs.registerOutParameter(16, java.sql.Types.VARCHAR);
-					cs.registerOutParameter(17, java.sql.Types.VARCHAR);
-					cs.execute();
-					return cs;
-				}
-
-			}, declareInAndOutputParameters);
-
-			logger.info("EX_GET_ROUTING_SET_UP_OTH Out put Parameters :" + output.toString());
-
-		} catch (DataAccessException e) {
-			e.printStackTrace();
-			logger.info("Out put Parameters :" + e.getMessage());
-		}
-		return output;
-	}
+	
 
 	/**
 	 * 
@@ -924,37 +856,55 @@ public class ApplicationProcedureDao {
 			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.NUMERIC));
 		}
 
-		Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
-			@Override
-			public CallableStatement createCallableStatement(Connection con) throws SQLException {
+		Connection connection = null;
+		Map<String, Object> output = new HashMap<>();
+		try {
+			connection = connectionProvider.getDataSource().getConnection();
 
-				String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
-				CallableStatement cs = con.prepareCall(proc);
-				// In Parameters
-				cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
-				cs.setString(2, inputValue.get("P_USER_TYPE").toString());
-				cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
-				cs.setBigDecimal(4, (BigDecimal) inputValue.get("P_BENEFICIARY_BANK_ID"));
-				cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
-				//cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-				cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT")==null?null:inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-				cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
-				cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
-				cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
-				// Parameters
-				cs.registerOutParameter(10, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(11, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(12, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(13, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(14, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(15, java.sql.Types.NUMERIC);
-				cs.registerOutParameter(16, java.sql.Types.VARCHAR);
-				cs.registerOutParameter(17, java.sql.Types.VARCHAR);
-				cs.execute();
-				return cs;
+			String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+			CallableStatement cs = connection.prepareCall(proc);
+			// In Parameters
+			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
+			cs.setString(2, inputValue.get("P_USER_TYPE").toString());
+			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
+			cs.setBigDecimal(4, (BigDecimal) inputValue.get("P_BENEFICIARY_BANK_ID"));
+			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
+			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
+					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
+			cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
+			// Parameters
+			cs.registerOutParameter(10, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(11, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(13, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(14, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(16, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(17, java.sql.Types.VARCHAR);
+			cs.execute();
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(10));
+			output.put("P_ROUTING_COUNTRY_ID", cs.getBigDecimal(11));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(12));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(13));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(14));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(15));
+			output.put("P_SWIFT", cs.getString(16));
+			output.put("P_ERROR_MESSAGE", cs.getString(17));
+		} catch (DataAccessException | SQLException e) {
+			logger.error("error in generate docNo", e);
+			logger.info("Out put Parameters :" + e.getMessage());
+		} finally {
+			if (connection != null) {
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
 			}
-
-		}, ouptutParams);
+		}
 
 		logger.info("Out put Parameters :" + output.toString());
 
