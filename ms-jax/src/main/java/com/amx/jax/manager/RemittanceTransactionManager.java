@@ -188,13 +188,19 @@ public class RemittanceTransactionManager {
 		}
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
-		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)) {
-			logger.info("recalculating comission for TT and routing countyr india");
-			commission = reCalculateComission(routingDetails, breakup);
-			logger.info("commission: " + commission);
-			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
-			breakup = getExchangeRateBreakup(exchangeRates, model, commission);
+		logger.info("recalculating comission ");
+		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
+		logger.info("newCommission: " + newCommission);
+		if(newCommission != null) {
+			commission = newCommission;
 		}
+	
+		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)
+				&& newCommission == null) {
+			logger.info("recalculating del mode for TT and routing countyr india");
+			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
+		}
+		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		if (commission == null) {
 			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
