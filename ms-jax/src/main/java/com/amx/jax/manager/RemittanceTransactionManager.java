@@ -181,7 +181,7 @@ public class RemittanceTransactionManager {
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, commission);
-		validateTransactionAmount(breakup.getConvertedLCAmount());
+		validateTransactionAmount(breakup.getNetAmount());
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
