@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -87,7 +88,7 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void sendOtpForMobileUpdate() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -101,5 +102,17 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
+	//@Test
+		public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+			jaxMetaInfo.setCountryId(new BigDecimal(91));
+			jaxMetaInfo.setCompanyId(new BigDecimal(1));
+			jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+			jaxMetaInfo.setCustomerId(new BigDecimal(5128));
+			ApiResponse<CustomerModel> response = null;
+
+			response = client.login("289053104436", "Amx@1234");
+			assertNotNull("Response is null", response);
+			assertNotNull(response.getResult());
+		}
 	
 }

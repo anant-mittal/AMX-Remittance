@@ -301,9 +301,11 @@ public class UserClient extends AbstractJaxServiceClient {
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		try {
 			ResponseEntity<ApiResponse<CustomerModel>> response = null;
-			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			String loginCustUrl = this.getBaseUrl() + USER_API_ENDPOINT + "/login/?userId=" + loginId + "&password="
-					+ password;
+			CustomerModel cmodel=new CustomerModel();
+			cmodel.setLoginId(loginId);
+			cmodel.setPassword(password);
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>( cmodel, getHeader());
+			String loginCustUrl = this.getBaseUrl() + USER_API_ENDPOINT + "/login/";
 			log.info("calling login api: " + loginCustUrl);
 			response = restTemplate.exchange(loginCustUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
