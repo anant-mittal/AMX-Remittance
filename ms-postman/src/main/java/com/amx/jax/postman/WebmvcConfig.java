@@ -36,8 +36,9 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
-		messageSource.setBasename("classpath:i18n/messages");
+		messageSource.setBasename("classpath:i18ns/messages");
 		messageSource.setCacheSeconds(3600); // refresh cache once per hour
+		messageSource.setDefaultEncoding("UTF-8");
 		return messageSource;
 	}
 
