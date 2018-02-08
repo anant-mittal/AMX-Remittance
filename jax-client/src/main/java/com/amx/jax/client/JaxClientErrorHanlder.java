@@ -140,7 +140,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.ID_PROOFS_IMAGES_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
-			if (JaxError.OTP_EXPIERED.getCode().equals(error.getErrorId())) {
+			if (JaxError.OTP_EXPIRED.getCode().equals(error.getErrorId())) {
 				iscustValidationError = true;
 			}
 			if (JaxError.INCORRECT_LENGTH.getCode().equals(error.getErrorId())) {

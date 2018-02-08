@@ -452,7 +452,7 @@ public class UserValidationService {
 			long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 			long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 			if (tokenTimeinMins > otpValidTimeInMins) {
-				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIERED.getCode());
+				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
 			}
 		}
 	}
