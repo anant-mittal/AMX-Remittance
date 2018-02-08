@@ -31,7 +31,7 @@ public class UserController {
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
 	public ApiResponse loginUser(@RequestParam String userId, @RequestParam String password) {
-		logger.debug("loginUser Request: usreid: " + userId + " pssword: " + password);
+		logger.info("loginUser Request: usreid: " + userId + " pssword: " + password);
 		ApiResponse response = userService.loginUser(userId, password);
 		return response;
 	}

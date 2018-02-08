@@ -1,6 +1,8 @@
 
 package com.amx.jax.ui.api;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +16,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HttpService;
+import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDevice;
 import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.JsonUtil;
@@ -34,6 +39,12 @@ public class HomeController {
 
 	@Autowired
 	private UserDevice userDevice;
+
+	@Autowired
+	private SessionService sessionService;
+	
+	@Autowired
+	HttpService httpService;
 
 	private long checkTime = 0L;
 	private String versionNew = "_";
@@ -58,6 +69,20 @@ public class HomeController {
 			}
 		}
 		return versionNew;
+	}
+
+	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
+	@ResponseBody
+	public String loginPing(HttpServletRequest request) {
+		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
+		Integer hits = sessionService.getGuestSession().hitCounter();
+		userDevice.getDeviceType();
+		wrapper.getData().hits = hits;
+		wrapper.getData().domain = request.getRequestURL().toString();
+		wrapper.getData().requestUri = request.getRequestURI();
+		wrapper.getData().remoteAddr = httpService.getIPAddress();
+		wrapper.getData().device = userDevice.toMap();
+		return JsonUtil.toJson(wrapper);
 	}
 
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })

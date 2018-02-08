@@ -21,6 +21,16 @@ public class GuestSession implements Serializable {
 
 	private static final long serialVersionUID = -8825493107883952226L;
 
+	private String nextToken = null;
+
+	public String getNextToken() {
+		return nextToken;
+	}
+
+	public void setNextToken(String nextToken) {
+		this.nextToken = nextToken;
+	}
+
 	private Integer hits = 0;
 
 	public Integer getHits() {

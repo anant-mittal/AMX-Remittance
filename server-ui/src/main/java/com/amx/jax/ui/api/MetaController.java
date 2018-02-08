@@ -72,15 +72,12 @@ public class MetaController {
 		return wrapper;
 	}
 
-	@ApiOperation(value = "Ping")
-	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/pub/ping", method = { RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
 			HttpServletRequest request, Device device) throws UnirestException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-
 		userDevice.getDeviceType();
-
 		wrapper.getData().debug = env.isDebug();
 		wrapper.getData().id = httpSession.getId();
 		wrapper.getData().hits = hits;
@@ -90,39 +87,9 @@ public class MetaController {
 		wrapper.getData().remoteHost = request.getRemoteHost();
 		wrapper.getData().remoteAddr = httpService.getIPAddress();
 		wrapper.getData().remoteAddr = request.getRemoteAddr();
-
 		wrapper.getData().localAddress = request.getLocalAddr();
-
 		wrapper.getData().scheme = request.getScheme();
-
 		wrapper.getData().device = userDevice.toMap();
-		wrapper.getData().onlineConfigurationDto = null;
-		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
-
-		Email email = new Email();
-		email.addTo("lalit.tanwar07@gmail.com");
-		email.setObject(wrapper);
-
-		email.setSubject("Test Email");
-		email.setTemplate(Templates.RESET_OTP);
-		email.setHtml(true);
-
-		File file = new File();
-		file.setTemplate(Templates.RESET_OTP);
-		file.setObject(wrapper);
-		file.setType(File.Type.PDF);
-		email.addFile(file);
-
-		postManService.sendEmail(email);
-
-		/*
-		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
-		 * 
-		 * hits = mapCustomers.get("hits"); if (hits == null) { hits = 0; }
-		 * 
-		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
-		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
-		 */
 		return wrapper;
 	}
 
