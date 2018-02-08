@@ -46,11 +46,11 @@ public abstract class AbstractJaxServiceClient {
 			info.setLanguageId(jaxMetaInfo.getLanguageId());
 			info.setCountryBranchId(jaxMetaInfo.getCountryBranchId());
 			info.setTenant(jaxMetaInfo.getTenant());
-			log.info("device ip" + jaxMetaInfo.getDeviceIp());
+			log.info("device ip  ---> " + jaxMetaInfo.getDeviceIp());
 			info.setDeviceId(jaxMetaInfo.getDeviceId());
 			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
 			info.setTenant(jaxMetaInfo.getTenant());
-			log.info("Tenant id: " + jaxMetaInfo.getTenant());
+			log.info("Tenant id --> " + jaxMetaInfo.getTenant());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 			log.error("error in getheader of jaxclient", e);

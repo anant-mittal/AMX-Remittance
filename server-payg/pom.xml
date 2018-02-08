@@ -95,7 +95,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${project.version}-dev</finalName>
+				<finalName>${project.name}-${project.version}-dev</finalName>
 			</build>
 		</profile>
 		<profile>
@@ -111,7 +111,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${project.version}-prod</finalName>
+				<finalName>${project.name}-${project.version}-prod</finalName>
 			</build>
 		</profile>
 	</profiles>
