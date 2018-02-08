@@ -195,7 +195,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 			ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
 			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
-
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
 					getHeader());
 
