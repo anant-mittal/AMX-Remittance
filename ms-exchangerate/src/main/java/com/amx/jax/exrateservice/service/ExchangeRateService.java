@@ -28,6 +28,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
@@ -67,6 +68,9 @@ public class ExchangeRateService extends AbstractService {
 
 	@Autowired
 	private CurrencyMasterDao currencyMasterDao;
+	
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
 
 	@Override
 	public String getModelType() {
@@ -90,9 +94,10 @@ public class ExchangeRateService extends AbstractService {
 			}
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
+			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
-					countryBranchId, toCurrencyMaster.getCountryId());
+					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
 			filterNonMinServiceIdRates(allExchangeRates);
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(
 					allExchangeRates, pips, bankId);

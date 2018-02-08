@@ -98,7 +98,7 @@ public class ExchangeRateProcedureDao {
 		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class, currencyid);
 		} catch (Exception e) {
-			logger.info("error in getCommission", e);
+			logger.info("error in getBankIdsForExchangeRates", e);
 		}
 
 		return list;

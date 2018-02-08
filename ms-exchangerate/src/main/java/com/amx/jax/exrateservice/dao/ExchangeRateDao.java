@@ -16,9 +16,9 @@ public class ExchangeRateDao {
 	private ExchangeRateApprovalDetRepository repo;
 
 	public List<ExchangeRateApprovalDetModel> getExchangeRates(BigDecimal currencyId, BigDecimal countryBranchId,
-			BigDecimal countryId) {
+			BigDecimal countryId, List<BigDecimal> bankIds) {
 
-		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId);
+		List<ExchangeRateApprovalDetModel> exchangeRates = repo.getExchangeRates(currencyId, countryBranchId, bankIds);
 		return exchangeRates;
 	}
 
