@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,6 +21,7 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
@@ -114,5 +117,21 @@ public class UserClientTest {
 			assertNotNull("Response is null", response);
 			assertNotNull(response.getResult());
 		}
+	
+	@Test
+	public void validateSecurityQuestions() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		ApiResponse response = null;
+
+		SecurityQuestionModel model = new SecurityQuestionModel(new BigDecimal(2),"tests");
+		List<SecurityQuestionModel> securityquestions = Arrays.asList(model);
+		
+		response = client.validateSecurityQuestions(securityquestions);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
 	
 }
