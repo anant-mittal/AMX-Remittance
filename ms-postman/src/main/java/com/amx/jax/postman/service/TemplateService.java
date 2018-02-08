@@ -67,7 +67,8 @@ public class TemplateService {
 	private LocaleResolver localeResolver;
 
 	private Locale getLocal() {
-		return new Locale("ar_KW"); //localeResolver.resolveLocale(request);
+		// return localeResolver.resolveLocale(request);
+		return new Locale("ar_KW");
 	}
 
 	@Autowired
@@ -86,7 +87,7 @@ public class TemplateService {
 			templateUtils.reverseFlag(true);
 		}
 
-		log.info("======"+ getLocal().toString() +"======" + reverse + "   " + templateUtils.reverseFlag());
+		log.info("======" + getLocal().toString() + "======" + reverse + "   " + templateUtils.reverseFlag());
 
 		Context context = new Context(getLocal());
 		context.setVariable("_tu", templateUtils);
