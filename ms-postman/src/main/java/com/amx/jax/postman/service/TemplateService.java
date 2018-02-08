@@ -67,8 +67,8 @@ public class TemplateService {
 	private LocaleResolver localeResolver;
 
 	private Locale getLocal() {
-		// return localeResolver.resolveLocale(request);
-		return new Locale("ar-kw");
+		return localeResolver.resolveLocale(request);
+		//return new Locale("ar-kw");
 	}
 
 	@Autowired
