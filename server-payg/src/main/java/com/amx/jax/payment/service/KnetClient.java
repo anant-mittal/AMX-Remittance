@@ -73,7 +73,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("action", knetAction);
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
-		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/KWT/");
+		configMap.put("responseUrl", knetCallbackUrl + "/app/capture/KNET/"+payGParams.getTenant()+"/");
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 
