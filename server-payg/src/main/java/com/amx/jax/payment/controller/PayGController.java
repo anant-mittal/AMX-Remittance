@@ -57,7 +57,7 @@ public class PayGController {
 			payGSession.setCallback(callback);
 		}
 
-		log.info(String.format("Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",trckid,amount,docNo,tnt.getCode(),pg));
+		log.info(String.format("Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",trckid,amount,docNo,tnt,pg));
 
 		PayGClient payGClient = payGClients.getPayGClient(pg, tnt);
 
@@ -81,6 +81,7 @@ public class PayGController {
 	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode) {
 		TenantContextHolder.setCurrent(tnt);
+		log.info("Inside capture method with parameters tenant : "+tnt+" paygCode : "+paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode, tnt);
 		return payGClient.capture(model);
 	}
