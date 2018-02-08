@@ -1,13 +1,18 @@
 package com.amx.jax.postman.service;
 
+import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.PostManService;
@@ -43,14 +48,30 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private TemplateService templateService;
 
-	@Override
+	@Autowired
+	private HttpServletRequest request;
+
+	@Value("${jax.lang.default}")
+	private String defaultLang;
+
+	@Autowired
+	private LocaleResolver localeResolver;
+
+	public Locale getLocale() {
+		String lang = localeResolver.resolveLocale(request).toString();
+		if (lang == null) {
+			lang = "en_KW";
+		}
+		return new Locale(lang);
+	}
+
 	@Async
 	public Email sendEmail(Email email) throws UnirestException {
 		String to = null;
 		try {
 			to = email.getTo().get(0);
 			if (email.getTemplate() != null) {
-				Context context = new Context();
+				Context context = new Context(getLocale());
 				context.setVariables(email.getModel());
 				if (email.isHtml()) {
 					email.setMessage(templateService.processHtml(email.getTemplate(), context));
@@ -80,25 +101,37 @@ public class PostManServiceImpl implements PostManService {
 
 	public File processTemplate(Templates template, Map<String, Object> map, Type fileType) {
 		File file = new File();
-		Context context = new Context();
-		context.setVariables(map);
+		file.setTemplate(template);
+		file.setType(fileType);
+		file.setModel(map);
+
 		try {
-			file.setContent(templateService.processHtml(template, context));
-		} catch (Exception e) {
-			LOGGER.error("Template {}", template.getFileName(), e);
-			this.notifyException(template.toString(), e);
-		}
-		try {
-			if (fileType == Type.PDF) {
-				file.setName(template.getFileName() + ".pdf");
-				pdfService.convert(file);
-			} else {
-				file.setName(template.getFileName() + ".html");
-			}
+			return fileService.create(file);
 		} catch (Exception e) {
 			this.notifyException(template.toString(), e);
 		}
 		LOGGER.info("Template Generated sent to {}", template.toString());
+
+		//
+		// Context context = new Context(getLocale());
+		// context.setVariables(map);
+		// try {
+		// file.setContent(templateService.processHtml(template, context));
+		// } catch (Exception e) {
+		// LOGGER.error("Template {}", template.getFileName(), e);
+		// this.notifySlack(e);
+		// }
+		// try {
+		// if (fileType == Type.PDF) {
+		// file.setName(template.getFileName() + ".pdf");
+		// pdfService.convert(file);
+		// } else {
+		// file.setName(template.getFileName() + ".html");
+		// }
+		// } catch (Exception e) {
+		// this.notifySlack(e);
+		// }
+
 		return file;
 	}
 
@@ -109,7 +142,7 @@ public class PostManServiceImpl implements PostManService {
 		try {
 			to = sms.getTo().get(0);
 			if (sms.getTemplate() != null) {
-				Context context = new Context();
+				Context context = new Context(getLocale());
 				context.setVariables(sms.getModel());
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}

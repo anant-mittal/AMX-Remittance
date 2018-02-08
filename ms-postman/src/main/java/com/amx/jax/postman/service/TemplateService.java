@@ -1,18 +1,23 @@
 package com.amx.jax.postman.service;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.LocaleResolver;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -52,6 +57,22 @@ public class TemplateService {
 		return rawStr;
 	}
 
+	@Autowired
+	private HttpServletRequest request;
+
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private LocaleResolver localeResolver;
+
+	private Locale getLocal() {
+		return localeResolver.resolveLocale(request);
+	}
+
+	@Autowired
+	TemplateUtils templateUtils;
+
 	/**
 	 * Parses file.template and creates content;
 	 * 
@@ -59,7 +80,16 @@ public class TemplateService {
 	 * @return
 	 */
 	public File process(File file) {
-		Context context = new Context();
+		String reverse = messageSource.getMessage("flag.reverse.char", null, getLocal());
+
+		if (("true".equalsIgnoreCase(reverse)) && file.getType() == File.Type.PDF) {
+			templateUtils.reverseFlag(true);
+		}
+
+		log.info("======"+ getLocal().toString() +"======" + reverse + "   " + templateUtils.reverseFlag());
+
+		Context context = new Context(getLocal());
+		context.setVariable("_tu", templateUtils);
 		context.setVariables(file.getModel());
 		String content = this.processHtml(file.getTemplate(), context);
 		file.setContent(content);

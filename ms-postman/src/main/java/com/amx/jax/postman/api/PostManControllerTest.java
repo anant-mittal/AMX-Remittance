@@ -3,6 +3,7 @@ package com.amx.jax.postman.api;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.LocaleResolver;
 
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
@@ -40,6 +43,7 @@ public class PostManControllerTest {
 	@Autowired
 	private HttpServletResponse response;
 
+
 	@Value("${jax.postman.url}")
 	private String postmanUrl;
 
@@ -48,6 +52,15 @@ public class PostManControllerTest {
 
 	@Autowired
 	private ApplicationContext context;
+
+	@Autowired
+	private HttpServletRequest request;
+	
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private LocaleResolver localeResolver;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
@@ -70,12 +83,15 @@ public class PostManControllerTest {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
+		//LOGGER.info("====={}", messageSource.getMessage("sender.details", null, localeResolver.resolveLocale(request)));
+
+		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 		if ("pdf".equals(ext)) {
-			File file = this.processTemplate(template, map, File.Type.PDF);
+			File file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = this.processTemplate(template, map, null);
+			File file = postManClient.processTemplate(template, map, null);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);

@@ -11,6 +11,8 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface PostManService {
 
+	public static final String PARAM_LANG = "lang";
+
 	public Email sendEmail(Email email) throws UnirestException;
 
 	public SMS sendSMS(SMS sms) throws UnirestException;

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.LocaleResolver;
 
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
@@ -33,6 +34,7 @@ public class PostManController {
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE, method = RequestMethod.POST)
 	public File processTemplate(@RequestParam Templates template, @RequestParam(required = false) String data,
 			@RequestParam(required = false) String fileName, @RequestParam(required = false) File.Type fileType) {
+
 		File file = null;
 		try {
 			file = postManService.processTemplate(template, JsonUtil.fromJson(data, Map.class), fileType);

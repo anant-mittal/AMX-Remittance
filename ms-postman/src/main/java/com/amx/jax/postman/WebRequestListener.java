@@ -1,4 +1,4 @@
-package com.amx.jax.ui.config;
+package com.amx.jax.postman;
 
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;

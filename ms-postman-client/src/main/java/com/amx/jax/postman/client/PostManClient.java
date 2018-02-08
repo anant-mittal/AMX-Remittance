@@ -17,6 +17,8 @@ import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.bootloaderjs.ArgUtil;
+import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
@@ -56,10 +58,18 @@ public class PostManClient implements PostManService {
 
 	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
+	public void setLang(String lang) {
+		ContextUtil.map().put(PARAM_LANG, lang);
+	}
+
+	public String getLang() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(PARAM_LANG));
+	}
+
 	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		LOGGER.info("Sending SMS to {} ", sms.getTo().get(0));
-		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
+		HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS).queryString(PARAM_LANG, getLang())
 				.header("content-type", "application/json").body(sms).asObject(SMS.class);
 		return response.getBody();
 	}
@@ -73,7 +83,8 @@ public class PostManClient implements PostManService {
 	public Email sendEmail(Email email) throws UnirestException {
 		LOGGER.info("Sending email to {} ", email.getTo().get(0));
 		HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
-				.header("content-type", "application/json").body(email).asObject(Email.class);
+				.queryString(PARAM_LANG, getLang()).header("content-type", "application/json").body(email)
+				.asObject(Email.class);
 		return response.getBody();
 	}
 
@@ -85,7 +96,8 @@ public class PostManClient implements PostManService {
 
 	public Message notifySlack(Message msg) throws UnirestException {
 		HttpResponse<Message> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)
-				.header("accept", "application/json").header("Content-Type", "application/json")
+				.queryString(PARAM_LANG, getLang()).header("accept", "application/json")
+				.header("Content-Type", "application/json")
 
 				.body(msg).asObject(Message.class);
 		return response.getBody();
@@ -100,6 +112,7 @@ public class PostManClient implements PostManService {
 	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws UnirestException {
 		HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
+				.queryString(PARAM_LANG, getLang())
 				// .header("content-type", "application/json")
 				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(data))
 				.field("fileType", fileType).asObject(File.class);
