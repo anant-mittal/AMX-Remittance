@@ -36,7 +36,6 @@ public class JaxNotificationService {
 
 	private final String SUBJECT_ACCOUNT_UPDATE="Account Update";
 	
-	@Async
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
 		logger.info("Sending txn notification to customer");
@@ -53,23 +52,18 @@ public class JaxNotificationService {
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
-
-		try {
-			logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
-			postManService.sendEmail(email);
-		} catch (UnirestException e) {
-			logger.error("error in sendTransactionNotification", e);
-		}
+		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+		sendEmail(email);
 	}
 
 	// to send profile (password, security question, image, mobile) change
 	// notification
-	@Async
 	public void sendProfileChangeNotificationEmail(CustomerModel customerModel, PersonInfo pinfo) {
 
 		logger.info("Sending Profile change notification to customer : " + pinfo.getFirstName());
 
 		Email email = new Email();
+		Email emailToOld = null;
 
 		if (customerModel.getPassword() != null) {
 			email.setSubject("Change Password Success");
@@ -90,22 +84,26 @@ public class JaxNotificationService {
 		} else if (customerModel.getEmail() != null) {
 			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+			
+			emailToOld=new Email();
+			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
+			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
+			emailToOld.addTo(customerModel.getEmail());
+			emailToOld.setTemplate(Templates.PROFILE_CHANGE);
+			emailToOld.setHtml(true);
+			emailToOld.getModel().put(RESP_DATA_KEY, pinfo);
+			logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+			sendEmail(emailToOld);
 		}
 
 		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
-
-		try {
-			logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
-			postManService.sendEmail(email);
-		} catch (UnirestException e) {
-			logger.error("error in sendProfileChangedNotification", e);
-		}
+		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
-	@Async
 	public void sendOtpSms(PersonInfo pinfo, CivilIdOtpModel model) {
 
 		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", pinfo.getFirstName(),
@@ -124,7 +122,6 @@ public class JaxNotificationService {
 		}
 	} // end of sendOtpSms
 
-	@Async
 	public void sendOtpEmail(PersonInfo pinfo, CivilIdOtpModel civilIdOtpModel) {
 
 		logger.info("Sending OTP Email to customer : " + pinfo.getFirstName());
@@ -136,16 +133,12 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
 		
-		try {
-			logger.info("Email to - "+pinfo.getEmail()+" first name : "+civilIdOtpModel.getFirstName());
-			postManService.sendEmail(email);
-			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
-		} catch (UnirestException e) {
-			logger.error("error in sendOtpEmail", e);
-		}
+		logger.info("Email to - "+pinfo.getEmail()+" first name : "+civilIdOtpModel.getFirstName());
+		sendEmail(email);
+		sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
+		
 	}// end of sendOtpEmail
 
-	@Async
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
 		Email email = new Email();
 		email.setSubject(REG_SUC);
@@ -154,15 +147,10 @@ public class JaxNotificationService {
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 		
-		try {
-			logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
-			postManService.sendEmail(email);
-		} catch (UnirestException e) {
-			logger.error("error in sendOtpEmail", e);
-		}
+		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+		sendEmail(email);
 	}
 
-	@Async
 	public void sendToSlack(String channel, String prefix, String otp) {
 		Message msg = new Message();
 		msg.setMessage(String.format("%s = %s-%s", channel, prefix, otp));
@@ -170,6 +158,14 @@ public class JaxNotificationService {
 			postManService.notifySlack(msg);
 		} catch (UnirestException e) {
 			logger.error("error in SlackNotify", e);
+		}
+	}
+	
+	private void sendEmail(Email email) {
+		try {
+			postManService.sendEmail(email);
+		} catch (UnirestException e) {
+			logger.error("error in sendProfileChangedNotification", e);
 		}
 	}
 

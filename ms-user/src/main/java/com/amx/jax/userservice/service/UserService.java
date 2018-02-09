@@ -196,6 +196,7 @@ public class UserService extends AbstractUserService {
 		if (customerId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
+		Customer cust = custDao.getCustById(customerId);
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
@@ -216,6 +217,11 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 
+		//this is to send email on OLD email id
+		if (model.getEmail() != null) {
+			model.setEmail(cust.getEmail());
+		}
+			
 		if (isNewUserRegistrationSuccess(model, onlineCust)) {
 			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
 					onlineCust.getEmail());
