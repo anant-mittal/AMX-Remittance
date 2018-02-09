@@ -99,7 +99,7 @@ public class JaxNotificationService {
 				e.printStackTrace();
 			}
 			oldPinfo.setEmail(customerModel.getEmail());
-			emailToOld.getModel().put(RESP_DATA_KEY, pinfo);
+			emailToOld.getModel().put(RESP_DATA_KEY, oldPinfo);
 			logger.info("Email change notification to - "+oldPinfo.getFirstName()+" on email id : "+oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
@@ -171,7 +171,7 @@ public class JaxNotificationService {
 	
 	private void sendEmail(Email email) {
 		try {
-			postManService.sendEmail(email);
+			postManService.sendEmailAsync(email);
 		} catch (UnirestException e) {
 			logger.error("error in sendProfileChangedNotification", e);
 		}
