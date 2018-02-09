@@ -212,7 +212,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setDocumentNo(
 				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
-		remittanceApplication.setWuIpAddress(metaData.getDeviceId());
+		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
