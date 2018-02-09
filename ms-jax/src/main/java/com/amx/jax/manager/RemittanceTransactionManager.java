@@ -188,9 +188,8 @@ public class RemittanceTransactionManager {
 		}
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
-		logger.info("recalculating comission ");
 		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
-		logger.info("newCommission: " + newCommission);
+		
 		if(newCommission != null) {
 			commission = newCommission;
 		}
@@ -238,6 +237,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private BigDecimal reCalculateComission(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+		logger.info("recalculating comission ");
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
@@ -246,6 +246,7 @@ public class RemittanceTransactionManager {
 			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
 			comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
 		}
+		logger.info("newCommission: " + comission);
 		return comission;
 	}
 
