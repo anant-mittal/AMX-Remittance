@@ -91,8 +91,16 @@ public class JaxNotificationService {
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setTemplate(Templates.PROFILE_CHANGE);
 			emailToOld.setHtml(true);
+			
+			PersonInfo oldPinfo=null;
+			try {
+				oldPinfo = (PersonInfo)pinfo.clone();
+			} catch (CloneNotSupportedException e) {
+				e.printStackTrace();
+			}
+			oldPinfo.setEmail(customerModel.getEmail());
 			emailToOld.getModel().put(RESP_DATA_KEY, pinfo);
-			logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+			logger.info("Email change notification to - "+oldPinfo.getFirstName()+" on email id : "+oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
 

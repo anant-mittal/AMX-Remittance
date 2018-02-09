@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 
-public class PersonInfo extends AbstractModel {
+public class PersonInfo extends AbstractModel implements Cloneable {
 
 	private String title;
 	private String firstName;
@@ -142,5 +142,9 @@ public class PersonInfo extends AbstractModel {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
 }
