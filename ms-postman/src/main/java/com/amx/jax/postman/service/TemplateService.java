@@ -34,16 +34,14 @@ public class TemplateService {
 	@Autowired
 	private ApplicationContext context;
 
-	private TemplateEngine customTemplateEngine;
-	
 	@Autowired
 	private TemplateEngine templateEngine;
 
 	@Autowired
 	private TemplateEngine textTemplateEngine;
-	
+
 	@Autowired
-	TemplateService(TemplateEngine templateEngine){
+	TemplateService(TemplateEngine templateEngine) {
 		templateEngine.addDialect(new HelloDialect());
 	}
 
@@ -76,11 +74,10 @@ public class TemplateService {
 
 	private Locale getLocal() {
 		return localeResolver.resolveLocale(request);
-		//return new Locale("ar-kw");
 	}
 
 	@Autowired
-	TemplateUtils templateUtils;
+	private TemplateUtils templateUtils;
 
 	/**
 	 * Parses file.template and creates content;
@@ -92,13 +89,15 @@ public class TemplateService {
 		String reverse = messageSource.getMessage("flag.reverse.char", null, getLocal());
 
 		if (("true".equalsIgnoreCase(reverse)) && file.getType() == File.Type.PDF) {
-			templateUtils.reverseFlag(true);
+			TemplateUtils.reverseFlag(true);
 		}
 
-		log.info("======" + getLocal().toString() + "======" + reverse + "   " + templateUtils.reverseFlag());
+		log.info("======" + getLocal().toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
 
 		Context context = new Context(getLocal());
+
 		context.setVariable("_tu", templateUtils);
+
 		context.setVariables(file.getModel());
 		String content = this.processHtml(file.getTemplate(), context);
 		file.setContent(content);

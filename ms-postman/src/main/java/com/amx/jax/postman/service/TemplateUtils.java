@@ -11,9 +11,9 @@ import com.bootloaderjs.ContextUtil;
 @Component
 public class TemplateUtils {
 
-	private Logger log = Logger.getLogger(getClass());
+	private static Logger log = Logger.getLogger(TemplateUtils.class);
 
-	public void reverseFlag(boolean set) {
+	public static void reverseFlag(boolean set) {
 		ContextUtil.map().put("reverseflag", true);
 	}
 

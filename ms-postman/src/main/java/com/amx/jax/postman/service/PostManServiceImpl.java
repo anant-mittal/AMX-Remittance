@@ -40,9 +40,6 @@ public class PostManServiceImpl implements PostManService {
 	private SlackService slackService;
 
 	@Autowired
-	private PdfService pdfService;
-
-	@Autowired
 	private FileService fileService;
 
 	@Autowired
