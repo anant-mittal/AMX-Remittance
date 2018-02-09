@@ -17,8 +17,6 @@ import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
@@ -59,11 +57,11 @@ public class PostManClient implements PostManService {
 	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
 	public void setLang(String lang) {
-		ContextUtil.map().put(PARAM_LANG, lang);
+		// ContextUtil.map().put(PARAM_LANG, lang);
 	}
 
 	public String getLang() {
-		return ArgUtil.parseAsString(ContextUtil.map().get(PARAM_LANG));
+		return null;// ArgUtil.parseAsString(ContextUtil.map().get(PARAM_LANG));
 	}
 
 	@Async
