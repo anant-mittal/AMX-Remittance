@@ -61,16 +61,17 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
-	//@Test
+	@Test
 	public void saveEmail() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(239));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
 		ApiResponse<CustomerModel> response = null;
-		String email = "viki.sangnai@almullagroup.com";
-		String mOtp="527911";
-		String eOtp="181341";
+		String email = "viki.sangani@almullagroup.com";
+		//String email = "viki.sangani@gmail.com";
+		String mOtp="046961";
+		String eOtp="672142";
 		response = client.saveEmail(email, mOtp, eOtp);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
@@ -118,7 +119,7 @@ public class UserClientTest {
 			assertNotNull(response.getResult());
 		}
 	
-	@Test
+	//@Test
 	public void validateSecurityQuestions() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
