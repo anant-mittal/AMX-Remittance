@@ -21,6 +21,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
@@ -33,11 +34,18 @@ public class TemplateService {
 	@Autowired
 	private ApplicationContext context;
 
+	private TemplateEngine customTemplateEngine;
+	
 	@Autowired
 	private TemplateEngine templateEngine;
 
 	@Autowired
 	private TemplateEngine textTemplateEngine;
+	
+	@Autowired
+	TemplateService(TemplateEngine templateEngine){
+		templateEngine.addDialect(new HelloDialect());
+	}
 
 	public String processHtml(Templates template, Context context) {
 		String rawStr = templateEngine.process(template.getFileName(), context);
