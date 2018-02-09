@@ -26,6 +26,7 @@ import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
+import com.amx.jax.util.DBUtil;
 
 @Component
 public class ApplicationProcedureDao {
@@ -165,10 +166,11 @@ public class ApplicationProcedureDao {
 
 		Map<String, Object> output = new HashMap<>();
 		Connection connection = null;
+		CallableStatement cs = null;
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
 			String proc = "{call EX_TO_GEN_NEXT_DOC_SERIAL_NO(?,?,?,?,?,?,?,?,?)}";
-			CallableStatement cs = connection.prepareCall(proc);
+			cs = connection.prepareCall(proc);
 			cs.setBigDecimal(1, applCountryId);
 			cs.setBigDecimal(2, branchId);
 			cs.setBigDecimal(3, companyId);
@@ -189,13 +191,7 @@ public class ApplicationProcedureDao {
 			logger.error("error in generate docNo", e);
 			logger.info("Out put Parameters :" + e.getMessage());
 		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			DBUtil.closeResources(cs, connection);
 		}
 		return output;
 	}
@@ -857,12 +853,13 @@ public class ApplicationProcedureDao {
 		}
 
 		Connection connection = null;
+		CallableStatement cs = null;
 		Map<String, Object> output = new HashMap<>();
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
 
 			String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
-			CallableStatement cs = connection.prepareCall(proc);
+			cs = connection.prepareCall(proc);
 			// In Parameters
 			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
 			cs.setString(2, inputValue.get("P_USER_TYPE").toString());
@@ -897,13 +894,7 @@ public class ApplicationProcedureDao {
 			logger.error("error in generate docNo", e);
 			logger.info("Out put Parameters :" + e.getMessage());
 		} finally {
-			if (connection != null) {
-				try {
-					connection.close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
+			DBUtil.closeResources(cs, connection);
 		}
 
 		logger.info("Out put Parameters :" + output.toString());
