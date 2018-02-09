@@ -65,7 +65,7 @@ public class PostManServiceImpl implements PostManService {
 		return new Locale(lang);
 	}
 
-	@Async
+	@Override
 	public Email sendEmail(Email email) throws UnirestException {
 		String to = null;
 		try {
@@ -73,11 +73,7 @@ public class PostManServiceImpl implements PostManService {
 			if (email.getTemplate() != null) {
 				Context context = new Context(getLocale());
 				context.setVariables(email.getModel());
-				if (email.isHtml()) {
-					email.setMessage(templateService.processHtml(email.getTemplate(), context));
-				} else {
-					email.setMessage(templateService.processText(email.getTemplate(), context));
-				}
+				email.setMessage(this.processTemplate(email.getTemplate(), email.getModel(), null).getContent());
 			}
 
 			if (email.getFiles() != null && email.getFiles().size() > 0) {
@@ -111,32 +107,10 @@ public class PostManServiceImpl implements PostManService {
 			this.notifyException(template.toString(), e);
 		}
 		LOGGER.info("Template Generated sent to {}", template.toString());
-
-		//
-		// Context context = new Context(getLocale());
-		// context.setVariables(map);
-		// try {
-		// file.setContent(templateService.processHtml(template, context));
-		// } catch (Exception e) {
-		// LOGGER.error("Template {}", template.getFileName(), e);
-		// this.notifySlack(e);
-		// }
-		// try {
-		// if (fileType == Type.PDF) {
-		// file.setName(template.getFileName() + ".pdf");
-		// pdfService.convert(file);
-		// } else {
-		// file.setName(template.getFileName() + ".html");
-		// }
-		// } catch (Exception e) {
-		// this.notifySlack(e);
-		// }
-
 		return file;
 	}
 
 	@Override
-	@Async
 	public SMS sendSMS(SMS sms) throws UnirestException {
 		String to = null;
 		try {
@@ -155,7 +129,6 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	@Async
 	public Message notifySlack(Message msg) throws UnirestException {
 		return slackService.sendNotification(msg);
 	}

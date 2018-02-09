@@ -26,7 +26,7 @@ public class PdfService {
 			if (file.getContent() != null && !Constants.BLANK.equals(file.getContent())) {
 				ITextRenderer renderer = new ITextRenderer();
 				renderer.getFontResolver().addFont("/fonts/arialuni.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-				renderer.getFontResolver().addFont("/fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				//renderer.getFontResolver().addFont("/fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 				renderer.getFontResolver().addFont("/fonts/arialbold.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
 				renderer.setDocumentFromString(file.getContent());
