@@ -115,8 +115,8 @@ public class KnetClient implements PayGClient {
 			if (pipeValue != e24PaymentPipe.SUCCESS) {
 				responseMap.put("errorMsg", pipe.getErrorMsg());
 				responseMap.put("debugMsg", pipe.getDebugMsg());
-				log.info(pipe.getErrorMsg());
-				log.info(pipe.getDebugMsg());
+				log.info("KNET-ERROR" + pipe.getErrorMsg());
+				log.info("KNET-DEBUg" + pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
 			} else {
 				log.info(pipe.getDebugMsg());

@@ -30,6 +30,7 @@ public enum Tenant {
 		mapping.put("app-dev", KWT);
 		mapping.put("app-devq", KWT2);
 		mapping.put("app-devb", BRN);
+		mapping.put("appq-kwt", KWT2);
 
 		for (Tenant site : Tenant.values()) {
 			mapping.put(site.toString().toLowerCase(), site);

@@ -1,22 +1,20 @@
 package com.amx.jax.client;
 
-import java.net.URL;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.scope.Tenant;
-import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.client.config.JaxConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public abstract class AbstractJaxServiceClient {
+
+	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
 
 	@Autowired
 	protected RestTemplate restTemplate;
@@ -25,14 +23,12 @@ public abstract class AbstractJaxServiceClient {
 	protected JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
-	@Qualifier("base_url")
-	private URL baseUrl;
+	JaxConfig jaxConfig;
 
 	public String getBaseUrl() {
-		return baseUrl.toString();
+		log.info("getBaseUrl:BASE URL IS BEING READ");
+		return jaxConfig.getSpServiceUrl(); // jaxServiceUrl.toString();
 	}
-
-	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
 
 	protected HttpHeaders getHeader() {
 
