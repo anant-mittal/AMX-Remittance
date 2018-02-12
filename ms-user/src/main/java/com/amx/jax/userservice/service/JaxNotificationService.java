@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -16,6 +15,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.config.AppConfig;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
@@ -31,6 +31,9 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
+
+	@Autowired
+	private AppConfig appConfig;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -125,7 +128,9 @@ public class JaxNotificationService {
 
 		try {
 			postManService.sendSMS(sms);
-			sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
+			if (!appConfig.isProdMode()) {
+				sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
+			}
 		} catch (UnirestException e) {
 			logger.error("error in sendOtpSms", e);
 		}
@@ -144,7 +149,10 @@ public class JaxNotificationService {
 
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + civilIdOtpModel.getFirstName());
 		sendEmail(email);
-		sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
+
+		if (!appConfig.isProdMode()) {
+			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
+		}
 
 	}// end of sendOtpEmail
 

@@ -8,6 +8,13 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 public class AppConfig {
 
+	@Value("${app.prod}")
+	private Boolean prodMode;
+
+	public Boolean isProdMode() {
+		return prodMode;
+	}
+
 	@Value("${app.swagger}")
 	private Boolean swaggerEnabled;
 
