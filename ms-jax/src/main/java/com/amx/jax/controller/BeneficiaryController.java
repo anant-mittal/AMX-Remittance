@@ -30,12 +30,13 @@ import com.amx.jax.util.ConverterUtil;
 @RestController
 @RequestMapping(BENE_API_ENDPOINT)
 public class BeneficiaryController {
-	private Logger logger = LoggerFactory.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(BeneficiaryController.class);
+	private static final String RELATIONSHIP_ID = "Relationship Id :";
+	private static final String CUSTOMER_ID = "Customer Id :";
 	
 	@Autowired
 	BeneficiaryService beneService;
-	
-	
+		
 	@Autowired
 	AccountTypeService accountTypeService;
 	
@@ -44,15 +45,14 @@ public class BeneficiaryController {
 	
 	@Autowired
 	MetaData metaData;
-
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
-		logger.info("userType :"+channel.name()+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
-		ApiResponse response =null;
+		LOGGER.info("userType :"+channel.name()+"\t customerId :"+customerId+"\t applicationCountryId :"+applicationCountryId+"\t beneCountryId :"+beneCountryId);
+		ApiResponse response;
 		if(channel!=null && channel.equals(JaxChannel.BRANCH)) {
 			response = beneService.getBeneficiaryListForBranch(customerId, applicationCountryId,beneCountryId);
 		}else {
@@ -60,21 +60,14 @@ public class BeneficiaryController {
 		}
 		return response;
 	}
-
-
-	
-
-	
-	
 	
 	@RequestMapping(value = "/benecountry/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryCountryListResponse() {
 		BigDecimal customerId = metaData.getCustomerId();
-		BigDecimal applicationCountryId = metaData.getCountryId();
 		JaxChannel channel = metaData.getChannel();
 		
-		logger.info("userType :"+channel+"\t customerId :"+customerId);
-		ApiResponse response ;
+		LOGGER.info("userType :"+channel+"\t customerId :"+customerId);
+		ApiResponse response;
 		if(channel!=null && channel.equals(JaxChannel.BRANCH)) {
 		 response = beneService.getBeneficiaryCountryListForBranch(customerId);
 		}else {
@@ -82,10 +75,6 @@ public class BeneficiaryController {
 		}
 		return response;
 	}
-	
-	
-	
-	
 	
 	/**
 	 * to get default beneficiary bene id and tran id is optional.
@@ -98,14 +87,14 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/defaultbene/", method = RequestMethod.POST)
 	public ApiResponse defaultBeneficiary(@RequestParam(required=false,value="beneRelationId") BigDecimal beneRelationId,
 			@RequestParam(required=false,value="transactionId") BigDecimal transactionId) {
-		logger.info("Bene disable method Trnx Report:");
-		ApiResponse response = null;
+		LOGGER.info("Bene disable method Trnx Report:");
+		ApiResponse response=null;
 		try {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		logger.info("Relation ship Id :" + beneRelationId);
-		logger.info("customerId Id :" + customerId);
-		logger.info("applicationCountryId  :" + applicationCountryId);
+		LOGGER.info( RELATIONSHIP_ID + beneRelationId);
+		LOGGER.info(CUSTOMER_ID + customerId);
+		LOGGER.info("applicationCountryId  :" + applicationCountryId);
 		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,transactionId);
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -120,13 +109,13 @@ public class BeneficiaryController {
 	
 	@RequestMapping(value = "/favouritebenelist/", method = RequestMethod.GET)
 	public ApiResponse favouriteBeneficiary() {
-		logger.info("getFavouriteBeneficiaryList controller :");
+		LOGGER.info("getFavouriteBeneficiaryList controller :");
 		ApiResponse response = null;
 		try {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		logger.info("favouritebene customerId Id :" + customerId);
-		logger.info("favouritebene applicationCountryId  :" + applicationCountryId);
+		LOGGER.info("favouritebene customerId Id :" + customerId);
+		LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
 		response= beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -134,13 +123,11 @@ public class BeneficiaryController {
 		return response;
 	}
 	
-	
-	
 	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
 	public ApiResponse beneDisable(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,@RequestParam("remarks") String remarks) {
-		logger.info("Bene disable method Trnx Report:");
+		LOGGER.info("Bene disable method Trnx Report:");
 		
-		ApiResponse response = null;
+		ApiResponse response;
 		
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
@@ -148,82 +135,50 @@ public class BeneficiaryController {
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		logger.info("Relation ship Id :" + beneDetails.getCustomerId());
-		logger.info("Relation ship Id :" + beneDetails.getBeneficiaryRelationShipSeqId());
-		logger.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
-		logger.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
+		LOGGER.info(CUSTOMER_ID + beneDetails.getCustomerId());
+		LOGGER.info(RELATIONSHIP_ID + beneDetails.getBeneficiaryRelationShipSeqId());
+		LOGGER.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
+		LOGGER.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
 		response= beneService.disableBeneficiary(beneDetails);
 		return response;
 	}
 
 	@RequestMapping(value = "/favoritebeneupdate/", method = RequestMethod.POST)
 	public ApiResponse favoriteBeneUpdate(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId) {
-		logger.info("Bene disable method Trnx Report:");
-		ApiResponse response = null;
+		LOGGER.info("Bene disable method Trnx Report:");
+		ApiResponse response;
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
 		//beneDetails.setBeneficiaryRelationShipSeqId(beneRelSeqId);
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
-		logger.info("Relation ship Id :" + beneDetails.getCustomerId());
-		logger.info("Relation ship Id :" + beneDetails.getBeneficiaryRelationShipSeqId());
-		logger.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
-		logger.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
+		LOGGER.info(CUSTOMER_ID + beneDetails.getCustomerId());
+		LOGGER.info(RELATIONSHIP_ID + beneDetails.getBeneficiaryRelationShipSeqId());
+		LOGGER.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
+		LOGGER.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
 		response= beneService.updateFavoriteBeneficiary(beneDetails);
 		return response;
 	}
 	
-	
-	
-	
-	
-	
 	@RequestMapping(value = "/beneupdate/", method = RequestMethod.POST)
 	public ApiResponse getBeneUpdate(@RequestBody String jsonBeneDTO) {
-		logger.info("getRemittanceDetailForReport Trnx Report:");
+		LOGGER.info("getRemittanceDetailForReport Trnx Report:");
 		BeneficiaryListDTO beneficiaryDto = (BeneficiaryListDTO) converterUtil.unmarshall(jsonBeneDTO, BeneficiaryListDTO.class);
-		logger.info("Bene Master Id :" + beneficiaryDto.getBeneficaryMasterSeqId());
-		logger.info("Bene Rela Seq Id :" + beneficiaryDto.getBeneficiaryRelationShipSeqId());
-		logger.info("Bene Account Length :" + beneficiaryDto.getBeneficiaryAccountSeqId());
-		logger.info("Customer Id :" + beneficiaryDto.getCustomerId() + "\t Reference :"+ beneficiaryDto.getServiceGroupId());
-		logger.info("Country Id :" + beneficiaryDto.getApplicationCountryId() + "\t Currency Id :"+ beneficiaryDto.getCurrencyId());
+		LOGGER.info("Bene Master Id :" + beneficiaryDto.getBeneficaryMasterSeqId());
+		LOGGER.info("Bene Rela Seq Id :" + beneficiaryDto.getBeneficiaryRelationShipSeqId());
+		LOGGER.info("Bene Account Length :" + beneficiaryDto.getBeneficiaryAccountSeqId());
+		LOGGER.info(CUSTOMER_ID + beneficiaryDto.getCustomerId() + "\t Reference :"+ beneficiaryDto.getServiceGroupId());
+		LOGGER.info("Country Id :" + beneficiaryDto.getApplicationCountryId() + "\t Currency Id :"+ beneficiaryDto.getCurrencyId());
 		ApiResponse response = beneService.beneficiaryUpdate(beneficiaryDto);
 		return response;
 	}
-
-	
-	
 	
 	@RequestMapping(value = "/accounttype/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryAccountType(@RequestParam("countryId") BigDecimal countryId) {
-		logger.info("getBeneficiaryAccountType countryId :"+countryId);
-		ApiResponse response =null;
+		LOGGER.info("getBeneficiaryAccountType countryId :"+countryId);
+		ApiResponse response;
 		 response = accountTypeService.getAccountTypeFromView(countryId);
 		return response;
 	}
-	
-	
-	
-	
-	
-	
-	/*@RequestMapping(value = "/benecheck/", method = RequestMethod.POST)
-	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonBeneDTO) {
-		logger.info("getRemittanceDetailForReport Trnx Report:");
-		BeneficiaryListDTO beneficiaryDto = (BeneficiaryListDTO) converterUtil.unmarshall(jsonBeneDTO, BeneficiaryListDTO.class);
-		logger.info("Bene Master Id :" + beneficiaryDto.getBeneficaryMasterSeqId());
-		logger.info("Bene Rela Seq Id :" + beneficiaryDto.getBeneficiaryRelationShipSeqId());
-		logger.info("Bene Account Length :" + beneficiaryDto.getBeneficiaryAccountSeqId());
-		logger.info("Customer Id :" + beneficiaryDto.getCustomerId() + "\t Reference :"
-				+ beneficiaryDto.getServiceGroupId());
-		logger.info("Country Id :" + beneficiaryDto.getApplicationCountryId() + "\t Currency Id :"
-				+ beneficiaryDto.getCurrencyId());
-
-		//ApiResponse response = reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
-		//return response;
-	}
-
-	*/
-	
 	
 }

@@ -86,8 +86,8 @@ public class RemittanceProcedureDao implements Serializable{
 			e.printStackTrace();
 		}finally {
 			try {
-				
-				connection.close();
+				if (connection!=null)
+					connection.close();
 			}catch(Exception ee) {
 				ee.printStackTrace();
 			}
@@ -132,7 +132,8 @@ public class RemittanceProcedureDao implements Serializable{
 			e.printStackTrace();
 		}finally {
 			try {
-				connection.close();
+				if (connection!=null)
+					connection.close();
 			}catch(Exception ee) {
 				ee.printStackTrace();
 			}

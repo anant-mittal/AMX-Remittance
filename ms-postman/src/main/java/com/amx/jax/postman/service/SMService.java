@@ -27,7 +27,7 @@ public class SMService {
 
 		String phone = sms.getTo().get(0);
 
-		if (phone != null & phone.length() == 10) {
+		if (phone != null && phone.length() == 10) {
 			HttpResponse<String> response = Unirest.post(remoteUrl).header("authkey", authKey)
 					.header("content-type", "application/json")
 					.body(String.format(
@@ -35,7 +35,7 @@ public class SMService {
 							senderId, route, sms.toText(), sms.getTo().get(0)))
 					.asString();
 			logger.info("SMS Sent   " + response.getBody());
-		} else if (phone != null & phone.length() == 8) {
+		} else if (phone != null && phone.length() == 8) {
 			HttpResponse<String> response = Unirest
 					.post("https://applications2.almullagroup.com/Login_Enhanced/LoginEnhancedServlet")
 					// .header("content-type", "application/json")
