@@ -36,13 +36,12 @@ public class CustomerController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@RequestMapping(method = RequestMethod.POST)
-	public ApiResponse saveCust(@RequestBody String json) {
-		logger.debug("saveCust Request:" + json);
-		CustomerModel model = (CustomerModel) converterUtil.unmarshall(json, CustomerModel.class);
-		ApiResponse response = userSerivce.saveCustomer(model);
+	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
+		logger.debug("saveCust Request:" + customerModel);
+		ApiResponse response = userSerivce.saveCustomer(customerModel);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
 		logger.debug("saveCust Request:" + customerModel.toString());
@@ -63,7 +62,7 @@ public class CustomerController {
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
-		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel, null,null);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, channel, null, null);
 		return response;
 	}
 
@@ -76,14 +75,15 @@ public class CustomerController {
 
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
-			@RequestParam(name="eOtp", required=false) String eOtp) {
+			@RequestParam(name = "eOtp", required = false) String eOtp) {
 		logger.debug("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
 		ApiResponse response = userSerivce.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
 
 	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
-	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp, @RequestParam(name="eOtp", required=false) String eOtp) {
+	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp,
+			@RequestParam(name = "eOtp", required = false) String eOtp) {
 		logger.debug("validateOtp Request:" + " mOtp:" + mOtp + " eOtp:" + eOtp);
 		ApiResponse response = userSerivce.validateOtp(null, mOtp, eOtp);
 		return response;
@@ -131,41 +131,42 @@ public class CustomerController {
 		ApiResponse response = userSerivce.deactivateCustomer();
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
 	public ApiResponse sendResetEmailCredentialsOtp(@RequestBody CustomerModel custModel) {
 		logger.debug("send Request:civilId" + custModel.toString());
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
-		
-		if (custModel.getMobile()!=null) {
-			logger.info("Validating mobile for client id : "+custModel.getCustomerId());
-		    userSerivce.validateMobile(custModel);
+
+		if (custModel.getMobile() != null) {
+			logger.info("Validating mobile for client id : " + custModel.getCustomerId());
+			userSerivce.validateMobile(custModel);
 		}
-		
-		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel,null);
+
+		ApiResponse response = userSerivce.sendOtpForCivilId(custModel.getIdentityId(), channel, custModel, null);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in unlockCustomer Request ");
 		ApiResponse response = userSerivce.unlockCustomer(civilid);
 		return response;
-	}	
-	
+	}
+
 	@RequestMapping(value = "/deactivate/{civilid}", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
 		logger.debug("in deActivateCustomer Request ");
 		ApiResponse response = userSerivce.deactivateCustomer(civilid);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
-	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,@PathVariable("init-registration") Boolean init) {
+	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,
+			@PathVariable("init-registration") Boolean init) {
 		logger.debug("initRegistrationSendOtp Request:civilId" + civilId);
-		ApiResponse response = userSerivce.sendOtpForCivilId(civilId,null,null,init);
+		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, null, null, init);
 		return response;
 	}
 }

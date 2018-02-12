@@ -67,7 +67,7 @@ import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.WebUtils;
 import com.bootloaderjs.Random;
 
@@ -85,7 +85,7 @@ public class UserService extends AbstractUserService {
 	private CryptoUtil cryptoUtil;
 
 	@Autowired
-	private Util util;
+	private JaxUtil util;
 
 	@Autowired
 	private WebUtils webutil;

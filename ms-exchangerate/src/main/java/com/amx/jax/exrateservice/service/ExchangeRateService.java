@@ -40,7 +40,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -64,7 +64,7 @@ public class ExchangeRateService extends AbstractService {
 	private MetaData meta;
 
 	@Autowired
-	Util util;
+	JaxUtil util;
 
 	@Autowired
 	private CurrencyMasterDao currencyMasterDao;

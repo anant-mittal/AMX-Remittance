@@ -41,7 +41,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -284,14 +284,14 @@ public class BeneficiaryService extends AbstractService {
 			} else {
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
 				System.out.println("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
-				if (beneDto != null && !Util.isNullZeroBigDecimalCheck(transactionId)
-						&& (Util.isNullZeroBigDecimalCheck(beneRealtionId)
-								|| Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
+				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
+						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
+								|| JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
 					trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
-				} else if (beneDto != null && Util.isNullZeroBigDecimalCheck(transactionId)
-						&& Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
+				} else if (beneDto != null && JaxUtil.isNullZeroBigDecimalCheck(transactionId)
+						&& JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)) {
 					trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId, transactionId);
-				} else if (beneDto != null && Util.isNullZeroBigDecimalCheck(transactionId)) {
+				} else if (beneDto != null && JaxUtil.isNullZeroBigDecimalCheck(transactionId)) {
 					trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
 				}
 

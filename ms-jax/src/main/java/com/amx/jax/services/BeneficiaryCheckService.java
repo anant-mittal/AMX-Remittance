@@ -42,7 +42,7 @@ import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -103,7 +103,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		String errorDesc = null;
 
 		System.out.println("beneDto :" + beneDto.isUpdateNeeded());
-		if (!Util.isNullZeroBigDecimalCheck(beneDto.getLanguageId())) {
+		if (!JaxUtil.isNullZeroBigDecimalCheck(beneDto.getLanguageId())) {
 			beneDto.setLanguageId(new BigDecimal(1));
 		}
 
@@ -130,7 +130,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBeneficaryMasterSeqId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficaryMasterSeqId())) {
 			List<BeneficaryRelationship> beneRelationship = beneficiaryRelationshipDao.getBeneRelationshipByBeneMasterId(beneDto.getBeneficaryMasterSeqId(), beneDto.getCustomerId());
 			if (beneRelationship.isEmpty()) {
 
@@ -145,7 +145,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBeneficaryMasterSeqId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficaryMasterSeqId())) {
 			List<BeneficaryMaster> beneMasterList = beneficiaryMasterDao.getBeneficiaryByBeneMasterId(beneDto.getBeneficaryMasterSeqId());
 			if (beneMasterList.isEmpty()) {
 				errorDesc = "INVALID BENEFICARY MASTER";
@@ -159,7 +159,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 					errorListDto.add(errorStatusDto);
 				}
-				if (!Util.isNullZeroBigDecimalCheck(beneMasterList.get(0).getFsCountryMaster())) {
+				if (!JaxUtil.isNullZeroBigDecimalCheck(beneMasterList.get(0).getFsCountryMaster())) {
 
 					errorDesc = "HOME COUNTRY IS NOT UPDATED.PLEASE UPDATE THE SAME";
 					errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_COUNTRY.toString(), errorDesc);
@@ -178,7 +178,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 					if (!StringUtils.isBlank(beneContactList.get(0).getTelephoneNumber())) {
 						benePhoneLength = beneContactList.get(0).getTelephoneNumber().length();
-					} else if (Util.isNullZeroBigDecimalCheck(beneContactList.get(0).getMobileNumber())) {
+					} else if (JaxUtil.isNullZeroBigDecimalCheck(beneContactList.get(0).getMobileNumber())) {
 						benePhoneLength = beneContactList.get(0).getMobileNumber().toString().length();
 					}
 					System.out.println("benePhoneLength :" + benePhoneLength);
@@ -193,7 +193,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryAccountSeqId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryAccountSeqId())) {
 			List<BeneficaryAccount> beneAccountList = beneficiaryAccountDao.getBeneficiaryByBeneAccountId(beneDto.getBeneficiaryAccountSeqId(), beneDto.getBeneficaryMasterSeqId(),
 					beneDto.getApplicationCountryId());
 			if (beneAccountList.isEmpty()) {
@@ -203,7 +203,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				errorListDto.add(errorStatusDto);
 
-			} else if (!Util.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServicegropupId().compareTo(new BigDecimal(2)) == 0) {
+			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServicegropupId().compareTo(new BigDecimal(2)) == 0) {
 
 				beneDto.setUpdateNeeded(true);
 
@@ -221,7 +221,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
 			List<BanksView> bankList = bankMasterDao.getBankListByBankId(beneDto.getBankId());
 			if (bankList.isEmpty()) {
 				errorDesc = "Invalid beneficiary bank";
@@ -247,7 +247,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBankId()) && Util.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId()) && JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
 			List<BanksView> bankList = bankMasterDao.getBankListByBeneBankIdAndCountry(beneDto.getBankId(), beneDto.getBenificaryCountry());
 			if (bankList.isEmpty()) {
 
@@ -264,7 +264,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
 			List<CountryMasterView> countryList = countryDao.findByLanguageIdAndCountryId(beneDto.getLanguageId(), beneDto.getBenificaryCountry());
 			if (countryList.isEmpty()) {
 				isUpdateNeeded = true;
@@ -284,7 +284,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getServiceGroupId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getServiceGroupId())) {
 			if (beneDto.getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
 				if (beneDto.getBankAccountNumber().isEmpty() || beneDto.getBankAccountNumber() == null) {
 					errorDesc = "Account number should not blank for Banking channel";
@@ -293,7 +293,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				}
 
-				if (Util.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
+				if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
 					List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
 					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
 
@@ -312,7 +312,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
 			List<ViewState> stateList = viewStateDao.getState(beneDto.getBenificaryCountry(), beneDto.getStateId(), beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
 				beneDto.setUpdateNeeded(true);
@@ -330,7 +330,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		}
 
 		
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(), beneDto.getLanguageId());
 			if (districtList.isEmpty()) {
 				beneDto.setUpdateNeeded(true);
@@ -348,7 +348,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 	
-		if (Util.isNullZeroBigDecimalCheck(beneDto.getCityId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getCityId())) {
 			List<ViewCity> cityList = cityDao.getCityDescription(beneDto.getDistrictId(), beneDto.getCityId(), beneDto.getLanguageId());
 
 			if (cityList.isEmpty()) {
@@ -375,7 +375,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 
 		} else {
-			if (Util.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght()) && (Util.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMaxLenght()))) {
+			if (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght()) && (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMaxLenght()))) {
 				int minLength = serviceAppList.get(0).getMinLenght().intValue();
 				int maxLength = serviceAppList.get(0).getMaxLenght().intValue();
 
