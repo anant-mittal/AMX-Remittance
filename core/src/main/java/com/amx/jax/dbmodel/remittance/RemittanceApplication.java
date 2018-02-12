@@ -121,9 +121,15 @@ public class RemittanceApplication implements Serializable {
 	private String pgErrorText;
 	private String pgReceiptDate;
 	private String errorMessage;
-
+	private String wuIpAddress;
+	
 	
 
+	
+	//private BigDecimal kioskDocumentNumber;
+	
+	//private Set<RemitApplAml> exRemitApplAmls = new HashSet<RemitApplAml>(0);
+	//private Set<AdditionalInstructionData> exAdditionalInstructionDatas = new HashSet<AdditionalInstructionData>(0);
 	private List<RemittanceAppBenificiary> exRemittanceAppBenificiary = new ArrayList<RemittanceAppBenificiary>(0);
 	
 	public RemittanceApplication() {
@@ -786,14 +792,24 @@ public class RemittanceApplication implements Serializable {
 	public void setPgErrorText(String pgErrorText) {
 		this.pgErrorText = pgErrorText;
 	}
+	
 	@Column(name="PG_RCEIPT_DATE")
 	public String getPgReceiptDate() {
 		return pgReceiptDate;
 	}
+	
 	public void setPgReceiptDate(String pgReceiptDate) {
 		this.pgReceiptDate = pgReceiptDate;
 	}
+	
+	@Column(name="WU_TERMINAL_ADDRESS")
+    public String getWuIpAddress() {
+           return wuIpAddress;
+    }
 
+    public void setWuIpAddress(String wuIpAddress) {
+           this.wuIpAddress = wuIpAddress;
+    }
 
 	@Column(name="ERROR_MESSAGE")
 	public String getErrorMessage() {
@@ -803,8 +819,6 @@ public class RemittanceApplication implements Serializable {
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
 	}
-
-	
 
 	
 
