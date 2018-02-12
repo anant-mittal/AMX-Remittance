@@ -20,7 +20,6 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.Constants;
 import com.amx.jax.ui.model.ServerStatus;

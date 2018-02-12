@@ -57,6 +57,7 @@
 	<modules>
 		<module>boot-utils</module>
 		<module>lib-ext-jar</module>
+		<module>lib-swagger</module>
 
 		<module>client-logger</module>
 		<module>ms-logger</module>

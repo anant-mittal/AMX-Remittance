@@ -14,14 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.amx.jax.payment.gateway.PayGSession;
 import com.bootloaderjs.Constants;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 /**
  * @author Viki Sangani 13-Dec-2017 Appcontroller.java
  */
 @Controller
-@Api(value = "App APIs")
 public class AppController {
 
 	private Logger log = Logger.getLogger(AppController.class);
@@ -29,7 +25,6 @@ public class AppController {
 	@Autowired
 	private PayGSession payGSession;
 
-	@ApiOperation(value = "Index page")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		return "thymeleaf/index";

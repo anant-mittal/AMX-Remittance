@@ -34,8 +34,8 @@ public class JaxNotificationService {
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private final String SUBJECT_ACCOUNT_UPDATE="Account Update";
-	
+	private final String SUBJECT_ACCOUNT_UPDATE = "Account Update";
+
 	public void sendTransactionNotification(RemittanceReceiptSubreport remittanceReceiptSubreport, PersonInfo pinfo) {
 
 		logger.info("Sending txn notification to customer");
@@ -52,7 +52,7 @@ public class JaxNotificationService {
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
 		email.addFile(file);
-		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
 
@@ -84,23 +84,24 @@ public class JaxNotificationService {
 		} else if (customerModel.getEmail() != null) {
 			email.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			email.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
-			
-			emailToOld=new Email();
+
+			emailToOld = new Email();
 			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
 			emailToOld.setTemplate(Templates.PROFILE_CHANGE);
 			emailToOld.setHtml(true);
-			
-			PersonInfo oldPinfo=null;
+
+			PersonInfo oldPinfo = null;
 			try {
-				oldPinfo = (PersonInfo)pinfo.clone();
+				oldPinfo = (PersonInfo) pinfo.clone();
 			} catch (CloneNotSupportedException e) {
 				e.printStackTrace();
 			}
 			oldPinfo.setEmail(customerModel.getEmail());
 			emailToOld.getModel().put(RESP_DATA_KEY, oldPinfo);
-			logger.info("Email change notification to - "+oldPinfo.getFirstName()+" on email id : "+oldPinfo.getEmail());
+			logger.info("Email change notification to - " + oldPinfo.getFirstName() + " on email id : "
+					+ oldPinfo.getEmail());
 			sendEmail(emailToOld);
 		}
 
@@ -108,7 +109,7 @@ public class JaxNotificationService {
 		email.setTemplate(Templates.PROFILE_CHANGE);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
-		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	} // end of sendProfileChangeNotificationEmail
 
@@ -140,11 +141,11 @@ public class JaxNotificationService {
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
-		
-		logger.info("Email to - "+pinfo.getEmail()+" first name : "+civilIdOtpModel.getFirstName());
+
+		logger.info("Email to - " + pinfo.getEmail() + " first name : " + civilIdOtpModel.getFirstName());
 		sendEmail(email);
 		sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
-		
+
 	}// end of sendOtpEmail
 
 	public void sendNewRegistrationSuccessEmailNotification(PersonInfo pinfo, String emailid) {
@@ -154,8 +155,8 @@ public class JaxNotificationService {
 		email.setTemplate(Templates.REG_SUC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
-		
-		logger.info("Email to - "+pinfo.getEmail()+" first name : "+pinfo.getFirstName());
+
+		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
 		sendEmail(email);
 	}
 
@@ -168,7 +169,7 @@ public class JaxNotificationService {
 			logger.error("error in SlackNotify", e);
 		}
 	}
-	
+
 	private void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.config.AppConfig;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Message;
@@ -25,12 +26,17 @@ public class HealthService {
 	@Autowired
 	AppEnvironment environment;
 
+	@Autowired
+	AppConfig appConfig;
+
 	@Async
 	public void sendApplicationLiveMessage() {
 
 		Message msg = new Message();
 
-		if (environment.isDebug()) {
+		log.info("AppConfig is in debug mode:" + appConfig.isDebug());
+
+		if (appConfig.isDebug()) {
 			log.info("Server is in debug mode");
 			return;
 		}
