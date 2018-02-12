@@ -141,7 +141,7 @@ public class ResponseWrapper<T> implements Serializable {
 	}
 
 	public void setMessage(ResponseStatus status, AbstractException jaxExcep) {
-		this.setMessage(status, jaxExcep.getError(), jaxExcep.getErrorMessage());
+		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 
 }
