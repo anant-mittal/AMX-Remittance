@@ -1,5 +1,7 @@
 package com.amx.amxlib.exception;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
 
@@ -12,10 +14,16 @@ public abstract class AbstractException extends RuntimeException {
 
 	protected String errorMessage;
 
+	protected String errorKey;
+
 	protected JaxError error;
 
 	public AbstractException(ApiError error) {
-		this.error = JaxError.valueOf(error.getErrorId());
+		try {
+			this.error = JaxError.valueOf(error.getErrorId());
+		} catch (Exception e) {
+		}
+		this.errorKey = error.getErrorId();
 		this.errorMessage = error.getErrorMessage();
 	}
 
@@ -27,7 +35,7 @@ public abstract class AbstractException extends RuntimeException {
 	public AbstractException(String errorMessage, String errorCode) {
 		super();
 		this.errorMessage = errorMessage;
-		this.error = JaxError.valueOf(errorCode);
+		this.errorKey = errorCode;
 	}
 
 	public String getErrorMessage() {
@@ -44,5 +52,17 @@ public abstract class AbstractException extends RuntimeException {
 
 	public void setError(JaxError error) {
 		this.error = error;
+	}
+
+	public String getErrorKey() {
+		if (StringUtils.isNotBlank(errorKey)) {
+			return errorKey;
+		} else {
+			return error.toString();
+		}
+	}
+
+	public void setErrorKey(String errorKey) {
+		this.errorKey = errorKey;
 	}
 }

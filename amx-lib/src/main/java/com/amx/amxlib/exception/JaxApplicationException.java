@@ -1,6 +1,5 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
 
 public class JaxApplicationException extends AbstractException {

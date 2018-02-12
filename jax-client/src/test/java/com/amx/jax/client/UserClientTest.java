@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
@@ -113,8 +114,11 @@ public class UserClientTest {
 			jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 			jaxMetaInfo.setCustomerId(new BigDecimal(5128));
 			ApiResponse<CustomerModel> response = null;
-
+			try {
 			response = client.login("289053104436", "Amx@123456");
+			}catch(AbstractException e) {
+				e.printStackTrace();
+			}
 			assertNotNull("Response is null", response);
 			assertNotNull(response.getResult());
 		}
