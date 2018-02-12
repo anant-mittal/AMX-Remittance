@@ -381,10 +381,10 @@ public class BeneficiaryService extends AbstractService {
 		BeneficaryContact beneContact = beneContactList.get(0);
 		String contactNumber = null;
 		if (beneContact != null) {
-			if (beneContact.getMobileNumber() != null) {
-				contactNumber = beneContact.getMobileNumber().toString();
-			} else {
+			if (beneContact.getTelephoneNumber() != null) {
 				contactNumber = beneContact.getTelephoneNumber();
+			} else {
+				contactNumber = beneContact.getMobileNumber().toString();
 			}
 		}
 		return contactNumber;

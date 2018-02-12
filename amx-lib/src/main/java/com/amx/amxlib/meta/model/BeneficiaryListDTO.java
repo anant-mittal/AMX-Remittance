@@ -88,6 +88,8 @@ public class BeneficiaryListDTO {
 	private String serviceGroupName;
 	private String myFavouriteBene;
 	
+	private String bankShortNames;
+	
 	
 	
 	public BigDecimal getIdNo() {
@@ -539,6 +541,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setMyFavouriteBene(String myFavouriteBene) {
 		this.myFavouriteBene = myFavouriteBene;
+	}
+	public String getBankShortNames() {
+		return bankShortNames;
+	}
+	public void setBankShortNames(String bankShortNames) {
+		this.bankShortNames = bankShortNames;
 	}
 	
 	
