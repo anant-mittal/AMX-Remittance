@@ -204,7 +204,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
-						<td th:text="${remittance.firstName}">--</td>
+						<td pm:pftext="${remittance.firstName}">--</td>
 						<td th:text="${_tu.reverse(#messages.msg('label.custmeridname'))}"></td>
 					</tr>
 					<tr>
@@ -274,7 +274,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>Name</td>
-						<td th:text="${remittance.beneficiaryName}">--</td>
+						<td pm:pftext="${remittance.beneficiaryName}">--</td>
 						<td th:text="${_tu.reverse(#messages.msg('label.beneficiaryName'))}"></td>
 					</tr>
 					<tr>
@@ -396,7 +396,7 @@ html, body {
 				<table class="table col-3 height100">
 					<tr>
 						<td>Cashier Name</td>
-						<td th:text="${remittance.userName}">KANMANI1</td>
+						<td pm:pftext="${remittance.userName}">KANMANI1</td>
 						<td th:text="${_tu.reverse(#messages.msg('label.userName'))}"> </td>
 					</tr>
 					<tr>
