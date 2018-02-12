@@ -124,7 +124,7 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 		BankMasterDTO o2 = arg0;
 		BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
 		BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
-		if (o2Rate != null) {
+		if (o2Rate != null && o1Rate != null) {
 			return o2Rate.compareTo(o1Rate);
 		}
 		return 0;
@@ -137,7 +137,7 @@ public class BankMasterDTO extends AbstractModel implements Comparable<BankMaste
 
 			BigDecimal o1Rate = (o1.getExRateBreakup() != null) ? o1.getExRateBreakup().getRate() : null;
 			BigDecimal o2Rate = (o2.getExRateBreakup() != null) ? o2.getExRateBreakup().getRate() : null;
-			if (o2Rate != null) {
+			if (o2Rate != null && o1Rate != null) {
 				return o2Rate.compareTo(o1Rate);
 			}
 			return 0;
