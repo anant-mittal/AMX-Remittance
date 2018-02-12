@@ -27,3 +27,4 @@ nbdist/
 .nb-gradle/
 /ms-jax*.log
 /ms-jax*.txt
+/log2/
