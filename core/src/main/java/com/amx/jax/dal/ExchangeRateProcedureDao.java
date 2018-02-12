@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExchangeRateProcedureDao {
 
-	private Logger logger = Logger.getLogger(ExchangeRateProcedureDao.class);
+	private static final Logger LOGGER = Logger.getLogger(ExchangeRateProcedureDao.class);
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
 	@Transactional
 	public Map<String, Object> findRemittanceAndDevlieryModeId(Map<String, Object> inputMap) {
-		logger.info("in findRemittanceAndDevlieryModeId, input mpa:  " + inputMap.toString());
+		LOGGER.info("in findRemittanceAndDevlieryModeId, input mpa:  " + inputMap.toString());
 		String sql = "SELECT DISTINCT A.REMITTANCE_MODE_ID," + "                A.DELIVERY_MODE_ID "
 				+ " FROM V_EX_ROUTING_DETAILS A," + "     EX_BANK_SERVICE_RULE B," + "     EX_BANK_CHARGES C"
 				+ " WHERE A.APPLICATION_COUNTRY_ID = ?" + "  AND A.COUNTRY_ID = ?" + "  AND A.BENE_BANK_ID = ?"
@@ -53,7 +53,7 @@ public class ExchangeRateProcedureDao {
 			output.put("P_REMITTANCE_MODE_ID", outputMap.get("REMITTANCE_MODE_ID"));
 			output.put("P_DELIVERY_MODE_ID", outputMap.get("DELIVERY_MODE_ID"));
 		} catch (Exception e) {
-			logger.info("error in findRemittanceAndDevlieryModeId " + e.getMessage());
+			LOGGER.info("error in findRemittanceAndDevlieryModeId : " +e);
 		}
 		return output;
 
@@ -83,7 +83,7 @@ public class ExchangeRateProcedureDao {
 		try {
 			comission = jdbcTemplate.queryForObject(sql, inputList.toArray(), BigDecimal.class);
 		} catch (Exception e) {
-			logger.info("error in getCommission", e);
+			LOGGER.info("error in getCommission : ", e);
 		}
 
 		return comission;
@@ -98,7 +98,7 @@ public class ExchangeRateProcedureDao {
 		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class, currencyid);
 		} catch (Exception e) {
-			logger.info("error in getBankIdsForExchangeRates", e);
+			LOGGER.info("error in getBankIdsForExchangeRates : ", e);
 		}
 
 		return list;

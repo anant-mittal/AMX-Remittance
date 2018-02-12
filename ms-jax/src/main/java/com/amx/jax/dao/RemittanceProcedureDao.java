@@ -1,6 +1,5 @@
 package com.amx.jax.dao;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -21,20 +20,15 @@ import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
-public class RemittanceProcedureDao implements Serializable{
+public class RemittanceProcedureDao {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -3602526373307568802L;
-
-	private Logger logger = Logger.getLogger(RemittanceProcedureDao.class);
+	private static final Logger LOGGER = Logger.getLogger(RemittanceProcedureDao.class);
 
 	@Autowired
 	MultiTenantConnectionProviderImpl connectionProvider;
 		
 	@Transactional
-	public Map<String, Object> insertRemittanceForOnline(HashMap<String, Object> inputValues) {
+	public Map<String, Object> insertRemittanceForOnline(Map<String, Object> inputValues) {
 
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
 		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
@@ -45,7 +39,7 @@ public class RemittanceProcedureDao implements Serializable{
 		String tranId = inputValues.get("P_TRANID") == null ? "" : inputValues.get("P_TRANID").toString();
 		String refId = inputValues.get("P_REFID") == null ? "" : inputValues.get("P_REFID").toString();
 
-		logger.info("EX_INSERT_REMITTANCE_ONLINE INPUT :"+inputValues.toString());
+		LOGGER.info("EX_INSERT_REMITTANCE_ONLINE INPUT :"+inputValues.toString());
 		
 		Map<String, Object> output = new HashMap<>();
 		
@@ -78,28 +72,25 @@ public class RemittanceProcedureDao implements Serializable{
 				output.put("P_COLLECTION_NO", collectionDocumentNumber);
 				output.put("P_COLLECTION_DOCUMENT_CODE", collectionDocumentCode);
 				output.put("P_ERROR_MESG", outMessage);
-				logger.info("EX_INSERT_REMITTANCE_ONLINE output :"+output.toString());
+				LOGGER.info("EX_INSERT_REMITTANCE_ONLINE output :"+output.toString());
 				cs.close();
 			
 		} catch (Exception e) {
-		
-			e.printStackTrace();
+			LOGGER.error("Error while calling EX_INSERT_REMITTANCE_ONLINE : ",e);
 		}finally {
 			try {
 				if (connection!=null)
 					connection.close();
 			}catch(Exception ee) {
-				ee.printStackTrace();
+				LOGGER.error("Error while closing connection. : ",ee);
 			}
 		}
-		 
 		return output;
-		
 	}
 	
 	
 	@Transactional
-	public Map<String, Object> insertEMOSLIVETransfer(HashMap<String, Object> inputValues) {
+	public Map<String, Object> insertEMOSLIVETransfer(Map<String, Object> inputValues) {
 
 		BigDecimal applicationCountryId = (BigDecimal) inputValues.get("P_APPL_CNTY_ID");
 		BigDecimal companyId = (BigDecimal) inputValues.get("P_COMPANY_ID");
@@ -107,7 +98,7 @@ public class RemittanceProcedureDao implements Serializable{
 		BigDecimal financialYr = (BigDecimal) inputValues.get("P_DOC_FINYR");
 		BigDecimal documentNo = (BigDecimal) inputValues.get("P_DOCUMENT_NO");
 		
-		logger.info("EX_INSERT_EMOS_TRANSFER_LIVE INPUT :"+inputValues.toString());
+		LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE INPUT :"+inputValues.toString());
 		
 		Map<String, Object> output = new HashMap<>();
 		
@@ -124,23 +115,20 @@ public class RemittanceProcedureDao implements Serializable{
 				cs.registerOutParameter(6, java.sql.Types.VARCHAR);
 				cs.execute();
 			output.put("P_ERROR_MESSAGE", cs.getString(6));
-			logger.info("EX_INSERT_EMOS_TRANSFER_LIVE INPUT :"+output.toString());
+			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE INPUT :"+output.toString());
 			cs.close();
 			
 		} catch (Exception e) {
-		
-			e.printStackTrace();
+			LOGGER.error("Error while calling EX_INSERT_EMOS_TRANSFER_LIVE : ",e);
 		}finally {
 			try {
 				if (connection!=null)
 					connection.close();
 			}catch(Exception ee) {
-				ee.printStackTrace();
+				LOGGER.error("Error while closing connection. : ",ee);
 			}
 		}
-		 
 		return output;
 	}
-			
 
 }
