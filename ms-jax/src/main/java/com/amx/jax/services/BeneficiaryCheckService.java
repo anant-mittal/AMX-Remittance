@@ -113,7 +113,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
-				errorDesc = "nglish name Of beneficary matching with black listed customer";
+				errorDesc = "English name Of beneficary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
 				errorListDto.add(errorStatusDto);
