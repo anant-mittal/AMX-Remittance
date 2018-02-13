@@ -19,13 +19,17 @@ public class Random {
 		return builder.toString();
 	}
 
-	public static String randomAlpha(int count) {
+	public static String randomAlpha(int count, String alphaString) {
 		StringBuilder builder = new StringBuilder();
 		while (count-- != 0) {
-			int character = (int) (Math.random() * ALPHA_STRING.length());
-			builder.append(ALPHA_STRING.charAt(character));
+			int character = (int) (Math.random() * alphaString.length());
+			builder.append(alphaString.charAt(character));
 		}
 		return builder.toString();
+	}
+
+	public static String randomAlpha(int count) {
+		return randomAlpha(count, ALPHA_STRING);
 	}
 
 	public static String randomNumeric(int count) {

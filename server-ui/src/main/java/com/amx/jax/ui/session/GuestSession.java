@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -24,16 +26,19 @@ import com.bootloaderjs.Random;
 public class GuestSession implements Serializable {
 
 	private static final long serialVersionUID = -8825493107883952226L;
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
 	public String getNextToken(String key) {
 		String nextToken = Random.randomAlpha(6);
 		nextTokenMap.put(key, nextToken);
+		log.info("Created {} = {}", key, nextToken);
 		return nextToken;
 	}
 
 	public boolean isValidToken(String key, String value) {
+		log.info("Validating {} = {}", key, value);
 		if (nextTokenMap.containsKey(key)) {
 			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
 		}

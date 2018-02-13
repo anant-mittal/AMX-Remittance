@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -47,7 +48,17 @@ public class UserController {
 	private HttpServletResponse response;
 
 	private void addSeqCookie(String seqKey) {
-		response.addCookie(new Cookie(UIConstants.SEQ_KEY, sessionService.getGuestSession().getNextToken(seqKey)));
+		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, sessionService.getGuestSession().getNextToken(seqKey));
+		kooky.setMaxAge(300);
+		//kooky.setPath("/");
+		response.addCookie(kooky);
+	}
+
+	private void validateSeqCookie(String seqKey, String seqValue) {
+		if (!sessionService.getGuestSession().isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			throw new HttpUnauthorizedException();
+		}
 	}
 
 	/**
@@ -66,7 +77,8 @@ public class UserController {
 
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqKey) {
+			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
+		validateSeqCookie(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue);
 		addSeqCookie(UIConstants.SEQ_KEY_STEP_SECQ);
 		return loginService.loginSecQues(guestanswer);
 	}
