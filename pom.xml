@@ -73,7 +73,7 @@
 		<module>ms-jax</module>
 		<module>jax-client</module>
 
-		<module>server-scheduler</module>
+		<module>ms-scheduler</module>
 
 		<module>server-payg</module>
 

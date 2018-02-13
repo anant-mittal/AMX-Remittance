@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>server-scheduler</artifactId>
+	<artifactId>ms-scheduler</artifactId>
 	<packaging>jar</packaging>
 
-	<name>server-scheduler</name>
+	<name>ms-scheduler</name>
 	<description>Scheduler server for jax e.g. to send rate alerts</description>
 
 	<parent>
