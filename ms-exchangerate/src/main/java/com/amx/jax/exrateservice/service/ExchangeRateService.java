@@ -95,6 +95,9 @@ public class ExchangeRateService extends AbstractService {
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
 			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
+			if (validBankIds.isEmpty()) {
+				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+			}
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
 					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
@@ -166,13 +169,13 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal lcAmount) {
+			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
 		Set<BankMasterDTO> bankWiseRates = new HashSet<>();
 		for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 			List<PipsMaster> piplist = entry.getValue();
 			ExchangeRateApprovalDetModel rate = entry.getKey();
 			BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
-			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, lcAmount));
+			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
 			logger.debug("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
 					+ rate.getCurrencyId());
 			currencyIdVsExchId.put(rate.getCurrencyId(),  rate.getExchangeRateMasterAprDetId());
@@ -185,33 +188,25 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	private ExchangeRateBreakup getExchangeRateFromPips(List<PipsMaster> piplist, ExchangeRateApprovalDetModel rate,
-			BigDecimal lcAmount) {
+			BigDecimal amount) {
 		BigDecimal exrate = null;
 		BigDecimal minServiceId = null;
 		if (piplist != null) {
 			for (PipsMaster pip : piplist) {
 				BigDecimal serviceId = rate.getServiceId();
-				BigDecimal fromFCLimitAmount = pip.getFromAmount();
-				BigDecimal toFCLimitAmount = pip.getToAmount();
-				BigDecimal exrateTemp = rate.getSellRateMax().subtract(pip.getPipsNo());
-				BigDecimal inverseExRateTemp = new BigDecimal(1).divide(exrateTemp, 10, RoundingMode.HALF_UP);
-				BigDecimal convertedFCAmount = inverseExRateTemp.multiply(lcAmount);
-				if (convertedFCAmount.compareTo(fromFCLimitAmount) >= 0
-						&& convertedFCAmount.compareTo(toFCLimitAmount) <= 0) {
-					if (minServiceId == null) {
-						minServiceId = rate.getServiceId();
-						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
-					}
-					if (serviceId.compareTo(minServiceId) < 0) {
-						minServiceId = serviceId;
-						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
-					}
+				if (minServiceId == null) {
+					minServiceId = rate.getServiceId();
+					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+				}
+				if (serviceId.compareTo(minServiceId) < 0) {
+					minServiceId = serviceId;
+					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
 				}
 			}
 		} else {
 			exrate = rate.getSellRateMax();
 		}
-		return createBreakUp(exrate, lcAmount);
+		return createBreakUp(exrate, amount);
 	}
 
 	private ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
