@@ -13,7 +13,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -108,14 +108,14 @@ public class UserService {
 
 		Email email = new Email();
 		email.setSubject("Verify Your Account");
-		if (model.getEmail() != null && !Constants.EMPTY.equals(model.getEmail())) {
+		if (model.getEmail() != null && !UIConstants.EMPTY.equals(model.getEmail())) {
 			email.addTo(model.getEmail());
 		} else {
 			email.addTo("riddhi.madhu@almullagroup.com");
 		}
 		email.setTemplate(Templates.RESET_OTP);
 		email.setHtml(true);
-		email.getModel().put(Constants.RESP_DATA_KEY, model);
+		email.getModel().put(UIConstants.RESP_DATA_KEY, model);
 
 		try {
 			postManService.sendEmail(email);

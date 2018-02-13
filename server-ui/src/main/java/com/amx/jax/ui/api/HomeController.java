@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -89,8 +89,8 @@ public class HomeController {
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
-		model.addAttribute(Constants.CDN_VERSION, getVersion());
-		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
 
@@ -107,8 +107,8 @@ public class HomeController {
 	public String defaultPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
-		model.addAttribute(Constants.CDN_VERSION, getVersion());
-		model.addAttribute(Constants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
 		return "app";
 	}
 }

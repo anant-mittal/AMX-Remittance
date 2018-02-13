@@ -4,6 +4,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
+import com.bootloaderjs.ArgUtil;
+import com.bootloaderjs.Constants;
 
 public abstract class AbstractException extends RuntimeException {
 
@@ -58,7 +60,7 @@ public abstract class AbstractException extends RuntimeException {
 		if (StringUtils.isNotBlank(errorKey)) {
 			return errorKey;
 		} else {
-			return error.toString();
+			return ArgUtil.parseAsString(error, Constants.BLANK);
 		}
 	}
 

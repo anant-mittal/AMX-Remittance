@@ -21,7 +21,7 @@ import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -109,7 +109,7 @@ public class MetaController {
 				email.setReplyTo(cemail);
 				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com",
 						"exch-online1@almullagroup.com", "exch-amx@almullagroup.com");
-				email.getModel().put(Constants.RESP_DATA_KEY, map);
+				email.getModel().put(UIConstants.RESP_DATA_KEY, map);
 				email.setSubject("Inquiry");
 				email.setTemplate(Templates.CONTACT_US);
 				email.setHtml(true);

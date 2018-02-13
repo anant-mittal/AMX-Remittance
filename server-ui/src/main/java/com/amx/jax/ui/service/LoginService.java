@@ -3,8 +3,6 @@ package com.amx.jax.ui.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +89,7 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> loginSecQues(SecurityQuestionModel guestanswer, HttpServletRequest request) {
+	public ResponseWrapper<LoginData> loginSecQues(SecurityQuestionModel guestanswer) {
 		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
 		if (userSession.isValid()) {
 			// Check if use is already logged in;

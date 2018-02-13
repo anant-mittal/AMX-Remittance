@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.bootloaderjs.ContextUtil;
 
 public class ResponseWrapper<T> implements Serializable {
@@ -37,8 +37,8 @@ public class ResponseWrapper<T> implements Serializable {
 	private Long timestamp = null;
 	private String status = "200";
 	private ResponseStatus statusKey = ResponseStatus.SUCCESS;
-	private String message = Constants.EMPTY;
-	private String messageKey = Constants.EMPTY;
+	private String message = UIConstants.EMPTY;
+	private String messageKey = UIConstants.EMPTY;
 	private String redirectUrl = null;
 
 	public String getRedirectUrl() {

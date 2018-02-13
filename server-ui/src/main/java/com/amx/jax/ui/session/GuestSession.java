@@ -1,12 +1,16 @@
 package com.amx.jax.ui.session;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.bootloaderjs.Constants;
+import com.bootloaderjs.Random;
 
 /**
  * To Save Values to Session Use this class, only if these values are not
@@ -21,14 +25,19 @@ public class GuestSession implements Serializable {
 
 	private static final long serialVersionUID = -8825493107883952226L;
 
-	private String nextToken = null;
+	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
-	public String getNextToken() {
+	public String getNextToken(String key) {
+		String nextToken = Random.randomAlpha(6);
+		nextTokenMap.put(key, nextToken);
 		return nextToken;
 	}
 
-	public void setNextToken(String nextToken) {
-		this.nextToken = nextToken;
+	public boolean isValidToken(String key, String value) {
+		if (nextTokenMap.containsKey(key)) {
+			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
+		}
+		return false;
 	}
 
 	private Integer hits = 0;

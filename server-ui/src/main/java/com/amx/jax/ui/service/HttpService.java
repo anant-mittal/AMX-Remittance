@@ -11,7 +11,7 @@ import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 
 @Component
 public class HttpService {
@@ -59,7 +59,7 @@ public class HttpService {
 
 	public String getDeviceId() {
 		String deviceId = null;
-		Cookie cookie = WebUtils.getCookie(request, Constants.DEVICE_ID_KEY);
+		Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
 		if (cookie != null) {
 			deviceId = cookie.getValue();
 		}

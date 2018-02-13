@@ -1,9 +1,11 @@
 
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -40,6 +43,13 @@ public class UserController {
 	@Autowired
 	private TenantContext tenantContext;
 
+	@Autowired
+	private HttpServletResponse response;
+
+	private void addSeqCookie(String seqKey) {
+		response.addCookie(new Cookie(UIConstants.SEQ_KEY, sessionService.getGuestSession().getNextToken(seqKey)));
+	}
+
 	/**
 	 * Asks for user login and password
 	 * 
@@ -50,16 +60,18 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
 			@RequestParam(required = false) String password) {
+		addSeqCookie(UIConstants.SEQ_KEY_STEP_LOGIN);
 		return loginService.login(identity, password);
 	}
 
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			HttpServletRequest request) {
-		return loginService.loginSecQues(guestanswer, request);
+			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqKey) {
+		addSeqCookie(UIConstants.SEQ_KEY_STEP_SECQ);
+		return loginService.loginSecQues(guestanswer);
 	}
 
-	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		if (mOtp == null && eOtp == null) {
@@ -90,8 +102,7 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 		}
-		
-		
+
 		return wrapper;
 	}
 

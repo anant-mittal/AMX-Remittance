@@ -38,7 +38,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -99,13 +99,13 @@ public class RemittController {
 		File file = new File();
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
-		file.getModel().put(Constants.RESP_DATA_KEY, data);
+		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
 		// file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
 		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
-		email.getModel().put(Constants.RESP_DATA_KEY,
+		email.getModel().put(UIConstants.RESP_DATA_KEY,
 				sessionService.getUserSession().getCustomerModel().getPersoninfo());
 		email.addFile(file);
 		email.setHtml(true);
