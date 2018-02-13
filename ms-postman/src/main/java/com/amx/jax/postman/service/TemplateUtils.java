@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.bootloaderjs.ArgUtil;
+import com.bootloaderjs.Constants;
 import com.bootloaderjs.ContextUtil;
 
 @Component
@@ -33,7 +34,8 @@ public class TemplateUtils {
 		return "-X-X-";
 	}
 
-	public static String fixBiDi(String word) {
+	public static String fixBiDi(String wordTemp) {
+		String word = ArgUtil.parseAsString(wordTemp, Constants.defaultString);
 		Bidi bidi = new Bidi(word, -2);
 		if (!bidi.isMixed() && bidi.getBaseLevel() == 0) {
 			return word;
