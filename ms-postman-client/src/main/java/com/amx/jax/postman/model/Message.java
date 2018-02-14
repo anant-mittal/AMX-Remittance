@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Message {
 
+	protected Langs lang = null;
 	protected String subject;
 	protected String message = null;
 	private List<String> to;
@@ -63,6 +64,14 @@ public class Message {
 
 	public void setTemplate(Templates template) {
 		this.template = template;
+	}
+
+	public Langs getLang() {
+		return lang;
+	}
+
+	public void setLang(Langs lang) {
+		this.lang = lang;
 	}
 
 	public Message() {

@@ -2,16 +2,16 @@ package com.amx.jax.postman;
 
 import javax.servlet.ServletRequestListener;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 
-import com.amx.jax.postman.custom.HelloDialect;
+import com.amx.jax.postman.model.Langs;
+import com.bootloaderjs.ArgUtil;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
@@ -22,6 +22,14 @@ public class PostManApplication {
 		SpringApplication.run(PostManApplication.class, args);
 	}
 
+	@Value("${jax.lang.code}")
+	private String defaultLangCode;
+
+	@Bean
+	Langs defaultLang() {
+		return (Langs) ArgUtil.parseAsEnum(defaultLangCode, Langs.DEFAULT);
+	}
+
 	@Bean
 	ServletListenerRegistrationBean<ServletRequestListener> myServletRequestListener() {
 		ServletListenerRegistrationBean<ServletRequestListener> srb = new ServletListenerRegistrationBean<>();
@@ -29,14 +37,16 @@ public class PostManApplication {
 		return srb;
 	}
 
-//	@Bean
-//	public SpringTemplateEngine customTemplateEngine(SpringTemplateEngine templateEngine) {
-//		SpringTemplateEngine customTemplateEngine = new SpringTemplateEngine();
-//		customTemplateEngine.setEnableSpringELCompiler(true);
-//		for (ITemplateResolver iterable_element : templateEngine.getTemplateResolvers()) {
-//			customTemplateEngine.setTemplateResolver(iterable_element);
-//		}
-//		customTemplateEngine.addDialect(new HelloDialect());
-//		return customTemplateEngine;
-//	}
+	// @Bean
+	// public SpringTemplateEngine customTemplateEngine(SpringTemplateEngine
+	// templateEngine) {
+	// SpringTemplateEngine customTemplateEngine = new SpringTemplateEngine();
+	// customTemplateEngine.setEnableSpringELCompiler(true);
+	// for (ITemplateResolver iterable_element :
+	// templateEngine.getTemplateResolvers()) {
+	// customTemplateEngine.setTemplateResolver(iterable_element);
+	// }
+	// customTemplateEngine.addDialect(new HelloDialect());
+	// return customTemplateEngine;
+	// }
 }

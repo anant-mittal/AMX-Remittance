@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
@@ -43,7 +44,6 @@ public class PostManControllerTest {
 	@Autowired
 	private HttpServletResponse response;
 
-
 	@Value("${jax.postman.url}")
 	private String postmanUrl;
 
@@ -55,7 +55,7 @@ public class PostManControllerTest {
 
 	@Autowired
 	private HttpServletRequest request;
-	
+
 	@Autowired
 	private MessageSource messageSource;
 
@@ -70,7 +70,7 @@ public class PostManControllerTest {
 		try {
 			throw new Exception("Some Error");
 		} catch (Exception e) {
-			postManClient.notifyExceptionAsync("My Error", e);
+			postManClient.notifyException("My Error", e);
 		}
 		return null;
 	}
@@ -79,13 +79,15 @@ public class PostManControllerTest {
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data)
-			throws IOException, DocumentException, UnirestException {
+			throws IOException, DocumentException, PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
-		//LOGGER.info("====={}", messageSource.getMessage("sender.details", null, localeResolver.resolveLocale(request)));
+		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
+		// localeResolver.resolveLocale(request)));
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
+
 		if ("pdf".equals(ext)) {
 			File file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
@@ -109,7 +111,7 @@ public class PostManControllerTest {
 
 				eml.addFile(file2);
 
-				postManClient.sendEmail(eml);
+				postManClient.sendEmailAsync(eml);
 			}
 			return file.getContent();
 		} else {

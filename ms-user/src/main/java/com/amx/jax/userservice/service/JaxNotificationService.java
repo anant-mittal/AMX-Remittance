@@ -16,6 +16,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.config.AppConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
@@ -131,7 +132,7 @@ public class JaxNotificationService {
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
 			}
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
@@ -173,7 +174,7 @@ public class JaxNotificationService {
 		msg.setMessage(String.format("%s = %s-%s", channel, prefix, otp));
 		try {
 			postManService.notifySlack(msg);
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in SlackNotify", e);
 		}
 	}
@@ -181,7 +182,7 @@ public class JaxNotificationService {
 	private void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in sendProfileChangedNotification", e);
 		}
 	}

@@ -45,8 +45,6 @@ public class PdfService {
 				renderer.layout();
 				renderer.createPDF(outputStream);
 				renderer.finishPDF();
-
-				System.out.println("PDF created successfully");
 				file.setBody(outputStream.toByteArray());
 				file.setType(Type.PDF);
 			}

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Message;
@@ -18,7 +19,6 @@ import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class UserService {
@@ -88,7 +88,7 @@ public class UserService {
 		msg.setMessage("Your OTP for Reset is " + model.getmOtp());
 		try {
 			postManService.notifySlack(msg);
-		} catch (UnirestException e1) {
+		} catch (PostManException e1) {
 			LOG.error("Error while sending SlackMS", e1);
 		}
 
