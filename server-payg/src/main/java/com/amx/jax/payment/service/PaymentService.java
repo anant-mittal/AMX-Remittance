@@ -4,7 +4,6 @@
 package com.amx.jax.payment.service;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -25,7 +24,7 @@ import com.amx.jax.scope.TenantContextHolder;
 @Component
 public class PaymentService {
 
-	private static Logger LOG = Logger.getLogger(PaymentService.class);
+	private static final Logger LOGGER = Logger.getLogger(PaymentService.class);
 
 	@Autowired
 	private RemitClient remitClient;
@@ -33,7 +32,7 @@ public class PaymentService {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	public PaymentResponse capturePayment(HashMap<String, String> paramMap) {
+	public PaymentResponse capturePayment(Map<String, String> paramMap) {
 
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 
@@ -44,11 +43,11 @@ public class PaymentService {
 
 			PaymentResponseDto paymentResponseDto = generatePaymentResponseDTO(paramMap);
 
-			LOG.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
+			LOGGER.info("Calling saveRemittanceTransaction with ...  " + paymentResponseDto.toString());
 			ApiResponse<PaymentResponseDto> resp = remitClient.saveRemittanceTransaction(paymentResponseDto);
 
 			if (resp.getResult() != null) {
-				LOG.info("PaymentResponseDto values -- CollectionDocumentCode : "
+			    LOGGER.info("PaymentResponseDto values -- CollectionDocumentCode : "
 						+ resp.getResult().getCollectionDocumentCode() + " CollectionDocumentNumber : "
 						+ resp.getResult().getCollectionDocumentNumber() + " CollectionFinanceYear : "
 						+ resp.getResult().getCollectionFinanceYear());
@@ -60,7 +59,7 @@ public class PaymentService {
 			for (Map.Entry<String, String> entry : paramMap.entrySet()) {
 				String keyValue = entry.getKey() + "/" + entry.getValue();
 				sb.append(keyValue);
-				LOG.info(keyValue);
+				LOGGER.info(keyValue);
 			}
 
 			data.setMsg(sb.toString());
@@ -69,8 +68,7 @@ public class PaymentService {
 			response.setData(data);
 			response.setError(null);
 		} catch (Exception e) {
-			e.printStackTrace();
-			// response.setError(e.getMessage());
+		    LOGGER.error("Exception while capture payment. : ",e);
 			response.setResponseCode("FAIL");
 			response.setResponseMessage("Exception while capturing payment.");
 		}
@@ -78,7 +76,7 @@ public class PaymentService {
 
 	}
 
-	public PaymentResponseDto generatePaymentResponseDTO(HashMap<String, String> params) {
+	public PaymentResponseDto generatePaymentResponseDTO(Map<String, String> params) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
 
 		paymentResponseDto.setApplicationCountryId(new BigDecimal(params.get("applicationCountryId")));

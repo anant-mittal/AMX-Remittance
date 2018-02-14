@@ -8,6 +8,6 @@ package com.amx.jax.payment.response;
  * 01-Nov-2017
  * AReponseDataModel.java
  */
-public abstract class AResponseDataModel {
+public interface AResponseDataModel {
 
 }
