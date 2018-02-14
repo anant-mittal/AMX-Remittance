@@ -13,8 +13,8 @@ import org.xhtmlrenderer.pdf.ITextImageElement;
 import org.xhtmlrenderer.render.BlockBox;
 import org.xhtmlrenderer.simple.extend.FormSubmissionListener;
 
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Image;
+import com.itextpdf.text.BadElementException;
+import com.itextpdf.text.Image;
 
 public class B64ImgReplacedElementFactory implements ReplacedElementFactory {
 

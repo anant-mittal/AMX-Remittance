@@ -11,8 +11,8 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.bootloaderjs.Constants;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.BaseFont;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.BaseFont;
 
 @Component
 public class PdfService {
@@ -25,9 +25,21 @@ public class PdfService {
 
 			if (file.getContent() != null && !Constants.BLANK.equals(file.getContent())) {
 				ITextRenderer renderer = new ITextRenderer();
-				renderer.getFontResolver().addFont("/fonts/arialuni.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-				renderer.getFontResolver().addFont("/fonts/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-				renderer.getFontResolver().addFont("/fonts/arialbold.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/arial.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/arialbd.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				// renderer.getFontResolver().addFont("/fonts/all/arialbi.ttf",
+				// BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				// renderer.getFontResolver().addFont("/fonts/all/ariali.ttf",
+				// BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/arialuni.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+
+				renderer.getFontResolver().addFont("/fonts/arabic/NotoNaskhArabic-Regular.ttf", BaseFont.IDENTITY_H,
+						BaseFont.EMBEDDED);
+
+				renderer.getFontResolver().addFont("/fonts/all/times.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/timesbd.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/timesbi.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/timesi.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 
 				renderer.setDocumentFromString(file.getContent());
 				renderer.layout();
