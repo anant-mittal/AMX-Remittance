@@ -6,10 +6,6 @@ package com.amx.jax.payment.controller;
 import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +22,6 @@ import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGSession;
-import com.amx.jax.payment.util.PaymentUtil;
 import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 

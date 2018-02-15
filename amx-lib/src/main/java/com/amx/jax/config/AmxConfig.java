@@ -6,7 +6,7 @@ import org.springframework.context.annotation.PropertySource;
 
 import com.bootloaderjs.config.AppConfig;
 
-@PropertySource("common.properties")
+@PropertySource("amx-config.properties")
 @Configuration
 public class AmxConfig extends AppConfig {
 

@@ -1,7 +1,11 @@
 package com.bootloaderjs.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
+@Component
+@PropertySource("app-config.properties")
 public class AppConfig {
 
 	@Value("${app.name}")
