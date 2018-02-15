@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
+
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.constant.Country;
 import com.amx.jax.scope.Tenant;

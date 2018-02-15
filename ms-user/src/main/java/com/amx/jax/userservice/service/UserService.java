@@ -66,8 +66,8 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
-import com.amx.jax.util.StringUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.util.StringUtil;
 import com.amx.jax.util.WebUtils;
 import com.bootloaderjs.Random;
 

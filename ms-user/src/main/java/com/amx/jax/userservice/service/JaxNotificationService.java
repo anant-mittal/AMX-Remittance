@@ -19,12 +19,12 @@ import com.amx.jax.config.AmxConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
+import com.amx.jax.postman.model.Channel;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -130,7 +130,7 @@ public class JaxNotificationService {
 		try {
 			postManService.sendSMS(sms);
 			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
+				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 			}
 		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
@@ -152,7 +152,7 @@ public class JaxNotificationService {
 		sendEmail(email);
 
 		if (!appConfig.isProdMode()) {
-			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
+			sendToSlack("email", email.getTo().get(0), civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
 		}
 
 	}// end of sendOtpEmail
@@ -169,9 +169,11 @@ public class JaxNotificationService {
 		sendEmail(email);
 	}
 
-	public void sendToSlack(String channel, String prefix, String otp) {
+	public void sendToSlack(String channel, String to, String prefix, String otp) {
 		Message msg = new Message();
-		msg.setMessage(String.format("%s = %s-%s", channel, prefix, otp));
+		msg.setMessage(String.format("%s = %s", channel, to));
+		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
+		msg.setChannel(Channel.NOTIPY);
 		try {
 			postManService.notifySlack(msg);
 		} catch (PostManException e) {
