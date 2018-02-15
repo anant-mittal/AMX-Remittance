@@ -15,7 +15,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.config.AppConfig;
+import com.amx.jax.config.AmxConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
@@ -34,7 +34,7 @@ public class JaxNotificationService {
 	private PostManService postManService;
 
 	@Autowired
-	private AppConfig appConfig;
+	private AmxConfig appConfig;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 

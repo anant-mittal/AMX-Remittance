@@ -1,12 +1,11 @@
 package com.amx.jax.ui;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
+import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestListener;
+import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -24,10 +23,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.amx.jax.ui.config.JaxProperties;
+import com.amx.jax.postman.client.PostManContextListener;
 import com.amx.jax.ui.config.WebRequestFilter;
 import com.amx.jax.ui.config.WebRequestListener;
-import com.amx.jax.ui.service.HealthService;
 
 @ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
@@ -39,18 +37,18 @@ public class WebApplication extends SpringBootServletInitializer {
 	public static final String USE_HAZELCAST = "false";
 	public static final String USE_REDIS = "true";
 
-	@Autowired
-	private JaxProperties props;
-
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(WebApplication.class, args);
 
-		context.getBean(HealthService.class).sendApplicationLiveMessage();
+		// context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
-	@Bean("base_url")
-	public URL baseUrl() throws MalformedURLException {
-		return new URL(props.getJaxServiceUrl());
+	@NotNull
+	@Bean
+	ServletListenerRegistrationBean<ServletContextListener> myServletListener() {
+		ServletListenerRegistrationBean<ServletContextListener> srb = new ServletListenerRegistrationBean<>();
+		srb.setListener(new PostManContextListener());
+		return srb;
 	}
 
 	@Override

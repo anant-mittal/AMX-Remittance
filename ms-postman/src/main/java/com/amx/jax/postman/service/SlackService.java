@@ -33,22 +33,31 @@ public class SlackService {
 
 	public Message sendNotification(Message msg) throws UnirestException {
 
-		HttpResponse<String> response = Unirest.post(sendNotificationApi).header("content-type", "application/json")
-				.body(String.format("{\"text\": \"%s\"}", msg.getMessage())).asString();
+		Map<String, Object> message = new HashMap<>();
+		message.put("text", msg.getMessage());
+		message.put("channel", msg.getChannel().getCode());
+
+		if (msg.getLines().size() > 0 && msg.getLines().get(0).toString().length() > 0) {
+			Map<String, String> attachment = new HashMap<>();
+
+			StringBuilder tracetext = new StringBuilder();
+
+			for (String line : msg.getLines()) {
+				tracetext.append("\n" + line);
+			}
+
+			attachment.put("text", tracetext.toString());
+			attachment.put("color", "danger");
+			message.put("attachments", Collections.singletonList(attachment));
+		}
+
+		HttpResponse<String> response = Unirest.post("https://slack.com/api/chat.postMessage")
+				.header("Authorization",
+						"Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171")
+				.header("content-type", "application/json").body(message).asString();
+
 		LOGGER.info("Slack Sent", response.getBody());
 		return msg;
-	}
-
-	public Message sendNotification(String to, Exception e) {
-		LOGGER.error("Exception to=" + to, e);
-		try {
-			HttpResponse<String> response = Unirest.post(sendException).header("content-type", "application/json")
-					.body(String.format("{\"text\": \"%s = %s\"}", to, URLEncoder.encode(e.getMessage(), "UTF-8")))
-					.asString();
-		} catch (Exception e1) {
-			LOGGER.error("NestedException ", e1);
-		}
-		return null;
 	}
 
 	public Exception sendException(String to, Exception e) {

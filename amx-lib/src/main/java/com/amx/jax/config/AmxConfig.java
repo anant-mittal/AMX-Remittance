@@ -4,30 +4,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+import com.bootloaderjs.config.AppConfig;
+
 @PropertySource("common.properties")
 @Configuration
-public class AppConfig {
-
-	@Value("${app.prod}")
-	private Boolean prodMode;
-
-	public Boolean isProdMode() {
-		return prodMode;
-	}
-
-	@Value("${app.swagger}")
-	private Boolean swaggerEnabled;
-
-	public Boolean isSwaggerEnabled() {
-		return swaggerEnabled;
-	}
-
-	@Value("${app.debug}")
-	private Boolean debug;
-
-	public Boolean isDebug() {
-		return debug;
-	}
+public class AmxConfig extends AppConfig {
 
 	@Value("${jax.cdn.url}")
 	private String cdnURL;
