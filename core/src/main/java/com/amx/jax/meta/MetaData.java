@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
-
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.constant.Country;
 import com.amx.jax.scope.Tenant;
@@ -41,8 +40,9 @@ public class MetaData implements IMetaData {
 	private Tenant tenant = Tenant.DEFAULT;
 	
 	private String deviceIp;
-	
 	private String deviceId;
+    private String referrer;
+	
 
 	/**
 	 * This returns service factory object depending on site country
@@ -144,5 +144,15 @@ public class MetaData implements IMetaData {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	
+
+	public String getReferrer() {
+		return referrer;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
 	}
 }
