@@ -51,7 +51,7 @@ public class PayGController {
     @Value("${app.url}")
     String redirectURL;
 
-    @RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.POST)
+    @RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
     public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
             @RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
             @RequestParam(required = false) String callbackd, Model model) {
