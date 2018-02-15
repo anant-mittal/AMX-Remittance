@@ -29,6 +29,7 @@ public class PostManContextListener implements ServletContextListener {
 			msg.setChannel(Channel.DEPLOYER);
 			msg.setMessage("App : " + appConfig.getAppName());
 			msg.addLine("Status : server is started...");
+			LOGGER.info("{} : Status : server is started...",appConfig.getAppName());
 			try {
 				postManService.notifySlack(msg);
 			} catch (PostManException e) {
@@ -49,6 +50,7 @@ public class PostManContextListener implements ServletContextListener {
 			msg.setChannel(Channel.DEPLOYER);
 			msg.setMessage("App : " + appConfig.getAppName());
 			msg.addLine("Status : server is shutdown...");
+			LOGGER.info("{} : Status : server is shutdown...",appConfig.getAppName());
 			try {
 				postManService.notifySlack(msg);
 			} catch (PostManException e) {
