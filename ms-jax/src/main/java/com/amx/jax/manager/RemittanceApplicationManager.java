@@ -204,7 +204,12 @@ public class RemittanceApplicationManager {
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		remittanceApplication.setCreatedBy("JOMAX_ONLINE");// TODO get it from uiserver
+		logger.info("Created by :"+metaData.getReferrer());
+		if(!StringUtils.isBlank(metaData.getReferrer())){
+			remittanceApplication.setCreatedBy(metaData.getReferrer());
+		}else{
+			remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+		}
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
