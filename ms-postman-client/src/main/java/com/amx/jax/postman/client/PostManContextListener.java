@@ -9,13 +9,19 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Channel;
-import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.postman.model.Notipy.Color;
 import com.bootloaderjs.config.AppConfig;
 
 public class PostManContextListener implements ServletContextListener {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManContextListener.class);
+
+	public PostManService getService(ServletContextEvent sce) {
+		return WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext())
+				.getBean(PostManService.class);
+	}
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
@@ -23,13 +29,13 @@ public class PostManContextListener implements ServletContextListener {
 				.getBean(AppConfig.class);
 
 		if (!appConfig.isDebug()) {
-			PostManService postManService = WebApplicationContextUtils
-					.getRequiredWebApplicationContext(sce.getServletContext()).getBean(PostManService.class);
-			Message msg = new Message();
+			PostManService postManService = getService(sce);
+			Notipy msg = new Notipy();
 			msg.setChannel(Channel.DEPLOYER);
+			msg.setColor(Color.SUCCESS);
 			msg.setMessage("App : " + appConfig.getAppName());
 			msg.addLine("Status : server is started...");
-			LOGGER.info("{} : Status : server is started...",appConfig.getAppName());
+			LOGGER.info("{} : Status : server is started...", appConfig.getAppName());
 			try {
 				postManService.notifySlack(msg);
 			} catch (PostManException e) {
@@ -44,13 +50,13 @@ public class PostManContextListener implements ServletContextListener {
 				.getBean(AppConfig.class);
 
 		if (!appConfig.isDebug()) {
-			PostManService postManService = WebApplicationContextUtils
-					.getRequiredWebApplicationContext(sce.getServletContext()).getBean(PostManService.class);
-			Message msg = new Message();
+			PostManService postManService = getService(sce);
+			Notipy msg = new Notipy();
 			msg.setChannel(Channel.DEPLOYER);
+			msg.setColor(Color.DANGER);
 			msg.setMessage("App : " + appConfig.getAppName());
 			msg.addLine("Status : server is shutdown...");
-			LOGGER.info("{} : Status : server is shutdown...",appConfig.getAppName());
+			LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());
 			try {
 				postManService.notifySlack(msg);
 			} catch (PostManException e) {

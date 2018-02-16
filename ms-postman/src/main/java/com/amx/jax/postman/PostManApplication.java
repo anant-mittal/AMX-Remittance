@@ -14,7 +14,7 @@ import com.amx.jax.postman.model.Langs;
 import com.bootloaderjs.ArgUtil;
 
 @SpringBootApplication
-@ComponentScan("com.amx.jax")
+@ComponentScan(basePackages = { "com.amx.jax", "com.bootloaderjs" })
 @EnableAsync(proxyTargetClass = true)
 public class PostManApplication {
 
@@ -37,16 +37,4 @@ public class PostManApplication {
 		return srb;
 	}
 
-	// @Bean
-	// public SpringTemplateEngine customTemplateEngine(SpringTemplateEngine
-	// templateEngine) {
-	// SpringTemplateEngine customTemplateEngine = new SpringTemplateEngine();
-	// customTemplateEngine.setEnableSpringELCompiler(true);
-	// for (ITemplateResolver iterable_element :
-	// templateEngine.getTemplateResolvers()) {
-	// customTemplateEngine.setTemplateResolver(iterable_element);
-	// }
-	// customTemplateEngine.addDialect(new HelloDialect());
-	// return customTemplateEngine;
-	// }
 }

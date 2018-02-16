@@ -15,6 +15,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.ArgUtil;
@@ -111,13 +112,13 @@ public class PostManClient implements PostManService {
 	}
 
 	@Override
-	public Message notifySlack(Message msg) throws PostManException {
+	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
-			HttpResponse<Message> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)
+			HttpResponse<Notipy> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)
 					.queryString(PARAM_LANG, getLang()).header("accept", "application/json")
 					.header("Content-Type", "application/json")
 
-					.body(msg).asObject(Message.class);
+					.body(msg).asObject(Notipy.class);
 			return response.getBody();
 		} catch (UnirestException e) {
 			throw new PostManException(e);

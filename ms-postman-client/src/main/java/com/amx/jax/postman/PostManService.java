@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 
@@ -17,7 +18,7 @@ public interface PostManService {
 
 	public SMS sendSMS(SMS sms) throws PostManException;
 
-	public Message notifySlack(Message msg) throws PostManException;
+	public Notipy notifySlack(Notipy msg) throws PostManException;
 
 	public Exception notifyException(String title, Exception e);
 

@@ -16,7 +16,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.JsonUtil;
@@ -115,7 +115,7 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	@Async
-	public Message notifySlack(Message msg) throws PostManException {
+	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
 			return slackService.sendNotification(msg);
 		} catch (UnirestException e) {

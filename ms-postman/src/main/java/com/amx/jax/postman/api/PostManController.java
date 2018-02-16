@@ -19,6 +19,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
@@ -105,7 +106,7 @@ public class PostManController {
 	}
 
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK, method = RequestMethod.POST)
-	public Message notifySlack(@RequestBody Message msg) throws PostManException {
+	public Message notifySlack(@RequestBody Notipy msg) throws PostManException {
 		postManService.notifySlack(msg);
 		return msg;
 	}

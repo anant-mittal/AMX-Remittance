@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -31,7 +31,7 @@ public class SlackService {
 	@Value("${slack.send.exception}")
 	private String sendException;
 
-	public Message sendNotification(Message msg) throws UnirestException {
+	public Notipy sendNotification(Notipy msg) throws UnirestException {
 
 		Map<String, Object> message = new HashMap<>();
 		message.put("text", msg.getMessage());
@@ -47,7 +47,7 @@ public class SlackService {
 			}
 
 			attachment.put("text", tracetext.toString());
-			attachment.put("color", "danger");
+			attachment.put("color", msg.getColor().getCode());
 			message.put("attachments", Collections.singletonList(attachment));
 		}
 
@@ -57,6 +57,7 @@ public class SlackService {
 				.header("content-type", "application/json").body(message).asString();
 
 		LOGGER.info("Slack Sent", response.getBody());
+
 		return msg;
 	}
 

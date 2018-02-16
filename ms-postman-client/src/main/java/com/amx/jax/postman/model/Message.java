@@ -21,16 +21,6 @@ public class Message {
 
 	private List<String> lines = new ArrayList<String>();
 
-	protected Channel channel = Channel.DEFAULT;
-
-	public Channel getChannel() {
-		return channel;
-	}
-
-	public void setChannel(Channel channel) {
-		this.channel = channel;
-	}
-
 	@Null
 	@JsonIgnore
 	private String object;

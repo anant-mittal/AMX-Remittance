@@ -19,10 +19,10 @@ import com.amx.jax.config.AmxConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
-import com.amx.jax.postman.model.Channel;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 
@@ -170,7 +170,7 @@ public class JaxNotificationService {
 	}
 
 	public void sendToSlack(String channel, String to, String prefix, String otp) {
-		Message msg = new Message();
+		Notipy msg = new Notipy();
 		msg.setMessage(String.format("%s = %s", channel, to));
 		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
 		msg.setChannel(Channel.NOTIPY);

@@ -18,7 +18,6 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -38,8 +37,8 @@ public class WebApplication extends SpringBootServletInitializer {
 	public static final String USE_REDIS = "true";
 
 	public static void main(String[] args) {
-		ConfigurableApplicationContext context = SpringApplication.run(WebApplication.class, args);
-
+		// ConfigurableApplicationContext context =
+		SpringApplication.run(WebApplication.class, args);
 		// context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
