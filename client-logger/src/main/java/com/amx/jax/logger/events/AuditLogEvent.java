@@ -2,19 +2,19 @@ package com.amx.jax.logger.events;
 
 public interface AuditLogEvent {
 
-	public static enum Type {
+	public static enum EventType {
 		DEFAULT_EVENT,
 		//
 		LOGIN_SUCCESS, LOGIN_FAIL;
-		public static final Type DEFAULT = DEFAULT_EVENT;
+		public static final EventType DEFAULT = DEFAULT_EVENT;
 
-		Type() {
+		EventType() {
 		}
 	}
 
 	abstract public long getTimestamp();
 
-	abstract public Type getType();
+	abstract public EventType getType();
 
 	abstract public String getMessage();
 

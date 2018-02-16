@@ -3,10 +3,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>ms-user</artifactId>
-	<packaging>jar</packaging>
-
 	<name>ms-user</name>
+	<description>user service of jax system</description>
+	<packaging>jar</packaging>
 	<url>http://maven.apache.org</url>
+
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>jax</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,9 +35,4 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<parent>
-		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 </project>
