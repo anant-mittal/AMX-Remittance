@@ -105,7 +105,7 @@ public class MetaController {
 				map.put("cemail", cemail);
 				map.put("message", message);
 				Email email = new Email();
-				email.setFrom("exch-online1@almullagroup.com");
+				email.setFrom("exch-online@almullagroup.com");
 				email.setReplyTo(cemail);
 				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com",
 						"exch-online1@almullagroup.com", "exch-amx@almullagroup.com");
