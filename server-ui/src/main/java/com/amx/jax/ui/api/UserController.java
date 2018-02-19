@@ -61,6 +61,7 @@ public class UserController {
 			throw new HttpUnauthorizedException();
 		}
 	}
+	
 
 	/**
 	 * Asks for user login and password
