@@ -50,12 +50,13 @@ public class UserController {
 	private void addSeqCookie(String seqKey) {
 		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, sessionService.getGuestSession().getNextToken(seqKey));
 		kooky.setMaxAge(300);
-		//kooky.setPath("/");
+		// kooky.setPath("/");
 		response.addCookie(kooky);
 	}
 
+	@SuppressWarnings("unused")
 	private void validateSeqCookie(String seqKey, String seqValue) {
-		if (!sessionService.getGuestSession().isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
+		if (false && !sessionService.getGuestSession().isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			throw new HttpUnauthorizedException();
 		}
