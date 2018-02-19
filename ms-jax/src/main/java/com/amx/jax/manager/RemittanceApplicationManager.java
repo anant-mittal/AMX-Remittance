@@ -21,6 +21,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -91,6 +92,9 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BankMetaService bankMetaService;
+	
+	   @Autowired
+	    private JaxMetaInfo jaxMetaInfo;
 	
 	/**
 	 * @param remitApplParametersMap2
@@ -204,7 +208,9 @@ public class RemittanceApplicationManager {
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		logger.info("Created by :"+metaData.getReferrer());
+		//logger.info("Created by :"+metaData.getReferrer());
+		logger.info("Created by :"+jaxMetaInfo.getReferrer());
+		
 		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
 		}else{
