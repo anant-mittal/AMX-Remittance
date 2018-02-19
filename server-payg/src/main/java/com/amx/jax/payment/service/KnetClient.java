@@ -31,6 +31,7 @@ import com.amx.jax.scope.Tenant;
 @Component
 public class KnetClient implements PayGClient {
 
+	
 	private static Logger LOGGER = Logger.getLogger(KnetClient.class);
 	
 	private static String URL_PARAMS = "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s";

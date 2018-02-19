@@ -72,14 +72,13 @@ public class SessionService {
 	@Autowired
 	RedissonClient redisson;
 
-	@SuppressWarnings("rawtypes")
-	LocalCachedMapOptions localCacheOptions = LocalCachedMapOptions.defaults().evictionPolicy(EvictionPolicy.NONE)
-			.cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE).syncStrategy(SyncStrategy.INVALIDATE)
-			.timeToLive(10000).maxIdle(10000);
+	LocalCachedMapOptions<String, String> localCacheOptions = LocalCachedMapOptions.<String, String>defaults()
+			.evictionPolicy(EvictionPolicy.NONE).cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE)
+			.syncStrategy(SyncStrategy.INVALIDATE).timeToLive(10000).maxIdle(10000);
 
-	@SuppressWarnings("unchecked")
 	private RLocalCachedMap<String, String> getLoggedInUsers() {
-		return redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
+		return map;
 	}
 
 	public GuestSession getGuestSession() {
@@ -105,9 +104,10 @@ public class SessionService {
 		token.setDetails(new WebAuthenticationDetails(request));
 		Authentication authentication = this.customerAuthProvider.authenticate(token);
 		userSession.setCustomerModel(customerModel);
-		this.indexUser();
+		this.indexUser(authentication);
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
+
 		SessionEvent sessionEvent = new SessionEvent();
 		if (valid) {
 			auditLoggerService.log(sessionEvent);
@@ -149,7 +149,7 @@ public class SessionService {
 	 * multiple deployments.
 	 * 
 	 */
-	public void indexUser() {
+	public void indexUser(Authentication authentication) {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
 			RLocalCachedMap<String, String> map = this.getLoggedInUsers();

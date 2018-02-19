@@ -101,10 +101,10 @@
 			</dependency> <dependency> <groupId>org.springframework.session</groupId> 
 			<artifactId>spring-session</artifactId> </dependency> -->
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session</artifactId>
-		</dependency>
+		</dependency> -->
 
 		<dependency>
 			<groupId>org.redisson</groupId>
