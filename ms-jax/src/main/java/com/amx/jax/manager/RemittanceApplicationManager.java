@@ -205,7 +205,11 @@ public class RemittanceApplicationManager {
 		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
 		}else{
-			remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+			if(!StringUtils.isBlank(metaData.getDeviceType())){
+			remittanceApplication.setCreatedBy("JOMAX_"+metaData.getDeviceType());
+			}else{
+				remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+			}
 		}
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
