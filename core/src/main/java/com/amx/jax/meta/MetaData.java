@@ -43,6 +43,8 @@ public class MetaData implements IMetaData {
 	private String deviceIp;
 	private String deviceId;
     private String referrer;
+    private String deviceType;
+    
 	
 
 	/**
@@ -155,5 +157,13 @@ public class MetaData implements IMetaData {
 
 	public void setReferrer(String referrer) {
 		this.referrer = referrer;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 }

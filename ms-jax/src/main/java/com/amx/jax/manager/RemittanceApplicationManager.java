@@ -21,7 +21,6 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -93,9 +92,6 @@ public class RemittanceApplicationManager {
 	@Autowired
 	private BankMetaService bankMetaService;
 	
-	   @Autowired
-	    private JaxMetaInfo jaxMetaInfo;
-	
 	/**
 	 * @param remitApplParametersMap2
 	 * @param validatedObjects:
@@ -121,8 +117,7 @@ public class RemittanceApplicationManager {
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
-		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
-				.get(0);
+		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
 		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
@@ -147,8 +142,7 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication
-				.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -203,14 +197,11 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 
 		try {
-			remittanceApplication
-					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		//logger.info("Created by :"+metaData.getReferrer());
-		logger.info("Created by :"+jaxMetaInfo.getReferrer());
-		
+		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType());
 		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
 		}else{
@@ -220,8 +211,7 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(
-				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
 		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		validateAdditionalErrorMessages(requestModel);
