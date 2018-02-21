@@ -17,7 +17,7 @@ public class CacheBox<T> {
 	@Autowired
 	RedissonClient redisson;
 
-	String cahceName = "common";
+	String cahceName = getClass().getName();
 
 	public RLocalCachedMap<String, T> map() {
 		return redisson.getLocalCachedMap(cahceName, localCacheOptions);
