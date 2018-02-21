@@ -5,12 +5,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.redisson.api.LocalCachedMapOptions;
-import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
-import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
-import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
-import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +19,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.logger.AuditLoggerService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.session.LoggedInUsers;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
@@ -70,16 +66,7 @@ public class SessionService {
 	}
 
 	@Autowired
-	RedissonClient redisson;
-
-	LocalCachedMapOptions<String, String> localCacheOptions = LocalCachedMapOptions.<String, String>defaults()
-			.evictionPolicy(EvictionPolicy.NONE).cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE)
-			.syncStrategy(SyncStrategy.INVALIDATE).timeToLive(10000).maxIdle(10000);
-
-	private RLocalCachedMap<String, String> getLoggedInUsers() {
-		RLocalCachedMap<String, String> map = redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
-		return map;
-	}
+	LoggedInUsers loggedInUsers;
 
 	public GuestSession getGuestSession() {
 		return guestSession;
@@ -152,7 +139,7 @@ public class SessionService {
 	public void indexUser(Authentication authentication) {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			String uuidToken = UUID.randomUUID().toString();
 			userSession.setUuidToken(uuidToken);
 			map.fastPut(userKeyString, uuidToken);
@@ -170,7 +157,7 @@ public class SessionService {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
 
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 
 			String uuidToken = userSession.getUuidToken();
 			if (map.containsKey(userKeyString) && uuidToken != null) {
@@ -187,7 +174,7 @@ public class SessionService {
 	 */
 	public void unauthorize() {
 		if (this.indexedUser()) {
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			String userKeyString = getUserKeyString();
 			map.fastRemove(userKeyString);
 			LOGGER.info("User is being unauthorized from current session userKeyString={}", userKeyString);

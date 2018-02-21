@@ -15,11 +15,9 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 // @EnableRedissonHttpSession
-@PropertySource("cache-config.properties")
 @ConditionalOnProperty("app.cache")
 @AutoConfigureAfter(RedisAutoConfiguration.class)
 public class CacheRedisConfiguration

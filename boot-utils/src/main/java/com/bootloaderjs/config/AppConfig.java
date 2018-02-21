@@ -5,7 +5,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource("classpath:app-config.properties")
+@PropertySource(value = "classpath:app-config.properties")
 public class AppConfig {
 
 	@Value("${app.name}")
@@ -33,6 +33,13 @@ public class AppConfig {
 	private Boolean debug;
 
 	public Boolean isDebug() {
+		return debug;
+	}
+
+	@Value("${app.cache}")
+	private Boolean cache;
+
+	public Boolean isCache() {
 		return debug;
 	}
 }

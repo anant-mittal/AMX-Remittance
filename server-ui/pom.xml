@@ -106,7 +106,7 @@
 			<artifactId>spring-session</artifactId>
 		</dependency> -->
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.redisson</groupId>
 			<artifactId>redisson</artifactId>
 			<version>3.5.6</version>
@@ -121,7 +121,20 @@
 			<groupId>de.ruedigermoeller</groupId>
 			<artifactId>fst</artifactId>
 			<version>2.54</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-cache</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-session</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 
 		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mobile</artifactId> 
 			</dependency> -->
