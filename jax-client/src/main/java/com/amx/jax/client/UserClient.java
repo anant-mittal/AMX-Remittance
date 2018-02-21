@@ -52,7 +52,7 @@ public class UserClient extends AbstractJaxServiceClient {
             if (StringUtils.isBlank(identityId) || "null".equalsIgnoreCase(identityId)) {
                 return validateOtp(mOtp, eOtp);
             }
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             LOGGER.info("calling validateOtp api: ");
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
@@ -65,6 +65,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in validateOtp : ",e);
             throw new JaxSystemError();
         } // end of try-catch
     }
@@ -72,7 +73,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> validateOtp(String mOtp, String eOtp)
             throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             LOGGER.info("calling validateOtp api: ");
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/validate-otp/";
@@ -85,6 +86,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in validateOtp : ",e);
             throw new JaxSystemError();
         } // end of try-catch
     }
@@ -92,7 +94,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CivilIdOtpModel> sendOtpForCivilId(String identityId)
             throws InvalidInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
             LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
@@ -105,6 +107,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in sendOtpForCivilId : ",e);
             throw new JaxSystemError();
         } // end of try-catch
     }
@@ -112,7 +115,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CivilIdOtpModel> sendResetOtpForCivilId(String identityId)
             throws InvalidInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-reset-otp/";
             LOGGER.info("calling sendResetOtpForCivilId api: " + sendOtpUrl);
@@ -125,6 +128,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in sendResetOtpForCivilId : ",e);
             throw new JaxSystemError();
         } // end of try-catch
     }
@@ -132,7 +136,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CivilIdOtpModel> sendOtpForCivilId()
             throws InvalidInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
             LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
@@ -145,6 +149,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in sendOtpForCivilId : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -153,7 +158,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> saveCustomer(String json)
             throws CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
             LOGGER.info("calling saveCustomer api: " + sendOtpUrl);
@@ -165,6 +170,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in saveCustomer : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -173,7 +179,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions, String mOtp,
             String eOtp) {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
 
             CustomerModel custModel = new CustomerModel();
             custModel.setMotp(mOtp);
@@ -192,6 +198,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in saveSecurityQuestions : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -199,7 +206,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<CustomerModel> savePhishiingImage(String caption, String imageUrl, String mOtp, String eOtp) {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
 
             CustomerModel custModel = new CustomerModel();
             custModel.setMotp(mOtp);
@@ -219,6 +226,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in savePhishiingImage : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -227,7 +235,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String mOtp, String eOtp)
             throws AlreadyExistsException {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             CustomerModel custModel = new CustomerModel();
             custModel.setLoginId(loginId);
             custModel.setPassword(password);
@@ -245,6 +253,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in saveLoginIdAndPassword : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -256,7 +265,7 @@ public class UserClient extends AbstractJaxServiceClient {
      */
     public ApiResponse<CustomerModel> fetchRandomQuestoins(int size) {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
 
             BigDecimal customerId = jaxMetaInfo.getCustomerId();
             HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
@@ -272,6 +281,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in fetchRandomQuestoins : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -280,7 +290,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> login(String loginId, String password)
             throws IncorrectInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             CustomerModel cmodel = new CustomerModel();
             cmodel.setLoginId(loginId);
             cmodel.setPassword(password);
@@ -295,6 +305,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in login : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -303,7 +314,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<CustomerModel> validateSecurityQuestions(List<SecurityQuestionModel> securityquestions)
             throws IncorrectInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
             CustomerModel custModel = new CustomerModel();
             LOGGER.info("validateSecurityQuestions for customer id " + jaxMetaInfo.getCustomerId());
 
@@ -321,6 +332,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in validateSecurityQuestions : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -329,7 +341,7 @@ public class UserClient extends AbstractJaxServiceClient {
     public ApiResponse<BooleanResponse> updatePassword(String password, String mOtp, String eOtp)
             throws IncorrectInputException, CustomerValidationException, LimitExeededException {
         try {
-            ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
             String endpoint = CUSTOMER_ENDPOINT + UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
             CustomerModel custModel = new CustomerModel();
             custModel.setPassword(password);
@@ -346,6 +358,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in updatePassword : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -353,7 +366,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<CustomerDto> getMyProfileInfo() {
         try {
-            ResponseEntity<ApiResponse<CustomerDto>> response = null;
+            ResponseEntity<ApiResponse<CustomerDto>> response;
 
             LOGGER.info("Bene Clinet to get bene list Input String :");
             String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
@@ -366,6 +379,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in getMyProfileInfo : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -373,7 +387,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<BooleanResponse> unLockCustomer() {
         try {
-            ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
             String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/unlock/";
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -383,6 +397,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in unLockCustomer : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -390,7 +405,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<BooleanResponse> deActivateCustomer() {
         try {
-            ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
             String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/deactivate/";
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -400,6 +415,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in deActivateCustomer : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -412,7 +428,7 @@ public class UserClient extends AbstractJaxServiceClient {
             custModel.setCustomerId(jaxMetaInfo.getCustomerId());
             custModel.setEmail(email);
 
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
             LOGGER.info("calling sendOtp for email update api: " + sendOtpUrl);
@@ -425,6 +441,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in sendOtpForEmailUpdate : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -437,7 +454,7 @@ public class UserClient extends AbstractJaxServiceClient {
             custModel.setCustomerId(jaxMetaInfo.getCustomerId());
             custModel.setMobile(mobile);
 
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
             LOGGER.info("calling sendOtp for mobile update api: " + sendOtpUrl);
@@ -450,6 +467,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in sendOtpForMobileUpdate : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -457,7 +475,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<BooleanResponse> unLockCustomer(String civilId) {
         try {
-            ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
             String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/unlock/" + civilId;
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -467,6 +485,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in unLockCustomer : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -474,7 +493,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<BooleanResponse> deActivateCustomer(String civilId) {
         try {
-            ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
             String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/deactivate/" + civilId;
             HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
             response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -484,6 +503,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in deActivateCustomer : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -491,7 +511,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<CustomerModel> saveEmail(String email, String mOtp, String eOtp) {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
 
             CustomerModel custModel = new CustomerModel();
             custModel.setMotp(mOtp);
@@ -510,6 +530,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in saveEmail : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -517,7 +538,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
     public ApiResponse<CustomerModel> saveMobile(String mobile, String mOtp, String eOtp) {
         try {
-            ResponseEntity<ApiResponse<CustomerModel>> response = null;
+            ResponseEntity<ApiResponse<CustomerModel>> response;
 
             CustomerModel custModel = new CustomerModel();
             custModel.setMotp(mOtp);
@@ -536,6 +557,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in saveMobile : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 
@@ -545,7 +567,7 @@ public class UserClient extends AbstractJaxServiceClient {
             throws InvalidInputException, CustomerValidationException, LimitExeededException {
         try {
             Boolean initRegistration = new Boolean(true);
-            ResponseEntity<ApiResponse<CivilIdOtpModel>> response = null;
+            ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
             HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/" + initRegistration
                     + "/send-otp/";
@@ -559,6 +581,7 @@ public class UserClient extends AbstractJaxServiceClient {
         } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
+            LOGGER.error("exception in initRegistration : ",e);
             throw new JaxSystemError();
         } // end of try-catch
     }
