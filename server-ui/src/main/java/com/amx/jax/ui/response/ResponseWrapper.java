@@ -24,13 +24,13 @@ public class ResponseWrapper<T> implements Serializable {
 
 	private static final long serialVersionUID = 7545829974699803746L;
 
-	private Long traceId = null;
+	private String traceId = null;
 
-	public Long getTraceId() {
+	public String getTraceId() {
 		return traceId;
 	}
 
-	public void setTraceId(Long traceId) {
+	public void setTraceId(String traceId) {
 		this.traceId = traceId;
 	}
 

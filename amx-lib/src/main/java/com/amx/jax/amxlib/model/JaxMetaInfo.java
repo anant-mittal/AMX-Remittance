@@ -62,13 +62,13 @@ public class JaxMetaInfo {
 		this.referrer = referrer;
 	}
 
-	private Long traceId;
+	private String traceId;
 
-	public Long getTraceId() {
+	public String getTraceId() {
 		return traceId;
 	}
 
-	public void setTraceId(Long traceId) {
+	public void setTraceId(String traceId) {
 		this.traceId = traceId;
 	}
 

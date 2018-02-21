@@ -25,6 +25,7 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.service.UserService;
+import com.amx.jax.ui.session.GuestSession;
 
 import io.swagger.annotations.Api;
 
@@ -44,25 +45,6 @@ public class UserController {
 	@Autowired
 	private TenantContext tenantContext;
 
-	@Autowired
-	private HttpServletResponse response;
-
-	private void addSeqCookie(String seqKey) {
-		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, sessionService.getGuestSession().getNextToken(seqKey));
-		kooky.setMaxAge(300);
-		// kooky.setPath("/");
-		response.addCookie(kooky);
-	}
-
-	@SuppressWarnings("unused")
-	private void validateSeqCookie(String seqKey, String seqValue) {
-		if (false && !sessionService.getGuestSession().isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			throw new HttpUnauthorizedException();
-		}
-	}
-	
-
 	/**
 	 * Asks for user login and password
 	 * 
@@ -73,15 +55,12 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
 			@RequestParam(required = false) String password) {
-		addSeqCookie(UIConstants.SEQ_KEY_STEP_LOGIN);
 		return loginService.login(identity, password);
 	}
 
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
 			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
-		validateSeqCookie(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue);
-		addSeqCookie(UIConstants.SEQ_KEY_STEP_SECQ);
 		return loginService.loginSecQues(guestanswer);
 	}
 
@@ -95,12 +74,16 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
+		return loginService.updatepwd(password, mOtp, eOtp);
+	}
+
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-
 		sessionService.unauthorize();
-
 		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}

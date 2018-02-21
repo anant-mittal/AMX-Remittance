@@ -119,6 +119,9 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getDeviceId());
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getDeviceIp());
 		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getDeviceType().toString());
+		
+		
+		log.info("referrer = {} ",sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
