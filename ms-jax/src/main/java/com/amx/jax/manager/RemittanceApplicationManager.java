@@ -91,8 +91,9 @@ public class RemittanceApplicationManager {
 
 	@Autowired
 	private BankMetaService bankMetaService;
-
+	
 	/**
+	 * @param remitApplParametersMap2
 	 * @param validatedObjects:
 	 *            - contains objects obtained after being passed through beneficiary
 	 *            validation process, validationResults- validation result like
@@ -100,7 +101,8 @@ public class RemittanceApplicationManager {
 	 * @return
 	 **/
 	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
-			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults) {
+			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
+			Map<String, Object> remitApplParametersMap) {
 
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
@@ -115,8 +117,7 @@ public class RemittanceApplicationManager {
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
 		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
-		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION)
-				.get(0);
+		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
 		remitApplParametersMap.put("P_DOCUMENT_ID", document.getDocumentID());
@@ -141,8 +142,7 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication
-				.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -197,19 +197,31 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setSelectedCurrencyId(foreignCurrencyId);
 
 		try {
-			remittanceApplication
-					.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
+			remittanceApplication.setAccountMmyyyy(new SimpleDateFormat("dd/MM/yyyy").parse(DateUtil.getCurrentAccMMYear()));
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		remittanceApplication.setCreatedBy("JOMAX_ONLINE");// TODO get it from uiserver
+		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType());
+		if(!StringUtils.isBlank(metaData.getReferrer())){
+			remittanceApplication.setCreatedBy(metaData.getReferrer());
+		}else{
+			if(!StringUtils.isBlank(metaData.getDeviceType())){
+				if(metaData.getDeviceType().equalsIgnoreCase("NORMAL")){
+					remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+				}else{
+					remittanceApplication.setCreatedBy("ONLINE_"+metaData.getDeviceType());
+				}
+			}else{
+				remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+			 }
+		}
 		remittanceApplication.setCreatedDate(new Date());
 		remittanceApplication.setIsactive(ConstantDocument.Yes);
 		remittanceApplication.setSourceofincome(requestModel.getSourceOfFund());
 		remittanceApplication.setApplInd(ConstantDocument.Online);
-		remittanceApplication.setDocumentNo(
-				generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
+		remittanceApplication.setDocumentNo(generateDocumentNumber(remittanceApplication.getExCountryBranch(), ConstantDocument.Update));
 		remittanceApplication.setPaymentId(remittanceApplication.getDocumentNo().toString());
+		remittanceApplication.setWuIpAddress(metaData.getDeviceIp());
 		validateAdditionalErrorMessages(requestModel);
 		validateBannedBank();
 		validateDailyBeneficiaryTransactionLimit(beneDetails);
@@ -257,9 +269,20 @@ public class RemittanceApplicationManager {
 		remitApplParametersMap.put("P_ADDITIONAL_BANK_RULE_ID_1", requestModel.getAdditionalBankRuleFiledId());
 		if (requestModel.getSrlId() != null) {
 			BigDecimal srlId = requestModel.getSrlId();
-			logger.info("Srl Id received: "+ srlId);
-			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId);
+			logger.info("Srl Id received: " + srlId);
+			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+			// BigDecimal countryId = (BigDecimal)
+			// remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
+			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
+					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
+			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
+				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
+						+ additionaBnankDetail.getServiceApplicabilityRuleId());
 				remitApplParametersMap.put("P_AMIEC_CODE_1", additionaBnankDetail.getAmiecCode());
 				remitApplParametersMap.put("P_FLEX_FIELD_VALUE_1", additionaBnankDetail.getAmieceDescription());
 				remitApplParametersMap.put("P_FLEX_FIELD_CODE_1", additionaBnankDetail.getFlexField());

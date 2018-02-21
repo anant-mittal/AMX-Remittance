@@ -118,4 +118,5 @@ public class Email extends Message {
 		String[] toSplit = toMultiple.split(",");
 		return toSplit;
 	}
+
 }

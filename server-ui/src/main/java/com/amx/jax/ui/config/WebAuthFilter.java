@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 import com.bootloaderjs.ContextUtil;
 
@@ -47,7 +47,7 @@ public class WebAuthFilter implements Filter {
 				response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 				response.setHeader("Location", "/logout");
 			} else {
-				String referrer = req.getParameter(Constants.REFERRER);
+				String referrer = req.getParameter(UIConstants.REFERRER);
 				if (referrer != null) {
 					sessionService.getUserSession().setReferrer(referrer);
 				}

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.exrateservice.service.ExchangeRateService;
 
-import io.swagger.annotations.ApiParam;
-
 @RestController
 @RequestMapping(EXCHANGE_RATE_ENDPOINT)
 @SuppressWarnings("rawtypes")

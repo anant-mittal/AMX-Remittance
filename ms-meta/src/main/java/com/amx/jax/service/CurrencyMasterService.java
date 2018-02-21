@@ -9,7 +9,6 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -39,7 +38,7 @@ public class CurrencyMasterService extends AbstractService {
 
 	@Autowired
 	ConverterUtil converterUtil;
-
+	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
 	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
@@ -56,6 +55,7 @@ public class CurrencyMasterService extends AbstractService {
 		return response;
 
 	}
+
 
 	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);

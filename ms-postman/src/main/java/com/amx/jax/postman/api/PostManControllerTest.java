@@ -3,6 +3,7 @@ package com.amx.jax.postman.api;
 import java.io.IOException;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,16 +20,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -48,22 +55,52 @@ public class PostManControllerTest {
 	@Autowired
 	private ApplicationContext context;
 
+	@Autowired
+	private HttpServletRequest request;
+
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private LocaleResolver localeResolver;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
+
+	@RequestMapping(value = "exception")
+	public Message notifySlack() throws UnirestException {
+
+		try {
+			throw new Exception("Some Error");
+		} catch (Exception e) {
+			postManClient.notifyException("My Error", e);
+		}
+		return null;
+	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data)
-			throws IOException, DocumentException, UnirestException {
+			throws IOException, DocumentException, PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
+		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
+		// localeResolver.resolveLocale(request)));
+
+		Notipy msg = new Notipy();
+		msg.setChannel(Channel.NOTIPY);
+		msg.setMessage("LT" + "\n is Up and Runnnig.");
+		postManClient.notifySlack(msg);
+
+		postManClient.setLang(localeResolver.resolveLocale(request).toString());
+
 		if ("pdf".equals(ext)) {
-			File file = this.processTemplate(template, map, File.Type.PDF);
+			File file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = this.processTemplate(template, map, null);
+			File file = postManClient.processTemplate(template, map, null);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);
@@ -81,7 +118,7 @@ public class PostManControllerTest {
 
 				eml.addFile(file2);
 
-				postManClient.sendEmail(eml);
+				postManClient.sendEmailAsync(eml);
 			}
 			return file.getContent();
 		} else {

@@ -1,9 +1,8 @@
 
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -55,11 +55,11 @@ public class UserController {
 
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			HttpServletRequest request) {
-		return loginService.loginSecQues(guestanswer, request);
+			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
+		return loginService.loginSecQues(guestanswer);
 	}
 
-	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<LoginData> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		if (mOtp == null && eOtp == null) {
@@ -69,12 +69,16 @@ public class UserController {
 		}
 	}
 
+	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
+		return loginService.updatepwd(password, mOtp, eOtp);
+	}
+
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-
 		sessionService.unauthorize();
-
 		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}

@@ -2,7 +2,7 @@
 
 source config/setvars.sh
 
-bash server-payg/setup.sh
+#bash server-payg/setup.sh
 
 #mvn clean
 

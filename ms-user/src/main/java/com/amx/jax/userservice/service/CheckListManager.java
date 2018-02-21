@@ -15,7 +15,6 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 

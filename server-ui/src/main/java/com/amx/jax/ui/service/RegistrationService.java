@@ -17,7 +17,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -144,14 +144,14 @@ public class RegistrationService {
 
 			String emailId = userSessionInfo.getCustomerModel().getEmail();
 
-			if (emailId != null && !Constants.EMPTY.equals(emailId)) {
+			if (emailId != null && !UIConstants.EMPTY.equals(emailId)) {
 				PersonInfo personInfo = userSessionInfo.getCustomerModel().getPersoninfo();
 				Email email = new Email();
-				email.setSubject(Constants.REG_SUC);
+				email.setSubject(UIConstants.REG_SUC);
 				email.addTo(emailId);
 				email.setTemplate(Templates.REG_SUC);
 				email.setHtml(true);
-				email.getModel().put(Constants.RESP_DATA_KEY, personInfo);
+				email.getModel().put(UIConstants.RESP_DATA_KEY, personInfo);
 
 				try {
 					postManService.sendEmail(email);

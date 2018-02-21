@@ -7,15 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
-import com.amx.jax.client.BeneClient;
-import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.client.RateAlertClient;
-import com.amx.jax.client.RemitClient;
-import com.amx.jax.client.UserClient;
-import com.amx.jax.dict.Language;
-import com.amx.jax.scope.TenantContextHolder;
-import com.bootloaderjs.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {

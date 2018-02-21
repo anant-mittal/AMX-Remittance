@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html th:marginheight="0" xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:th="http://www.thymeleaf.org" lang="ar">
+<html th:marginheight="0"  th:lang="ar-kw" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+	
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -187,11 +187,11 @@ html, body {
 		</tr>
 		<tr>
 			<td th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
-			<td th:text="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
+			<td pm:pftext="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
 		</tr>
 	</table>
 	<!--header table end-->
-	<table class="mainTable" th:each="remittance : ${data.remittanceApplList}">
+	<table class="mainTable" th:each="remittance : ${data.remittanceApplList}" style="height:970px;page-break-before: always;">
 		<tr>
 			<td class="mainTable-border">
 				<!--customer table-->
@@ -199,27 +199,27 @@ html, body {
 					<tr>
 						<td>Sender Details</td>
 						<td></td>
-						<td>بيانات الراسل</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.senderdetails'))}"></td>
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
-						<td th:text="${remittance.firstName}">--</td>
-						<td>اسم / رقم البطاقة المدنية للعميل</td>
+						<td pm:pftext="${remittance.firstName}">--</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.custmeridname'))}"></td>
 					</tr>
 					<tr>
 						<td>Contact No</td>
 						<td th:text="${remittance.mobileNo}">--</td>
-						<td>رقم الهاتف</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.contactno'))}"></td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
 						<td th:text="${remittance.civilId}">--</td>
-						<td>رقم البطاقة المدنية</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.civilId'))}"></td>
 					</tr>
 					<tr>
 						<td>ID Expiry Date</td>
 						<td th:text="${remittance.idExpiryDate}">--</td>
-						<td>تاريخ انتهاء البطاقة المدنية</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.idExpiryDate'))}"></td>
 					</tr>
 				</table> <!--customer table end-->
 				</td></tr>
@@ -229,12 +229,12 @@ html, body {
 					<tr>
 						<td>Loyalty Point Expiring</td>
 						<td th:text="${remittance.loyalityPointExpiring}">--</td>
-						<td>تاريخ انتهاء سريان النقاط</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.loyalityPointExpiring'))}"></td>
 					</tr>
 					<tr>
 						<td>Insurance</td>
-						<td th:text="${remittance.insurence1}">--</td>
-						<td>التأمين</td>
+						<td pm:pftext="${remittance.insurence1}">--</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.insurence1'))}"></td>
 					</tr>
 				
 				</table> <!--loyalty insurance table end--> 
@@ -245,17 +245,17 @@ html, body {
 					<tr>
 						<td>No Of Transactions</td>
 						<td th:text="${remittance.noOfTransaction}">--</td>
-						<td>عدد المعاملات</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.noOfTransaction'))}"></td>
 					</tr>
 					<tr>
 						<td>Location / Phone No</td>
 						<td th:text="${remittance.location} + ' / ' + ${remittance.phoneNumber}">KUWAIT / 1840123</td>
-						<td>الموقع / رقم الهاتف</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.locationphoneNumber'))}"></td>
 					</tr>
 					<tr>
 						<td>Receipt No / Date</td>
 						<td th:text="${remittance.receiptNo} +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; '+  ${remittance.date} +''">2017 / 27000003 / 24/05/2017</td>
-						<td>رقم / تاريخ الإيصال</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.receiptNopin'))}"></td>
 					</tr>
 				</table> <!--transaction detail table end-->
 				</td></tr>
@@ -264,87 +264,87 @@ html, body {
 					<tr>
 						<td>Beneficiary Details</td>
 						<td></td>
-						<td>بيانات المستفيد</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.beneficiaryDetails'))}"></td>
 					</tr>
 					<tr>
 						<td>Transaction No</td>
 						<td><span th:text="${remittance.transactionNo}"></span> <span th:text="${(remittance.pinNo != null) ? 'Pin No: ' + remittance.pinNo : 'Pin No:' }" style="padding-left:100px; font-weight: bold"></span></td>
-						<td>رقم المعاملة</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.transactionNoPin'))}"></td>
 					</tr>
 					<tr>
 						<td>Name</td>
-						<td th:text="${remittance.beneficiaryName}">--</td>
-						<td>الاسم</td>
+						<td pm:pftext="${remittance.beneficiaryName}">--</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.beneficiaryName'))}"></td>
 					</tr>
 					<tr>
 						<td>Bank Name</td>
 						<td th:text="${remittance.benefeciaryBankName}">--</td>
-						<td> اسم البنك</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryBankName'))}"> </td>
 					</tr>
 					<tr>
 						<td>Branch Name</td>
 						<td th:text="${remittance.benefeciaryBranchName}">--</td>
-						<td>اسم الفرع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryBranchName'))}"></td>
 					</tr>
 					<tr>
 						<td>Account No</td>
 						<td th:text="${remittance.benefeciaryAccountNumber}">--</td>
-						<td>رقم الحساب</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryAccountNumber'))}"></td>
 					</tr>
 					<tr>
 						<td>Payment Channel</td>
 						<td th:text="${remittance.paymentChannel}">--</td>
-						<td>قناة الدفع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.paymentChannel'))}"></td>
 					</tr>
 					<tr>
 						<td>Currency &amp; Amount</td>
 						<td th:text="${remittance.currencyAndAmount}">--</td>
-						<td>العُملة والمبلغ</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.currencyAndAmount'))}"></td>
 					</tr>
 					<tr>
 						<td>Exchange Rate</td>
 						<td th:text="${remittance.exchangeRate}">--</td>
-						<td>سعر الصرف</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.exchangeRate'))}"></td>
 					</tr>
 					<tr>
 						<td>KWD Amount</td>
 						<td th:text="${remittance.localTransactionAmount}">--</td>
-						<td>المبلغ بالدينار الكويتى</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.localTransactionAmount'))}"></td>
 					</tr>
 					<tr>
 						<td>Commission</td>
 						<td th:text="${remittance.commision}">--</td>
-						<td>العمولة</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.commision'))}"></td>
 					</tr>
 					<tr>
 						<td>Other Charges</td>
 						<td th:text="${remittance.otherCharges}">--</td>
-						<td>رسوم أُخرى</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.otherCharges'))}"></td>
 					</tr>
 					<tr>
 						<td>Total Amount</td>
 						<td th:text="${remittance.totalAmount}">--</td>
-						<td>إجمالي المبلغ</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.totalAmount'))}"></td>
 					</tr>
 					<tr>
 						<td>Further Instructions</td>
 						<td th:text="${remittance.futherInstructions}">--</td>
-						<td>تعليمات إضافية</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.futherInstructions'))}"></td>
 					</tr>
 					<tr>
 						<td>Source Of Income</td>
 						<td th:text="${remittance.sourceOfIncome}">--</td>
-						<td>مصدر الدخل</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.sourceOfIncome'))}"></td>
 					</tr>
 					<tr>
 						<td>Intermediary Bank</td>
 						<td th:text="${remittance.intermediataryBank}">--</td>
-						<td>البنك الوسيط</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.intermediataryBank'))}"></td>
 					</tr>
 					<tr>
 						<td>Address</td>
 						<td th:text="${remittance.address}">--</td>
-						<td>العنوان</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.address'))}"></td>
 					</tr>
 					<tr>
 						<td colspan="3" th:text="${remittance.purposeOfRemitTrList[0].purposeOfTrField} + '&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;' + ${remittance.purposeOfRemitTrList[0].purposeOfTrValue}">--</td>
@@ -357,37 +357,37 @@ html, body {
 						<td>Payment Details</td>
 						<td></td>
 						<td></td>
-						<td>تفاصيل الدفع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.paymentDetails'))}"></td>
 					</tr>
 					<tr>
 						<td>Amount Paid</td>
 						<td th:text="${remittance.paidAmount}">--</td>
 						<td></td>
-						<td>المبلغ المدفوع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.paidAmount'))}"></td>
 					</tr>
 					<tr>
 						<td>Amount Refund</td>
 						<td th:text="${remittance.refundedAmount}">--</td>
 						<td></td>
-						<td>المبلغ المُسترد</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.refundedAmount'))}"></td>
 					</tr>
 					<tr>
 						<td>Amount Payable</td>
 						<td th:text="${remittance.amountPayable}">--</td>
 						<td></td>
-						<td>المبلغ المُسدد</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.amountPayable'))}"></td>
 					</tr>
 					<tr>
 						<td>Net Paid Amount</td>
 						<td th:text="${remittance.netAmount}">--</td>
 						<td></td>
-						<td>صافي المبلغ المدفوع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.netAmount'))}"></td>
 					</tr>
 					<tr class="mode" th:each="mode : ${remittance.collectionDetailList}">
 						<td>Payment Mode</td>
 						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
 						<td th:text="${mode.approvalNo}">Approved No : 1234</td>
-						<td>طريقة الدفع</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.approvalNo'))}"></td>
 					</tr>
 				</table> <!--Payment Details table end--> 
 				</td></tr>
@@ -395,13 +395,13 @@ html, body {
 				<table class="table col-3 height100">
 					<tr>
 						<td>Cashier Name</td>
-						<td th:text="${remittance.userName}">KANMANI1</td>
-						<td>اسم الكاشير </td>
+						<td pm:pftext="${remittance.userName}">KANMANI1</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.userName'))}"> </td>
 					</tr>
 					<tr>
 						<td>Cashier Signature</td>
 						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
-						<td>توقيع الكاشير</td>
+						<td th:text="${_tu.reverse(#messages.msg('label.cashierSignature'))}"></td>
 					</tr>
 				</table>
 		<!--Cashier table end-->
@@ -414,8 +414,8 @@ html, body {
 					<div>I / We have read the terms and conditions overleaf and confirm to have fully understood and accepted the same without any reservations</div>
 				</td>
 				<td valign="top" align="right">
-					<div>أقر أنا/ نحن بأن بيانات المستفيد المذكورة أعلاه صحيحة</div>
-					<div>أقر أنا/ نحن بالاطلاع على البنود والشروط المذكورة بالخلف ونؤكد بأننا فهمنا ما بها وقبلناها بدون أى تحفُظات.</div>
+					<div th:text="${_tu.reverse(#messages.msg('label.iagree1'))}"></div>
+					<div th:text="${_tu.reverse(#messages.msg('label.iagree2'))}"></div>
 				</td>
 			</tr>
 			<tr>
@@ -425,7 +425,7 @@ html, body {
 			
 			<tr>
 				<td align="center"><strong>(Signature Of Remitter)</strong></td>
-				<td align="center"><strong>(توقيع الراسل)</strong></td>
+				<td align="center"><strong th:text="${_tu.reverse(#messages.msg('label.signatureOfRemitter'))}"></strong></td>
 			</tr>
 		</table>
 		</td>

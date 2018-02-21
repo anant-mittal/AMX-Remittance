@@ -11,6 +11,8 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 
 public interface IBeneficaryContactDao extends JpaRepository<BeneficaryContact, Serializable>{
 
-	@Query("select bc from BeneficaryContact bc where bc.beneficaryMasterId =?1 and isActive='Y'")
+	@Query("select bc from BeneficaryContact bc where bc.beneficaryMasterId =?1 and isActive='Y' order by NVL(bc.modifiedDate,bc.createdDate) desc")
 	public List<BeneficaryContact> getBeneContact(BigDecimal beneMasterId);
+	
+
 }

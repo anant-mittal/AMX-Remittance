@@ -12,11 +12,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Message {
 
+	protected Langs lang = null;
 	protected String subject;
 	protected String message = null;
 	private List<String> to;
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
+
+	private List<String> lines = new ArrayList<String>();
+
 	@Null
 	@JsonIgnore
 	private String object;
@@ -65,6 +69,14 @@ public class Message {
 		this.template = template;
 	}
 
+	public Langs getLang() {
+		return lang;
+	}
+
+	public void setLang(Langs lang) {
+		this.lang = lang;
+	}
+
 	public Message() {
 		this.to = new ArrayList<String>();
 	}
@@ -92,5 +104,19 @@ public class Message {
 		for (String recieverId : recieverIds) {
 			this.to.add(recieverId);
 		}
+	}
+
+	public void addLine(String... lines) {
+		for (String line : lines) {
+			this.lines.add(line);
+		}
+	}
+
+	public List<String> getLines() {
+		return lines;
+	}
+
+	public void setLines(List<String> lines) {
+		this.lines = lines;
 	}
 }

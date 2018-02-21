@@ -1,7 +1,6 @@
 package com.amx.jax.client;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -13,8 +12,6 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.util.ConverterUtility;
 
 @Component
 public class JaxConfigClient extends AbstractJaxServiceClient {

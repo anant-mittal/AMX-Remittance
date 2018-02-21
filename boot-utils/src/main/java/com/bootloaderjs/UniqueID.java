@@ -11,6 +11,8 @@ public final class UniqueID {
 	/** The Constant INT_22. */
 	private static final int INT_22 = 22;
 
+	public static final String PREF = Random.randomAlpha(3);
+
 	/** The atom. */
 	private static AtomicInteger atom = new AtomicInteger();
 
@@ -36,6 +38,6 @@ public final class UniqueID {
 	 * @return : Unique String ID
 	 */
 	public static String generateString() {
-		return Long.toString(generate(), 36);
+		return PREF + "" + Long.toString(generate(), 36);
 	}
 }

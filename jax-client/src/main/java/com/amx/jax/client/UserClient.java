@@ -192,7 +192,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setEotp(eOtp);
 			custModel.setSecurityquestions(securityquestions);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			log.info("calling saveSecurityQuestions api: " + sendOtpUrl);
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
@@ -221,7 +221,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setCaption(caption);
 			custModel.setImageUrl(imageUrl);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			log.info("calling savePhishiingImage api: " + saveCustUrl);
 			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
@@ -250,7 +250,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			custModel.setMotp(mOtp);
 			custModel.setEotp(eOtp);
 			custModel.setCustomerId(jaxMetaInfo.getCustomerId());
-			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(custModel), getHeader());
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel , getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			log.info("calling saveLoginIdAndPassword api: " + saveCustUrl);
 			response = restTemplate.exchange(saveCustUrl, HttpMethod.POST, requestEntity,
@@ -301,9 +301,11 @@ public class UserClient extends AbstractJaxServiceClient {
 			throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		try {
 			ResponseEntity<ApiResponse<CustomerModel>> response = null;
-			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			String loginCustUrl = this.getBaseUrl() + USER_API_ENDPOINT + "/login/?userId=" + loginId + "&password="
-					+ password;
+			CustomerModel cmodel=new CustomerModel();
+			cmodel.setLoginId(loginId);
+			cmodel.setPassword(password);
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>( cmodel, getHeader());
+			String loginCustUrl = this.getBaseUrl() + USER_API_ENDPOINT + "/login/";
 			log.info("calling login api: " + loginCustUrl);
 			response = restTemplate.exchange(loginCustUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
@@ -435,19 +437,7 @@ public class UserClient extends AbstractJaxServiceClient {
 
 	}
 
-	/*
-	 * public ApiResponse<CustomerModel> updateCustomerEmail(String json) throws
-	 * CustomerValidationException, LimitExeededException {
-	 * ResponseEntity<ApiResponse<CustomerModel>> response = null;
-	 * HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
-	 * String sendOtpUrl = baseUrl.toString() + CUSTOMER_ENDPOINT;
-	 * log.info("calling saveCustomer api: " + sendOtpUrl); response =
-	 * restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity, new
-	 * ParameterizedTypeReference<ApiResponse<CustomerModel>>() { });
-	 * log.info("responce from  saveCustomer api: " +
-	 * util.marshall(response.getBody())); return response.getBody(); }
-	 */
-
+	
 	public ApiResponse<CivilIdOtpModel> sendOtpForEmailUpdate(String email)
 			throws InvalidInputException, CustomerValidationException, LimitExeededException {
 		try {

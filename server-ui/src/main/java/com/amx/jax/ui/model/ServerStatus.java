@@ -2,8 +2,6 @@ package com.amx.jax.ui.model;
 
 import java.util.Map;
 
-import com.amx.amxlib.meta.model.ApplicationSetupDTO;
-
 public class ServerStatus {
 	public Boolean debug = null;
 	public String id = null;
@@ -17,5 +15,4 @@ public class ServerStatus {
 	public String scheme = null;
 	public String remoteAddr = null;
 	public Map<String, Object> device = null;
-	public ApplicationSetupDTO onlineConfigurationDto = null;
 }

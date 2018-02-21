@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.io.IOException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,6 +10,7 @@ import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
@@ -16,8 +18,9 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 
@@ -34,6 +37,11 @@ public class TemplateService {
 
 	@Autowired
 	private TemplateEngine textTemplateEngine;
+
+	@Autowired
+	TemplateService(TemplateEngine templateEngine) {
+		templateEngine.addDialect(new HelloDialect());
+	}
 
 	public String processHtml(Templates template, Context context) {
 		String rawStr = templateEngine.process(template.getFileName(), context);
@@ -53,6 +61,19 @@ public class TemplateService {
 		return rawStr;
 	}
 
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private TemplateUtils templateUtils;
+
+	private Locale getLocal(File file) {
+		if (file == null || file.getLang() == null) {
+			return new Locale(Langs.DEFAULT.getCode());
+		}
+		return new Locale(file.getLang().getCode());
+	}
+
 	/**
 	 * Parses file.template and creates content;
 	 * 
@@ -60,7 +81,19 @@ public class TemplateService {
 	 * @return
 	 */
 	public File process(File file) {
-		Context context = new Context();
+		Locale locale = getLocal(file);
+		String reverse = messageSource.getMessage("flag.reverse.char", null, locale);
+
+		if (("true".equalsIgnoreCase(reverse)) && file.getType() == File.Type.PDF) {
+			TemplateUtils.reverseFlag(true);
+		}
+
+		log.info("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+
+		Context context = new Context(locale);
+
+		context.setVariable("_tu", templateUtils);
+
 		context.setVariables(file.getModel());
 		String content = this.processHtml(file.getTemplate(), context);
 		file.setContent(content);

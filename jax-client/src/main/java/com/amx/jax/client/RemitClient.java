@@ -117,6 +117,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			if (e instanceof AbstractException) {
 				throw e;
 			} else {
+				log.error("error in validateTransaction" , e);
 				throw new JaxSystemError();
 			}
 		} // end of try-catch
@@ -194,7 +195,6 @@ public class RemitClient extends AbstractJaxServiceClient {
 			ResponseEntity<ApiResponse<PaymentResponseDto>> response = null;
 			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
-
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
 					getHeader());
 

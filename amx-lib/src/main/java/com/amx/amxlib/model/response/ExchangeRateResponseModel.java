@@ -1,7 +1,6 @@
 package com.amx.amxlib.model.response;
 
 import java.util.List;
-import java.util.SortedSet;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.AbstractModel;

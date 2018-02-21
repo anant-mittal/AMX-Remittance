@@ -4,7 +4,6 @@
 
 	<artifactId>ms-postman</artifactId>
 	<packaging>jar</packaging>
-
 	<name>ms-postman</name>
 	<url>http://maven.apache.org</url>
 	<description>Common Notificationa nd Templating Service</description>
@@ -52,8 +51,8 @@
 		<!-- PDF FLYINSOC -->
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
-			<artifactId>flying-saucer-pdf</artifactId>
-			<version>9.1.5</version>
+			<artifactId>flying-saucer-pdf-itext5</artifactId>
+			<version>9.1.11</version>
 		</dependency>
 
 		<!-- HTML TO PDF -->

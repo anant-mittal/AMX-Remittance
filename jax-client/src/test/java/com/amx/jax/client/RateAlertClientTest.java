@@ -2,7 +2,6 @@ package com.amx.jax.client;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,18 +13,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.constant.RuleEnum;
-import com.amx.amxlib.exception.InvalidInputException;
-import com.amx.amxlib.exception.LimitExeededException;
-import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ExchangeRateResponseModel;
-import com.amx.amxlib.model.response.PurposeOfTransactionModel;
-import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)

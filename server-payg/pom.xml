@@ -5,16 +5,15 @@
 
 	<groupId>com.amx.jax.payment</groupId>
 	<artifactId>server-payg</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<name>server-payg</name>
 	<description>Payment related services.</description>
 
 	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.8.RELEASE</version>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>jax</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
@@ -37,22 +36,16 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Swagger infos -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
-		</dependency>
-
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 		<!-- OMAN-NET lib START -->
@@ -73,10 +66,16 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-swagger</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
 	</dependencies>
-
 
 	<profiles>
 		<profile>
@@ -89,7 +88,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${artifactId}-${version}-dev</finalName>
+				<finalName>${project.artifactId}-${project.version}-dev</finalName>
 			</build>
 		</profile>
 		<profile>
@@ -105,7 +104,7 @@
 				</dependency>
 			</dependencies>
 			<build>
-				<finalName>${artifactId}-${version}-prod</finalName>
+				<finalName>${project.artifactId}-${project.version}-prod</finalName>
 			</build>
 		</profile>
 	</profiles>

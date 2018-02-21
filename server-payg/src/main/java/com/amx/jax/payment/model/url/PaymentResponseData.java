@@ -11,7 +11,7 @@ import com.amx.jax.payment.response.AResponseDataModel;
  * 06-Nov-2017
  * SendTransactionEmailResponseData.java
  */
-public class PaymentResponseData extends AResponseDataModel{
+public class PaymentResponseData implements AResponseDataModel{
 
 	/**
 	 * 

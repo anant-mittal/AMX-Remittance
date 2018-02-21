@@ -1,6 +1,5 @@
 package com.amx.jax.controller;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
@@ -24,12 +23,8 @@ import com.amx.jax.service.OnlineCustomerService;
 
 @RestController
 @RequestMapping("/user")
-public class MetaUserController implements Serializable{
+public class MetaUserController {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7446679687593857144L;
 	final static Logger logger = Logger.getLogger(MetaUserController.class);
 	
 	@Autowired
@@ -40,49 +35,25 @@ public class MetaUserController implements Serializable{
 	
 	@Autowired
 	BlackMasterService blackMasterService;
-	
-	
+		
 	@RequestMapping(value = "/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerDetailsResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		ApiResponse response = customerService.getCustomer(countryId, userId);
-		return response;
+		return customerService.getCustomer(countryId, userId);
 	}
 	
 	@RequestMapping(value = "/{countryId}/{companyId}/{customerId}", method = RequestMethod.GET)
 	public ApiResponse getCustomerDetailsByCustomerIdResponse(@PathVariable("countryId") BigDecimal countryId
 			,@PathVariable("companyId") BigDecimal companyId,@PathVariable("customerId") BigDecimal customerId){
-		ApiResponse response = customerService.getCustomerByCustomerId(countryId, companyId, customerId);
-		return response;
+		return customerService.getCustomerByCustomerId(countryId, companyId, customerId);
 	}
-	
-	
-
-	
-	
-	/*
-	@RequestMapping(value = "/lylpointU/{loyaltyPoint}/{countryId}/{companyId}/{customerId}", method = RequestMethod.GET)
-	public void  updateCustomerLoyaltyPoint(@PathVariable("loyaltyPoint") BigDecimal loyaltyPoint,@PathVariable("countryId") BigDecimal countryId
-			,@PathVariable("companyId") BigDecimal companyId,@PathVariable("customerId") BigDecimal customerId){
-		logger.info("loyaltyPoint :"+loyaltyPoint+"\t countryId :"+countryId+"\t companyId :"+companyId+"\t customerId :"+customerId);
-		customerService.updateLoyaltyPoint(loyaltyPoint, countryId, companyId, customerId);
-		
-	}*/
-	
-	
-	
 	
 	@RequestMapping(value = "/online/{countryId}/{userId}", method = RequestMethod.GET)
 	public ApiResponse getOnlineCustomerResponse(@PathVariable("countryId") BigDecimal countryId,@PathVariable("userId") String userId){
-		ApiResponse response = onlineCustomerService.getOnlineCustomerList(countryId, userId);
-		return response;
+		return onlineCustomerService.getOnlineCustomerList(countryId, userId);
 	}
-	
 	
 	@RequestMapping(value = "/blist/{name}", method = RequestMethod.GET)
 	public ApiResponse getBlackListResponse(@PathVariable("name") String name){
-		ApiResponse response =  blackMasterService.getBlackList(name);
-		return response;
+		return  blackMasterService.getBlackList(name);
 	}
-
-
 }

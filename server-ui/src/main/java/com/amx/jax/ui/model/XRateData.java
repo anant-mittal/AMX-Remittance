@@ -2,7 +2,6 @@ package com.amx.jax.ui.model;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;

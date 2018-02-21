@@ -66,8 +66,8 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
 import com.bootloaderjs.Random;
 
@@ -85,7 +85,7 @@ public class UserService extends AbstractUserService {
 	private CryptoUtil cryptoUtil;
 
 	@Autowired
-	private Util util;
+	private JaxUtil util;
 
 	@Autowired
 	private WebUtils webutil;
@@ -183,6 +183,8 @@ public class UserService extends AbstractUserService {
 				personinfo.setLastLoginTime(history.getLoginTime());
 			}
 			BeanUtils.copyProperties(personinfo, customer);
+			personinfo.setEmail(customer.getEmail());
+			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
 		}
@@ -194,6 +196,9 @@ public class UserService extends AbstractUserService {
 		if (customerId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
+		Customer cust = custDao.getCustById(customerId);
+		String oldEmail = cust.getEmail();
+		
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
@@ -208,15 +213,17 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
-			Map<String, Object> output = afterLoginSteps(onlineCust);
-			if (output.get("PERSON_INFO") != null) {
-				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-			}
+			 afterLoginSteps(onlineCust);
 		}
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-
+		
+		//this is to send email on OLD email id
+		if (model.getEmail() != null) {
+			model.setEmail(oldEmail);
+		}
+		
 		if (isNewUserRegistrationSuccess(model, onlineCust)) {
 			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
 					onlineCust.getEmail());
@@ -276,8 +283,21 @@ public class UserService extends AbstractUserService {
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
+		if (customerId == null && civilId != null){
+			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
+		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
+		
+		logger.info("customerId is --> "+customerId);
+		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustReg!=null) {
+			logger.info("validating customer lock count.");
+			userValidationService.validateCustomerLockCount(onlineCustReg);
+		}else {
+			logger.info("onlineCustReg is null");
+		}
+		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		
 		try {
@@ -286,7 +306,7 @@ public class UserService extends AbstractUserService {
 			// reset sent token count
 			onlineCust.setTokenSentCount(BigDecimal.ZERO);
 		}
-		userValidationService.validateCustomerLockCount(onlineCust);
+		//userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
@@ -312,7 +332,7 @@ public class UserService extends AbstractUserService {
 			logger.info(String.format("Customer %s -- %s is already registred.", model.getCustomerId(),
 					model.getFirstName()));
 			return response;
-		}		
+		}				
 		
 		PersonInfo personinfo = new PersonInfo();
 		try {

@@ -3,7 +3,6 @@ package com.amx.jax.exrateservice.service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +28,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
@@ -42,7 +40,7 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -66,10 +64,13 @@ public class ExchangeRateService extends AbstractService {
 	private MetaData meta;
 
 	@Autowired
-	Util util;
+	JaxUtil util;
 
 	@Autowired
 	private CurrencyMasterDao currencyMasterDao;
+	
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
 
 	@Override
 	public String getModelType() {
@@ -93,9 +94,13 @@ public class ExchangeRateService extends AbstractService {
 			}
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
+			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
+			if (validBankIds.isEmpty()) {
+				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+			}
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
-					countryBranchId, toCurrencyMaster.getCountryId());
+					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
 			filterNonMinServiceIdRates(allExchangeRates);
 			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(
 					allExchangeRates, pips, bankId);

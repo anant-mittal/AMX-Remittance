@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.TextScore;
 
 import com.amx.jax.logger.events.AuditLogEvent;
+import com.amx.jax.logger.events.AuditLogEvent.EventType;;
 
 public class AbstractLogMessage implements AuditLogEvent {
 
@@ -13,7 +14,7 @@ public class AbstractLogMessage implements AuditLogEvent {
 
 	public long timestamp;
 
-	private Type type;
+	private EventType type;
 
 	@TextIndexed
 	private String moduleName;
@@ -73,11 +74,11 @@ public class AbstractLogMessage implements AuditLogEvent {
 		this.moduleName = moduleName;
 	}
 
-	public Type getType() {
+	public EventType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(EventType type) {
 		this.type = type;
 	}
 
@@ -91,8 +92,9 @@ public class AbstractLogMessage implements AuditLogEvent {
 
 	@Override
 	public String toString() {
-		return "AbstractLogMessage{" + "id=" + id + ", message='" + message + '\'' + ", time=" + timestamp + ", moduleName='"
-				+ moduleName + '\'' + ", loggerName='" + loggerName + '\'' + ", score=" + score + '}';
+		return "AbstractLogMessage{" + "id=" + id + ", message='" + message + '\'' + ", time=" + timestamp
+				+ ", moduleName='" + moduleName + '\'' + ", loggerName='" + loggerName + '\'' + ", score=" + score
+				+ '}';
 	}
 
 }

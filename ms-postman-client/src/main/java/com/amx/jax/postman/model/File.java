@@ -23,6 +23,16 @@ public class File {
 		}
 	}
 
+	Langs lang = null;
+
+	public Langs getLang() {
+		return lang;
+	}
+
+	public void setLang(Langs lang) {
+		this.lang = lang;
+	}
+
 	private String content;
 	private String name;
 	private Type type;

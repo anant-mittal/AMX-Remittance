@@ -6,11 +6,12 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.service.UserService;
@@ -30,9 +31,9 @@ public class UserController {
 	private Logger logger = Logger.getLogger(UserController.class);
 
 	@RequestMapping(value = "/login/", method = RequestMethod.POST)
-	public ApiResponse loginUser(@RequestParam String userId, @RequestParam String password) {
-		logger.debug("loginUser Request: usreid: " + userId + " pssword: " + password);
-		ApiResponse response = userService.loginUser(userId, password);
+	public ApiResponse loginUser(@RequestBody CustomerModel customerModel) {
+		logger.info("loginUser Request: usreid: " + customerModel.getLoginId());
+		ApiResponse response = userService.loginUser(customerModel.getLoginId(), customerModel.getPassword());
 		return response;
 	}
 	

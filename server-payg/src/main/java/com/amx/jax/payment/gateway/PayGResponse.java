@@ -1,5 +1,5 @@
 package com.amx.jax.payment.gateway;
 
-public class PayGResponse {
+public interface PayGResponse {
 
 }

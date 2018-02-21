@@ -1,28 +1,35 @@
 package com.amx.jax.postman;
 
+import org.json.JSONObject;
+
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface PostManService {
 
-	public Email sendEmail(Email email) throws UnirestException;
+	public static final String PARAM_LANG = "lang";
+	public static final String PARAM_ASYNC = "async";
 
-	public SMS sendSMS(SMS sms) throws UnirestException;
+	public Email sendEmail(Email email) throws PostManException;
 
-	public Message notifySlack(Message msg) throws UnirestException;
+	public SMS sendSMS(SMS sms) throws PostManException;
 
-	public Email sendEmailAsync(Email email) throws UnirestException;
+	public Notipy notifySlack(Notipy msg) throws PostManException;
 
-	public SMS sendSMSAsync(SMS sms) throws UnirestException;
+	public Exception notifyException(String title, Exception e);
 
-	public Message notifySlackAsync(Message msg) throws UnirestException;
+	public Email sendEmailAsync(Email email) throws PostManException;
 
-	public File processTemplate(Templates template, Object data, File.Type fileType) throws UnirestException;
+	public SMS sendSMSAsync(SMS sms) throws PostManException;
 
-	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws UnirestException;
+	public File processTemplate(Templates template, Object data, File.Type fileType) throws PostManException;
+
+	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException;
+
+	public JSONObject getMap(String url) throws PostManException;
 
 }

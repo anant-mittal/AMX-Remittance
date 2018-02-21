@@ -46,6 +46,7 @@ import com.amx.jax.userservice.dao.DmsDocumentDao;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidation;
 
 @Service
@@ -89,6 +90,9 @@ public class UserValidationService {
 	
 	@Autowired
 	private ValidationClients validationClients;
+	
+	@Autowired
+	private JaxUtil jaxUtil;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -125,8 +129,13 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
-			incrementLockCount(customer);
-			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
+			Integer attemptsLeft = incrementLockCount(customer);
+			String errorExpression = JaxError.WRONG_PASSWORD.toString();
+			if (attemptsLeft > 0) {
+				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
+						attemptsLeft);
+			}
+			throw new GlobalException("Incorrect/wrong password", errorExpression);
 		}
 	}
 
@@ -337,8 +346,8 @@ public class UserValidationService {
 	/**
 	 * updates lock count by one due to wrong password/otp attempt
 	 */
-	public void incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
-		int lockCnt = 0;
+	public int incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
+		Integer lockCnt = 0;
 		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			lockCnt = onlineCustomer.getLockCnt().intValue();
@@ -353,6 +362,7 @@ public class UserValidationService {
 			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 		}
+		return MAX_OTP_ATTEMPTS - lockCnt;
 	}
 
 	public Date getMidnightToday() {
@@ -395,7 +405,7 @@ public class UserValidationService {
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
 		// email otp validation
-		if (onlineCustomer.getEmailToken() != null) {
+		if (isEOtpFlowRequired && onlineCustomer.getEmailToken() != null) {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
 			String dbeOtp = onlineCustomer.getEmailToken();
 			if (!hashedEotp.equals(dbeOtp)) {
@@ -452,7 +462,7 @@ public class UserValidationService {
 			long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 			long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 			if (tokenTimeinMins > otpValidTimeInMins) {
-				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIERED.getCode());
+				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
 			}
 		}
 	}

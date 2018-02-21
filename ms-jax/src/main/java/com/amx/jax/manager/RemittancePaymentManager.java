@@ -39,7 +39,7 @@ import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.JaxNotificationService;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -129,7 +129,7 @@ public class RemittancePaymentManager extends AbstractService{
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
 				
 				/** Calling stored procedure  to move remittance to old emos **/
-				if(Util.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
+				if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
 					paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
 					paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
 					paymentResponse.setCollectionFinanceYear(collectionFinanceYear);

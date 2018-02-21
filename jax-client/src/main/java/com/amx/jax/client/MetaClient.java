@@ -192,7 +192,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 
@@ -220,7 +220,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			log.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
@@ -247,7 +247,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response = null;
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			log.info("Terms and Condition " + languageId);
@@ -274,7 +274,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			log.info("Terms and Condition " + languageId);
@@ -301,7 +301,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
+				
 				languageId = new BigDecimal(1);
 			}
 			log.info("Terms and Condition " + languageId);
@@ -457,10 +458,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal stateId, BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
@@ -511,9 +510,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal languageId, BigDecimal stateId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
@@ -540,9 +537,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
 
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
@@ -569,9 +565,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<ViewStateDto>> response = null;
 		try {
 
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
@@ -598,10 +593,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public ApiResponse<ViewCityDto> getCitytList(BigDecimal districtId) {
 		ResponseEntity<ApiResponse<ViewCityDto>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
@@ -629,7 +622,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 
-			if (languageId == null && languageId.compareTo(BigDecimal.ZERO) == 0) {
+			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
