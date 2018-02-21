@@ -16,23 +16,23 @@ import com.amx.jax.amxlib.config.OtpSettings;
 @Component
 public class JaxConfigClient extends AbstractJaxServiceClient {
 
-	private static final Logger LOGGER = Logger.getLogger(JaxConfigClient.class);
+    private static final Logger LOGGER = Logger.getLogger(JaxConfigClient.class);
 
-	public ApiResponse<BooleanResponse> createorUpdateOtpSettings(OtpSettings otpSettings) {
-		try {
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
-			String url = this.getBaseUrl() + "/config/";
-			HttpEntity<OtpSettings> requestEntity = new HttpEntity<OtpSettings>(otpSettings, getHeader());
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-					});
-			return response.getBody();
-		} catch (AbstractException ae) {
+    public ApiResponse<BooleanResponse> createorUpdateOtpSettings(OtpSettings otpSettings) {
+        try {
+            ResponseEntity<ApiResponse<BooleanResponse>> response;
+            String url = this.getBaseUrl() + "/config/";
+            HttpEntity<OtpSettings> requestEntity = new HttpEntity<OtpSettings>(otpSettings, getHeader());
+            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+                    });
+            return response.getBody();
+        } catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
-            LOGGER.error("exception in createorUpdateOtpSettings : ",e);
+            LOGGER.error("exception in createorUpdateOtpSettings : ", e);
             throw new JaxSystemError();
         } // end of try-catch
-	}
+    }
 
 }
