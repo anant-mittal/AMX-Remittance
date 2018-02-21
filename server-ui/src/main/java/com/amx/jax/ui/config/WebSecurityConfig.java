@@ -19,14 +19,26 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED).and().authorizeRequests()
-				.antMatchers("/register/**").permitAll().and().authorizeRequests().antMatchers("/home/**").permitAll()
-				.and().authorizeRequests().antMatchers("/pub/**").permitAll().and().authorizeRequests()
-				.antMatchers("/login/**").permitAll().and().authorizeRequests().antMatchers("/api/**").authenticated()
-				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().formLogin().loginPage("/login")
-				.permitAll().failureUrl("/login?error").permitAll().and().logout().permitAll()
-				.logoutSuccessUrl("/login?logout").permitAll().and().exceptionHandling().accessDeniedPage("/403").and()
-				.csrf().disable().headers().disable();
+		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+				// Register Calls
+				.and().authorizeRequests().antMatchers("/register/**").permitAll()
+				// Home Pages Calls
+				.and().authorizeRequests().antMatchers("/home/**").permitAll()
+				// Publics Calls
+				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
+				// Login Calls
+				.and().authorizeRequests().antMatchers("/login/**").permitAll()
+				// API Calls
+				.and().authorizeRequests().antMatchers("/api/**").authenticated()
+				// Exceptions APIS Calls
+				.and().authorizeRequests().antMatchers("/api/user/password/*").permitAll()
+				// App Pages
+				.and().authorizeRequests().antMatchers("/app/**").authenticated()
+				// Login Formas
+				.and().formLogin().loginPage("/login").permitAll().failureUrl("/login?error").permitAll()
+				// Logiut Pages
+				.and().logout().permitAll().logoutSuccessUrl("/login?logout").permitAll().and().exceptionHandling()
+				.accessDeniedPage("/403").and().csrf().disable().headers().disable();
 	}
 
 	@Autowired

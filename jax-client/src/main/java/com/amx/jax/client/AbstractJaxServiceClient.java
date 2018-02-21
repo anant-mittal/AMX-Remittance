@@ -45,8 +45,11 @@ public abstract class AbstractJaxServiceClient {
 			log.info("device ip  ---> " + jaxMetaInfo.getDeviceIp());
 			info.setDeviceId(jaxMetaInfo.getDeviceId());
 			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
-			info.setTenant(jaxMetaInfo.getTenant());
+			info.setReferrer(jaxMetaInfo.getReferrer());
 			log.info("Tenant id --> " + jaxMetaInfo.getTenant());
+			log.info("Referal id --> " + jaxMetaInfo.getReferrer()+"\t Device Type :"+jaxMetaInfo.getDeviceType());
+			info.setReferrer(jaxMetaInfo.getReferrer());
+			info.setDeviceType(jaxMetaInfo.getDeviceType());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 			log.error("error in getheader of jaxclient", e);

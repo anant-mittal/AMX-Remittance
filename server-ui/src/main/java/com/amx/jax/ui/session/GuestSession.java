@@ -4,13 +4,20 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
@@ -28,6 +35,48 @@ public class GuestSession implements Serializable {
 	private static final long serialVersionUID = -8825493107883952226L;
 	private Logger log = LoggerFactory.getLogger(getClass());
 
+	public static enum AuthFlow {
+		LOGIN, ACTIVATION, RESET_PASS
+	}
+
+	public static enum AuthFlowStep {
+		USERPASS, SECQUES, IDVALID, DOTPVFY
+	}
+
+	AuthFlow flow = null;
+	AuthFlowStep authStep = null;
+	String seqId = null;
+
+	public AuthFlowStep getAuthStep() {
+		return authStep;
+	}
+
+	public void setAuthStep(AuthFlowStep authStep) {
+		this.authStep = authStep;
+	}
+
+	public boolean isAuthStep(AuthFlowStep authStep) {
+		return this.authStep == authStep;
+	}
+
+	public AuthFlow getFlow() {
+		return flow;
+	}
+
+	public boolean isFlow(AuthFlow flow) {
+		return this.flow == flow;
+	}
+
+	public void setFlow(AuthFlow authFlow) {
+		this.flow = authFlow;
+	}
+
+	@Autowired
+	private HttpServletResponse response;
+
+	@Autowired
+	private HttpServletRequest request;
+
 	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
 	public String getNextToken(String key) {
@@ -43,6 +92,20 @@ public class GuestSession implements Serializable {
 			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
 		}
 		return false;
+	}
+
+	public void validate(String curEnd, String[] validEnds) {
+		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, this.getNextToken(curEnd));
+		kooky.setMaxAge(300);
+		// kooky.setPath("/");
+		response.addCookie(kooky);
+	}
+
+	private void validateSeqCookie(String seqKey, String seqValue) {
+		if (this.isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			throw new HttpUnauthorizedException();
+		}
 	}
 
 	private Integer hits = 0;
