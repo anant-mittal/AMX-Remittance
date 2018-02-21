@@ -1,9 +1,6 @@
 
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.model.LoginData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -25,7 +21,6 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.service.UserService;
-import com.amx.jax.ui.session.GuestSession;
 
 import io.swagger.annotations.Api;
 
