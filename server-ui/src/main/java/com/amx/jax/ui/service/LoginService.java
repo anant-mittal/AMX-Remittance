@@ -101,9 +101,7 @@ public class LoginService {
 			} else {
 				sessionService.getGuestSession().setAuthStep(AuthFlowStep.SECQUES);
 
-				if (sessionService.getGuestSession().isFlow(AuthFlow.LOGIN)) {
-					sessionService.authorize(customerModel, true);
-				}
+				sessionService.authorize(customerModel, sessionService.getGuestSession().isFlow(AuthFlow.LOGIN));
 
 				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 			}
@@ -197,11 +195,11 @@ public class LoginService {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
 			if (sessionService.getGuestSession().isFlow(AuthFlow.RESET_PASS)
-					&& !sessionService.getGuestSession().isAuthStep(AuthFlowStep.DOTPVFY)) {
+					&& !sessionService.getGuestSession().isAuthStep(AuthFlowStep.SECQUES)) {
 				throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 			}
 			if (!sessionService.getUserSession().isValid()) {
-				throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
+				// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
 			}
 			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
 					.getResult();

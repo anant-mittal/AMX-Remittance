@@ -31,7 +31,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// Exceptions APIS Calls
-				.and().authorizeRequests().antMatchers("/api/user/password").permitAll()
+				.and().authorizeRequests().antMatchers("/api/user/password/*").permitAll()
 				// App Pages
 				.and().authorizeRequests().antMatchers("/app/**").authenticated()
 				// Login Formas
