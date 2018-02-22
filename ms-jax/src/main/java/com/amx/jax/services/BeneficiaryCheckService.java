@@ -287,6 +287,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getServiceGroupId())) {
 			if (beneDto.getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
 				if (beneDto.getBankAccountNumber().isEmpty() || beneDto.getBankAccountNumber() == null) {
+					beneDto.setUpdateNeeded(true);
 					errorDesc = "Account number should not blank for Banking channel";
 					errorStatusDto = this.setBeneError(JaxError.BENE_ACCOUNT_BLANK.toString(), errorDesc);
 					errorListDto.add(errorStatusDto);
@@ -305,6 +306,7 @@ public class BeneficiaryCheckService extends AbstractService {
 							}
 						}
 						if(!accNumCheck){
+							beneDto.setUpdateNeeded(true);
 							errorDesc = "Invalid Beneficiary Account Number length";
 							errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
 							errorListDto.add(errorStatusDto);
