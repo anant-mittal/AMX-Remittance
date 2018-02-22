@@ -5,288 +5,278 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddAdditionalBankDataDto {
-	private BigDecimal additionalBankRuleFiledId;
-	private String additionalDesc;
-	private String flexiField;
-	private String variableName;
-	private BigDecimal additionalBankId;
-	private String addItionalData;
+    private BigDecimal additionalBankRuleFiledId;
+    private String additionalDesc;
+    private String flexiField;
+    private String variableName;
+    private BigDecimal additionalBankId;
+    private String addItionalData;
 
-	private String fieldType;
-	private String navicable;
-	private String mandatory;
-	private int minLenght;
-	private BigDecimal maxLenght;
-	private String validation;
-	private String isActive;
-	private BigDecimal fieldLength;
-	private Boolean required = false;
+    private String fieldType;
+    private String navicable;
+    private String mandatory;
+    private int minLenght;
+    private BigDecimal maxLenght;
+    private String validation;
+    private String isActive;
+    private BigDecimal fieldLength;
+    private Boolean required = false;
 
-	private Boolean renderInputText = false;
-	private Boolean renderSelect = false;
-	private Boolean renderOneSelect = false;
-	private String oneAdditional;
-	private BigDecimal oneAdditionalId;
-	private String amicCode;
-	private String amicDesc;
-	private Boolean msgRender=false;
-	private String exceptionMessage;
-	
-	public List<AdditionalBankRuleAddDataDto> additionalBankRuleData = new ArrayList<>();
-	public List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
-	
-	public AddAdditionalBankDataDto() {
+    private Boolean renderInputText = false;
+    private Boolean renderSelect = false;
+    private Boolean renderOneSelect = false;
+    private String oneAdditional;
+    private BigDecimal oneAdditionalId;
+    private String amicCode;
+    private String amicDesc;
+    private Boolean msgRender = false;
+    private String exceptionMessage;
 
-	}
+    public List<AdditionalBankRuleAddDataDto> additionalBankRuleData = new ArrayList<>();
+    public List<AdditionalBankDetailsViewDto> listadditionAmiecData = new ArrayList<>();
 
-	public AddAdditionalBankDataDto(BigDecimal additionalBankRuleFiledId,
-			String additionalDesc, String flexiField, String variableName,
-			BigDecimal additionalBankId, String addItionalData,
-			String fieldType, String navicable, String mandatory,
-			int minLenght, BigDecimal maxLenght, String validation,
-			String isActive, BigDecimal fieldLength, Boolean required,
-			Boolean renderInputText, Boolean renderSelect,
-			Boolean renderOneSelect, String oneAdditional,
-			BigDecimal oneAdditionalId, String amicCode, String amicDesc,
-			Boolean msgRender) {
-		super();
-		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
-		this.additionalDesc = additionalDesc;
-		this.flexiField = flexiField;
-		this.variableName = variableName;
-		this.additionalBankId = additionalBankId;
-		this.addItionalData = addItionalData;
-		this.fieldType = fieldType;
-		this.navicable = navicable;
-		this.mandatory = mandatory;
-		this.minLenght = minLenght;
-		this.maxLenght = maxLenght;
-		this.validation = validation;
-		this.isActive = isActive;
-		this.fieldLength = fieldLength;
-		this.required = required;
-		this.renderInputText = renderInputText;
-		this.renderSelect = renderSelect;
-		this.renderOneSelect = renderOneSelect;
-		this.oneAdditional = oneAdditional;
-		this.oneAdditionalId = oneAdditionalId;
-		this.amicCode = amicCode;
-		this.amicDesc = amicDesc;
-		
-		this.msgRender = msgRender;
-	}
+    public AddAdditionalBankDataDto() {
 
+    }
 
+    public AddAdditionalBankDataDto(BigDecimal additionalBankRuleFiledId, String additionalDesc, String flexiField,
+            String variableName, BigDecimal additionalBankId, String addItionalData, String fieldType, String navicable,
+            String mandatory, int minLenght, BigDecimal maxLenght, String validation, String isActive,
+            BigDecimal fieldLength, Boolean required, Boolean renderInputText, Boolean renderSelect,
+            Boolean renderOneSelect, String oneAdditional, BigDecimal oneAdditionalId, String amicCode, String amicDesc,
+            Boolean msgRender) {
+        super();
+        this.additionalBankRuleFiledId = additionalBankRuleFiledId;
+        this.additionalDesc = additionalDesc;
+        this.flexiField = flexiField;
+        this.variableName = variableName;
+        this.additionalBankId = additionalBankId;
+        this.addItionalData = addItionalData;
+        this.fieldType = fieldType;
+        this.navicable = navicable;
+        this.mandatory = mandatory;
+        this.minLenght = minLenght;
+        this.maxLenght = maxLenght;
+        this.validation = validation;
+        this.isActive = isActive;
+        this.fieldLength = fieldLength;
+        this.required = required;
+        this.renderInputText = renderInputText;
+        this.renderSelect = renderSelect;
+        this.renderOneSelect = renderOneSelect;
+        this.oneAdditional = oneAdditional;
+        this.oneAdditionalId = oneAdditionalId;
+        this.amicCode = amicCode;
+        this.amicDesc = amicDesc;
 
-	public BigDecimal getAdditionalBankRuleFiledId() {
-		return additionalBankRuleFiledId;
-	}
+        this.msgRender = msgRender;
+    }
 
-	public void setAdditionalBankRuleFiledId(
-			BigDecimal additionalBankRuleFiledId) {
-		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
-	}
+    public BigDecimal getAdditionalBankRuleFiledId() {
+        return additionalBankRuleFiledId;
+    }
 
-	public String getAdditionalDesc() {
-		return additionalDesc;
-	}
+    public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
+        this.additionalBankRuleFiledId = additionalBankRuleFiledId;
+    }
 
-	public void setAdditionalDesc(String additionalDesc) {
-		this.additionalDesc = additionalDesc;
-	}
+    public String getAdditionalDesc() {
+        return additionalDesc;
+    }
 
-	public String getFlexiField() {
-		return flexiField;
-	}
+    public void setAdditionalDesc(String additionalDesc) {
+        this.additionalDesc = additionalDesc;
+    }
 
-	public void setFlexiField(String flexiField) {
-		this.flexiField = flexiField;
-	}
+    public String getFlexiField() {
+        return flexiField;
+    }
 
-	public String getVariableName() {
-		return variableName;
-	}
+    public void setFlexiField(String flexiField) {
+        this.flexiField = flexiField;
+    }
 
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
-	}
+    public String getVariableName() {
+        return variableName;
+    }
 
-	public BigDecimal getAdditionalBankId() {
-		return additionalBankId;
-	}
+    public void setVariableName(String variableName) {
+        this.variableName = variableName;
+    }
 
-	public void setAdditionalBankId(BigDecimal additionalBankId) {
-		this.additionalBankId = additionalBankId;
-	}
+    public BigDecimal getAdditionalBankId() {
+        return additionalBankId;
+    }
 
-	public String getAddItionalData() {
-		return addItionalData;
-	}
+    public void setAdditionalBankId(BigDecimal additionalBankId) {
+        this.additionalBankId = additionalBankId;
+    }
 
-	public void setAddItionalData(String addItionalData) {
-		this.addItionalData = addItionalData;
-	}
+    public String getAddItionalData() {
+        return addItionalData;
+    }
 
-	public String getFieldType() {
-		return fieldType;
-	}
+    public void setAddItionalData(String addItionalData) {
+        this.addItionalData = addItionalData;
+    }
 
-	public void setFieldType(String fieldType) {
-		this.fieldType = fieldType;
-	}
+    public String getFieldType() {
+        return fieldType;
+    }
 
-	public String getNavicable() {
-		return navicable;
-	}
+    public void setFieldType(String fieldType) {
+        this.fieldType = fieldType;
+    }
 
-	public void setNavicable(String navicable) {
-		this.navicable = navicable;
-	}
+    public String getNavicable() {
+        return navicable;
+    }
 
-	public String getMandatory() {
-		return mandatory;
-	}
+    public void setNavicable(String navicable) {
+        this.navicable = navicable;
+    }
 
-	public void setMandatory(String mandatory) {
-		this.mandatory = mandatory;
-	}
+    public String getMandatory() {
+        return mandatory;
+    }
 
-	public int getMinLenght() {
-		return minLenght;
-	}
+    public void setMandatory(String mandatory) {
+        this.mandatory = mandatory;
+    }
 
-	public void setMinLenght(int minLenght) {
-		this.minLenght = minLenght;
-	}
+    public int getMinLenght() {
+        return minLenght;
+    }
 
-	public BigDecimal getMaxLenght() {
-		return maxLenght;
-	}
+    public void setMinLenght(int minLenght) {
+        this.minLenght = minLenght;
+    }
 
-	public void setMaxLenght(BigDecimal maxLenght) {
-		this.maxLenght = maxLenght;
-	}
+    public BigDecimal getMaxLenght() {
+        return maxLenght;
+    }
 
-	public String getValidation() {
-		return validation;
-	}
+    public void setMaxLenght(BigDecimal maxLenght) {
+        this.maxLenght = maxLenght;
+    }
 
-	public void setValidation(String validation) {
-		this.validation = validation;
-	}
+    public String getValidation() {
+        return validation;
+    }
 
-	public String getIsActive() {
-		return isActive;
-	}
+    public void setValidation(String validation) {
+        this.validation = validation;
+    }
 
-	public void setIsActive(String isActive) {
-		this.isActive = isActive;
-	}
+    public String getIsActive() {
+        return isActive;
+    }
 
-	public BigDecimal getFieldLength() {
-		return fieldLength;
-	}
+    public void setIsActive(String isActive) {
+        this.isActive = isActive;
+    }
 
-	public void setFieldLength(BigDecimal fieldLength) {
-		this.fieldLength = fieldLength;
-	}
+    public BigDecimal getFieldLength() {
+        return fieldLength;
+    }
 
-	public Boolean getRequired() {
-		return required;
-	}
+    public void setFieldLength(BigDecimal fieldLength) {
+        this.fieldLength = fieldLength;
+    }
 
-	public void setRequired(Boolean required) {
-		this.required = required;
-	}
+    public Boolean getRequired() {
+        return required;
+    }
 
-	public Boolean getRenderInputText() {
-		return renderInputText;
-	}
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
 
-	public void setRenderInputText(Boolean renderInputText) {
-		this.renderInputText = renderInputText;
-	}
+    public Boolean getRenderInputText() {
+        return renderInputText;
+    }
 
-	public Boolean getRenderSelect() {
-		return renderSelect;
-	}
+    public void setRenderInputText(Boolean renderInputText) {
+        this.renderInputText = renderInputText;
+    }
 
-	public void setRenderSelect(Boolean renderSelect) {
-		this.renderSelect = renderSelect;
-	}
+    public Boolean getRenderSelect() {
+        return renderSelect;
+    }
 
+    public void setRenderSelect(Boolean renderSelect) {
+        this.renderSelect = renderSelect;
+    }
 
+    public Boolean getRenderOneSelect() {
+        return renderOneSelect;
+    }
 
-	public Boolean getRenderOneSelect() {
-		return renderOneSelect;
-	}
+    public void setRenderOneSelect(Boolean renderOneSelect) {
+        this.renderOneSelect = renderOneSelect;
+    }
 
-	public void setRenderOneSelect(Boolean renderOneSelect) {
-		this.renderOneSelect = renderOneSelect;
-	}
+    public String getOneAdditional() {
+        return oneAdditional;
+    }
 
-	public String getOneAdditional() {
-		return oneAdditional;
-	}
+    public void setOneAdditional(String oneAdditional) {
+        this.oneAdditional = oneAdditional;
+    }
 
-	public void setOneAdditional(String oneAdditional) {
-		this.oneAdditional = oneAdditional;
-	}
+    public BigDecimal getOneAdditionalId() {
+        return oneAdditionalId;
+    }
 
-	public BigDecimal getOneAdditionalId() {
-		return oneAdditionalId;
-	}
+    public void setOneAdditionalId(BigDecimal oneAdditionalId) {
+        this.oneAdditionalId = oneAdditionalId;
+    }
 
-	public void setOneAdditionalId(BigDecimal oneAdditionalId) {
-		this.oneAdditionalId = oneAdditionalId;
-	}
+    public String getAmicCode() {
+        return amicCode;
+    }
 
-	public String getAmicCode() {
-		return amicCode;
-	}
+    public void setAmicCode(String amicCode) {
+        this.amicCode = amicCode;
+    }
 
-	public void setAmicCode(String amicCode) {
-		this.amicCode = amicCode;
-	}
+    public String getAmicDesc() {
+        return amicDesc;
+    }
 
-	public String getAmicDesc() {
-		return amicDesc;
-	}
+    public void setAmicDesc(String amicDesc) {
+        this.amicDesc = amicDesc;
+    }
 
-	public void setAmicDesc(String amicDesc) {
-		this.amicDesc = amicDesc;
-	}
+    public Boolean getMsgRender() {
+        return msgRender;
+    }
 
+    public void setMsgRender(Boolean msgRender) {
+        this.msgRender = msgRender;
+    }
 
-	public Boolean getMsgRender() {
-		return msgRender;
-	}
+    public List<AdditionalBankRuleAddDataDto> getAdditionalBankRuleData() {
+        return additionalBankRuleData;
+    }
 
-	public void setMsgRender(Boolean msgRender) {
-		this.msgRender = msgRender;
-	}
+    public void setAdditionalBankRuleData(List<AdditionalBankRuleAddDataDto> additionalBankRuleData) {
+        this.additionalBankRuleData = additionalBankRuleData;
+    }
 
-	public List<AdditionalBankRuleAddDataDto> getAdditionalBankRuleData() {
-		return additionalBankRuleData;
-	}
+    public List<AdditionalBankDetailsViewDto> getListadditionAmiecData() {
+        return listadditionAmiecData;
+    }
 
-	public void setAdditionalBankRuleData(List<AdditionalBankRuleAddDataDto> additionalBankRuleData) {
-		this.additionalBankRuleData = additionalBankRuleData;
-	}
+    public void setListadditionAmiecData(List<AdditionalBankDetailsViewDto> listadditionAmiecData) {
+        this.listadditionAmiecData = listadditionAmiecData;
+    }
 
-	public List<AdditionalBankDetailsViewDto> getListadditionAmiecData() {
-		return listadditionAmiecData;
-	}
+    public String getExceptionMessage() {
+        return exceptionMessage;
+    }
 
-	public void setListadditionAmiecData(List<AdditionalBankDetailsViewDto> listadditionAmiecData) {
-		this.listadditionAmiecData = listadditionAmiecData;
-	}
-
-	public String getExceptionMessage() {
-		return exceptionMessage;
-	}
-
-	public void setExceptionMessage(String exceptionMessage) {
-		this.exceptionMessage = exceptionMessage;
-	}
+    public void setExceptionMessage(String exceptionMessage) {
+        this.exceptionMessage = exceptionMessage;
+    }
 }
