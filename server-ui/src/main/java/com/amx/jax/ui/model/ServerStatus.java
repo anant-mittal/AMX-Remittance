@@ -15,4 +15,6 @@ public class ServerStatus {
 	public String scheme = null;
 	public String remoteAddr = null;
 	public Map<String, Object> device = null;
+
+	public String message = null;
 }

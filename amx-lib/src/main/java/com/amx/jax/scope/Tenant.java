@@ -19,7 +19,7 @@ public enum Tenant {
 	BRN("bhr", "83"),
 
 	/** India */
-	IND("in", "94");
+	IND("in", "94"), NONE("none", "0");
 
 	public static final Tenant DEFAULT = KWT;
 
