@@ -36,6 +36,7 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
+import com.codahale.metrics.annotation.Timed;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
@@ -81,6 +82,7 @@ public class MetaController {
 		return wrapper;
 	}
 
+	@Timed
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
