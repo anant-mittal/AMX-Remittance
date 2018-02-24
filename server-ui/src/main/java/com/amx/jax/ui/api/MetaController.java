@@ -8,7 +8,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,11 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
+import com.amx.jax.config.AppConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.tunnel.TunnelPublisherImpl;
+import com.amx.jax.scope.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
@@ -43,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "Meta APIs")
 public class MetaController {
 
-	private Logger log = Logger.getLogger(getClass());
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	private JaxService jaxService;
@@ -64,10 +66,13 @@ public class MetaController {
 	HttpService httpService;
 
 	@Autowired
-	TunnelPublisherImpl tunnelPublisher;
+	UserDevice userDevice;
 
 	@Autowired
-	UserDevice userDevice;
+	CalcLibs calcLibs;
+
+	@Autowired
+	AppConfig appConfig;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -79,10 +84,10 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
-			HttpServletRequest request, Device device) throws UnirestException {
+			HttpServletRequest request, Device device) throws UnirestException, PostManException {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
-		
+
 		userDevice.getDeviceType();
 
 		wrapper.getData().debug = env.isDebug();
@@ -100,24 +105,25 @@ public class MetaController {
 		wrapper.getData().scheme = request.getScheme();
 
 		wrapper.getData().device = userDevice.toMap();
-		wrapper.getData().onlineConfigurationDto = null;
+		wrapper.getData().message = calcLibs.get().getRSName();
+
+		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
+				appConfig.isDebug());
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
 
-		Email email = new Email();
-		email.addTo("lalit.tanwar07@gmail.com");
-		email.setObject(wrapper);
-
-		email.setSubject("Test Email");
-		email.setTemplate(Templates.RESET_OTP);
-		email.setHtml(true);
-
-		File file = new File();
-		file.setTemplate(Templates.RESET_OTP);
-		file.setObject(wrapper);
-		file.setType(File.Type.PDF);
-		email.addFile(file);
-
-		postManService.sendEmail(email);
+		/*
+		 * Email email = new Email(); email.addTo("lalit.tanwar07@gmail.com");
+		 * email.setObject(wrapper);
+		 * 
+		 * email.setSubject("Test Email"); email.setTemplate(Templates.RESET_OTP);
+		 * email.setHtml(true);
+		 * 
+		 * File file = new File(); file.setTemplate(Templates.RESET_OTP);
+		 * file.setObject(wrapper); file.setType(File.Type.PDF); email.addFile(file);
+		 * 
+		 * postManService.sendEmail(email);
+		 *
+		 */
 
 		/*
 		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");

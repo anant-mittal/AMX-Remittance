@@ -59,9 +59,10 @@
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
 		<module>lib-cache</module>
+ 		<module>lib-tunnel</module>
 		<module>lib-session</module>
+		<module>lib-logger</module>
 
-		<module>client-logger</module>
 		<module>ms-logger</module>
 
 		<module>ms-postman-client</module>

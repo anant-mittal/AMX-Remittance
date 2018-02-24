@@ -3,12 +3,27 @@ package com.amx.jax.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
-import com.bootloaderjs.config.AppConfig;
-
-@PropertySource(value = "classpath:amx-config.properties")
+@Component
 @Configuration
-public class AmxConfig extends AppConfig {
+@PropertySource("application-lib.properties")
+public class AppConfig {
+
+	@Value("${app.name}")
+	private String appName;
+
+	@Value("${app.prod}")
+	private Boolean prodMode;
+
+	@Value("${app.swagger}")
+	private boolean swaggerEnabled;
+
+	@Value("${app.debug}")
+	private Boolean debug;
+
+	@Value("${app.cache}")
+	private Boolean cache;
 
 	@Value("${jax.cdn.url}")
 	private String cdnURL;
@@ -27,6 +42,26 @@ public class AmxConfig extends AppConfig {
 
 	@Value("${jax.logger.url}")
 	private String loggerURL;
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public Boolean isProdMode() {
+		return prodMode;
+	}
+
+	public Boolean isSwaggerEnabled() {
+		return swaggerEnabled;
+	}
+
+	public Boolean isDebug() {
+		return debug;
+	}
+
+	public Boolean isCache() {
+		return debug;
+	}
 
 	public String getCdnURL() {
 		return cdnURL;
@@ -51,5 +86,4 @@ public class AmxConfig extends AppConfig {
 	public String getLoggerURL() {
 		return loggerURL;
 	}
-
 }

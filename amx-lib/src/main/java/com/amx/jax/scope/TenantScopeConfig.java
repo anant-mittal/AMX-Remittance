@@ -11,4 +11,5 @@ public class TenantScopeConfig {
 	public static BeanFactoryPostProcessor beanFactoryPostProcessor() {
 		return new TenantBeanFactoryPostProcessor();
 	}
+
 }
