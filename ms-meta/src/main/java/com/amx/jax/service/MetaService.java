@@ -1,3 +1,10 @@
+/**
+ * Meta Servcie
+ * Author : MRU
+ * Purpose : To get the customer Info
+ * Date    : 03/01/2018
+ */
+
 package com.amx.jax.service;
 
 import java.lang.reflect.InvocationTargetException;
@@ -11,27 +18,52 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.ViewCityDto;
+import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.repository.IViewCityDao;
+import com.amx.jax.repository.IViewDistrictDAO;
+import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.repository.OnlineConfigurationRepository;
 import com.amx.jax.services.AbstractService;
 
 @Service
 @SuppressWarnings("rawtypes")
-public class MetaService  extends AbstractService{
-	
+public class MetaService extends AbstractService {
+
 	private Logger logger = Logger.getLogger(MetaService.class);
-	
+
 	@Autowired
 	IViewCityDao cityDao;
-	
-	
-	public ApiResponse getDistrictCity(BigDecimal districtId,BigDecimal languageId) {
+
+	@Autowired
+	IViewStateDao stateDao;
+
+	@Autowired
+	CountryRepository countryDao;
+
+	@Autowired
+	ICustomerRepository customerDao;
+
+	@Autowired
+	IContactDetailDao contactDao;
+
+	@Autowired
+	IViewDistrictDAO districtDao;
+
+	@Autowired
+	OnlineConfigurationRepository onlineConfigurationRepository;
+
+	public ApiResponse getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
 		ApiResponse response = getBlackApiResponse();
-		if(cityList.isEmpty()) {
+		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
 		} else {
 			response.getData().getValues().addAll(convertCityDto(cityList));
@@ -40,11 +72,11 @@ public class MetaService  extends AbstractService{
 		response.getData().setType("city");
 		return response;
 	}
-	
-	public ApiResponse getCityDescription(BigDecimal districtId,BigDecimal languageId,BigDecimal cityId) {
+
+	public ApiResponse getCityDescription(BigDecimal districtId, BigDecimal languageId, BigDecimal cityId) {
 		List<ViewCity> cityList = cityDao.getCityDescription(districtId, cityId, languageId);
 		ApiResponse response = getBlackApiResponse();
-		if(cityList.isEmpty()) {
+		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
 		} else {
 			response.getData().getValues().addAll(convertCityDto(cityList));
@@ -53,17 +85,13 @@ public class MetaService  extends AbstractService{
 		response.getData().setType("city");
 		return response;
 	}
-	
-	
-	
-	
 
 	private List<ViewCityDto> convertCityDto(List<ViewCity> cityList) {
 		List<ViewCityDto> output = new ArrayList<>();
 		cityList.forEach(cityModel -> output.add(convertCityModelToDto(cityModel)));
 		return output;
 	}
-	
+
 	private ViewCityDto convertCityModelToDto(ViewCity cityModel) {
 		ViewCityDto dto = new ViewCityDto();
 		try {
@@ -74,8 +102,19 @@ public class MetaService  extends AbstractService{
 		return dto;
 	}
 
-	
-	
+	public ApiResponse getOnlineConfig(String applInd) {
+		ApiResponse response = getBlackApiResponse();
+		List<OnlineConfiguration> output = onlineConfigurationRepository.findByappInd(applInd);
+		OnlineConfigurationDto dto = new OnlineConfigurationDto();
+		try {
+			BeanUtils.copyProperties(dto, output.get(0));
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("unable to convert OnlineConfigurationDto", e);
+		}
+		response.getData().setType("online-config");
+		response.getData().getValues().add(dto);
+		return response;
+	}
 
 	@Override
 	public String getModelType() {

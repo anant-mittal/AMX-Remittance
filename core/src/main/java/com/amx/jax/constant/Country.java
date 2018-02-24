@@ -24,7 +24,7 @@ public enum Country {
 		return countryId;
 	}
 
-	public static Map<Integer, Country> countryIdToCountryMap = new HashMap<>();
+	public static final Map<Integer, Country> countryIdToCountryMap = new HashMap<>();
 	static {
 
 		for (Country c : Country.values()) {

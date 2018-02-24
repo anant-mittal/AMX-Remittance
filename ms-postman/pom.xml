@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.amx.jax</groupId>
 	<artifactId>ms-postman</artifactId>
 	<packaging>jar</packaging>
 	<name>ms-postman</name>
 	<url>http://maven.apache.org</url>
+	<description>Common Notificationa nd Templating Service</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -27,6 +27,7 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
+		<!-- thymeleaf dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -37,6 +38,34 @@
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
 			<version>3.0.0.RELEASE</version>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
+<!-- 		<dependency>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>1.9.21</version>$NO-MVN-MAN-VER$
+		</dependency> -->
+
+		<!-- /thymeleaf dependencies -->
+
+		<!-- PDF FLYINSOC -->
+		<dependency>
+			<groupId>org.xhtmlrenderer</groupId>
+			<artifactId>flying-saucer-pdf-itext5</artifactId>
+			<version>9.1.11</version>
+		</dependency>
+
+		<!-- HTML TO PDF -->
+		<!-- <dependency> <groupId>org.apache.pdfbox</groupId> <artifactId>pdfbox-tools</artifactId> 
+			<version>2.0.3</version> </dependency> <dependency> <groupId>net.sf.cssbox</groupId> 
+			<artifactId>pdf2dom</artifactId> <version>1.6</version> </dependency> <dependency> 
+			<groupId>com.itextpdf</groupId> <artifactId>itextpdf</artifactId> <version>5.5.10</version> 
+			</dependency> <dependency> <groupId>com.itextpdf.tool</groupId> <artifactId>xmlworker</artifactId> 
+			<version>5.5.10</version> </dependency> <dependency> <groupId>org.apache.poi</groupId> 
+			<artifactId>poi-ooxml</artifactId> <version>3.15</version> </dependency> 
+			<dependency> <groupId>org.apache.poi</groupId> <artifactId>poi-scratchpad</artifactId> 
+			<version>3.15</version> </dependency> -->
+		<!-- HTML TO PDF ENDS -->
 
 
 		<!-- UNIREST DEPENDCY -->
@@ -66,56 +95,45 @@
 			<version>1.4.9</version>
 		</dependency>
 
-		<!-- PDF FLYINSOC -->
+		<!-- Swagger infos -->
 		<dependency>
-			<groupId>org.xhtmlrenderer</groupId>
-			<artifactId>flying-saucer-pdf</artifactId>
-			<version>9.1.5</version>
-		</dependency>
-
-		<!-- HTML TO PDF -->
-<!-- 		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox-tools</artifactId>
-			<version>2.0.3</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.6.1</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.cssbox</groupId>
-			<artifactId>pdf2dom</artifactId>
-			<version>1.6</version>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.6.1</version>
+			<scope>compile</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>itextpdf</artifactId>
-			<version>5.5.10</version>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf.tool</groupId>
-			<artifactId>xmlworker</artifactId>
-			<version>5.5.10</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>3.15</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-scratchpad</artifactId>
-			<version>3.15</version>
-		</dependency> -->
-		<!-- HTML TO PDF ENDS -->
-
 
 		<dependency>
 			<groupId>com.bootloaderjs</groupId>
 			<artifactId>boot-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>ms-postman-client</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
 
 	</dependencies>
-	<description>Common utils library for boot projects</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

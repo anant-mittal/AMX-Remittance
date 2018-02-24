@@ -2,6 +2,7 @@ package com.amx.jax.userservice.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -13,11 +14,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
@@ -30,20 +36,40 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.LoginLogoutHistory;
+import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.ViewDistrict;
+import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidJsonInputException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.CountryRepository;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IContactDetailDao;
+import com.amx.jax.repository.ICustomerRepository;
+import com.amx.jax.repository.ITransactionHistroyDAO;
+import com.amx.jax.repository.IViewCityDao;
+import com.amx.jax.repository.IViewDistrictDAO;
+import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.Util;
 import com.amx.jax.util.WebUtils;
+import com.bootloaderjs.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -59,7 +85,7 @@ public class UserService extends AbstractUserService {
 	private CryptoUtil cryptoUtil;
 
 	@Autowired
-	private Util util;
+	private JaxUtil util;
 
 	@Autowired
 	private WebUtils webutil;
@@ -75,6 +101,39 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private StringUtil stringUtil;
+
+	@Autowired
+	private LoginLogoutHistoryRepository loginLogoutHistoryRepositoryRepo;
+
+	@Autowired
+	IViewCityDao cityDao;
+
+	@Autowired
+	IViewStateDao stateDao;
+
+	@Autowired
+	CountryRepository countryDao;
+
+	@Autowired
+	ICustomerRepository customerDao;
+
+	@Autowired
+	IContactDetailDao contactDao;
+
+	@Autowired
+	IViewDistrictDAO districtDao;
+
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+
+	@Autowired
+	ITransactionHistroyDAO tranxHistDao;
+
+	@Autowired
+	MetaData metaData;
+
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -108,7 +167,7 @@ public class UserService extends AbstractUserService {
 		model.setImageUrl(cust.getImageUrl());
 		model.setMobile(cust.getMobileNumber());
 		model.setCustomerId(cust.getCustomerId());
-		model.setIsActive("Y".equals(cust.getStatus()));
+		model.setIsActive(ConstantDocument.Yes.equals(cust.getStatus()));
 		List<SecurityQuestionModel> securityquestions = new ArrayList<>();
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion1(), cust.getSecurityAnswer1()));
 		securityquestions.add(new SecurityQuestionModel(cust.getSecurityQuestion2(), cust.getSecurityAnswer2()));
@@ -119,7 +178,13 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
+			if (history != null) {
+				personinfo.setLastLoginTime(history.getLoginTime());
+			}
 			BeanUtils.copyProperties(personinfo, customer);
+			personinfo.setEmail(customer.getEmail());
+			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
 		}
@@ -127,33 +192,54 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse saveCustomer(CustomerModel model) {
-		// userValidationService.validateCustomerForOnlineFlow(model.getCustomerId());
-		if (model.getCustomerId() == null) {
+		BigDecimal customerId = (model.getCustomerId() == null) ? metaData.getCustomerId() : model.getCustomerId();
+		if (customerId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(model.getCustomerId());
+		Customer cust = custDao.getCustById(customerId);
+		String oldEmail = cust.getEmail();
+		
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
 		}
 		if (model.getLoginId() != null) {
 			userValidationService.validateLoginId(model.getLoginId());
 		}
-
+		userValidationService.validateOtpFlow(model);
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
-			Map<String, Object> output = afterLoginSteps(onlineCust);
-			if (output.get("PERSON_INFO") != null) {
-				outputModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-			}
+			 afterLoginSteps(onlineCust);
 		}
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		
+		//this is to send email on OLD email id
+		if (model.getEmail() != null) {
+			model.setEmail(oldEmail);
+		}
+		
+		if (isNewUserRegistrationSuccess(model, onlineCust)) {
+			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
+					onlineCust.getEmail());
+		} else {
+			jaxNotificationService.sendProfileChangeNotificationEmail(model, outputModel.getPersoninfo());
+		}
+
 		return response;
+	}
+
+	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
+
+		if (model.getPassword() != null && ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+			return true;
+		}
+		return false;
 	}
 
 	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
@@ -173,63 +259,162 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(cust.getCustomerId());
 		if (onlineCust == null) {
+			logger.info("registering new customer for online device IP: " + metaData.getDeviceIp());
+			logger.info("device id: " + metaData.getDeviceId());
 			onlineCust = new CustomerOnlineRegistration(cust);
 			onlineCust.setHresetBy(cust.getIdentityInt());
-			onlineCust.setHresetIp(webutil.getClientIp());
+			onlineCust.setHresetIp(metaData.getDeviceIp());
 			onlineCust.setHresetkDt(new Date());
-			onlineCust.setResetIp(webutil.getClientIp());
+			onlineCust.setResetIp(metaData.getDeviceIp());
 		}
 		model.setEmail(cust.getEmail());
 		model.setMobile(cust.getMobile());
-		model.setIsActiveCustomer("Y".equals(onlineCust.getStatus()) ? true : false);
+		model.setIsActiveCustomer(ConstantDocument.Yes.equals(onlineCust.getStatus()) ? true : false);
 		return onlineCust;
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
+		return sendOtpForCivilId(civilId, null, null,null);
+	}
+
+	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
+			CustomerModel customerModel,Boolean initRegistration) {
+		BigDecimal customerId = metaData.getCustomerId();
+		if (customerId != null) {
+			civilId = custDao.getCustById(customerId).getIdentityInt();
+		}
+		if (customerId == null && civilId != null){
+			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
+		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
+		
+		logger.info("customerId is --> "+customerId);
+		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustReg!=null) {
+			logger.info("validating customer lock count.");
+			userValidationService.validateCustomerLockCount(onlineCustReg);
+		}else {
+			logger.info("onlineCustReg is null");
+		}
+		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
-		userValidationService.validateCustomerLockCount(onlineCust);
-		generateToken(civilId, model);
-		onlineCust.setEmailToken(model.getHashedOtp());
-		onlineCust.setSmsToken(model.getHashedOtp());
+		
+		try {
+			userValidationService.validateTokenDate(onlineCust);
+		} catch (GlobalException e) {
+			// reset sent token count
+			onlineCust.setTokenSentCount(BigDecimal.ZERO);
+		}
+		//userValidationService.validateCustomerLockCount(onlineCust);
+		userValidationService.validateTokenSentCount(onlineCust);
+		generateToken(civilId, model, channels);
+		onlineCust.setEmailToken(model.getHashedeOtp());
+		onlineCust.setSmsToken(model.getHashedmOtp());
 		onlineCust.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (onlineCust.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: onlineCust.getTokenSentCount().add(new BigDecimal(1));
+		onlineCust.setTokenSentCount(tokenSentCount);
 		custDao.saveOnlineCustomer(onlineCust);
+		Customer customer = custDao.getCustById(onlineCust.getCustomerId());
+		model.setFirstName(customer.getFirstName());
+		model.setLastName(customer.getLastName());
+		model.setCustomerId(onlineCust.getCustomerId());
+		model.setMiddleName(customer.getMiddleName());
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
+		
+		//if user is already registered do not send OTP
+		if (initRegistration != null && initRegistration && onlineCust != null
+				&& ConstantDocument.Yes.equals(onlineCust.getStatus())) {
+			logger.info(String.format("Customer %s -- %s is already registred.", model.getCustomerId(),
+					model.getFirstName()));
+			return response;
+		}				
+		
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		}
+
+		if (customerModel != null && customerModel.getEmail() != null) {
+			personinfo.setEmail(customerModel.getEmail());
+		}
+		if (customerModel != null && customerModel.getMobile() != null) {
+			personinfo.setMobile(customerModel.getMobile());
+		}
+
+		jaxNotificationService.sendOtpSms(personinfo, model);
+
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			jaxNotificationService.sendOtpEmail(personinfo, model);
+		}
 		return response;
 	}
 
-	private void generateToken(String userId, CivilIdOtpModel model) {
-		String randOtp = util.createRandomPassword(6);
-		String hashedOtp = cryptoUtil.getHash(userId, randOtp);
-		model.setHashedOtp(hashedOtp);
-		model.setOtp(randOtp);
-		logger.info("Generated otp for civilid- " + userId + " is " + randOtp);
+	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+		String randmOtp = util.createRandomPassword(6);
+		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
+		String randeOtp = util.createRandomPassword(6);
+		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
+		model.setHashedmOtp(hashedmOtp);
+		model.setmOtp(randmOtp);
+		model.setmOtpPrefix(Random.randomAlpha(3));
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			model.setHashedeOtp(hashedeOtp);
+			model.seteOtp(randeOtp);
+			model.seteOtpPrefix(Random.randomAlpha(3));
+			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
+		}
+		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 
-	public ApiResponse validateOtp(String civilId, String otp) {
+	public ApiResponse validateOtp(String civilId, String mOtp) {
+		return validateOtp(civilId, mOtp, null);
+	}
+
+	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
 		logger.debug("in validateopt of civilid: " + civilId);
-		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByUserId(civilId);
+		Customer customer = null;
+		if (civilId != null) {
+			customer = custDao.getCustomerByCivilId(civilId);
+		}
+		if (metaData.getCustomerId() != null) {
+			customer = custDao.getCustById(metaData.getCustomerId());
+			civilId = customer.getIdentityInt();
+		}
+		if (customer == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCust == null) {
 			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
 		}
-		if (StringUtils.isEmpty(otp)) {
+		if (StringUtils.isEmpty(mOtp)) {
 			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
 		}
 		userValidationService.validateCustomerLockCount(onlineCust);
-		String emailTokenHash = onlineCust.getEmailToken();
-		String otpHash = cryptoUtil.getHash(civilId, otp);
-		if (!otpHash.equals(emailTokenHash)) {
+		userValidationService.validateTokenDate(onlineCust);
+		String etokenHash = onlineCust.getEmailToken();
+		String mtokenHash = onlineCust.getSmsToken();
+		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
+		String eOtpHash = null;
+		if (org.apache.commons.lang.StringUtils.isNotBlank(eOtp)) {
+			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
+		}
+		if (!mOtpHash.equals(mtokenHash)) {
 			userValidationService.incrementLockCount(onlineCust);
-			throw new InvalidOtpException("Otp is incorrect for civil-id: " + civilId);
+			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
+		}
+		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
+			userValidationService.incrementLockCount(onlineCust);
+			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
 		}
 		checkListManager.updateMobileAndEmailCheck(onlineCust, custDao.getCheckListForUserId(civilId));
 		this.unlockCustomer(onlineCust);
-		onlineCust.setEmailToken(null);
-		onlineCust.setMobileNumber(null);
 		custDao.saveOnlineCustomer(onlineCust);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCust);
@@ -243,7 +428,8 @@ public class UserService extends AbstractUserService {
 	public ApiResponse loginUser(String userId, String password) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new UserNotFoundException("User with userId: " + userId + " not found or not active");
+			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerLockCount(onlineCustomer);
@@ -268,6 +454,7 @@ public class UserService extends AbstractUserService {
 	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
+		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
 		Map<String, Object> output = new HashMap<>();
 		return output;
 	}
@@ -315,12 +502,14 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
-	public ApiResponse updatePassword(Integer custId, String password) {
+	public ApiResponse updatePassword(CustomerModel model) {
+		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
 		if (custId == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(custId));
-		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), password));
+		userValidationService.validateOtpFlow(model);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
+		onlineCustomer.setPassword(cryptoUtil.getHash(onlineCustomer.getUserName(), model.getPassword()));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		ApiResponse response = getBlackApiResponse();
 		BooleanResponse responseModel = new BooleanResponse(true);
@@ -339,6 +528,221 @@ public class UserService extends AbstractUserService {
 			onlineCustomer.setLockDt(null);
 			custDao.saveOnlineCustomer(onlineCustomer);
 		}
+		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
+	}
+
+	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
+
+		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
+		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
+
+		return output;
+	}
+
+	protected void saveLoginLogoutHistoryByUserName(String userName) {
+		LoginLogoutHistory output = getLoginLogoutHistoryByUserName(userName);
+		if (output == null) {
+			output = new LoginLogoutHistory();
+			output.setLoginType("C");
+			output.setUserName(userName);
+		}
+		output.setLoginTime(new Timestamp(new Date().getTime()));
+		loginLogoutHistoryRepositoryRepo.save(output);
+	}
+
+	/**
+	 * My Profile Info
+	 */
+
+	public ApiResponse getCustomerInfo(BigDecimal countryId, BigDecimal companyId, BigDecimal customerId) {
+		CustomerDto customerInfo = new CustomerDto();
+		ApiResponse response = getBlackApiResponse();
+		BeneficiaryListDTO beneDto = null;
+		List<Customer> customerList = customerDao.getCustomerByCustomerId(countryId, companyId, customerId);
+		BenificiaryListView defaultBene = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, countryId);
+		List<CustomerRemittanceTransactionView> noOfTrnxList = tranxHistDao.getCustomerTotalTrnx(customerId);
+		List<ContactDetail> contactList = contactDao.getContactDetailForLocal(new Customer(customerId));
+
+		if (customerList.isEmpty()) {
+			throw new GlobalException("Customer is not avaliable");
+		} else {
+			customerInfo = convertCustomerDto(customerList);
+			if (defaultBene != null) {
+				beneDto = convertBeneModelToDto(defaultBene);
+			}
+			if (!noOfTrnxList.isEmpty()) {
+				customerInfo.setTotalTrnxCount(new BigDecimal(noOfTrnxList.size()));
+			}
+			customerInfo.setDefaultBeneDto(beneDto);
+
+			if (!contactList.isEmpty()) {
+				customerInfo.setLocalContactBuilding(contactList.get(0).getBuildingNo());
+				customerInfo.setStreet(contactList.get(0).getStreet());
+				customerInfo.setBlockNo(contactList.get(0).getBlock());
+				customerInfo.setHouse(contactList.get(0).getFlat());
+				List<CountryMasterView> countryMasterView = countryDao.findByLanguageIdAndCountryId(new BigDecimal(1),
+						contactList.get(0).getFsCountryMaster().getCountryId());
+				if (!countryMasterView.isEmpty()) {
+					customerInfo.setLocalContactCountry(countryMasterView.get(0).getCountryName());
+					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),
+							contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
+					if (!stateMasterView.isEmpty()) {
+						customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
+						List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(),
+								contactList.get(0).getFsDistrictMaster().getDistrictId(), new BigDecimal(1));
+						if (!districtMas.isEmpty()) {
+							customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+							List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),
+									contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+							if (!cityDetails.isEmpty()) {
+								customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+							}
+						}
+					}
+
+				}
+				response.getData().getValues().add(customerInfo);
+				response.setResponseStatus(ResponseStatus.OK);
+			}
+		}
+		response.getData().setType("customer-dto");
+		return response;
+	}
+
+	public CustomerDto convertCustomerDto(List<Customer> customerList) {
+		CustomerDto dto = null;
+		for (Customer model : customerList) {
+			dto = new CustomerDto();
+			dto.setTitle(model.getTitle());
+			dto.setFirstName(model.getFirstName());
+			dto.setMiddleName(model.getMiddleName());
+			dto.setLastName(model.getLastName());
+			dto.setIdentityInt(model.getIdentityInt());
+			dto.setIdentityExpiredDate(model.getIdentityExpiredDate());
+			dto.setEmail(model.getEmail() == null ? "" : model.getEmail());
+			dto.setMobile(model.getMobile() == null ? "" : model.getMobile());
+			dto.setLoyaltyPoints(model.getLoyaltyPoints());
+			dto.setDateOfBirth(model.getDateOfBirth());
+			dto.setCustomerId(model.getCustomerId());
+			dto.setCustomerReference(model.getCustomerReference());
+			dto.setIsActive(model.getIsActive());
+			dto.setFirstNameLocal(model.getFirstNameLocal());
+			dto.setMiddleNameLocal(model.getMiddleNameLocal());
+			dto.setLastNameLocal(model.getLastNameLocal());
+			dto.setShortName(model.getShortName());
+			dto.setShortNameLocal(model.getShortNameLocal());
+		}
+
+		return dto;
+	}
+
+	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
+		BeneficiaryListDTO dto = new BeneficiaryListDTO();
+		try {
+			BeanUtils.copyProperties(dto, beneModel);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("bene list display", e);
+		}
+		return dto;
+	}
+
+	/**
+	 * Unlocks the customer account
+	 */
+	public ApiResponse unlockCustomer() {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
+		}
+		this.unlockCustomer(onlineCustomer);
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 
 	}
+
+	/**
+	 * Deactivates the customer
+	 */
+	public ApiResponse deactivateCustomer() {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer != null) {
+			onlineCustomer.setStatus(ConstantDocument.No);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+
+	}
+
+	/**
+	 * Unlocks the customer account
+	 */
+	public ApiResponse unlockCustomer(String civilid) {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		// BigDecimal customerId = metaData.getCustomerId();
+
+		Customer cust = custDao.getCustomerByCivilId(civilid);
+		BigDecimal customerId = null;
+		if (cust != null)
+			customerId = cust.getCustomerId();
+
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer == null) {
+			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
+					JaxError.USER_NOT_REGISTERED);
+		}
+		this.unlockCustomer(onlineCustomer);
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
+
+	/**
+	 * Deactivates the customer
+	 */
+	public ApiResponse deactivateCustomer(String civilid) {
+		ApiResponse response = getBlackApiResponse();
+		BooleanResponse responseModel = new BooleanResponse();
+		// BigDecimal customerId = metaData.getCustomerId();
+
+		Customer cust = custDao.getCustomerByCivilId(civilid);
+		BigDecimal customerId = null;
+		if (cust != null)
+			customerId = cust.getCustomerId();
+
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		if (onlineCustomer != null) {
+			onlineCustomer.setStatus(ConstantDocument.No);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+		responseModel.setSuccess(true);
+		response.getData().getValues().add(responseModel);
+		response.getData().setType(responseModel.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+
+	}
+
+	public void validateMobile(CustomerModel custModel) {
+		Customer cust = custDao.getCustById(custModel.getCustomerId());
+		userValidationService.validateMobileNumberLength(cust, custModel.getMobile());
+		userValidationService.isMobileExist(cust, custModel.getMobile());
+
+	} // end of validateMobile
 }

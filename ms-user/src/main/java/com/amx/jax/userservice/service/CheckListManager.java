@@ -3,8 +3,11 @@ package com.amx.jax.userservice.service;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerModel;
@@ -12,11 +15,11 @@ import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 
 @Component
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CheckListManager {
 
 	@Autowired

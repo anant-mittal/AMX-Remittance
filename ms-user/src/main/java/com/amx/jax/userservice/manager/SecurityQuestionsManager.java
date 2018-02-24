@@ -9,14 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.service.QuestionAnswerService;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Component
 public class SecurityQuestionsManager {
@@ -34,7 +33,7 @@ public class SecurityQuestionsManager {
 	private QuestionAnswerService qaService;
 
 	@Autowired
-	private Util util;
+	private JaxUtil util;
 
 	public List<OnlineQuestModel> getAllQuestionsList() {
 		return questionAnswerRepository.findAllQuestion(metaData.getLanguageId(), metaData.getCountryId());

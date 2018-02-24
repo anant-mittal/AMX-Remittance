@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>Payment Service</title>
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+</head>
+<body>
+     <h3 align="center">Your payment is successful !!!</h3><br/>
+	 <h3 align="center">Thank you for using AlMulla PG.</h3><br/>
+	 
+	 	<table>
+		<tr>
+			<th>Parameter</th>
+			<th>Value</th>
+		</tr>
+		<tr>
+			<td>Result</td>
+			<td>"${param.result}"</td>
+		</tr>
+		<tr>
+			<td>Payment Id</td>
+			<td>${#request.getParameter('PaymentID')}</td>
+		</tr>
+		<tr>
+			<td>Track Id</td>
+			<td>${#request.getParameter('trackid')}</td>
+		</tr>
+		<tr>
+			<td>Ref Id</td>
+			<td>"${param.ref}"</td>
+		</tr>
+		<tr>
+			<td>Date</td>
+			<td>"${param.postdate}"</td>
+		</tr>
+				<tr>
+			<td>Auth No</td>
+			<td>"${param.auth}"</td>
+		</tr>
+		<tr>
+			<td>Transaction Id</td>
+			<td>"${param.tranid}"</td>
+
+		</tr>
+	</table>
+	 
+</body>
+</html>

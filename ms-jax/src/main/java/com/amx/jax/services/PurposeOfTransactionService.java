@@ -22,7 +22,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dal.ApplicationProcedureDao;
+import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
@@ -260,11 +260,13 @@ public class PurposeOfTransactionService extends AbstractService {
 		Map<String, Object> routingDetails = applicationProcedureDao.getRoutingDetails(beneBankDetails);
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
 		BigDecimal countryId = beneficiary.getCountryId();
+		BigDecimal rountingCountry = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal remittanceModeId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryModeId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
-		BigDecimal bankId = beneficiary.getBankId();
-		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, countryId, currencyId,
+		BigDecimal bankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
+		
+		List<AddAdditionalBankDataDto> dto = this.getPutrposeOfTransaction(applicationCountryId, rountingCountry, currencyId,
 				remittanceModeId, deliveryModeId, bankId);
 		PurposeOfTransactionModel purposeOfTxnModel = new PurposeOfTransactionModel();
 		purposeOfTxnModel.setDto(dto);

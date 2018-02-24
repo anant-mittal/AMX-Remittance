@@ -2,7 +2,7 @@
 .settings
 .classpath
 .springBeans
-/target/
+*/target/classes
 /.settings/
 .metadata
 bin/
@@ -17,4 +17,4 @@ tmp/
 .idea
 *.iml
 .DS_Store
-
+D:\\payment-service.log

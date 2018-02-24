@@ -10,14 +10,14 @@ import com.bootloaderjs.ContextUtil;
 
 public class WebRequestListener implements ServletRequestListener {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestListener.class);
 
 	/**
 	 * Reset the metadata for the current request thread
 	 */
 	public void requestDestroyed(ServletRequestEvent event) {
 		LOGGER.debug("Trace Id in filter requestDestroyed {}", ContextUtil.getTraceId());
-		ContextUtil.map().clear();
+		ContextUtil.clear();
 	}
 
 	/**

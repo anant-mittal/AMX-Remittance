@@ -298,5 +298,204 @@ public class ExchangeRateApprovalDetModel implements Serializable{
 	public void setBankMaster(BankMasterModel bankMaster) {
 		this.bankMaster = bankMaster;
 	}
+
+
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((applicationCountryId == null) ? 0 : applicationCountryId.hashCode());
+		result = prime * result + ((approvedBy == null) ? 0 : approvedBy.hashCode());
+		result = prime * result + ((approvedDate == null) ? 0 : approvedDate.hashCode());
+		result = prime * result + ((authorisedBy == null) ? 0 : authorisedBy.hashCode());
+		result = prime * result + ((authorisedDate == null) ? 0 : authorisedDate.hashCode());
+		result = prime * result + ((bankMaster == null) ? 0 : bankMaster.hashCode());
+		result = prime * result + ((buyRateMax == null) ? 0 : buyRateMax.hashCode());
+		result = prime * result + ((buyRateMin == null) ? 0 : buyRateMin.hashCode());
+		result = prime * result + ((corporateRate == null) ? 0 : corporateRate.hashCode());
+		result = prime * result + ((countryBranchId == null) ? 0 : countryBranchId.hashCode());
+		result = prime * result + ((countryId == null) ? 0 : countryId.hashCode());
+		result = prime * result + ((createdBy == null) ? 0 : createdBy.hashCode());
+		result = prime * result + ((createdDate == null) ? 0 : createdDate.hashCode());
+		result = prime * result + ((currencyId == null) ? 0 : currencyId.hashCode());
+		result = prime * result + ((deliveryModeId == null) ? 0 : deliveryModeId.hashCode());
+		result = prime * result + ((exchangeRateMasterAprDetId == null) ? 0 : exchangeRateMasterAprDetId.hashCode());
+		result = prime * result + ((exchangeRateMasterId == null) ? 0 : exchangeRateMasterId.hashCode());
+		result = prime * result + ((isActive == null) ? 0 : isActive.hashCode());
+		result = prime * result + ((modifiedBy == null) ? 0 : modifiedBy.hashCode());
+		result = prime * result + ((modifiedDate == null) ? 0 : modifiedDate.hashCode());
+		result = prime * result + ((prvBuyRateMax == null) ? 0 : prvBuyRateMax.hashCode());
+		result = prime * result + ((prvBuyRateMin == null) ? 0 : prvBuyRateMin.hashCode());
+		result = prime * result + ((prvSellRateMax == null) ? 0 : prvSellRateMax.hashCode());
+		result = prime * result + ((prvSellRateMin == null) ? 0 : prvSellRateMin.hashCode());
+		result = prime * result + ((remarks == null) ? 0 : remarks.hashCode());
+		result = prime * result + ((remitanceModeId == null) ? 0 : remitanceModeId.hashCode());
+		result = prime * result + ((sellRateMax == null) ? 0 : sellRateMax.hashCode());
+		result = prime * result + ((sellRateMin == null) ? 0 : sellRateMin.hashCode());
+		result = prime * result + ((serviceId == null) ? 0 : serviceId.hashCode());
+		return result;
+	}
+
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ExchangeRateApprovalDetModel other = (ExchangeRateApprovalDetModel) obj;
+		if (applicationCountryId == null) {
+			if (other.applicationCountryId != null)
+				return false;
+		} else if (!applicationCountryId.equals(other.applicationCountryId))
+			return false;
+		if (approvedBy == null) {
+			if (other.approvedBy != null)
+				return false;
+		} else if (!approvedBy.equals(other.approvedBy))
+			return false;
+		if (approvedDate == null) {
+			if (other.approvedDate != null)
+				return false;
+		} else if (!approvedDate.equals(other.approvedDate))
+			return false;
+		if (authorisedBy == null) {
+			if (other.authorisedBy != null)
+				return false;
+		} else if (!authorisedBy.equals(other.authorisedBy))
+			return false;
+		if (authorisedDate == null) {
+			if (other.authorisedDate != null)
+				return false;
+		} else if (!authorisedDate.equals(other.authorisedDate))
+			return false;
+		if (bankMaster == null) {
+			if (other.bankMaster != null)
+				return false;
+		} else if (!bankMaster.equals(other.bankMaster))
+			return false;
+		if (buyRateMax == null) {
+			if (other.buyRateMax != null)
+				return false;
+		} else if (!buyRateMax.equals(other.buyRateMax))
+			return false;
+		if (buyRateMin == null) {
+			if (other.buyRateMin != null)
+				return false;
+		} else if (!buyRateMin.equals(other.buyRateMin))
+			return false;
+		if (corporateRate == null) {
+			if (other.corporateRate != null)
+				return false;
+		} else if (!corporateRate.equals(other.corporateRate))
+			return false;
+		if (countryBranchId == null) {
+			if (other.countryBranchId != null)
+				return false;
+		} else if (!countryBranchId.equals(other.countryBranchId))
+			return false;
+		if (countryId == null) {
+			if (other.countryId != null)
+				return false;
+		} else if (!countryId.equals(other.countryId))
+			return false;
+		if (createdBy == null) {
+			if (other.createdBy != null)
+				return false;
+		} else if (!createdBy.equals(other.createdBy))
+			return false;
+		if (createdDate == null) {
+			if (other.createdDate != null)
+				return false;
+		} else if (!createdDate.equals(other.createdDate))
+			return false;
+		if (currencyId == null) {
+			if (other.currencyId != null)
+				return false;
+		} else if (!currencyId.equals(other.currencyId))
+			return false;
+		if (deliveryModeId == null) {
+			if (other.deliveryModeId != null)
+				return false;
+		} else if (!deliveryModeId.equals(other.deliveryModeId))
+			return false;
+		if (exchangeRateMasterAprDetId == null) {
+			if (other.exchangeRateMasterAprDetId != null)
+				return false;
+		} else if (!exchangeRateMasterAprDetId.equals(other.exchangeRateMasterAprDetId))
+			return false;
+		if (exchangeRateMasterId == null) {
+			if (other.exchangeRateMasterId != null)
+				return false;
+		} else if (!exchangeRateMasterId.equals(other.exchangeRateMasterId))
+			return false;
+		if (isActive == null) {
+			if (other.isActive != null)
+				return false;
+		} else if (!isActive.equals(other.isActive))
+			return false;
+		if (modifiedBy == null) {
+			if (other.modifiedBy != null)
+				return false;
+		} else if (!modifiedBy.equals(other.modifiedBy))
+			return false;
+		if (modifiedDate == null) {
+			if (other.modifiedDate != null)
+				return false;
+		} else if (!modifiedDate.equals(other.modifiedDate))
+			return false;
+		if (prvBuyRateMax == null) {
+			if (other.prvBuyRateMax != null)
+				return false;
+		} else if (!prvBuyRateMax.equals(other.prvBuyRateMax))
+			return false;
+		if (prvBuyRateMin == null) {
+			if (other.prvBuyRateMin != null)
+				return false;
+		} else if (!prvBuyRateMin.equals(other.prvBuyRateMin))
+			return false;
+		if (prvSellRateMax == null) {
+			if (other.prvSellRateMax != null)
+				return false;
+		} else if (!prvSellRateMax.equals(other.prvSellRateMax))
+			return false;
+		if (prvSellRateMin == null) {
+			if (other.prvSellRateMin != null)
+				return false;
+		} else if (!prvSellRateMin.equals(other.prvSellRateMin))
+			return false;
+		if (remarks == null) {
+			if (other.remarks != null)
+				return false;
+		} else if (!remarks.equals(other.remarks))
+			return false;
+		if (remitanceModeId == null) {
+			if (other.remitanceModeId != null)
+				return false;
+		} else if (!remitanceModeId.equals(other.remitanceModeId))
+			return false;
+		if (sellRateMax == null) {
+			if (other.sellRateMax != null)
+				return false;
+		} else if (!sellRateMax.equals(other.sellRateMax))
+			return false;
+		if (sellRateMin == null) {
+			if (other.sellRateMin != null)
+				return false;
+		} else if (!sellRateMin.equals(other.sellRateMin))
+			return false;
+		if (serviceId == null) {
+			if (other.serviceId != null)
+				return false;
+		} else if (!serviceId.equals(other.serviceId))
+			return false;
+		return true;
+	}
 	
 }

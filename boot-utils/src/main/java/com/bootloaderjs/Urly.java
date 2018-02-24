@@ -25,4 +25,9 @@ public class Urly {
 			return names[0];
 		}
 	}
+
+	public static URLBuilder getBuilder() {
+		return new URLBuilder();
+	}
+
 }

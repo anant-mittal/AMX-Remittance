@@ -1,7 +1,5 @@
 package com.amx.amxlib.model;
 
-import com.amx.amxlib.model.AbstractModel;
-
 public class AbstractUserModel extends AbstractModel {
 
 	private Long id;

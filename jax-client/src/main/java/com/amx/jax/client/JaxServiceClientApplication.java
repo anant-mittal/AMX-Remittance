@@ -1,8 +1,5 @@
 package com.amx.jax.client;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,14 +22,11 @@ public class JaxServiceClientApplication {
 	protected JaxConfig jaxConfig;
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		builder.rootUri(jaxConfig.getSpServiceUrl());
-		return builder.build();
-	}
-
-	@Bean("base_url")
-	public URL baseUrl() throws MalformedURLException {
-		return new URL(jaxConfig.getSpServiceUrl());
+	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
+		builder.rootUri(jaxConfig.getDefaultUrl());
+		RestTemplate restTemplate = builder.build();
+		restTemplate.setErrorHandler(errorHandler);
+		return restTemplate;
 	}
 
 }

@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
 
@@ -125,6 +127,8 @@ public class Customer implements java.io.Serializable {
 	private String kioskPin;
 	private BigDecimal nationalityId;
 	private String isOnlineUser;
+	
+	private Date identityExpiredDate;
 	
 	
 	
@@ -378,6 +382,7 @@ public class Customer implements java.io.Serializable {
 		this.gender = gender;
 	}
 
+	@Temporal(TemporalType.DATE)
 	@Column(name = "DATE_OF_BIRTH")
 	public Date getDateOfBirth() {
 		return this.dateOfBirth;
@@ -870,6 +875,16 @@ public class Customer implements java.io.Serializable {
 
 	public void setNationalityId(BigDecimal nationalityId) {
 		this.nationalityId = nationalityId;
+	}
+
+	@Temporal(TemporalType.DATE)
+	@Column(name="IDENTITY_EXPIRY_DATE")
+	public Date getIdentityExpiredDate() {
+		return identityExpiredDate;
+	}
+
+	public void setIdentityExpiredDate(Date identityExpiredDate) {
+		this.identityExpiredDate = identityExpiredDate;
 	}
 
 	/*@ManyToOne(fetch = FetchType.LAZY)

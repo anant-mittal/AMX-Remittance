@@ -8,10 +8,10 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-
-import javax.naming.LimitExceededException;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -20,7 +20,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -33,24 +36,24 @@ import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exception.InvalidCivilIdException;
+import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.validation.ValidationClient;
+import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.validation.CustomerValidation;
-import com.amx.jax.util.validation.PatternValidator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
-
-	private static final int WRONG_PASSWORD_ATTEMPTS_ALLOWED = 3;
-
-	@Autowired
-	private PatternValidator patternValidator;
+	
+	Logger logger = Logger.getLogger(UserValidationService.class);
 
 	@Autowired
 	private CustomerValidation custValidation;
@@ -82,13 +85,18 @@ public class UserValidationService {
 	@Autowired
 	private DmsDocumentDao dmsDocDao;
 
+	@Autowired
+	OtpSettings otpSettings;
+	
+	@Autowired
+	private ValidationClients validationClients;
+	
+	@Autowired
+	private JaxUtil jaxUtil;
+
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-		// boolean userNameValid = patternValidator.validateUserName(loginId);
-		// if (!userNameValid) {
-		// throw new GlobalException("Username is not valid", "INVALID_USERNAME");
-		// }
 		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
 		if (existingCust != null) {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
@@ -101,10 +109,10 @@ public class UserValidationService {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);
 		}
 		if (cust.getMobile() == null) {
-			throw new InvalidCivilIdException("Mobile number is empty. Contact branch to update the same.");
+			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
 		}
 		if (cust.getEmail() == null) {
-			throw new InvalidCivilIdException("Email is empty. Contact branch to update the same.");
+			throw new GlobalException("Email is empty. Contact branch to update the same.");
 		}
 		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
@@ -121,8 +129,13 @@ public class UserValidationService {
 		String dbPwd = customer.getPassword();
 		String passwordhashed = cryptoUtil.getHash(customer.getUserName(), password);
 		if (!dbPwd.equals(passwordhashed)) {
-			incrementLockCount(customer);
-			throw new GlobalException("Incorrect/wrong password", JaxError.WRONG_PASSWORD);
+			Integer attemptsLeft = incrementLockCount(customer);
+			String errorExpression = JaxError.WRONG_PASSWORD.toString();
+			if (attemptsLeft > 0) {
+				errorExpression = jaxUtil.buildErrorExpression(JaxError.WRONG_PASSWORDS_ATTEMPTS.toString(),
+						attemptsLeft);
+			}
+			throw new GlobalException("Incorrect/wrong password", errorExpression);
 		}
 	}
 
@@ -220,10 +233,15 @@ public class UserValidationService {
 		}
 		boolean ishome = false, islocal = false;
 		for (ContactDetail contact : contactDetails) {
-			if (contact.getContactTypeId().equals(new BigDecimal(49))) {
+			if (contact.getFsCustomer().getCountryId().equals(meta.getCountryId())) {
+				ishome = true;
+			}
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId()
+					.equals(ConstantDocument.CONTACT_TYPE_FOR_LOCAL)) {
 				islocal = true;
 			}
-			if (contact.getContactTypeId().equals(new BigDecimal(50))) {
+			if (contact.getFsBizComponentDataByContactTypeId().getComponentDataId()
+					.equals(ConstantDocument.CONTACT_TYPE_FOR_HOME)) {
 				ishome = true;
 			}
 		}
@@ -306,6 +324,7 @@ public class UserValidationService {
 	}
 
 	public void validateCustomerLockCount(CustomerOnlineRegistration onlineCustomer) {
+		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			int lockCnt = onlineCustomer.getLockCnt().intValue();
 			Date midnightTomorrow = getMidnightToday();
@@ -316,7 +335,7 @@ public class UserValidationService {
 					custDao.saveOnlineCustomer(onlineCustomer);
 					lockCnt = 0;
 				}
-				if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+				if (lockCnt >= MAX_OTP_ATTEMPTS) {
 					throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 							JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 				}
@@ -327,21 +346,23 @@ public class UserValidationService {
 	/**
 	 * updates lock count by one due to wrong password/otp attempt
 	 */
-	public void incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
-		int lockCnt = 0;
+	public int incrementLockCount(CustomerOnlineRegistration onlineCustomer) {
+		Integer lockCnt = 0;
+		final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
 		if (onlineCustomer.getLockCnt() != null) {
 			lockCnt = onlineCustomer.getLockCnt().intValue();
 		}
 		lockCnt++;
-		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			onlineCustomer.setLockDt(new Date());
 		}
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
-		if (lockCnt >= WRONG_PASSWORD_ATTEMPTS_ALLOWED) {
+		if (lockCnt >= MAX_OTP_ATTEMPTS) {
 			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
 					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
 		}
+		return MAX_OTP_ATTEMPTS - lockCnt;
 	}
 
 	public Date getMidnightToday() {
@@ -362,4 +383,110 @@ public class UserValidationService {
 		return onlineCustomer;
 	}
 
+	public void validateOtpFlow(CustomerModel model) {
+		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
+		boolean isEOtpFlowRequired = isEOtpFlowRequired(model);
+
+		if (isMOtpFlowRequired && model.getMotp() == null) {
+			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
+		}
+
+		if (isEOtpFlowRequired && model.getEotp() == null) {
+			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
+		}
+
+		BigDecimal custId = meta.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		// mobile otp validation
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
+		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
+		String dbmOtp = onlineCustomer.getSmsToken();
+		if (!hashedotp.equals(dbmOtp)) {
+			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
+		}
+		// email otp validation
+		if (isEOtpFlowRequired && onlineCustomer.getEmailToken() != null) {
+			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
+			String dbeOtp = onlineCustomer.getEmailToken();
+			if (!hashedEotp.equals(dbeOtp)) {
+				throw new InvalidOtpException("Email Otp is incorrect for identity int:  " + customer.getIdentityInt());
+			}
+		}
+	}
+
+	private boolean isMOtpFlowRequired(CustomerModel model) {
+
+		boolean required = false;
+		if (model.getSecurityquestions() != null) {
+			required = true;
+		}
+		if (model.getPassword() != null) {
+			required = true;
+		}
+		if (model.getImageUrl() != null) {
+			required = true;
+		}
+		if (model.getEmail() != null) {
+			required = true;
+		}
+		return required;
+	}
+
+	private boolean isEOtpFlowRequired(CustomerModel model) {
+
+		boolean required = false;
+
+		if (model.getEmail() != null) {
+			required = true;
+		}
+
+		if (model.getMobile() != null) {
+			required = true;
+		}
+		return required;
+	}
+
+	public void validateTokenSentCount(CustomerOnlineRegistration onlineCust) {
+
+		Integer limit = otpSettings.getMaxSendOtpAttempts();
+		if (onlineCust.getTokenSentCount() != null && onlineCust.getTokenSentCount().intValue() >= limit) {
+			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		}
+	}
+
+	public void validateTokenDate(CustomerOnlineRegistration onlineCust) {
+
+		long otpValidTimeInMins = otpSettings.getOtpValidityTime().longValue();
+		Date tokenDate = onlineCust.getTokenDate();
+		if (tokenDate != null) {
+			long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
+			long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
+			if (tokenTimeinMins > otpValidTimeInMins) {
+				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
+			}
+		}
+	}
+	
+	protected void validateMobileNumberLength(Customer customer, String mobile) {
+		
+		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+		if (!validationClient.isValidMobileNumber(mobile)) {
+			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
+		}
+	}
+	
+	protected void isMobileExist(Customer customer, String mobile) {
+		
+		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
+		if (validationClient.isMobileExist(mobile)) {
+			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
+		}
+	}
+
+
 }
+
+
+
+
+

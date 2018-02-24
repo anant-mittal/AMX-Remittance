@@ -9,12 +9,12 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.exception.GlobalException;
@@ -29,13 +29,16 @@ public class CurrencyMasterService extends AbstractService {
 
 	@Autowired
 	ICurrencyDao currencyDao;
+	
+	@Autowired
+	CurrencyMasterDao currencyMasterDao;
 
 	@Autowired
 	ViewOnlineCurrencyRepository viewOnlineCurrencyRepo;
 
 	@Autowired
 	ConverterUtil converterUtil;
-
+	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
 	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
@@ -53,12 +56,18 @@ public class CurrencyMasterService extends AbstractService {
 
 	}
 
+
 	public CurrencyMasterModel getCurrencyMasterById(BigDecimal currencyId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
 		CurrencyMasterModel currencymaster = null;
 		if (currencyList != null && !currencyList.isEmpty()) {
 			currencymaster = currencyList.get(0);
 		}
+		return currencymaster;
+	}
+	
+	public CurrencyMasterModel getCurrencyMasterById(String quoteName) {
+		CurrencyMasterModel currencymaster = currencyMasterDao.getCurrencyMasterByQuote(quoteName);
 		return currencymaster;
 	}
 

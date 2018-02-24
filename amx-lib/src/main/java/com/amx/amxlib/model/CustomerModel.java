@@ -3,7 +3,6 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-
 public class CustomerModel extends AbstractModel {
 
 	private String identityId;
@@ -21,12 +20,16 @@ public class CustomerModel extends AbstractModel {
 	private String caption;
 
 	private String imageUrl;
-	
+
 	private BigDecimal customerId;
-	
+
 	private Boolean isActive;
-	
+
 	private PersonInfo personinfo;
+
+	private String motp;
+
+	private String eotp;
 
 	public String getEmail() {
 		return email;
@@ -119,6 +122,30 @@ public class CustomerModel extends AbstractModel {
 
 	public void setPersoninfo(PersonInfo personinfo) {
 		this.personinfo = personinfo;
+	}
+
+	public String getMotp() {
+		return motp;
+	}
+
+	public void setMotp(String motp) {
+		this.motp = motp;
+	}
+
+	public String getEotp() {
+		return eotp;
+	}
+
+	public void setEotp(String eotp) {
+		this.eotp = eotp;
+	}
+
+	@Override
+	public String toString() {
+		return "CustomerModel [identityId=" + identityId + ", email=" + email + ", mobile=" + mobile + ", loginId="
+				+ loginId + ", password=" + password + ", securityquestions=" + securityquestions + ", caption="
+				+ caption + ", imageUrl=" + imageUrl + ", customerId=" + customerId + ", isActive=" + isActive
+				+ ", personinfo=" + personinfo + ", motp=" + motp + ", eotp=" + eotp + "]";
 	}
 
 }

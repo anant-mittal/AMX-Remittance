@@ -59,7 +59,11 @@ public final class ContextUtil {
 	 *            the new trace id
 	 */
 	public static void setTraceId(long traceId) {
-		context.get().put(TRACE_ID, Long.valueOf(traceId));
+		String trace_id = ArgUtil.parseAsString(traceId);
+		if (trace_id == null) {
+			trace_id = UniqueID.generateString();
+		}
+		setTraceId(trace_id);
 	}
 
 	/**
@@ -69,11 +73,7 @@ public final class ContextUtil {
 	 *            the new trace id
 	 */
 	public static void setTraceId(String trace_id) {
-		Long traceId = ArgUtil.parseAsLong(trace_id);
-		if (traceId == null) {
-			traceId = Long.valueOf(UniqueID.generate());
-		}
-		setTraceId(traceId.longValue());
+		context.get().put(TRACE_ID, trace_id);
 	}
 
 	/**
@@ -81,7 +81,7 @@ public final class ContextUtil {
 	 *
 	 * @return the trace id
 	 */
-	public static long getTraceId() {
+	public static String getTraceId() {
 		return getTraceId(true);
 	}
 
@@ -92,16 +92,16 @@ public final class ContextUtil {
 	 *            the generate
 	 * @return the trace id
 	 */
-	public static long getTraceId(boolean generate) {
-		Long traceId = (Long) context.get().get(TRACE_ID);
+	public static String getTraceId(boolean generate) {
+		String traceId = (String) context.get().get(TRACE_ID);
 		if (traceId == null) {
 			if (!generate) {
-				return 0L;
+				return "";
 			}
-			traceId = Long.valueOf(UniqueID.generate());
+			traceId = UniqueID.generateString();
 			context.get().put(TRACE_ID, traceId);
 		}
-		return traceId.longValue();
+		return traceId;
 	}
 
 }

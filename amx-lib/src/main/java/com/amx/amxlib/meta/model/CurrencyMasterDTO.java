@@ -70,4 +70,35 @@ public class CurrencyMasterDTO extends AbstractModel {
 		this.countryId = countryId;
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((countryId == null) ? 0 : countryId.hashCode());
+		result = prime * result + ((currencyId == null) ? 0 : currencyId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CurrencyMasterDTO other = (CurrencyMasterDTO) obj;
+		if (countryId == null) {
+			if (other.countryId != null)
+				return false;
+		} else if (!countryId.equals(other.countryId))
+			return false;
+		if (currencyId == null) {
+			if (other.currencyId != null)
+				return false;
+		} else if (!currencyId.equals(other.currencyId))
+			return false;
+		return true;
+	}
+
 }

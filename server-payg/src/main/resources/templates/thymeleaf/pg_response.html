@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>PayG Service</title>
+</head>
+<body>
+
+	<div th:switch="${page}">
+		<p th:case="'success'">Your payment is successful !!!</p>
+		<p th:case="'cancelled'">Your payment is cancelled !!!</p>
+		<p th:case="*">Your payment is unsuccessful !!!</p>
+	</div>
+	<br />
+	<center>
+		<a th:href="@{callback}"><span>Redirecting...</span> </a>
+	</center>
+	<script>
+		var uRL = '<div th:utext="${callback}" th:remove="tag">Redirecting</div>';
+		if (uRL) {
+			console.log("uRL=", uRL);
+			window.location = uRL;
+		}
+	</script>
+</body>
+</html>

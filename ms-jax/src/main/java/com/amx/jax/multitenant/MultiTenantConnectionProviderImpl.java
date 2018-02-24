@@ -18,10 +18,10 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	@Autowired
 	private DataSource dataSource;
-	
+
 	@Autowired
 	@Qualifier("dataSourcesJax")
 	Map<String, DataSource> dataSourcesJax;
@@ -40,16 +40,22 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 	public Connection getConnection(String tenantIdentifie) throws SQLException {
 		String tenantIdentifier = TenantContext.getCurrentTenant();
 		DataSource ds = dataSourcesJax.get(tenantIdentifier);
-		 Connection connection;
+		Connection connection;
 
-		if(ds != null) {
+		if (ds != null) {
 			connection = ds.getConnection();
-		}else {
+		} else {
 			connection = getAnyConnection();
 		}
 		return connection;
 	}
 
+	public DataSource getDataSource() {
+		String tenantIdentifier = TenantContext.getCurrentTenant();
+		DataSource ds = dataSourcesJax.get(tenantIdentifier);
+		return ds;
+	}
+	
 	@Override
 	public void releaseConnection(String tenantIdentifier, Connection connection) throws SQLException {
 		connection.close();
@@ -68,6 +74,6 @@ public class MultiTenantConnectionProviderImpl implements MultiTenantConnectionP
 
 	@Override
 	public boolean supportsAggressiveRelease() {
-		return true;
+		return false;
 	}
 }

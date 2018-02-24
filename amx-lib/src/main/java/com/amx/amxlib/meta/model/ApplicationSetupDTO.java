@@ -9,6 +9,10 @@ public class ApplicationSetupDTO  extends AbstractModel{
 
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private BigDecimal applicationSetupId;
 	private String faAccountNumber;
 	private BigDecimal applicationCountryId;
@@ -281,7 +285,6 @@ public class ApplicationSetupDTO  extends AbstractModel{
 
 	@Override
 	public String getModelType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

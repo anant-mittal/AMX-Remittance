@@ -1,5 +1,6 @@
 package com.amx.jax.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,8 +11,10 @@ import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
+import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.services.AbstractService;
 
 @Service
@@ -20,6 +23,9 @@ public class ParameterService extends AbstractService {
 	
 	@Autowired
 	AuthenticationLimitCheckDAO authentication;
+	
+	@Autowired
+	AuthenticationViewRepository authenticationViewRepository;
 	
 	public ApiResponse  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
@@ -91,5 +97,7 @@ public class ParameterService extends AbstractService {
 		return authLimits;
 	}
 	
-	
+	public AuthenticationView getAuthenticationViewRepository(BigDecimal authType) {
+		return authenticationViewRepository.findOne(authType);
+	}
 }

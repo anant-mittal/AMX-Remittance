@@ -7,8 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table(name = "JAX_VW_EX_TRANSACTION_INQUIRY")
@@ -42,7 +40,7 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name = "CORRESPONDING_BANK")
 	private String beneficaryCorespondingBankName;
 	
-	@Temporal(TemporalType.DATE)
+	//@Temporal(TemporalType.DATE)
 	@Column(name = "DOCUMENT_DATE")
 	private Date documentDate;
 	
@@ -91,6 +89,12 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	
 	@Column(name="SOURCE_OF_INCOME_ID")
 	private BigDecimal sourceOfIncomeId;
+	
+	
+	@Column(name = "PURPOSE_OF_TRNX_ID")
+	private String purposeOfTrnx;
+	
+	
 	
 	
 	
@@ -294,5 +298,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
 		this.sourceOfIncomeId = sourceOfIncomeId;
+	}
+
+	public String getPurposeOfTrnx() {
+		return purposeOfTrnx;
+	}
+
+	public void setPurposeOfTrnx(String purposeOfTrnx) {
+		this.purposeOfTrnx = purposeOfTrnx;
 	}
 }

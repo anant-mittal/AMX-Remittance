@@ -114,6 +114,18 @@ public class RemittanceApplication implements Serializable {
 	private BigDecimal loccod;
 	private BigDecimal documentCode;
 	private BigDecimal companyCode;
+	
+	private String pgReferenceId;
+	private String pgTransactionId;
+	private String pgAuthCode;
+	private String pgErrorText;
+	private String pgReceiptDate;
+	private String errorMessage;
+	private String wuIpAddress;
+	
+	
+
+	
 	//private BigDecimal kioskDocumentNumber;
 	
 	//private Set<RemitApplAml> exRemitApplAmls = new HashSet<RemitApplAml>(0);
@@ -750,13 +762,64 @@ public class RemittanceApplication implements Serializable {
 	public void setCompanyCode(BigDecimal companyCode) {
 		this.companyCode = companyCode;
 	}
-
-	/*@Column(name="KIOSK_DOCUMENT_NUMBER")
-	public BigDecimal getKioskDocumentNumber() {
-		return kioskDocumentNumber;
+	
+	
+	@Column(name="PG_REFERENCE_ID")
+	public String getPgReferenceId() {
+		return pgReferenceId;
 	}
-	public void setKioskDocumentNumber(BigDecimal kioskDocumentNumber) {
-		this.kioskDocumentNumber = kioskDocumentNumber;
-	}*/
+	public void setPgReferenceId(String pgReferenceId) {
+		this.pgReferenceId = pgReferenceId;
+	}
+	@Column(name="PG_TRANSACTION_ID")
+	public String getPgTransactionId() {
+		return pgTransactionId;
+	}
+	public void setPgTransactionId(String pgTransactionId) {
+		this.pgTransactionId = pgTransactionId;
+	}
+	@Column(name="PG_AUTH_CODE")
+	public String getPgAuthCode() {
+		return pgAuthCode;
+	}
+	public void setPgAuthCode(String pgAuthCode) {
+		this.pgAuthCode = pgAuthCode;
+	}
+	@Column(name="PG_ERROR_TEXT")
+	public String getPgErrorText() {
+		return pgErrorText;
+	}
+	public void setPgErrorText(String pgErrorText) {
+		this.pgErrorText = pgErrorText;
+	}
+	
+	@Column(name="PG_RCEIPT_DATE")
+	public String getPgReceiptDate() {
+		return pgReceiptDate;
+	}
+	
+	public void setPgReceiptDate(String pgReceiptDate) {
+		this.pgReceiptDate = pgReceiptDate;
+	}
+	
+	@Column(name="WU_TERMINAL_ADDRESS")
+    public String getWuIpAddress() {
+           return wuIpAddress;
+    }
+
+    public void setWuIpAddress(String wuIpAddress) {
+           this.wuIpAddress = wuIpAddress;
+    }
+
+	@Column(name="ERROR_MESSAGE")
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	
 
 }

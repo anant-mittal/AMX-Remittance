@@ -1,9 +1,16 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
-public class TransactionHistroyDTO {
+public class TransactionHistroyDTO implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private BigDecimal idno;
 
 	private BigDecimal customerReference;
@@ -60,6 +67,11 @@ public class TransactionHistroyDTO {
 	
 	
 	private BigDecimal sourceOfIncomeId;
+	
+	private String purposeOfTrnx;
+	
+	
+	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
 	
 
 	public BigDecimal getIdno() {
@@ -292,6 +304,23 @@ public class TransactionHistroyDTO {
 
 	public void setSourceOfIncomeId(BigDecimal sourceOfIncomeId) {
 		this.sourceOfIncomeId = sourceOfIncomeId;
+	}
+
+	public String getPurposeOfTrnx() {
+		return purposeOfTrnx;
+	}
+
+	public void setPurposeOfTrnx(String purposeOfTrnx) {
+		this.purposeOfTrnx = purposeOfTrnx;
+	}
+
+	public List<BeneficiaryErrorStatusDto> getBeneficiaryErrorStatus() {
+		return beneficiaryErrorStatus;
+	}
+
+	public void setBeneficiaryErrorStatus(
+			List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus) {
+		this.beneficiaryErrorStatus = beneficiaryErrorStatus;
 	}
 
 }

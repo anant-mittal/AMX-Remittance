@@ -9,6 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.constant.Country;
+import com.amx.jax.scope.Tenant;
 import com.amx.jax.services.AbstractServiceFactory;
 
 @Component
@@ -36,6 +37,15 @@ public class MetaData implements IMetaData {
 	private BigDecimal customerId;
 	
 	private BigDecimal countryBranchId;
+	
+	private Tenant tenant = Tenant.DEFAULT;
+	
+	private String deviceIp;
+	private String deviceId;
+    private String referrer;
+    private String deviceType;
+    
+	
 
 	/**
 	 * This returns service factory object depending on site country
@@ -113,5 +123,47 @@ public class MetaData implements IMetaData {
 
 	public void setCountryBranchId(BigDecimal countryBranchId) {
 		this.countryBranchId = countryBranchId;
+	}
+
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
+	}
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
+	}
+
+	
+
+	public String getReferrer() {
+		return referrer;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 }

@@ -15,21 +15,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
-public class BeneClient extends AbstractJaxServiceClient{
+public class BeneClient extends AbstractJaxServiceClient {
 
 	private Logger log = Logger.getLogger(BeneClient.class);
-
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
 	private ConverterUtility util;
@@ -41,123 +39,199 @@ public class BeneClient extends AbstractJaxServiceClient{
 	 * @return
 	 */
 	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId) {
-		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
 		try {
-			
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
 			MultiValueMap<String, String> headers = getHeader();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/beneList/" + sb.toString();
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/beneList/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {});
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+
+			return response.getBody();
 		} catch (Exception e) {
-			log.debug("Bene country list ", e);
-		}
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
-	
 	public ApiResponse<BeneCountryDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
-		ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal customerId = jaxMetaInfo.getCustomerId();
-			String userType       = jaxMetaInfo.getChannel().toString();
+			ResponseEntity<ApiResponse<BeneCountryDTO>> response = null;
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/benecountry/" + sb.toString();
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/benecountry/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
 					});
+
+			return response.getBody();
 		} catch (Exception e) {
-			log.debug("Bene country list ", e);
-		}
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
-	
-	
-	
-	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId,BigDecimal transactionId) {
-		ResponseEntity<ApiResponse<RemittancePageDto>> response = null;
+	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId, BigDecimal transactionId) {
 		try {
-			
+			ResponseEntity<ApiResponse<RemittancePageDto>> response = null;
+
 			log.info("Default Beneficiary");
-			
-			StringBuffer sb = new StringBuffer();
-			sb.append("?beneRelationId=").append(beneRealtionId).append("&transactionId=").append(transactionId);
 
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			StringBuffer sb = new StringBuffer();
+
+			if (beneRealtionId != null || transactionId != null) {
+				sb.append("?");
+			}
+
+			if (beneRealtionId != null) {
+				sb.append("beneRelationId=").append(beneRealtionId).append("&");
+			}
+			if (transactionId != null) {
+				sb.append("transactionId=").append(transactionId);
+			}
+
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/defaultbene/"+sb.toString();
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>(){});
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/defaultbene/" + sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+					});
+
+			return response.getBody();
 		} catch (Exception e) {
-			log.debug("Default Beneficiary bene client ", e);
-		}
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
-	
-	
-	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneMasSeqId,String remarks) {
-		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+
+	public ApiResponse<BeneficiaryListDTO> beneDisable(BigDecimal beneMasSeqId, String remarks) {
 		try {
-			
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+
 			log.info("Transaction Histroy");
-			
+
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url =baseUrl.toString()+ BENE_API_ENDPOINT+"/disable/"+sb.toString();
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>(){});
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/disable/" + sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+
+			return response.getBody();
 		} catch (Exception e) {
-			log.debug("exception in registeruser ", e);
-		}
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
-	
-	
-	
+
+	public ApiResponse<BeneficiaryListDTO> beneFavoriteUpdate(BigDecimal beneMasSeqId) {
+		try {
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+
+			log.info("bene client beneFavoriteUpdate ");
+
+			StringBuffer sb = new StringBuffer();
+			sb.append("?beneMasSeqId=").append(beneMasSeqId);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/favoritebeneupdate/" + sb.toString();
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+	}
+
+	/** favouritebene **/
+	public ApiResponse<BeneficiaryListDTO> beneFavoriteList() {
+		try {
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+			MultiValueMap<String, String> headers = getHeader();
+			log.info("beneFavList  Clinet to get bene list Input String :");
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/favouritebenelist/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+	}
 
 	public ApiResponse<BeneficiaryListDTO> beneUpdate(BeneficiaryListDTO beneficiarydto) {
-		ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
 		try {
-		
-		log.info("Bene update Client :"+beneficiarydto.getCustomerId()+"\t customerId :"+beneficiarydto.getBeneficiaryRelationShipSeqId());
-		HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(beneficiarydto), getHeader());
-		String url = baseUrl.toString() + REMIT_API_ENDPOINT+"/beneupdate/";
-		response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {});
-		}catch(Exception e) {
-			log.error("exception in saveSecurityQuestions ", e);
-		}
-		return response.getBody();
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response = null;
+
+			log.info("Bene update Client :" + beneficiarydto.getCustomerId() + "\t customerId :"
+					+ beneficiarydto.getBeneficiaryRelationShipSeqId());
+			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(beneficiarydto), getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/beneupdate/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
+
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
-	
-	
-	
-	
-	
+
 	public ApiResponse<AccountTypeDto> getBeneficiaryAccountType(BigDecimal beneCountryId) {
-		ResponseEntity<ApiResponse<AccountTypeDto>> response = null;
 		try {
+			ResponseEntity<ApiResponse<AccountTypeDto>> response = null;
 
 			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
 			log.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = baseUrl.toString() + BENE_API_ENDPOINT + "/accounttype/" + sb.toString();
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/accounttype/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<AccountTypeDto>>() {
 					});
+
+			return response.getBody();
 		} catch (Exception e) {
-			log.debug("Bene country list ", e);
-		}
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
 	}
 
 }

@@ -5,32 +5,38 @@ import java.io.Serializable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.CustomerModel;
-import com.bootloaderjs.Random;
 
 @Component
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserSession implements Serializable {
 
 	private static final long serialVersionUID = -6354887590466374869L;
 	private boolean valid = false;
-	private String otpPrefix = null;
+	private String uuidToken = null;
+	private String referrer = null;
 
-	public void setOtpPrefix() {
-		this.otpPrefix = Random.randomAlpha(3);
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
 	}
 
-	public String getOtpPrefix() {
-		return otpPrefix;
+	public String getReferrer() {
+		return referrer;
+	}
+
+	public String getUuidToken() {
+		return uuidToken;
+	}
+
+	public void setUuidToken(String uuidToken) {
+		this.uuidToken = uuidToken;
 	}
 
 	private String userid = null;
 
 	private CustomerModel customerModel = null;
-
-	private CurrencyMasterDTO localCurrency = null;
 
 	public CustomerModel getCustomerModel() {
 		return customerModel;

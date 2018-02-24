@@ -1,5 +1,8 @@
 package com.amx.jax.services;
 
+/**
+ * Author :Rabil
+ */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -9,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -16,6 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -36,7 +41,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
-import com.amx.jax.util.Util;
+import com.amx.jax.util.JaxUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -62,14 +67,13 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	CustomerDao custDao;
-	
+
 	@Autowired
 	BeneficiaryDao beneDao;
-	
+
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
 
-	
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
@@ -84,7 +88,7 @@ public class BeneficiaryService extends AbstractService {
 		Collections.sort(beneList, comparator);
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found");
+			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -92,12 +96,6 @@ public class BeneficiaryService extends AbstractService {
 		response.getData().setType("beneList");
 		return response;
 	}
-	
-	
-	
-	
-	
-	
 
 	public class BenificiaryListViewOnlineComparator implements Comparator<BenificiaryListView> {
 
@@ -140,7 +138,7 @@ public class BeneficiaryService extends AbstractService {
 
 		ApiResponse response = getBlackApiResponse();
 		if (beneList.isEmpty()) {
-			throw new GlobalException("Beneficiary list is not found");
+			throw new GlobalException("Beneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -153,7 +151,7 @@ public class BeneficiaryService extends AbstractService {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForOnline(customerId);
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found");
+			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -166,7 +164,7 @@ public class BeneficiaryService extends AbstractService {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForBranch(customerId);
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found");
+			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convert(beneocountryList));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -198,7 +196,7 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
 			} else {
-				throw new GlobalException("No record found");
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 
 			return response;
@@ -208,6 +206,42 @@ public class BeneficiaryService extends AbstractService {
 
 	}
 
+	
+	public ApiResponse updateFavoriteBeneficiary(BeneficiaryListDTO beneDetails) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<BeneficaryRelationship> beneRelationList = null;
+
+			BeneficaryRelationship beneRelation = null;
+
+			// beneRelation =
+			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
+
+			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
+					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+
+			if (!beneRelationList.isEmpty()) {
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+				beneRelationModel.setModifiedDate(new Date());
+				if(StringUtils.isBlank(beneRelationModel.getMyFavouriteBene()) || beneRelationModel.getMyFavouriteBene().equalsIgnoreCase("N")){
+					beneRelationModel.setMyFavouriteBene("Y");
+				}else{
+					beneRelationModel.setMyFavouriteBene("N");
+				}
+				beneRelationShipDao.save(beneRelationModel);
+				response.setResponseStatus(ResponseStatus.OK);
+			} else {
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+			}
+
+			return response;
+		} catch (Exception e) {
+			throw new GlobalException("Error while update");
+		}
+
+	}
+	
 	public ApiResponse beneficiaryUpdate(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
@@ -220,55 +254,80 @@ public class BeneficiaryService extends AbstractService {
 
 		return response;
 	}
-	
-	
-	
+
 	/**
 	 * to get default beneficiary.
+	 * 
 	 * @param beneocountryList
-	 * @return
-	 * Transaction Id: idno
-	 * And Beneficiary Id :idNo
+	 * @return Transaction Id: idno And Beneficiary Id :idNo
 	 */
-	
+
 	public ApiResponse getDefaultBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,
-			BigDecimal beneRealtionId,BigDecimal transactionId) {
+			BigDecimal beneRealtionId, BigDecimal transactionId) {
 		ApiResponse response = getBlackApiResponse();
 		try {
-		BenificiaryListView beneList = null;
-		BeneficiaryListDTO beneDto =null;
-		CustomerRemittanceTransactionView trnxView = null;
-		RemittancePageDto remitPageDto = new RemittancePageDto();
-		
-		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
-			beneList = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId, beneRealtionId);
-		} else {
-			beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
-		
-		}
-		
-		if(beneList ==null) {
-			throw new GlobalException("Not found");
-		}else {
-			beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
-			if(beneDto!=null && !Util.isNullZeroBigDecimalCheck(transactionId) && (Util.isNullZeroBigDecimalCheck(beneRealtionId) || Util.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
-				trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
-			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId) && Util.isNullZeroBigDecimalCheck(beneRealtionId)) {
-				trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId,transactionId);
-			}else if(beneDto!=null && Util.isNullZeroBigDecimalCheck(transactionId)){
-				trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
+			BenificiaryListView beneList = null;
+			BeneficiaryListDTO beneDto = null;
+			CustomerRemittanceTransactionView trnxView = null;
+			RemittancePageDto remitPageDto = new RemittancePageDto();
+
+			if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+				beneList = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,
+						beneRealtionId);
+			} else {
+				beneList = beneficiaryOnlineDao.getDefaultBeneficiary(customerId, applicationCountryId);
+
 			}
-			
+
+			if (beneList == null) {
+				throw new GlobalException("Not found");
+			} else {
+				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
+				System.out.println("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
+				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
+						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
+								|| JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
+					trnxView = tranxHistDao.getDefaultTrnxHist(customerId, beneDto.getBeneficiaryRelationShipSeqId());
+				} else if (beneDto != null && JaxUtil.isNullZeroBigDecimalCheck(transactionId)
+						&& JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)) {
+					trnxView = tranxHistDao.getTrnxHistByBeneIdAndTranId(customerId, beneRealtionId, transactionId);
+				} else if (beneDto != null && JaxUtil.isNullZeroBigDecimalCheck(transactionId)) {
+					trnxView = tranxHistDao.getTrnxHistTranId(customerId, transactionId);
+				}
+
+			}
+
+			remitPageDto.setBeneficiaryDto(beneDto);
+			if (trnxView != null) {
+				remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+			}
+			response.getData().getValues().add(remitPageDto);
+			response.getData().setType(remitPageDto.getModelType());
+			response.setResponseStatus(ResponseStatus.OK);
+		} catch (Exception e) {
+			logger.error("Error occured in getDefaultBeneficiary method", e);
+			throw new GlobalException("Default bene not found" + e.getMessage());
 		}
-		
-		remitPageDto.setBeneficiaryDto(beneDto);
-		remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
-		response.getData().getValues().add(remitPageDto);
-		response.getData().setType(remitPageDto.getModelType());
-		response.setResponseStatus(ResponseStatus.OK);
-		}catch (Exception e) {
-			throw new GlobalException("Default bene not found");
+		return response;
+	}
+	
+	
+	/** My fovorite Bene List **/
+	
+	public ApiResponse getFavouriteBeneficiaryList(BigDecimal customerId, BigDecimal applicationCountryId) {
+		List<BenificiaryListView> beneList = null;
+		ApiResponse response = getBlackApiResponse();
+		beneList = beneficiaryOnlineDao.getFavouriteBeneListFromViewForCountry(customerId, applicationCountryId);
+		if(beneList.isEmpty()){
+			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
+		if (beneList.isEmpty()) {
+			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertBeneList(beneList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("beneList");
 		return response;
 	}
 	
@@ -306,7 +365,6 @@ public class BeneficiaryService extends AbstractService {
 		return dto;
 	}
 
-	
 	private TransactionHistroyDTO convertTranHistDto(CustomerRemittanceTransactionView tranView) {
 		TransactionHistroyDTO tranDto = new TransactionHistroyDTO();
 		try {
@@ -315,33 +373,31 @@ public class BeneficiaryService extends AbstractService {
 			logger.error("bene list display", e);
 		}
 		return tranDto;
-		
+
 	}
-	
-	
+
 	public String getBeneficiaryContactNumber(BigDecimal beneMasterId) {
 		List<BeneficaryContact> beneContactList = beneficiaryContactDao.getBeneContact(beneMasterId);
 		BeneficaryContact beneContact = beneContactList.get(0);
 		String contactNumber = null;
 		if (beneContact != null) {
-			if (beneContact.getMobileNumber() != null) {
-				contactNumber = beneContact.getMobileNumber().toString();
-			} else {
+			if (beneContact.getTelephoneNumber() != null) {
 				contactNumber = beneContact.getTelephoneNumber();
+			} else {
+				contactNumber = beneContact.getMobileNumber().toString();
 			}
 		}
 		return contactNumber;
 	}
-	
+
 	public SwiftMasterView getSwiftMasterBySwiftBic(String swiftBic) {
 		return beneDao.getSwiftMasterBySwiftBic(swiftBic);
 	}
-	
-	
-	
-	
-	
-	
+
+	public Integer getTodaysTransactionForBene(BigDecimal customerId, BigDecimal benRelationId) {
+		logger.info("in getTodaysTransactionForBene, customerId: " + customerId + " benRelationId: " + benRelationId);
+		return tranxHistDao.getTodaysTransactionForBeneficiary(customerId, benRelationId);
+	}
 
 	@Override
 	public String getModelType() {

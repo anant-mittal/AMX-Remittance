@@ -1,6 +1,5 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.model.response.ApiError;
 
 public class InvalidInputException extends AbstractException {

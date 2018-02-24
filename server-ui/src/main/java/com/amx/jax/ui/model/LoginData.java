@@ -1,9 +1,11 @@
 package com.amx.jax.ui.model;
 
+import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 
-public class LoginData {
+public class LoginData extends AbstractModel {
 
+	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
 	private String otp = null;
 	private String otpPrefix = null;
@@ -11,6 +13,26 @@ public class LoginData {
 	private String imageCaption = null;
 	private String question = null;
 	private SecurityQuestionModel answer = null;
+
+	private String mOtpPrefix = null;
+
+	public String getmOtpPrefix() {
+		return mOtpPrefix;
+	}
+
+	public void setmOtpPrefix(String mOtpPrefix) {
+		this.mOtpPrefix = mOtpPrefix;
+	}
+
+	public String geteOtpPrefix() {
+		return eOtpPrefix;
+	}
+
+	public void seteOtpPrefix(String eOtpPrefix) {
+		this.eOtpPrefix = eOtpPrefix;
+	}
+
+	private String eOtpPrefix = null;
 
 	public String getOtpPrefix() {
 		return otpPrefix;

@@ -12,7 +12,7 @@ public class TenantIdentifierResolver  implements CurrentTenantIdentifierResolve
 	        if (tenantId != null) {
 	            return tenantId;
 	        }
-	        return "91";
+	        return "KWT";
 	    }
 	    @Override
 	    public boolean validateExistingCurrentSessions() {

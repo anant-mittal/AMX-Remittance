@@ -65,6 +65,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal additionalBankRuleId = (BigDecimal) remitApplParametersMap.get(params.pruleId);
 			String amiecCode = (String) remitApplParametersMap.get(params.pamieCode);
 			String flexFieldValue = (String) remitApplParametersMap.get(params.pflexField);
+			logger.info("flexFieldValue: "+ flexFieldValue);
 			String indicator = (String) remitApplParametersMap.get("P_FLEX_FIELD_CODE_1");
 			if (indicator == null) {
 				indicator = params.indic;
@@ -86,7 +87,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal applicationCountryId, String indicatorCode, String amiecCode, String flexFieldValue,
 			BigDecimal additionalBankRuleId) {
 
-		logger.info(" Enter into fetchIndicatorsData ");
+		logger.info(" Enter into fetchIndicatorsData :"+flexFieldValue);
 
 		AdditionalInstructionData additionalInsData = new AdditionalInstructionData();
 
@@ -114,7 +115,7 @@ public class RemittanceApplicationAdditionalDataManager {
 			additionalInsData.setAmiecCode(amiecCode);
 		} else {
 			additionalInsData.setAmiecCode(ConstantDocument.AMIEC_CODE);
-			additionalInsData.setFlexFieldValue("ONLINE TEST");
+			//additionalInsData.setFlexFieldValue("ONLINE TEST");
 		}
 
 		additionalInsData.setExRemittanceApplication(remittanceApplication);

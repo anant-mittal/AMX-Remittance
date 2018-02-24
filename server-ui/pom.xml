@@ -29,10 +29,21 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
+
+		<!-- thymeleaf dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
+		<dependency>
+			<groupId>net.sourceforge.nekohtml</groupId>
+			<artifactId>nekohtml</artifactId>
+			<version>1.9.21</version><!--$NO-MVN-MAN-VER$ -->
+		</dependency>
+
+		<!-- /thymeleaf dependencies -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -77,9 +88,11 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>ms-postman</artifactId>
+			<artifactId>ms-postman-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<!-- <dependency> <groupId>com.amx.jax</groupId> <artifactId>ms-postman</artifactId> 
+			<version>0.0.1-SNAPSHOT</version> </dependency> -->
 
 		<!-- Spring Framework Caching Support -->
 		<!-- <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId> 
@@ -88,37 +101,60 @@
 			</dependency> <dependency> <groupId>org.springframework.session</groupId> 
 			<artifactId>spring-session</artifactId> </dependency> -->
 
+<!-- 		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session</artifactId>
+		</dependency> -->
 
+<!-- 		<dependency>
+			<groupId>org.redisson</groupId>
+			<artifactId>redisson</artifactId>
+			<version>3.5.6</version>
+		</dependency>
 
 		<!-- Swagger infos -->
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
 		<dependency>
-			<groupId>net.sourceforge.nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
-			<version>1.9.21</version><!--$NO-MVN-MAN-VER$ -->
+			<groupId>de.ruedigermoeller</groupId>
+			<artifactId>fst</artifactId>
+			<version>2.54</version>
+		</dependency> -->
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-cache</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-session</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+
+		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mobile</artifactId> 
+			</dependency> -->
+		<dependency>
+			<groupId>org.springframework.mobile</groupId>
+			<artifactId>spring-mobile-device</artifactId>
 		</dependency>
 
 
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>client-logger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-
 		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-swagger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>

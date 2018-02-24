@@ -30,6 +30,22 @@ public class ViewTransfer {
 	
 	@Column(name = "NETAMT")
 	BigDecimal netAmount;
+	
+	@Column(name="LOCCOD")
+	BigDecimal locCode;
+	
+	@Column(name="BNFBNKCOD")
+	String bnfBankCode;
+	
+	@Column(name="BNFACNO")
+	String bnfAccountNo;
+	
+	@Column(name="E_BNFNAME")
+	String engName;
+	
+	@Column(name="TRNFSTS")
+	String trnfStatus;
+	
 
 	public Date getDocDate() {
 		return docDate;
@@ -78,6 +94,16 @@ public class ViewTransfer {
 	public void setNetAmount(BigDecimal netAmount) {
 		this.netAmount = netAmount;
 	}
+
+	public String getTrnfStatus() {
+		return trnfStatus;
+	}
+
+	public void setTrnfStatus(String trnfStatus) {
+		this.trnfStatus = trnfStatus;
+	}
+
+
 
 
 }

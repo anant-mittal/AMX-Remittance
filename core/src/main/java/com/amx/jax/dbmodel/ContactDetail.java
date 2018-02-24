@@ -7,9 +7,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -24,13 +27,15 @@ public class ContactDetail implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal contactDetailId;
-	//private Customer fsCustomer;
+	private Customer fsCustomer;
 	/*private LanguageType fsLanguageType;
+	 */
 	private BizComponentData fsBizComponentDataByContactTypeId;
+	
 	private CountryMaster fsCountryMaster;
 	private DistrictMaster fsDistrictMaster;
 	private StateMaster fsStateMaster;
-	private CityMaster fsCityMaster;*/
+	private CityMaster fsCityMaster;
 	private String alterEmailId;
 	private String area;
 	private String block;
@@ -46,8 +51,8 @@ public class ContactDetail implements java.io.Serializable {
 	private String activeStatus;
 	private String buildingNo;
 	private String telephoneCode;
-	private BigDecimal customerId;
-	private BigDecimal contactTypeId;
+	//private BigDecimal customerId;
+	//private BigDecimal contactTypeId;
 
 	public ContactDetail() {
 	}
@@ -96,7 +101,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.contactDetailId = contactDetailId;
 	}
 
-	/*@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_ID")
 	public Customer getFsCustomer() {
 		return this.fsCustomer;
@@ -104,7 +109,7 @@ public class ContactDetail implements java.io.Serializable {
 
 	public void setFsCustomer(Customer fsCustomer) {
 		this.fsCustomer = fsCustomer;
-	}*/
+	}
 /*
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "LANGUAGE_ID")
@@ -115,7 +120,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsLanguageType(LanguageType fsLanguageType) {
 		this.fsLanguageType = fsLanguageType;
 	}
-
+*/
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CONTACT_TYPE_ID")
@@ -137,7 +142,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsDistrictMaster(DistrictMaster fsDistrictMaster) {
 		this.fsDistrictMaster = fsDistrictMaster;
 	}
-*/
+
 	@Column(name = "ALTER_EMAIL_ID", length = 200)
 	public String getAlterEmailId() {
 		return this.alterEmailId;
@@ -249,7 +254,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.lastUpdated = lastUpdated;
 	}
 	
-	/*@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STATE_ID")
 	public StateMaster getFsStateMaster() {
 		return this.fsStateMaster;
@@ -278,7 +283,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsCityMaster(CityMaster fsCityMaster) {
 		this.fsCityMaster = fsCityMaster;
 	}
-	*/
+	
 	@Column(name = "ISACTIVE", nullable = false, length = 1)
 	public String getActiveStatus() {
 		return this.activeStatus;
@@ -306,7 +311,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.telephoneCode = telephoneCode;
 	}
 
-	@Column(name="CUSTOMER_ID")
+	/*@Column(name="CUSTOMER_ID")
 	public BigDecimal getCustomerId() {
 		return customerId;
 	}
@@ -314,15 +319,15 @@ public class ContactDetail implements java.io.Serializable {
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
 	}
-
-	@Column(name="CONTACT_TYPE_ID")
+*/
+/*	@Column(name="CONTACT_TYPE_ID",insertable=false,updatable=false)
 	public BigDecimal getContactTypeId() {
 		return contactTypeId;
 	}
 
 	public void setContactTypeId(BigDecimal contactTypeId) {
 		this.contactTypeId = contactTypeId;
-	}
+	}*/
 
 	
 }

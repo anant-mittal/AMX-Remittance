@@ -18,17 +18,11 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.Urly;
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
-
-import springfox.documentation.RequestHandler;
 
 @Component
 public class WebRequestFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
-	private static final MetricRegistry metrics = new MetricRegistry();
-	//private final Histogram responseSizes = metrics.histogram(name(RequestHandler.class, "response-sizes"));
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -48,7 +42,8 @@ public class WebRequestFilter implements Filter {
 		}
 
 		/**
-		 * Not able to use session scoped bean here so using typical session attribute;
+		 * Not able to use session scoped bean here hence using typical session
+		 * attribute;
 		 */
 		if (siteId == null) {
 			siteId = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
@@ -60,6 +55,8 @@ public class WebRequestFilter implements Filter {
 		} else {
 			TenantContextHolder.setDefault();
 		}
+
+		// LOGGER.info("Tenant {}", sessionService.getTenantBean().getTenant().getId());
 
 		try {
 			chain.doFilter(req, resp);

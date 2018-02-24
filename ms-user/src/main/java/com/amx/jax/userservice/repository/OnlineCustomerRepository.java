@@ -20,7 +20,7 @@ public interface OnlineCustomerRepository extends JpaRepository<CustomerOnlineRe
 	@Query("select c from CustomerOnlineRegistration c where customerId=?1")
 	public List<CustomerOnlineRegistration> getOnlineCustomersById(BigDecimal customerId);
 
-	@Query("select c from CustomerOnlineRegistration c where loginId=?1")
+	@Query("select c from CustomerOnlineRegistration c where loginId=?1 and status='Y'")
 	public CustomerOnlineRegistration getOnlineCustomersByLoginId(String loginId);
 
 	@Query("select c from CustomerOnlineRegistration c where (loginId=?1 or userName=?1) and status='Y' ")

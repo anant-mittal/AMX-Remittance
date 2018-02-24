@@ -1,90 +1,84 @@
 package com.amx.jax.ui.service;
 
-import java.math.BigDecimal;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.jax.postman.Email;
-import com.amx.jax.postman.SMS;
-import com.amx.jax.postman.Templates;
-import com.amx.jax.postman.client.PostManClient;
-import com.amx.jax.ui.Constants;
-import com.amx.jax.ui.session.UserSession;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
+import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.model.UserBean;
+import com.amx.jax.ui.model.UserUpdateData;
+import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.ResponseWrapper;
 
-@Component
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
+@Service
 public class UserService {
 
-	private Logger log = Logger.getLogger(UserService.class);
+	private Logger LOG = Logger.getLogger(UserService.class);
 
 	@Autowired
-	private PostManClient postManClient;
+	private UserBean userBean;
 
-	@Autowired
-	private UserSession userSession;
-
-	@Autowired
-	private TenantService tenantService;
-
-	CurrencyMasterDTO defaultForCurrency;
-
-	public CurrencyMasterDTO getDefaultForCurrency() {
-		if (defaultForCurrency == null) {
-			BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
-			if (nationalityId == null) {
-				defaultForCurrency = tenantService.getOnlineCurrencies().get(0);
-			} else {
-				for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
-					if (nationalityId.equals(currency.getCountryId())) {
-						defaultForCurrency = currency;
-						break;
-					}
-				}
-			}
-		}
-		return defaultForCurrency;
+	public UserBean getUserBean() {
+		return userBean;
 	}
 
-	@Async
-	public void notifyResetOTP(CivilIdOtpModel model) {
+	@Autowired
+	private PostManService postManService;
 
-		SMS sms = new SMS();
+	@Autowired
+	private JaxService jaxService;
 
+	public ResponseWrapper<CustomerDto> getProfileDetails() {
+		return new ResponseWrapper<CustomerDto>(
+				jaxService.setDefaults().getUserclient().getMyProfileInfo().getResult());
+	}
+
+	public ResponseWrapper<UserUpdateData> updateEmail(String email, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
-			sms.setTo("7710072192");
-			sms.setText("Your OTP for Reset is " + model.getOtp());
-			sms.setTemplate(Templates.RESET_OTP_SMS);
-			sms.getModel().put("data", model);
-			postManClient.sendSMS(sms);
-		} catch (Exception e) {
-			log.error("Error while sending OTP SMS to 7710072192", e);
+			if (mOtp == null) {
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email)
+						.getResult();
+				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
+			} else {
+				jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
+			}
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}
+		return wrapper;
+	}
 
-		Email email = new Email();
-		email.setSubject("Verify Your Account");
-		email.setFrom("amxjax@gmail.com");
-		if (model.getEmail() != null && !Constants.EMPTY.equals(model.getEmail())) {
-			email.setTo(model.getEmail());
-		} else {
-			email.setTo("riddhi.madhu@almullagroup.com");
-		}
-		email.setTemplate(Templates.RESET_OTP);
-		email.setHtml(true);
-		email.getModel().put("data", model);
-
+	public ResponseWrapper<UserUpdateData> updatePhone(String phone, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
-			postManClient.sendEmail(email);
-		} catch (Exception e) {
-			log.error("Error while sending OTP Email to" + model.getEmail(), e);
+			if (mOtp == null) {
+				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(phone)
+						.getResult();
+				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
+			} else {
+				jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
+			}
+		} catch (AbstractException e) {
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
 		}
-
+		return wrapper;
 	}
 
 }

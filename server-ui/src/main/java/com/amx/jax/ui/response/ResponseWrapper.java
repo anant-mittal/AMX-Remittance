@@ -4,28 +4,50 @@ import java.io.Serializable;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
-import com.amx.jax.ui.Constants;
+import com.amx.jax.ui.UIConstants;
+import com.bootloaderjs.ContextUtil;
 
 public class ResponseWrapper<T> implements Serializable {
 
 	public ResponseWrapper() {
 		super();
 		this.timestamp = System.currentTimeMillis();
+		this.traceId = ContextUtil.getTraceId();
 	}
 
 	public ResponseWrapper(T data) {
 		super();
 		this.data = data;
 		this.timestamp = System.currentTimeMillis();
+		this.traceId = ContextUtil.getTraceId();
 	}
 
 	private static final long serialVersionUID = 7545829974699803746L;
 
+	private String traceId = null;
+
+	public String getTraceId() {
+		return traceId;
+	}
+
+	public void setTraceId(String traceId) {
+		this.traceId = traceId;
+	}
+
 	private Long timestamp = null;
 	private String status = "200";
 	private ResponseStatus statusKey = ResponseStatus.SUCCESS;
-	private String message = Constants.EMPTY;
-	private String messageKey = Constants.EMPTY;
+	private String message = UIConstants.EMPTY;
+	private String messageKey = UIConstants.EMPTY;
+	private String redirectUrl = null;
+
+	public String getRedirectUrl() {
+		return redirectUrl;
+	}
+
+	public void setRedirectUrl(String redirectUrl) {
+		this.redirectUrl = redirectUrl;
+	}
 
 	public String getMessageKey() {
 		return messageKey;
@@ -43,6 +65,11 @@ public class ResponseWrapper<T> implements Serializable {
 
 	public void setData(T data) {
 		this.data = data;
+	}
+
+	public ResponseWrapper<T> updateData(T data) {
+		this.setData(data);
+		return this;
 	}
 
 	// public void setData(List<T> results) {
@@ -114,7 +141,7 @@ public class ResponseWrapper<T> implements Serializable {
 	}
 
 	public void setMessage(ResponseStatus status, AbstractException jaxExcep) {
-		this.setMessage(status, jaxExcep.getError(), jaxExcep.getErrorMessage());
+		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 
 }

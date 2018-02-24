@@ -1,0 +1,147 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>lib-ext-jar</artifactId>
+	<packaging>jar</packaging>
+	<name>lib-ext-jar</name>
+	<description>Common lib for  db</description>
+	<url>http://maven.apache.org</url>
+
+	<parent>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>jax</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>ojdbc6</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.oracle</groupId>
+							<artifactId>ojdbc6</artifactId>
+							<version>11.2.4</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/ojdbc6.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>KNET_WinEPTS_API</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.knet</groupId>
+							<artifactId>KNET_WinEPTS_API</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/KNET_WinEPTS_API.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+					<execution>
+						<id>knet</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.knet</groupId>
+							<artifactId>knet</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/knet.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>e24Pipe</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.e24Pipe</groupId>
+							<artifactId>e24Pipe</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/e24Pipe.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>knet_test</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.knet.test</groupId>
+							<artifactId>knet_test</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/knet_test.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>bouncycastle</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>bouncycastle-1.20</groupId>
+							<artifactId>bouncycastle-1.20</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/bouncycastle-1.20.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>bcprov-jdk15-145</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>bcprov-jdk15-145</groupId>
+							<artifactId>bcprov-jdk15-145</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/bcprov-jdk15-145.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

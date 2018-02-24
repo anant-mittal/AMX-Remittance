@@ -1,7 +1,7 @@
 package com.amx.jax.ui.model;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -9,22 +9,20 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 public class XRateData {
 
 	CurrencyMasterDTO forCur = null;
-	String forCurDesc = null;
 	BigDecimal forXRate = null;
 	BigDecimal forAmount = null;
 
 	CurrencyMasterDTO domCur = null;
-	String domCurDesc = null;
 	BigDecimal domXRate = null;
 	BigDecimal domAmount = null;
 
-	Set<BankMasterDTO> beneBanks = null;
+	List<BankMasterDTO> beneBanks = null;
 
-	public Set<BankMasterDTO> getBeneBanks() {
+	public List<BankMasterDTO> getBeneBanks() {
 		return beneBanks;
 	}
 
-	public void setBeneBanks(Set<BankMasterDTO> set) {
+	public void setBeneBanks(List<BankMasterDTO> set) {
 		this.beneBanks = set;
 	}
 
@@ -34,14 +32,6 @@ public class XRateData {
 
 	public void setForCur(CurrencyMasterDTO forCurcy) {
 		this.forCur = forCurcy;
-	}
-
-	public String getForCurDesc() {
-		return forCurDesc;
-	}
-
-	public void setForCurDesc(String forCurDesc) {
-		this.forCurDesc = forCurDesc;
 	}
 
 	public BigDecimal getForXRate() {
@@ -66,14 +56,6 @@ public class XRateData {
 
 	public void setDomCur(CurrencyMasterDTO domCur) {
 		this.domCur = domCur;
-	}
-
-	public String getDomCurDesc() {
-		return domCurDesc;
-	}
-
-	public void setDomCurDesc(String domCurDesc) {
-		this.domCurDesc = domCurDesc;
 	}
 
 	public BigDecimal getDomXRate() {

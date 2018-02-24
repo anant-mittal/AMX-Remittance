@@ -1,9 +1,11 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Date;
 
-public class PersonInfo extends AbstractModel {
+
+public class PersonInfo extends AbstractModel implements Cloneable {
 
 	private String title;
 	private String firstName;
@@ -17,7 +19,9 @@ public class PersonInfo extends AbstractModel {
 	private Date dateOfBirth;
 	private String alterEmailId;
 	private String mobile;
+	private String email;
 	private BigDecimal nationalityId;
+	private Timestamp lastLoginTime;
 
 	public String getTitle() {
 		return title;
@@ -122,5 +126,25 @@ public class PersonInfo extends AbstractModel {
 	public void setNationalityId(BigDecimal nationalityId) {
 		this.nationalityId = nationalityId;
 	}
+
+	public Timestamp getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	public void setLastLoginTime(Timestamp lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
 }

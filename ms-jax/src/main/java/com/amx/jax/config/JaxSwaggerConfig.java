@@ -22,7 +22,7 @@ public class JaxSwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
-				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\"}")
+				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT2\"}")
 				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
 		List<Parameter> globalParams = Arrays.asList(headerParam);
 

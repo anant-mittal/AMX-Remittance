@@ -18,8 +18,9 @@ public class StringUtil {
 		/* first we split the strings on space */
 		String[] result = s.split("\\s");
 		for (int x = 0; x < result.length; x++) {
+			
 			// remove the trailing s from each word
-			result[x] = removeTrailingS(result[x]); /* remove trailing s */
+			//result[x] = removeTrailingS(result[x]); /* remove trailing s */
 			result[x] = stripSpecialCharacters(result[x].toUpperCase()).trim(); /* strip special characters and trim */
 		}
 		String finalString = "";

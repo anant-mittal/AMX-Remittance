@@ -86,6 +86,9 @@ public class BeneficiaryListDTO {
 	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
 	
 	private String serviceGroupName;
+	private String myFavouriteBene;
+	
+	private String bankShortNames;
 	
 	
 	
@@ -532,6 +535,18 @@ public class BeneficiaryListDTO {
 	}
 	public void setServiceGroupName(String serviceGroupName) {
 		this.serviceGroupName = serviceGroupName;
+	}
+	public String getMyFavouriteBene() {
+		return myFavouriteBene;
+	}
+	public void setMyFavouriteBene(String myFavouriteBene) {
+		this.myFavouriteBene = myFavouriteBene;
+	}
+	public String getBankShortNames() {
+		return bankShortNames;
+	}
+	public void setBankShortNames(String bankShortNames) {
+		this.bankShortNames = bankShortNames;
 	}
 	
 	

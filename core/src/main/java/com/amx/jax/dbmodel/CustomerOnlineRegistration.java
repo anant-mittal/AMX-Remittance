@@ -67,6 +67,7 @@ public class CustomerOnlineRegistration {
 	/**Added  by Rabil*/
 	private String emailToken;
 	private String smsToken;
+	private BigDecimal tokenSentCount;
 	private String mobileNumber;
 	private Date tokenDate;
 	private String loginId;
@@ -530,5 +531,14 @@ public class CustomerOnlineRegistration {
 	@PrePersist
 	public void prepersist() {
 		this.lastUpdated = new Date();
+	}
+
+	@Column(name="TOKEN_SENT_CNT")
+	public BigDecimal getTokenSentCount() {
+		return tokenSentCount;
+	}
+
+	public void setTokenSentCount(BigDecimal tokenSentCount) {
+		this.tokenSentCount = tokenSentCount;
 	}
 }

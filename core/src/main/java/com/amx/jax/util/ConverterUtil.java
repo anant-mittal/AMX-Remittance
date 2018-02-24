@@ -20,9 +20,25 @@ public class ConverterUtil {
 		}
 	}
 
+	public <T> T readValue(String json, Class<T> c) {
+		try {
+			return new ObjectMapper().readValue(json, c);
+		} catch (IOException e) {
+			throw new InvalidJsonInputException("Unable to parse request body json");
+		}
+	}
+
 	public <T> List<T> fromIterableToArrayList(Iterable<T> iterable) {
 		List<T> list = new ArrayList<>();
 		iterable.forEach(i -> list.add(i));
 		return list;
+	}
+
+	public String marshall(Object c) {
+		try {
+			return new ObjectMapper().writeValueAsString(c);
+		} catch (IOException e) {
+			throw new InvalidJsonInputException("Unable to parse request body json");
+		}
 	}
 }

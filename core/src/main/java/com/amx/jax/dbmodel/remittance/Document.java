@@ -47,6 +47,10 @@ public class Document implements Serializable {
 	public Document() {
 	}
 
+	public Document(BigDecimal docId) {
+		this.documentID = docId;
+	}
+
 	@Id
 	@GeneratedValue(generator = "ex_document_seq", strategy = GenerationType.SEQUENCE)
 	@SequenceGenerator(name = "ex_document_seq", sequenceName = "EX_DOCUMENT_SEQ", allocationSize = 1)

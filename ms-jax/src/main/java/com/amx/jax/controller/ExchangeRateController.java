@@ -33,4 +33,11 @@ public class ExchangeRateController {
 		ApiResponse response = service.getExchangeRatesForOnline(fromCurrency, toCurrency, amount, bankId);
 		return response;
 	}
+
+	@RequestMapping(value = "/online/", method = RequestMethod.POST)
+	public ApiResponse setOnlineExchangeRates(@RequestParam(required = true) String quoteName,
+			@RequestParam BigDecimal value) {
+		ApiResponse response = service.setOnlineExchangeRates(quoteName, value);
+		return response;
+	}
 }

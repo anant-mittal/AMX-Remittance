@@ -11,9 +11,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 
 @Component
@@ -23,8 +26,8 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal amount, BigDecimal bankId) throws ResourceNotFoundException, InvalidInputException {
-		ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
 		try {
+			ResponseEntity<ApiResponse<ExchangeRateResponseModel>> response = null;
 			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
 			StringBuilder sb = new StringBuilder();
 			sb.append("?").append("fromCurrency=").append(fromCurrency);
@@ -33,17 +36,46 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			if (bankId != null) {
 				sb.append("&").append("bankId=").append(bankId);
 			}
-			String getExchangeRateUrl = baseUrl.toString() + endpoint + sb.toString();
+			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
 			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
 			response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
 					});
+			return response.getBody();
 		} catch (Exception e) {
-			log.error("exception in getExchangeRate ", e);
-		}
-		checkResourceNotFoundException(response.getBody());
-		checkInvalidInputErrors(response.getBody());
-		return response.getBody();
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
+	}
+
+	public ApiResponse<BooleanResponse> setExchangeRate(String toCurrency, BigDecimal amount)
+			throws ResourceNotFoundException, InvalidInputException {
+		try {
+			ResponseEntity<ApiResponse<BooleanResponse>> response = null;
+			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/";
+			StringBuilder sb = new StringBuilder();
+			sb.append("?").append("quoteName=").append(toCurrency);
+			sb.append("&").append("value=").append(amount);
+
+			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
+			response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+
 	}
 }

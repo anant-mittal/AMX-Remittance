@@ -2,7 +2,13 @@ package com.amx.jax.ui.api;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,19 +28,27 @@ import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
+import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
-import com.amx.jax.postman.client.PostManClient;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Templates;
+import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
-import com.amx.jax.ui.service.TenantService;
-import com.amx.jax.ui.service.UserService;
+import com.amx.jax.ui.service.PayGService;
+import com.amx.jax.ui.service.SessionService;
+import com.amx.jax.ui.service.TenantContext;
 import com.bootloaderjs.JsonUtil;
-import com.codahale.metrics.annotation.Timed;
-import com.lowagie.text.DocumentException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,58 +58,98 @@ import io.swagger.annotations.ApiOperation;
 public class RemittController {
 
 	@Autowired
+	private HttpServletResponse response;
+
+	@Autowired
 	private JaxService jaxService;
 
 	@Autowired
-	private TenantService tenantService;
+	private TenantContext tenantContext;
 
 	@Autowired
-	private UserService userService;
+	private UserBean userBean;
 
 	@Autowired
-	private PostManClient postManClient;
+	private PostManService postManService;
+
+	@Autowired
+	private PayGService payGService;
+
+	@Autowired
+	private SessionService sessionService;
 
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
-	@Timed
 	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>(
 				jaxService.setDefaults().getRemitClient().getTransactionHistroy("2017", null, null, null).getResults());
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
+	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
+			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
+			throws IOException, PostManException {
+
+		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>();
+		// postManService.processTemplate(Templates.REMIT_STATMENT_EMAIL_FILE, wrapper,
+		// File.Type.PDF);
+		List<TransactionHistroyDTO> data = jaxService.setDefaults().getRemitClient()
+				.getTransactionHistroy(docfyr, null, fromDate, toDate).getResults();
+		File file = new File();
+		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
+		file.setType(File.Type.PDF);
+		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
+		// file.setName("RemittanceStatment.pdf");
+		Email email = new Email();
+		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
+		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
+		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
+		email.getModel().put(UIConstants.RESP_DATA_KEY,
+				sessionService.getUserSession().getCustomerModel().getPersoninfo());
+		email.addFile(file);
+		email.setHtml(true);
+		postManService.sendEmailAsync(email);
+		// wrapper.setData(data);
+		return wrapper;
+	}
+
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
-	public ResponseWrapper<List<TransactionHistroyDTO>> printHistory(
-			@RequestBody ResponseWrapper<List<TransactionHistroyDTO>> wrapper) throws IOException, DocumentException {
-		postManClient.downloadPDF("RemittanceStatment", wrapper, "RemittanceStatment.pdf");
+	public ResponseWrapper<List<Map<String, Object>>> printHistory(
+			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
+		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
+		// file.setName("RemittanceStatment.pdf");
+		file.create(response, true);
 		return wrapper;
 	}
 
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
 	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
-			@RequestParam(required = false) BigDecimal collectionDocumentNo,
-			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
-			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @RequestParam(required = false) Boolean skipd)
-			throws IOException, DocumentException {
+			@RequestParam(required = false) Boolean duplicate, @RequestParam(required = false) Boolean skipd)
+			throws IOException, PostManException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
+		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+
 		if (skipd == null || skipd.booleanValue() == false) {
-			postManClient.downloadPDF("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport"
-					+ tranxDTO.getCollectionDocumentFinYear() + "-" + tranxDTO.getCollectionDocumentNo() + ".pdf");
+			File file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+			file.create(response, true);
 		}
 		return JsonUtil.toJson(wrapper);
 	}
 
-	@ApiOperation(value = "Returns transaction reciept")
+	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
-			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext)
-			throws IOException, DocumentException {
+			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
+			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
+
+		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
@@ -106,10 +160,14 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
-			postManClient.createPDF("RemittanceReceiptReport", wrapper);
+			File file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			return postManClient.processTemplate("RemittanceReceiptReport", wrapper, "RemittanceReceiptReport");
+			File file = postManService
+					.processTemplate(duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, null);
+			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
 		}
@@ -120,15 +178,15 @@ public class RemittController {
 			@RequestParam(required = false) String banBank, @RequestParam(required = false) BigDecimal domAmount) {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
-		CurrencyMasterDTO domCur = tenantService.getDomCurrency();
+		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
 		CurrencyMasterDTO forCurcy = null;
 
 		wrapper.getData().setDomCur(domCur);
 
 		if (forCur == null) {
-			forCurcy = userService.getDefaultForCurrency();
+			forCurcy = userBean.getDefaultForCurrency();
 		} else {
-			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
 				if (currency.getCurrencyId().equals(forCur)) {
 					forCurcy = currency;
 					break;
@@ -159,7 +217,20 @@ public class RemittController {
 	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal transactionId) {
 		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId).getResult());
+		RemittancePageDto remittancePageDto = jaxService.setDefaults().getBeneClient()
+				.defaultBeneficiary(beneId, transactionId).getResult();
+
+		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
+
+		for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
+			if (currency.getCurrencyId().equals(forCurId)) {
+				remittancePageDto.setForCur(currency);
+				break;
+			}
+		}
+		remittancePageDto.setDomCur(tenantContext.getDomCurrency());
+
+		wrapper.setData(remittancePageDto);
 		return wrapper;
 	}
 
@@ -175,11 +246,40 @@ public class RemittController {
 			@RequestBody RemittanceTransactionRequestModel request) {
 		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
 		try {
-			wrapper.setData(jaxService.setDefaults().getRemitClient().validateTransaction(request).getResult());
+			RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
+					.validateTransaction(request).getResult();
+			wrapper.setData(respTxMdl);
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.ERROR, e);
 		}
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
+			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
+		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
+		try {
+			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
+					.saveTransaction(transactionRequestModel).getResult();
+
+			wrapper.setData(respTxMdl);
+			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
+					"https://" + request.getServerName() + "/app/landing/remittance", tenantContext.getTenant()));
+
+		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e);
+		} catch (MalformedURLException | URISyntaxException e) {
+			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
+		}
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceTransactionStatusResponseModel> appStatus(
+			@RequestBody RemittanceTransactionStatusRequestModel request) {
+		ResponseWrapper<RemittanceTransactionStatusResponseModel> wrapper = new ResponseWrapper<RemittanceTransactionStatusResponseModel>();
+		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResult());
+		return wrapper;
+	}
 }

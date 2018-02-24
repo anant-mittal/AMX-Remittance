@@ -11,9 +11,9 @@ import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.LoyaltyPointModel;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
@@ -33,6 +33,9 @@ public class CustomerDao {
 	@Autowired
 	private OnlineCustomerRepository onlineCustRepo;
 
+	@Autowired
+	private CustomerRepository customerRepo;
+	
 	@Autowired
 	private UserVerificationCheckListModelRepository checkListrepo;
 
@@ -109,11 +112,33 @@ public class CustomerDao {
 		if (model.getLoginId() != null) {
 			onlineCust.setLoginId(model.getLoginId());
 		}
+		
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));
-			onlineCust.setStatus("Y");
+			onlineCust.setStatus(ConstantDocument.Yes);
+		}
+		
+		//update new email id
+		if (model.getEmail() != null) {
+			onlineCust.setEmail(model.getEmail());
+		}
+		
+		//update new mobile number
+		if (model.getMobile() != null) {
+			onlineCust.setMobileNumber(model.getMobile());
 		}
 		onlineCustRepo.save(onlineCust);
+		
+		if (model.getEmail() != null || model.getMobile() != null) {
+			Customer cust = getCustomerByCountryAndUserId(onlineCust.getCountryId(), userId);
+			if (model.getEmail() != null) {
+				cust.setEmail(model.getEmail());
+			}else {
+				cust.setMobile(model.getMobile());
+			}
+			customerRepo.save(cust);
+		}
+		
 		return onlineCust;
 	}
 
@@ -190,4 +215,23 @@ public class CustomerDao {
 		customer.setLoyaltyPoints(loyalityPoints);
 		repo.save(customer);
 	}
+	
+	public Customer getCustomerByCountryAndUserId(BigDecimal countryId,String userId) {
+		List<Customer> list = customerRepo.getCustomerbyuser(countryId, userId);
+		Customer customer = null;
+		if (list != null) {
+			customer = list.get(0);
+		}
+		return customer;
+	}
+	
+	public Customer getCustomerByMobile(String mobile) {
+		List<Customer> list = customerRepo.getCustomerByMobile(mobile);
+		Customer customer = null;
+		if (list != null && list.size()!=0) {
+			customer = list.get(0);
+		}
+		return customer;
+	}
+	
 }

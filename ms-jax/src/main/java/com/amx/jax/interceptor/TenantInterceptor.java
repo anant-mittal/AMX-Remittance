@@ -25,9 +25,9 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
 			TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
 			};
 			HashMap<String, Object> metaInfoMap = new ObjectMapper().readValue(metaInfo, typeRef);
-			if (!StringUtils.isEmpty(metaInfoMap.get("country-id"))) {
-				Integer countryId = (Integer) metaInfoMap.get("country-id");
-				TenantContext.setCurrentTenant(countryId.toString());
+			if (!StringUtils.isEmpty(metaInfoMap.get("tenant"))) {
+				String tenant = (String) metaInfoMap.get("tenant");
+				TenantContext.setCurrentTenant(tenant);
 			}
 		}
 		return true;

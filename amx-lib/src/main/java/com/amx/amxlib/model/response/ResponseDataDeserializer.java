@@ -12,6 +12,8 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -25,6 +27,8 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.fasterxml.jackson.core.JsonParser;
@@ -161,6 +165,22 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			
 		case "remittance-page-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittancePageDto>>(){});
+			break;
+			
+		case "rate-alert-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RateAlertDTO>>(){});
+			break;	
+		case "remittance-transaction-status-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceTransactionStatusResponseModel>>(){});
+			break;
+		case "customer-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerDto>>(){});
+			break;
+		case "pg_remit_response":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PaymentResponseDto>>(){});
+			break;
+		case "online-config":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<OnlineConfigurationDto>>(){});
 			break;
 	}
 		

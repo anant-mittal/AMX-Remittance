@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!-- Static content -->
+
+<title>Payment Service</title>
+
+<style type="text/css">
+table, th, td {
+	border: 1px solid black;
+}
+
+table {
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+</head>
+<body>
+	<h1 align="center">Welcome to AlMulla Payment Service !!!</h1>
+	<hr />
+	<br />
+	<br />
+	<br />
+
+	<div class="form">
+		<!-- <form action="app/pay" method="get"> -->
+		<form action="/app/payment" method="post">
+
+			<table>
+				<tr>
+					<td>Tenant</td>
+					<td><select name="tnt">
+							<option value="KWT" selected="selected">KWT</option>
+							<option value="OMN">OMAN</option>
+							<option value="BRN">BAHRAIN</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>Payment Gateway</td>
+					<td><select name="pg">
+							<option value="knet" selected="selected">KNET</option>
+							<option value="omannet">OMAN-NET</option>
+							<option value="benefit">BENEFIT</option>
+					</select></td>
+				</tr>
+				<tr>
+					<td>Amount</td>
+					<td><input type="number" id="amount" name="amount"
+						required="required" step="any" value="10" /></td>
+				</tr>
+				<tr>
+					<td>TicketId</td>
+					<td><input id="trckid" name="trckid" value="121212" /></td>
+
+				</tr>
+				<tr>
+					<td>Doc No</td>
+					<td><input id="docNo" name="docNo" placeholder="1212"
+						value="121212" /></td>
+				</tr>
+				<tr>
+					<td>Doc No</td>
+					<td><input id="docFy" name="docFy" placeholder="2018"
+						value="2018" /></td>
+				</tr>
+
+				<tr height="50">
+					<td colspan="2" style="text-align: center;"><input
+						type="submit" value="Submit" /></td>
+				</tr>
+			</table>
+
+		</form>
+	</div>
+
+</body>
+</html>

@@ -1,6 +1,7 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -32,7 +33,11 @@ public class BankService {
 		return swift;
 	}
 
-	public AdditionalBankDetailsView getAdditionalBankDetail(BigDecimal id) {
-		return bankDetailsDao.findOne(id);
+	public AdditionalBankDetailsView getAdditionalBankDetail(BigDecimal srlId, BigDecimal currencyId, BigDecimal bankId,
+			BigDecimal remittanceModeId, BigDecimal deleveryModeId) {
+
+		List<AdditionalBankDetailsView> additionalBankDetails = bankDetailsDao.getAdditionalBankDetails(srlId,
+				currencyId, bankId, remittanceModeId, deleveryModeId);
+		return additionalBankDetails.get(0);
 	}
 }
