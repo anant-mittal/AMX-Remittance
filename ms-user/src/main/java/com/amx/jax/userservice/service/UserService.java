@@ -68,7 +68,6 @@ import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.WebUtils;
 import com.bootloaderjs.Random;
 
 @Service
@@ -86,9 +85,6 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private JaxUtil util;
-
-	@Autowired
-	private WebUtils webutil;
 
 	@Autowired
 	private CheckListManager checkListManager;
@@ -207,7 +203,7 @@ public class UserService extends AbstractUserService {
 			userValidationService.validateLoginId(model.getLoginId());
 		}
 		userValidationService.validateOtpFlow(model);
-		simplifyAnswers(model.getSecurityquestions());
+		//simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
@@ -242,12 +238,12 @@ public class UserService extends AbstractUserService {
 		return false;
 	}
 
-	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
-		if (securityquestions != null && !securityquestions.isEmpty()) {
-			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
-		}
-
-	}
+//	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+//		if (securityquestions != null && !securityquestions.isEmpty()) {
+//			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
+//		}
+//
+//	}
 
 	@Override
 	public Class<UserModel> getModelClass() {
@@ -487,7 +483,8 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
-		simplifyAnswers(model.getSecurityquestions());
+		//commented trailing s and special characters removal
+		//simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
