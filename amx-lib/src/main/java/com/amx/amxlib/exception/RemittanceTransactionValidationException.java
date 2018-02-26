@@ -4,13 +4,13 @@ import com.amx.amxlib.model.response.ApiError;
 
 public class RemittanceTransactionValidationException extends AbstractException {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-	public RemittanceTransactionValidationException(ApiError error) {
-		super(error);
-	}
+    public RemittanceTransactionValidationException(ApiError error) {
+        super(error);
+    }
 
 }

@@ -4,9 +4,10 @@ import com.amx.amxlib.model.response.ApiError;
 
 public class AlreadyExistsException extends AbstractException {
 
-	public AlreadyExistsException(ApiError error) {
+    private static final long serialVersionUID = 1L;
+
+    public AlreadyExistsException(ApiError error) {
 		super(error);
-		// TODO Auto-generated constructor stub
 	}
 
 }

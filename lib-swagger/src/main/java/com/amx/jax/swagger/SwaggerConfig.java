@@ -1,12 +1,18 @@
 package com.amx.jax.swagger;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
+import springfox.documentation.service.Parameter;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -18,6 +24,10 @@ public class SwaggerConfig {
 
 	@Bean
 	public Docket productApi() {
+//		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
+//				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT2\"}")
+//				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
+//		List<Parameter> globalParams = Arrays.asList(headerParam);
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();

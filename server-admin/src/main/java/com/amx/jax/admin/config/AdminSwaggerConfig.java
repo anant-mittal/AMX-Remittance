@@ -26,8 +26,9 @@ public class AdminSwaggerConfig {
 				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
 		List<Parameter> globalParams = Arrays.asList(headerParam);
 
-		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.amx.jax.admin"))
-				.build().globalOperationParameters(globalParams);
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.amx.jax.admin")).build()
+				.globalOperationParameters(globalParams);
 	}
 
 	@SuppressWarnings("unused")

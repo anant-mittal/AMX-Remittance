@@ -1,5 +1,6 @@
 package com.amx.jax.dbmodel;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -16,8 +17,12 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_PIPS_MASTER")
-public class PipsMaster {
-	private BigDecimal pipsMasterId;
+public class PipsMaster implements Serializable {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private BigDecimal pipsMasterId;
 	private CountryBranch countryBranch;
 	private CountryMaster countryMaster;
 	private BankMasterModel bankMaster;

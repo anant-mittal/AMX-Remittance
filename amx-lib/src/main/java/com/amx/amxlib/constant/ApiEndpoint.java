@@ -1,6 +1,10 @@
 package com.amx.amxlib.constant;
 
 public class ApiEndpoint {
+    
+    private ApiEndpoint() {
+        
+    }
 
     public static final String USER_API_ENDPOINT = "/user";
 
