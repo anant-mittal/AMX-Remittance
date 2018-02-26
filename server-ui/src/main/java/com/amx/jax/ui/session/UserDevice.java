@@ -20,7 +20,7 @@ import com.amx.jax.ui.service.HttpService.UserAgent;
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserDevice implements Serializable {
 
-	private static final long serialVersionUID = 2688371431451654849L;
+	private static final long serialVersionUID = -6869375666742059912L;
 	private String deviceId = null;
 	private String deviceIp = null;
 	private DeviceType deviceType = null;

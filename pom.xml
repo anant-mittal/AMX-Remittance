@@ -62,6 +62,7 @@
  		<module>lib-tunnel</module>
 		<module>lib-session</module>
 		<module>lib-logger</module>
+		<module>lib-monitor</module>
 
 		<module>ms-logger</module>
 
