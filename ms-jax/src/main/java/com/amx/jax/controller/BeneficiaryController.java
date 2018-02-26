@@ -95,7 +95,7 @@ public class BeneficiaryController {
 		LOGGER.info("applicationCountryId  :" + applicationCountryId);
 		response= beneService.getDefaultBeneficiary(customerId, applicationCountryId, beneRelationId,transactionId);
 		}catch(Exception e) {
-			e.printStackTrace();
+			LOGGER.error("exception in defaultBeneficiary : ",e);
 		}
 		return response;
 	}
@@ -119,7 +119,6 @@ public class BeneficiaryController {
 			response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
 		}catch(Exception e) {
 			LOGGER.error("Error while fetching favourite BeneficiaryList : ",e);
-			e.printStackTrace();
 		}
 		return response;
 	}
