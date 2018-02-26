@@ -21,8 +21,8 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.jax.logger.AuditLoggerService;
-import com.amx.jax.logger.events.SessionEvent;
+//import com.amx.jax.logger.AuditLoggerService;
+//import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
@@ -62,8 +62,8 @@ public class SessionService {
 	@Autowired
 	private TenantContext tenantContext;
 
-	@Autowired
-	private AuditLoggerService auditLoggerService;
+	//@Autowired
+	//private AuditLoggerService auditLoggerService;
 
 	public TenantContext getTenantContext() {
 		return tenantContext;
@@ -108,9 +108,9 @@ public class SessionService {
 		this.indexUser();
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		SessionEvent sessionEvent = new SessionEvent();
+		//SessionEvent sessionEvent = new SessionEvent();
 		if (valid) {
-			auditLoggerService.log(sessionEvent);
+		//	auditLoggerService.log(sessionEvent);
 		}
 	}
 
