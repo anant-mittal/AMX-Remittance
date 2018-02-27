@@ -184,6 +184,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
+
 		try {
 			ResponseEntity<ApiResponse<PaymentResponseDto>> response;
 			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());

@@ -30,16 +30,6 @@ public class PaymentUtil {
 		return sbuf.toString();
 	}
 	
-	public static String getMapAsString(Map<String, String> map) {
-	    StringBuilder sbuf = new StringBuilder();
-		for (java.util.Map.Entry<String, String> entry : map.entrySet()) {
-			String v = entry.getValue();
-			String k = entry.getKey();
-			sbuf.append(" "+k).append(" = ").append( v !=null  ? v : "null");
-		}
-		return sbuf.toString();
-	}
-	
 	public static String getMapKeyValue(Map<String, Object> map) {
 	    StringBuilder sbuf = new StringBuilder();
 		for (java.util.Map.Entry<String, Object> entry : map.entrySet()) {
