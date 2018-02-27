@@ -21,6 +21,7 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
 import com.amx.jax.ui.service.UserService;
+import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -83,6 +84,7 @@ public class UserController {
 		return wrapper;
 	}
 
+	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());

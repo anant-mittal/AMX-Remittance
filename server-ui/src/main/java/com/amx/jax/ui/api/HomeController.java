@@ -25,6 +25,7 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDevice;
 import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.JsonUtil;
+import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -42,7 +43,7 @@ public class HomeController {
 
 	@Autowired
 	private SessionService sessionService;
-	
+
 	@Autowired
 	HttpService httpService;
 
@@ -71,6 +72,7 @@ public class HomeController {
 		return versionNew;
 	}
 
+	@Timed
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
 	public String loginPing(HttpServletRequest request) {
@@ -85,6 +87,7 @@ public class HomeController {
 		return JsonUtil.toJson(wrapper);
 	}
 
+	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);

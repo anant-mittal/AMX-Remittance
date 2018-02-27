@@ -21,7 +21,7 @@ public class MetricsConfig extends MetricsConfigurerAdapter {
 	public void configureReporters(MetricRegistry metricRegistry) {
 		// registerReporter allows the MetricsConfigurerAdapter to
 		// shut down the reporter when the Spring context is closed
-		registerReporter(ConsoleReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
+		//registerReporter(ConsoleReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
 	}
 
 	@Bean
@@ -34,10 +34,5 @@ public class MetricsConfig extends MetricsConfigurerAdapter {
 		connMgr.setMaxTotal(200);
 		connMgr.setDefaultMaxPerRoute(20);
 		return connMgr;
-	}
-
-	@Bean
-	public LoggedInUsersMetrics loggedInUsersMetrics() {
-		return new LoggedInUsersMetrics();
 	}
 }

@@ -1,11 +1,14 @@
-package com.amx.jax.metrics;
+package com.amx.jax.ui;
+
+import org.springframework.stereotype.Component;
 
 import com.codahale.metrics.annotation.Gauge;
 
+@Component
 public class LoggedInUsersMetrics {
 
 	@Gauge
-	public int getAvailableConnections() {
+	public int getTotalUsers() {
 		return 5;
 	}
 
