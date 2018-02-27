@@ -169,12 +169,19 @@ public class KnetClient implements PayGClient {
 
 		LOGGER.info("Params captured from PaymentGatway : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+		try {
+		    PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+		      // Capturing JAX Response
+	        gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+	        gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+	        gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
 
-		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		}catch(Exception e) {
+		    LOGGER.error("payment service error in capturePayment method : ",e);
+		    gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+		}
+		
+
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
