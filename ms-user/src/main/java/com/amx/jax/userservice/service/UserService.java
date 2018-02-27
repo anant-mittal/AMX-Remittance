@@ -203,7 +203,7 @@ public class UserService extends AbstractUserService {
 			userValidationService.validateLoginId(model.getLoginId());
 		}
 		userValidationService.validateOtpFlow(model);
-		//simplifyAnswers(model.getSecurityquestions());
+		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
@@ -238,12 +238,12 @@ public class UserService extends AbstractUserService {
 		return false;
 	}
 
-//	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
-//		if (securityquestions != null && !securityquestions.isEmpty()) {
-//			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
-//		}
-//
-//	}
+	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+		if (securityquestions != null && !securityquestions.isEmpty()) {
+			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
+		}
+
+	}
 
 	@Override
 	public Class<UserModel> getModelClass() {
@@ -484,7 +484,7 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		//commented trailing s and special characters removal
-		//simplifyAnswers(model.getSecurityquestions());
+		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
