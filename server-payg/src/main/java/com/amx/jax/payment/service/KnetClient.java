@@ -21,7 +21,6 @@ import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
-import com.amx.jax.payment.util.PaymentUtil;
 import com.amx.jax.scope.Tenant;
 import com.bootloaderjs.JsonUtil;
 
@@ -80,7 +79,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 
-		LOGGER.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		LOGGER.info("KNET payment configuration : " + JsonUtil.toJson(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -165,27 +164,25 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.KWT.getCode());
 
-		LOGGER.info("Params captured from PaymentGatway : " + JsonUtil.toJson(gatewayResponse));
+		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
 		try {
-		    PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-		      // Capturing JAX Response
-	        gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-	        gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-	        gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+			PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+			// Capturing JAX Response
+			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
 
-		}catch(Exception e) {
-		    LOGGER.error("payment service error in capturePayment method : ",e);
-		    gatewayResponse.setPayGStatus(PayGStatus.ERROR);
-		}
-		
+			if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+				gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+			} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+				gatewayResponse.setPayGStatus(PayGStatus.CANCELED);
+			} else {
+				gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+			}
 
-
-		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
-			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-			gatewayResponse.setPayGStatus(PayGStatus.CANCELED);
-		} else {
+		} catch (Exception e) {
+			LOGGER.error("payment service error in capturePayment method : ", e);
 			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
 		}
 

@@ -16,7 +16,7 @@ import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.util.PaymentUtil;
+import com.bootloaderjs.JsonUtil;
 
 /**
  * 
@@ -72,7 +72,7 @@ public class BenefitClient implements PayGClient {
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
-		log.info("Baharain KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		log.info("Baharain KNET payment configuration : " + JsonUtil.toJson(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();

@@ -1,10 +1,6 @@
-/**  AlMulla Exchange
-  *  
-  */
 package com.amx.jax.payment.service;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +11,11 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.gateway.PayGResponse;
-import com.amx.jax.payment.model.url.PaymentResponse;
-import com.amx.jax.payment.model.url.PaymentResponseData;
 import com.amx.jax.scope.TenantContextHolder;
 
 /**
- * @author Viki Sangani 14-Dec-2017 PaymentService.java
+ * @author Viki Sangani 14-Dec-2017
+ * @author Lalit Tanwar
  */
 @Component
 public class PaymentService {
@@ -33,6 +28,13 @@ public class PaymentService {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
+	/**
+	 * Captures the payment in jax service
+	 * 
+	 * @param payGServiceResponse
+	 *            - populated response recieved from PayMentgateWaye service
+	 * @return
+	 */
 	public PaymentResponseDto capturePayment(PayGResponse payGServiceResponse) {
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 
@@ -54,6 +56,11 @@ public class PaymentService {
 		return paymentResponseDto;
 	}
 
+	/**
+	 * 
+	 * @param payGServiceResponse
+	 * @return
+	 */
 	public PaymentResponseDto generatePaymentResponseDTO(PayGResponse payGServiceResponse) {
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
 
