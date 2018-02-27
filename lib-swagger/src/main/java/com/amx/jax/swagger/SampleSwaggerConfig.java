@@ -1,16 +1,13 @@
 package com.amx.jax.swagger;
 
 import java.util.Arrays;
-import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
-import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.Parameter;
@@ -20,19 +17,23 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-@PropertySource("common.properties")
 @ConditionalOnProperty("app.swagger")
-public class SwaggerConfig {
+public class SampleSwaggerConfig {
+
+	@Autowired(required = false)
+	public Parameter swaggerHeaderParam;
 
 	@Bean
 	public Docket productApi() {
-//		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
-//				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT2\"}")
-//				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
-//		List<Parameter> globalParams = Arrays.asList(headerParam);
-		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
+		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();
+		if (swaggerHeaderParam != null) {
+			docket.globalOperationParameters(Arrays.asList(swaggerHeaderParam));
+		}
+
+		return docket;
 	}
 
 	@SuppressWarnings("unused")
