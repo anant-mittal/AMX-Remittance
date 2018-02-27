@@ -9,7 +9,7 @@
 		</layout>
 	</appender>
 
-	<appender name="FILE"
+<!-- 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_PATH}/ms-jax.log</file>
 
@@ -20,13 +20,13 @@
 		</encoder>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<!-- rollover daily -->
+			rollover daily
 			<fileNamePattern>ms-jax-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
 			<maxFileSize>100MB</maxFileSize>
 			<maxHistory>365</maxHistory>
 			<totalSizeCap>10GB</totalSizeCap>
 		</rollingPolicy>
-	</appender>
+	</appender> -->
 
 	<root level="${log.level:-INFO}">
 		<appender-ref ref="STDOUT" />
