@@ -3,9 +3,10 @@ package com.amx.jax.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.stereotype.Component;
 
-@Component
+import com.bootloaderjs.config.AppConfig;
+
+@PropertySource(value="classpath:amx-config.properties")
 @Configuration
 @PropertySource("application-lib.properties")
 public class AppConfig {
@@ -86,4 +87,5 @@ public class AppConfig {
 	public String getLoggerURL() {
 		return loggerURL;
 	}
+
 }
