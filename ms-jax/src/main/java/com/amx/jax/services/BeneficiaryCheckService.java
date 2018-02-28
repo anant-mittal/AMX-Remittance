@@ -197,13 +197,16 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BeneficaryAccount> beneAccountList = beneficiaryAccountDao.getBeneficiaryByBeneAccountId(beneDto.getBeneficiaryAccountSeqId(), beneDto.getBeneficaryMasterSeqId(),
 					beneDto.getApplicationCountryId());
 			if (beneAccountList.isEmpty()) {
+
 				errorDesc = "INVALID ACCOUNT SEQ ID";
 				errorStatusDto = this.setBeneError(JaxError.RECORD_NOT_FOUND.toString(), errorDesc);
+
 				errorListDto.add(errorStatusDto);
 
 			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServicegropupId().compareTo(new BigDecimal(2)) == 0) {
 
 				beneDto.setUpdateNeeded(true);
+
 				errorDesc = "ACCOUNT TYPE IS NOT UPDATED.PLEASE UPDATE THE SAME";
 				errorStatusDto = this.setBeneError(JaxError.ACCOUNT_TYPE_UPDATE.toString(), errorDesc);
 
@@ -213,6 +216,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		} else {
 			errorDesc = "Beneficiary account id shouldnot be blank";
 			errorStatusDto = this.setBeneError(JaxError.NULL_CHECK.toString(), errorDesc);
+
 			errorListDto.add(errorStatusDto);
 
 		}
@@ -255,6 +259,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 			errorDesc = "Invalid beneficiary bank country";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_BANK_CNTRY.toString(), errorDesc);
+
 			errorListDto.add(errorStatusDto);
 
 		}
@@ -281,7 +286,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getServiceGroupId())) {
 			if (beneDto.getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
-				if (beneDto.getBankAccountNumber().isEmpty() || beneDto.getBankAccountNumber() == null) {
+				if(StringUtils.isBlank(beneDto.getBankAccountNumber())){
 					beneDto.setUpdateNeeded(true);
 					errorDesc = "Account number should not blank for Banking channel";
 					errorStatusDto = this.setBeneError(JaxError.BENE_ACCOUNT_BLANK.toString(), errorDesc);
@@ -291,11 +296,10 @@ public class BeneficiaryCheckService extends AbstractService {
 
 					if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
 						List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
-					
 						if(!accLengthList.isEmpty()){
 						boolean accNumCheck = Boolean.FALSE;
 						for(BankAccountLength acctLength : accLengthList){
-							if(acctLength !=null && acctLength.getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) == 0){
+							if( !StringUtils.isBlank(beneDto.getBankAccountNumber()) &&  acctLength !=null && acctLength.getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) == 0){
 								accNumCheck = Boolean.TRUE;
 								break;
 							}
