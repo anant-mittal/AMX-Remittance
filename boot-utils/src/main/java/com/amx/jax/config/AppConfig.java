@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-@PropertySource(value = "classpath:amx-config.properties")
 @Configuration
 @PropertySource("application-lib.properties")
 public class AppConfig {
