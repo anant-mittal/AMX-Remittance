@@ -146,7 +146,11 @@ public class RemittanceController {
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
+		if(customerId!=null) {
 		paymentResponse.setCustomerId(customerId);
+		}else {
+		    paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
+		}
 		paymentResponse.setApplicationCountryId(applicationCountryId);
 		paymentResponse.setCompanyId(companyId);
 		logger.info("save-Remittance before payment capture :" + customerId+"\t country ID :"+applicationCountryId+"\t Compa Id:"+companyId);
