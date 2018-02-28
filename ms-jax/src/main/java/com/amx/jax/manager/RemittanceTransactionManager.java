@@ -279,8 +279,7 @@ public class RemittanceTransactionManager {
 
 	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
 		BigDecimal beneficiaryPerDayLimit = parameterService.getAuthenticationViewRepository(new BigDecimal(13)).getAuthLimit();
-		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(beneficiary.getCustomerId(), beneficiary.getBankCode(),
-				beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
+		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(beneficiary.getCustomerId(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
 		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
 				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (transfers != null && transfers.size() >= beneficiaryPerDayLimit.intValue()) {
@@ -355,7 +354,7 @@ public class RemittanceTransactionManager {
 			logger.info(" limitView.getAuthorizationType() :"+limitView.getAuthorizationType()+"\t Auth Limit :"+limitView.getAuthLimit());
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
 			logger.info("Trnx Count for Limit Check :"+txnCount);
-			if (txnCount > limitView.getAuthLimit().intValue()) {
+			if (txnCount >= limitView.getAuthLimit().intValue()) {
 				throw new GlobalException(limitView.getAuthMessage(), JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
 			}
 		}
