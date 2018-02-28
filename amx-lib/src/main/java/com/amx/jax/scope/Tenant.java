@@ -3,6 +3,8 @@ package com.amx.jax.scope;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum Tenant {
 
@@ -24,6 +26,7 @@ public enum Tenant {
 	public static final Tenant DEFAULT = KWT;
 
 	public static Map<String, Tenant> mapping = new HashMap<String, Tenant>();
+	public static final Pattern pattern = Pattern.compile("^(.+?)-(.+?)$");
 
 	static {
 		// Additional Mappings
@@ -62,6 +65,11 @@ public enum Tenant {
 	public static Tenant fromString(String siteId) {
 		if (siteId != null) {
 			String siteIdStr = siteId.toLowerCase();
+			Matcher matcher = pattern.matcher(siteIdStr);
+			if (matcher.find()) {
+				siteIdStr = matcher.group(2);
+			}
+
 			if (mapping.containsKey(siteIdStr)) {
 				return mapping.get(siteIdStr);
 			}
