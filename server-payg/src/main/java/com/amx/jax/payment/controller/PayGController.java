@@ -7,8 +7,6 @@ import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
 import java.util.Base64;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -98,29 +96,12 @@ public class PayGController {
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
 	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode,HttpServletRequest request) {
+			@PathVariable("paygCode") PayGServiceCode paygCode) {
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
 
-		PayGResponse gatewayResponse = new PayGResponse();
-	      // Capturing GateWay Response
-        gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
-        gatewayResponse.setResult(request.getParameter("result"));
-        gatewayResponse.setAuth(request.getParameter("auth"));
-        gatewayResponse.setRef(request.getParameter("ref"));
-        gatewayResponse.setPostDate(request.getParameter("postdate"));
-        gatewayResponse.setTrackId(request.getParameter("trackid"));
-        gatewayResponse.setTranxId(request.getParameter("tranid"));
-        gatewayResponse.setResponseCode(request.getParameter("responsecode"));
-        gatewayResponse.setUdf1(request.getParameter("udf1"));
-        gatewayResponse.setUdf2(request.getParameter("udf2"));
-        gatewayResponse.setUdf3(request.getParameter("udf3"));
-        gatewayResponse.setUdf4(request.getParameter("udf4"));
-        gatewayResponse.setUdf5(request.getParameter("udf5"));
-        gatewayResponse.setCountryId(Tenant.KWT.getCode());
-        
-		PayGResponse payGResponse = payGClient.capture(gatewayResponse);
+		PayGResponse payGResponse = payGClient.capture(new PayGResponse());
 
 		String redirectUrl;
 

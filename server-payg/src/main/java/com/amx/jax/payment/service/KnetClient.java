@@ -53,8 +53,8 @@ public class KnetClient implements PayGClient {
 	@Autowired
 	HttpServletResponse response;
 
-	//@Autowired
-	//HttpServletRequest request;
+	@Autowired
+	HttpServletRequest request;
 
 	@Autowired
 	PayGConfig payGConfig;
@@ -149,21 +149,21 @@ public class KnetClient implements PayGClient {
 	@Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
-//		// Capturing GateWay Response
-//		gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
-//		gatewayResponse.setResult(request.getParameter("result"));
-//		gatewayResponse.setAuth(request.getParameter("auth"));
-//		gatewayResponse.setRef(request.getParameter("ref"));
-//		gatewayResponse.setPostDate(request.getParameter("postdate"));
-//		gatewayResponse.setTrackId(request.getParameter("trackid"));
-//		gatewayResponse.setTranxId(request.getParameter("tranid"));
-//		gatewayResponse.setResponseCode(request.getParameter("responsecode"));
-//		gatewayResponse.setUdf1(request.getParameter("udf1"));
-//		gatewayResponse.setUdf2(request.getParameter("udf2"));
-//		gatewayResponse.setUdf3(request.getParameter("udf3"));
-//		gatewayResponse.setUdf4(request.getParameter("udf4"));
-//		gatewayResponse.setUdf5(request.getParameter("udf5"));
-//		gatewayResponse.setCountryId(Tenant.KWT.getCode());
+		// Capturing GateWay Response
+		gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
+		gatewayResponse.setResult(request.getParameter("result"));
+		gatewayResponse.setAuth(request.getParameter("auth"));
+		gatewayResponse.setRef(request.getParameter("ref"));
+		gatewayResponse.setPostDate(request.getParameter("postdate"));
+		gatewayResponse.setTrackId(request.getParameter("trackid"));
+		gatewayResponse.setTranxId(request.getParameter("tranid"));
+		gatewayResponse.setResponseCode(request.getParameter("responsecode"));
+		gatewayResponse.setUdf1(request.getParameter("udf1"));
+		gatewayResponse.setUdf2(request.getParameter("udf2"));
+		gatewayResponse.setUdf3(request.getParameter("udf3"));
+		gatewayResponse.setUdf4(request.getParameter("udf4"));
+		gatewayResponse.setUdf5(request.getParameter("udf5"));
+		gatewayResponse.setCountryId(Tenant.KWT.getCode());
 
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
