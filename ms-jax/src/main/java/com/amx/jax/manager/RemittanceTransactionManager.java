@@ -187,6 +187,8 @@ public class RemittanceTransactionManager {
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
+		
+		logger.info("newCommission: " + newCommission);
 
 		if (newCommission != null) {
 			commission = newCommission;
@@ -197,9 +199,9 @@ public class RemittanceTransactionManager {
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
-		if (commission == null) {
-			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId,
-					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+		//if (commission == null) {
+		if (newCommission == null) {
+			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId +" Amount :"+model.getLocalAmount(),JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		// commission
 		responseModel.setTxnFee(commission);
@@ -294,8 +296,7 @@ public class RemittanceTransactionManager {
 		BigDecimal maxLoyalityPoints = loyalityPointService.getVwLoyalityEncash().getLoyalityPoint();
 		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
 		int todaysLoyalityPointsEncashedInt = todaysLoyalityPointsEncashed == null ? 0 : todaysLoyalityPointsEncashed.intValue();
-		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
-				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
+		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
 					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
@@ -379,7 +380,8 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
+		//List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
+		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
 			PipsMaster pip = pips.get(0);
