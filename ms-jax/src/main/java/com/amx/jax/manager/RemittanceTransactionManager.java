@@ -172,8 +172,7 @@ public class RemittanceTransactionManager {
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
-		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,
-				deliveryMode);
+		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
@@ -201,7 +200,7 @@ public class RemittanceTransactionManager {
 		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		//if (commission == null) {
 		if (newCommission == null) {
-			throw new GlobalException("COMMISSION NOT DEFINED FOR Routing Bank Id:- " + routingBankId +" Amount :"+model.getLocalAmount(),JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(beneficiary.getCurrencyQuoteName()+" "+model.getForeignAmount()+" is not allowed to do the transaction.",JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		// commission
 		responseModel.setTxnFee(commission);
