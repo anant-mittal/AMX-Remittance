@@ -165,8 +165,7 @@ public class RemittanceTransactionManager {
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
 
-		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId, meta.getCountryBranchId(),
-				rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
+		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId, meta.getCountryBranchId(),rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
@@ -198,9 +197,9 @@ public class RemittanceTransactionManager {
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
-		//if (commission == null) {
+		BigDecimal decimalCurrencyValue = currencyMasterService.getCurrencyMasterById(currencyId).getDecinalNumber();
 		if (newCommission == null) {
-			throw new GlobalException(beneficiary.getCurrencyQuoteName()+" "+model.getForeignAmount()+" is not allowed to do the transaction.",JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException(beneficiary.getCurrencyQuoteName()+" "+RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue())+" is not allowed to do the transaction.",JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		// commission
 		responseModel.setTxnFee(commission);
