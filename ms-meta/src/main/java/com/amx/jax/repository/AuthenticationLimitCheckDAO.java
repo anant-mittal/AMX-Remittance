@@ -23,7 +23,7 @@ public interface AuthenticationLimitCheckDAO extends JpaRepository<Authenticatio
 	public AuthenticationLimitCheckView getTop1OnlineTxnLimit();
 	
 	
-	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType=13")
+	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType='13'")
 	public AuthenticationLimitCheckView getPerBeneTxnLimit();
 	
 	
