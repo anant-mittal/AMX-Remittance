@@ -279,11 +279,15 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
-		BigDecimal beneficiaryPerDayLimit = parameterService.getAuthenticationViewRepository(new BigDecimal(13)).getAuthLimit();
-		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(beneficiary.getCustomerId(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
-		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
-				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
-		if (transfers != null && transfers.size() >= beneficiaryPerDayLimit.intValue()) {
+		//BigDecimal beneficiaryPerDayLimit = parameterService.getAuthenticationViewRepository(new BigDecimal(13)).getAuthLimit();
+		
+		AuthenticationLimitCheckView beneficiaryPerDayLimit = parameterService.getPerCustomerPerBeneTrnxLimit();
+		logger.info("customer Id :"+beneficiary.getCustomerId());
+		Customer customer = custDao.getCustById(meta.getCustomerId());
+		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
+		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
+		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
+		if (beneficiaryPerDayLimit != null && transfers != null && transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
 			throw new GlobalException("Dear Customer, you have already done 1 transaction to this beneficiary within the last "
 					+ "24 hours. In the interest of safety, we do not allow a customer to repeat the same "
 					+ "transaction to the same beneficiary more than once in 24 hours.", JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
