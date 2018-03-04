@@ -100,4 +100,11 @@ public class ParameterService extends AbstractService {
 	public AuthenticationView getAuthenticationViewRepository(BigDecimal authType) {
 		return authenticationViewRepository.findOne(authType);
 	}
+	
+	public AuthenticationLimitCheckView getPerCustomerPerBeneTrnxLimit() {
+		AuthenticationLimitCheckView authLimits = authentication.getPerBeneTxnLimit();
+		return authLimits;
+	}
+	
+	
 }
