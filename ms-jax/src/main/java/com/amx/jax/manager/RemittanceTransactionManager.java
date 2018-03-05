@@ -320,9 +320,7 @@ public class RemittanceTransactionManager {
 		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber()==null?"":beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
 		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null && transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
-			throw new GlobalException("Dear Customer, you have already done 1 transaction to this beneficiary within the last "
-					+ "24 hours. In the interest of safety, we do not allow a customer to repeat the same "
-					+ "transaction to the same beneficiary more than once in 24 hours.", JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
+			throw new GlobalException(beneficiaryPerDayLimit.getAuthMessage(),JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
 		}
 	}
 
