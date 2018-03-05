@@ -146,7 +146,8 @@ public class KnetClient implements PayGClient {
 
 	}
 
-	@Override
+	@SuppressWarnings("finally")
+    @Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
 		// Capturing GateWay Response
@@ -185,10 +186,9 @@ public class KnetClient implements PayGClient {
 		} catch (Exception e) {
 			LOGGER.error("payment service error in capturePayment method : ", e);
 			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
-		}
-
-		return gatewayResponse;
-
-	}
-
+			//return gatewayResponse;
+		}finally {
+		    return gatewayResponse;
+		}// end of try-catch-finally
+	}// end of capture
 }
