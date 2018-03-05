@@ -199,7 +199,23 @@ public class RemittanceTransactionManager {
 		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
 		BigDecimal decimalCurrencyValue = currencyMasterService.getCurrencyMasterById(currencyId).getDecinalNumber();
 		if (newCommission == null) {
-			throw new GlobalException(beneficiary.getCurrencyQuoteName()+" "+RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue())+" is not allowed to do the transaction.",JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			Map<String,Object> commissionRangeMap = getCommissionRange(routingDetails, breakup);
+			String msg ="";
+			BigDecimal fromAmount =BigDecimal.ZERO;
+			BigDecimal toAmount =BigDecimal.ZERO;
+			BigDecimal fcAmount =RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue());
+			 if(commissionRangeMap.get("FROM_AMOUNT")!=null || commissionRangeMap.get("TO_AMOUNT")!=null){
+			 fromAmount =(BigDecimal)commissionRangeMap.get("FROM_AMOUNT");
+			 toAmount = (BigDecimal)commissionRangeMap.get("TO_AMOUNT");
+			 }
+			 
+			 if(fcAmount.compareTo(fromAmount)<0){
+				 msg = "Amount to be remitted, cannot be lesser than "+beneficiary.getCurrencyQuoteName()+" "+fromAmount +".Please increase the amount to be remitted.";
+			 }else if(fcAmount.compareTo(toAmount)>0){
+				 msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "+beneficiary.getCurrencyQuoteName()+" "+toAmount +".";
+			 }
+			
+			 throw new GlobalException(msg,JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		// commission
 		responseModel.setTxnFee(commission);
@@ -241,6 +257,22 @@ public class RemittanceTransactionManager {
 		logger.info("newCommission: " + comission);
 		return comission;
 	}
+	
+	private Map<String,Object> getCommissionRange(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+		
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
+		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
+		Map<String,Object> comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
+		if (comissionRangeMap.get("FROM_AMOUNT")==null || comissionRangeMap.get("TO_AMOUNT")==null) {
+			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
+			comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
+		}
+		logger.info("comissionRangeMap: " + comissionRangeMap.toString());
+		return comissionRangeMap;
+		
+	}
+	
 
 	private void recalculateDeliveryAndRemittanceModeId(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
 		if (breakup.getConvertedFCAmount() != null) {
@@ -278,13 +310,14 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
-		//BigDecimal beneficiaryPerDayLimit = parameterService.getAuthenticationViewRepository(new BigDecimal(13)).getAuthLimit();
-		
 		AuthenticationLimitCheckView beneficiaryPerDayLimit = parameterService.getPerCustomerPerBeneTrnxLimit();
-		logger.info("customer Id :"+beneficiary.getCustomerId());
+		
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
-		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
+		
+		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
+		
+		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber()==null?"":beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
 		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null && transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
 			throw new GlobalException("Dear Customer, you have already done 1 transaction to this beneficiary within the last "
@@ -372,8 +405,9 @@ public class RemittanceTransactionManager {
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
 		breakup.setInverseRate(inverseExchangeRate);
+		
 		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-
+		
 		if (fcAmount != null) {
 			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
 			breakup.setConvertedFCAmount(fcAmount);
@@ -382,7 +416,6 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-		//List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
 		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
