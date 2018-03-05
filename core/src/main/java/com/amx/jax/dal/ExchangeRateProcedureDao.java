@@ -104,5 +104,39 @@ public class ExchangeRateProcedureDao {
 		return list;
 
 	}
+	
+	
+	@Transactional
+	public Map<String, Object> getCommissionRange(Map<String, Object> inputMap) {
+
+		String sql = " SELECT MIN(B.FROM_AMOUNT) FROM_AMOUNT ,MAX(B.TO_AMOUNT) TO_AMOUNT " + "        FROM   EX_BANK_SERVICE_RULE A,"
+				+ "               EX_BANK_CHARGES B"
+				+ "        WHERE  A.BANK_SERVICE_RULE_ID  =   B.BANK_SERVICE_RULE_ID"
+				+ "        AND    A.COUNTRY_ID            =   ?" + "        AND    A.CURRENCY_ID           =   ?"
+				+ "        AND    A.BANK_ID               =   ?" + "        AND    A.REMITTANCE_MODE_ID    =   ?"
+				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
+				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
+				+ "        AND    B.CHARGES_TYPE          =   'C'";
+		List<BigDecimal> inputList = new ArrayList<>();
+		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
+		inputList.add((BigDecimal) inputMap.get("P_FOREIGN_CURRENCY_ID"));
+		inputList.add((BigDecimal) inputMap.get("P_ROUTING_BANK_ID"));
+		inputList.add((BigDecimal) inputMap.get("P_REMITTANCE_MODE_ID"));
+		inputList.add((BigDecimal) inputMap.get("P_DELIVERY_MODE_ID"));
+		inputList.add((BigDecimal) inputMap.get("P_CUSTYPE_ID"));
+		Map<String, Object> output = new HashMap<>();
+		try {
+			LOGGER.info("getCommissionRange INPUT VALUE : "+inputList.toString());
+			Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
+			output.put("FROM_AMOUNT", outputMap.get("FROM_AMOUNT"));
+			output.put("TO_AMOUNT", outputMap.get("TO_AMOUNT"));
+			LOGGER.info("getCommissionRange OUTPUT VALUE : "+output.toString());
+		} catch (Exception e) {
+			LOGGER.info("error in getCommission : ", e);
+		}
+		return output;
+	}
+	
+	
 
 }
