@@ -209,7 +209,7 @@ public class RateAlertTask implements Runnable {
 	private void setMetaInfo() {
 		// jaxMetaInfo.setCountryId(tenant.getBDCode());
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		// jaxMetaInfo.setTenant(tenant);
+		jaxMetaInfo.setTenant(tenant);
 		TenantContextHolder.setCurrent(tenant);
 	}
 
