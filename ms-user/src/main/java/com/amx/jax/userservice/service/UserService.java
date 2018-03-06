@@ -531,20 +531,22 @@ public class UserService extends AbstractUserService {
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
-		//LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
-		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.getLastLoginByUserName(userName);
+		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName, sort);
+		LoginLogoutHistory output=null;
+		
+		if (last2HistoryList!= null && !last2HistoryList.isEmpty()) {
+		    output = last2HistoryList.get(1);
+		}
 		return output;
 	}
 
 	protected void saveLoginLogoutHistoryByUserName(String userName) {
-		LoginLogoutHistory output = getLoginLogoutHistoryByUserName(userName);
-		if (output == null) {
-			output = new LoginLogoutHistory();
-			output.setLoginType("C");
-			output.setUserName(userName);
-		}
-		output.setLoginTime(new Timestamp(new Date().getTime()));
-		loginLogoutHistoryRepositoryRepo.save(output);
+		  LoginLogoutHistory output = new LoginLogoutHistory();
+		  output = new LoginLogoutHistory();
+          output.setLoginType("C");
+          output.setUserName(userName);
+          output.setLoginTime(new Timestamp(new Date().getTime()));
+          loginLogoutHistoryRepositoryRepo.save(output);
 	}
 
 	/**
