@@ -241,10 +241,15 @@ public class RateAlertTask implements Runnable {
 
 		List<CurrencyMasterDTO> forCurrencyList = data.getForeignCurrencyList();
 		for (CurrencyMasterDTO currency : forCurrencyList) {
-			ApiResponse<ExchangeRateResponseModel> response = exchangeRateClient.getExchangeRate(
-					data.getDomesticCurrency().getCurrencyId(), currency.getCurrencyId(), new BigDecimal(1), null);
-			if (response != null && response.getResult() != null && response.getResult().getBankWiseRates() != null) {
-				exchangeRates.put(currency, response.getResult().getBankWiseRates());
+			try {
+				ApiResponse<ExchangeRateResponseModel> response = exchangeRateClient.getExchangeRate(
+						data.getDomesticCurrency().getCurrencyId(), currency.getCurrencyId(), new BigDecimal(1), null);
+				if (response != null && response.getResult() != null
+						&& response.getResult().getBankWiseRates() != null) {
+					exchangeRates.put(currency, response.getResult().getBankWiseRates());
+				}
+			} catch (Exception e) {
+				logger.error("error occured while fetching ex rates for foreign currency:" + currency.getQuoteName());
 			}
 		}
 		data.setExchangeRates(exchangeRates);
