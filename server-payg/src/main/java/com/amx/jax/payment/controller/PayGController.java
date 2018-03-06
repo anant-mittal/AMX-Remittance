@@ -113,7 +113,7 @@ public class PayGController {
 
 		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
 			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
-		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELED) {
+		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
 			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
 		} else {
 			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
