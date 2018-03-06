@@ -15,19 +15,23 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
  * PaymentUtil.java
  */
 public class PaymentUtil {
+    
+    private PaymentUtil() {
+        
+    }
 	
 	public static String getMapKeyValueAsString(Map<String, String[]> map) {
-		StringBuffer sbuf = new StringBuffer();
+	    StringBuilder sbuf = new StringBuilder();
 		for (java.util.Map.Entry<String, String[]> entry : map.entrySet()) {
 			String[] v = entry.getValue();
 			String k = entry.getKey();
-			sbuf.append(" "+k).append(" = ").append(v.length > 0 ? v[0].toString() : "null");
+			sbuf.append(" "+k).append(" = ").append(v.length > 0 ? v[0] : "null");
 		}
 		return sbuf.toString();
 	}
 	
 	public static String getMapAsString(Map<String, String> map) {
-		StringBuffer sbuf = new StringBuffer();
+	    StringBuilder sbuf = new StringBuilder();
 		for (java.util.Map.Entry<String, String> entry : map.entrySet()) {
 			String v = entry.getValue();
 			String k = entry.getKey();
@@ -37,7 +41,7 @@ public class PaymentUtil {
 	}
 	
 	public static String getMapKeyValue(Map<String, Object> map) {
-		StringBuffer sbuf = new StringBuffer();
+	    StringBuilder sbuf = new StringBuilder();
 		for (java.util.Map.Entry<String, Object> entry : map.entrySet()) {
 			
 			String k = entry.getKey();
@@ -57,15 +61,13 @@ public class PaymentUtil {
 		return sbuf.toString();
 	}
 	
-	public static PaymentResponseDto  generatePaymentResponseDTO(HashMap<String, String> params){
+	public static PaymentResponseDto  generatePaymentResponseDTO(Map<String, String> params){
 		PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
 		
-		//paymentResponseDto.setApplicationCountryId(params.get(""));
 		paymentResponseDto.setAuth_appNo(params.get("auth_appNo"));
 		paymentResponseDto.setTransactionId(params.get("tranId"));
 		paymentResponseDto.setResultCode(params.get("result"));
 		paymentResponseDto.setPostDate(params.get("postDate"));
-		//paymentResponseDto.setCustomerId(params.get(""));
 		paymentResponseDto.setTrackId(params.get("trackId"));
 		paymentResponseDto.setReferenceId(params.get("referenceId"));
 		paymentResponseDto.setUdf1(params.get("udf1"));
@@ -95,5 +97,5 @@ public class PaymentUtil {
 		mapPaymentResponeDetails.put("udf5", parameters.get("udf5")[0]);
 		return mapPaymentResponeDetails;
 	}
-
+	
 }

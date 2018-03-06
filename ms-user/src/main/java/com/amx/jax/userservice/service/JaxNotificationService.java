@@ -15,15 +15,16 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.config.AppConfig;
+import com.amx.jax.config.AmxConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -33,7 +34,7 @@ public class JaxNotificationService {
 	private PostManService postManService;
 
 	@Autowired
-	private AppConfig appConfig;
+	private AmxConfig appConfig;
 
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -129,9 +130,9 @@ public class JaxNotificationService {
 		try {
 			postManService.sendSMS(sms);
 			if (!appConfig.isProdMode()) {
-				sendToSlack("mobile", model.getmOtpPrefix(), model.getmOtp());
+				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 			}
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in sendOtpSms", e);
 		}
 	} // end of sendOtpSms
@@ -151,7 +152,7 @@ public class JaxNotificationService {
 		sendEmail(email);
 
 		if (!appConfig.isProdMode()) {
-			sendToSlack("email", civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
+			sendToSlack("email", email.getTo().get(0), civilIdOtpModel.geteOtpPrefix(), civilIdOtpModel.geteOtp());
 		}
 
 	}// end of sendOtpEmail
@@ -168,12 +169,14 @@ public class JaxNotificationService {
 		sendEmail(email);
 	}
 
-	public void sendToSlack(String channel, String prefix, String otp) {
-		Message msg = new Message();
-		msg.setMessage(String.format("%s = %s-%s", channel, prefix, otp));
+	public void sendToSlack(String channel, String to, String prefix, String otp) {
+		Notipy msg = new Notipy();
+		msg.setMessage(String.format("%s = %s", channel, to));
+		msg.addLine(String.format("OTP = %s-%s", prefix, otp));
+		msg.setChannel(Channel.NOTIPY);
 		try {
 			postManService.notifySlack(msg);
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in SlackNotify", e);
 		}
 	}
@@ -181,7 +184,7 @@ public class JaxNotificationService {
 	private void sendEmail(Email email) {
 		try {
 			postManService.sendEmailAsync(email);
-		} catch (UnirestException e) {
+		} catch (PostManException e) {
 			logger.error("error in sendProfileChangedNotification", e);
 		}
 	}

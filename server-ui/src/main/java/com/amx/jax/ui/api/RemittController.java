@@ -34,6 +34,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
@@ -48,7 +49,6 @@ import com.amx.jax.ui.service.PayGService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantContext;
 import com.bootloaderjs.JsonUtil;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -89,7 +89,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
 			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
-			throws IOException, UnirestException {
+			throws IOException, PostManException {
 
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>();
 		// postManService.processTemplate(Templates.REMIT_STATMENT_EMAIL_FILE, wrapper,
@@ -117,7 +117,7 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
-			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, UnirestException {
+			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
 		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
 		// file.setName("RemittanceStatment.pdf");
 		file.create(response, true);
@@ -128,7 +128,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
 	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
 			@RequestParam(required = false) Boolean duplicate, @RequestParam(required = false) Boolean skipd)
-			throws IOException, UnirestException {
+			throws IOException, PostManException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
@@ -147,7 +147,7 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
-			@RequestParam(required = false) Boolean duplicate) throws UnirestException, IOException {
+			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
 
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 

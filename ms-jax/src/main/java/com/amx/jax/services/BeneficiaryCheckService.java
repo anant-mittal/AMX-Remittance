@@ -287,24 +287,33 @@ public class BeneficiaryCheckService extends AbstractService {
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getServiceGroupId())) {
 			if (beneDto.getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
 				if (beneDto.getBankAccountNumber().isEmpty() || beneDto.getBankAccountNumber() == null) {
+					beneDto.setUpdateNeeded(true);
 					errorDesc = "Account number should not blank for Banking channel";
 					errorStatusDto = this.setBeneError(JaxError.BENE_ACCOUNT_BLANK.toString(), errorDesc);
 					errorListDto.add(errorStatusDto);
 
 				}
 
-				if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
-					List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
-					if (!accLengthList.isEmpty() && accLengthList.get(0).getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) != 0) {
-
-						errorDesc = "Invalid Beneficiary Account Number length";
-						errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
-
-						errorListDto.add(errorStatusDto);
-
+					if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())) {
+						List<BankAccountLength> accLengthList = bankAccountLengthDao.getBankAccountLength(beneDto.getBankId());
+					
+						if(!accLengthList.isEmpty()){
+						boolean accNumCheck = Boolean.FALSE;
+						for(BankAccountLength acctLength : accLengthList){
+							if(acctLength !=null && acctLength.getAcLength().compareTo(new BigDecimal(beneDto.getBankAccountNumber().length())) == 0){
+								accNumCheck = Boolean.TRUE;
+								break;
+							}
+						}
+						if(!accNumCheck){
+							beneDto.setUpdateNeeded(true);
+							errorDesc = "Invalid Beneficiary Account Number length";
+							errorStatusDto = this.setBeneError(JaxError.ACCOUNT_LENGTH.toString(), errorDesc);
+							errorListDto.add(errorStatusDto);
+						}
+						
 					}
 				}
-
 			}
 		} else {
 			errorDesc = "Account number should not blank for Banking channel";

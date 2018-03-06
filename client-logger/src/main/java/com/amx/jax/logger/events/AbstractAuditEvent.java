@@ -4,14 +4,14 @@ public class AbstractAuditEvent implements AuditLogEvent {
 
 	public long timestamp;
 	private String moduleName;
-	private Type type;
+	private EventType type;
 	private String message;
 
 	public AbstractAuditEvent() {
 		this.timestamp = System.currentTimeMillis();
 	}
 
-	public AbstractAuditEvent(Type type) {
+	public AbstractAuditEvent(EventType type) {
 		super();
 		this.type = type;
 	}
@@ -20,11 +20,11 @@ public class AbstractAuditEvent implements AuditLogEvent {
 		this.message = message;
 	}
 
-	public Type getType() {
+	public EventType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(EventType type) {
 		this.type = type;
 	}
 

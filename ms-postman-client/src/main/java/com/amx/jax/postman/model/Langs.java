@@ -2,19 +2,22 @@ package com.amx.jax.postman.model;
 
 public enum Langs {
 
-	KW("ar_KW"), ENG("en_US");
+	AR_KW("ar_KW"), EN_US("en_US");
 
-	String langCode = null;
+	public static Langs DEFAULT = AR_KW;
 
-	public String getLangCode() {
-		return langCode;
+	public String code;
+
+	public String getCode() {
+		return code;
 	}
 
-	public void setLangCode(String langCode) {
-		this.langCode = langCode;
+	public void setCode(String code) {
+		this.code = code;
 	}
 
-	Langs(String langCode) {
-		this.langCode = langCode;
+	Langs(String code) {
+		this.code = code;
 	}
+
 }

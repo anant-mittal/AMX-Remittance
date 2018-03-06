@@ -10,12 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scheduler.ratealert.RateAlertNotificationDTO;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Service
 public class NotificationService {
@@ -28,7 +27,7 @@ public class NotificationService {
 	@Async
 	public void sendBatchNotification(List<RateAlertNotificationDTO> subList) {
 		for (RateAlertNotificationDTO alert : subList) {
-			logger.info("Sending rate alert to "+ alert.getEmail());
+			logger.info("Sending rate alert to " + alert.getEmail());
 			Email email = new Email();
 			email.setSubject("AMX Rate Alert");
 			email.addTo(alert.getEmail());
@@ -37,7 +36,7 @@ public class NotificationService {
 			email.getModel().put(RESP_DATA_KEY, alert);
 			try {
 				postManService.sendEmail(email);
-			} catch (UnirestException e) {
+			} catch (PostManException e) {
 				logger.error("error in sendBatchNotification", e);
 			}
 		}

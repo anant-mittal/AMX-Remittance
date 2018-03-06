@@ -5,8 +5,6 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
@@ -17,12 +15,12 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.LocaleResolver;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 
@@ -64,20 +62,17 @@ public class TemplateService {
 	}
 
 	@Autowired
-	private HttpServletRequest request;
-
-	@Autowired
 	private MessageSource messageSource;
 
 	@Autowired
-	private LocaleResolver localeResolver;
-
-	private Locale getLocal() {
-		return localeResolver.resolveLocale(request);
-	}
-
-	@Autowired
 	private TemplateUtils templateUtils;
+
+	private Locale getLocal(File file) {
+		if (file == null || file.getLang() == null) {
+			return new Locale(Langs.DEFAULT.getCode());
+		}
+		return new Locale(file.getLang().getCode());
+	}
 
 	/**
 	 * Parses file.template and creates content;
@@ -86,15 +81,16 @@ public class TemplateService {
 	 * @return
 	 */
 	public File process(File file) {
-		String reverse = messageSource.getMessage("flag.reverse.char", null, getLocal());
+		Locale locale = getLocal(file);
+		String reverse = messageSource.getMessage("flag.reverse.char", null, locale);
 
 		if (("true".equalsIgnoreCase(reverse)) && file.getType() == File.Type.PDF) {
 			TemplateUtils.reverseFlag(true);
 		}
 
-		log.info("======" + getLocal().toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		log.info("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
 
-		Context context = new Context(getLocal());
+		Context context = new Context(locale);
 
 		context.setVariable("_tu", templateUtils);
 

@@ -1,7 +1,6 @@
 package com.amx.jax.client;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;

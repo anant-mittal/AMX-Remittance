@@ -41,8 +41,11 @@ public class MetaData implements IMetaData {
 	private Tenant tenant = Tenant.DEFAULT;
 	
 	private String deviceIp;
-	
 	private String deviceId;
+    private String referrer;
+    private String deviceType;
+    
+	
 
 	/**
 	 * This returns service factory object depending on site country
@@ -144,5 +147,23 @@ public class MetaData implements IMetaData {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	
+
+	public String getReferrer() {
+		return referrer;
+	}
+
+	public void setReferrer(String referrer) {
+		this.referrer = referrer;
+	}
+
+	public String getDeviceType() {
+		return deviceType;
+	}
+
+	public void setDeviceType(String deviceType) {
+		this.deviceType = deviceType;
 	}
 }

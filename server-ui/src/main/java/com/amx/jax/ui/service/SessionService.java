@@ -205,6 +205,8 @@ public class SessionService {
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
+		guestSession.setFlow(null);
+		guestSession.setAuthStep(null);
 		guestSession.setCustomerModel(null);
 	}
 

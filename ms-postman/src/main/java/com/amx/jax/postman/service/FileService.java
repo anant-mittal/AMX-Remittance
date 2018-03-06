@@ -49,7 +49,7 @@ public class FileService {
 			 * From string to File type
 			 */
 			pdfService.convert(file);
-			LOGGER.info("File converted to PDF");
+			LOGGER.info("File converted to PDF = {}", file.getTemplate());
 		}
 		return file;
 	}

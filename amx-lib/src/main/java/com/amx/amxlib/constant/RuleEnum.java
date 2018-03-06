@@ -15,17 +15,17 @@ public enum RuleEnum {
 	GREATER("grater"),
 	LESS("less");
 
-	private String ruleEnum;
+	private String name;
 
-	RuleEnum(String ruleEnum) {
-		this.ruleEnum = ruleEnum;
+	RuleEnum(String name) {
+		this.name = name;
 	}
 
 	/**
 	 * @return the discountType
 	 */
-	public String getRuleEnum() {
-		return this.ruleEnum;
+	public String getName() {
+		return this.name;
 	}
 
 }

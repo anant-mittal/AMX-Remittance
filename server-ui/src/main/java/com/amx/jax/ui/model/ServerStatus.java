@@ -2,8 +2,6 @@ package com.amx.jax.ui.model;
 
 import java.util.Map;
 
-import com.amx.amxlib.meta.model.ApplicationSetupDTO;
-
 public class ServerStatus {
 	public Boolean debug = null;
 	public String id = null;

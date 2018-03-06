@@ -2,7 +2,6 @@ package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;

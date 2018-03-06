@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.payment.PayGServiceCode;
-import com.amx.jax.scope.Tenant;
 
 /**
  * 
@@ -18,24 +17,24 @@ import com.amx.jax.scope.Tenant;
 @Service
 public class PayGClients {
 
-	private final Map<String, PayGClient> servicesByCode = new HashMap<>();
+    private final Map<String, PayGClient> servicesByCode = new HashMap<>();
 
-	@Autowired
-	public PayGClients(List<PayGClient> services) {
-		for (PayGClient service : services) {
-			register(service.getClientCode(), service);
-		}
-	}
+    @Autowired
+    public PayGClients(List<PayGClient> services) {
+        for (PayGClient service : services) {
+            register(service.getClientCode(), service);
+        }
+    }
 
-	public void register(PayGServiceCode serviceCode, PayGClient service) {
-		this.servicesByCode.put(serviceCode.toString().toLowerCase(), service);
-	}
+    public void register(PayGServiceCode serviceCode, PayGClient service) {
+        this.servicesByCode.put(serviceCode.toString().toLowerCase(), service);
+    }
 
-	public PayGClient getPayGClient(PayGServiceCode service, Tenant tenant) {
-		return this.servicesByCode.get(service.toString().toLowerCase());
-	}
+    public PayGClient getPayGClient(PayGServiceCode service) {
+        return this.servicesByCode.get(service.toString().toLowerCase());
+    }
 
-	public PayGClient getPayGClient(String service, Tenant tenant) {
-		return this.servicesByCode.get(service.toLowerCase());
-	}
+    public PayGClient getPayGClient(String service) {
+        return this.servicesByCode.get(service.toLowerCase());
+    }
 }

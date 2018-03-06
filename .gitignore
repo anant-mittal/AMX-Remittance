@@ -2,7 +2,7 @@
 .settings
 .classpath
 .springBeans
-/target/
+*/target/classes
 /.settings/
 .metadata
 bin/

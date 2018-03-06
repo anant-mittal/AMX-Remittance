@@ -31,7 +31,9 @@ import com.amx.jax.scope.Tenant;
 @Component
 public class KnetClient implements PayGClient {
 
-	private Logger log = Logger.getLogger(KnetClient.class);
+	private static Logger LOGGER = Logger.getLogger(KnetClient.class);
+	
+	private static String URL_PARAMS = "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s";
 
 	@Value("${knet.certificate.path}")
 	String knetCertpath;
@@ -77,7 +79,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 
-		log.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
+		LOGGER.info("KNET payment configuration : " + PaymentUtil.getMapKeyValue(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -94,11 +96,10 @@ public class KnetClient implements PayGClient {
 			    bd = bd.setScale(3, RoundingMode.HALF_UP);
 	     	    amount = bd.toPlainString();
 
-	     	log.info("Amount to remit is --> "+amount);
+	     	LOGGER.info("Amount to remit is --> "+amount);
 	     	
 			pipe.setAction((String) configMap.get("action"));
 			pipe.setCurrency((String) configMap.get("currency"));
-			// pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
@@ -110,16 +111,16 @@ public class KnetClient implements PayGClient {
 			pipe.setUdf3(payGParams.getDocNo());
 
 			Short pipeValue = pipe.performPaymentInitialization();
-			log.info("pipeValue : " + pipeValue);
+			LOGGER.info("pipeValue : " + pipeValue);
 
 			if (pipeValue != e24PaymentPipe.SUCCESS) {
 				responseMap.put("errorMsg", pipe.getErrorMsg());
 				responseMap.put("debugMsg", pipe.getDebugMsg());
-				log.info("KNET-ERROR" + pipe.getErrorMsg());
-				log.info("KNET-DEBUg" + pipe.getDebugMsg());
+				LOGGER.info("KNET-ERROR" + pipe.getErrorMsg());
+				LOGGER.info("KNET-DEBUg" + pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to KNET - Error Code KU-KNETINIT");
 			} else {
-				log.info(pipe.getDebugMsg());
+				LOGGER.info(pipe.getDebugMsg());
 			}
 
 			// get results
@@ -130,14 +131,16 @@ public class KnetClient implements PayGClient {
 			responseMap.put("payurl", new String(payURL));
 
 			String url = payURL + "?paymentId=" + payID;
-			log.info("Generated url is ---> "+url);
+			LOGGER.info("Generated url is ---> "+url);
 			payGParams.setRedirectUrl(url);
 
 		} catch(NumberFormatException e) {
-			log.error(String.format("Amount entered --> %s ,is not correct number.",amount),e);
-		}catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error(String.format("Amount entered --> %s ,is not correct number.",amount),e);
+		}catch (RuntimeException e) {
+			LOGGER.error("Problem while sending transaction to KNET",e);
 			throw new RuntimeException(e);
+		}catch (Exception e) {
+			LOGGER.error("Error while sending request to KNET.",e);
 		}
 
 	}
@@ -176,40 +179,35 @@ public class KnetClient implements PayGClient {
 		paramMap.put("udf5", udf5);
 		paramMap.put("applicationCountryId", Tenant.KWT.getCode());
 
-		log.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
+		LOGGER.info("In Payment capture method with params : " + PaymentUtil.getMapAsString(paramMap));
 
 		PaymentResponse res = paymentService.capturePayment(paramMap);
 
 		String doccode = null;
 		String docno = null;
 		String finyear = null;
-		PaymentResponseData data = null;
 
-		String redirectUrl = null;
+		String redirectUrl; 
 		if ("CAPTURED".equalsIgnoreCase(result)) {
 
 			try {
-				data = (PaymentResponseData) res.getData();
+				PaymentResponseData data = (PaymentResponseData) res.getData();
 				doccode = data.getResponseDTO().getCollectionDocumentCode().toString();
 				docno = data.getResponseDTO().getCollectionDocumentNumber().toString();
 				finyear = data.getResponseDTO().getCollectionFinanceYear().toString();
 			} catch (NullPointerException e) {
-				log.error("Error while fetching doccode, docno, finyear.");
-				e.printStackTrace();
+				LOGGER.error("Error while fetching doccode, docno, finyear.",e);
 			}
 
-			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"
-					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
+			redirectUrl = String.format(knetCallbackUrl + "/callback/success?"+URL_PARAMS ,
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
 		} else if ("CANCELED".equalsIgnoreCase(result)) {
-			redirectUrl = String.format(knetCallbackUrl + "/callback/cancelled?"
-					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
+			redirectUrl = String.format(knetCallbackUrl + "/callback/cancelled?"+ URL_PARAMS,
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
 		} else {
-			redirectUrl = String.format(knetCallbackUrl + "/callback/error?"
-					+ "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s",
+			redirectUrl = String.format(knetCallbackUrl + "/callback/error?"+ URL_PARAMS,
 					paymentid, result, auth, ref, postdate, trackid, tranid, udf1, udf2, udf3, udf4, udf5, doccode,
 					docno, finyear);
 		}
