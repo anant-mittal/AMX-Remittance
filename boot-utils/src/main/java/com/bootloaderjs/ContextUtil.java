@@ -104,4 +104,23 @@ public final class ContextUtil {
 		return traceId;
 	}
 
+	/**
+	 * Gets the trace id.
+	 *
+	 * @param generate
+	 *            the generate
+	 * @return the trace id
+	 */
+	public static String getTraceId(boolean generate, String midfix) {
+		String traceId = (String) context.get().get(TRACE_ID);
+		if (traceId == null) {
+			if (!generate) {
+				return "";
+			}
+			traceId = UniqueID.generateSystemString(midfix);
+			context.get().put(TRACE_ID, traceId);
+		}
+		return traceId;
+	}
+
 }

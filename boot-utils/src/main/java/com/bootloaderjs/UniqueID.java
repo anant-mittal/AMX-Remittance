@@ -38,6 +38,15 @@ public final class UniqueID {
 	 * @return : Unique String ID
 	 */
 	public static String generateString() {
-		return PREF + "" + Long.toString(generate(), 36);
+		return Long.toString(generate(), 36);
+	}
+
+	/**
+	 * Generate string.
+	 *
+	 * @return : Unique String ID
+	 */
+	public static String generateSystemString(String midfix) {
+		return PREF + "-" + midfix + "-" + Long.toString(generate(), 36);
 	}
 }

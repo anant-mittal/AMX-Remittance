@@ -40,7 +40,6 @@ public class WebRequestFilter implements Filter {
 		if (siteId == null) {
 			siteId = Urly.getSubDomainName(request.getServerName());
 		}
-
 		/**
 		 * Not able to use session scoped bean here hence using typical session
 		 * attribute;
@@ -55,9 +54,7 @@ public class WebRequestFilter implements Filter {
 		} else {
 			TenantContextHolder.setDefault();
 		}
-
 		// LOGGER.info("Tenant {}", sessionService.getTenantBean().getTenant().getId());
-
 		try {
 			chain.doFilter(req, resp);
 		} finally {

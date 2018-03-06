@@ -1,8 +1,6 @@
 package com.amx.jax.amxcore;
 
-import java.util.regex.Pattern;
-
-import com.amx.jax.scope.Tenant;
+import com.bootloaderjs.UniqueID;
 
 public class App { // Noncompliant
 
@@ -13,15 +11,8 @@ public class App { // Noncompliant
 	 */
 	public static void main(String[] args) {
 
-		System.out.println("====" + Tenant.fromString("app-kwt").toString());
-		System.out.println("====" + Tenant.fromString("app-kwt2").toString());
-		System.out.println("====" + Tenant.fromString("app-kwt3").toString());
-		System.out.println("====" + Tenant.fromString("app-kwt-q").toString());
-		System.out.println("====" + Tenant.fromString("APP-kwt3").toString());
-
-		System.out.println("====" + Tenant.fromString("APp-kWt3").toString());
-
-		System.out.println("====" + Tenant.fromString("APp-OMN").toString());
-
+		Long lng = UniqueID.generate();
+		System.out.println("====" + lng);
+		System.out.println("====" + Long.toString(lng,36));
 	}
 }

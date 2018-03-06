@@ -3,7 +3,6 @@ package com.amx.jax.ui;
 import java.util.ArrayList;
 
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletRequestListener;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.boot.SpringApplication;
@@ -24,7 +23,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.postman.client.PostManContextListener;
 import com.amx.jax.ui.config.WebRequestFilter;
-import com.amx.jax.ui.config.WebRequestListener;
 
 @ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
@@ -76,11 +74,11 @@ public class WebApplication extends SpringBootServletInitializer {
 		return registration;
 	}
 
-	@Bean
-	ServletListenerRegistrationBean<ServletRequestListener> myServletRequestListener() {
-		ServletListenerRegistrationBean<ServletRequestListener> srb = new ServletListenerRegistrationBean<>();
-		srb.setListener(new WebRequestListener());
-		return srb;
-	}
+//	@Bean
+//	ServletListenerRegistrationBean<ServletRequestListener> myServletRequestListener() {
+//		ServletListenerRegistrationBean<ServletRequestListener> srb = new ServletListenerRegistrationBean<>();
+//		srb.setListener(new WebRequestListener());
+//		return srb;
+//	}
 
 }
