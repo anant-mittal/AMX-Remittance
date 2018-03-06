@@ -531,8 +531,8 @@ public class UserService extends AbstractUserService {
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
-		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
-
+		//LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
+		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.getLastLoginByUserName(userName);
 		return output;
 	}
 
