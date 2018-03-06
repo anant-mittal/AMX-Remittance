@@ -177,11 +177,13 @@ public class KnetClient implements PayGClient {
 
 			if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 				gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+				throw new Exception("For testing");
 			} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
 				gatewayResponse.setPayGStatus(PayGStatus.CANCELED);
 			} else {
 				gatewayResponse.setPayGStatus(PayGStatus.ERROR);
 			}
+			
 
 		} catch (Exception e) {
 			LOGGER.error("payment service error in capturePayment method : ", e);
