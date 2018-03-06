@@ -182,25 +182,34 @@ public class ExchangeRateService extends AbstractService {
 		return output;
 	}
 
-	private ExchangeRateBreakup getExchangeRateFromPips(List<PipsMaster> piplist, ExchangeRateApprovalDetModel rate,BigDecimal amount) {
+	private ExchangeRateBreakup getExchangeRateFromPips(List<PipsMaster> piplist, ExchangeRateApprovalDetModel rate,
+			BigDecimal lcAmount) {
 		BigDecimal exrate = null;
 		BigDecimal minServiceId = null;
 		if (piplist != null) {
 			for (PipsMaster pip : piplist) {
 				BigDecimal serviceId = rate.getServiceId();
-				if (minServiceId == null) {
-					minServiceId = rate.getServiceId();
-					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
-				}
-				if (serviceId.compareTo(minServiceId) < 0) {
-					minServiceId = serviceId;
-					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+				BigDecimal fromFCLimitAmount = pip.getFromAmount();
+				BigDecimal toFCLimitAmount = pip.getToAmount();
+				BigDecimal exrateTemp = rate.getSellRateMax().subtract(pip.getPipsNo());
+				BigDecimal inverseExRateTemp = new BigDecimal(1).divide(exrateTemp, 10, RoundingMode.HALF_UP);
+				BigDecimal convertedFCAmount = inverseExRateTemp.multiply(lcAmount);
+				if (convertedFCAmount.compareTo(fromFCLimitAmount) >= 0
+						&& convertedFCAmount.compareTo(toFCLimitAmount) <= 0) {
+					if (minServiceId == null) {
+						minServiceId = rate.getServiceId();
+						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+					}
+					if (serviceId.compareTo(minServiceId) < 0) {
+						minServiceId = serviceId;
+						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+					}
 				}
 			}
 		} else {
 			exrate = rate.getSellRateMax();
 		}
-		return createBreakUp(exrate, amount);
+		return createBreakUp(exrate, lcAmount);
 	}
 
 	private ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
