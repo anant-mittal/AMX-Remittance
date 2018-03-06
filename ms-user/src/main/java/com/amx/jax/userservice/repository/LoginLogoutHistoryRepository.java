@@ -15,6 +15,6 @@ public interface LoginLogoutHistoryRepository extends CrudRepository<LoginLogout
 
 	LoginLogoutHistory findFirst1ByuserName(String userName, Sort sort);
 	
-    @Query(value = "select * from LoginLogoutHistory where loginLogoutId=(select max(loginLogoutId)-1 from LoginLogoutHistory where userName = ?1)")
+    @Query(value = "select lh from LoginLogoutHistory lh where loginLogoutId=(select max(loginLogoutId)-1 from LoginLogoutHistory where userName = ?1)")
     public LoginLogoutHistory getLastLoginByUserName(String userName);
 }
