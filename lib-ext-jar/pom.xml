@@ -140,7 +140,43 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>htmlcomponent</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>jasperreports</groupId>
+							<artifactId>htmlcomponent</artifactId>
+							<version>5.0.1</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/jasperreports-htmlcomponent-5.0.1.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>olap4j</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.olap4j</groupId>
+							<artifactId>olap4j</artifactId>
+							<version>0.9.7.309-JS-3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/olap4j-0.9.7.309-JS-3.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+
+
+
 				</executions>
+
 			</plugin>
 		</plugins>
 	</build>
