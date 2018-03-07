@@ -207,10 +207,13 @@ public class UserService extends AbstractUserService {
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
-		CustomerModel outputModel = convert(onlineCust);
+		
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
 			 afterLoginSteps(onlineCust);
 		}
+		
+		CustomerModel outputModel = convert(onlineCust);
+		
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
