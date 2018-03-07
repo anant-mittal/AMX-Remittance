@@ -485,8 +485,8 @@ public class UserService extends AbstractUserService {
 		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
-		CustomerModel responseModel = convert(onlineCustomer);
 		afterLoginSteps(onlineCustomer);
+		CustomerModel responseModel = convert(onlineCustomer);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
