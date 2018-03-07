@@ -183,6 +183,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
+		    logger.error("Exception while populating PersonInfo : ",e);
 		}
 		return model;
 	}
@@ -528,7 +529,7 @@ public class UserService extends AbstractUserService {
 		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName, sort);
 		LoginLogoutHistory output=null;
 		
-		if (last2HistoryList!= null && !last2HistoryList.isEmpty()) {
+		if (last2HistoryList!= null && last2HistoryList.size()>1) {
 		    output = last2HistoryList.get(1);
 		}
 		return output;
