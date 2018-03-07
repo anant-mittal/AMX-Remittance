@@ -434,10 +434,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-		Map<String, Object> output = afterLoginSteps(onlineCustomer);
-		if (output.get("PERSON_INFO") != null) {
-			customerModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-		}
+		//afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -447,12 +444,10 @@ public class UserService extends AbstractUserService {
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
 		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
-		Map<String, Object> output = new HashMap<>();
-		return output;
 	}
 
 	public ApiResponse getUserCheckList(String loginId) {
@@ -488,11 +483,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
-		Map<String, Object> output = afterLoginSteps(onlineCustomer);
-		if (output.get("PERSON_INFO") != null) {
-			responseModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-		}
-
+		afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
