@@ -1,4 +1,3 @@
-
 package com.amx.jax.ui.api;
 
 import java.util.HashMap;
@@ -107,7 +106,7 @@ public class MetaController {
 				Email email = new Email();
 				email.setFrom("exch-online@almullagroup.com");
 				email.setReplyTo(cemail);
-				email.addTo("alexander.jacob@almullagroup.com", "riddhi.madhu@almullagroup.com",
+				email.addTo("alexander.jacob@almullagroup.com",
 						"exch-online1@almullagroup.com", "exch-amx@almullagroup.com");
 				email.getModel().put(UIConstants.RESP_DATA_KEY, map);
 				email.setSubject("Inquiry");

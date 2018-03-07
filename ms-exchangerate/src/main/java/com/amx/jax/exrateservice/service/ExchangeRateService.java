@@ -82,10 +82,8 @@ public class ExchangeRateService extends AbstractService {
 		return null;
 	}
 
-	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
-			BigDecimal bankId) {
-		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
-				+ lcAmount);
+	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,BigDecimal bankId) {
+		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "+ lcAmount);
 		ApiResponse response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
@@ -102,10 +100,8 @@ public class ExchangeRateService extends AbstractService {
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
 					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
 			filterNonMinServiceIdRates(allExchangeRates);
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(
-					allExchangeRates, pips, bankId);
-			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,
-					lcAmount);
+			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(allExchangeRates, pips, bankId);
+			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,lcAmount);
 			if (equivalentAmount == null) {
 				equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, lcAmount);
 			}
@@ -151,8 +147,7 @@ public class ExchangeRateService extends AbstractService {
 		}
 	}
 
-	private ExchangeRateBreakup checkAndApplyLowConversionRate(ExchangeRateBreakup equivalentAmount,
-			List<ExchangeRateApprovalDetModel> allExchangeRates, BigDecimal amount) {
+	private ExchangeRateBreakup checkAndApplyLowConversionRate(ExchangeRateBreakup equivalentAmount,List<ExchangeRateApprovalDetModel> allExchangeRates, BigDecimal amount) {
 		BigDecimal maxInverseRate = null;
 		if (equivalentAmount != null) {
 			maxInverseRate = equivalentAmount.getInverseRate();
@@ -188,25 +183,33 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	private ExchangeRateBreakup getExchangeRateFromPips(List<PipsMaster> piplist, ExchangeRateApprovalDetModel rate,
-			BigDecimal amount) {
+			BigDecimal lcAmount) {
 		BigDecimal exrate = null;
 		BigDecimal minServiceId = null;
 		if (piplist != null) {
 			for (PipsMaster pip : piplist) {
 				BigDecimal serviceId = rate.getServiceId();
-				if (minServiceId == null) {
-					minServiceId = rate.getServiceId();
-					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
-				}
-				if (serviceId.compareTo(minServiceId) < 0) {
-					minServiceId = serviceId;
-					exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+				BigDecimal fromFCLimitAmount = pip.getFromAmount();
+				BigDecimal toFCLimitAmount = pip.getToAmount();
+				BigDecimal exrateTemp = rate.getSellRateMax().subtract(pip.getPipsNo());
+				BigDecimal inverseExRateTemp = new BigDecimal(1).divide(exrateTemp, 10, RoundingMode.HALF_UP);
+				BigDecimal convertedFCAmount = inverseExRateTemp.multiply(lcAmount);
+				if (convertedFCAmount.compareTo(fromFCLimitAmount) >= 0
+						&& convertedFCAmount.compareTo(toFCLimitAmount) <= 0) {
+					if (minServiceId == null) {
+						minServiceId = rate.getServiceId();
+						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+					}
+					if (serviceId.compareTo(minServiceId) < 0) {
+						minServiceId = serviceId;
+						exrate = rate.getSellRateMax().subtract(pip.getPipsNo());
+					}
 				}
 			}
 		} else {
 			exrate = rate.getSellRateMax();
 		}
-		return createBreakUp(exrate, amount);
+		return createBreakUp(exrate, lcAmount);
 	}
 
 	private ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
@@ -220,8 +223,7 @@ public class ExchangeRateService extends AbstractService {
 		return breakup;
 	}
 
-	private ExchangeRateBreakup getApplicableExchangeAmountWithDiscounts(
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicationRates, BigDecimal localAmount) {
+	private ExchangeRateBreakup getApplicableExchangeAmountWithDiscounts(Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicationRates, BigDecimal localAmount) {
 
 		BigDecimal minServiceId = null;
 		BigDecimal exrate = null;
@@ -268,8 +270,7 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	// logic acc. to VW_EX_TRATE
-	private Map<ExchangeRateApprovalDetModel, List<PipsMaster>> getApplicableExchangeRates(
-			List<ExchangeRateApprovalDetModel> allExchangeRates, List<PipsMaster> pips, BigDecimal bankId) {
+	private Map<ExchangeRateApprovalDetModel, List<PipsMaster>> getApplicableExchangeRates(List<ExchangeRateApprovalDetModel> allExchangeRates, List<PipsMaster> pips, BigDecimal bankId) {
 		Map<ExchangeRateApprovalDetModel, List<PipsMaster>> output = new LinkedHashMap<>();
 		Map<BigDecimal, ExchangeRateApprovalDetModel> map = new HashMap<>();
 		if (allExchangeRates != null && !allExchangeRates.isEmpty()) {
@@ -284,8 +285,7 @@ public class ExchangeRateService extends AbstractService {
 						continue;
 					}
 					ExchangeRateApprovalDetModel value = map.get(bankMaster.getBankId());
-					if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())
-							&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
+					if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
 						List<PipsMaster> piplist = output.get(value);
 						if (piplist == null) {
 							piplist = new ArrayList<>();
