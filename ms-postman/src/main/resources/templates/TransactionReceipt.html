@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html th:marginheight="0"  th:lang="ar-kw" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
 	
-
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
@@ -213,15 +212,6 @@ html, body {
 	<!--header table end-->
 	<table class="mainTable" th:each="remittance : ${data.remittanceApplList}" style="height:970px;page-break-before: always;">
 		<tr>
-		<td class="testFont" th:text="#{label.senderdetails}"></td>
-		</tr>
-		<tr>
-		<td class="testFont" pm:pftext="#{label.senderdetails}"></td>
-		</tr>
-		<tr>
-		<td class="testFont2" pm:pftext="#{label.senderdetails}"></td>
-		</tr>
-		<tr>
 			<td class="mainTable-border">
 				<!--customer table-->
 				<table class="table  table-horizontal col-3 table-odd ">
@@ -429,7 +419,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>Cashier Signature</td>
-						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
+						<td><img height="50" th:if="${remittance.cashierSignature != null}" th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
 						<td th:text="${_tu.reverse(#messages.msg('label.cashierSignature'))}"></td>
 					</tr>
 				</table>
@@ -448,7 +438,7 @@ html, body {
 				</td>
 			</tr>
 			<tr>
-				<td align="center"><img height="50"  th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
+				<td align="center"><img height="50" th:if="${remittance.signature != null}" th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
 				<td></td>
 			</tr>
 			

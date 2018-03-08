@@ -172,8 +172,37 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>itext218</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext</artifactId>
+							<version>2.1.8</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-4.2.0.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
 
-
+					<execution>
+						<id>itext-asian</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext-asian</artifactId>
+							<version>2.3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/itext-asian.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
 
 				</executions>
 
