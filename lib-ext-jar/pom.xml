@@ -125,6 +125,22 @@
 					</execution>
 
 					<execution>
+						<id>bcpkix-jdk15on-1-48</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.bouncycastle</groupId>
+							<artifactId>bcpkix-jdk15on</artifactId>
+							<version>1.48</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/bcpkix-jdk15on-1.48.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
 						<id>bcprov-jdk15-145</id>
 						<phase>package</phase>
 						<goals>
@@ -200,6 +216,22 @@
 							<version>2.3</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/../ext-jars/itext-2.3/itext-asian.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>itext-hyph-xml</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext-hyph-xml</artifactId>
+							<version>2.3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/itext-hyph-xml.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>

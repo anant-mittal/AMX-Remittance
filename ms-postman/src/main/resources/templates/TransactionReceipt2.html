@@ -1,11 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
-<html th:marginheight="0" th:lang="ar-kw"
-	xmlns:th="http://www.thymeleaf.org"
-	xmlns="http://www.w3.org/1999/xhtml">
-
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<html th:marginheight="0"  th:lang="ar-kw" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+	
 <head>
-
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
 html, body {
 	margin: 0;
@@ -29,10 +27,14 @@ html, body {
 	/* font-family: 'Arial Unicode MS';
 	 font-family: Arial, Arial Bold; */
 	/* font-family: Verdana; */
-	/* 	font-family: 'Noto Naskh Arabic';
+	/* 	
 	font-family: 'Arial Unicode MS';
 	 font-family: 'Times New Roman'; */
 	/* letter-spacing: 0.0em; */
+	/*font-family: 'Noto Naskh Arabic';*/
+	/* font-family: 'Arial', 'Arial Bold', 'Noto Naskh Arabic', 'Noto Sans Gurmukhi'; */
+	 font-family: Arial Unicode MS, Arial, Arial Bold;
+	 /* font-family: 'Noto Naskh Arabic'; */
 }
 
 .table {
@@ -227,13 +229,13 @@ bottom-center {
 		th:each="remittance : ${data.remittanceApplList}"
 		style="height: 970px; page-break-before: always;">
 		<tr>
-			<td class="testFont" th:text="#{label.senderdetails}"></td>
+			<td class="testFont" th:text="#{label.test.text}"></td>
 		</tr>
 		<tr>
-			<td class="testFont" pm:pftext="#{label.senderdetails}"></td>
+			<td class="testFont" pm:pftext="#{label.test.text}"></td>
 		</tr>
 		<tr>
-			<td class="testFont2" pm:pftext="#{label.senderdetails}"></td>
+			<td class="testFont2" pm:pftext="#{label.test.text}"></td>
 		</tr>
 		<tr>
 			<td class="mainTable-border">

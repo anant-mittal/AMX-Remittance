@@ -42,8 +42,8 @@ public class ConverterFlyingSaucer implements FileConverter {
 				// BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
 				// renderer.getFontResolver().addFont("/fonts/all/ariali.ttf",
 				// BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
-				// renderer.getFontResolver().addFont("/fonts/all/arialuni.ttf",
-				// BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/all/arialuni.ttf", BaseFont.IDENTITY_H,
+						BaseFont.NOT_EMBEDDED);
 				/*
 				 * renderer.getFontResolver().addFont("/fonts/all/times.ttf",
 				 * BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
@@ -54,11 +54,13 @@ public class ConverterFlyingSaucer implements FileConverter {
 				 * renderer.getFontResolver().addFont("/fonts/all/timesi.ttf",
 				 * BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 				 */
-				renderer.getFontResolver().addFontDirectory("/fonts/all", BaseFont.NOT_EMBEDDED);
+				// renderer.getFontResolver().addFontDirectory("/fonts/all",
+				// BaseFont.NOT_EMBEDDED);
 
-				// renderer.getFontResolver().addFont("/fonts/arabic/NotoNaskhArabic-Regular.ttf",
-				// BaseFont.IDENTITY_H,
-				// BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/unhinted/NotoNaskhArabic-Regular2.ttf", BaseFont.IDENTITY_H,
+						BaseFont.EMBEDDED);
+				renderer.getFontResolver().addFont("/fonts/unhinted/NotoSansGurmukhi-Regular.ttf", BaseFont.IDENTITY_H,
+						BaseFont.EMBEDDED);
 
 				// renderer.getFontResolver().addFont("/fonts/all/times.ttf",
 				// BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
