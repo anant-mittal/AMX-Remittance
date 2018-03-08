@@ -315,6 +315,8 @@ public class RemittanceTransactionManager {
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
 		
+		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
+		
 		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber()==null?"":beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
 		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null && transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
@@ -404,15 +406,21 @@ public class RemittanceTransactionManager {
 		
 		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
 		
-		if (fcAmount != null) {
+		if (fcAmount != null &&  fcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
 			breakup.setConvertedFCAmount(fcAmount);
 		}
-		if (lcAmount != null) {
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-		List<PipsMaster> pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
+		List<PipsMaster> pips = null;
+		
+		if(fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO)>0){
+		pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
+		}else{
+			pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
+		}
 		// apply discounts
 		if (pips != null && !pips.isEmpty()) {
 			PipsMaster pip = pips.get(0);
@@ -420,11 +428,12 @@ public class RemittanceTransactionManager {
 			breakup.setInverseRate(inverseExchangeRate);
 			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
 		}
-		if (fcAmount != null) {
+		
+		if (fcAmount != null &&  fcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
 			breakup.setConvertedFCAmount(fcAmount);
 		}
-		if (lcAmount != null) {
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
