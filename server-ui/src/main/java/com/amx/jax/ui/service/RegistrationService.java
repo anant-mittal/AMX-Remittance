@@ -18,7 +18,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.LoginData;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -42,14 +42,14 @@ public class RegistrationService {
 	@Autowired
 	private PostManService postManService;
 
-	public ResponseWrapper<LoginData> verifyId(String civilid) {
+	public ResponseWrapper<AuthData> verifyId(String civilid) {
 
 		/**
 		 * Clearing old session before proceeding
 		 */
 		sessionService.clear();
 
-		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		try {
 
 			CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(civilid).getResult();
@@ -72,8 +72,8 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<LoginData> loginWithOtp(String idnetity, String mOtp) {
-		ResponseWrapper<LoginData> wrapper = new ResponseWrapper<LoginData>(new LoginData());
+	public ResponseWrapper<AuthData> loginWithOtp(String idnetity, String mOtp) {
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 
 		if (userSessionInfo.isValid()) {
 			// Check if use is already logged in;

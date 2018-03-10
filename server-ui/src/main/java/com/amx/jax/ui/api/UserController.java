@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.LoginData;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -48,19 +48,19 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
+	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
 			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}
 
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
+	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
 			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
 		return loginService.loginSecQues(guestanswer);
 	}
 
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> initReset(@RequestParam String identity,
+	public ResponseWrapper<AuthData> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		if (mOtp == null && eOtp == null) {
 			return loginService.initResetPassword(identity);
@@ -122,7 +122,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> sendOTP(@RequestParam(required = false) String mOtp,
+	public ResponseWrapper<AuthData> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {
 		if (mOtp == null) {
 			return loginService.sendOTP(null);

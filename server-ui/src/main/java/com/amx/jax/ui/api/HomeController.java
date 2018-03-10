@@ -42,7 +42,7 @@ public class HomeController {
 
 	@Autowired
 	private SessionService sessionService;
-	
+
 	@Autowired
 	HttpService httpService;
 
