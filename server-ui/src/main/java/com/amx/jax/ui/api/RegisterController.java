@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.ui.model.LoginData;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
@@ -36,7 +36,7 @@ public class RegisterController {
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> verifyID(@RequestParam String civilid) {
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid) {
 		return registrationService.verifyId(civilid);
 	}
 
@@ -49,7 +49,7 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
+	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
 		return registrationService.loginWithOtp(civilid, mOtp);
 	}
 

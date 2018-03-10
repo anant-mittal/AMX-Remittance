@@ -136,7 +136,5 @@ public class ExchangeRateProcedureDao {
 		}
 		return output;
 	}
-	
-	
 
 }

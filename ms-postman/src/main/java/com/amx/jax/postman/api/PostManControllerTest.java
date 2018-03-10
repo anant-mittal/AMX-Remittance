@@ -28,8 +28,6 @@ import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.Templates;
 import com.bootloaderjs.IoUtils;
 import com.bootloaderjs.JsonUtil;
@@ -87,11 +85,6 @@ public class PostManControllerTest {
 
 		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
 		// localeResolver.resolveLocale(request)));
-
-		Notipy msg = new Notipy();
-		msg.setChannel(Channel.NOTIPY);
-		msg.setMessage("LT" + "\n is Up and Runnnig.");
-		postManClient.notifySlack(msg);
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 

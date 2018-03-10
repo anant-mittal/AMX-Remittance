@@ -18,5 +18,7 @@ tmp/
 *.iml
 .DS_Store
 D:\\payment-service.log
+*/target/maven-*
+*/target/*.jar
 lib-*/target/
 ms-*/target/

@@ -3,7 +3,7 @@ package com.amx.jax.ui.model;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 
-public class LoginData extends AbstractModel {
+public class AuthData extends AbstractModel {
 
 	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
