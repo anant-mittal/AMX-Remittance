@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.amx.jax.config.ScopedBeanFactory;
 
-public class TenantLibs<T> extends ScopedBeanFactory<Tenant, T> {
+public class TenantContext<T> extends ScopedBeanFactory<Tenant, T> {
 
-	public TenantLibs(List<T> libs) {
+	public TenantContext(List<T> libs) {
 		super(libs);
 	}
 

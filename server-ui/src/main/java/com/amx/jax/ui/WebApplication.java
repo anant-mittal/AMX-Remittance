@@ -22,7 +22,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.postman.client.PostManContextListener;
-import com.amx.jax.ui.config.WebRequestFilter;
+import com.amx.jax.ui.config.WebTenantFilter;
 
 @ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
@@ -55,7 +55,7 @@ public class WebApplication extends SpringBootServletInitializer {
 
 	@Bean(name = "checkSession")
 	public FilterRegistrationBean filterRegistrationBean() {
-		WebRequestFilter f = new WebRequestFilter();
+		WebTenantFilter f = new WebTenantFilter();
 		FilterRegistrationBean registrationBean = new FilterRegistrationBean();
 		registrationBean.setFilter(f);
 		ArrayList<String> match = new ArrayList<>();

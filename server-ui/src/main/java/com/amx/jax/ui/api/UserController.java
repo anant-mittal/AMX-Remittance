@@ -19,7 +19,7 @@ import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
-import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
 import com.codahale.metrics.annotation.Timed;
 
@@ -39,7 +39,7 @@ public class UserController {
 	private UserService userService;
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
 	/**
 	 * Asks for user login and password
@@ -48,18 +48,21 @@ public class UserController {
 	 * @param password
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
 			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
 			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
 		return loginService.loginSecQues(guestanswer);
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
@@ -70,12 +73,14 @@ public class UserController {
 		}
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -100,15 +105,15 @@ public class UserController {
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerDto> profile() {
+		return userService.getProfileDetails();
+	}
+
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
-	}
-
-	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
-	public ResponseWrapper<CustomerDto> profile() {
-		return userService.getProfileDetails();
 	}
 
 	@RequestMapping(value = "/api/user/email", method = { RequestMethod.POST })
@@ -121,6 +126,12 @@ public class UserController {
 	public ResponseWrapper<UserUpdateData> updatePhone(@RequestParam String phone,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatePhone(phone, mOtp, eOtp);
+	}
+
+	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> updateSecQues(@RequestBody SecurityQuestionModel guestanswer,
+			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
+		return loginService.loginSecQues(guestanswer);
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })

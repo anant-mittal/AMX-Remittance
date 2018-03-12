@@ -2,6 +2,8 @@ package com.amx.jax.ui.model;
 
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.session.GuestSession.AuthFlow;
+import com.amx.jax.ui.session.GuestSession.AuthStep;
 
 public class AuthData extends AbstractModel {
 
@@ -13,6 +15,29 @@ public class AuthData extends AbstractModel {
 	private String imageCaption = null;
 	private String question = null;
 	private SecurityQuestionModel answer = null;
+	private AuthFlow authFlow = null;
+	private AuthStep authStep = null;
+
+	public AuthStep getAuthStep() {
+		return authStep;
+	}
+
+	public AuthFlow getAuthFlow() {
+		return authFlow;
+	}
+
+	public void setAuthFlow(AuthFlow authFlow) {
+		this.authFlow = authFlow;
+	}
+
+	public void setNext(AuthFlow authFlow, AuthStep authStep) {
+		this.authFlow = authFlow;
+		this.authStep = authStep;
+	}
+
+	public void setAuthStep(AuthStep authStep) {
+		this.authStep = authStep;
+	}
 
 	private String mOtpPrefix = null;
 

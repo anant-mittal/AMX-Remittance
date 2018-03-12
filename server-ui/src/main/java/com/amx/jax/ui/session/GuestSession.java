@@ -16,7 +16,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
@@ -39,23 +41,32 @@ public class GuestSession implements Serializable {
 		LOGIN, ACTIVATION, RESET_PASS
 	}
 
-	public static enum AuthFlowStep {
-		USERPASS, SECQUES, IDVALID, DOTPVFY
+	public static enum AuthStep {
+		USERPASS, SECQUES, IDVALID, DOTPVFY, COMPLETED,
+		// Reg
+		MOTPVFY
 	}
 
+	@Autowired
+	TenantContext<AuthLib> tenantContext;
+
 	AuthFlow flow = null;
-	AuthFlowStep authStep = null;
+	AuthStep authStep = null;
 	String seqId = null;
 
-	public AuthFlowStep getAuthStep() {
+	public AuthStep getAuthStep() {
 		return authStep;
 	}
 
-	public void setAuthStep(AuthFlowStep authStep) {
+	public AuthStep getNextAuthStep() {
+		return tenantContext.get().getNextAuthStep(flow, authStep);
+	}
+
+	public void setAuthStep(AuthStep authStep) {
 		this.authStep = authStep;
 	}
 
-	public boolean isAuthStep(AuthFlowStep authStep) {
+	public boolean isAuthStep(AuthStep authStep) {
 		return this.authStep == authStep;
 	}
 

@@ -32,7 +32,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
-import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
 import com.codahale.metrics.annotation.Timed;
@@ -54,7 +54,7 @@ public class MetaController {
 	AppEnvironment env;
 
 	@Autowired
-	TenantContext tenantContext;
+	TenantService tenantContext;
 
 	@Autowired
 	PostManService postManService;

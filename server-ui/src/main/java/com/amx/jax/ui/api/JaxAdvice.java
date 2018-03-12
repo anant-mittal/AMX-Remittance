@@ -22,4 +22,5 @@ public class JaxAdvice {
 		wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
+	
 }

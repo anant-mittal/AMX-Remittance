@@ -47,7 +47,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
 import com.amx.jax.ui.service.SessionService;
-import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.service.TenantService;
 import com.bootloaderjs.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -64,7 +64,7 @@ public class RemittController {
 	private JaxService jaxService;
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
 	@Autowired
 	private UserBean userBean;

@@ -56,12 +56,12 @@ public class SessionService {
 	}
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
 	@Autowired
 	private AuditLoggerService auditLoggerService;
 
-	public TenantContext getTenantContext() {
+	public TenantService getTenantContext() {
 		return tenantContext;
 	}
 

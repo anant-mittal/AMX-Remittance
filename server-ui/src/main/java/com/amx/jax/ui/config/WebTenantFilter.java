@@ -10,19 +10,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantContextHolder;
 import com.bootloaderjs.Constants;
-import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.Urly;
 
 @Component
-public class WebRequestFilter implements Filter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebRequestFilter.class);
+public class WebTenantFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -32,10 +27,7 @@ public class WebRequestFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-		long time = System.currentTimeMillis();
 		HttpServletRequest request = ((HttpServletRequest) req);
-		String url = request.getRequestURI();
-		LOGGER.info("Trace Id in th begining {} {}", ContextUtil.getTraceId(), url);
 		String siteId = request.getParameter(TenantContextHolder.TENANT);
 		if (siteId == null) {
 			siteId = Urly.getSubDomainName(request.getServerName());
@@ -54,13 +46,7 @@ public class WebRequestFilter implements Filter {
 		} else {
 			TenantContextHolder.setDefault();
 		}
-		// LOGGER.info("Tenant {}", sessionService.getTenantBean().getTenant().getId());
-		try {
-			chain.doFilter(req, resp);
-		} finally {
-			time = System.currentTimeMillis() - time;
-			LOGGER.info("Trace Id in filter end {} {}  time taken was {}", ContextUtil.getTraceId(), url, time);
-		}
+		chain.doFilter(req, resp);
 	}
 
 	@Override

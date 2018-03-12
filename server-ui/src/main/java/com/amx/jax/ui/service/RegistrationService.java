@@ -72,8 +72,8 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthData> loginWithOtp(String idnetity, String mOtp) {
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+	public ResponseWrapper<UserUpdateData> loginWithOtp(String idnetity, String mOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		if (userSessionInfo.isValid()) {
 			// Check if use is already logged in;
@@ -87,6 +87,11 @@ public class RegistrationService {
 				// Check if otp is valid
 				if (model != null && userSessionInfo.isValid(idnetity, mOtp)) {
 					sessionService.authorize(model, true);
+					
+					List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
+					wrapper.getData().setSecQuesMeta(questModel);
+					wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
+					
 					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 				} else { // Use is cannot be validated
 					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);

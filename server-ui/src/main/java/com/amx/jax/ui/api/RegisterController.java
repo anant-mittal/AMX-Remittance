@@ -49,14 +49,56 @@ public class RegisterController {
 	 * @return
 	 */
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
+	public ResponseWrapper<UserUpdateData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
 		return registrationService.loginWithOtp(civilid, mOtp);
 	}
+
+	/**
+	 * @param securityquestions
+	 * @return
+	 */
+	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regSecQues(@RequestBody UserUpdateData userUpdateData) {
+		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
+				userUpdateData.geteOtp());
+	}
+
+	/**
+	 * @param imageUrl
+	 * @param caption
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
+	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regPhising(@RequestParam String imageUrl, @RequestParam String caption,
+			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
+		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
+	}
+
+	/**
+	 * 
+	 * @param loginId
+	 * @param password
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 */
+	@RequestMapping(value = "/pub/register/creds", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
+	}
+
+	/**
+	 * These APIS ends needs to be move to appropriate Controller
+	 */
 
 	/**
 	 * @param request
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues();
@@ -94,6 +136,7 @@ public class RegisterController {
 	 * @param eOtp
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
