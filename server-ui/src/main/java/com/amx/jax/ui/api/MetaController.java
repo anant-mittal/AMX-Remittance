@@ -85,7 +85,7 @@ public class MetaController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
-			HttpServletRequest request, Device device) throws UnirestException, PostManException {
+			HttpServletRequest request, Device device) throws Exception {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 
@@ -134,6 +134,9 @@ public class MetaController {
 		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
 		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
 		 */
+		if (!"".equalsIgnoreCase(httpSession.getId()))
+			throw new Exception();
+
 		return wrapper;
 	}
 
@@ -152,8 +155,8 @@ public class MetaController {
 				Email email = new Email();
 				email.setFrom("exch-online@almullagroup.com");
 				email.setReplyTo(cemail);
-				email.addTo("alexander.jacob@almullagroup.com",
-						"exch-online1@almullagroup.com", "exch-amx@almullagroup.com");
+				email.addTo("alexander.jacob@almullagroup.com", "exch-online1@almullagroup.com",
+						"exch-amx@almullagroup.com");
 				email.getModel().put(UIConstants.RESP_DATA_KEY, map);
 				email.setSubject("Inquiry");
 				email.setTemplate(Templates.CONTACT_US);
