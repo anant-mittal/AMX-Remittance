@@ -41,7 +41,13 @@ public class OldController {
 	/**
 	 * These APIS ends needs to be move to appropriate Controller
 	 */
-
+	/**
+	 * Some changes
+	 * 
+	 * @param identity
+	 * @param password
+	 * @return
+	 */
 	@Deprecated
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
