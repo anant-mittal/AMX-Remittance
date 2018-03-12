@@ -33,6 +33,5 @@ public class ConstantDocument {
 	public static final BigDecimal CONTACT_TYPE_FOR_HOME=new BigDecimal(50);
 	
 	
-	
 
 }

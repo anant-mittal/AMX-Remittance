@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.CusmasModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
@@ -52,7 +53,7 @@ import com.amx.jax.util.validation.CustomerValidation;
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
-	
+
 	Logger logger = Logger.getLogger(UserValidationService.class);
 
 	@Autowired
@@ -87,12 +88,15 @@ public class UserValidationService {
 
 	@Autowired
 	OtpSettings otpSettings;
-	
+
 	@Autowired
 	private ValidationClients validationClients;
-	
+
 	@Autowired
 	private JaxUtil jaxUtil;
+
+	@Autowired
+	private CustomerVerificationService customerVerificationService;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -111,11 +115,24 @@ public class UserValidationService {
 		if (cust.getMobile() == null) {
 			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
 		}
+
 		if (cust.getEmail() == null) {
-			throw new GlobalException("Email is empty. Contact branch to update the same.");
+			createEmailVerification(cust);
 		}
+
 		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
+	}
+
+	private CustomerVerification createEmailVerification(Customer cust) {
+
+		CustomerVerification customerVerification = new CustomerVerification();
+		customerVerification.setCustomerId(cust.getCustomerId());
+		customerVerification.setVerificationType("EMAIL");
+		customerVerification.setVerificationStatus("N");
+		customerVerification.setCreateDate(new Date());
+		customerVerificationService.saveOrUpdateVerification(customerVerification);
+		return customerVerification;
 	}
 
 	protected void validateCivilId(String civilId) {
@@ -466,27 +483,21 @@ public class UserValidationService {
 			}
 		}
 	}
-	
+
 	protected void validateMobileNumberLength(Customer customer, String mobile) {
-		
+
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (!validationClient.isValidMobileNumber(mobile)) {
 			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
 		}
 	}
-	
+
 	protected void isMobileExist(Customer customer, String mobile) {
-		
+
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (validationClient.isMobileExist(mobile)) {
 			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
 		}
 	}
 
-
 }
-
-
-
-
-

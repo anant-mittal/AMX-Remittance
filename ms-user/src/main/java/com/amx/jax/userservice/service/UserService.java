@@ -37,6 +37,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -134,6 +135,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	
+	@Autowired
+	CustomerVerificationService customerVerificationService ;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -209,6 +213,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateOtpFlow(model);
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
+		activateCustomer(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
@@ -232,6 +237,20 @@ public class UserService extends AbstractUserService {
 		}
 
 		return response;
+	}
+
+	// password not null flag indicates it is final step in registration
+	private void activateCustomer(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
+
+		if (model.getPassword() != null) {
+			if (model.getEmail() != null) {
+				onlineCust.setStatus(ConstantDocument.No);
+				customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
+			} else {
+				onlineCust.setStatus(ConstantDocument.Yes);
+			}
+		}
+
 	}
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
