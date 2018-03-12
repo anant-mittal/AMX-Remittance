@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<property resource="application.properties" />
+	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread : %X{traceId}] %-5level %logger{36}.%M - %msg%n
+				%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} [%t : %X{traceId}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}
 			</Pattern>
 		</layout>
 	</appender>
