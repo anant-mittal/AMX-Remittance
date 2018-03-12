@@ -115,7 +115,6 @@ public class CustomerDao {
 		
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));
-			onlineCust.setStatus(ConstantDocument.Yes);
 		}
 		
 		//update new email id
