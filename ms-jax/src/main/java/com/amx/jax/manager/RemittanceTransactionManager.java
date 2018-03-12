@@ -164,7 +164,7 @@ public class RemittanceTransactionManager {
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
-
+		logger.info("currencyId :"+currencyId+"\t rountingCountryId :"+rountingCountryId+"\t routingBankId :"+routingBankId+"\t serviceMasterId :"+serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId, meta.getCountryBranchId(),rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
@@ -214,8 +214,10 @@ public class RemittanceTransactionManager {
 			 }else if(fcAmount.compareTo(toAmount)>0){
 				 msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "+beneficiary.getCurrencyQuoteName()+" "+toAmount +".";
 			 }
-			
-			 throw new GlobalException(msg,JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			 if(!StringUtils.isBlank(msg)){
+				 throw new GlobalException(msg,JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			 }
+			 
 		}
 		// commission
 		responseModel.setTxnFee(commission);
@@ -250,6 +252,7 @@ public class RemittanceTransactionManager {
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 		BigDecimal comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
+		logger.info("newCommission 95: " + comission);
 		if (comission == null) {
 			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
 			comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
