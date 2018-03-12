@@ -1,7 +1,5 @@
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,56 +88,4 @@ public class RegisterController {
 		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
 	}
 
-	/**
-	 * These APIS ends needs to be move to appropriate Controller
-	 */
-
-	/**
-	 * @param request
-	 * @return
-	 */
-	@Deprecated
-	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
-	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
-		return registrationService.getSecQues();
-	}
-
-	/**
-	 * @param securityquestions
-	 * @return
-	 */
-	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody UserUpdateData userUpdateData) {
-		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
-				userUpdateData.geteOtp());
-	}
-
-	/**
-	 * 
-	 * @param imageUrl
-	 * @param caption
-	 * @param mOtp
-	 * @param eOtp
-	 * @return
-	 */
-	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
-			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
-	}
-
-	/**
-	 * 
-	 * @param loginId
-	 * @param password
-	 * @param mOtp
-	 * @param eOtp
-	 * @return
-	 */
-	@Deprecated
-	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
-	}
 }

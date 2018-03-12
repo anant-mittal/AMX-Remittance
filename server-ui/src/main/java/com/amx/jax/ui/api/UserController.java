@@ -15,7 +15,6 @@ import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -40,54 +39,6 @@ public class UserController {
 
 	@Autowired
 	private TenantService tenantContext;
-
-	/**
-	 * Asks for user login and password
-	 * 
-	 * @param identity
-	 * @param password
-	 * @return
-	 */
-	@Deprecated
-	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
-			@RequestParam(required = false) String password) {
-		return loginService.login(identity, password);
-	}
-
-	@Deprecated
-	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
-		return loginService.loginSecQues(guestanswer);
-	}
-
-	@Deprecated
-	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> initReset(@RequestParam String identity,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
-		if (mOtp == null && eOtp == null) {
-			return loginService.initResetPassword(identity);
-		} else {
-			return loginService.verifyResetPassword(identity, mOtp, eOtp);
-		}
-	}
-
-	@Deprecated
-	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return loginService.updatepwd(password, mOtp, eOtp);
-	}
-
-	@Deprecated
-	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
-	public ResponseWrapper<UserMetaData> logout() {
-		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-		sessionService.unauthorize();
-		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
-		return wrapper;
-	}
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
