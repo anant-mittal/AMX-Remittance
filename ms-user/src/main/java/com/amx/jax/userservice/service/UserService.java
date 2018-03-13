@@ -498,6 +498,17 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
+	
+	public ApiResponse getDataValidationRandomQuestions(Integer size) {
+		BigDecimal customerId = metaData.getCustomerId();
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		ApiResponse response = getBlackApiResponse();
+		List<QuestModelDTO> result = secQmanager.getDataValidationRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
+		response.getData().setType("quest");
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+	}
 
 	public ApiResponse validateCustomerData(CustomerModel model) {
 		if (model.getCustomerId() == null) {

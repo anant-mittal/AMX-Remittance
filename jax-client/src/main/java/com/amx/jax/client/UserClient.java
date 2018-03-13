@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDATE_CUSTOMER_PASSWORD_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.USER_API_ENDPOINT;
 
@@ -15,6 +16,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractException;
@@ -26,6 +29,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -604,6 +608,26 @@ public class UserClient extends AbstractJaxServiceClient {
 			if (e instanceof AbstractException) {
 				throw e;
 			} else {
+				throw new JaxSystemError();
+			}
+		} // end of try-catch
+	}
+		
+	public ApiResponse<QuestModelDTO> getDataVerificationQuestions() {
+		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
+		try {
+			log.info("Get all the getDataVerificationQuestions");
+			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/?size=1";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				log.error("exception in getDataVerificationQuestions ", e);
 				throw new JaxSystemError();
 			}
 		} // end of try-catch

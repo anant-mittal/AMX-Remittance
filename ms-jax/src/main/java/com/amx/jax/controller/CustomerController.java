@@ -169,4 +169,11 @@ public class CustomerController {
 		ApiResponse response = userSerivce.sendOtpForCivilId(civilId, null, null, init);
 		return response;
 	}
+
+	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.GET)
+	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
+		logger.debug("getCustomerDataValidationQeustions Request:");
+		ApiResponse response = userSerivce.getDataValidationRandomQuestions(size);
+		return response;
+	}
 }
