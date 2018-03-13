@@ -1,8 +1,11 @@
 package com.amx.jax.util;
 
 import java.math.BigDecimal;
+import java.text.DateFormatSymbols;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
@@ -96,5 +99,16 @@ public class JaxUtil {
 			}
 		}
 		return output;
+	}
+
+	public Map<String, String> getMonthsList() {
+
+		String[] monthsDesc = new DateFormatSymbols().getMonths();
+		String[] monthCodes = new DateFormatSymbols().getShortMonths();
+		Map<String, String> monthMap = new HashMap<>();
+		for (int i = 0; i < monthsDesc.length; i++) {
+			monthMap.put(monthCodes[i], monthsDesc[i]);
+		}
+		return monthMap;
 	}
 }

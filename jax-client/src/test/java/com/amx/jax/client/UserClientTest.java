@@ -19,6 +19,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -106,7 +107,7 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 		public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 			jaxMetaInfo.setCountryId(new BigDecimal(91));
 			jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -138,4 +139,19 @@ public class UserClientTest {
 		assertNotNull(response.getResult());
 	}
 	
+	@Test
+	public void testFetchRandomDataVerificationQuestions() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<QuestModelDTO> response = null;
+		try {
+			response = client.getDataVerificationQuestions();
+		}catch(AbstractException e) {
+			e.printStackTrace();
+		}
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
 }

@@ -6,10 +6,6 @@ public class QuestModelDTO  {
 	
 
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 8157975211922060021L;
 	private BigDecimal questId;
 	private BigDecimal questNumber;
 	private BigDecimal companyId;
@@ -17,7 +13,19 @@ public class QuestModelDTO  {
 	private BigDecimal countryId;
 	private String status;
 	private String description;
+	private String answerType;
 	
+	private QuestAnswerModelDTO questAnswerModelDTO;
+	
+	public QuestModelDTO(BigDecimal questId, BigDecimal questNumber, String description) {
+		super();
+		this.questId = questId;
+		this.questNumber = questNumber;
+		this.description = description;
+	}
+	public QuestModelDTO() {
+		// TODO Auto-generated constructor stub
+	}
 	public BigDecimal getQuestId() {
 		return questId;
 	}
@@ -70,5 +78,17 @@ public class QuestModelDTO  {
 	}
 	public void setQuestNumber(BigDecimal questNumber) {
 		this.questNumber = questNumber;
+	}
+	public String getAnswerType() {
+		return answerType;
+	}
+	public void setAnswerType(String answerType) {
+		this.answerType = answerType;
+	}
+	public QuestAnswerModelDTO getQuestAnswerModelDTO() {
+		return questAnswerModelDTO;
+	}
+	public void setQuestAnswerModelDTO(QuestAnswerModelDTO questAnswerModelDTO) {
+		this.questAnswerModelDTO = questAnswerModelDTO;
 	}
 }
