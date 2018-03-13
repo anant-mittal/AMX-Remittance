@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public class SecurityQuestionModel extends AbstractModel {
 
 	private BigDecimal questionSrNo;
+	
+	private String answerKey;
 
 	public SecurityQuestionModel() {
 		super();
@@ -34,4 +36,13 @@ public class SecurityQuestionModel extends AbstractModel {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+
+	public String getAnswerKey() {
+		return answerKey;
+	}
+
+	public void setAnswerKey(String answerKey) {
+		this.answerKey = answerKey;
+	}
+
 }

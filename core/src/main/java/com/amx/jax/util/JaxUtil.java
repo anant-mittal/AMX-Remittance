@@ -111,4 +111,10 @@ public class JaxUtil {
 		}
 		return monthMap;
 	}
+	
+	public String getShortMonth(int index) {
+
+		String[] monthCodes = new DateFormatSymbols().getShortMonths();
+		return monthCodes[index];
+	}
 }

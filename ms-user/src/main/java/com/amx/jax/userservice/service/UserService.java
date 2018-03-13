@@ -135,9 +135,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-	
+
 	@Autowired
-	CustomerVerificationService customerVerificationService ;
+	CustomerVerificationService customerVerificationService;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -202,7 +202,7 @@ public class UserService extends AbstractUserService {
 		}
 		Customer cust = custDao.getCustById(customerId);
 		String oldEmail = cust.getEmail();
-		
+
 		CustomerOnlineRegistration onlineCust = custDao.getOnlineCustomerByCustomerId(customerId);
 		if (onlineCust == null) {
 			throw new UserNotFoundException("Customer is not registered for online flow");
@@ -218,17 +218,17 @@ public class UserService extends AbstractUserService {
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel outputModel = convert(onlineCust);
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
-			 afterLoginSteps(onlineCust);
+			afterLoginSteps(onlineCust);
 		}
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		
-		//this is to send email on OLD email id
+
+		// this is to send email on OLD email id
 		if (model.getEmail() != null) {
 			model.setEmail(oldEmail);
 		}
-		
+
 		if (isNewUserRegistrationSuccess(model, onlineCust)) {
 			jaxNotificationService.sendNewRegistrationSuccessEmailNotification(outputModel.getPersoninfo(),
 					onlineCust.getEmail());
@@ -293,39 +293,39 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId) {
-		return sendOtpForCivilId(civilId, null, null,null);
+		return sendOtpForCivilId(civilId, null, null, null);
 	}
 
 	public ApiResponse sendOtpForCivilId(String civilId, List<CommunicationChannel> channels,
-			CustomerModel customerModel,Boolean initRegistration) {
+			CustomerModel customerModel, Boolean initRegistration) {
 		BigDecimal customerId = metaData.getCustomerId();
 		if (customerId != null) {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
-		if (customerId == null && civilId != null){
+		if (customerId == null && civilId != null) {
 			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
 		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
-		
-		logger.info("customerId is --> "+customerId);
+
+		logger.info("customerId is --> " + customerId);
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
-		if (onlineCustReg!=null) {
+		if (onlineCustReg != null) {
 			logger.info("validating customer lock count.");
 			userValidationService.validateCustomerLockCount(onlineCustReg);
-		}else {
+		} else {
 			logger.info("onlineCustReg is null");
 		}
-		
+
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
-		
+
 		try {
 			userValidationService.validateTokenDate(onlineCust);
 		} catch (GlobalException e) {
 			// reset sent token count
 			onlineCust.setTokenSentCount(BigDecimal.ZERO);
 		}
-		//userValidationService.validateCustomerLockCount(onlineCust);
+		// userValidationService.validateCustomerLockCount(onlineCust);
 		userValidationService.validateTokenSentCount(onlineCust);
 		generateToken(civilId, model, channels);
 		onlineCust.setEmailToken(model.getHashedeOtp());
@@ -344,15 +344,15 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		
-		//if user is already registered do not send OTP
+
+		// if user is already registered do not send OTP
 		if (initRegistration != null && initRegistration && onlineCust != null
 				&& ConstantDocument.Yes.equals(onlineCust.getStatus())) {
 			logger.info(String.format("Customer %s -- %s is already registred.", model.getCustomerId(),
 					model.getFirstName()));
 			return response;
-		}				
-		
+		}
+
 		PersonInfo personinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(personinfo, customer);
@@ -498,12 +498,13 @@ public class UserService extends AbstractUserService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-	
-	public ApiResponse getDataValidationRandomQuestions(Integer size) {
+
+	@SuppressWarnings("unchecked")
+	public ApiResponse<List<QuestModelDTO>> getDataVerificationRandomQuestions(Integer size) {
 		BigDecimal customerId = metaData.getCustomerId();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
-		ApiResponse response = getBlackApiResponse();
-		List<QuestModelDTO> result = secQmanager.getDataValidationRandomQuestions(onlineCustomer, size, customerId);
+		ApiResponse<List<QuestModelDTO>> response = getBlackApiResponse();
+		List<QuestModelDTO> result = secQmanager.getDataVerificationRandomQuestions(onlineCustomer, size, customerId);
 		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
@@ -547,6 +548,16 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+	
+	public void updateEmail(BigDecimal customerId, String email) {
+
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
+		onlineCustomer.setEmail(email);
+		Customer customer = custDao.getCustById(customerId);
+		customer.setEmail(email);
+		custDao.saveOnlineCustomer(onlineCustomer);
+		custDao.saveCustomer(customer);
 	}
 
 	/**
@@ -775,4 +786,19 @@ public class UserService extends AbstractUserService {
 		userValidationService.isMobileExist(cust, custModel.getMobile());
 
 	} // end of validateMobile
+	
+	public PersonInfo getPersonInfo(BigDecimal customerId) {
+		PersonInfo personInfo = null;
+		try {
+			personInfo = new PersonInfo();
+			Customer customer = custDao.getCustById(customerId);
+
+			BeanUtils.copyProperties(personInfo, customer);
+			personInfo.setEmail(customer.getEmail());
+			personInfo.setMobile(customer.getMobile());
+		} catch (Exception e) {
+		}
+		return personInfo;
+	}
+
 }

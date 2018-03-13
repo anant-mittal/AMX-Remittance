@@ -22,7 +22,7 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.service.QuestionAnswerService;
-import com.amx.jax.userservice.constant.DataVerificationQuestion;
+import com.amx.jax.userservice.constant.CustomerDataVerificationQuestion;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.util.JaxUtil;
 
@@ -76,18 +76,16 @@ public class SecurityQuestionsManager {
 		return result;
 	}
 
-	public List<QuestModelDTO> getDataValidationRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
+	public List<QuestModelDTO> getDataVerificationRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			BigDecimal customerId) {
 		if (onlineCustomer == null) {
 			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
 		}
 
-		QuestModelDTO q1 = DataVerificationQuestion.Q1.getQuestModelDTO();
-		q1.setAnswerType("text");
-		QuestModelDTO q2 = DataVerificationQuestion.Q2.getQuestModelDTO();
-		q2.setAnswerType("select");
-		QuestModelDTO q3 = DataVerificationQuestion.Q3.getQuestModelDTO();
-		q3.setAnswerType("select");
+		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
+		QuestModelDTO q2 = CustomerDataVerificationQuestion.Q2.getQuestModelDTO();
+		QuestModelDTO q3 = CustomerDataVerificationQuestion.Q3.getQuestModelDTO();
+		q1.setQuestAnswerModelDTO(getAnswerModelForQ1());
 		q2.setQuestAnswerModelDTO(getRelationShips());
 		q3.setQuestAnswerModelDTO(getListOfMonths());
 		List<QuestModelDTO> result = new ArrayList<>();
@@ -101,8 +99,15 @@ public class SecurityQuestionsManager {
 
 	}
 
+	private QuestAnswerModelDTO getAnswerModelForQ1() {
+		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("text");
+		return dto;
+	}
+
 	private QuestAnswerModelDTO getListOfMonths() {
 		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerKey("select");
 		List<AbstractAnswer> possibleAnswers = new ArrayList<>();
 		dto.setPossibleAnswers(possibleAnswers);
 		util.getMonthsList().forEach((k, v) -> {
@@ -116,6 +121,7 @@ public class SecurityQuestionsManager {
 
 	private QuestAnswerModelDTO getRelationShips() {
 		QuestAnswerModelDTO dto = new QuestAnswerModelDTO();
+		dto.setAnswerType("select");
 		List<AbstractAnswer> possibleAnswers = new ArrayList<>();
 
 		dto.setPossibleAnswers(possibleAnswers);

@@ -233,4 +233,8 @@ public class CustomerDao {
 		return customer;
 	}
 	
+	public void saveCustomer(Customer c) {
+		customerRepo.save(c);
+	}
+	
 }

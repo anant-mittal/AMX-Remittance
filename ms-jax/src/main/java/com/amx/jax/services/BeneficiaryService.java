@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -23,10 +27,12 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -35,6 +41,7 @@ import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -73,6 +80,9 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
+	
+	@Autowired
+	MetaData metaData;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -411,4 +421,41 @@ public class BeneficiaryService extends AbstractService {
 		return null;
 	}
 
+	public void setBeneDataVerificationQuestion(List<QuestModelDTO> result) {
+
+		result.forEach(i -> {
+			if (i.getQuestNumber().equals(BigDecimal.ONE)) {
+				List<BenificiaryListView> list = beneficiaryOnlineDao
+						.getOnlineBeneListFromView(metaData.getCustomerId(), metaData.getCountryId());
+				int index = ThreadLocalRandom.current().nextInt(0, list.size());
+				BenificiaryListView randomBene = list.get(index);
+				logger.info("Random bene-id recieved:" + randomBene.getIdNo());
+				logger.info("Random bene name:" + randomBene.getFirstName());
+				i.getQuestAnswerModelDTO().setAnswerKey(randomBene.getIdNo().toString());
+				String question = i.getDescription();
+				Map<String, String> valuesMap = new HashMap<String, String>();
+				valuesMap.put("name", randomBene.getFirstName());
+				StrSubstitutor sub = new StrSubstitutor(valuesMap);
+				question = sub.replace(question);
+				i.setDescription(question);
+			}
+		});
+	}
+
+	/**
+	 * @return list of bene for customer and country in meta data
+	 */
+	public List<BenificiaryListView> getBeneList() {
+		List<BenificiaryListView> list = beneficiaryOnlineDao.getOnlineBeneListFromView(metaData.getCustomerId(),
+				metaData.getCountryId());
+		return list;
+	}
+	
+	public BenificiaryListView getBeneByIdNo(BigDecimal idNo) {
+		return beneficiaryOnlineDao.findOne(idNo);
+	}
+	
+	public BenificiaryListView getLastTransactionBene() {
+		return beneficiaryOnlineDao.getLastTransactionBene(metaData.getCustomerId(), metaData.getCountryId());
+	}
 }

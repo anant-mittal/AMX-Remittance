@@ -13,7 +13,6 @@ public class QuestModelDTO  {
 	private BigDecimal countryId;
 	private String status;
 	private String description;
-	private String answerType;
 	
 	private QuestAnswerModelDTO questAnswerModelDTO;
 	
@@ -70,21 +69,13 @@ public class QuestModelDTO  {
 		this.description=description;
 	}
 	
-	
-	
-
 	public BigDecimal getQuestNumber() {
 		return questNumber;
 	}
 	public void setQuestNumber(BigDecimal questNumber) {
 		this.questNumber = questNumber;
 	}
-	public String getAnswerType() {
-		return answerType;
-	}
-	public void setAnswerType(String answerType) {
-		this.answerType = answerType;
-	}
+	
 	public QuestAnswerModelDTO getQuestAnswerModelDTO() {
 		return questAnswerModelDTO;
 	}

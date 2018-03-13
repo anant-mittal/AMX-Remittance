@@ -30,6 +30,8 @@ public class CustomerModel extends AbstractModel {
 	private String motp;
 
 	private String eotp;
+	
+	private List<SecurityQuestionModel> verificationAnswers;
 
 	public String getEmail() {
 		return email;
@@ -146,6 +148,14 @@ public class CustomerModel extends AbstractModel {
 				+ loginId + ", password=" + password + ", securityquestions=" + securityquestions + ", caption="
 				+ caption + ", imageUrl=" + imageUrl + ", customerId=" + customerId + ", isActive=" + isActive
 				+ ", personinfo=" + personinfo + ", motp=" + motp + ", eotp=" + eotp + "]";
+	}
+
+	public List<SecurityQuestionModel> getVerificationAnswers() {
+		return verificationAnswers;
+	}
+
+	public void setVerificationAnswers(List<SecurityQuestionModel> verificationAnswers) {
+		this.verificationAnswers = verificationAnswers;
 	}
 
 }

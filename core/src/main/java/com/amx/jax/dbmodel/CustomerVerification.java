@@ -53,16 +53,10 @@ public class CustomerVerification {
 
 	@Column(name = "UPDATE_DATE")
 	Date updateDate;
-
-	@Column(name = "VERIFICATION_CHECK_1")
-	String verificationCheck1;
-
-	@Column(name = "VERIFICATION_CHECK_2")
-	String verificationCheck2;
-
-	@Column(name = "VERIFICATION_CHECK_3")
-	String verificationCheck3;
 	
+	@Column(name="TPIN")
+	String tpin;
+
 	@PrePersist
 	private void setDefaultValues() {
 		this.updateDate = new Date();
@@ -132,36 +126,20 @@ public class CustomerVerification {
 		this.updateDate = updateDate;
 	}
 
-	public String getVerificationCheck1() {
-		return verificationCheck1;
-	}
-
-	public void setVerificationCheck1(String verificationCheck1) {
-		this.verificationCheck1 = verificationCheck1;
-	}
-
-	public String getVerificationCheck2() {
-		return verificationCheck2;
-	}
-
-	public void setVerificationCheck2(String verificationCheck2) {
-		this.verificationCheck2 = verificationCheck2;
-	}
-
-	public String getVerificationCheck3() {
-		return verificationCheck3;
-	}
-
-	public void setVerificationCheck3(String verificationCheck3) {
-		this.verificationCheck3 = verificationCheck3;
-	}
-
 	public String getVerificationType() {
 		return verificationType;
 	}
 
 	public void setVerificationType(String verificationType) {
 		this.verificationType = verificationType;
+	}
+
+	public String getTpin() {
+		return tpin;
+	}
+
+	public void setTpin(String tpin) {
+		this.tpin = tpin;
 	}
 
 }
