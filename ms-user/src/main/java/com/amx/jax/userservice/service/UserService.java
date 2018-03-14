@@ -69,7 +69,6 @@ import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.amx.jax.util.WebUtils;
 import com.bootloaderjs.Random;
 
 @Service
@@ -87,9 +86,6 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	private JaxUtil util;
-
-	@Autowired
-	private WebUtils webutil;
 
 	@Autowired
 	private CheckListManager checkListManager;
@@ -191,6 +187,7 @@ public class UserService extends AbstractUserService {
 			personinfo.setMobile(customer.getMobile());
 			model.setPersoninfo(personinfo);
 		} catch (Exception e) {
+		    logger.error("Exception while populating PersonInfo : ",e);
 		}
 		return model;
 	}
@@ -216,10 +213,13 @@ public class UserService extends AbstractUserService {
 		activateCustomer(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
-		CustomerModel outputModel = convert(onlineCust);
+		
 		if (model.getLoginId() != null || model.getPassword() != null) { // after this step flow is going to login
 			afterLoginSteps(onlineCust);
 		}
+		
+		CustomerModel outputModel = convert(onlineCust);
+		
 		response.getData().getValues().add(outputModel);
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -457,10 +457,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateCustomerData(onlineCustomer, customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-		Map<String, Object> output = afterLoginSteps(onlineCustomer);
-		if (output.get("PERSON_INFO") != null) {
-			customerModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-		}
+		//afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -470,12 +467,10 @@ public class UserService extends AbstractUserService {
 	/**
 	 * call this method to perform tasks after login
 	 */
-	private Map<String, Object> afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
+	private void afterLoginSteps(CustomerOnlineRegistration onlineCustomer) {
 		custDao.updatetLoyaltyPoint(onlineCustomer.getCustomerId());
 		this.unlockCustomer(onlineCustomer);
 		this.saveLoginLogoutHistoryByUserName(onlineCustomer.getUserName());
-		Map<String, Object> output = new HashMap<>();
-		return output;
 	}
 
 	public ApiResponse getUserCheckList(String loginId) {
@@ -500,10 +495,10 @@ public class UserService extends AbstractUserService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ApiResponse<List<QuestModelDTO>> getDataVerificationRandomQuestions(Integer size) {
+	public ApiResponse<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
 		BigDecimal customerId = metaData.getCustomerId();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
-		ApiResponse<List<QuestModelDTO>> response = getBlackApiResponse();
+		ApiResponse<QuestModelDTO> response = getBlackApiResponse();
 		List<QuestModelDTO> result = secQmanager.getDataVerificationRandomQuestions(onlineCustomer, size, customerId);
 		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
@@ -518,15 +513,12 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		userValidationService.validateCustomerLockCount(onlineCustomer);
+		//commented trailing s and special characters removal
 		simplifyAnswers(model.getSecurityquestions());
 		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		this.unlockCustomer(onlineCustomer);
+		afterLoginSteps(onlineCustomer);
 		CustomerModel responseModel = convert(onlineCustomer);
-		Map<String, Object> output = afterLoginSteps(onlineCustomer);
-		if (output.get("PERSON_INFO") != null) {
-			responseModel.setPersoninfo((PersonInfo) output.get("PERSON_INFO"));
-		}
-
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
@@ -575,20 +567,22 @@ public class UserService extends AbstractUserService {
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
-		LoginLogoutHistory output = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
-
+		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName, sort);
+		LoginLogoutHistory output=null;
+		
+		if (last2HistoryList!= null && last2HistoryList.size()>1) {
+		    output = last2HistoryList.get(1);
+		}
 		return output;
 	}
 
 	protected void saveLoginLogoutHistoryByUserName(String userName) {
-		LoginLogoutHistory output = getLoginLogoutHistoryByUserName(userName);
-		if (output == null) {
-			output = new LoginLogoutHistory();
-			output.setLoginType("C");
-			output.setUserName(userName);
-		}
-		output.setLoginTime(new Timestamp(new Date().getTime()));
-		loginLogoutHistoryRepositoryRepo.save(output);
+		  LoginLogoutHistory output = new LoginLogoutHistory();
+		  output = new LoginLogoutHistory();
+          output.setLoginType("C");
+          output.setUserName(userName);
+          output.setLoginTime(new Timestamp(new Date().getTime()));
+          loginLogoutHistoryRepositoryRepo.save(output);
 	}
 
 	/**

@@ -60,16 +60,16 @@ public class CustomerDataVerificationService extends AbstractService {
 	@Autowired
 	JaxNotificationService jaxNotificationService;
 
-	public void setAdditionalData(List<QuestModelDTO> result) {
+	public void setAdditionalData(List<QuestModelDTO> list) {
 
-		beneService.setBeneDataVerificationQuestion(result);
+		beneService.setBeneDataVerificationQuestion(list);
 	}
 
 	public ApiResponse saveVerificationData(CustomerModel model) {
-		if (model.getCustomerId() == null) {
+		if (metaData.getCustomerId() == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		saveVerificationData(model.getVerificationAnswers());
 		CustomerModel responseModel = userService.convert(onlineCustomer);

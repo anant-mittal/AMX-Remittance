@@ -179,8 +179,8 @@ public class CustomerController {
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.GET)
 	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
 		logger.debug("getCustomerDataValidationQeustions Request:");
-		ApiResponse<List<QuestModelDTO>> response = userSerivce.getDataVerificationRandomQuestions(size);
-		customerDataVerificationService.setAdditionalData(response.getResult());
+		ApiResponse<QuestModelDTO> response = userSerivce.getDataVerificationRandomQuestions(size);
+		customerDataVerificationService.setAdditionalData(response.getResults());
 		return response;
 	}
 	
