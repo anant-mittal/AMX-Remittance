@@ -5,13 +5,12 @@ import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.logger.AuditLoggerResponse;
-import com.amx.jax.logger.AuditLoggerService;
 import com.amx.jax.logger.AuditLoggerUrls;
-import com.amx.jax.logger.events.SessionEvent;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AbstractAuditEvent;
 import com.bootloaderjs.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.mashape.unirest.http.HttpResponse;
@@ -19,9 +18,9 @@ import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
 
 @Component
-public class AuditLoggerClient implements AuditLoggerService {
+public class AuditLoggerClient implements AuditService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuditLoggerClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
 
 	{
 		Unirest.setObjectMapper(new ObjectMapper() {
@@ -50,8 +49,13 @@ public class AuditLoggerClient implements AuditLoggerService {
 	@Value("${app.enabled.logger}")
 	private Boolean loggerEnable;
 
-	@Async
-	public AuditLoggerResponse log(SessionEvent event) {
+	public AuditLoggerResponse log(AbstractAuditEvent event) {
+		LOGGER.info(JsonUtil.toJson(event));
+		return null;
+	}
+
+	@Override
+	public AuditLoggerResponse logRest(AbstractAuditEvent event) {
 		HttpResponse<AuditLoggerResponse> response = null;
 		try {
 			if (loggerEnable) {

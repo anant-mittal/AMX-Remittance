@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.jax.config.AppConfig;
-import com.amx.jax.postman.PostManException;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
@@ -36,7 +37,6 @@ import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
 import com.codahale.metrics.annotation.Timed;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +45,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(value = "Meta APIs")
 public class MetaController {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(MetaController.class);
 
 	@Autowired
 	private JaxService jaxService;
@@ -73,6 +73,9 @@ public class MetaController {
 
 	@Autowired
 	AppConfig appConfig;
+
+	@Autowired
+	AuditService auditService;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -108,6 +111,12 @@ public class MetaController {
 		wrapper.getData().device = userDevice.toMap();
 		wrapper.getData().message = calcLibs.get().getRSName();
 
+		SessionEvent evt = new SessionEvent();
+
+		evt.setDeviceId(userDevice.getDeviceId());
+		evt.setDeviceType(userDevice.getDeviceType().toString());
+		evt.setDeviceIp(userDevice.getDeviceIp());
+		auditService.log(evt);
 		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
 				appConfig.isDebug());
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
@@ -134,8 +143,8 @@ public class MetaController {
 		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
 		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
 		 */
-		if (!"".equalsIgnoreCase(httpSession.getId()))
-			throw new Exception();
+//		if (!"".equalsIgnoreCase(httpSession.getId()))
+//			throw new Exception();
 
 		return wrapper;
 	}

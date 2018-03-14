@@ -2,6 +2,16 @@ package com.amx.jax.logger.events;
 
 public class SessionEvent extends AbstractAuditEvent {
 
+	public String deviceIp = null;
+
+	public String getDeviceIp() {
+		return deviceIp;
+	}
+
+	public void setDeviceIp(String deviceIp) {
+		this.deviceIp = deviceIp;
+	}
+
 	public String deviceId = null;
 
 	public String getDeviceId() {
