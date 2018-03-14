@@ -54,9 +54,6 @@ public class CustomerVerification {
 	@Column(name = "UPDATE_DATE")
 	Date updateDate;
 	
-	@Column(name="TPIN")
-	String tpin;
-
 	@PrePersist
 	private void setDefaultValues() {
 		this.updateDate = new Date();
@@ -132,14 +129,6 @@ public class CustomerVerification {
 
 	public void setVerificationType(String verificationType) {
 		this.verificationType = verificationType;
-	}
-
-	public String getTpin() {
-		return tpin;
-	}
-
-	public void setTpin(String tpin) {
-		this.tpin = tpin;
 	}
 
 }
