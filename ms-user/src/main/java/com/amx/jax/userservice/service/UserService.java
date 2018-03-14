@@ -495,10 +495,10 @@ public class UserService extends AbstractUserService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ApiResponse<List<QuestModelDTO>> getDataVerificationRandomQuestions(Integer size) {
+	public ApiResponse<QuestModelDTO> getDataVerificationRandomQuestions(Integer size) {
 		BigDecimal customerId = metaData.getCustomerId();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
-		ApiResponse<List<QuestModelDTO>> response = getBlackApiResponse();
+		ApiResponse<QuestModelDTO> response = getBlackApiResponse();
 		List<QuestModelDTO> result = secQmanager.getDataVerificationRandomQuestions(onlineCustomer, size, customerId);
 		response.getData().getValues().addAll(result);
 		response.getData().setType("quest");
