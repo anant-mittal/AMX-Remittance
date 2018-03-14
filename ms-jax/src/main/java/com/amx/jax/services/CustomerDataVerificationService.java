@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -22,7 +23,9 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.exception.GlobalException;
@@ -118,19 +121,20 @@ public class CustomerDataVerificationService extends AbstractService {
 				}
 			}
 			if (verificationDone) {
-				userService.updateEmail(metaData.getCustomerId(), cv.getFieldValue());
+				if(StringUtils.isNotBlank(cv.getFieldValue())) {
+					userService.updateEmail(metaData.getCustomerId(), cv.getFieldValue());
+				}
 				updateCustomerVerification(cv);
 			}
 		});
 		if (ConstantDocument.No.equals(cv.getVerificationStatus())) {
-			sendTpinTocustomer(cv);
+			// sendTpinTocustomer(cv);
 		}
 	}
 
 	private void sendTpinTocustomer(CustomerVerification cv) {
 		String tpin = util.createRandomPassword(6);
 		logger.info("generated tpin/otp for customer data verification is: " + tpin);
-		cv.setTpin(tpin);
 		PersonInfo pinfo = userService.getPersonInfo(metaData.getCustomerId());
 		CivilIdOtpModel model = new CivilIdOtpModel();
 		model.setmOtp(tpin);
