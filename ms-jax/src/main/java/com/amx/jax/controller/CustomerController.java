@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.CustomerDataVerificationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
@@ -32,6 +35,9 @@ public class CustomerController {
 
 	@Autowired
 	private UserService userSerivce;
+	
+	@Autowired
+	private CustomerDataVerificationService customerDataVerificationService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -173,7 +179,15 @@ public class CustomerController {
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.GET)
 	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
 		logger.debug("getCustomerDataValidationQeustions Request:");
-		ApiResponse response = userSerivce.getDataValidationRandomQuestions(size);
+		ApiResponse<List<QuestModelDTO>> response = userSerivce.getDataVerificationRandomQuestions(size);
+		customerDataVerificationService.setAdditionalData(response.getResult());
+		return response;
+	}
+	
+	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.POST)
+	public ApiResponse saveDataVerificationQuestions(@RequestBody CustomerModel model) {
+		logger.debug("in saveDataVerificationQuestions ");
+		ApiResponse response = customerDataVerificationService.saveVerificationData(model);
 		return response;
 	}
 }
