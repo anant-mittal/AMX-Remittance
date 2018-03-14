@@ -69,7 +69,7 @@ public class CustomerDataVerificationService extends AbstractService {
 		if (model.getCustomerId() == null) {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		saveVerificationData(model.getVerificationAnswers());
 		CustomerModel responseModel = userService.convert(onlineCustomer);

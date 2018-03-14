@@ -606,4 +606,26 @@ public class UserClient extends AbstractJaxServiceClient {
 			}
 		} // end of try-catch
 	}
+    
+	public ApiResponse<QuestModelDTO> saveDataVerificationQuestions(List<SecurityQuestionModel> answers) {
+		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
+		try {
+			LOGGER.info("in the saveDataVerificationQuestions");
+			CustomerModel cmodel = new CustomerModel();
+			cmodel.setSecurityquestions(answers);
+			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/";
+			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(cmodel, getHeader());
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					});
+			return response.getBody();
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				LOGGER.error("exception in saveDataVerificationQuestions ", e);
+				throw new JaxSystemError();
+			}
+		}
+	}
 }
