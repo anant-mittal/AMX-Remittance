@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 	<property resource="application.properties" />
+	<property name="AUDIT" value="AUDIT" />
 	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
@@ -9,9 +10,19 @@
 			</Pattern>
 		</layout>
 	</appender>
+	<appender name="AUDIT" class="ch.qos.logback.core.ConsoleAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+				%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${AUDIT:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} [%t : %X{traceId}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}
+			</Pattern>
+		</layout>
+	</appender>
+	<logger name="com.amx.jax.logger.AuditService" level="info"  additivity="false">
+		<appender-ref ref="AUDIT" />
+	</logger>
+	<logger name="org.springframework" level="info" additivity="false" />
 	<root level="${log.level:-INFO}">
 		<appender-ref ref="STDOUT" />
 		<!-- <appender-ref ref="FILE" /> -->
 	</root>
-	<logger name="org.springframework" level="info" />
 </configuration>

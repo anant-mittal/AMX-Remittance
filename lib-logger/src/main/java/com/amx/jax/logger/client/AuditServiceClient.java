@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,7 @@ public class AuditServiceClient implements AuditService {
 
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
+	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -40,7 +43,7 @@ public class AuditServiceClient implements AuditService {
 			AuditFilter<AuditEvent> filter = filtersMap.get(event.getClass().getName());
 			filter.doFilter(event);
 		}
-		LOGGER.info(JsonUtil.toJson(event));
+		LOGGER.info(auditmarker, JsonUtil.toJson(event));
 		return null;
 	}
 
@@ -52,7 +55,7 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse staticLogger(AuditEvent event) {
-		LOGGER.info(JsonUtil.toJson(event));
+		LOGGER.info(auditmarker, JsonUtil.toJson(event));
 		return null;
 	}
 
