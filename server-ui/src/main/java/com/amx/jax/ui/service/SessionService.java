@@ -95,8 +95,10 @@ public class SessionService {
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-		SessionEvent sessionEvent = new SessionEvent();
 		if (valid) {
+			SessionEvent sessionEvent = new SessionEvent();
+			sessionEvent.setUserKey(getUserKeyString());
+			sessionEvent.setType(SessionEvent.Type.SESSION_AUTHED);
 			auditService.log(sessionEvent);
 		}
 	}
@@ -173,12 +175,19 @@ public class SessionService {
 	 * 
 	 */
 	public void unauthorize() {
+		String userKeyString = getUserKeyString();
+
 		if (this.indexedUser()) {
 			RLocalCachedMap<String, String> map = loggedInUsers.map();
-			String userKeyString = getUserKeyString();
 			map.fastRemove(userKeyString);
 			LOGGER.info("User is being unauthorized from current session userKeyString={}", userKeyString);
 		}
+
+		SessionEvent sessionEvent = new SessionEvent();
+		sessionEvent.setUserKey(userKeyString);
+		sessionEvent.setType(SessionEvent.Type.SESSION_UNAUTHED);
+		auditService.log(sessionEvent);
+
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
 	}

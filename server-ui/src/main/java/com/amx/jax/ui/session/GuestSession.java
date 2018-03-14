@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
@@ -49,6 +53,9 @@ public class GuestSession implements Serializable {
 
 	@Autowired
 	TenantContext<AuthLib> tenantContext;
+
+	@Autowired
+	AuditService auditService;
 
 	AuthFlow flow = null;
 	AuthStep authStep = null;
@@ -155,6 +162,20 @@ public class GuestSession implements Serializable {
 
 	public void nextQuesIndex() {
 		quesIndex++;
+	}
+
+	@PostConstruct
+	public void started() throws Exception {
+		SessionEvent evt = new SessionEvent();
+		evt.setType(SessionEvent.Type.SESSION_STARTED);
+		auditService.log(evt);
+	}
+
+	@PreDestroy
+	public void ended() throws Exception {
+		SessionEvent evt = new SessionEvent();
+		evt.setType(SessionEvent.Type.SESSION_ENDED);
+		auditService.log(evt);
 	}
 
 }

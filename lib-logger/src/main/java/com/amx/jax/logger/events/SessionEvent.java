@@ -1,57 +1,31 @@
 package com.amx.jax.logger.events;
 
-public class SessionEvent extends AbstractAuditEvent {
+import java.util.HashMap;
+import java.util.Map;
 
-	public String deviceIp = null;
+public class SessionEvent extends DefaultEvent {
 
-	public String getDeviceIp() {
-		return deviceIp;
+	public static enum Type implements EventType {
+		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
 	}
 
-	public void setDeviceIp(String deviceIp) {
-		this.deviceIp = deviceIp;
+	Map<String, Object> device = new HashMap<String, Object>();
+	String userKey = null;
+
+	public String getUserKey() {
+		return userKey;
 	}
 
-	public String deviceId = null;
-
-	public String getDeviceId() {
-		return deviceId;
+	public void setUserKey(String userKey) {
+		this.userKey = userKey;
 	}
 
-	public void setDeviceId(String deviceId) {
-		this.deviceId = deviceId;
+	public Map<String, Object> getDevice() {
+		return device;
 	}
 
-	public String getDeviceType() {
-		return deviceType;
-	}
-
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
-	}
-
-	public String getDeviceInfo() {
-		return deviceInfo;
-	}
-
-	public void setDeviceInfo(String deviceInfo) {
-		this.deviceInfo = deviceInfo;
-	}
-
-	public String getDeviceOS() {
-		return deviceOS;
-	}
-
-	public void setDeviceOS(String deviceOS) {
-		this.deviceOS = deviceOS;
-	}
-
-	public String getBrowserInfo() {
-		return browserInfo;
-	}
-
-	public void setBrowserInfo(String browserInfo) {
-		this.browserInfo = browserInfo;
+	public void setDevice(Map<String, Object> device) {
+		this.device = device;
 	}
 
 	public String getAppVersion() {
@@ -62,9 +36,5 @@ public class SessionEvent extends AbstractAuditEvent {
 		this.appVersion = appVersion;
 	}
 
-	public String deviceType = null;
-	public String deviceInfo = null;
-	public String deviceOS = null;
-	public String browserInfo = null;
 	public String appVersion = null;
 }

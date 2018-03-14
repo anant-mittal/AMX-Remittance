@@ -112,10 +112,6 @@ public class MetaController {
 		wrapper.getData().message = calcLibs.get().getRSName();
 
 		SessionEvent evt = new SessionEvent();
-
-		evt.setDeviceId(userDevice.getDeviceId());
-		evt.setDeviceType(userDevice.getDeviceType().toString());
-		evt.setDeviceIp(userDevice.getDeviceIp());
 		auditService.log(evt);
 		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
 				appConfig.isDebug());
