@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -17,7 +18,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
@@ -44,6 +44,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
@@ -210,7 +211,8 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateOtpFlow(model);
 		simplifyAnswers(model.getSecurityquestions());
 		onlineCust = custDao.saveOrUpdateOnlineCustomer(onlineCust, model);
-		activateCustomer(onlineCust, model, cust);
+		updateCustomerVerification(onlineCust, model, cust);
+		setCustomerStatus(onlineCust, model, cust);
 		checkListManager.updateCustomerChecks(onlineCust, model);
 		ApiResponse response = getBlackApiResponse();
 		
@@ -239,18 +241,30 @@ public class UserService extends AbstractUserService {
 		return response;
 	}
 
-	// password not null flag indicates it is final step in registration
-	private void activateCustomer(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
-
-		if (model.getPassword() != null) {
-			if (model.getEmail() != null) {
-				onlineCust.setStatus(ConstantDocument.No);
-				customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
-			} else {
-				onlineCust.setStatus(ConstantDocument.Yes);
+	private void updateCustomerVerification(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
+		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
+		if (cv != null) {
+			customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
+			if(model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())){
+				updateEmail(cust.getCustomerId(), model.getEmail());
 			}
-		}
+		}		
+		
+	}
 
+	// password not null flag indicates it is final step in registration
+	private void setCustomerStatus(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
+		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL,
+				model.getEmail());
+
+		if (!ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
+			throw new GlobalException("Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
+					JaxError.USER_DATA_VERIFICATION_PENDING);
+		}
+		if (model.getPassword() != null) {
+			onlineCust.setStatus(ConstantDocument.Yes);
+		}
+		custDao.saveOnlineCustomer(onlineCust);
 	}
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
@@ -421,7 +435,7 @@ public class UserService extends AbstractUserService {
 		String mtokenHash = onlineCust.getSmsToken();
 		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
 		String eOtpHash = null;
-		if (org.apache.commons.lang.StringUtils.isNotBlank(eOtp)) {
+		if (StringUtils.isNotBlank(eOtp)) {
 			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
 		}
 		if (!mOtpHash.equals(mtokenHash)) {
@@ -567,7 +581,7 @@ public class UserService extends AbstractUserService {
 	protected LoginLogoutHistory getLoginLogoutHistoryByUserName(String userName) {
 
 		Sort sort = new Sort(Direction.DESC, "loginLogoutId");
-		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst1ByuserName(userName, sort);
+		List<LoginLogoutHistory> last2HistoryList = loginLogoutHistoryRepositoryRepo.findFirst2ByuserName(userName, sort);
 		LoginLogoutHistory output=null;
 		
 		if (last2HistoryList!= null && last2HistoryList.size()>1) {
