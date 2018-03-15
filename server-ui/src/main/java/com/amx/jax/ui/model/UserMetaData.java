@@ -1,5 +1,8 @@
 package com.amx.jax.ui.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
@@ -11,6 +14,15 @@ public class UserMetaData extends AbstractModel {
 	public Boolean active = false;
 	PersonInfo personinfo = null;
 	CurrencyMasterDTO domCurrency = null;
+	Map<String, Object> device = new HashMap<String, Object>();
+
+	public Map<String, Object> getDevice() {
+		return device;
+	}
+
+	public void setDevice(Map<String, Object> device) {
+		this.device = device;
+	}
 
 	public CurrencyMasterDTO getDomCurrency() {
 		return domCurrency;
