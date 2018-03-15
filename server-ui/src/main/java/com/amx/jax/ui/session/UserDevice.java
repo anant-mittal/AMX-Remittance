@@ -27,6 +27,7 @@ public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
 	private String fingerprint = null;
+
 	private String ip = null;
 	private String id = null;
 	private DeviceType type = null;
@@ -34,6 +35,7 @@ public class UserDevice implements Serializable {
 	private OperatingSystem operatingSystem = null;
 	private Browser browser = null;
 	private Version browserVersion = null;
+	private String appVersion = null;
 
 	@Autowired
 	private HttpService httpService;
@@ -94,11 +96,26 @@ public class UserDevice implements Serializable {
 		return browser;
 	}
 
+	public Version getBrowserVersion() {
+		if (browserVersion == null) {
+			this.resolve();
+		}
+		return browserVersion;
+	}
+
 	public String getId() {
 		if (id == null) {
 			this.resolve();
 		}
 		return id;
+	}
+
+	public String getAppVersion() {
+		return appVersion;
+	}
+
+	public void setAppVersion(String appVersion) {
+		this.appVersion = appVersion;
 	}
 
 	public Map<String, Object> toMap() {
@@ -111,7 +128,53 @@ public class UserDevice implements Serializable {
 		map.put("browser", browser);
 		map.put("browserVersion", browserVersion);
 		map.put("os", operatingSystem);
+		map.put("appVersion", appVersion);
 		return map;
 	}
 
+	public UserDevice toUserDevice() {
+		UserDevice device = new UserDevice();
+		device.setId(getId());
+		device.setFingerprint(getFingerprint());
+		device.setPlatform(getPlatform());
+		device.setType(getType());
+		device.setIp(getIp());
+		device.setBrowser(getBrowser());
+		device.setBrowserVersion(getBrowserVersion());
+		device.setOperatingSystem(getOperatingSystem());
+		device.setAppVersion(getAppVersion());
+		return device;
+	}
+
+	public void setBrowserVersion(Version browserVersion) {
+		this.browserVersion = browserVersion;
+	}
+
+	public void setFingerprint(String fingerprint) {
+		this.fingerprint = fingerprint;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setType(DeviceType type) {
+		this.type = type;
+	}
+
+	public void setPlatform(DevicePlatform platform) {
+		this.platform = platform;
+	}
+
+	public void setOperatingSystem(OperatingSystem operatingSystem) {
+		this.operatingSystem = operatingSystem;
+	}
+
+	public void setBrowser(Browser browser) {
+		this.browser = browser;
+	}
 }

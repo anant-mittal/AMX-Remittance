@@ -45,7 +45,7 @@ public class UserController {
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
-		wrapper.getData().setDevice(sessionService.getAppDevice().toMap());
+		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
