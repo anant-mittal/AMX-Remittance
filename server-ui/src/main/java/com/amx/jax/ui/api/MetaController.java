@@ -92,7 +92,7 @@ public class MetaController {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 
-		userDevice.getDeviceType();
+		userDevice.getType();
 
 		wrapper.getData().debug = env.isDebug();
 		wrapper.getData().id = httpSession.getId();
@@ -111,8 +111,6 @@ public class MetaController {
 		wrapper.getData().device = userDevice.toMap();
 		wrapper.getData().message = calcLibs.get().getRSName();
 
-		SessionEvent evt = new SessionEvent();
-		auditService.log(evt);
 		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
 				appConfig.isDebug());
 		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();

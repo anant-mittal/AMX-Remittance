@@ -78,7 +78,7 @@ public class HomeController {
 	public String loginPing(HttpServletRequest request) {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = sessionService.getGuestSession().hitCounter();
-		userDevice.getDeviceType();
+		userDevice.getType();
 		wrapper.getData().hits = hits;
 		wrapper.getData().domain = request.getRequestURL().toString();
 		wrapper.getData().requestUri = request.getRequestURI();
@@ -93,7 +93,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 
@@ -111,7 +111,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 }

@@ -7,7 +7,6 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -23,7 +22,6 @@ import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
@@ -92,9 +90,6 @@ public class GuestSession implements Serializable {
 	@Autowired
 	private HttpServletResponse response;
 
-	@Autowired
-	private HttpServletRequest request;
-
 	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
 	public String getNextToken(String key) {
@@ -117,13 +112,6 @@ public class GuestSession implements Serializable {
 		kooky.setMaxAge(300);
 		// kooky.setPath("/");
 		response.addCookie(kooky);
-	}
-
-	private void validateSeqCookie(String seqKey, String seqValue) {
-		if (this.isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			throw new HttpUnauthorizedException();
-		}
 	}
 
 	private Integer hits = 0;

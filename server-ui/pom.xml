@@ -80,6 +80,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>eu.bitwalker</groupId>
+			<artifactId>UserAgentUtils</artifactId>
+			<version>1.21</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.bootloaderjs</groupId>
 			<artifactId>boot-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

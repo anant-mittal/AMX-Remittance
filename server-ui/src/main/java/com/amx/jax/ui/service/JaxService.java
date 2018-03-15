@@ -116,9 +116,9 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
-		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getDeviceId());
-		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getDeviceIp());
-		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getDeviceType().toString());
+		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
+		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
+		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getType().toString());
 		
 		
 		log.info("referrer = {} ",sessionService.getUserSession().getReferrer());
