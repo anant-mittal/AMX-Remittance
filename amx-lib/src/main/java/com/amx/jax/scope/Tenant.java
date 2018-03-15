@@ -9,16 +9,16 @@ import java.util.regex.Pattern;
 public enum Tenant {
 
 	/** Dev Environments **/
-	KWT2("kw", "91"), BRNDEV("bhr", "83"), OMNDEV("om", "84"),
+	KWT2("kw", "91"), BRNDEV("bhr", "104"), OMNDEV("om", "82"),
 
 	/** Kuwait */
 	KWT("kw", "91"),
 
 	/** Oman */
-	OMN("om", "84"),
+	OMN("om", "82"),
 
 	/** Baharain */
-	BRN("bhr", "83"),
+	BRN("bhr", "104"),
 
 	/** India */
 	IND("in", "94"), NONE("none", "0");
