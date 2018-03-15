@@ -37,7 +37,7 @@ public class CustomerValidation {
 			}
 
 		} else if (util.isBahrain(countryCode)) {
-			if (civilId.length() != 8) {
+			if (civilId.length() != 9) {
 				return false;
 			}
 		}

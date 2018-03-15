@@ -242,7 +242,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	private void updateCustomerVerification(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
-		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
+		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 		if (cv != null) {
 			customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
 			if(model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())){
@@ -254,8 +254,7 @@ public class UserService extends AbstractUserService {
 
 	// password not null flag indicates it is final step in registration
 	private void setCustomerStatus(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
-		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL,
-				model.getEmail());
+		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 
 		if (!ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 			throw new GlobalException("Thank you for registration, Our helpdesk will get in touch with you in 48 hours",

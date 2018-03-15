@@ -31,7 +31,7 @@ public class CustomerVerificationService {
 		customerVerificationRepository.save(customerverification);
 	}
 	
-	public CustomerVerification getVerification(Customer cust, CustomerVerificationType type, String value) {
+	public CustomerVerification getVerification(Customer cust, CustomerVerificationType type) {
 		return customerVerificationRepository
 				.findBycustomerIdAndVerificationType(cust.getCustomerId(), type.toString());
 		

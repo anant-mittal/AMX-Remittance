@@ -24,6 +24,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -125,13 +126,16 @@ public class UserValidationService {
 	}
 
 	private CustomerVerification createEmailVerification(Customer cust) {
-
-		CustomerVerification customerVerification = new CustomerVerification();
-		customerVerification.setCustomerId(cust.getCustomerId());
-		customerVerification.setVerificationType("EMAIL");
-		customerVerification.setVerificationStatus("N");
-		customerVerification.setCreateDate(new Date());
-		customerVerificationService.saveOrUpdateVerification(customerVerification);
+		CustomerVerification customerVerification = customerVerificationService.getVerification(cust,
+				CustomerVerificationType.EMAIL);
+		if (customerVerification == null) {
+			customerVerification = new CustomerVerification();
+			customerVerification.setCustomerId(cust.getCustomerId());
+			customerVerification.setVerificationType("EMAIL");
+			customerVerification.setVerificationStatus("N");
+			customerVerification.setCreateDate(new Date());
+			customerVerificationService.saveOrUpdateVerification(customerVerification);
+		}
 		return customerVerification;
 	}
 
