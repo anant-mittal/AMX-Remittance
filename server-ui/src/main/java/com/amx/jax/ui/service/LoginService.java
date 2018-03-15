@@ -17,14 +17,13 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
-import com.amx.jax.ui.session.GuestSession.AuthFlow;
-import com.amx.jax.ui.session.GuestSession.AuthStep;
 import com.amx.jax.ui.session.UserSession;
 import com.bootloaderjs.ListManager;
 
@@ -66,7 +65,7 @@ public class LoginService {
 	public ResponseWrapper<AuthData> login(String identity, String password) {
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(null);
 		sessionService.clear();
-		sessionService.getGuestSession().setFlow(AuthFlow.LOGIN);
+		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.LOGIN);
 		CustomerModel customerModel;
 		try {
 			customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
@@ -75,9 +74,11 @@ public class LoginService {
 			} else {
 				log.info("Login Started for user : customer id : {}", customerModel.getCustomerId());
 				sessionService.getGuestSession().setCustomerModel(customerModel);
-				sessionService.getGuestSession().setAuthStep(AuthStep.USERPASS);
+				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.USERPASS);
+
 				wrapper.setData(getRandomSecurityQuestion(customerModel));
-				wrapper.getData().setNext(AuthFlow.LOGIN, sessionService.getGuestSession().getNextAuthStep());
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
+
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 			}
 		} catch (LimitExeededException e) {
@@ -99,9 +100,10 @@ public class LoginService {
 			if (customerModel == null) {
 				wrapper.setMessage(ResponseStatus.AUTH_FAILED, ResponseMessage.AUTH_FAILED);
 			} else {
-				sessionService.getGuestSession().setAuthStep(AuthStep.SECQUES);
+				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.SECQUES);
 
-				sessionService.authorize(customerModel, sessionService.getGuestSession().isFlow(AuthFlow.LOGIN));
+				sessionService.authorize(customerModel,
+						sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
 
 				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 			}
@@ -155,7 +157,7 @@ public class LoginService {
 
 	public ResponseWrapper<AuthData> initResetPassword(String identity) {
 		sessionService.clear();
-		sessionService.getGuestSession().setFlow(AuthFlow.RESET_PASS);
+		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.RESET_PASS);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		try {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
@@ -164,7 +166,7 @@ public class LoginService {
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
-			sessionService.getGuestSession().setAuthStep(AuthStep.IDVALID);
+			sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.IDVALID);
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
 		}
@@ -179,7 +181,7 @@ public class LoginService {
 			// Check if otp is valid
 			if (model != null) {
 				sessionService.getGuestSession().setCustomerModel(model);
-				sessionService.getGuestSession().setAuthStep(AuthStep.DOTPVFY);
+				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.DOTPVFY);
 				wrapper.setData(getRandomSecurityQuestion(model));
 				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 			} else { // Use is cannot be validated
@@ -194,8 +196,8 @@ public class LoginService {
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
-			if (sessionService.getGuestSession().isFlow(AuthFlow.RESET_PASS)
-					&& !sessionService.getGuestSession().isAuthStep(AuthStep.SECQUES)) {
+			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.RESET_PASS)
+					&& !sessionService.getGuestSession().getState().isStep(AuthState.AuthStep.SECQUES)) {
 				throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 			}
 			if (!sessionService.getUserSession().isValid()) {

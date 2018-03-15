@@ -607,7 +607,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
     
-	public ApiResponse<QuestModelDTO> saveDataVerificationQuestions(List<SecurityQuestionModel> answers) {
+	public ApiResponse<QuestModelDTO> validateDataVerificationQuestions(List<SecurityQuestionModel> answers) {
 		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
 		try {
 			LOGGER.info("in the saveDataVerificationQuestions");

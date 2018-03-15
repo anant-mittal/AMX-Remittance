@@ -1,45 +1,65 @@
 package com.amx.jax.ui.model;
 
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.session.GuestSession.AuthFlow;
-import com.amx.jax.ui.session.GuestSession.AuthStep;
+import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 
 public class AuthData extends AbstractModel {
 
 	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
+
+	private String identity = null;
+
+	public String getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(String identity) {
+		this.identity = identity;
+	}
+
+	private String mOtp = null;
+	private String eOtp = null;
+
+	private String mOtpPrefix = null;
+	private String eOtpPrefix = null;
+
 	private String otp = null;
 	private String otpPrefix = null;
 	private String imageId = null;
 	private String imageCaption = null;
 	private String question = null;
+	private QuestModelDTO ques = null;
 	private SecurityQuestionModel answer = null;
-	private AuthFlow authFlow = null;
-	private AuthStep authStep = null;
+	private AuthState state = null;
 
-	public AuthStep getAuthStep() {
-		return authStep;
+	public AuthState getState() {
+		return state;
 	}
 
-	public AuthFlow getAuthFlow() {
-		return authFlow;
+	public void setState(AuthState state) {
+		this.state = state;
 	}
 
-	public void setAuthFlow(AuthFlow authFlow) {
-		this.authFlow = authFlow;
+	public String getmOtp() {
+		return mOtp;
 	}
 
-	public void setNext(AuthFlow authFlow, AuthStep authStep) {
-		this.authFlow = authFlow;
-		this.authStep = authStep;
+	public void setmOtp(String mOtp) {
+		this.mOtp = mOtp;
 	}
 
-	public void setAuthStep(AuthStep authStep) {
-		this.authStep = authStep;
+	public String geteOtp() {
+		return eOtp;
 	}
 
-	private String mOtpPrefix = null;
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
 
 	public String getmOtpPrefix() {
 		return mOtpPrefix;
@@ -56,8 +76,6 @@ public class AuthData extends AbstractModel {
 	public void seteOtpPrefix(String eOtpPrefix) {
 		this.eOtpPrefix = eOtpPrefix;
 	}
-
-	private String eOtpPrefix = null;
 
 	public String getOtpPrefix() {
 		return otpPrefix;
@@ -89,6 +107,14 @@ public class AuthData extends AbstractModel {
 
 	public void setImageCaption(String imageCaption) {
 		this.imageCaption = imageCaption;
+	}
+
+	public QuestModelDTO getQues() {
+		return ques;
+	}
+
+	public void setQues(QuestModelDTO ques) {
+		this.ques = ques;
 	}
 
 	public String getQuestion() {

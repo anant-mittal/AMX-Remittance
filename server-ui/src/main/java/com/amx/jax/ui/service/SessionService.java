@@ -20,6 +20,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.session.LoggedInUsers;
+import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
@@ -201,8 +202,7 @@ public class SessionService {
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
-		guestSession.setFlow(null);
-		guestSession.setAuthStep(null);
+		guestSession.setState(new AuthState());
 		guestSession.setCustomerModel(null);
 	}
 

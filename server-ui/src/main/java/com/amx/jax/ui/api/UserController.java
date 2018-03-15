@@ -41,11 +41,12 @@ public class UserController {
 	private TenantService tenantContext;
 
 	@Timed
-	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {

@@ -38,6 +38,11 @@ public class RegisterController {
 		return registrationService.verifyId(civilid);
 	}
 
+	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
+		return registrationService.validateCustomer(authData.getIdentity(), authData.getmOtp(), authData.getAnswer());
+	}
+
 	/**
 	 * Verifies OTP for civilID
 	 * 
@@ -46,8 +51,9 @@ public class RegisterController {
 	 * @param request
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
+	public ResponseWrapper<UserUpdateData> verifyCUser(@RequestParam String civilid, @RequestParam String mOtp) {
 		return registrationService.loginWithOtp(civilid, mOtp);
 	}
 

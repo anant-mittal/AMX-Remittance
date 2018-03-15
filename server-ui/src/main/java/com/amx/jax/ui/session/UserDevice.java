@@ -26,8 +26,8 @@ import eu.bitwalker.useragentutils.Version;
 public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
-	private String fingerprint = null;
 
+	private String fingerprint = null;
 	private String ip = null;
 	private String id = null;
 	private DeviceType type = null;
@@ -55,7 +55,7 @@ public class UserDevice implements Serializable {
 	}
 
 	public String getIp() {
-		if (ip == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return ip;
@@ -69,48 +69,51 @@ public class UserDevice implements Serializable {
 	}
 
 	public DevicePlatform getPlatform() {
-		if (platform == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return platform;
 	}
 
 	public String getFingerprint() {
-		if (fingerprint == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return fingerprint;
 	}
 
 	public OperatingSystem getOperatingSystem() {
-		if (operatingSystem == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return operatingSystem;
 	}
 
 	public Browser getBrowser() {
-		if (browser == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return browser;
 	}
 
 	public Version getBrowserVersion() {
-		if (browserVersion == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return browserVersion;
 	}
 
 	public String getId() {
-		if (id == null) {
+		if (type == null) {
 			this.resolve();
 		}
 		return id;
 	}
 
 	public String getAppVersion() {
+		if (type == null) {
+			this.resolve();
+		}
 		return appVersion;
 	}
 

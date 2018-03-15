@@ -5,44 +5,47 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
-import com.amx.jax.ui.session.GuestSession.AuthFlow;
-import com.amx.jax.ui.session.GuestSession.AuthStep;
 
 @Component
 @TenantSpecific(Tenant.KWT)
 public class AuthLibKWT implements AuthLib {
 
 	@Override
-	public AuthStep getNextAuthStep(AuthFlow authFlow, AuthStep authStep) {
-		if (authFlow == AuthFlow.LOGIN) {
-			switch (authStep) {
+	public AuthState toNextAuthState(AuthState authState) {
+		authState.cStep = toNextAuthStep(authState);
+		return authState;
+	}
+
+	public AuthState.AuthStep toNextAuthStep(AuthState authState) {
+		if (authState.flow == AuthState.AuthFlow.LOGIN) {
+			switch (authState.cStep) {
 			case USERPASS:
-				return AuthStep.SECQUES;
+				return AuthState.AuthStep.SECQUES;
 			case SECQUES:
-				return AuthStep.COMPLETED;
+				return AuthState.AuthStep.COMPLETED;
 			default:
-				return AuthStep.USERPASS;
+				return AuthState.AuthStep.USERPASS;
 			}
-		} else if (authFlow == AuthFlow.RESET_PASS) {
-			switch (authStep) {
+		} else if (authState.flow == AuthState.AuthFlow.RESET_PASS) {
+			switch (authState.cStep) {
 			case IDVALID:
-				return AuthStep.DOTPVFY;
+				return AuthState.AuthStep.DOTPVFY;
 			case DOTPVFY:
-				return AuthStep.COMPLETED;
+				return AuthState.AuthStep.COMPLETED;
 			default:
-				return authStep;
+				return authState.cStep;
 			}
-		} else if (authFlow == AuthFlow.ACTIVATION) {
-			switch (authStep) {
+		} else if (authState.flow == AuthState.AuthFlow.ACTIVATION) {
+			switch (authState.cStep) {
 			case IDVALID:
-				return AuthStep.MOTPVFY;
+				return AuthState.AuthStep.MOTPVFY;
 			case MOTPVFY:
-				return AuthStep.COMPLETED;
+				return AuthState.AuthStep.COMPLETED;
 			default:
-				return authStep;
+				return authState.cStep;
 			}
 		}
-		return authStep;
+		return authState.cStep;
 	}
 
 }

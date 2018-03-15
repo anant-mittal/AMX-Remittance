@@ -22,6 +22,7 @@ import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
+import com.amx.jax.ui.auth.AuthState;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
@@ -39,52 +40,26 @@ public class GuestSession implements Serializable {
 	private static final long serialVersionUID = -8825493107883952226L;
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public static enum AuthFlow {
-		LOGIN, ACTIVATION, RESET_PASS
-	}
-
-	public static enum AuthStep {
-		USERPASS, SECQUES, IDVALID, DOTPVFY, COMPLETED,
-		// Reg
-		MOTPVFY
-	}
-
 	@Autowired
 	TenantContext<AuthLib> tenantContext;
 
 	@Autowired
 	AuditService auditService;
 
-	AuthFlow flow = null;
-	AuthStep authStep = null;
+	public AuthState state = new AuthState();
+
+	public AuthState getState() {
+		return state;
+	}
+
+	public void setState(AuthState state) {
+		this.state = state;
+	}
+
 	String seqId = null;
 
-	public AuthStep getAuthStep() {
-		return authStep;
-	}
-
-	public AuthStep getNextAuthStep() {
-		return tenantContext.get().getNextAuthStep(flow, authStep);
-	}
-
-	public void setAuthStep(AuthStep authStep) {
-		this.authStep = authStep;
-	}
-
-	public boolean isAuthStep(AuthStep authStep) {
-		return this.authStep == authStep;
-	}
-
-	public AuthFlow getFlow() {
-		return flow;
-	}
-
-	public boolean isFlow(AuthFlow flow) {
-		return this.flow == flow;
-	}
-
-	public void setFlow(AuthFlow authFlow) {
-		this.flow = authFlow;
+	public void moveNextState() {
+		tenantContext.get().toNextAuthState(state);
 	}
 
 	@Autowired

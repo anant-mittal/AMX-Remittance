@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -18,6 +19,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -48,6 +50,7 @@ public class RegistrationService {
 		 * Clearing old session before proceeding
 		 */
 		sessionService.clear();
+		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.ACTIVATION);
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		try {
@@ -57,9 +60,13 @@ public class RegistrationService {
 			if (model.getIsActiveCustomer()) {
 				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 			} else {
+				sessionService.getGuestSession().getState().setValidId(true);
+				sessionService.getGuestSession().moveNextState();
+
 				wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
 				wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
 				wrapper.setMessage(ResponseStatus.OTP_SENT);
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
 			}
 			userSessionInfo.setUserid(civilid);
 
@@ -72,46 +79,66 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	@Deprecated
 	public ResponseWrapper<UserUpdateData> loginWithOtp(String idnetity, String mOtp) {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-
-		if (userSessionInfo.isValid()) {
-			// Check if use is already logged in;
-			wrapper.setMessage(ResponseStatus.ACTIVE_SESSION, ResponseMessage.USER_ALREADY_LOGGIN);
-		} else {
-
-			try {
-				ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity,
-						mOtp, null);
-				CustomerModel model = response.getResult();
-				// Check if otp is valid
-				if (model != null && userSessionInfo.isValid(idnetity, mOtp)) {
-					sessionService.authorize(model, true);
-					
-					List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
-					wrapper.getData().setSecQuesMeta(questModel);
-					wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
-					
-					wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
-				} else { // Use is cannot be validated
-					wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
-				}
-			} catch (AbstractException e) {
-				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
-			}
-		}
+		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
+		CustomerModel model = response.getResult();
+		sessionService.authorize(model, true);
+		initActivation(wrapper);
+		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> getSecQues() {
+	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp) {
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
+		CustomerModel model = response.getResult();
+		if (model.getEmail() != null) {
+			sessionService.authorize(model, false);
+		} else {
+			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
+					.getDataVerificationQuestions();
+			QuestModelDTO ques = response2.getResult();
 
-		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+			// update Session/State
+			sessionService.getGuestSession().getState().setValidMotp(true);
+			sessionService.getGuestSession().moveNextState();
 
+			// update Response
+			wrapper.getData().setQues(ques);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
+		}
+		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		return wrapper;
+	}
+
+	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
+		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		List<SecurityQuestionModel> answers = new ArrayList<SecurityQuestionModel>();
+		answers.add(answer);
+		QuestModelDTO response = jaxClient.setDefaults().getUserclient().validateDataVerificationQuestions(answers)
+				.getResult();
+
+		// update Session/State
+		sessionService.getGuestSession().getState().setValidDataVer(true);
+		sessionService.getGuestSession().moveNextState();
+
+		// update Response
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+
+		return wrapper;
+	}
+
+	private void initActivation(ResponseWrapper<UserUpdateData> wrapper) {
 		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
-
 		wrapper.getData().setSecQuesMeta(questModel);
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
+	}
 
+	public ResponseWrapper<UserUpdateData> getSecQues() {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		initActivation(wrapper);
 		return wrapper;
 	}
 
