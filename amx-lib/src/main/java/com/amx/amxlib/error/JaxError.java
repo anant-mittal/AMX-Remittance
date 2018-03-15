@@ -69,7 +69,8 @@ public enum JaxError {
     NO_RECORD_FOUND,
     INCORRECT_LENGTH,
     ALREADY_EXIST,
-    JAX_SYSTEM_ERROR;
+    JAX_SYSTEM_ERROR,
+    USER_DATA_VERIFICATION_PENDING;
 
 	public String getCode() {
 		return this.toString();
