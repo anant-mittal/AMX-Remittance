@@ -19,6 +19,9 @@ public enum Tenant {
 
 	/** Baharain */
 	BRN("bhr", "104"),
+	
+	/** Baharain */
+	BHR("bhr", "104"),
 
 	/** India */
 	IND("in", "94"), NONE("none", "0");
