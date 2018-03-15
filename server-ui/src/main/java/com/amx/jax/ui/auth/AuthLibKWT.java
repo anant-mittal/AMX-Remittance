@@ -18,6 +18,9 @@ public class AuthLibKWT implements AuthLib {
 
 	public AuthState.AuthStep toNextAuthStep(AuthState authState) {
 		if (authState.flow == AuthState.AuthFlow.LOGIN) {
+			if (authState.cStep == null) {
+				return AuthState.AuthStep.IDVALID;
+			}
 			switch (authState.cStep) {
 			case USERPASS:
 				return AuthState.AuthStep.SECQUES;
@@ -27,6 +30,9 @@ public class AuthLibKWT implements AuthLib {
 				return AuthState.AuthStep.USERPASS;
 			}
 		} else if (authState.flow == AuthState.AuthFlow.RESET_PASS) {
+			if (authState.cStep == null) {
+				return AuthState.AuthStep.IDVALID;
+			}
 			switch (authState.cStep) {
 			case IDVALID:
 				return AuthState.AuthStep.DOTPVFY;
@@ -36,6 +42,9 @@ public class AuthLibKWT implements AuthLib {
 				return authState.cStep;
 			}
 		} else if (authState.flow == AuthState.AuthFlow.ACTIVATION) {
+			if (authState.cStep == null) {
+				return AuthState.AuthStep.IDVALID;
+			}
 			switch (authState.cStep) {
 			case IDVALID:
 				return AuthState.AuthStep.MOTPVFY;

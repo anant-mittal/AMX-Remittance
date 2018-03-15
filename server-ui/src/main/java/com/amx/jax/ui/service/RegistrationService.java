@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -53,28 +52,21 @@ public class RegistrationService {
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.ACTIVATION);
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
-		try {
 
-			CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(civilid).getResult();
-			// Check if response was successful
-			if (model.getIsActiveCustomer()) {
-				wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
-			} else {
-				sessionService.getGuestSession().getState().setValidId(true);
-				sessionService.getGuestSession().moveNextState();
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(civilid).getResult();
+		// Check if response was successful
+		if (model.getIsActiveCustomer()) {
+			wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
+		} else {
+			sessionService.getGuestSession().getState().setValidId(true);
+			sessionService.getGuestSession().moveNextState();
 
-				wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
-				wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
-				wrapper.setMessage(ResponseStatus.OTP_SENT);
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
-			}
-			userSessionInfo.setUserid(civilid);
-
-		} catch (AbstractException e) {
-			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
-		} catch (Exception e) {
-			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
+			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
+			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
+			wrapper.setMessage(ResponseStatus.OTP_SENT);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
+		userSessionInfo.setUserid(civilid);
 
 		return wrapper;
 	}
