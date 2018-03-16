@@ -41,7 +41,7 @@ public class PostManContextListener implements ServletContextListener {
 				postManService.notifySlack(msg);
 			}
 
-		} catch (PostManException e) {
+		} catch (Exception e) {
 			LOGGER.error("Exception while Sending Server Up Status", e);
 		}
 	}
@@ -61,7 +61,7 @@ public class PostManContextListener implements ServletContextListener {
 				LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());
 				postManService.notifySlack(msg);
 			}
-		} catch (PostManException e) {
+		} catch (Exception e) {
 			LOGGER.error("Exception while Sending Server Down Status", e);
 		}
 	}

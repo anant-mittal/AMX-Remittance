@@ -85,7 +85,6 @@ public class LoginService {
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 				sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 				wrapper.getData().setState(sessionService.getGuestSession().getState());
-
 			}
 
 		} catch (LimitExeededException e) {
