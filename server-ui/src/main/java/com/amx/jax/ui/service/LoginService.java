@@ -17,7 +17,9 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -40,6 +42,9 @@ public class LoginService {
 
 	@Autowired
 	private SessionService sessionService;
+
+	@Autowired
+	private AuditService auditService;
 
 	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
 		AuthData loginData = new AuthData();
@@ -74,21 +79,23 @@ public class LoginService {
 			} else {
 				log.info("Login Started for user : customer id : {}", customerModel.getCustomerId());
 				sessionService.getGuestSession().setCustomerModel(customerModel);
-				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.USERPASS);
 
 				wrapper.setData(getRandomSecurityQuestion(customerModel));
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
 
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
+				sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
+
 			}
+
 		} catch (LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
 		}
-
 		return wrapper;
 	}
 
 	public ResponseWrapper<AuthData> loginSecQues(SecurityQuestionModel guestanswer) {
+		sessionService.getGuestSession().initStep(AuthStep.SECQUES);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		CustomerModel customerModel;
 		try {
@@ -100,12 +107,12 @@ public class LoginService {
 			if (customerModel == null) {
 				wrapper.setMessage(ResponseStatus.AUTH_FAILED, ResponseMessage.AUTH_FAILED);
 			} else {
-				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.SECQUES);
-
 				sessionService.authorize(customerModel,
 						sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
 
 				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+				sessionService.getGuestSession().endStep(AuthStep.SECQUES);
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
 			}
 
 		} catch (IncorrectInputException e) {
@@ -166,7 +173,8 @@ public class LoginService {
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
-			sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.IDVALID);
+			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
 		}
@@ -174,6 +182,7 @@ public class LoginService {
 	}
 
 	public ResponseWrapper<AuthData> verifyResetPassword(String identity, String motp, String eotp) {
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(null);
 		try {
 			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp)
@@ -181,9 +190,12 @@ public class LoginService {
 			// Check if otp is valid
 			if (model != null) {
 				sessionService.getGuestSession().setCustomerModel(model);
-				sessionService.getGuestSession().getState().setcStep(AuthState.AuthStep.DOTPVFY);
 				wrapper.setData(getRandomSecurityQuestion(model));
+
 				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+				sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
+
 			} else { // Use is cannot be validated
 				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
 			}
@@ -194,6 +206,7 @@ public class LoginService {
 	}
 
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
+		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		try {
 			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.RESET_PASS)
@@ -207,6 +220,8 @@ public class LoginService {
 					.getResult();
 			if (model.isSuccess()) {
 				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+				sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+				wrapper.getData().setState(sessionService.getGuestSession().getState());
 			}
 		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
 			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);

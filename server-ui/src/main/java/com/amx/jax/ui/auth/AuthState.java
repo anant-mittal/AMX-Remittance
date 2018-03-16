@@ -22,6 +22,15 @@ public class AuthState {
 	public boolean validMotp = false;
 	public boolean validEotp = false;
 	public boolean validDataVer = false;
+	public boolean presentEmail = false;
+
+	public boolean isPresentEmail() {
+		return presentEmail;
+	}
+
+	public void setPresentEmail(boolean presentEmail) {
+		this.presentEmail = presentEmail;
+	}
 
 	public boolean isValidId() {
 		return validId;

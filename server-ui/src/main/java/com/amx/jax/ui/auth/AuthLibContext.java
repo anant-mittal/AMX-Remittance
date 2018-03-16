@@ -12,7 +12,10 @@ import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 public class AuthLibContext extends TenantContext<AuthLib> {
 
 	public interface AuthLib {
+
 		public AuthState toNextAuthState(AuthState authState);
+
+		public AuthState.AuthStep getNextAuthStep(AuthState authState);
 
 	}
 

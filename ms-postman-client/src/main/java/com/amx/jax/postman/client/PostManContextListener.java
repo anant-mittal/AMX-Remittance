@@ -25,43 +25,44 @@ public class PostManContextListener implements ServletContextListener {
 
 	@Override
 	public void contextInitialized(ServletContextEvent sce) {
-		AppConfig appConfig = WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext())
-				.getBean(AppConfig.class);
+		try {
+			AppConfig appConfig = WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext())
+					.getBean(AppConfig.class);
 
-		if (!appConfig.isDebug()) {
-			PostManService postManService = getService(sce);
-			Notipy msg = new Notipy();
-			msg.setChannel(Channel.DEPLOYER);
-			msg.setColor(Color.SUCCESS);
-			msg.setMessage("App : " + appConfig.getAppName());
-			msg.addLine("Status : server is started...");
-			LOGGER.info("{} : Status : server is started...", appConfig.getAppName());
-			try {
+			if (!appConfig.isDebug()) {
+				PostManService postManService = getService(sce);
+				Notipy msg = new Notipy();
+				msg.setChannel(Channel.DEPLOYER);
+				msg.setColor(Color.SUCCESS);
+				msg.setMessage("App : " + appConfig.getAppName());
+				msg.addLine("Status : server is started...");
+				LOGGER.info("{} : Status : server is started...", appConfig.getAppName());
+
 				postManService.notifySlack(msg);
-			} catch (PostManException e) {
-				LOGGER.error("Exception while Sending Server Up Status", e);
 			}
+
+		} catch (PostManException e) {
+			LOGGER.error("Exception while Sending Server Up Status", e);
 		}
 	}
 
 	@Override
 	public void contextDestroyed(ServletContextEvent sce) {
-		AppConfig appConfig = WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext())
-				.getBean(AppConfig.class);
-
-		if (!appConfig.isDebug()) {
-			PostManService postManService = getService(sce);
-			Notipy msg = new Notipy();
-			msg.setChannel(Channel.DEPLOYER);
-			msg.setColor(Color.DANGER);
-			msg.setMessage("App : " + appConfig.getAppName());
-			msg.addLine("Status : server is shutdown...");
-			LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());
-			try {
+		try {
+			AppConfig appConfig = WebApplicationContextUtils.getRequiredWebApplicationContext(sce.getServletContext())
+					.getBean(AppConfig.class);
+			if (!appConfig.isDebug()) {
+				PostManService postManService = getService(sce);
+				Notipy msg = new Notipy();
+				msg.setChannel(Channel.DEPLOYER);
+				msg.setColor(Color.DANGER);
+				msg.setMessage("App : " + appConfig.getAppName());
+				msg.addLine("Status : server is shutdown...");
+				LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());
 				postManService.notifySlack(msg);
-			} catch (PostManException e) {
-				LOGGER.error("Exception while Sending Server Down Status", e);
 			}
+		} catch (PostManException e) {
+			LOGGER.error("Exception while Sending Server Down Status", e);
 		}
 	}
 

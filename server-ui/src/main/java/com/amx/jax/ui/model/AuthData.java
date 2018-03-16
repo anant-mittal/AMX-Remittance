@@ -4,8 +4,6 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.auth.AuthState;
-import com.amx.jax.ui.auth.AuthState.AuthFlow;
-import com.amx.jax.ui.auth.AuthState.AuthStep;
 
 public class AuthData extends AbstractModel {
 

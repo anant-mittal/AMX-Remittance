@@ -23,6 +23,8 @@ import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
+import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
@@ -60,6 +62,20 @@ public class GuestSession implements Serializable {
 
 	public void moveNextState() {
 		tenantContext.get().toNextAuthState(state);
+	}
+
+	public void initStep(AuthStep step) {
+		AuthStep nStep = tenantContext.get().getNextAuthStep(state);
+		if (nStep != step) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
+		state.cStep = step;
+	}
+
+	public AuthState endStep(AuthStep step) {
+		state.cStep = step;
+		state.nStep = tenantContext.get().getNextAuthStep(state);
+		return state;
 	}
 
 	@Autowired

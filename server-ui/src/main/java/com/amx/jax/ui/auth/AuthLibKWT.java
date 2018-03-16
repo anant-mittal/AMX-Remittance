@@ -12,11 +12,11 @@ public class AuthLibKWT implements AuthLib {
 
 	@Override
 	public AuthState toNextAuthState(AuthState authState) {
-		authState.cStep = toNextAuthStep(authState);
+		authState.cStep = getNextAuthStep(authState);
 		return authState;
 	}
 
-	public AuthState.AuthStep toNextAuthStep(AuthState authState) {
+	public AuthState.AuthStep getNextAuthStep(AuthState authState) {
 		if (authState.flow == AuthState.AuthFlow.LOGIN) {
 			if (authState.cStep == null) {
 				return AuthState.AuthStep.IDVALID;
@@ -49,6 +49,16 @@ public class AuthLibKWT implements AuthLib {
 			case IDVALID:
 				return AuthState.AuthStep.MOTPVFY;
 			case MOTPVFY:
+				if (authState.isPresentEmail()) {
+					return AuthState.AuthStep.SECQ_SET;
+				} else {
+					return AuthState.AuthStep.DATA_VERIFY;
+				}
+			case DATA_VERIFY:
+				return AuthState.AuthStep.SECQ_SET;
+			case SECQ_SET:
+				return AuthState.AuthStep.CREDS_SET;
+			case CREDS_SET:
 				return AuthState.AuthStep.COMPLETED;
 			default:
 				return authState.cStep;

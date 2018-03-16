@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.auth.AuthState;
 
 public class UserUpdateData {
 
@@ -12,6 +13,16 @@ public class UserUpdateData {
 
 	private String mOtpPrefix = null;
 	private String eOtpPrefix = null;
+
+	private AuthState state = null;
+
+	public AuthState getState() {
+		return state;
+	}
+
+	public void setState(AuthState state) {
+		this.state = state;
+	}
 
 	public String getmOtpPrefix() {
 		return this.mOtpPrefix;

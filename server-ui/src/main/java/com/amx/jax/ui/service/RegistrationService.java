@@ -19,6 +19,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
@@ -43,7 +44,7 @@ public class RegistrationService {
 	@Autowired
 	private PostManService postManService;
 
-	public ResponseWrapper<AuthData> verifyId(String civilid) {
+	public ResponseWrapper<AuthData> validateCustomer(String civilid) {
 
 		/**
 		 * Clearing old session before proceeding
@@ -83,29 +84,35 @@ public class RegistrationService {
 	}
 
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp) {
+		if (mOtp == null) {
+			return validateCustomer(idnetity);
+		}
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
+
 		CustomerModel model = response.getResult();
+
+		sessionService.authorize(model, false);
+		sessionService.getGuestSession().getState().setValidMotp(true);
+
 		if (model.getEmail() != null) {
-			sessionService.authorize(model, false);
+			sessionService.getGuestSession().getState().setPresentEmail(true);
 		} else {
 			ApiResponse<QuestModelDTO> response2 = jaxClient.setDefaults().getUserclient()
 					.getDataVerificationQuestions();
 			QuestModelDTO ques = response2.getResult();
-
-			// update Session/State
-			sessionService.getGuestSession().getState().setValidMotp(true);
-			sessionService.getGuestSession().moveNextState();
-
-			// update Response
 			wrapper.getData().setQues(ques);
-			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
+		sessionService.getGuestSession().moveNextState();
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
 
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
+		if (answer == null) {
+			return validateCustomer(idnetity, mOtp);
+		}
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		List<SecurityQuestionModel> answers = new ArrayList<SecurityQuestionModel>();
 		answers.add(answer);
@@ -115,10 +122,8 @@ public class RegistrationService {
 		// update Session/State
 		sessionService.getGuestSession().getState().setValidDataVer(true);
 		sessionService.getGuestSession().moveNextState();
-
-		// update Response
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
-
+		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
 
@@ -142,9 +147,9 @@ public class RegistrationService {
 		CustomerModel customerModel = jaxClient.setDefaults().getUserclient()
 				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 
+		sessionService.getGuestSession().endStep(AuthStep.SECQ_SET);
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
-
 		return wrapper;
 	}
 
@@ -153,8 +158,8 @@ public class RegistrationService {
 
 		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
 
+		sessionService.getGuestSession().endStep(AuthStep.CAPTION_SET);
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
-
 		return wrapper;
 	}
 

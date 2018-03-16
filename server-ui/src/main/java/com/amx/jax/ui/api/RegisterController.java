@@ -1,6 +1,7 @@
 package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @Api(value = "Registration APIs")
+@PropertySource("classpath:controller.properties")
 public class RegisterController {
 
 	@Autowired
@@ -35,9 +37,10 @@ public class RegisterController {
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid) {
-		return registrationService.verifyId(civilid);
+		return registrationService.validateCustomer(civilid);
 	}
 
+	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
 		return registrationService.validateCustomer(authData.getIdentity(), authData.getmOtp(), authData.getAnswer());
