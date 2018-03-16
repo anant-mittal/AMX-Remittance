@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import com.amx.jax.config.AppConfig;
-import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
@@ -41,7 +40,7 @@ public class PostManContextListener implements ServletContextListener {
 				postManService.notifySlack(msg);
 			}
 
-		} catch (PostManException e) {
+		} catch (Exception e) {
 			LOGGER.error("Exception while Sending Server Up Status", e);
 		}
 	}
@@ -61,7 +60,7 @@ public class PostManContextListener implements ServletContextListener {
 				LOGGER.info("{} : Status : server is shutdown...", appConfig.getAppName());
 				postManService.notifySlack(msg);
 			}
-		} catch (PostManException e) {
+		} catch (Exception e) {
 			LOGGER.error("Exception while Sending Server Down Status", e);
 		}
 	}

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AuthEvent;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
@@ -65,11 +66,13 @@ public class GuestSession implements Serializable {
 	}
 
 	public void initStep(AuthStep step) {
-		AuthStep nStep = tenantContext.get().getNextAuthStep(state);
-		if (nStep != step) {
-			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
+		if (step != state.cStep) {
+			AuthEvent event = new AuthEvent(AuthEvent.Type.AUTH_DEFAULT, HttpUnauthorizedException.UN_SEQUENCE, false);
+			auditService.log(event);
+			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
-		state.cStep = step;
+		// state.cStep = step;
 	}
 
 	public AuthState endStep(AuthStep step) {
