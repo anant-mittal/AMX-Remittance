@@ -112,7 +112,7 @@ public class RegistrationService {
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		List<SecurityQuestionModel> answers = new ArrayList<SecurityQuestionModel>();
 		answers.add(answer);
-		QuestModelDTO response = jaxClient.setDefaults().getUserclient().validateDataVerificationQuestions(answers)
+		CustomerModel response = jaxClient.setDefaults().getUserclient().validateDataVerificationQuestions(answers)
 				.getResult();
 
 		// update Session/State

@@ -607,8 +607,8 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
     
-	public ApiResponse<QuestModelDTO> validateDataVerificationQuestions(List<SecurityQuestionModel> answers) {
-		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
+	public ApiResponse<CustomerModel> validateDataVerificationQuestions(List<SecurityQuestionModel> answers) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			LOGGER.info("in the saveDataVerificationQuestions");
 			CustomerModel cmodel = new CustomerModel();
@@ -616,7 +616,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/";
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(cmodel, getHeader());
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			return response.getBody();
 		} catch (Exception e) {
