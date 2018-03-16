@@ -63,10 +63,12 @@ import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
+import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -135,6 +137,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	CustomerVerificationService customerVerificationService;
+	
+	@Autowired
+	TenantContext<UserValidation> tenantContext;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {

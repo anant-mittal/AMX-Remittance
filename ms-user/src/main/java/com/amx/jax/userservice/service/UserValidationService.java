@@ -125,11 +125,7 @@ public class UserValidationService {
 		if (cust.getEmail() == null) {
 			createEmailVerification(cust);
 		}
-		if (tenantContext.get() != null) {
-			tenantContext.get().validateCustIdProofs(cust.getCustomerId());
-		} else {
-			this.validateCustIdProofs(cust.getCustomerId());
-		}
+		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
 	}
 
@@ -169,6 +165,10 @@ public class UserValidationService {
 	}
 
 	protected void validateCustIdProofs(BigDecimal custId) {
+		if (tenantContext.get() != null) {
+			tenantContext.get().validateCustIdProofs(custId);
+			return;
+		} 
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			validateIdProof(idProof);
