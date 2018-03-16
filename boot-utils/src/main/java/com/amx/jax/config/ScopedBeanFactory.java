@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 
  * @author lalittanwar
@@ -14,6 +17,9 @@ import java.util.Map;
  * @param <T>
  */
 public abstract class ScopedBeanFactory<E, T> {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
+
 	private final Map<String, T> libsByCode = new HashMap<>();
 
 	public ScopedBeanFactory(List<T> beans) {
@@ -60,7 +66,11 @@ public abstract class ScopedBeanFactory<E, T> {
 	 * @return
 	 */
 	public T get(E key) {
-		return this.libsByCode.get(key.toString().toLowerCase());
+		if (this.libsByCode.containsKey(key.toString().toLowerCase())) {
+			return this.libsByCode.get(key.toString().toLowerCase());
+		}
+		log.error("libsByCode Not Exists for Code== " + key);
+		return null;
 	}
 
 	/**
