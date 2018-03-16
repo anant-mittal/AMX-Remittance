@@ -26,7 +26,7 @@ public class UserValidationBhr implements UserValidation {
 	public void validateCustIdProofs(BigDecimal custId) {
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
-			if (!idProof.getIdentityExpiryDate().before(new Date())) {
+			if (!idProof.getIdentityExpiryDate().after(new Date())) {
 				throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
 			}
 		}
