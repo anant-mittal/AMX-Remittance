@@ -424,7 +424,7 @@ public class BeneficiaryService extends AbstractService {
 	public void setBeneDataVerificationQuestion(List<QuestModelDTO> result) {
 
 		result.forEach(i -> {
-			if (i.getQuestNumber().equals(BigDecimal.ONE)) {
+			if (i.getQuestNumber().equals(new BigDecimal(2))) {
 				List<BenificiaryListView> list = beneficiaryOnlineDao
 						.getOnlineBeneListFromView(metaData.getCustomerId(), metaData.getCountryId());
 				int index = ThreadLocalRandom.current().nextInt(0, list.size());
