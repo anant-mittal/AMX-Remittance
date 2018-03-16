@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("application-lib.properties")
+@PropertySource("classpath:application-lib.properties")
 public class AppConfig {
 
 	@Value("${app.name}")
