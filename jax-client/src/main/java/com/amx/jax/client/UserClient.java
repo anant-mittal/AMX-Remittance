@@ -612,7 +612,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			LOGGER.info("in the saveDataVerificationQuestions");
 			CustomerModel cmodel = new CustomerModel();
-			cmodel.setSecurityquestions(answers);
+			cmodel.setVerificationAnswers(answers);
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/";
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(cmodel, getHeader());
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
