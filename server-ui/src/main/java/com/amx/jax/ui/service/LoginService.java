@@ -18,6 +18,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
@@ -85,6 +86,7 @@ public class LoginService {
 				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
 				sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 				wrapper.getData().setState(sessionService.getGuestSession().getState());
+				auditService.log(new AuthEvent(AuthEvent.Type.LOGIN_ATTEMPT, AuthStep.USERPASS, true));
 			}
 
 		} catch (LimitExeededException e) {
