@@ -7,17 +7,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.model.AuthData;
@@ -41,9 +35,6 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
-	@Autowired
-	private PostManService postManService;
-
 	public ResponseWrapper<AuthData> validateCustomer(String civilid) {
 
 		/**
@@ -60,11 +51,12 @@ public class RegistrationService {
 			wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
 		} else {
 			sessionService.getGuestSession().getState().setValidId(true);
-			sessionService.getGuestSession().moveNextState();
 
 			wrapper.getData().setmOtpPrefix((model.getmOtpPrefix()));
 			wrapper.getData().seteOtpPrefix((model.geteOtpPrefix()));
 			wrapper.setMessage(ResponseStatus.OTP_SENT);
+
+			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
 		userSessionInfo.setUserid(civilid);
@@ -87,6 +79,7 @@ public class RegistrationService {
 		if (mOtp == null) {
 			return validateCustomer(idnetity);
 		}
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
 
@@ -103,13 +96,16 @@ public class RegistrationService {
 			QuestModelDTO ques = response2.getResult();
 			wrapper.getData().setQues(ques);
 		}
-		sessionService.getGuestSession().moveNextState();
-		wrapper.getData().setState(sessionService.getGuestSession().getState());
+
 		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
+
 		return wrapper;
 	}
 
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
+		sessionService.getGuestSession().initStep(AuthStep.DATA_VERIFY);
 		if (answer == null) {
 			return validateCustomer(idnetity, mOtp);
 		}
@@ -121,9 +117,9 @@ public class RegistrationService {
 
 		// update Session/State
 		sessionService.getGuestSession().getState().setValidDataVer(true);
-		sessionService.getGuestSession().moveNextState();
-		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(AuthStep.DATA_VERIFY);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
@@ -141,58 +137,40 @@ public class RegistrationService {
 
 	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
 			String eOtp) {
-
+		sessionService.getGuestSession().initStep(AuthStep.SECQ_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		CustomerModel customerModel = jaxClient.setDefaults().getUserclient()
 				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 
-		sessionService.getGuestSession().endStep(AuthStep.SECQ_SET);
 		wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
+		sessionService.getGuestSession().endStep(AuthStep.SECQ_SET);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
+		sessionService.getGuestSession().initStep(AuthStep.CAPTION_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		jaxClient.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
 
-		sessionService.getGuestSession().endStep(AuthStep.CAPTION_SET);
 		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
+		sessionService.getGuestSession().endStep(AuthStep.CAPTION_SET);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password, String mOtp,
 			String eOtp) {
+		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		try {
-			jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, mOtp, eOtp).getResult();
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
-
-			String emailId = userSessionInfo.getCustomerModel().getEmail();
-
-			if (emailId != null && !UIConstants.EMPTY.equals(emailId)) {
-				PersonInfo personInfo = userSessionInfo.getCustomerModel().getPersoninfo();
-				Email email = new Email();
-				email.setSubject(UIConstants.REG_SUC);
-				email.addTo(emailId);
-				email.setTemplate(Templates.REG_SUC);
-				email.setHtml(true);
-				email.getModel().put(UIConstants.RESP_DATA_KEY, personInfo);
-
-				try {
-					postManService.sendEmail(email);
-				} catch (Exception e) {
-					LOG.error("Error while sending OTP Email to" + emailId, e);
-				}
-			}
-
-		} catch (AlreadyExistsException e) {
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
-			e.getStackTrace();
-		}
+		jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, mOtp, eOtp).getResult();
+		wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
+		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 
 		return wrapper;
 	}
