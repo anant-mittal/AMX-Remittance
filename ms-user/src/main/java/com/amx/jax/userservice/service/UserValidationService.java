@@ -41,10 +41,12 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
@@ -98,6 +100,9 @@ public class UserValidationService {
 
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
+	
+	@Autowired
+	TenantContext<UserValidation> tenantContext;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -120,8 +125,11 @@ public class UserValidationService {
 		if (cust.getEmail() == null) {
 			createEmailVerification(cust);
 		}
-
-		this.validateCustIdProofs(cust.getCustomerId());
+		if (tenantContext.get() != null) {
+			tenantContext.get().validateCustIdProofs(cust.getCustomerId());
+		} else {
+			this.validateCustIdProofs(cust.getCustomerId());
+		}
 		return cust;
 	}
 
