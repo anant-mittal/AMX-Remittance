@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.PostManException;
@@ -14,7 +15,6 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
@@ -112,6 +112,7 @@ public class PostManClient implements PostManService {
 	}
 
 	@Override
+	@Async
 	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
 			HttpResponse<Notipy> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)

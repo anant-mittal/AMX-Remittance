@@ -65,11 +65,11 @@ public class GuestSession implements Serializable {
 	}
 
 	public void initStep(AuthStep step) {
-		AuthStep nStep = tenantContext.get().getNextAuthStep(state);
-		if (nStep != step) {
-			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		//AuthStep nStep = tenantContext.get().getNextAuthStep(state);
+		if (step != state.cStep) {
+			//throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
-		state.cStep = step;
+		//state.cStep = step;
 	}
 
 	public AuthState endStep(AuthStep step) {

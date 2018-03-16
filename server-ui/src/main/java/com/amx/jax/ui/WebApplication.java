@@ -74,11 +74,13 @@ public class WebApplication extends SpringBootServletInitializer {
 		return registration;
 	}
 
-//	@Bean
-//	ServletListenerRegistrationBean<ServletRequestListener> myServletRequestListener() {
-//		ServletListenerRegistrationBean<ServletRequestListener> srb = new ServletListenerRegistrationBean<>();
-//		srb.setListener(new WebRequestListener());
-//		return srb;
-//	}
+	// @Bean
+	// ServletListenerRegistrationBean<ServletRequestListener>
+	// myServletRequestListener() {
+	// ServletListenerRegistrationBean<ServletRequestListener> srb = new
+	// ServletListenerRegistrationBean<>();
+	// srb.setListener(new WebRequestListener());
+	// return srb;
+	// }
 
 }
