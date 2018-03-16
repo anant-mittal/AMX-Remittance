@@ -179,6 +179,7 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			model.setEmail(customer.getEmail());
 			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
 			if (history != null) {
 				personinfo.setLastLoginTime(history.getLoginTime());
