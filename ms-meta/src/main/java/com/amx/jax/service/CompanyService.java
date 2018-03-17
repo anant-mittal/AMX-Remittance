@@ -35,6 +35,11 @@ public class CompanyService extends AbstractService {
 		response.getData().setType("company");
 		return response;
 	}
+	
+	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
+		return companyDetails.get(0);
+	}
 
 	public  static ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
 		ViewCompanyDetails companyDetails=null;

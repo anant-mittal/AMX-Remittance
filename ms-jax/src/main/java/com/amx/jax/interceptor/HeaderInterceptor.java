@@ -15,10 +15,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.amx.amxlib.constant.JaxChannel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryBranchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,6 +33,9 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 	
 	@Autowired 
 	CountryBranchService countryBranchService;
+	
+	@Autowired
+	CompanyService companyService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -57,6 +63,10 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 			if (cb != null) {
 				metaData.setCountryBranchId(cb.getCountryBranchId());
 			}
+		}
+		if(metaData.getLanguageId() != null) {
+			ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+			metaData.setCompanyId(company.getCompanyId());
 		}
 
 	}
