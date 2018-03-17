@@ -45,6 +45,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.CustomerVerification;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
@@ -646,14 +647,19 @@ public class UserService extends AbstractUserService {
 							contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
 					if (!stateMasterView.isEmpty()) {
 						customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
-						List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(),
-								contactList.get(0).getFsDistrictMaster().getDistrictId(), new BigDecimal(1));
-						if (!districtMas.isEmpty()) {
-							customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-							List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),
-									contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-							if (!cityDetails.isEmpty()) {
-								customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+						DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
+						if (distictMaster != null) {
+							List<ViewDistrict> districtMas = districtDao.getDistrict(
+									stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),
+									new BigDecimal(1));
+							if (!districtMas.isEmpty()) {
+								customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+								List<ViewCity> cityDetails = cityDao.getCityDescription(
+										districtMas.get(0).getDistrictId(),
+										contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+								if (!cityDetails.isEmpty()) {
+									customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+								}
 							}
 						}
 					}
