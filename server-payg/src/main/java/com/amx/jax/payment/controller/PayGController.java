@@ -61,6 +61,10 @@ public class PayGController {
 
 		TenantContextHolder.setCurrent(tnt);
 
+		if (tnt.equals(Tenant.BHR)) {
+		    pg = "BENEFIT";
+		}
+		
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 			String callback = new String(decodedBytes);
