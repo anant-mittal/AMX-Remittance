@@ -628,4 +628,25 @@ public class UserClient extends AbstractJaxServiceClient {
 			}
 		}
 	}
+	
+    public ApiResponse<CustomerModel> customerLoggedIn() {
+        try {
+            ResponseEntity<ApiResponse<CustomerModel>> response;
+            CustomerModel custModel = new CustomerModel();
+            custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+            HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+            String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
+            LOGGER.info("calling saveEmail api: " + sendOtpUrl);
+            response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+                    });
+            LOGGER.info("responce from  customer logged in  api: " + util.marshall(response.getBody()));
+            return response.getBody();
+        } catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in customer logged in : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    } // end of customerLoggedIn
 }

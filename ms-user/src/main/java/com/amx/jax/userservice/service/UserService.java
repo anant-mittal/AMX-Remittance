@@ -817,5 +817,16 @@ public class UserService extends AbstractUserService {
 		}
 		return personInfo;
 	}
+	
+	   public ApiResponse customerLoggedIn(CustomerModel customerModel) {
+	        CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerModel.getCustomerId());
+	        ApiResponse response = getBlackApiResponse();
+	        CustomerModel cusModel = convert(onlineCustomer);
+	        //afterLoginSteps(onlineCustomer);
+	        response.getData().getValues().add(cusModel);
+	        response.getData().setType(cusModel.getModelType());
+	        response.setResponseStatus(ResponseStatus.OK);
+	        return response;
+	    }
 
 }
