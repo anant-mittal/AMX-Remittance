@@ -13,15 +13,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.AuthEvent;
+import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
-import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.GuestSession;
 
 @ControllerAdvice
-public class JaxAdvice {
+public class WebJaxAdvice {
 
 	@Autowired
 	private AuditService auditService;
@@ -29,7 +28,7 @@ public class JaxAdvice {
 	@Autowired
 	private GuestSession guestSession;
 
-	private Logger LOG = LoggerFactory.getLogger(JaxAdvice.class);
+	private Logger LOG = LoggerFactory.getLogger(WebJaxAdvice.class);
 
 	@ExceptionHandler(AbstractException.class)
 	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractException exc, HttpServletRequest request,
@@ -38,8 +37,8 @@ public class JaxAdvice {
 		wrapper.setMessage(ResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		LOG.error(ResponseStatus.UNKNOWN_JAX_ERROR.toString(), exc);
 		AuthState state = guestSession.getState();
-		if (state.getFlow() == AuthFlow.LOGIN) {
-			auditService.log(new AuthEvent(AuthEvent.Type.LOGIN_ATTEMPT, state.getnStep(), false));
+		if (state.getFlow() != null) {
+			auditService.log(new AuthEvent(AuthEvent.Type.AUTH_FAIL, state, exc.getError()));
 		}
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}

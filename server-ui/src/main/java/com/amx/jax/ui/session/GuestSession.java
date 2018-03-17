@@ -18,15 +18,14 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.AuthEvent;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
-import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
 /**
@@ -59,25 +58,31 @@ public class GuestSession implements Serializable {
 		this.state = state;
 	}
 
-	String seqId = null;
+	String identity = null;
 
-	public void moveNextState() {
-		tenantContext.get().toNextAuthState(state);
+	public String getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(String identiy) {
+		this.identity = identiy;
 	}
 
 	public void initStep(AuthStep step) {
 		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.cStep) {
-			AuthEvent event = new AuthEvent(AuthEvent.Type.AUTH_DEFAULT, HttpUnauthorizedException.UN_SEQUENCE, false);
-			auditService.log(event);
+			auditService.log(new AuthEvent(AuthEvent.Type.AUTH_FAIL, state, HttpUnauthorizedException.UN_SEQUENCE));
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
-		// state.cStep = step;
 	}
 
 	public AuthState endStep(AuthStep step) {
+		auditService.log(new AuthEvent(state));
 		state.cStep = step;
 		state.nStep = tenantContext.get().getNextAuthStep(state);
+		if (state.nStep == AuthStep.COMPLETED) {
+			state.flow = null;
+		}
 		return state;
 	}
 
@@ -91,14 +96,6 @@ public class GuestSession implements Serializable {
 		nextTokenMap.put(key, nextToken);
 		log.info("Created {} = {}", key, nextToken);
 		return nextToken;
-	}
-
-	public boolean isValidToken(String key, String value) {
-		log.info("Validating {} = {}", key, value);
-		if (nextTokenMap.containsKey(key)) {
-			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
-		}
-		return false;
 	}
 
 	public void validate(String curEnd, String[] validEnds) {

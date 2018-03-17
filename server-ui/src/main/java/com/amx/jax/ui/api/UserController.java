@@ -2,7 +2,6 @@
 package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -82,8 +80,7 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> updateSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
+	public ResponseWrapper<AuthData> updateSecQues(@RequestBody SecurityQuestionModel guestanswer) {
 		return loginService.loginSecQues(guestanswer);
 	}
 

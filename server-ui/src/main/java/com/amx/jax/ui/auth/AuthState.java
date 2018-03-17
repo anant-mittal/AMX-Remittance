@@ -1,8 +1,10 @@
 package com.amx.jax.ui.auth;
 
+import com.amx.jax.logger.AuditEvent.EventType;
+
 public class AuthState {
 
-	public static enum AuthFlow {
+	public static enum AuthFlow implements EventType {
 		LOGIN, ACTIVATION, RESET_PASS
 	}
 

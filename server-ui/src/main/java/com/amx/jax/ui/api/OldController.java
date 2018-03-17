@@ -57,8 +57,7 @@ public class OldController {
 
 	@Deprecated
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
+	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer) {
 		return loginService.loginSecQues(guestanswer);
 	}
 

@@ -35,17 +35,18 @@ public class RegistrationService {
 	@Autowired
 	private JaxService jaxClient;
 
-	public ResponseWrapper<AuthData> validateCustomer(String civilid) {
+	public ResponseWrapper<AuthData> validateCustomer(String identity) {
 
 		/**
 		 * Clearing old session before proceeding
 		 */
 		sessionService.clear();
+		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.ACTIVATION);
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 
-		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(civilid).getResult();
+		CivilIdOtpModel model = jaxClient.setDefaults().getUserclient().initRegistration(identity).getResult();
 		// Check if response was successful
 		if (model.getIsActiveCustomer()) {
 			wrapper.setMessage(ResponseStatus.ALREADY_ACTIVE, ResponseMessage.USER_ALREADY_ACTIVE);
@@ -59,7 +60,7 @@ public class RegistrationService {
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
-		userSessionInfo.setUserid(civilid);
+		userSessionInfo.setUserid(identity);
 
 		return wrapper;
 	}

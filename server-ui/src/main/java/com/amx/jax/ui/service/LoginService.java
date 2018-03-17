@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
+import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -18,7 +19,6 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
@@ -73,25 +73,16 @@ public class LoginService {
 		sessionService.clear();
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.LOGIN);
 		CustomerModel customerModel;
-		try {
-			customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
-			if (customerModel == null) {
-				wrapper.setMessage(ResponseStatus.AUTH_FAILED, ResponseMessage.AUTH_FAILED);
-			} else {
-				log.info("Login Started for user : customer id : {}", customerModel.getCustomerId());
-				sessionService.getGuestSession().setCustomerModel(customerModel);
-
-				wrapper.setData(getRandomSecurityQuestion(customerModel));
-
-				wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
-				sessionService.getGuestSession().endStep(AuthStep.USERPASS);
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
-				auditService.log(new AuthEvent(AuthEvent.Type.LOGIN_ATTEMPT, AuthStep.USERPASS, true));
-			}
-
-		} catch (LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
+		sessionService.getGuestSession().setIdentity(identity);
+		customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();
+		if (customerModel == null) {
+			throw new JaxSystemError();
 		}
+		sessionService.getGuestSession().setCustomerModel(customerModel);
+		wrapper.setData(getRandomSecurityQuestion(customerModel));
+		wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
+		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
@@ -165,6 +156,7 @@ public class LoginService {
 
 	public ResponseWrapper<AuthData> initResetPassword(String identity) {
 		sessionService.clear();
+		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.RESET_PASS);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		try {
@@ -185,47 +177,36 @@ public class LoginService {
 	public ResponseWrapper<AuthData> verifyResetPassword(String identity, String motp, String eotp) {
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(null);
-		try {
-			CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp)
-					.getResult();
-			// Check if otp is valid
-			if (model != null) {
-				sessionService.getGuestSession().setCustomerModel(model);
-				wrapper.setData(getRandomSecurityQuestion(model));
-
-				wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
-				sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
-
-			} else { // Use is cannot be validated
-				wrapper.setMessage(ResponseStatus.VERIFY_FAILED, ResponseMessage.AUTH_FAILED);
-			}
-		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.VERIFY_FAILED, e);
+		CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp).getResult();
+		// Check if otp is valid
+		if (model == null) {
+			throw new JaxSystemError();
 		}
+		sessionService.getGuestSession().setCustomerModel(model);
+		wrapper.setData(getRandomSecurityQuestion(model));
+
+		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
-		try {
-			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.RESET_PASS)
-					&& !sessionService.getGuestSession().getState().isStep(AuthState.AuthStep.SECQUES)) {
-				throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
-			}
-			if (!sessionService.getUserSession().isValid()) {
-				// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
-			}
-			BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
-					.getResult();
-			if (model.isSuccess()) {
-				wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
-				sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
-			}
-		} catch (IncorrectInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_FAILED, e);
+		if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.RESET_PASS)
+				&& !sessionService.getGuestSession().getState().isStep(AuthState.AuthStep.SECQUES)) {
+			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
+		if (!sessionService.getUserSession().isValid()) {
+			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_AUTHORIZED);
+		}
+		BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
+				.getResult();
+		if (model.isSuccess()) {
+			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
 		return wrapper;
 	}
