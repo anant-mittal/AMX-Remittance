@@ -14,9 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.service.CountryBranchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -24,6 +27,9 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
 	private MetaData metaData;
+	
+	@Autowired 
+	CountryBranchService countryBranchService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -40,8 +46,19 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 			MDC.put("customer-id", metaData.getCustomerId());
 			logger.info("Referrer = {}", metaData.getReferrer());
 		}
+		resolveMetaDataFields();
 
 		return super.preHandle(request, response, handler);
+	}
+
+	private void resolveMetaDataFields() {
+		if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
+			CountryBranch cb = countryBranchService.getOnlineCountryBranch();
+			if (cb != null) {
+				metaData.setCountryBranchId(cb.getCountryBranchId());
+			}
+		}
+
 	}
 
 }

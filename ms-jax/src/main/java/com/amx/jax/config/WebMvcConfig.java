@@ -27,8 +27,8 @@ public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(interceptor);
 		registry.addInterceptor(tenantInterceptor);
+		registry.addInterceptor(interceptor);
 	}
 	
 	@Bean(autowire=Autowire.BY_NAME)
