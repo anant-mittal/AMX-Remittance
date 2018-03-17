@@ -250,8 +250,9 @@ public class UserService extends AbstractUserService {
 	private void updateCustomerVerification(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
 		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 		if (cv != null) {
+			logger.info("customer verification found with status = " + cv.getVerificationStatus());
 			customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
-			if(model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())){
+			if (model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				updateEmail(cust.getCustomerId(), model.getEmail());
 			}
 		}		
@@ -562,7 +563,7 @@ public class UserService extends AbstractUserService {
 	}
 	
 	public void updateEmail(BigDecimal customerId, String email) {
-
+		logger.info("Updating customer's email address " + email);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		onlineCustomer.setEmail(email);
 		Customer customer = custDao.getCustById(customerId);
