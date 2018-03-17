@@ -634,9 +634,10 @@ public class UserClient extends AbstractJaxServiceClient {
             ResponseEntity<ApiResponse<CustomerModel>> response;
             CustomerModel custModel = new CustomerModel();
             custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+            
             HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
             String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
-            LOGGER.info("calling saveEmail api: " + sendOtpUrl);
+            LOGGER.info("calling customer logged in api: " + sendOtpUrl);
             response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
                     new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
                     });
