@@ -1,15 +1,17 @@
 
 package com.amx.jax.ui.api;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -22,6 +24,8 @@ import io.swagger.annotations.Api;
 @RestController
 @Api(value = "User Auth APIs")
 public class AuthController {
+
+	public static final String SECURITYQUESTIONMODEL = "" + SecurityQuestionModel.class.getName();
 
 	@Autowired
 	private LoginService loginService;
@@ -37,30 +41,32 @@ public class AuthController {
 	 * @return
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
-			@RequestParam(required = false) String password) {
-		return loginService.login(identity, password);
+	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
+		return loginService.login(authData.getIdentity(), authData.getPassword());
 	}
 
 	@RequestMapping(value = "/pub/auth/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer) {
-		return loginService.loginSecQues(guestanswer);
+	public ResponseWrapper<AuthResponse> loginSecQues(@Valid @RequestBody AuthRequest authData) {
+		return loginService.loginSecQues(authData.getAnswer(), authData.getmOtp());
+	}
+
+	@RequestMapping(value = "/pub/auth/otp", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponse> sendOTP(@Valid @RequestBody AuthRequest authData) {
+		return loginService.sendOTP(authData.getIdentity(), null);
 	}
 
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> initReset(@RequestParam String identity,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
-		if (mOtp == null && eOtp == null) {
-			return loginService.initResetPassword(identity);
+	public ResponseWrapper<AuthResponse> initReset(@Valid @RequestBody AuthRequest authData) {
+		if (authData.getmOtp() == null && authData.geteOtp() == null) {
+			return loginService.initResetPassword(authData.getIdentity());
 		} else {
-			return loginService.verifyResetPassword(identity, mOtp, eOtp);
+			return loginService.verifyResetPassword(authData.getIdentity(), authData.getmOtp(), authData.geteOtp());
 		}
 	}
 
 	@RequestMapping(value = "/pub/auth/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return loginService.updatepwd(password, mOtp, eOtp);
+	public ResponseWrapper<UserUpdateData> resetPassword(@Valid @RequestBody AuthRequest authData) {
+		return loginService.updatepwd(authData.getPassword(), authData.getmOtp(), authData.geteOtp());
 	}
 
 	@RequestMapping(value = "/pub/auth/logout", method = { RequestMethod.POST })

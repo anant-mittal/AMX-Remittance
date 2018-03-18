@@ -1,6 +1,8 @@
 package com.amx.jax.ui.response;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
@@ -40,6 +42,16 @@ public class ResponseWrapper<T> implements Serializable {
 	private String message = UIConstants.EMPTY;
 	private String messageKey = UIConstants.EMPTY;
 	private String redirectUrl = null;
+
+	private List<ResponseError> errors = null;
+
+	public List<ResponseError> getErrors() {
+		return errors;
+	}
+
+	public void setErrors(List<ResponseError> errors) {
+		this.errors = errors;
+	}
 
 	public String getRedirectUrl() {
 		return redirectUrl;

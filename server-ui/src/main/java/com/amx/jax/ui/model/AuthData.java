@@ -1,21 +1,39 @@
 package com.amx.jax.ui.model;
 
+import javax.validation.constraints.Pattern;
+
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 
-public class AuthData extends AbstractModel {
+public class AuthData extends AbstractModel implements AuthResponse, AuthRequest {
 
 	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
 
+	@Pattern(regexp = "^[0-9a-zA-Z]+$")
 	private String identity = null;
 
+	private String password = null;
+
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	@Override
 	public String getIdentity() {
 		return identity;
 	}
 
+	@Override
 	public void setIdentity(String identity) {
 		this.identity = identity;
 	}
@@ -35,18 +53,22 @@ public class AuthData extends AbstractModel {
 	private SecurityQuestionModel answer = null;
 	private AuthState state = null;
 
+	@Override
 	public AuthState getState() {
 		return state;
 	}
 
+	@Override
 	public void setState(AuthState state) {
 		this.state = state;
 	}
 
+	@Override
 	public String getmOtp() {
 		return mOtp;
 	}
 
+	@Override
 	public void setmOtp(String mOtp) {
 		this.mOtp = mOtp;
 	}
@@ -115,6 +137,7 @@ public class AuthData extends AbstractModel {
 		this.ques = ques;
 	}
 
+	@Override
 	public String getQuestion() {
 		return question;
 	}
@@ -123,6 +146,7 @@ public class AuthData extends AbstractModel {
 		this.question = question;
 	}
 
+	@Override
 	public SecurityQuestionModel getAnswer() {
 		return answer;
 	}

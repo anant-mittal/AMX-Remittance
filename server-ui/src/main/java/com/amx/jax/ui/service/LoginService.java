@@ -23,6 +23,7 @@ import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -60,16 +61,18 @@ public class LoginService {
 		for (QuestModelDTO questModelDTO : questModel) {
 			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
 				loginData.setQuestion(questModelDTO.getDescription());
+				loginData.setQues(questModelDTO);
 			}
 		}
+
 		loginData.setImageId(customerModel.getImageUrl());
 		loginData.setImageCaption(customerModel.getCaption());
 		loginData.setAnswer(answer);
 		return loginData;
 	}
 
-	public ResponseWrapper<AuthData> login(String identity, String password) {
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(null);
+	public ResponseWrapper<AuthResponse> login(String identity, String password) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.LOGIN);
 		CustomerModel customerModel;
@@ -86,26 +89,31 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthData> loginSecQues(SecurityQuestionModel guestanswer) {
+	public ResponseWrapper<AuthResponse> loginSecQues(SecurityQuestionModel guestanswer, String mOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.SECQUES);
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		CustomerModel customerModel;
 		try {
-			List<SecurityQuestionModel> guestanswers = new ArrayList<SecurityQuestionModel>();
-			guestanswers.add(guestanswer);
-			customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswers)
-					.getResult();
+
+			if (mOtp == null) {
+				List<SecurityQuestionModel> guestanswers = new ArrayList<SecurityQuestionModel>();
+				guestanswers.add(guestanswer);
+				customerModel = jaxService.setDefaults().getUserclient().validateSecurityQuestions(guestanswers)
+						.getResult();
+			} else {
+				customerModel = jaxService.setDefaults().getUserclient().validateOtp(null, mOtp, null).getResult();
+			}
 
 			if (customerModel == null) {
-				wrapper.setMessage(ResponseStatus.AUTH_FAILED, ResponseMessage.AUTH_FAILED);
-			} else {
-				sessionService.authorize(customerModel,
-						sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
-
-				wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
-				sessionService.getGuestSession().endStep(AuthStep.SECQUES);
-				wrapper.getData().setState(sessionService.getGuestSession().getState());
+				throw new JaxSystemError();
 			}
+
+			sessionService.authorize(customerModel,
+					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+
+			wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
+			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
 		} catch (IncorrectInputException e) {
 			customerModel = sessionService.getGuestSession().getCustomerModel();
@@ -123,7 +131,7 @@ public class LoginService {
 					wrapper.getData().setQuestion(questModelDTO.getDescription());
 				}
 			}
-			wrapper.getData().setAnswer(answer);
+			// wrapper.getData().setAnswer(answer);
 			wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
 		} catch (CustomerValidationException e) {
 			wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
@@ -133,8 +141,8 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthData> sendOTP(String identity) {
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+	public ResponseWrapper<AuthResponse> sendOTP(String identity, String motp) {
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		try {
 			CivilIdOtpModel model;
 			if (identity == null) {
@@ -154,11 +162,11 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthData> initResetPassword(String identity) {
+	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
 		sessionService.clear();
 		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.RESET_PASS);
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		try {
 			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
 					.getResult();
@@ -174,9 +182,9 @@ public class LoginService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<AuthData> verifyResetPassword(String identity, String motp, String eotp) {
+	public ResponseWrapper<AuthResponse> verifyResetPassword(String identity, String motp, String eotp) {
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
-		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(null);
+		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		CustomerModel model = jaxService.setDefaults().getUserclient().validateOtp(identity, motp, eotp).getResult();
 		// Check if otp is valid
 		if (model == null) {
