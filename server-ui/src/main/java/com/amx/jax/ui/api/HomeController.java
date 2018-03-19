@@ -18,7 +18,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.SessionService;
@@ -102,7 +102,7 @@ public class HomeController {
 	@ResponseBody
 	public String loginPJson() {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
-		wrapper.setMessage(ResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
+		wrapper.setMessage(WebResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 		return JsonUtil.toJson(wrapper);
 	}
 

@@ -2,9 +2,10 @@
 package com.amx.jax.ui.api;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.service.SessionService;
@@ -27,6 +28,7 @@ import io.swagger.annotations.Api;
 @RestController
 @Api(value = "Deprecated Auth APIs")
 @Deprecated
+@Validated
 public class OldController {
 
 	@Autowired
@@ -50,21 +52,21 @@ public class OldController {
 	 */
 	@Deprecated
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> login(@RequestParam(required = false) String identity,
+	public ResponseWrapper<AuthResponse> login(
+			@RequestParam(required = false) @Pattern(regexp = UIConstants.Validator.IDENTITY) String identity,
 			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}
 
 	@Deprecated
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
-		return loginService.loginSecQues(guestanswer);
+	public ResponseWrapper<AuthResponse> loginSecQues(@RequestBody SecurityQuestionModel guestanswer) {
+		return loginService.loginSecQues(guestanswer, null);
 	}
 
 	@Deprecated
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> initReset(@RequestParam String identity,
+	public ResponseWrapper<AuthResponse> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		if (mOtp == null && eOtp == null) {
 			return loginService.initResetPassword(identity);
@@ -84,8 +86,8 @@ public class OldController {
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-		sessionService.unauthorize();
-		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
+		sessionService.logout();
+		wrapper.setMessage(WebResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}
 

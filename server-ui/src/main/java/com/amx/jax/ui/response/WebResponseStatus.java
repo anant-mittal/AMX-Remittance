@@ -1,6 +1,6 @@
 package com.amx.jax.ui.response;
 
-public enum ResponseStatus {
+public enum WebResponseStatus {
 
 	// Registration - CIVIL ID validation
 	ALREADY_ACTIVE("302"), INVALID_ID("200"), OTP_SENT("200"),
@@ -17,7 +17,7 @@ public enum ResponseStatus {
 
 	UNKNOWN_JAX_ERROR("500"),
 	// Registration - END ERROR
-	SUCCESS("200"), ERROR("500");
+	BAD_INPUT("400"), SUCCESS("200"), ERROR("500");
 
 	private final String code;
 
@@ -25,7 +25,7 @@ public enum ResponseStatus {
 		return code;
 	}
 
-	ResponseStatus(String code) {
+	WebResponseStatus(String code) {
 		this.code = code;
 	}
 

@@ -10,12 +10,12 @@ public class ResponseMeta {
 	public ResponseMeta() {
 		super();
 		responseMessage = Arrays.asList(ResponseMessage.values());
-		responseStatus = Arrays.asList(ResponseStatus.values());
+		responseStatus = Arrays.asList(WebResponseStatus.values());
 		jaxError = Arrays.asList(JaxError.values());
 	}
 
 	List<ResponseMessage> responseMessage;
-	List<ResponseStatus> responseStatus;
+	List<WebResponseStatus> responseStatus;
 	List<JaxError> jaxError;
 
 	public List<ResponseMessage> getResponseMessage() {
@@ -26,11 +26,11 @@ public class ResponseMeta {
 		this.responseMessage = responseMessage;
 	}
 
-	public List<ResponseStatus> getResponseStatus() {
+	public List<WebResponseStatus> getResponseStatus() {
 		return responseStatus;
 	}
 
-	public void setResponseStatus(List<ResponseStatus> responseStatus) {
+	public void setResponseStatus(List<WebResponseStatus> responseStatus) {
 		this.responseStatus = responseStatus;
 	}
 
