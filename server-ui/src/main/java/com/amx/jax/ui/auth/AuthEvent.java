@@ -1,5 +1,8 @@
 package com.amx.jax.ui.auth;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
@@ -36,6 +39,15 @@ public class AuthEvent extends AuditEvent {
 	String identiy = null;
 	String userId = null;
 	String authresult = null;
+	Map<String, Object> device = new HashMap<String, Object>();
+
+	public Map<String, Object> getDevice() {
+		return device;
+	}
+
+	public void setDevice(Map<String, Object> device) {
+		this.device = device;
+	}
 
 	public String getAuthresult() {
 		return this.type + ":" + this.step + ":" + this.result;

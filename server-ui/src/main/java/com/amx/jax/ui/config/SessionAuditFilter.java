@@ -15,7 +15,6 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 
 	@Override
 	public void doFilter(SessionEvent event) {
-
 		if (userDevice.getFingerprint() == null) {
 			userDevice.resolve();
 		}
