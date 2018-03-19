@@ -1,5 +1,6 @@
 package com.amx.jax.ui.model;
 
+import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.auth.AuthState;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -49,8 +50,10 @@ public final class AuthDataInterface {
 
 		public void setState(AuthState state);
 
+		@Deprecated
 		public String getQuestion();
 
+		@Deprecated
 		public void setQuestion(String description);
 
 		public String getmOtpPrefix();
@@ -60,6 +63,10 @@ public final class AuthDataInterface {
 		public String geteOtpPrefix();
 
 		public void seteOtpPrefix(String geteOtpPrefix);
+
+		public QuestModelDTO getQues();
+
+		public void setQues(QuestModelDTO questModelDTO);
 
 	}
 }
