@@ -114,6 +114,22 @@ public class JaxClientApplicationTests {
 		logger.info("response of testsavecustapi:" + util.marshall(response));
 		assertNotNull("Response is null", response);
 	}
+	
+	@Test
+	public void testSaveCustomerApiWithEmail() throws IOException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<CustomerModel> response = null;
+		try {
+			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com");
+		} catch (AlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.info("response of testsavecustapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+	}
 
 	// @Test
 	public void updatepasswordapi() throws IncorrectInputException, CustomerValidationException, LimitExeededException {

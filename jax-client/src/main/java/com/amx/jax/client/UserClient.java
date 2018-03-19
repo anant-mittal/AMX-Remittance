@@ -233,6 +233,12 @@ public class UserClient extends AbstractJaxServiceClient {
 
     }
 
+    /**
+     * saves customer's login id and password
+     * @param email Customer's email id
+     * @param mOtp mobile otp
+     * @param eOtp email otp
+     * */
     public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String mOtp, String eOtp,
     		String email)
             throws AlreadyExistsException {
