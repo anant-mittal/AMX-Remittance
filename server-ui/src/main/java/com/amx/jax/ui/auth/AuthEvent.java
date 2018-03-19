@@ -17,8 +17,10 @@ public class AuthEvent extends AuditEvent {
 	}
 
 	public AuthEvent(AuthState state, Result result) {
-		this(state.flow,state.getnStep());
+		this(state.flow, state.getnStep());
 		this.step = state.getnStep();
+		this.result = result;
+		this.authresult = state.flow + ":" + this.step + ":" + result;
 	}
 
 	public AuthEvent(AuthState state, Result result, Object message) {
@@ -33,6 +35,25 @@ public class AuthEvent extends AuditEvent {
 	AuthStep step = null;
 	String identiy = null;
 	String userId = null;
+	String authresult = null;
+
+	public String getAuthresult() {
+		return this.type + ":" + this.step + ":" + this.result;
+	}
+
+	public void setAuthresult(String authresult) {
+		this.authresult = authresult;
+	}
+
+	Result result = Result.PASS;
+
+	public Result getResult() {
+		return result;
+	}
+
+	public void setResult(Result result) {
+		this.result = result;
+	}
 
 	public String getUserId() {
 		return userId;
