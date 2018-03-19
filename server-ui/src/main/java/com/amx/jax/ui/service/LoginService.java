@@ -72,7 +72,7 @@ public class LoginService {
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
-		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.LOGIN);
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.LOGIN);
 		CustomerModel customerModel;
 		sessionService.getGuestSession().setIdentity(identity);
 		customerModel = jaxService.setDefaults().getUserclient().login(identity, password).getResult();

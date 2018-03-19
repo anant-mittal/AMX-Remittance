@@ -9,6 +9,7 @@ public abstract class AuditEvent {
 	protected EnumType type;
 	protected long timestamp;
 	protected String message;
+	protected String description = null;
 
 	public AuditEvent() {
 		this.timestamp = System.currentTimeMillis();
@@ -62,6 +63,14 @@ public abstract class AuditEvent {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

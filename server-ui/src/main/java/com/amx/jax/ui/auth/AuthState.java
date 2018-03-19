@@ -5,7 +5,7 @@ import com.bootloaderjs.EnumType;
 public class AuthState {
 
 	public static enum AuthFlow implements EnumType {
-		LOGIN, ACTIVATION, RESET_PASS, LOGOUT
+		DEFAULT, LOGIN, ACTIVATION, RESET_PASS, LOGOUT
 	}
 
 	public static enum AuthStep {
@@ -18,7 +18,7 @@ public class AuthState {
 		COMPLETED
 	}
 
-	public AuthFlow flow = null;
+	public AuthFlow flow = AuthFlow.DEFAULT;
 	public AuthStep cStep = null;
 	public AuthStep nStep = null;
 

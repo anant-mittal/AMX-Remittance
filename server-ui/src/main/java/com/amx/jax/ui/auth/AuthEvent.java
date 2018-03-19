@@ -23,7 +23,7 @@ public class AuthEvent extends AuditEvent {
 		this(state.flow, state.getnStep());
 		this.step = state.getnStep();
 		this.result = result;
-		this.authresult = state.flow + ":" + this.step + ":" + result;
+		this.description = state.flow + ":" + this.step + ":" + result;
 	}
 
 	public AuthEvent(AuthState state, Result result, Object message) {
@@ -38,7 +38,6 @@ public class AuthEvent extends AuditEvent {
 	AuthStep step = null;
 	String identiy = null;
 	String userId = null;
-	String authresult = null;
 	Map<String, Object> device = new HashMap<String, Object>();
 
 	public Map<String, Object> getDevice() {
@@ -49,12 +48,9 @@ public class AuthEvent extends AuditEvent {
 		this.device = device;
 	}
 
-	public String getAuthresult() {
+	@Override
+	public String getDescription() {
 		return this.type + ":" + this.step + ":" + this.result;
-	}
-
-	public void setAuthresult(String authresult) {
-		this.authresult = authresult;
 	}
 
 	Result result = Result.PASS;

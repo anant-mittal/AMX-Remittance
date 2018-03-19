@@ -17,6 +17,7 @@ public class WebSessionListener implements HttpSessionListener {
 	@Autowired(required = false)
 	UserDevice userDevice;
 
+	@Autowired
 	private AppConfig appConfig;
 
 	@Override
