@@ -1,5 +1,7 @@
 package com.amx.jax.userservice.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -34,6 +36,12 @@ public class CustomerVerificationService {
 	public CustomerVerification getVerification(Customer cust, CustomerVerificationType type) {
 		return customerVerificationRepository
 				.findBycustomerIdAndVerificationType(cust.getCustomerId(), type.toString());
+		
+	}
+	
+	public CustomerVerification getVerification(BigDecimal custId, CustomerVerificationType type) {
+		return customerVerificationRepository
+				.findBycustomerIdAndVerificationType(custId, type.toString());
 		
 	}
 

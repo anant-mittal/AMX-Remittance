@@ -520,4 +520,14 @@ public class UserValidationService {
 		}
 	}
 
+	public void validateCustomerVerification(BigDecimal customerId) {
+
+		CustomerVerification cv = customerVerificationService.getVerification(customerId,
+				CustomerVerificationType.EMAIL);
+		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus())) {
+			throw new GlobalException("Your email verificaiton is pending",
+					JaxError.USER_DATA_VERIFICATION_PENDING_REG);
+		}
+	}
+
 }
