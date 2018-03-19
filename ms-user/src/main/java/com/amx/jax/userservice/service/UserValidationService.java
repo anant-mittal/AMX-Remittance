@@ -413,6 +413,9 @@ public class UserValidationService {
 	}
 
 	public void validateOtpFlow(CustomerModel model) {
+		if(model.isRegistrationFlow()) {
+			return;
+		}
 		BigDecimal custId = meta.getCustomerId();
 		Customer customer = custDao.getCustById(custId);
 		
