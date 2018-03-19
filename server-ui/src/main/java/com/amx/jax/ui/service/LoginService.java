@@ -65,7 +65,7 @@ public class LoginService {
 
 		loginData.setImageId(customerModel.getImageUrl());
 		loginData.setImageCaption(customerModel.getCaption());
-		loginData.setAnswer(answer);
+		// loginData.setAnswer(answer);
 		return loginData;
 	}
 
