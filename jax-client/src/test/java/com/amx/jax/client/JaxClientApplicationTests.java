@@ -106,7 +106,7 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp, null);
+			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp,null, null);
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -327,7 +327,11 @@ public class UserService extends AbstractUserService {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
-			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
+			Customer customer = custDao.getCustomerByCivilId(civilId);
+			if (customer == null) {
+				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
+			}
+			customerId = customer.getCustomerId();
 		}
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
