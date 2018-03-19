@@ -17,6 +17,7 @@ import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
+import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
@@ -168,7 +169,7 @@ public class RegistrationService {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
+		jaxClient.setDefaults().getUserclient().saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email).getResult();
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());

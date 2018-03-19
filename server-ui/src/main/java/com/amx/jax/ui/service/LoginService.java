@@ -8,17 +8,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
-import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
-import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
@@ -26,8 +24,8 @@ import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 import com.bootloaderjs.ListManager;
 
@@ -60,7 +58,7 @@ public class LoginService {
 
 		for (QuestModelDTO questModelDTO : questModel) {
 			if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-				loginData.setQuestion(questModelDTO.getDescription());
+				loginData.setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
 				loginData.setQues(questModelDTO);
 			}
 		}
@@ -128,37 +126,32 @@ public class LoginService {
 
 			for (QuestModelDTO questModelDTO : questModel) {
 				if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-					wrapper.getData().setQuestion(questModelDTO.getDescription());
+					wrapper.getData().setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
+					wrapper.getData().setQues(questModelDTO);
 				}
 			}
 			// wrapper.getData().setAnswer(answer);
 			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
-		} catch (CustomerValidationException e) {
-			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
-		} catch (LimitExeededException e) {
-			wrapper.setMessage(WebResponseStatus.AUTH_BLOCKED_TEMP, e);
+			auditService.log(
+					new AuthEvent(sessionService.getGuestSession().getState(), AuthEvent.Result.FAIL, e.getError()));
 		}
 		return wrapper;
 	}
 
 	public ResponseWrapper<AuthResponse> sendOTP(String identity, String motp) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
-		try {
-			CivilIdOtpModel model;
-			if (identity == null) {
-				model = jaxService.setDefaults().getUserclient().sendOtpForCivilId().getResult();
-			} else {
-				model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity).getResult();
-				userSession.setUserid(identity);
-			}
-			// Check if response was successful
-			// append info in response data
-			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
-		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(WebResponseStatus.INVALID_ID, e);
+		CivilIdOtpModel model;
+		if (identity == null) {
+			model = jaxService.setDefaults().getUserclient().sendOtpForCivilId().getResult();
+		} else {
+			model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity).getResult();
+			userSession.setUserid(identity);
 		}
+		// Check if response was successful
+		// append info in response data
+		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
 		return wrapper;
 	}
 
@@ -167,18 +160,13 @@ public class LoginService {
 		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.RESET_PASS);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
-		try {
-			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity)
-					.getResult();
-			userSession.setUserid(identity);
-			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
-			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
-			wrapper.getData().setState(sessionService.getGuestSession().getState());
-		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(WebResponseStatus.INVALID_ID, e);
-		}
+		CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity).getResult();
+		userSession.setUserid(identity);
+		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
+		sessionService.getGuestSession().endStep(AuthStep.IDVALID);
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
 	}
 
