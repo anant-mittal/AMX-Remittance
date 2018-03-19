@@ -8,7 +8,7 @@ import com.bootloaderjs.ArgUtil;
 public class AuthEvent extends AuditEvent {
 
 	public enum Result {
-		PASS, FAIL, UNAUTH, MISSING;
+		PASS, FAIL;
 	}
 
 	public AuthEvent(AuthFlow flow, AuthStep step) {
