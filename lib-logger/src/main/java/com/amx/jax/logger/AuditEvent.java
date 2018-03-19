@@ -5,7 +5,7 @@ import com.bootloaderjs.EnumType;
 public abstract class AuditEvent {
 
 	protected String component;
-	protected String category = getClass().getName();
+	protected String category = getClass().getSimpleName();
 	protected EnumType type;
 	protected long timestamp;
 	protected String message;

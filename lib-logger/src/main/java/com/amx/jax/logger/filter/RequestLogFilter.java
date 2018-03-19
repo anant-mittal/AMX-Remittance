@@ -19,6 +19,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.amx.jax.logger.AuditConstant;
 import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.UniqueID;
@@ -42,21 +43,22 @@ public class RequestLogFilter implements Filter {
 			HttpServletRequest req = ((HttpServletRequest) request);
 			LOGGER.info("INSIDE {}", req.getRequestURI());
 
-			String traceId = req.getHeader("x-trace-id");
+			String traceId = req.getHeader(AuditConstant.TRACE_ID_KEY);
 			if (StringUtils.isEmpty(traceId)) {
 				String sessionID = null;
 				HttpSession session = req.getSession(false);
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute("x-session-id"), UniqueID.generateString());
+					sessionID = ArgUtil.parseAsString(session.getAttribute(AuditConstant.SESSION_ID_KEY),
+							UniqueID.generateString());
 					// if (StringUtils.isEmpty(sessionID)) {
 					// sessionID = UniqueID.generateString();
 					// }
 				}
 				traceId = ContextUtil.getTraceId(true, sessionID);
 				MDC.put("traceId", traceId);
-				req.getSession().setAttribute("x-session-id", sessionID);
+				req.getSession().setAttribute(AuditConstant.SESSION_ID_KEY, sessionID);
 				LOGGER.info("getTraceId SET {} {} ", sessionID, traceId);
 			} else {
 				MDC.put("traceId", traceId);
