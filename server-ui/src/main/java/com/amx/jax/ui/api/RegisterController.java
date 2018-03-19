@@ -93,8 +93,9 @@ public class RegisterController {
 	 */
 	@RequestMapping(value = "/pub/register/creds", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestParam(required = false) String email) {
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email);
 	}
 
 }
