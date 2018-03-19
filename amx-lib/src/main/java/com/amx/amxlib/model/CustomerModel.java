@@ -32,6 +32,16 @@ public class CustomerModel extends AbstractModel {
 	private String eotp;
 	
 	private List<SecurityQuestionModel> verificationAnswers;
+	
+	private boolean isRegistrationFlow;
+
+	public boolean isRegistrationFlow() {
+		return isRegistrationFlow;
+	}
+
+	public void setRegistrationFlow(boolean isRegistrationFlow) {
+		this.isRegistrationFlow = isRegistrationFlow;
+	}
 
 	public String getEmail() {
 		return email;

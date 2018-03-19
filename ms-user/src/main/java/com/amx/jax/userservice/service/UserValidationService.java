@@ -413,8 +413,14 @@ public class UserValidationService {
 	}
 
 	public void validateOtpFlow(CustomerModel model) {
+		if(model.isRegistrationFlow()) {
+			return;
+		}
+		BigDecimal custId = meta.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		
 		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
-		boolean isEOtpFlowRequired = isEOtpFlowRequired(model);
+		boolean isEOtpFlowRequired = isEOtpFlowRequired(model, customer);
 
 		if (isMOtpFlowRequired && model.getMotp() == null) {
 			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
@@ -424,8 +430,6 @@ public class UserValidationService {
 			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
 
-		BigDecimal custId = meta.getCustomerId();
-		Customer customer = custDao.getCustById(custId);
 		// mobile otp validation
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
@@ -461,7 +465,7 @@ public class UserValidationService {
 		return required;
 	}
 
-	private boolean isEOtpFlowRequired(CustomerModel model) {
+	private boolean isEOtpFlowRequired(CustomerModel model, Customer customer) {
 
 		boolean required = false;
 
@@ -471,6 +475,10 @@ public class UserValidationService {
 
 		if (model.getMobile() != null) {
 			required = true;
+		}
+		CustomerVerification cv = customerVerificationService.getVerification(customer, CustomerVerificationType.EMAIL);
+		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus())) {
+			required = false;
 		}
 		return required;
 	}
@@ -509,6 +517,16 @@ public class UserValidationService {
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (validationClient.isMobileExist(mobile)) {
 			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
+		}
+	}
+
+	public void validateCustomerVerification(BigDecimal customerId) {
+
+		CustomerVerification cv = customerVerificationService.getVerification(customerId,
+				CustomerVerificationType.EMAIL);
+		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
+			throw new GlobalException("Your email verificaiton is pending",
+					JaxError.USER_DATA_VERIFICATION_PENDING_REG);
 		}
 	}
 

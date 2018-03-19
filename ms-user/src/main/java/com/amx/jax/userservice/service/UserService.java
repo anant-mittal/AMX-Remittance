@@ -333,10 +333,11 @@ public class UserService extends AbstractUserService {
 			}
 			customerId = customer.getCustomerId();
 		}
+		logger.info("customerId is --> " + customerId);
+		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
-		logger.info("customerId is --> " + customerId);
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustReg != null) {
 			logger.info("validating customer lock count.");
@@ -401,6 +402,7 @@ public class UserService extends AbstractUserService {
 		}
 		return response;
 	}
+
 
 	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
 		String randmOtp = util.createRandomPassword(6);

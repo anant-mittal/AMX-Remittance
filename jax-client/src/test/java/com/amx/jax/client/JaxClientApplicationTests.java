@@ -44,10 +44,6 @@ public class JaxClientApplicationTests {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	@Test
-	public void contextLoads() {
-	}
-
 	@Autowired
 	protected JaxConfig conf;
 
@@ -57,7 +53,7 @@ public class JaxClientApplicationTests {
 	public void testSendotpapi() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CivilIdOtpModel> response = null;
 		try {
 			response = client.sendOtpForCivilId();
@@ -106,7 +102,24 @@ public class JaxClientApplicationTests {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.saveLoginIdAndPassword("289072104474", "amx@123", otp,null, null);
+			response = client.saveCredentials("289072104474", "amx@123", otp,null, null);
+		} catch (AlreadyExistsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		logger.info("response of testsavecustapi:" + util.marshall(response));
+		assertNotNull("Response is null", response);
+	}
+	
+	@Test
+	public void testSaveCustomerApiWithEmail() throws IOException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		testSendotpapi();
+		ApiResponse<CustomerModel> response = null;
+		try {
+			response = client.saveCredentials("289072104474", "amx@123", otp, null, "prashant.thorat@almullagroup.com");
 		} catch (AlreadyExistsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -160,7 +173,7 @@ public class JaxClientApplicationTests {
 		assertNotNull("\"Response is null", response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void sendOtpForEmailUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -173,7 +186,7 @@ public class JaxClientApplicationTests {
 		assertNotNull("\"Response is null", response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void sendOtpForMobileUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
