@@ -36,7 +36,6 @@ public class AuditServiceClient implements AuditService {
 		for (AuditFilter filter : filters) {
 			Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 			if (matcher.find()) {
-				LOGGER.info("=====AuditFilter=== " + matcher.group(1));
 				filtersMap.put(matcher.group(1), filter);
 			}
 		}
