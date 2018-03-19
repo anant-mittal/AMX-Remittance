@@ -5,6 +5,7 @@ import javax.validation.constraints.Pattern;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -14,7 +15,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
 
-	@Pattern(regexp = "^[0-9a-zA-Z]+$")
+	@Pattern(regexp = UIConstants.Validator.IDENTITY)
 	private String identity = null;
 
 	private String password = null;

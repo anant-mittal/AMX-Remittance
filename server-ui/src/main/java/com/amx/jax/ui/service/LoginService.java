@@ -26,7 +26,7 @@ import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.session.UserSession;
 import com.bootloaderjs.ListManager;
@@ -83,7 +83,7 @@ public class LoginService {
 		}
 		sessionService.getGuestSession().setCustomerModel(customerModel);
 		wrapper.setData(getRandomSecurityQuestion(customerModel));
-		wrapper.setMessage(ResponseStatus.AUTH_OK, "Password is Correct");
+		wrapper.setMessage(WebResponseStatus.AUTH_OK, "Password is Correct");
 		sessionService.getGuestSession().endStep(AuthStep.USERPASS);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -111,7 +111,7 @@ public class LoginService {
 			sessionService.authorize(customerModel,
 					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
 
-			wrapper.setMessage(ResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
+			wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
@@ -132,11 +132,11 @@ public class LoginService {
 				}
 			}
 			// wrapper.getData().setAnswer(answer);
-			wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
+			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 		} catch (CustomerValidationException e) {
-			wrapper.setMessage(ResponseStatus.AUTH_FAILED, e);
+			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 		} catch (LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.AUTH_BLOCKED_TEMP, e);
+			wrapper.setMessage(WebResponseStatus.AUTH_BLOCKED_TEMP, e);
 		}
 		return wrapper;
 	}
@@ -155,9 +155,9 @@ public class LoginService {
 			// append info in response data
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
+			wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+			wrapper.setMessage(WebResponseStatus.INVALID_ID, e);
 		}
 		return wrapper;
 	}
@@ -173,11 +173,11 @@ public class LoginService {
 			userSession.setUserid(identity);
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-			wrapper.setMessage(ResponseStatus.OTP_SENT, "OTP generated and sent");
+			wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		} catch (InvalidInputException | CustomerValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.INVALID_ID, e);
+			wrapper.setMessage(WebResponseStatus.INVALID_ID, e);
 		}
 		return wrapper;
 	}
@@ -193,7 +193,7 @@ public class LoginService {
 		sessionService.getGuestSession().setCustomerModel(model);
 		wrapper.setData(getRandomSecurityQuestion(model));
 
-		wrapper.setMessage(ResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
+		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		return wrapper;
@@ -212,7 +212,7 @@ public class LoginService {
 		BooleanResponse model = jaxService.setDefaults().getUserclient().updatePassword(password, mOtp, eOtp)
 				.getResult();
 		if (model.isSuccess()) {
-			wrapper.setMessage(ResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
+			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Password Updated Succesfully");
 			sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}

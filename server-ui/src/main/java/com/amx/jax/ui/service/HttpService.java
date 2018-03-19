@@ -4,6 +4,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
@@ -17,6 +19,8 @@ import eu.bitwalker.useragentutils.UserAgent;
 
 @Component
 public class HttpService {
+
+	private static final PolicyFactory policy = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
 
 	@Autowired(required = false)
 	private HttpServletRequest request;
@@ -87,6 +91,10 @@ public class HttpService {
 		}
 		return agent;
 
+	}
+
+	public static String sanitze(String str) {
+		return policy.sanitize(str);
 	}
 
 }

@@ -15,7 +15,7 @@ import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -74,7 +74,7 @@ public class AuthController {
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 		sessionService.logout();
-		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
+		wrapper.setMessage(WebResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}
 

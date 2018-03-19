@@ -27,7 +27,7 @@ import com.amx.jax.scope.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.HttpService;
@@ -166,10 +166,10 @@ public class MetaController {
 				postManService.sendEmail(email);
 				wrapper.setData(email);
 			} else {
-				wrapper.setStatusKey(ResponseStatus.ERROR);
+				wrapper.setStatusKey(WebResponseStatus.ERROR);
 			}
 		} catch (Exception e) {
-			wrapper.setStatusKey(ResponseStatus.ERROR);
+			wrapper.setStatusKey(WebResponseStatus.ERROR);
 			log.error("/pub/contact", e);
 		}
 
