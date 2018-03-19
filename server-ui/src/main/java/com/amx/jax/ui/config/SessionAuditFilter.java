@@ -19,7 +19,6 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 		if (userDevice.getFingerprint() == null) {
 			userDevice.resolve();
 		}
-		event.setComponent("Server-UI");
 		event.setDevice(userDevice.toMap());
 	}
 

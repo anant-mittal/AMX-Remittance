@@ -13,6 +13,7 @@ import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.config.AppConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
@@ -25,6 +26,9 @@ public class AuditServiceClient implements AuditService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
 	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
+
+	@Autowired
+	AppConfig appConfig;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
@@ -39,6 +43,7 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	public AuditLoggerResponse log(AuditEvent event) {
+		event.setComponent(appConfig.getAppName());
 		if (filtersMap.containsKey(event.getClass().getName())) {
 			AuditFilter<AuditEvent> filter = filtersMap.get(event.getClass().getName());
 			filter.doFilter(event);

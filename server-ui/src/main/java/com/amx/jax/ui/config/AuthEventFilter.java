@@ -3,6 +3,7 @@ package com.amx.jax.ui.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.config.AppConfig;
 import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.session.GuestSession;
@@ -18,9 +19,12 @@ public class AuthEventFilter implements AuditFilter<AuthEvent> {
 	@Autowired
 	GuestSession guestSession;
 
+	@Autowired
+	AppConfig appConfig;
+
 	@Override
 	public void doFilter(AuthEvent event) {
-		event.setComponent("Server-UI");
+		event.setComponent(appConfig.getAppName());
 		userDevice.resolve();
 		event.setIdentiy(guestSession.getIdentity());
 		if (guestSession.getCustomerModel() != null) {
