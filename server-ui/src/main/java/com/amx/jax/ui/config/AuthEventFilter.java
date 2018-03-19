@@ -21,6 +21,7 @@ public class AuthEventFilter implements AuditFilter<AuthEvent> {
 	@Override
 	public void doFilter(AuthEvent event) {
 		event.setComponent("Server-UI");
+		userDevice.resolve();
 		event.setIdentiy(guestSession.getIdentity());
 		if (guestSession.getCustomerModel() != null) {
 			event.setUserId(ArgUtil.parseAsString(guestSession.getCustomerModel().getCustomerId()));

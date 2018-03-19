@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.redisson.api.RLocalCachedMap;
 import org.slf4j.Logger;
@@ -20,7 +21,10 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.session.LoggedInUsers;
+import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
@@ -47,6 +51,9 @@ public class SessionService {
 
 	@Autowired
 	private UserDevice appDevice;
+
+	@Autowired
+	private HttpService httpService;
 
 	public UserDevice getAppDevice() {
 		return appDevice;
@@ -171,6 +178,19 @@ public class SessionService {
 		return Boolean.FALSE;
 	}
 
+	public boolean validateSessionUnique() {
+		if (this.validatedUser() && !this.indexedUser()) {
+			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
+			this.unauthorize();
+			return false;
+		}
+		return true;
+	}
+
+	public void logout() {
+		this.unauthorize();
+	}
+
 	/**
 	 * Unauthorizes current user & deletes current session completely.
 	 * 
@@ -181,7 +201,7 @@ public class SessionService {
 		if (this.indexedUser()) {
 			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			map.fastRemove(userKeyString);
-			LOGGER.info("User is being unauthorized from current session userKeyString={}", userKeyString);
+			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
 		}
 
 		SessionEvent sessionEvent = new SessionEvent();
@@ -191,6 +211,13 @@ public class SessionService {
 
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
+		HttpSession session = request.getSession(false);
+		SecurityContextHolder.clearContext();
+		session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		httpService.clearSessionCookie();
 	}
 
 	/**

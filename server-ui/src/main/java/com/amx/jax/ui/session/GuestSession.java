@@ -71,7 +71,7 @@ public class GuestSession implements Serializable {
 	public void initStep(AuthStep step) {
 		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.cStep) {
-			auditService.log(new AuthEvent(AuthEvent.Type.AUTH_FAIL, state, HttpUnauthorizedException.UN_SEQUENCE));
+			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
 	}

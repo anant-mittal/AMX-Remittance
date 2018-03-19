@@ -81,7 +81,7 @@ public class OldController {
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-		sessionService.unauthorize();
+		sessionService.logout();
 		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}

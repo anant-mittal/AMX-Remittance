@@ -1,17 +1,21 @@
 package com.amx.jax.ui.auth;
 
-import com.amx.jax.logger.AuditEvent.EventType;
+import com.bootloaderjs.EnumType;
 
 public class AuthState {
 
-	public static enum AuthFlow implements EventType {
-		LOGIN, ACTIVATION, RESET_PASS
+	public static enum AuthFlow implements EnumType {
+		LOGIN, ACTIVATION, RESET_PASS, LOGOUT
 	}
 
 	public static enum AuthStep {
-		USERPASS, SECQUES, IDVALID, DOTPVFY, COMPLETED,
+		USERPASS, SECQUES, IDVALID, DOTPVFY,
 		// Reg
-		MOTPVFY, DATA_VERIFY, SECQ_SET, CAPTION_SET, CREDS_SET
+		MOTPVFY, DATA_VERIFY, SECQ_SET, CAPTION_SET, CREDS_SET,
+		// Logout
+		MISSING, UNAUTH,
+		// DONE
+		COMPLETED
 	}
 
 	public AuthFlow flow = null;

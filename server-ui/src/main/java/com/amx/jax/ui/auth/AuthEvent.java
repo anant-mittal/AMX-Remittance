@@ -7,26 +7,29 @@ import com.bootloaderjs.ArgUtil;
 
 public class AuthEvent extends AuditEvent {
 
-	public enum Type implements EventType {
-		AUTH_OK, AUTH_FAIL;
+	public enum Result {
+		PASS, FAIL, UNAUTH, MISSING;
 	}
 
-	public AuthEvent(Type type, AuthState state) {
-		super(type);
-		this.flow = state.flow;
+	public AuthEvent(AuthFlow flow, AuthStep step) {
+		super(flow);
+		this.step = step;
+	}
+
+	public AuthEvent(AuthState state, Result result) {
+		this(state.flow,state.getnStep());
 		this.step = state.getnStep();
 	}
 
-	public AuthEvent(Type type, AuthState state, Object message) {
-		this(type, state);
+	public AuthEvent(AuthState state, Result result, Object message) {
+		this(state, result);
 		this.message = ArgUtil.parseAsString(message);
 	}
 
 	public AuthEvent(AuthState state) {
-		this(Type.AUTH_OK, state);
+		this(state, Result.PASS);
 	}
 
-	AuthFlow flow = null;
 	AuthStep step = null;
 	String identiy = null;
 	String userId = null;
@@ -47,30 +50,12 @@ public class AuthEvent extends AuditEvent {
 		this.identiy = identiy;
 	}
 
-	public AuthFlow getFlow() {
-		return flow;
-	}
-
-	public void setFlow(AuthFlow flow) {
-		this.flow = flow;
-	}
-
 	public AuthStep getStep() {
 		return step;
 	}
 
 	public void setStep(AuthStep step) {
 		this.step = step;
-	}
-
-	private String result = null;
-
-	public String getResult() {
-		return result;
-	}
-
-	public void setResult(String result) {
-		this.result = result;
 	}
 
 }

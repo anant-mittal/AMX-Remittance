@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseStatus;
@@ -72,7 +73,7 @@ public class AuthController {
 	@RequestMapping(value = "/pub/auth/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-		sessionService.unauthorize();
+		sessionService.logout();
 		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
 		return wrapper;
 	}

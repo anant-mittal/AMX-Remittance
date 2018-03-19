@@ -38,7 +38,7 @@ public class WebJaxAdvice {
 		LOG.error(ResponseStatus.UNKNOWN_JAX_ERROR.toString(), exc);
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
-			auditService.log(new AuthEvent(AuthEvent.Type.AUTH_FAIL, state, exc.getError()));
+			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, exc.getError()));
 		}
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}

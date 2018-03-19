@@ -2,15 +2,15 @@ package com.amx.jax.ui.service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import com.amx.jax.config.AppConfig;
 import com.amx.jax.ui.UIConstants;
 
 import eu.bitwalker.useragentutils.UserAgent;
@@ -18,31 +18,14 @@ import eu.bitwalker.useragentutils.UserAgent;
 @Component
 public class HttpService {
 
-	private Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-	// public class UserAgent {
-	// String os = null;
-	// String browser = null;
-	//
-	// public String getOs() {
-	// return os;
-	// }
-	//
-	// public void setOs(String os) {
-	// this.os = os;
-	// }
-	//
-	// public String getBrowser() {
-	// return browser;
-	// }
-	//
-	// public void setBrowser(String browser) {
-	// this.browser = browser;
-	// }
-	// }
-
 	@Autowired(required = false)
 	private HttpServletRequest request;
+
+	@Autowired(required = false)
+	private HttpServletResponse response;
+
+	@Autowired
+	private AppConfig appConfig;
 
 	public String getIPAddress() {
 		String remoteAddr = null;
@@ -61,15 +44,43 @@ public class HttpService {
 
 	public String getDeviceId() {
 		String deviceId = null;
-		Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
-		if (cookie != null) {
-			deviceId = cookie.getValue();
+		if (request != null) {
+			Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
+			if (cookie != null) {
+				deviceId = cookie.getValue();
+			}
 		}
 		return deviceId;
 	}
 
+	public void clearSessionCookie() {
+		Cookie cookie = WebUtils.getCookie(request, UIConstants.SESSIONID);
+		if (cookie != null) {
+			cookie.setMaxAge(0);
+		}
+	}
+
+	public String getBrowserId(String browserIdNew) {
+		String browserId = null;
+		if (request != null) {
+			Cookie cookie = WebUtils.getCookie(request, UIConstants.BROWSER_ID_KEY);
+			if (cookie != null) {
+				browserId = cookie.getValue();
+			} else if (response != null) {
+				browserId = browserIdNew;
+				Cookie kooky = new Cookie(UIConstants.BROWSER_ID_KEY, browserIdNew);
+				kooky.setMaxAge(31622400);
+				kooky.setHttpOnly(appConfig.isCookieHttpOnly());
+				kooky.setSecure(appConfig.isCookieSecure());
+				kooky.setPath("/");
+				response.addCookie(kooky);
+			}
+		}
+		return browserId;
+	}
+
 	public UserAgent getUserAgent() {
-		UserAgent agent = new UserAgent() ;
+		UserAgent agent = new UserAgent();
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);

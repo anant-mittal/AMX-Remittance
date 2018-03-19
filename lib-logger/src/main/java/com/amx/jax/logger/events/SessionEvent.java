@@ -3,9 +3,11 @@ package com.amx.jax.logger.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.bootloaderjs.EnumType;
+
 public class SessionEvent extends DefaultEvent {
 
-	public static enum Type implements EventType {
+	public static enum Type implements EnumType {
 		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
 	}
 

@@ -41,6 +41,20 @@ public class AppConfig {
 	@Value("${jax.logger.url}")
 	private String loggerURL;
 
+	@Value("${server.session.cookie.http-only}")
+	private boolean cookieHttpOnly;
+
+	@Value("${server.session.cookie.secure}")
+	private boolean cookieSecure;
+
+	public boolean isCookieHttpOnly() {
+		return cookieHttpOnly;
+	}
+
+	public boolean isCookieSecure() {
+		return cookieSecure;
+	}
+
 	public String getAppName() {
 		return appName;
 	}

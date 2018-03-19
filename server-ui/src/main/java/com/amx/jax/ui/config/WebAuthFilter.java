@@ -10,19 +10,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
-import com.bootloaderjs.ContextUtil;
 
 @Component
 public class WebAuthFilter implements Filter {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(WebAuthFilter.class);
 
 	@Autowired
 	SessionService sessionService;
@@ -35,11 +30,7 @@ public class WebAuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-
-		if (sessionService.validatedUser() && !sessionService.indexedUser()) {
-			LOGGER.info("User is logged in somewhere else so logging out this one, traceid={}",
-					ContextUtil.getTraceId());
-			sessionService.unauthorize();
+		if (!sessionService.validateSessionUnique()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
