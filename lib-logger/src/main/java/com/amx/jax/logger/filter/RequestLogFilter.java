@@ -58,6 +58,7 @@ public class RequestLogFilter implements Filter {
 				}
 				traceId = ContextUtil.getTraceId(true, sessionID);
 				MDC.put("traceId", traceId);
+				ContextUtil.map().put(AuditConstant.SESSION_ID_KEY, sessionID);
 				req.getSession().setAttribute(AuditConstant.SESSION_ID_KEY, sessionID);
 				LOGGER.info("getTraceId SET {} {} ", sessionID, traceId);
 			} else {
