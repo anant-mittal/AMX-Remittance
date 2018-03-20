@@ -104,7 +104,7 @@ public class CustomerDataVerificationService extends AbstractService {
 			if (i.getQuestionSrNo().equals(new BigDecimal(2))) {
 				BigDecimal ansKey = new BigDecimal(i.getAnswerKey());
 				BenificiaryListView randombene = beneService.getBeneByIdNo(ansKey);
-				String actualAnswer = randombene.getRelationShipName();
+				String actualAnswer = randombene.getRelationShipId().toString();
 				String givenAnswer = i.getAnswer();
 				logger.info(
 						"Q2: in saveVerificationData. actualAnswer: " + actualAnswer + " givenAnswer: " + givenAnswer);
