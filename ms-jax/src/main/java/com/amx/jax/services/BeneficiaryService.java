@@ -21,6 +21,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -456,6 +459,11 @@ public class BeneficiaryService extends AbstractService {
 	}
 	
 	public BenificiaryListView getLastTransactionBene() {
-		return beneficiaryOnlineDao.getLastTransactionBene(metaData.getCustomerId(), metaData.getCountryId());
+		List<BenificiaryListView> list = beneficiaryOnlineDao.getLastTransactionBene(metaData.getCustomerId(), metaData.getCountryId(), new PageRequest(0, 1));
+		return list.get(0);
+	}
+	
+	public BenificiaryListView getBeneBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId) {
+		return beneficiaryOnlineDao.findBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
 	}
 }
