@@ -47,6 +47,9 @@ public class CustomerDataVerificationService extends AbstractService {
 
 	@Autowired
 	BeneficiaryService beneService;
+	
+	@Autowired
+	TransactionHistroyService txnhistoryService;
 
 	@Autowired
 	UserService userService;
@@ -89,7 +92,8 @@ public class CustomerDataVerificationService extends AbstractService {
 		verificationAnswers.forEach(i -> {
 			boolean verificationDone = false;
 			if (i.getQuestionSrNo().equals(BigDecimal.ONE)) {
-				String actualAnswer = beneService.getLastTransactionBene().getFirstName();
+				BigDecimal beneficiaryRelationShipSeqId = txnhistoryService.getLastTransaction(metaData.getCustomerId()).getBeneficiaryRelationSeqId();
+				String actualAnswer = beneService.getBeneBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId).getFirstName();
 				String givenAnswer = i.getAnswer();
 				logger.info(
 						"Q1: in saveVerificationData. actualAnswer: " + actualAnswer + " givenAnswer: " + givenAnswer);
@@ -109,7 +113,7 @@ public class CustomerDataVerificationService extends AbstractService {
 				}
 			}
 			if (i.getQuestionSrNo().equals(new BigDecimal(3))) {
-				Date lastRemittanceDate = beneService.getLastTransactionBene().getLastJavaRemittance();
+				Date lastRemittanceDate =  txnhistoryService.getLastTransaction(metaData.getCustomerId()).getDocumentDate();
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(lastRemittanceDate);
 				String givenAnswer = i.getAnswer();
