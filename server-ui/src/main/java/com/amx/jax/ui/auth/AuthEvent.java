@@ -23,7 +23,7 @@ public class AuthEvent extends AuditEvent {
 		this(state.flow, state.getnStep());
 		this.step = state.getnStep();
 		this.result = result;
-		this.description = state.flow + ":" + this.step + ":" + result;
+		this.description = this.getDescription();
 	}
 
 	public AuthEvent(AuthState state, Result result, Object message) {
@@ -50,7 +50,7 @@ public class AuthEvent extends AuditEvent {
 
 	@Override
 	public String getDescription() {
-		return this.type + ":" + this.step + ":" + this.result;
+		return (this.type == null ? AuthFlow.DEFAULT : this.type) + ":" + this.step + ":" + this.result;
 	}
 
 	Result result = Result.PASS;
