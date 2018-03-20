@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html th:marginheight="0"  th:lang="ar-kw" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
-	
+<html th:marginheight="0" xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="ar">
+
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <style type="text/css">
@@ -11,25 +12,6 @@ html, body {
 	font-family: Arial, Arial Bold;
 	font-size: 10px;
 	line-height: 14px;
-}
-
-.testFont2 {
-	font-size : 50px;
-}
-.testFont {
-	width: 15%;
-	text-align: left;
-	/* font-weight: bold; */
-	font-size : 50px;
-	line-height : 100px;
-	/* font-family: 'Arial'; */
-	/* font-family: 'Arial Unicode MS';
-	 font-family: Arial, Arial Bold; */
-	 /* font-family: Verdana; */
-/* 	font-family: 'Noto Naskh Arabic';
-	font-family: 'Arial Unicode MS';
-	 font-family: 'Times New Roman'; */
-	 /* letter-spacing: 0.0em; */
 }
 
 .table {
@@ -139,11 +121,15 @@ html, body {
 @page {
 	size: A4;
 	margin: 0;
-	margin-top: 107px;
+	margin-top: 0;
 	margin-bottom: 18px;
-	@top-center {content: element(header);}
-	@bottom-center {
-    	content: "Page " counter(page) " of " counter(pages)"&nbsp;&nbsp;";
+  
+  @top-center {
+  	content: element(header);
+  }
+  
+  @bottom-center {
+    	content: "Page " counter(page) " of " counter(pages);
   }
 }
 #header {
@@ -188,10 +174,16 @@ html, body {
 .mode + .mode td:nth-child(3){
 	color:#fff;
 }
+.page-break{
+	page-break-before: always;
+}
 </style>
 </head>
 <body>
 	<!--<span th:text="${data}">TesTUser</span>-->
+	
+	<div class="page-break" th:each="remittance : ${data.remittanceApplList}" >
+	
 	<!--header table-->
 	<table class="nowrap" id="header" border="0" cellspacing="0"
 		cellpadding="0" >
@@ -204,13 +196,12 @@ html, body {
 			</td>
 		</tr>
 		<tr>
-			<td th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
-			<td th:text="${data.remittanceApplList[0].arabicCompanyInfo}">--</td>
-			<td pm:pftext="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
+			<td style="padding-left:5px" th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
+			<td style="padding-right:5px" th:text="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
 		</tr>
 	</table>
 	<!--header table end-->
-	<table class="mainTable" th:each="remittance : ${data.remittanceApplList}" style="height:970px;page-break-before: always;">
+	<table class="mainTable" >
 		<tr>
 			<td class="mainTable-border">
 				<!--customer table-->
@@ -218,27 +209,27 @@ html, body {
 					<tr>
 						<td>Sender Details</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.senderdetails'))}"></td>
+						<td th:text="${#messages.msg('label.senderdetails')}"></td>
 					</tr>
 					<tr>
 						<td>Customer ID /Name</td>
-						<td pm:pftext="${remittance.firstName}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.custmeridname'))}"></td>
+						<td th:text="${remittance.firstName}">--</td>
+						<td th:text="${#messages.msg('label.custmeridname')}"></td>
 					</tr>
 					<tr>
 						<td>Contact No</td>
 						<td th:text="${remittance.mobileNo}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.contactno'))}"></td>
+						<td th:text="${#messages.msg('label.contactno')}"></td>
 					</tr>
 					<tr>
 						<td>Civil Id No</td>
 						<td th:text="${remittance.civilId}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.civilId'))}"></td>
+						<td th:text="${#messages.msg('label.civilId')}"></td>
 					</tr>
 					<tr>
 						<td>ID Expiry Date</td>
 						<td th:text="${remittance.idExpiryDate}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.idExpiryDate'))}"></td>
+						<td th:text="${#messages.msg('label.idExpiryDate')}"></td>
 					</tr>
 				</table> <!--customer table end-->
 				</td></tr>
@@ -248,12 +239,12 @@ html, body {
 					<tr>
 						<td>Loyalty Point Expiring</td>
 						<td th:text="${remittance.loyalityPointExpiring}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.loyalityPointExpiring'))}"></td>
+						<td th:text="${#messages.msg('label.loyalityPointExpiring')}"></td>
 					</tr>
 					<tr>
 						<td>Insurance</td>
-						<td pm:pftext="${remittance.insurence1}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.insurence1'))}"></td>
+						<td th:text="${remittance.insurence1}">--</td>
+						<td th:text="${#messages.msg('label.insurence1')}"></td>
 					</tr>
 				
 				</table> <!--loyalty insurance table end--> 
@@ -264,17 +255,17 @@ html, body {
 					<tr>
 						<td>No Of Transactions</td>
 						<td th:text="${remittance.noOfTransaction}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.noOfTransaction'))}"></td>
+						<td th:text="${#messages.msg('label.noOfTransaction')}"></td>
 					</tr>
 					<tr>
 						<td>Location / Phone No</td>
 						<td th:text="${remittance.location} + ' / ' + ${remittance.phoneNumber}">KUWAIT / 1840123</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.locationphoneNumber'))}"></td>
+						<td th:text="${#messages.msg('label.locationphoneNumber')}"></td>
 					</tr>
 					<tr>
 						<td>Receipt No / Date</td>
 						<td th:text="${remittance.receiptNo} +'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp; '+  ${remittance.date} +''">2017 / 27000003 / 24/05/2017</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.receiptNopin'))}"></td>
+						<td th:text="${#messages.msg('label.receiptNopin')}"></td>
 					</tr>
 				</table> <!--transaction detail table end-->
 				</td></tr>
@@ -283,87 +274,87 @@ html, body {
 					<tr>
 						<td>Beneficiary Details</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.beneficiaryDetails'))}"></td>
+						<td th:text="${#messages.msg('label.beneficiaryDetails')}"></td>
 					</tr>
 					<tr>
 						<td>Transaction No</td>
 						<td><span th:text="${remittance.transactionNo}"></span> <span th:text="${(remittance.pinNo != null) ? 'Pin No: ' + remittance.pinNo : 'Pin No:' }" style="padding-left:100px; font-weight: bold"></span></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.transactionNoPin'))}"></td>
+						<td th:text="${#messages.msg('label.transactionNoPin')}"></td>
 					</tr>
 					<tr>
 						<td>Name</td>
-						<td pm:pftext="${remittance.beneficiaryName}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.beneficiaryName'))}"></td>
+						<td th:text="${remittance.beneficiaryName}">--</td>
+						<td th:text="${#messages.msg('label.beneficiaryName')}"></td>
 					</tr>
 					<tr>
 						<td>Bank Name</td>
 						<td th:text="${remittance.benefeciaryBankName}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryBankName'))}"> </td>
+						<td th:text="${#messages.msg('label.benefeciaryBankName')}"> </td>
 					</tr>
 					<tr>
 						<td>Branch Name</td>
 						<td th:text="${remittance.benefeciaryBranchName}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryBranchName'))}"></td>
+						<td th:text="${#messages.msg('label.benefeciaryBranchName')}"></td>
 					</tr>
 					<tr>
 						<td>Account No</td>
 						<td th:text="${remittance.benefeciaryAccountNumber}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.benefeciaryAccountNumber'))}"></td>
+						<td th:text="${#messages.msg('label.benefeciaryAccountNumber')}"></td>
 					</tr>
 					<tr>
 						<td>Payment Channel</td>
 						<td th:text="${remittance.paymentChannel}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.paymentChannel'))}"></td>
+						<td th:text="${#messages.msg('label.paymentChannel')}"></td>
 					</tr>
 					<tr>
 						<td>Currency &amp; Amount</td>
 						<td th:text="${remittance.currencyAndAmount}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.currencyAndAmount'))}"></td>
+						<td th:text="${#messages.msg('label.currencyAndAmount')}"></td>
 					</tr>
 					<tr>
 						<td>Exchange Rate</td>
 						<td th:text="${remittance.exchangeRate}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.exchangeRate'))}"></td>
+						<td th:text="${#messages.msg('label.exchangeRate')}"></td>
 					</tr>
 					<tr>
 						<td>KWD Amount</td>
 						<td th:text="${remittance.localTransactionAmount}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.localTransactionAmount'))}"></td>
+						<td th:text="${#messages.msg('label.localTransactionAmount')}"></td>
 					</tr>
 					<tr>
 						<td>Commission</td>
 						<td th:text="${remittance.commision}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.commision'))}"></td>
+						<td th:text="${#messages.msg('label.commision')}"></td>
 					</tr>
 					<tr>
 						<td>Other Charges</td>
 						<td th:text="${remittance.otherCharges}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.otherCharges'))}"></td>
+						<td th:text="${#messages.msg('label.otherCharges')}"></td>
 					</tr>
 					<tr>
 						<td>Total Amount</td>
 						<td th:text="${remittance.totalAmount}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.totalAmount'))}"></td>
+						<td th:text="${#messages.msg('label.totalAmount')}"></td>
 					</tr>
 					<tr>
 						<td>Further Instructions</td>
 						<td th:text="${remittance.futherInstructions}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.futherInstructions'))}"></td>
+						<td th:text="${#messages.msg('label.futherInstructions')}"></td>
 					</tr>
 					<tr>
 						<td>Source Of Income</td>
 						<td th:text="${remittance.sourceOfIncome}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.sourceOfIncome'))}"></td>
+						<td th:text="${#messages.msg('label.sourceOfIncome')}"></td>
 					</tr>
 					<tr>
 						<td>Intermediary Bank</td>
 						<td th:text="${remittance.intermediataryBank}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.intermediataryBank'))}"></td>
+						<td th:text="${#messages.msg('label.intermediataryBank')}"></td>
 					</tr>
 					<tr>
 						<td>Address</td>
 						<td th:text="${remittance.address}">--</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.address'))}"></td>
+						<td th:text="${#messages.msg('label.address')}"></td>
 					</tr>
 					<tr>
 						<td colspan="3" th:text="${remittance.purposeOfRemitTrList[0].purposeOfTrField} + '&nbsp;&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;' + ${remittance.purposeOfRemitTrList[0].purposeOfTrValue}">--</td>
@@ -376,37 +367,37 @@ html, body {
 						<td>Payment Details</td>
 						<td></td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.paymentDetails'))}"></td>
+						<td th:text="${#messages.msg('label.paymentDetails')}"></td>
 					</tr>
 					<tr>
 						<td>Amount Paid</td>
 						<td th:text="${remittance.paidAmount}">--</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.paidAmount'))}"></td>
+						<td th:text="${#messages.msg('label.paidAmount')}"></td>
 					</tr>
 					<tr>
 						<td>Amount Refund</td>
 						<td th:text="${remittance.refundedAmount}">--</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.refundedAmount'))}"></td>
+						<td th:text="${#messages.msg('label.refundedAmount')}"></td>
 					</tr>
 					<tr>
 						<td>Amount Payable</td>
 						<td th:text="${remittance.amountPayable}">--</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.amountPayable'))}"></td>
+						<td th:text="${#messages.msg('label.amountPayable')}"></td>
 					</tr>
 					<tr>
 						<td>Net Paid Amount</td>
 						<td th:text="${remittance.netAmount}">--</td>
 						<td></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.netAmount'))}"></td>
+						<td th:text="${#messages.msg('label.netAmount')}"></td>
 					</tr>
 					<tr class="mode" th:each="mode : ${remittance.collectionDetailList}">
 						<td>Payment Mode</td>
 						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
 						<td th:text="${mode.approvalNo}">Approved No : 1234</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.approvalNo'))}"></td>
+						<td th:text="${#messages.msg('label.approvalNo')}"></td>
 					</tr>
 				</table> <!--Payment Details table end--> 
 				</td></tr>
@@ -414,13 +405,13 @@ html, body {
 				<table class="table col-3 height100">
 					<tr>
 						<td>Cashier Name</td>
-						<td pm:pftext="${remittance.userName}">KANMANI1</td>
-						<td th:text="${_tu.reverse(#messages.msg('label.userName'))}"> </td>
+						<td th:text="${remittance.userName}">KANMANI1</td>
+						<td th:text="${#messages.msg('label.userName')}"> </td>
 					</tr>
 					<tr>
 						<td>Cashier Signature</td>
-						<td><img height="50" th:if="${remittance.cashierSignature != null}" th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
-						<td th:text="${_tu.reverse(#messages.msg('label.cashierSignature'))}"></td>
+						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
+						<td th:text="${#messages.msg('label.cashierSignature')}"></td>
 					</tr>
 				</table>
 		<!--Cashier table end-->
@@ -433,22 +424,23 @@ html, body {
 					<div>I / We have read the terms and conditions overleaf and confirm to have fully understood and accepted the same without any reservations</div>
 				</td>
 				<td valign="top" align="right">
-					<div th:text="${_tu.reverse(#messages.msg('label.iagree1'))}"></div>
-					<div th:text="${_tu.reverse(#messages.msg('label.iagree2'))}"></div>
+					<div th:text="${#messages.msg('label.iagree1')}"></div>
+					<div th:text="${#messages.msg('label.iagree2')}"></div>
 				</td>
 			</tr>
 			<tr>
-				<td align="center"><img height="50" th:if="${remittance.signature != null}" th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
+				<td align="center"><img height="50"  th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
 				<td></td>
 			</tr>
 			
 			<tr>
 				<td align="center"><strong>(Signature Of Remitter)</strong></td>
-				<td align="center"><strong th:text="${_tu.reverse(#messages.msg('label.signatureOfRemitter'))}"></strong></td>
+				<td align="center"><strong th:text="${#messages.msg('label.signatureOfRemitter')}"></strong></td>
 			</tr>
 		</table>
 		</td>
 		</tr>
 	</table>
+	</div>
 </body>
 </html>

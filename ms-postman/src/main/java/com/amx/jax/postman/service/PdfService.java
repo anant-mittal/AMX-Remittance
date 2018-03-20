@@ -33,7 +33,7 @@ public class PdfService {
 	private ConverterFOP converterFOP;
 
 	public File convert(File file) {
-		return converterFOP.toPDF(file);
+		return converterIText7.toPDF(file);
 	}
 
 }
