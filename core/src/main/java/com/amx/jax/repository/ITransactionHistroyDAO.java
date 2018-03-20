@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -72,5 +73,6 @@ public interface ITransactionHistroyDAO extends JpaRepository<CustomerRemittance
 	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.transactionStatusDesc='PAID'")
 	public List<CustomerRemittanceTransactionView> getCustomerTotalTrnx(@Param("customerid") BigDecimal customerid);
 	
-	
+	@Query("select th from CustomerRemittanceTransactionView th where th.customerId=:customerid and th.transactionTypeDesc is not null order by th.documentDate desc")
+	public List<CustomerRemittanceTransactionView> getLastTransaction(@Param("customerid") BigDecimal customerid, Pageable pageable);
 }

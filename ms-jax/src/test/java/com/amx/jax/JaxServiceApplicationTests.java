@@ -21,7 +21,9 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.VwLoyalityEncashRepository;
+import com.amx.jax.scope.Tenant;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;
 
@@ -42,13 +44,16 @@ public class JaxServiceApplicationTests {
 	ApplicationProcedureDao applProDao;
 	
 	@Autowired
-	BeneficiaryService beneSerive;
+	TransactionHistroyService txnhistoryService;
 	
 	@Autowired
 	VwLoyalityEncashRepository loyalityRepo;
 	
 	@Autowired
 	BizcomponentDao bizcomponentDao ; 
+	
+	@Autowired
+	MetaData metaData;
 	
 
 	// @Test
@@ -73,6 +78,7 @@ public class JaxServiceApplicationTests {
 	public MetaData meta() {
 		MetaData metad = new MetaData();
 		metad.setCountryId(new BigDecimal(91));
+		metad.setCustomerId(new BigDecimal(5218));
 		return metad;
 	}
 
@@ -104,12 +110,15 @@ public class JaxServiceApplicationTests {
 	
 	/** Generate document seriality **/
 	
-	//@Test
+	@Test
 	public void getDocumentSeriality() {
-		System.out.println(beneSerive.getTodaysTransactionForBene(new BigDecimal(5218), new BigDecimal(1424)));
+		metaData.setCustomerId(new BigDecimal(5218));
+		metaData.setCountryId(new BigDecimal(91));
+		metaData.setTenant(Tenant.KWT2);
+		System.out.println(txnhistoryService.getLastTransaction(metaData.getCustomerId()));
 	}
 	
-	@Test
+	//@Test
 	public void bizcomponentDaoTest() {
 		System.out.println(bizcomponentDao.findCustomerTypeId("I"));
 	}

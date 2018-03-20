@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -169,7 +170,14 @@ public class TransactionHistroyService extends AbstractService {
 		return dto;
 	}
 	
-	
+	public CustomerRemittanceTransactionView getLastTransaction(BigDecimal custId) {
+		CustomerRemittanceTransactionView output = null;
+		List<CustomerRemittanceTransactionView> list = transactionHistroyDao.getLastTransaction(custId, new PageRequest(0, 1));
+		if(list != null && !list.isEmpty()) {
+			output = list.get(0);
+		}
+		return output;
+	}
 	
 	
 	
