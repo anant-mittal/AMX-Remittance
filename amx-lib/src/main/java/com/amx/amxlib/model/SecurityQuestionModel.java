@@ -2,9 +2,15 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class SecurityQuestionModel extends AbstractModel {
 
+	private static final long serialVersionUID = -1144780796090568414L;
+
 	private BigDecimal questionSrNo;
+
+	private String answerKey = null;
 
 	public SecurityQuestionModel() {
 		super();
@@ -19,6 +25,7 @@ public class SecurityQuestionModel extends AbstractModel {
 
 	private String answer;
 
+	@ApiModelProperty(example = "6")
 	public BigDecimal getQuestionSrNo() {
 		return questionSrNo;
 	}
@@ -27,6 +34,7 @@ public class SecurityQuestionModel extends AbstractModel {
 		this.questionSrNo = questionSrNo;
 	}
 
+	@ApiModelProperty(example = "test")
 	public String getAnswer() {
 		return answer;
 	}
@@ -34,4 +42,14 @@ public class SecurityQuestionModel extends AbstractModel {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
+
+	@ApiModelProperty(example = "null")
+	public String getAnswerKey() {
+		return answerKey;
+	}
+
+	public void setAnswerKey(String answerKey) {
+		this.answerKey = answerKey;
+	}
+
 }

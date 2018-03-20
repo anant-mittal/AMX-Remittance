@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
+import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
+import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
+import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.jax.scope.Tenant;
 import com.bootloaderjs.JsonUtil;
 
 /**
@@ -26,7 +30,7 @@ import com.bootloaderjs.JsonUtil;
 @Component
 public class BenefitClient implements PayGClient {
 
-	private Logger log = Logger.getLogger(BenefitClient.class);
+	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
 
 	@Value("${benefit.certificate.path}")
 	String benefitCertpath;
@@ -51,13 +55,16 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	HttpServletRequest request;
+	
+   @Autowired
+    PayGConfig payGConfig;
 
 	@Autowired
 	private PaymentService paymentService;
 
 	@Override
 	public PayGServiceCode getClientCode() {
-		return PayGServiceCode.KNET;
+		return PayGServiceCode.BENEFIT;
 	}
 
 	@Override
@@ -68,11 +75,12 @@ public class BenefitClient implements PayGClient {
 		configMap.put("action", benefitAction);
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
-		configMap.put("responseUrl", benefitCallbackUrl + "/app/capture/KNET/BRN/");
+		configMap.put("responseUrl",
+                payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
-		log.info("Baharain KNET payment configuration : " + JsonUtil.toJson(configMap));
+		LOGGER.info("Baharain KNET payment configuration : " + JsonUtil.toJson(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -83,6 +91,9 @@ public class BenefitClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			// pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String) configMap.get("languageCode"));
+			configMap.put("responseUrl",
+	                payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
+			
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
@@ -93,13 +104,13 @@ public class BenefitClient implements PayGClient {
 			pipe.setUdf3(payGParams.getDocNo());
 
 			Short pipeValue = pipe.performPaymentInitialization();
-			System.out.println("pipeValue :" + pipeValue);
+			LOGGER.info("pipeValue : " + pipeValue);
 
 			if (pipeValue != e24PaymentPipe.SUCCESS) {
 				responseMap.put("errorMsg", pipe.getErrorMsg());
 				responseMap.put("debugMsg", pipe.getDebugMsg());
-				log.error(pipe.getErrorMsg());
-				log.debug(pipe.getDebugMsg());
+				LOGGER.error(pipe.getErrorMsg());
+				LOGGER.debug(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to Benefit.");
 			}
 
@@ -111,6 +122,7 @@ public class BenefitClient implements PayGClient {
 			responseMap.put("payurl", new String(payURL));
 
 			String url = payURL + "?paymentId=" + payID;
+			LOGGER.info("Generated url is ---> " + url);
 			payGParams.setRedirectUrl(url);
 
 		} catch (Exception e) {
@@ -120,9 +132,48 @@ public class BenefitClient implements PayGClient {
 
 	}
 
-	@Override
-	public PayGResponse capture(PayGResponse response) {
-		return null;
-	}
+    @SuppressWarnings("finally")
+    @Override
+    public PayGResponse capture(PayGResponse gatewayResponse) {
+
+        // Capturing GateWay Response
+        gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
+        gatewayResponse.setResult(request.getParameter("result"));
+        gatewayResponse.setAuth(request.getParameter("auth"));
+        gatewayResponse.setRef(request.getParameter("ref"));
+        gatewayResponse.setPostDate(request.getParameter("postdate"));
+        gatewayResponse.setTrackId(request.getParameter("trackid"));
+        gatewayResponse.setTranxId(request.getParameter("tranid"));
+        gatewayResponse.setResponseCode(request.getParameter("responsecode"));
+        gatewayResponse.setUdf1(request.getParameter("udf1"));
+        gatewayResponse.setUdf2(request.getParameter("udf2"));
+        gatewayResponse.setUdf3(request.getParameter("udf3"));
+        gatewayResponse.setUdf4(request.getParameter("udf4"));
+        gatewayResponse.setUdf5(request.getParameter("udf5"));
+        gatewayResponse.setCountryId(Tenant.KWT.getCode());
+
+        LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
+
+        try {
+            PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+            // Capturing JAX Response
+            gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+            gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+            gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+
+            if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+                gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+            } else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+                gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+            } else {
+                gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+            }
+        } catch (Exception e) {
+            LOGGER.error("payment service error in capturePayment method : ", e);
+            gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+        }finally {
+            return gatewayResponse;
+        }// end of try-catch-finally
+    }// end of capture
 
 }

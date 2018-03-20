@@ -9,3 +9,4 @@ mvn install:install-file -Dfile=knet_test.jar -DgroupId=com.knet.test -Dartifact
 mvn install:install-file -Dfile=bouncycastle-1.20.jar -DgroupId=bouncycastle-1.20 -DartifactId=bouncycastle-1.20 -Dversion=1.0 -Dpackaging=jar
 mvn install:install-file -Dfile=cryptix32.jar -DgroupId=cryptix32 -DartifactId=cryptix32 -Dversion=1.0 -Dpackaging=jar
 mvn install:install-file -Dfile=bcprov-jdk15-145.jar -DgroupId=bcprov-jdk15-145 -DartifactId=bcprov-jdk15-145 -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=bah_knet_test.jar -DgroupId=com.knet.bah.test -DartifactId=knet.bah.test -Dversion=1.0 -Dpackaging=jar

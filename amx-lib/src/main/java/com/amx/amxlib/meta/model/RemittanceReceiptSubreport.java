@@ -13,7 +13,14 @@ public class RemittanceReceiptSubreport {
 	private List<RemittanceReportBean> cities;
 	
 	private String waterMarkLogoPath;
+	
 	private Boolean waterMarkCheck;
+	
+	private String subReport;
+	    
+	private Boolean fcsaleApplicationCheck;
+	
+	private Boolean remittanceReceiptCheck;
 	
 	public Boolean getWaterMarkCheck() {
 		return waterMarkCheck;
@@ -39,15 +46,6 @@ public class RemittanceReceiptSubreport {
 	public void setCities(List<RemittanceReportBean> cities) {
 		this.cities = cities;
 	}
-
-
-
-	private String subReport;
-	
-	private Boolean fcsaleApplicationCheck;
-	private Boolean remittanceReceiptCheck;
-	
-
 	
 	public Boolean getRemittanceReceiptCheck() {
 		return remittanceReceiptCheck;

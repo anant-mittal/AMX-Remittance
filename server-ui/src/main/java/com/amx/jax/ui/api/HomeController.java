@@ -18,13 +18,14 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDevice;
 import com.bootloaderjs.ArgUtil;
 import com.bootloaderjs.JsonUtil;
+import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -42,7 +43,7 @@ public class HomeController {
 
 	@Autowired
 	private SessionService sessionService;
-	
+
 	@Autowired
 	HttpService httpService;
 
@@ -71,12 +72,13 @@ public class HomeController {
 		return versionNew;
 	}
 
+	@Timed
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
 	public String loginPing(HttpServletRequest request) {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = sessionService.getGuestSession().hitCounter();
-		userDevice.getDeviceType();
+		userDevice.getType();
 		wrapper.getData().hits = hits;
 		wrapper.getData().domain = request.getRequestURL().toString();
 		wrapper.getData().requestUri = request.getRequestURI();
@@ -85,12 +87,13 @@ public class HomeController {
 		return JsonUtil.toJson(wrapper);
 	}
 
+	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 
@@ -99,7 +102,7 @@ public class HomeController {
 	@ResponseBody
 	public String loginPJson() {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
-		wrapper.setMessage(ResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
+		wrapper.setMessage(WebResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -108,7 +111,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getDeviceId());
+		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 }

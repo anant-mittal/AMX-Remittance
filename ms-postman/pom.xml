@@ -40,11 +40,8 @@
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/net.sourceforge.nekohtml/nekohtml -->
-<!-- 		<dependency>
-			<groupId>net.sourceforge.nekohtml</groupId>
-			<artifactId>nekohtml</artifactId>
-			<version>1.9.21</version>$NO-MVN-MAN-VER$
-		</dependency> -->
+		<!-- <dependency> <groupId>net.sourceforge.nekohtml</groupId> <artifactId>nekohtml</artifactId> 
+			<version>1.9.21</version>$NO-MVN-MAN-VER$ </dependency> -->
 
 		<!-- /thymeleaf dependencies -->
 
@@ -119,9 +116,7 @@
 			<artifactId>ms-postman-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
-
-
+		
 	</dependencies>
 
 	<build>

@@ -13,22 +13,26 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.exrateservice.repository.PipsMasterRepository;
+import com.amx.jax.meta.MetaData;
 
 @Component
 public class PipsMasterDao {
 
 	@Autowired
 	private PipsMasterRepository repo;
+	
+	@Autowired
+	MetaData metaData;
 
 	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency) {
 		CountryBranch onlineBranch = new CountryBranch();
-		onlineBranch.setCountryBranchId(new BigDecimal(78));
+		onlineBranch.setCountryBranchId(metaData.getCountryBranchId());
 		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
 	}
 
 	public List<PipsMaster> getPipsMasterForBranch(ExchangeRateApprovalDetModel exchangeRate, BigDecimal fcAmount) {
 		CountryBranch onlineBranch = new CountryBranch();
-		onlineBranch.setCountryBranchId(new BigDecimal(78));
+		onlineBranch.setCountryBranchId(metaData.getCountryBranchId());
 		CountryBranch countryBranch = new CountryBranch();
 		countryBranch.setCountryBranchId(exchangeRate.getCountryBranchId());
 		CountryMaster countryMaster = new CountryMaster();

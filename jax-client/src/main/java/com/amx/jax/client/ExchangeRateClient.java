@@ -22,7 +22,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 @Component
 public class ExchangeRateClient extends AbstractJaxServiceClient {
 
-	private Logger log = Logger.getLogger(getClass());
+	private static final Logger LOGGER = Logger.getLogger(ExchangeRateClient.class);
 
 	public ApiResponse<ExchangeRateResponseModel> getExchangeRate(BigDecimal fromCurrency, BigDecimal toCurrency,
 			BigDecimal amount, BigDecimal bankId) throws ResourceNotFoundException, InvalidInputException {
@@ -38,18 +38,17 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			}
 			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
+			LOGGER.info("calling getExchangeRate api: " + getExchangeRateUrl);
 			response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
 					});
 			return response.getBody();
-		} catch (Exception e) {
-			if (e instanceof AbstractException) {
-				throw e;
-			} else {
-				throw new JaxSystemError();
-			}
-		} // end of try-catch
+		} catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in getExchangeRate : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
 
 	}
 
@@ -64,18 +63,17 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 
 			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
+			LOGGER.info("calling getExchangeRate api: " + getExchangeRateUrl);
 			response = restTemplate.exchange(getExchangeRateUrl, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 			return response.getBody();
-		} catch (Exception e) {
-			if (e instanceof AbstractException) {
-				throw e;
-			} else {
-				throw new JaxSystemError();
-			}
-		} // end of try-catch
+		} catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in setExchangeRate : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
 
 	}
 }

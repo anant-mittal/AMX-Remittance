@@ -93,9 +93,11 @@ public class ExchangeRateService extends AbstractService {
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
 			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
+			
 			if (validBankIds.isEmpty()) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
+			
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
 					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
@@ -164,13 +166,13 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal fromCurrency,
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal amount) {
+			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount, BigDecimal lcAmount) {
 		Set<BankMasterDTO> bankWiseRates = new HashSet<>();
 		for (Entry<ExchangeRateApprovalDetModel, List<PipsMaster>> entry : applicableRatesWithDiscount.entrySet()) {
 			List<PipsMaster> piplist = entry.getValue();
 			ExchangeRateApprovalDetModel rate = entry.getKey();
 			BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
-			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, amount));
+			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, lcAmount));
 			logger.debug("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
 					+ rate.getCurrencyId());
 			currencyIdVsExchId.put(rate.getCurrencyId(),  rate.getExchangeRateMasterAprDetId());

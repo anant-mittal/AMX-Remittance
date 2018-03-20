@@ -75,6 +75,23 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.mobile</groupId>
+			<artifactId>spring-mobile-device</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>eu.bitwalker</groupId>
+			<artifactId>UserAgentUtils</artifactId>
+			<version>1.21</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+			<artifactId>owasp-java-html-sanitizer</artifactId>
+			<version>20180219.1</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.bootloaderjs</groupId>
 			<artifactId>boot-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
@@ -91,54 +108,34 @@
 			<artifactId>ms-postman-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<!-- <dependency> <groupId>com.amx.jax</groupId> <artifactId>ms-postman</artifactId> 
-			<version>0.0.1-SNAPSHOT</version> </dependency> -->
-
-		<!-- Spring Framework Caching Support -->
-		<!-- <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast</artifactId> 
-			</dependency> <dependency> <groupId>com.hazelcast</groupId> <artifactId>hazelcast-spring</artifactId> 
-			</dependency> <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-cache</artifactId> 
-			</dependency> <dependency> <groupId>org.springframework.session</groupId> 
-			<artifactId>spring-session</artifactId> </dependency> -->
 
 		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.redisson</groupId>
-			<artifactId>redisson</artifactId>
-			<version>3.5.6</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-redis</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>de.ruedigermoeller</groupId>
-			<artifactId>fst</artifactId>
-			<version>2.54</version>
-		</dependency>
-
-		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-mobile</artifactId> 
-			</dependency> -->
-		<dependency>
-			<groupId>org.springframework.mobile</groupId>
-			<artifactId>spring-mobile-device</artifactId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-cache</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>client-logger</artifactId>
+			<artifactId>lib-session</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-logger</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-swagger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
@@ -160,6 +157,14 @@
 		<repository>
 			<id>spring-milestone</id>
 			<url>https://repo.spring.io/libs-milestone</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>bintray</name>
+			<url>http://jcenter.bintray.com</url>
 		</repository>
 	</repositories>
 </project>

@@ -4,13 +4,12 @@
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<Pattern>
-				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %X
-				- %msg%n
+				%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %X - %msg%n
 			</Pattern>
 		</layout>
 	</appender>
 
-	<appender name="FILE"
+<!-- 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${LOG_PATH}/ms-jax.log</file>
 
@@ -21,18 +20,17 @@
 		</encoder>
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<!-- rollover daily -->
+			rollover daily
 			<fileNamePattern>ms-jax-%d{yyyy-MM-dd}.%i.txt</fileNamePattern>
 			<maxFileSize>100MB</maxFileSize>
 			<maxHistory>365</maxHistory>
 			<totalSizeCap>10GB</totalSizeCap>
 		</rollingPolicy>
-	</appender>
-
+	</appender> -->
 
 	<root level="${log.level:-INFO}">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
+		<!-- <appender-ref ref="FILE" /> -->
 	</root>
 	<logger name="org.hibernate" level="info" />
 	<logger name="org.springframework" level="info" />

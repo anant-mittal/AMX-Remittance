@@ -1,15 +1,14 @@
 package com.amx.jax.ui.api;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.ui.model.LoginData;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.RegistrationService;
@@ -25,6 +24,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @Api(value = "Registration APIs")
+@PropertySource("classpath:controller.properties")
 public class RegisterController {
 
 	@Autowired
@@ -36,8 +36,14 @@ public class RegisterController {
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> verifyID(@RequestParam String civilid) {
-		return registrationService.verifyId(civilid);
+	public ResponseWrapper<AuthData> verifyID(@RequestParam String civilid) {
+		return registrationService.validateCustomer(civilid);
+	}
+
+	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
+	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
+		return registrationService.validateCustomer(authData.getIdentity(), authData.getmOtp(), authData.getAnswer());
 	}
 
 	/**
@@ -48,40 +54,31 @@ public class RegisterController {
 	 * @param request
 	 * @return
 	 */
+	@Deprecated
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> verifyCustomer(@RequestParam String civilid, @RequestParam String mOtp) {
+	public ResponseWrapper<UserUpdateData> verifyCUser(@RequestParam String civilid, @RequestParam String mOtp) {
 		return registrationService.loginWithOtp(civilid, mOtp);
-	}
-
-	/**
-	 * @param request
-	 * @return
-	 */
-	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
-	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
-		return registrationService.getSecQues();
 	}
 
 	/**
 	 * @param securityquestions
 	 * @return
 	 */
-	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody UserUpdateData userUpdateData) {
+	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regSecQues(@RequestBody UserUpdateData userUpdateData) {
 		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
 				userUpdateData.geteOtp());
 	}
 
 	/**
-	 * 
 	 * @param imageUrl
 	 * @param caption
 	 * @param mOtp
 	 * @param eOtp
 	 * @return
 	 */
-	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
+	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regPhising(@RequestParam String imageUrl, @RequestParam String caption,
 			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
 	}
@@ -94,9 +91,11 @@ public class RegisterController {
 	 * @param eOtp
 	 * @return
 	 */
-	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp);
+	@RequestMapping(value = "/pub/register/creds", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
+			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestParam(required = false) String email) {
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email);
 	}
+
 }

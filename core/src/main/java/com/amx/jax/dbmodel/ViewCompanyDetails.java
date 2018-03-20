@@ -3,6 +3,7 @@ package com.amx.jax.dbmodel;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -21,11 +22,16 @@ Created	:		Rabil
 				Revision:
 /***********************************************************/
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 
 
 
 @Entity
 @Table(name = "JAX_VIEW_EX_COMPANY")
+@Cacheable
+@Cache(usage=CacheConcurrencyStrategy.READ_WRITE)
 public class ViewCompanyDetails implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal companyId;

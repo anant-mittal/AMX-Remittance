@@ -4,8 +4,9 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
@@ -16,9 +17,16 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.SessionEvent;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
+import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
-import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
 /**
@@ -35,47 +43,59 @@ public class GuestSession implements Serializable {
 	private static final long serialVersionUID = -8825493107883952226L;
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	public static enum AuthFlow {
-		LOGIN, ACTIVATION, RESET_PASS
+	@Autowired
+	TenantContext<AuthLib> tenantContext;
+
+	@Autowired
+	AuditService auditService;
+
+	public AuthState state = new AuthState();
+
+	public AuthState getState() {
+		return state;
 	}
 
-	public static enum AuthFlowStep {
-		USERPASS, SECQUES, IDVALID, DOTPVFY
+	public void setState(AuthState state) {
+		this.state = state;
 	}
 
-	AuthFlow flow = null;
-	AuthFlowStep authStep = null;
-	String seqId = null;
+	String identity = null;
 
-	public AuthFlowStep getAuthStep() {
-		return authStep;
+	public String getIdentity() {
+		return identity;
 	}
 
-	public void setAuthStep(AuthFlowStep authStep) {
-		this.authStep = authStep;
+	public void setIdentity(String identiy) {
+		this.identity = identiy;
 	}
 
-	public boolean isAuthStep(AuthFlowStep authStep) {
-		return this.authStep == authStep;
+	public void initFlow(AuthFlow flow) {
+		state.flow = flow;
+		state.cStep = null;
+		state.nStep = tenantContext.get().getNextAuthStep(state);
 	}
 
-	public AuthFlow getFlow() {
-		return flow;
+	public void initStep(AuthStep step) {
+		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
+		if (step != state.nStep) {
+			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
+			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		}
 	}
 
-	public boolean isFlow(AuthFlow flow) {
-		return this.flow == flow;
-	}
-
-	public void setFlow(AuthFlow authFlow) {
-		this.flow = authFlow;
+	public AuthState endStep(AuthStep step) {
+		auditService.log(new AuthEvent(state));
+		state.cStep = step;
+		state.nStep = tenantContext.get().getNextAuthStep(state);
+		if (state.nStep == AuthStep.COMPLETED) {
+			auditService.log(new AuthEvent(state, AuthEvent.Result.PASS));
+			state.flow = null;
+		}
+		return state;
 	}
 
 	@Autowired
 	private HttpServletResponse response;
-
-	@Autowired
-	private HttpServletRequest request;
 
 	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
@@ -86,26 +106,11 @@ public class GuestSession implements Serializable {
 		return nextToken;
 	}
 
-	public boolean isValidToken(String key, String value) {
-		log.info("Validating {} = {}", key, value);
-		if (nextTokenMap.containsKey(key)) {
-			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
-		}
-		return false;
-	}
-
 	public void validate(String curEnd, String[] validEnds) {
 		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, this.getNextToken(curEnd));
 		kooky.setMaxAge(300);
 		// kooky.setPath("/");
 		response.addCookie(kooky);
-	}
-
-	private void validateSeqCookie(String seqKey, String seqValue) {
-		if (this.isValidToken(UIConstants.SEQ_KEY_STEP_LOGIN, seqValue)) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			throw new HttpUnauthorizedException();
-		}
 	}
 
 	private Integer hits = 0;
@@ -144,6 +149,20 @@ public class GuestSession implements Serializable {
 
 	public void nextQuesIndex() {
 		quesIndex++;
+	}
+
+	@PostConstruct
+	public void started() throws Exception {
+		SessionEvent evt = new SessionEvent();
+		evt.setType(SessionEvent.Type.SESSION_STARTED);
+		auditService.log(evt);
+	}
+
+	@PreDestroy
+	public void ended() throws Exception {
+		SessionEvent evt = new SessionEvent();
+		evt.setType(SessionEvent.Type.SESSION_ENDED);
+		auditService.log(evt);
 	}
 
 }

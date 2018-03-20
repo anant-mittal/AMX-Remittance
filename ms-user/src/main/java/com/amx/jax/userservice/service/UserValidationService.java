@@ -24,6 +24,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -32,6 +33,7 @@ import com.amx.jax.dbmodel.CusmasModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.exception.GlobalException;
@@ -39,10 +41,12 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.exception.InvalidOtpException;
 import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
@@ -52,7 +56,7 @@ import com.amx.jax.util.validation.CustomerValidation;
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserValidationService {
-	
+
 	Logger logger = Logger.getLogger(UserValidationService.class);
 
 	@Autowired
@@ -87,12 +91,18 @@ public class UserValidationService {
 
 	@Autowired
 	OtpSettings otpSettings;
-	
+
 	@Autowired
 	private ValidationClients validationClients;
-	
+
 	@Autowired
 	private JaxUtil jaxUtil;
+
+	@Autowired
+	private CustomerVerificationService customerVerificationService;
+	
+	@Autowired
+	TenantContext<UserValidation> tenantContext;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -111,11 +121,26 @@ public class UserValidationService {
 		if (cust.getMobile() == null) {
 			throw new GlobalException("Mobile number is empty. Contact branch to update the same.");
 		}
+
 		if (cust.getEmail() == null) {
-			throw new GlobalException("Email is empty. Contact branch to update the same.");
+			createEmailVerification(cust);
 		}
 		this.validateCustIdProofs(cust.getCustomerId());
 		return cust;
+	}
+
+	private CustomerVerification createEmailVerification(Customer cust) {
+		CustomerVerification customerVerification = customerVerificationService.getVerification(cust,
+				CustomerVerificationType.EMAIL);
+		if (customerVerification == null) {
+			customerVerification = new CustomerVerification();
+			customerVerification.setCustomerId(cust.getCustomerId());
+			customerVerification.setVerificationType("EMAIL");
+			customerVerification.setVerificationStatus("N");
+			customerVerification.setCreateDate(new Date());
+			customerVerificationService.saveOrUpdateVerification(customerVerification);
+		}
+		return customerVerification;
 	}
 
 	protected void validateCivilId(String civilId) {
@@ -140,6 +165,10 @@ public class UserValidationService {
 	}
 
 	protected void validateCustIdProofs(BigDecimal custId) {
+		if (tenantContext.get() != null) {
+			tenantContext.get().validateCustIdProofs(custId);
+			return;
+		} 
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			validateIdProof(idProof);
@@ -384,8 +413,14 @@ public class UserValidationService {
 	}
 
 	public void validateOtpFlow(CustomerModel model) {
+		if(model.isRegistrationFlow()) {
+			return;
+		}
+		BigDecimal custId = meta.getCustomerId();
+		Customer customer = custDao.getCustById(custId);
+		
 		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
-		boolean isEOtpFlowRequired = isEOtpFlowRequired(model);
+		boolean isEOtpFlowRequired = isEOtpFlowRequired(model, customer);
 
 		if (isMOtpFlowRequired && model.getMotp() == null) {
 			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
@@ -395,8 +430,6 @@ public class UserValidationService {
 			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
 		}
 
-		BigDecimal custId = meta.getCustomerId();
-		Customer customer = custDao.getCustById(custId);
 		// mobile otp validation
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
@@ -432,7 +465,7 @@ public class UserValidationService {
 		return required;
 	}
 
-	private boolean isEOtpFlowRequired(CustomerModel model) {
+	private boolean isEOtpFlowRequired(CustomerModel model, Customer customer) {
 
 		boolean required = false;
 
@@ -442,6 +475,10 @@ public class UserValidationService {
 
 		if (model.getMobile() != null) {
 			required = true;
+		}
+		CustomerVerification cv = customerVerificationService.getVerification(customer, CustomerVerificationType.EMAIL);
+		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus())) {
+			required = false;
 		}
 		return required;
 	}
@@ -466,27 +503,31 @@ public class UserValidationService {
 			}
 		}
 	}
-	
+
 	protected void validateMobileNumberLength(Customer customer, String mobile) {
-		
+
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (!validationClient.isValidMobileNumber(mobile)) {
 			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
 		}
 	}
-	
+
 	protected void isMobileExist(Customer customer, String mobile) {
-		
+
 		ValidationClient validationClient = validationClients.getValidationClient(customer.getCountryId().toString());
 		if (validationClient.isMobileExist(mobile)) {
 			throw new GlobalException("Mobile Number already exist.", JaxError.ALREADY_EXIST);
 		}
 	}
 
+	public void validateCustomerVerification(BigDecimal customerId) {
+
+		CustomerVerification cv = customerVerificationService.getVerification(customerId,
+				CustomerVerificationType.EMAIL);
+		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
+			throw new GlobalException("Your email verificaiton is pending",
+					JaxError.USER_DATA_VERIFICATION_PENDING_REG);
+		}
+	}
 
 }
-
-
-
-
-

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public abstract class AbstractJaxServiceClient {
 
-	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
+	private static final Logger LOGGER = Logger.getLogger(AbstractJaxServiceClient.class);
 
 	@Autowired
 	protected RestTemplate restTemplate;
@@ -26,8 +26,8 @@ public abstract class AbstractJaxServiceClient {
 	JaxConfig jaxConfig;
 
 	public String getBaseUrl() {
-		log.info("getBaseUrl:BASE URL IS BEING READ");
-		return jaxConfig.getSpServiceUrl(); // jaxServiceUrl.toString();
+	    LOGGER.info("getBaseUrl:BASE URL IS BEING READ");
+		return jaxConfig.getSpServiceUrl();
 	}
 
 	protected HttpHeaders getHeader() {
@@ -42,17 +42,17 @@ public abstract class AbstractJaxServiceClient {
 			info.setLanguageId(jaxMetaInfo.getLanguageId());
 			info.setCountryBranchId(jaxMetaInfo.getCountryBranchId());
 			info.setTenant(jaxMetaInfo.getTenant());
-			log.info("device ip  ---> " + jaxMetaInfo.getDeviceIp());
+			LOGGER.info("device ip  ---> " + jaxMetaInfo.getDeviceIp());
 			info.setDeviceId(jaxMetaInfo.getDeviceId());
 			info.setDeviceIp(jaxMetaInfo.getDeviceIp());
 			info.setReferrer(jaxMetaInfo.getReferrer());
-			log.info("Tenant id --> " + jaxMetaInfo.getTenant());
-			log.info("Referal id --> " + jaxMetaInfo.getReferrer()+"\t Device Type :"+jaxMetaInfo.getDeviceType());
+			LOGGER.info("Tenant id --> " + jaxMetaInfo.getTenant());
+			LOGGER.info("Referal id --> " + jaxMetaInfo.getReferrer()+"\t Device Type :"+jaxMetaInfo.getDeviceType());
 			info.setReferrer(jaxMetaInfo.getReferrer());
 			info.setDeviceType(jaxMetaInfo.getDeviceType());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
-			log.error("error in getheader of jaxclient", e);
+		    LOGGER.error("error in getheader of jaxclient", e);
 		}
 		return headers;
 	}

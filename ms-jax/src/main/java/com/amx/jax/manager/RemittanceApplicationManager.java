@@ -238,8 +238,7 @@ public class RemittanceApplicationManager {
 	}
 
 	private void validateDailyBeneficiaryTransactionLimit(BenificiaryListView beneDetails) {
-		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),
-				beneDetails.getBeneficaryMasterSeqId());
+		Integer todaysTxns = beneficiaryService.getTodaysTransactionForBene(metaData.getCustomerId(),beneDetails.getBeneficaryMasterSeqId());
 		if (todaysTxns > 0) {
 			throw new GlobalException(
 					"Dear Customer, you have already done 1 application to this beneficiary within the last 24"

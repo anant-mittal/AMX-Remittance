@@ -60,34 +60,13 @@ public class BusinessComponentConf implements java.io.Serializable {
 	private List<BizComponentConfDetail> fsBizComponentConfDetails = new ArrayList<BizComponentConfDetail>();
 	private List<BizComponentDataRef> fsBizComponentDataRefs = new ArrayList<BizComponentDataRef>();
 
-	public BusinessComponentConf() {
-	}
-
 	public BusinessComponentConf(BigDecimal componentConfId,
 			Date createdTime, Date updatedTime) {
 		this.componentConfId = componentConfId;
 		this.createdTime = createdTime;
 		this.updatedTime = updatedTime;
 	}
-	
-	
-/*
-	public BusinessComponentConf(BigDecimal componentConfId, BusinessComponent fsBusinessComponent, RuleApplicationMaster fsRuleApplicationMaster, RulePageMaster fsRulePageMaster, CompanyMaster fsCompanyMaster, CountryMaster fsCountryMaster, BigDecimal levelId, String createdBy, Date createdTime, String updatedBy, Date updatedTime, List<BizComponentConfDetail> fsBizComponentConfDetails, List<BizComponentDataRef> fsBizComponentDataRefs) {
-		this.componentConfId = componentConfId;
-		this.fsBusinessComponent = fsBusinessComponent;
-		//this.fsRuleApplicationMaster = fsRuleApplicationMaster;
-		//this.fsRulePageMaster = fsRulePageMaster;
-		this.fsCompanyMaster = fsCompanyMaster;
-		this.fsCountryMaster = fsCountryMaster;
-		this.levelId = levelId;
-		this.createdBy = createdBy;
-		this.createdTime = createdTime;
-		this.updatedBy = updatedBy;
-		this.updatedTime = updatedTime;
-		this.fsBizComponentConfDetails = fsBizComponentConfDetails;
-		//this.fsBizComponentDataRefs = fsBizComponentDataRefs;
-	}
-*/
+
 	@Id
 	/*@TableGenerator(name="componentconfid",table="fs_componentconfidpk",pkColumnName="componentconfidkey",pkColumnValue="componentconfidvale",allocationSize=1)
 	@GeneratedValue(strategy=GenerationType.TABLE,generator="componentconfid")
