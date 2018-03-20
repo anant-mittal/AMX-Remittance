@@ -42,7 +42,7 @@ public class RegistrationService {
 		 */
 		sessionService.clear();
 		sessionService.getGuestSession().setIdentity(identity);
-		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.ACTIVATION);
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.ACTIVATION);
 
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 

@@ -157,8 +157,8 @@ public class LoginService {
 
 	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
 		sessionService.clear();
+		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(identity);
-		sessionService.getGuestSession().getState().setFlow(AuthState.AuthFlow.RESET_PASS);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity).getResult();
 		userSession.setUserid(identity);
