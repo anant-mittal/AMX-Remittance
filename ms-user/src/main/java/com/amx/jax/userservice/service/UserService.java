@@ -45,6 +45,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.CustomerVerification;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
@@ -63,10 +64,12 @@ import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
+import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -135,6 +138,9 @@ public class UserService extends AbstractUserService {
 
 	@Autowired
 	CustomerVerificationService customerVerificationService;
+	
+	@Autowired
+	TenantContext<UserValidation> tenantContext;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -179,6 +185,7 @@ public class UserService extends AbstractUserService {
 		try {
 			PersonInfo personinfo = new PersonInfo();
 			Customer customer = custDao.getCustById(cust.getCustomerId());
+			model.setEmail(customer.getEmail());
 			LoginLogoutHistory history = this.getLoginLogoutHistoryByUserName(cust.getUserName());
 			if (history != null) {
 				personinfo.setLastLoginTime(history.getLoginTime());
@@ -244,8 +251,9 @@ public class UserService extends AbstractUserService {
 	private void updateCustomerVerification(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
 		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 		if (cv != null) {
+			logger.info("customer verification found with status = " + cv.getVerificationStatus());
 			customerVerificationService.updateVerification(cust, CustomerVerificationType.EMAIL, model.getEmail());
-			if(model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())){
+			if (model.getEmail() != null && ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				updateEmail(cust.getCustomerId(), model.getEmail());
 			}
 		}		
@@ -254,16 +262,19 @@ public class UserService extends AbstractUserService {
 
 	// password not null flag indicates it is final step in registration
 	private void setCustomerStatus(CustomerOnlineRegistration onlineCust, CustomerModel model, Customer cust) {
-		CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
-
-		if (!ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
-			throw new GlobalException("Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
-					JaxError.USER_DATA_VERIFICATION_PENDING);
-		}
 		if (model.getPassword() != null) {
+			CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
+
+			if (cv != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
+				throw new GlobalException(
+						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
+						JaxError.USER_DATA_VERIFICATION_PENDING);
+			}
+
 			onlineCust.setStatus(ConstantDocument.Yes);
+			custDao.saveOnlineCustomer(onlineCust);
 		}
-		custDao.saveOnlineCustomer(onlineCust);
+		
 	}
 
 	private boolean isNewUserRegistrationSuccess(CustomerModel model, CustomerOnlineRegistration onlineCust) {
@@ -316,12 +327,17 @@ public class UserService extends AbstractUserService {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
-			customerId = custDao.getCustomerByCivilId(civilId).getCustomerId();
+			Customer customer = custDao.getCustomerByCivilId(civilId);
+			if (customer == null) {
+				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
+			}
+			customerId = customer.getCustomerId();
 		}
+		logger.info("customerId is --> " + customerId);
+		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
-		logger.info("customerId is --> " + customerId);
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustReg != null) {
 			logger.info("validating customer lock count.");
@@ -386,6 +402,7 @@ public class UserService extends AbstractUserService {
 		}
 		return response;
 	}
+
 
 	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
 		String randmOtp = util.createRandomPassword(6);
@@ -556,7 +573,7 @@ public class UserService extends AbstractUserService {
 	}
 	
 	public void updateEmail(BigDecimal customerId, String email) {
-
+		logger.info("Updating customer's email address " + email);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		onlineCustomer.setEmail(email);
 		Customer customer = custDao.getCustById(customerId);
@@ -636,14 +653,19 @@ public class UserService extends AbstractUserService {
 							contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
 					if (!stateMasterView.isEmpty()) {
 						customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
-						List<ViewDistrict> districtMas = districtDao.getDistrict(stateMasterView.get(0).getStateId(),
-								contactList.get(0).getFsDistrictMaster().getDistrictId(), new BigDecimal(1));
-						if (!districtMas.isEmpty()) {
-							customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-							List<ViewCity> cityDetails = cityDao.getCityDescription(districtMas.get(0).getDistrictId(),
-									contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-							if (!cityDetails.isEmpty()) {
-								customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+						DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
+						if (distictMaster != null) {
+							List<ViewDistrict> districtMas = districtDao.getDistrict(
+									stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),
+									new BigDecimal(1));
+							if (!districtMas.isEmpty()) {
+								customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+								List<ViewCity> cityDetails = cityDao.getCityDescription(
+										districtMas.get(0).getDistrictId(),
+										contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+								if (!cityDetails.isEmpty()) {
+									customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+								}
 							}
 						}
 					}
@@ -807,5 +829,16 @@ public class UserService extends AbstractUserService {
 		}
 		return personInfo;
 	}
+	
+	   public ApiResponse customerLoggedIn(CustomerModel customerModel) {
+	        CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerModel.getCustomerId());
+	        ApiResponse response = getBlackApiResponse();
+	        CustomerModel cusModel = convert(onlineCustomer);
+	        //afterLoginSteps(onlineCustomer);
+	        response.getData().getValues().add(cusModel);
+	        response.getData().setType(cusModel.getModelType());
+	        response.setResponseStatus(ResponseStatus.OK);
+	        return response;
+	    }
 
 }

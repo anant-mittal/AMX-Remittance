@@ -21,11 +21,12 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
-import com.bootloaderjs.Constants;
 import com.bootloaderjs.Random;
 
 /**
@@ -58,23 +59,38 @@ public class GuestSession implements Serializable {
 		this.state = state;
 	}
 
-	String seqId = null;
+	String identity = null;
 
-	public void moveNextState() {
-		tenantContext.get().toNextAuthState(state);
+	public String getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(String identiy) {
+		this.identity = identiy;
+	}
+
+	public void initFlow(AuthFlow flow) {
+		state.flow = flow;
+		state.cStep = null;
+		state.nStep = tenantContext.get().getNextAuthStep(state);
 	}
 
 	public void initStep(AuthStep step) {
-		AuthStep nStep = tenantContext.get().getNextAuthStep(state);
-		if (nStep != step) {
-			throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
+		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
+		if (step != state.nStep) {
+			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
+			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
-		state.cStep = step;
 	}
 
 	public AuthState endStep(AuthStep step) {
+		auditService.log(new AuthEvent(state));
 		state.cStep = step;
 		state.nStep = tenantContext.get().getNextAuthStep(state);
+		if (state.nStep == AuthStep.COMPLETED) {
+			auditService.log(new AuthEvent(state, AuthEvent.Result.PASS));
+			state.flow = null;
+		}
 		return state;
 	}
 
@@ -88,14 +104,6 @@ public class GuestSession implements Serializable {
 		nextTokenMap.put(key, nextToken);
 		log.info("Created {} = {}", key, nextToken);
 		return nextToken;
-	}
-
-	public boolean isValidToken(String key, String value) {
-		log.info("Validating {} = {}", key, value);
-		if (nextTokenMap.containsKey(key)) {
-			return nextTokenMap.getOrDefault(key, Constants.BLANK).equalsIgnoreCase(value);
-		}
-		return false;
 	}
 
 	public void validate(String curEnd, String[] validEnds) {

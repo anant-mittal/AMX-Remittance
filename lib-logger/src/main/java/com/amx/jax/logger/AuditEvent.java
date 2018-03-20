@@ -1,27 +1,26 @@
 package com.amx.jax.logger;
 
+import com.bootloaderjs.EnumType;
+
 public abstract class AuditEvent {
 
-	public interface EventType {
-		String name();
-	}
-
 	protected String component;
-	protected String category = getClass().getName();
-	protected EventType type;
+	protected String category = getClass().getSimpleName();
+	protected EnumType type;
 	protected long timestamp;
 	protected String message;
+	protected String description = null;
 
 	public AuditEvent() {
 		this.timestamp = System.currentTimeMillis();
 	}
 
-	public AuditEvent(EventType type) {
+	public AuditEvent(EnumType type) {
 		this();
 		this.type = type;
 	}
 
-	public AuditEvent(EventType type, String message) {
+	public AuditEvent(EnumType type, String message) {
 		this(type);
 		this.message = message;
 	}
@@ -42,11 +41,11 @@ public abstract class AuditEvent {
 		this.category = category;
 	}
 
-	public EventType getType() {
+	public EnumType getType() {
 		return type;
 	}
 
-	public void setType(EventType type) {
+	public void setType(EnumType type) {
 		this.type = type;
 	}
 
@@ -64,6 +63,14 @@ public abstract class AuditEvent {
 
 	public void setMessage(String message) {
 		this.message = message;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

@@ -42,7 +42,7 @@ import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
-import com.amx.jax.ui.response.ResponseStatus;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
@@ -207,7 +207,7 @@ public class RemittController {
 				wrapper.getData().setForAmount(resp.getExRateBreakup().getConvertedFCAmount());
 				wrapper.getData().setBeneBanks(resp.getBankWiseRates());
 			} catch (ResourceNotFoundException | InvalidInputException e) {
-				wrapper.setMessage(ResponseStatus.ERROR, e);
+				wrapper.setMessage(WebResponseStatus.ERROR, e);
 			}
 		}
 		return wrapper;
@@ -250,7 +250,7 @@ public class RemittController {
 					.validateTransaction(request).getResult();
 			wrapper.setData(respTxMdl);
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.ERROR, e);
+			wrapper.setMessage(WebResponseStatus.ERROR, e);
 		}
 		return wrapper;
 	}
@@ -268,9 +268,9 @@ public class RemittController {
 					"https://" + request.getServerName() + "/app/landing/remittance", tenantContext.getTenant()));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
-			wrapper.setMessage(ResponseStatus.ERROR, e);
+			wrapper.setMessage(WebResponseStatus.ERROR, e);
 		} catch (MalformedURLException | URISyntaxException e) {
-			wrapper.setMessage(ResponseStatus.ERROR, e.getMessage());
+			wrapper.setMessage(WebResponseStatus.ERROR, e.getMessage());
 		}
 		return wrapper;
 	}

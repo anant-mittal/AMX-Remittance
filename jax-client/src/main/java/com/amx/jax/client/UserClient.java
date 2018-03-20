@@ -233,15 +233,24 @@ public class UserClient extends AbstractJaxServiceClient {
 
     }
 
-    public ApiResponse<CustomerModel> saveLoginIdAndPassword(String loginId, String password, String mOtp, String eOtp)
+    /**
+     * saves customer's login id and password
+     * @param email Customer's email id
+     * @param mOtp mobile otp
+     * @param eOtp email otp
+     * */
+    public ApiResponse<CustomerModel> saveCredentials(String loginId, String password, String mOtp, String eOtp,
+    		String email)
             throws AlreadyExistsException {
         try {
             ResponseEntity<ApiResponse<CustomerModel>> response;
             CustomerModel custModel = new CustomerModel();
+            custModel.setRegistrationFlow(true);
             custModel.setLoginId(loginId);
             custModel.setPassword(password);
             custModel.setMotp(mOtp);
             custModel.setEotp(eOtp);
+            custModel.setEmail(email);
             custModel.setCustomerId(jaxMetaInfo.getCustomerId());
             HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
             String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
@@ -607,16 +616,16 @@ public class UserClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
     
-	public ApiResponse<QuestModelDTO> validateDataVerificationQuestions(List<SecurityQuestionModel> answers) {
-		ResponseEntity<ApiResponse<QuestModelDTO>> response = null;
+	public ApiResponse<CustomerModel> validateDataVerificationQuestions(List<SecurityQuestionModel> answers) {
+		ResponseEntity<ApiResponse<CustomerModel>> response = null;
 		try {
 			LOGGER.info("in the saveDataVerificationQuestions");
 			CustomerModel cmodel = new CustomerModel();
-			cmodel.setSecurityquestions(answers);
+			cmodel.setVerificationAnswers(answers);
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/";
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(cmodel, getHeader());
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 			return response.getBody();
 		} catch (Exception e) {
@@ -628,4 +637,26 @@ public class UserClient extends AbstractJaxServiceClient {
 			}
 		}
 	}
+	
+    public ApiResponse<CustomerModel> customerLoggedIn() {
+        try {
+            ResponseEntity<ApiResponse<CustomerModel>> response;
+            CustomerModel custModel = new CustomerModel();
+            custModel.setCustomerId(jaxMetaInfo.getCustomerId());
+            
+            HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
+            String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
+            LOGGER.info("calling customer logged in api: " + sendOtpUrl);
+            response = restTemplate.exchange(sendOtpUrl, HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+                    });
+            LOGGER.info("responce from  customer logged in  api: " + util.marshall(response.getBody()));
+            return response.getBody();
+        } catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in customer logged in : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    } // end of customerLoggedIn
 }

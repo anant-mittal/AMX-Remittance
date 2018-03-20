@@ -82,8 +82,8 @@
 			<id>dev</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.knet.test</groupId>
-					<artifactId>knet.test</artifactId>
+					<groupId>com.knet.bah.test</groupId>
+					<artifactId>knet.bah.test</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>

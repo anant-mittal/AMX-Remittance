@@ -3,6 +3,7 @@ package com.amx.jax.ui.session;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -40,7 +41,7 @@ public class UserDevice implements Serializable {
 	@Autowired
 	private HttpService httpService;
 
-	private void resolve() {
+	public UserDevice resolve() {
 		Device currentDevice = httpService.getCurrentDevice();
 		this.ip = httpService.getIPAddress();
 		this.type = (currentDevice.isMobile() ? DeviceType.MOBILE
@@ -48,10 +49,19 @@ public class UserDevice implements Serializable {
 		this.platform = currentDevice.getDevicePlatform();
 		this.fingerprint = httpService.getDeviceId();
 		UserAgent userAgent = httpService.getUserAgent();
-		this.id = ArgUtil.parseAsString(userAgent.getId());
+		if (this.id == null) {
+			String idn = null;
+			if (this.fingerprint != null) {
+				idn = UUID.nameUUIDFromBytes(this.fingerprint.getBytes()).toString();
+			} else {
+				idn = UUID.randomUUID().toString();
+			}
+			this.id = httpService.getBrowserId(ArgUtil.parseAsString(idn));
+		}
 		this.browser = userAgent.getBrowser();
 		this.browserVersion = userAgent.getBrowserVersion();
 		this.operatingSystem = userAgent.getOperatingSystem();
+		return this;
 	}
 
 	public String getIp() {

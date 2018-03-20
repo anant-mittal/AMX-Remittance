@@ -183,4 +183,25 @@ public class UserClientTest {
         assertNotNull("Response is null", response);
         assertNotNull(response.getResult());
     }
+    
+    @Test
+    public void customerLoggedIn(){
+        jaxMetaInfo.setCountryId(new BigDecimal(91));
+        jaxMetaInfo.setCompanyId(new BigDecimal(1));
+        jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+        jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+        ApiResponse<CustomerModel> response = null;
+        
+        try {
+            response = client.customerLoggedIn();
+        }catch(JaxSystemError je) {
+            je.printStackTrace();
+        }catch(AbstractException e) {
+            LOGGER.info("Error key is ---> "+e.getErrorKey());
+            LOGGER.info("Error message is ---> "+e.getErrorMessage());
+        }
+        
+        assertNotNull("Response is null", response);
+        assertNotNull(response.getResult());
+    }
 }

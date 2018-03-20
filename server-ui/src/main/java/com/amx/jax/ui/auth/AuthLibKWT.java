@@ -7,7 +7,7 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 
 @Component
-@TenantSpecific(Tenant.KWT)
+@TenantSpecific({ Tenant.KWT, Tenant.BHR, Tenant.KWT2 })
 public class AuthLibKWT implements AuthLib {
 
 	@Override
@@ -19,7 +19,7 @@ public class AuthLibKWT implements AuthLib {
 	public AuthState.AuthStep getNextAuthStep(AuthState authState) {
 		if (authState.flow == AuthState.AuthFlow.LOGIN) {
 			if (authState.cStep == null) {
-				return AuthState.AuthStep.IDVALID;
+				return AuthState.AuthStep.USERPASS;
 			}
 			switch (authState.cStep) {
 			case USERPASS:

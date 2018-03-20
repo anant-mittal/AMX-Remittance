@@ -30,15 +30,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/login/**").permitAll()
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
-				// Exceptions APIS Calls
-				.and().authorizeRequests().antMatchers("/api/user/password/*").permitAll()
 				// App Pages
-				.and().authorizeRequests().antMatchers("/app/**").authenticated()
+				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
+				.antMatchers("/.**").authenticated()
 				// Login Formas
 				.and().formLogin().loginPage("/login").permitAll().failureUrl("/login?error").permitAll()
 				// Logiut Pages
-				.and().logout().permitAll().logoutSuccessUrl("/login?logout").permitAll().and().exceptionHandling()
-				.accessDeniedPage("/403").and().csrf().disable().headers().disable();
+				.and().logout().permitAll().logoutSuccessUrl("/login?logout").deleteCookies("JSESSIONID")
+				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()
+				.disable().headers().disable();
 	}
 
 	@Autowired

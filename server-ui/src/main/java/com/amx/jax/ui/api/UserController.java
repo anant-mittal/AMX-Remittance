@@ -2,7 +2,6 @@
 package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -82,16 +80,15 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> updateSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
-		return loginService.loginSecQues(guestanswer);
+	public ResponseWrapper<AuthResponse> updateSecQues(@RequestBody SecurityQuestionModel guestanswer) {
+		return loginService.loginSecQues(guestanswer, null);
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthData> sendOTP(@RequestParam(required = false) String mOtp,
+	public ResponseWrapper<AuthResponse> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {
 		if (mOtp == null) {
-			return loginService.sendOTP(null);
+			return loginService.sendOTP(null, null);
 		} else {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}

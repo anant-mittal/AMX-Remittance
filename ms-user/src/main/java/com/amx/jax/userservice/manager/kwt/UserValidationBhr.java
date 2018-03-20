@@ -5,10 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.jax.dbmodel.CustomerIdProof;
@@ -19,8 +16,7 @@ import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-@TenantSpecific({ Tenant.BHR, Tenant.BRN, Tenant.BRNDEV })
+@TenantSpecific(value = { Tenant.BHR, Tenant.BRN, Tenant.BRNDEV })
 public class UserValidationBhr implements UserValidation {
 
 	@Autowired
@@ -30,7 +26,7 @@ public class UserValidationBhr implements UserValidation {
 	public void validateCustIdProofs(BigDecimal custId) {
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
-			if (!idProof.getIdentityExpiryDate().before(new Date())) {
+			if (!idProof.getIdentityExpiryDate().after(new Date())) {
 				throw new GlobalException("Identity proof are expired", JaxError.ID_PROOF_EXPIRED);
 			}
 		}
