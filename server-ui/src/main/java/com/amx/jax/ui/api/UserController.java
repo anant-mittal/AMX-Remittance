@@ -18,6 +18,7 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
+import com.amx.jax.ui.session.UserDevice;
 import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
@@ -40,8 +41,17 @@ public class UserController {
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta() {
+	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDevice.AppType appType,
+			@RequestParam(required = false) String appVersion) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
+
+		if (appType != null) {
+			sessionService.getAppDevice().setAppType(appType);
+		}
+
+		if (appVersion != null) {
+			sessionService.getAppDevice().setAppVersion(appVersion);
+		}
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());

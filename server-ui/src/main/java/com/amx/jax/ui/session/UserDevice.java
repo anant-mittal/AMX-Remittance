@@ -14,6 +14,7 @@ import org.springframework.mobile.device.DeviceType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.HttpService;
 import com.bootloaderjs.ArgUtil;
 
@@ -28,6 +29,10 @@ public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
 
+	public enum AppType {
+		WEB, ANDROID, IOS;
+	}
+
 	private String fingerprint = null;
 	private String ip = null;
 	private String id = null;
@@ -37,6 +42,7 @@ public class UserDevice implements Serializable {
 	private Browser browser = null;
 	private Version browserVersion = null;
 	private String appVersion = null;
+	private AppType appType = null;
 
 	@Autowired
 	private HttpService httpService;
@@ -61,6 +67,44 @@ public class UserDevice implements Serializable {
 		this.browser = userAgent.getBrowser();
 		this.browserVersion = userAgent.getBrowserVersion();
 		this.operatingSystem = userAgent.getOperatingSystem();
+
+		/**
+		 * "browserVersion": null, "platform": "UNKNOWN", "id":
+		 * "2673a5c9-f334-4be3-b810-418e15f9c1ae", "browser": "UNKNOWN", "fingerprint":
+		 * null, "appVersion": null, "ip": "141.101.107.253", "type": "NORMAL", "os":
+		 * "UNKNOWN"
+		 */
+
+		/**
+		 * 
+		 * "browserVersion": null, "platform": "ANDROID", "id":
+		 * "ac4a66c5-af27-49f2-9388-7ae1b2f5c0c6", "browser": "UNKNOWN", "fingerprint":
+		 * null, "appVersion": null, "ip": "49.32.170.141", "type": "TABLET", "os":
+		 * "ANDROID7_TABLET"
+		 * 
+		 */
+		if (this.appType == null) {
+
+			if (this.platform == DevicePlatform.ANDROID && this.browser == Browser.UNKNOWN) {
+				this.appType = AppType.ANDROID;
+			} else if (this.platform == DevicePlatform.IOS && this.browser == Browser.UNKNOWN) {
+				this.appType = AppType.IOS;
+			} else if (this.platform == DevicePlatform.UNKNOWN && this.browser == Browser.UNKNOWN
+					&& this.operatingSystem == OperatingSystem.UNKNOWN) {
+				this.appType = AppType.IOS;
+			} else if (this.fingerprint != null && !UIConstants.EMPTY.equalsIgnoreCase(this.fingerprint)) {
+				if (this.fingerprint.length() == 16) {
+					this.appType = AppType.ANDROID;
+				} else if (this.fingerprint.length() == 40) {
+					this.appType = AppType.IOS;
+				} else if (this.fingerprint.length() == 32) {
+					this.appType = AppType.WEB;
+				}
+			} else if (this.type == DeviceType.NORMAL) {
+				this.appType = AppType.WEB;
+			}
+		}
+
 		return this;
 	}
 
@@ -142,6 +186,7 @@ public class UserDevice implements Serializable {
 		map.put("browserVersion", browserVersion);
 		map.put("os", operatingSystem);
 		map.put("appVersion", appVersion);
+		map.put("appType", appType);
 		return map;
 	}
 
@@ -156,6 +201,7 @@ public class UserDevice implements Serializable {
 		device.setBrowserVersion(getBrowserVersion());
 		device.setOperatingSystem(getOperatingSystem());
 		device.setAppVersion(getAppVersion());
+		device.setAppType(getAppType());
 		return device;
 	}
 
@@ -189,5 +235,13 @@ public class UserDevice implements Serializable {
 
 	public void setBrowser(Browser browser) {
 		this.browser = browser;
+	}
+
+	public AppType getAppType() {
+		return appType;
+	}
+
+	public void setAppType(AppType appType) {
+		this.appType = appType;
 	}
 }
