@@ -121,7 +121,7 @@ public class BenefitClient implements PayGClient {
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
 
-			String url = payURL + "?paymentId=" + payID;
+			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
 			payGParams.setRedirectUrl(url);
 
