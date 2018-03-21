@@ -50,6 +50,7 @@ public abstract class AbstractJaxServiceClient {
 			LOGGER.info("Referal id --> " + jaxMetaInfo.getReferrer()+"\t Device Type :"+jaxMetaInfo.getDeviceType());
 			info.setReferrer(jaxMetaInfo.getReferrer());
 			info.setDeviceType(jaxMetaInfo.getDeviceType());
+			info.setAppType(jaxMetaInfo.getAppType());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(info));
 		} catch (JsonProcessingException e) {
 		    LOGGER.error("error in getheader of jaxclient", e);

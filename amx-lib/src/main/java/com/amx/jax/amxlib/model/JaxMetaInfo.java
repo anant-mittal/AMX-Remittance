@@ -28,7 +28,7 @@ public class JaxMetaInfo {
 
 	private String deviceType;
 	private String appType;
-
+	
 	public String getAppType() {
 		return appType;
 	}
