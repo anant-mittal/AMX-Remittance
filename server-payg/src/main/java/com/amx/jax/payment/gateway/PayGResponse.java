@@ -20,7 +20,8 @@ public class PayGResponse {
 	String udf4 = null;
 	String udf5 = null;
 	String countryId = null;
-
+	String errorText = null;
+	
 	String collectionFinYear;
 	String collectionDocNumber;
 	String collectionDocCode;
@@ -170,5 +171,19 @@ public class PayGResponse {
 	public void setPaymentiId(String paymentiId) {
 		this.paymentiId = paymentiId;
 	}
+
+    /**
+     * @return the errorText
+     */
+    public String getErrorText() {
+        return errorText;
+    }
+
+    /**
+     * @param errorText the errorText to set
+     */
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+    }
 
 }

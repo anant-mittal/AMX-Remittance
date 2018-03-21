@@ -76,11 +76,11 @@ public class BenefitClient implements PayGClient {
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl",
-                payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
+                payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
-		LOGGER.info("Baharain KNET payment configuration : " + JsonUtil.toJson(configMap));
+		LOGGER.info("Baharain BENEFIT payment configuration : " + JsonUtil.toJson(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -89,11 +89,7 @@ public class BenefitClient implements PayGClient {
 
 			pipe.setAction((String) configMap.get("action"));
 			pipe.setCurrency((String) configMap.get("currency"));
-			// pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String) configMap.get("languageCode"));
-			configMap.put("responseUrl",
-	                payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
-			
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
@@ -150,9 +146,10 @@ public class BenefitClient implements PayGClient {
         gatewayResponse.setUdf3(request.getParameter("udf3"));
         gatewayResponse.setUdf4(request.getParameter("udf4"));
         gatewayResponse.setUdf5(request.getParameter("udf5"));
-        gatewayResponse.setCountryId(Tenant.KWT.getCode());
-
-        LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
+        gatewayResponse.setCountryId(Tenant.BHR.getCode());
+        gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+        
+        LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
         try {
             PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
