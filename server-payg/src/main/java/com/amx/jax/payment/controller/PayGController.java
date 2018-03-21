@@ -101,24 +101,8 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-	public String paymentCapture(HttpServletRequest request, Model model, @PathVariable("tenant") Tenant tnt,
+	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode) {
-	    
-	    String payId = (request.getParameter("paymentid"));
-	    String result = (request.getParameter("result"));
-	    String auth = (request.getParameter("auth"));
-	    String resf = (request.getParameter("ref"));
-	    String postDate = (request.getParameter("postdate"));
-	    String trackId = (request.getParameter("trackid"));
-	    String tranId = (request.getParameter("tranid"));
-	    String responseCode = (request.getParameter("responsecode"));
-	    String udf1 = (request.getParameter("udf1"));
-	    String udf2 = (request.getParameter("udf2"));
-	    String udf3 = (request.getParameter("udf3"));
-	    String udf4 = (request.getParameter("udf4"));
-	    String udf5 = (request.getParameter("udf5"));
-	    String tenantId = (Tenant.BHR.getCode());
-	    String erorrText = (request.getParameter("ErrorText"));
 	    
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
