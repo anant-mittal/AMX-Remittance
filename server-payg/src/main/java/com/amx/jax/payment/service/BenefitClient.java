@@ -133,7 +133,7 @@ public class BenefitClient implements PayGClient {
     public PayGResponse capture(PayGResponse gatewayResponse) {
 
         // Capturing GateWay Response
-        gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
+        gatewayResponse.setPaymentId(request.getParameter("paymentid"));
         gatewayResponse.setResult(request.getParameter("result"));
         gatewayResponse.setAuth(request.getParameter("auth"));
         gatewayResponse.setRef(request.getParameter("ref"));

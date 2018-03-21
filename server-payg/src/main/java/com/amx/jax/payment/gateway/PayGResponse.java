@@ -6,7 +6,7 @@ public class PayGResponse {
 		INIT, CAPTURED, CANCELLED, ERROR
 	}
 
-	String paymentiId = null;
+	String paymentId = null;
 	String result = null;
 	String auth = null;
 	String ref = null;
@@ -164,12 +164,12 @@ public class PayGResponse {
 		this.udf5 = udf5;
 	}
 
-	public String getPaymentiId() {
-		return paymentiId;
+	public String getPaymentId() {
+		return paymentId;
 	}
 
-	public void setPaymentiId(String paymentiId) {
-		this.paymentiId = paymentiId;
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
 	}
 
     /**
