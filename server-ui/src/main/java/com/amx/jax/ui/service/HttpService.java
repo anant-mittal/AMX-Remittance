@@ -14,6 +14,7 @@ import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.config.AppConfig;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.session.UserDevice.AppType;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -90,7 +91,6 @@ public class HttpService {
 			return UserAgent.parseUserAgentString(browserDetails);
 		}
 		return agent;
-
 	}
 
 	public static String sanitze(String str) {
