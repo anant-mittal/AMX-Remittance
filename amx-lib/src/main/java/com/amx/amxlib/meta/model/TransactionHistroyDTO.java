@@ -70,9 +70,18 @@ public class TransactionHistroyDTO implements Serializable {
 	
 	private String purposeOfTrnx;
 	
-	
 	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
 	
+	private String transactionReference;
+	
+	
+	public String getTransactionReference() {
+		return transactionReference;
+	}
+
+	public void setTransactionReference(String transactionReference) {
+		this.transactionReference = transactionReference;
+	}
 
 	public BigDecimal getIdno() {
 		return idno;
