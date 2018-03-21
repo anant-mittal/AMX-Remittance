@@ -13,7 +13,7 @@ public class AuthState {
 		// Reg
 		MOTPVFY, DATA_VERIFY, SECQ_SET, CAPTION_SET, CREDS_SET,
 		// Logout
-		MISSING, UNAUTH,
+		MISSING, UNAUTH, LOCKED,
 		// DONE
 		COMPLETED
 	}
