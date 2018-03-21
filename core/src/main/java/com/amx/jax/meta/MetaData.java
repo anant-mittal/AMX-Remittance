@@ -165,7 +165,7 @@ public class MetaData implements IMetaData {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
-	
+
 	public String getAppType() {
 		return appType;
 	}
