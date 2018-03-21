@@ -215,6 +215,10 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	/**
+	 * Fetches the transaction details of given document number and document fin
+	 * year
+	 */
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
 			RemittanceTransactionStatusRequestModel request)
 			throws RemittanceTransactionValidationException, LimitExeededException {
