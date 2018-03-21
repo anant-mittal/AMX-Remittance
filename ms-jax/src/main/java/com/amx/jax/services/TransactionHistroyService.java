@@ -142,6 +142,7 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			model.setTransactionReference(getTransactionReferece(hist));
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
@@ -160,6 +161,10 @@ public class TransactionHistroyService extends AbstractService {
 	
 	
 	
+	private String getTransactionReferece(CustomerRemittanceTransactionView hist) {
+		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
+	}
+
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		try {
