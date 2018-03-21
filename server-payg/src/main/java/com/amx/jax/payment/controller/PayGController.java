@@ -118,13 +118,21 @@ public class PayGController {
 				payGResponse.getUdf4(), payGResponse.getUdf5(), payGResponse.getCollectionDocCode(),
 				payGResponse.getCollectionDocNumber(), payGResponse.getCollectionFinYear());
 
-		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
-		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
-		} else {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
-		}
+//		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
+//		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
+//		} else {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
+//		}
+		
+	      if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success" ;
+	        } else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled";
+	        } else {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error";
+	        }
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
