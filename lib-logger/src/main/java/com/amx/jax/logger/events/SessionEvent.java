@@ -39,13 +39,4 @@ public class SessionEvent extends DefaultEvent {
 		this.device = device;
 	}
 
-	public String getAppVersion() {
-		return appVersion;
-	}
-
-	public void setAppVersion(String appVersion) {
-		this.appVersion = appVersion;
-	}
-
-	public String appVersion = null;
 }
