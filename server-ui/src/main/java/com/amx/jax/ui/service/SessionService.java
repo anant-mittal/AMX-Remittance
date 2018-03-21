@@ -136,8 +136,8 @@ public class SessionService {
 		if (userSession.getCustomerModel() == null) {
 			return null;
 		}
-		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
-		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), customerId.toString());
+		// BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
+		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), guestSession.getIdentity());
 
 	}
 
@@ -153,6 +153,19 @@ public class SessionService {
 			String uuidToken = UUID.randomUUID().toString();
 			userSession.setUuidToken(uuidToken);
 			map.fastPut(userKeyString, uuidToken);
+		}
+	}
+
+	public void unIndexUser() {
+		if (guestSession.getIdentity() != null) {
+			// BigDecimal customerId = guestSession.getCustomerModel().getCustomerId();
+			String userKeyString = String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(),
+					guestSession.getIdentity());
+			if (userKeyString != null) {
+				RLocalCachedMap<String, String> map = loggedInUsers.map();
+				map.fastRemove(userKeyString);
+				auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.LOCKED));
+			}
 		}
 	}
 

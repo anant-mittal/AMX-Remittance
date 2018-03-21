@@ -238,6 +238,9 @@ public class UserDevice implements Serializable {
 	}
 
 	public AppType getAppType() {
+		if (this.appType == null) {
+			return AppType.WEB;
+		}
 		return appType;
 	}
 
