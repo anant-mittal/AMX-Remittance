@@ -5,7 +5,9 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+import com.amx.jax.config.AppConstants;
 import com.amx.jax.scope.Tenant;
+import com.bootloaderjs.ContextUtil;
 import com.bootloaderjs.URLBuilder;
 
 public abstract class AbstractPayGService {
@@ -23,7 +25,8 @@ public abstract class AbstractPayGService {
 				.addParameter("pg", remittanceApplicationResponseModel.getPgCode())
 				.addParameter("docFy", remittanceApplicationResponseModel.getDocumentFinancialYear())
 				.addParameter("docNo", remittanceApplicationResponseModel.getDocumentIdForPayment())
-				.addParameter("tnt", tnt).addParameter("callbackd", callbackd);
+				.addParameter("tnt", tnt).addParameter("callbackd", callbackd)
+				.addParameter(AppConstants.TRACE_ID_KEY, ContextUtil.getTraceId());
 		return builder.getURL();
 	}
 
