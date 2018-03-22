@@ -213,7 +213,7 @@ public class RemittanceApplicationManager {
 				}*/
 				remittanceApplication.setCreatedBy(metaData.getAppType());
 			}else{
-				remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+				remittanceApplication.setCreatedBy("WEB");
 			 }
 		}
 		remittanceApplication.setCreatedDate(new Date());
