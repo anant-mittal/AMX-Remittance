@@ -3,7 +3,7 @@ package com.amx.jax.payment.gateway;
 public class PayGResponse {
 
 	public static enum PayGStatus {
-		INIT, CAPTURED, CANCELLED, ERROR
+		INIT, CAPTURED, CANCELLED, ERROR, NOT_CAPTURED
 	}
 
 	String paymentId = null;

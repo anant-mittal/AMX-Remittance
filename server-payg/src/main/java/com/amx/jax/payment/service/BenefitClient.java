@@ -153,16 +153,19 @@ public class BenefitClient implements PayGClient {
 
         try {
             PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-            // Capturing JAX Response
-            gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-            gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-            gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+            
 
             if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
                 gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+             // Capturing JAX Response
+                gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+                gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+                gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
             } else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
                 gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-            } else {
+            } else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+                gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
+            }else {
                 gatewayResponse.setPayGStatus(PayGStatus.ERROR);
             }
         } catch (Exception e) {
