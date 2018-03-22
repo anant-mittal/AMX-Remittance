@@ -62,7 +62,6 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
-
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
@@ -74,7 +73,13 @@
 			<artifactId>lib-swagger</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-logger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>

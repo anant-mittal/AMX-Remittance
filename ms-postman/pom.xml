@@ -116,7 +116,13 @@
 			<artifactId>ms-postman-client</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-logger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
