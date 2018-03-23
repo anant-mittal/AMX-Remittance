@@ -136,6 +136,7 @@ public class RemittanceTransactionManager {
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -549,6 +550,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
+		
 		return remiteAppModel;
 
 	}

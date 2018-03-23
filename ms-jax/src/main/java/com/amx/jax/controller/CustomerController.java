@@ -50,28 +50,28 @@ public class CustomerController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse saveCust(@RequestBody CustomerModel customerModel) {
-		logger.debug("saveCust Request:" + customerModel);
+		logger.info("saveCust Request:" + customerModel);
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
 
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse save(@RequestBody CustomerModel customerModel) {
-		logger.debug("saveCust Request:" + customerModel.toString());
+		logger.info("saveCust Request:" + customerModel.toString());
 		ApiResponse response = userService.saveCustomer(customerModel);
 		return response;
 	}
 
 	@RequestMapping(value = "/{civil-id}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp(@PathVariable("civil-id") String civilId) {
-		logger.debug("verifyCivilId Request:civilId" + civilId);
+		logger.info("verifyCivilId Request:civilId" + civilId);
 		ApiResponse response = userService.sendOtpForCivilId(civilId);
 		return response;
 	}
 
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
-		logger.debug("send Request:civilId" + civilId);
+		logger.info("send Request:civilId" + civilId);
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
@@ -81,7 +81,7 @@ public class CustomerController {
 
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
-		logger.debug("in sendOtp Request");
+		logger.info("in sendOtp Request");
 		ApiResponse response = userService.sendOtpForCivilId(null);
 		return response;
 	}
@@ -89,7 +89,7 @@ public class CustomerController {
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
-		logger.debug("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		logger.info("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
@@ -97,21 +97,21 @@ public class CustomerController {
 	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
-		logger.debug("validateOtp Request:" + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		logger.info("validateOtp Request:" + " mOtp:" + mOtp + " eOtp:" + eOtp);
 		ApiResponse response = userService.validateOtp(null, mOtp, eOtp);
 		return response;
 	}
 
 	@RequestMapping(value = "/{civil-id}/checklist/", method = RequestMethod.GET)
 	public ApiResponse getCheckList(@PathVariable("civil-id") String civilId) {
-		logger.debug("getCheckList Request:civilId" + civilId);
+		logger.info("getCheckList Request:civilId" + civilId);
 		ApiResponse response = userService.getUserCheckList(civilId);
 		return response;
 	}
 
 	@RequestMapping(value = "{customer-id}/random-questions/", method = RequestMethod.GET)
 	public ApiResponse getRandomQuestion(@RequestParam Integer size, @PathVariable("customer-id") Integer customerId) {
-		logger.debug("getCheckList Request: customerId" + customerId + " size= " + size);
+		logger.info("getCheckList Request: customerId" + customerId + " size= " + size);
 		ApiResponse response = userService.generateRandomQuestions(size, customerId);
 		return response;
 	}
@@ -119,35 +119,35 @@ public class CustomerController {
 	@RequestMapping(value = "/validate-random-questions/", method = RequestMethod.POST)
 	public ApiResponse validateCustomerData(@RequestBody CustomerModel model) {
 		String json = converterUtil.marshall(model);
-		logger.debug("validateCustomerData Request:" + json);
+		logger.info("validateCustomerData Request:" + json);
 		ApiResponse response = userService.validateCustomerData(model);
 		return response;
 	}
 
 	@RequestMapping(value = UPDATE_CUSTOMER_PASSWORD_ENDPOINT, method = RequestMethod.PUT)
 	public ApiResponse updatePassword(@RequestBody CustomerModel model) {
-		logger.debug("updatePassword Request: " + model.toString());
+		logger.info("updatePassword Request: " + model.toString());
 		ApiResponse response = userService.updatePassword(model);
 		return response;
 	}
 
 	@RequestMapping(value = "/unlock/", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer() {
-		logger.debug("in unlockCustomer Request ");
+		logger.info("in unlockCustomer Request ");
 		ApiResponse response = userService.unlockCustomer();
 		return response;
 	}
 
 	@RequestMapping(value = "/deactivate/", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer() {
-		logger.debug("in deActivateCustomer Request ");
+		logger.info("in deActivateCustomer Request ");
 		ApiResponse response = userService.deactivateCustomer();
 		return response;
 	}
 
 	@RequestMapping(value = "/send-otp/", method = RequestMethod.POST)
 	public ApiResponse sendResetEmailCredentialsOtp(@RequestBody CustomerModel custModel) {
-		logger.debug("send Request:civilId" + custModel.toString());
+		logger.info("send Request:civilId" + custModel.toString());
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
 		channel.add(CommunicationChannel.MOBILE);
@@ -163,14 +163,14 @@ public class CustomerController {
 
 	@RequestMapping(value = "/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
-		logger.debug("in unlockCustomer Request ");
+		logger.info("in unlockCustomer Request ");
 		ApiResponse response = userService.unlockCustomer(civilid);
 		return response;
 	}
 
 	@RequestMapping(value = "/deactivate/{civilid}", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
-		logger.debug("in deActivateCustomer Request ");
+		logger.info("in deActivateCustomer Request ");
 		ApiResponse response = userService.deactivateCustomer(civilid);
 		return response;
 	}
@@ -178,14 +178,14 @@ public class CustomerController {
 	@RequestMapping(value = "/{civil-id}/{init-registration}/send-otp/", method = RequestMethod.GET)
 	public ApiResponse initRegistrationSendOtp(@PathVariable("civil-id") String civilId,
 			@PathVariable("init-registration") Boolean init) {
-		logger.debug("initRegistrationSendOtp Request:civilId" + civilId);
+		logger.info("initRegistrationSendOtp Request:civilId" + civilId);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, null, null, init);
 		return response;
 	}
 
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.GET)
 	public ApiResponse getCustomerDataValidationQeustions(@RequestParam Integer size) {
-		logger.debug("getCustomerDataValidationQeustions Request:");
+		logger.info("getCustomerDataValidationQeustions Request:");
 		ApiResponse<QuestModelDTO> response = userService.getDataVerificationRandomQuestions(size);
 		customerDataVerificationService.setAdditionalData(response.getResults());
 		return response;
@@ -193,7 +193,7 @@ public class CustomerController {
 	
 	@RequestMapping(value = "/random-data-verification-questions/", method = RequestMethod.POST)
 	public ApiResponse saveDataVerificationQuestions(@RequestBody CustomerModel model) {
-		logger.debug("in saveDataVerificationQuestions ");
+		logger.info("in saveDataVerificationQuestions ");
 		ApiResponse response = customerDataVerificationService.saveVerificationData(model);
 		return response;
 	}

@@ -65,7 +65,7 @@
 		<module>lib-logger</module>
 		<module>lib-monitor</module>
 
-		<module>ms-logger</module>
+		<!-- <module>ms-logger</module> -->
 
 		<module>lib-postman</module>
 		<module>ms-postman</module>

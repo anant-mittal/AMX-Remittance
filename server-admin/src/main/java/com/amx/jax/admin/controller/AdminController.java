@@ -53,9 +53,10 @@ public class AdminController {
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		Tenant tenant = metaData.getTenant();
-		logger.info(String.format("Tenant is : %s", tenant.getCode()));
 
-		logger.debug("in unlockCustomer Request ");
+		logger.info(String.format("Tenant is : %s",tenant.getCode()));
+		
+		logger.info("in unlockCustomer Request ");
 		jaxService.setDefaults();
 		ApiResponse response = adminService.unlockCustomer(civilid);
 		return response;
@@ -63,7 +64,7 @@ public class AdminController {
 
 	@RequestMapping(value = "/customer/deactivate/{civilid}", method = RequestMethod.GET)
 	public ApiResponse deActivateCustomer(@PathVariable("civilid") String civilid) {
-		logger.debug("in deActivateCustomer Request ");
+		logger.info("in deActivateCustomer Request ");
 		jaxService.setDefaults();
 		ApiResponse response = adminService.deactivateCustomer(civilid);
 		return response;
@@ -72,7 +73,7 @@ public class AdminController {
 	@RequestMapping(value = "/config", method = RequestMethod.GET)
 	public ApiResponse createorUpdateOtpSettings(@RequestParam Integer maxValidateOtpAttempts,
 			@RequestParam Integer maxSendOtpAttempts, @RequestParam Integer otpValidityTime) {
-		logger.debug("in createorUpdateOtpSettings Request ");
+		logger.info("in createorUpdateOtpSettings Request ");
 
 		ApiResponse response = adminService.createorUpdateOtpSettings(
 				new OtpSettings(maxValidateOtpAttempts, maxSendOtpAttempts, otpValidityTime));

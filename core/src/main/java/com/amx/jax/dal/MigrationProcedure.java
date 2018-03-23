@@ -43,7 +43,7 @@ public class MigrationProcedure {
 	public String migrationBeneficiaryProcedure(final BigDecimal cusref) {
 		String errorMsg = null;
 		try {
-			logger.debug("start input parameters :"+cusref);
+			logger.info("start input parameters :"+cusref);
 			List<SqlParameter> declaredInAndOutParameters = Arrays.asList(new SqlParameter(Types.BIGINT),new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
@@ -59,7 +59,7 @@ public class MigrationProcedure {
 
 			}, declaredInAndOutParameters);
 			errorMsg = output.get("P_ERROR_MESSAGE").toString();
-			logger.debug("MIG_BENEFICARY_MASTER_NEW = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
+			logger.info("MIG_BENEFICARY_MASTER_NEW = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}
@@ -72,7 +72,7 @@ public class MigrationProcedure {
 	public String migrationBeneBank(final BigDecimal cusref) {
 		String errorMsg = null;
 		try {
-			logger.debug("start input parameters :"+cusref);
+			logger.info("start input parameters :"+cusref);
 			List<SqlParameter> declaredInAndOutParameters = Arrays.asList(new SqlParameter(Types.BIGINT),new SqlOutParameter("P_ERROR_MESSAGE", Types.VARCHAR),new SqlParameter(Types.VARCHAR));
 			Map<String, Object> output = jdbcTemplate.call(new CallableStatementCreator() {
 				@Override
@@ -88,7 +88,7 @@ public class MigrationProcedure {
 
 			}, declaredInAndOutParameters);
 			errorMsg = output.get("P_ERROR_MESSAGE").toString();
-			logger.debug("MIG_CUSMAS_BNK = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
+			logger.info("MIG_CUSMAS_BNK = " + declaredInAndOutParameters.get(0)+"\t P_ERROR_MESSAGE :"+errorMsg);
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}

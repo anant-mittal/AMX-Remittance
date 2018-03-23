@@ -173,7 +173,7 @@ public class ExchangeRateService extends AbstractService {
 			ExchangeRateApprovalDetModel rate = entry.getKey();
 			BankMasterDTO dto = bankMasterService.convert(rate.getBankMaster());
 			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, lcAmount));
-			logger.debug("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
+			logger.info("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
 					+ rate.getCurrencyId());
 			currencyIdVsExchId.put(rate.getCurrencyId(),  rate.getExchangeRateMasterAprDetId());
 			bankWiseRates.add(dto);

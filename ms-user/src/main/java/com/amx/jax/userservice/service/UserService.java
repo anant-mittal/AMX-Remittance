@@ -426,7 +426,7 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
-		logger.debug("in validateopt of civilid: " + civilId);
+		logger.info("in validateopt of civilid: " + civilId);
 		Customer customer = null;
 		if (civilId != null) {
 			customer = custDao.getCustomerByCivilId(civilId);
@@ -470,7 +470,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		logger.debug("end of validateopt for civilid: " + civilId);
+		logger.info("end of validateopt for civilid: " + civilId);
 		return response;
 	}
 
@@ -485,6 +485,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
+		userValidationService.validateCustomerVerification(customer.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 		//afterLoginSteps(onlineCustomer);
@@ -509,7 +510,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(model);
 		response.getData().setType(model.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		logger.debug("end of getUserCheckList for loginId: " + loginId);
+		logger.info("end of getUserCheckList for loginId: " + loginId);
 		return response;
 
 	}
