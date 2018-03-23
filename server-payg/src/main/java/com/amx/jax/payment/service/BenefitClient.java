@@ -55,9 +55,9 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	HttpServletRequest request;
-	
-   @Autowired
-    PayGConfig payGConfig;
+
+	@Autowired
+	PayGConfig payGConfig;
 
 	@Autowired
 	private PaymentService paymentService;
@@ -76,7 +76,7 @@ public class BenefitClient implements PayGClient {
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl",
-                payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
+				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -92,8 +92,8 @@ public class BenefitClient implements PayGClient {
 			// pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			configMap.put("responseUrl",
-	                payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
-			
+					payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
+
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
@@ -132,52 +132,45 @@ public class BenefitClient implements PayGClient {
 
 	}
 
-    @SuppressWarnings("finally")
-    @Override
-    public PayGResponse capture(PayGResponse gatewayResponse) {
+	@SuppressWarnings("finally")
+	@Override
+	public PayGResponse capture(PayGResponse gatewayResponse) {
 
-        // Capturing GateWay Response
-        gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-        gatewayResponse.setResult(request.getParameter("result"));
-        gatewayResponse.setAuth(request.getParameter("auth"));
-        gatewayResponse.setRef(request.getParameter("ref"));
-        gatewayResponse.setPostDate(request.getParameter("postdate"));
-        gatewayResponse.setTrackId(request.getParameter("trackid"));
-        gatewayResponse.setTranxId(request.getParameter("tranid"));
-        gatewayResponse.setResponseCode(request.getParameter("responsecode"));
-        gatewayResponse.setUdf1(request.getParameter("udf1"));
-        gatewayResponse.setUdf2(request.getParameter("udf2"));
-        gatewayResponse.setUdf3(request.getParameter("udf3"));
-        gatewayResponse.setUdf4(request.getParameter("udf4"));
-        gatewayResponse.setUdf5(request.getParameter("udf5"));
-        gatewayResponse.setCountryId(Tenant.BHR.getCode());
-        gatewayResponse.setErrorText(request.getParameter("ErrorText"));
-        
-        LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
+		// Capturing GateWay Response
+		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
+		gatewayResponse.setResult(request.getParameter("result"));
+		gatewayResponse.setAuth(request.getParameter("auth"));
+		gatewayResponse.setRef(request.getParameter("ref"));
+		gatewayResponse.setPostDate(request.getParameter("postdate"));
+		gatewayResponse.setTrackId(request.getParameter("trackid"));
+		gatewayResponse.setTranxId(request.getParameter("tranid"));
+		gatewayResponse.setResponseCode(request.getParameter("responsecode"));
+		gatewayResponse.setUdf1(request.getParameter("udf1"));
+		gatewayResponse.setUdf2(request.getParameter("udf2"));
+		gatewayResponse.setUdf3(request.getParameter("udf3"));
+		gatewayResponse.setUdf4(request.getParameter("udf4"));
+		gatewayResponse.setUdf5(request.getParameter("udf5"));
+		gatewayResponse.setCountryId(Tenant.BHR.getCode());
+		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 
-        try {
-            PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-            
+		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
-            if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
-                gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-             // Capturing JAX Response
-                gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-                gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-                gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
-            } else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-                gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-            } else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
-                gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
-            }else {
-                gatewayResponse.setPayGStatus(PayGStatus.ERROR);
-            }
-        } catch (Exception e) {
-            LOGGER.error("payment service error in capturePayment method : ", e);
-            gatewayResponse.setPayGStatus(PayGStatus.ERROR);
-        }finally {
-            return gatewayResponse;
-        }// end of try-catch-finally
-    }// end of capture
+		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+
+		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+			// Capturing JAX Response
+			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+		} else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
+		} else {
+			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+		}
+		return gatewayResponse;
+	}// end of capture
 
 }
