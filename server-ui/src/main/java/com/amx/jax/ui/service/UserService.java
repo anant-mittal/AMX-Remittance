@@ -2,23 +2,16 @@ package com.amx.jax.ui.service;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.Message;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
-import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 
 @Service
 public class UserService {

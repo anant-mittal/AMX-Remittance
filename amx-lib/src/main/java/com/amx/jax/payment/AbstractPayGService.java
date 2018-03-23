@@ -5,10 +5,10 @@ import java.net.URISyntaxException;
 import java.util.Base64;
 
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
-import com.amx.jax.config.AppConstants;
-import com.amx.jax.scope.Tenant;
-import com.bootloaderjs.ContextUtil;
-import com.bootloaderjs.URLBuilder;
+import com.amx.jax.AppConstants;
+import com.amx.jax.dict.Tenant;
+import com.amx.utils.ContextUtil;
+import com.amx.utils.URLBuilder;
 
 public abstract class AbstractPayGService {
 

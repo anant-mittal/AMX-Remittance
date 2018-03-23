@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
-import com.amx.jax.config.AppConfig;
+import com.amx.jax.AppConfig;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -27,8 +27,8 @@ import com.amx.jax.scope.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
@@ -136,8 +136,8 @@ public class MetaController {
 		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
 		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
 		 */
-//		if (!"".equalsIgnoreCase(httpSession.getId()))
-//			throw new Exception();
+		// if (!"".equalsIgnoreCase(httpSession.getId()))
+		// throw new Exception();
 
 		return wrapper;
 	}

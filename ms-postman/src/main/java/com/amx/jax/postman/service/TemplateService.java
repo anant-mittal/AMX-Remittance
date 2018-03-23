@@ -22,7 +22,7 @@ import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Templates;
-import com.bootloaderjs.IoUtils;
+import com.amx.utils.IoUtils;
 
 @Component
 public class TemplateService {

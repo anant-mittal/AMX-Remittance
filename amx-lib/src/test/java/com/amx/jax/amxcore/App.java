@@ -1,6 +1,6 @@
 package com.amx.jax.amxcore;
 
-import com.bootloaderjs.UniqueID;
+import com.amx.utils.UniqueID;
 
 public class App { // Noncompliant
 

@@ -2,7 +2,8 @@ package com.amx.jax.scope;
 
 import java.util.List;
 
-import com.amx.jax.config.ScopedBeanFactory;
+import com.amx.common.ScopedBeanFactory;
+import com.amx.jax.dict.Tenant;
 
 public class TenantContext<T> extends ScopedBeanFactory<Tenant, T> {
 

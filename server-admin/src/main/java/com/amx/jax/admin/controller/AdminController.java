@@ -22,7 +22,7 @@ import com.amx.jax.admin.service.JaxService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.ExchangeRateClient;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -40,21 +40,21 @@ public class AdminController {
 
 	@Autowired
 	private JaxService jaxService;
-	
+
 	@Autowired
 	private AdminService adminService;
-	
+
 	@Autowired
 	private ExchangeRateClient exchangeRateClient;
-	
+
 	@Autowired
 	JaxMetaInfo metaData;
 
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		Tenant tenant = metaData.getTenant();
-		logger.info(String.format("Tenant is : %s",tenant.getCode()));
-		
+		logger.info(String.format("Tenant is : %s", tenant.getCode()));
+
 		logger.debug("in unlockCustomer Request ");
 		jaxService.setDefaults();
 		ApiResponse response = adminService.unlockCustomer(civilid);
@@ -78,7 +78,7 @@ public class AdminController {
 				new OtpSettings(maxValidateOtpAttempts, maxSendOtpAttempts, otpValidityTime));
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/exrate", method = RequestMethod.POST)
 	public ApiResponse<BooleanResponse> setOnlineExchangeRates(
 			@ApiParam(required = true, allowableValues = "INR, AED, AUD, BDT, BAM, GBP, EURO, PKR, USD, ZAR, LKR,BHD,CAD,EGP,MUR,NPR,OMR,SAR", value = "Select quote", name = "quoteName") @RequestParam(required = true) String quoteName,

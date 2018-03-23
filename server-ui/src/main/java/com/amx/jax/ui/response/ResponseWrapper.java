@@ -1,7 +1,6 @@
 package com.amx.jax.ui.response;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.error.JaxError;

@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.payment.PayGServiceCode;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -27,7 +28,6 @@ import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PayGSession;
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 import io.swagger.annotations.Api;

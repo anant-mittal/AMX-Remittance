@@ -1,6 +1,7 @@
 package com.amx.jax.scope;
 
-import com.bootloaderjs.ContextUtil;
+import com.amx.jax.dict.Tenant;
+import com.amx.utils.ContextUtil;
 
 public class TenantContextHolder {
 

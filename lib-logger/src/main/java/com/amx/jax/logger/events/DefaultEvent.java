@@ -1,7 +1,7 @@
 package com.amx.jax.logger.events;
 
 import com.amx.jax.logger.AuditEvent;
-import com.bootloaderjs.EnumType;
+import com.amx.utils.EnumType;
 
 public class DefaultEvent extends AuditEvent {
 

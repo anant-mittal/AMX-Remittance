@@ -3,7 +3,7 @@ package com.amx.jax.logger.events;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.bootloaderjs.EnumType;
+import com.amx.utils.EnumType;
 
 public class SessionEvent extends DefaultEvent {
 

@@ -16,10 +16,10 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.utils.JsonUtil;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.bootloaderjs.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component

@@ -24,7 +24,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 
 @RunWith(SpringRunner.class)

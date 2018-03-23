@@ -10,7 +10,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.bootloaderjs.Constants;
+import com.amx.utils.Constants;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
 

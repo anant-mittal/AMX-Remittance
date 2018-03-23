@@ -13,11 +13,11 @@ import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.config.AppConfig;
+import com.amx.jax.AppConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
-import com.bootloaderjs.JsonUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class AuditServiceClient implements AuditService {

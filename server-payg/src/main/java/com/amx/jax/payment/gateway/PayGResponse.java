@@ -1,6 +1,6 @@
 package com.amx.jax.payment.gateway;
 
-import com.bootloaderjs.EnumType;
+import com.amx.utils.EnumType;
 
 public class PayGResponse {
 

@@ -19,10 +19,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.amx.jax.config.AppConstants;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
-import com.bootloaderjs.UniqueID;
+import com.amx.jax.AppConstants;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
+import com.amx.utils.UniqueID;
 
 @Component
 // @PropertySource("classpath:application-logger.properties")

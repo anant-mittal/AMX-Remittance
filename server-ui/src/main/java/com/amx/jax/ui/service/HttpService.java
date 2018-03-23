@@ -12,9 +12,8 @@ import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
-import com.amx.jax.config.AppConfig;
+import com.amx.jax.AppConfig;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.session.UserDevice.AppType;
 
 import eu.bitwalker.useragentutils.UserAgent;
 

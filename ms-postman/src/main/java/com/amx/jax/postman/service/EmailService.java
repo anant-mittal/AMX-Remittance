@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.bootloaderjs.Constants;
-import com.bootloaderjs.Utils;
+import com.amx.utils.Constants;
+import com.amx.utils.Utils;
 
 @Component
 public class EmailService {
