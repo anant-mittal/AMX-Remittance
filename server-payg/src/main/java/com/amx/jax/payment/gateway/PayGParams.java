@@ -1,6 +1,6 @@
 package com.amx.jax.payment.gateway;
 
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 public class PayGParams {
 	String amount = null;

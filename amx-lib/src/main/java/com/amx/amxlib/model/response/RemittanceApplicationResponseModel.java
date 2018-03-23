@@ -3,7 +3,7 @@ package com.amx.amxlib.model.response;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.AbstractModel;
-import com.amx.jax.payment.PayGServiceCode;
+import com.amx.jax.dict.PayGServiceCode;
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 

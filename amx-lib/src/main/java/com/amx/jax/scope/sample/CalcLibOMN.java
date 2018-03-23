@@ -2,7 +2,7 @@ package com.amx.jax.scope.sample;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantSpecific;
 
 @Component

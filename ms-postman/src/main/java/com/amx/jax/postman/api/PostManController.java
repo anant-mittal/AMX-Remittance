@@ -23,8 +23,8 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.JsonUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @RestController
 public class PostManController {

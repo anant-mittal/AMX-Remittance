@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.config.AppConfig;
-import com.amx.jax.config.AppConstants;
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppConstants;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDevice;

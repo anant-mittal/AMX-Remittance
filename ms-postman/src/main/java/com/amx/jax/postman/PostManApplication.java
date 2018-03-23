@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
 import com.amx.jax.postman.model.Langs;
-import com.bootloaderjs.ArgUtil;
+import com.amx.utils.ArgUtil;
 
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.amx.jax", "com.bootloaderjs" })

@@ -13,14 +13,14 @@ import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.jax.payment.PayGServiceCode;
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
-import com.amx.jax.scope.Tenant;
-import com.bootloaderjs.JsonUtil;
+import com.amx.utils.JsonUtil;
 
 /**
  * 

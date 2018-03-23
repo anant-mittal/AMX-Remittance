@@ -73,7 +73,7 @@ import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
-import com.bootloaderjs.Random;
+import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -1,6 +1,6 @@
 package com.amx.jax.payment.gateway;
 
-import com.amx.jax.payment.PayGServiceCode;
+import com.amx.jax.dict.PayGServiceCode;
 
 public interface PayGClient {
 
