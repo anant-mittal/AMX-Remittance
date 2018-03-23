@@ -27,7 +27,7 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
-import com.bootloaderjs.ListManager;
+import com.amx.utils.ListManager;
 
 @Service
 public class LoginService {

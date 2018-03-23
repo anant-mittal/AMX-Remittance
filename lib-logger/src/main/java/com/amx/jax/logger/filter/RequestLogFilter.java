@@ -45,6 +45,8 @@ public class RequestLogFilter implements Filter {
 			HttpServletRequest req = ((HttpServletRequest) request);
 
 			String siteId = request.getParameter(TenantContextHolder.TENANT);
+			req.getHeader(TenantContextHolder.TENANT);
+			
 			if (siteId != null && !Constants.BLANK.equals(siteId)) {
 				TenantContextHolder.setCurrent(siteId);
 			}

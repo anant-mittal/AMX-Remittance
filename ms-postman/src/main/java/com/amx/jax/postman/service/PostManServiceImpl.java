@@ -20,12 +20,10 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.scope.TenantScoped;
 import com.amx.utils.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
-@TenantScoped
 public class PostManServiceImpl implements PostManService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManServiceImpl.class);
