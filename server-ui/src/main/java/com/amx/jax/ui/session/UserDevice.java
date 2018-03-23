@@ -16,7 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.HttpService;
-import com.bootloaderjs.ArgUtil;
+import com.amx.utils.ArgUtil;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;

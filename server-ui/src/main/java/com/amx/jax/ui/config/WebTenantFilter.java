@@ -15,8 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantContextHolder;
-import com.bootloaderjs.Constants;
-import com.bootloaderjs.Urly;
+import com.amx.utils.Constants;
+import com.amx.utils.Urly;
 
 @Component
 public class WebTenantFilter implements Filter {

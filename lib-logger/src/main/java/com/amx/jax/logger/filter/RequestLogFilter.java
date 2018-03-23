@@ -19,10 +19,12 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.amx.jax.logger.AuditConstant;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
-import com.bootloaderjs.UniqueID;
+import com.amx.jax.AppConstants;
+import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
+import com.amx.utils.ContextUtil;
+import com.amx.utils.UniqueID;
 
 @Component
 // @PropertySource("classpath:application-logger.properties")
@@ -41,16 +43,25 @@ public class RequestLogFilter implements Filter {
 			throws IOException, ServletException {
 		try {
 			HttpServletRequest req = ((HttpServletRequest) request);
-			LOGGER.info("INSIDE {}", req.getRequestURI());
 
-			String traceId = req.getHeader(AuditConstant.TRACE_ID_KEY);
+			String siteId = request.getParameter(TenantContextHolder.TENANT);
+			req.getHeader(TenantContextHolder.TENANT);
+			
+			if (siteId != null && !Constants.BLANK.equals(siteId)) {
+				TenantContextHolder.setCurrent(siteId);
+			}
+
+			String traceId = req.getHeader(AppConstants.TRACE_ID_KEY);
+			if (StringUtils.isEmpty(traceId)) {
+				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_KEY));
+			}
 			if (StringUtils.isEmpty(traceId)) {
 				String sessionID = null;
 				HttpSession session = req.getSession(false);
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute(AuditConstant.SESSION_ID_KEY),
+					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_KEY),
 							UniqueID.generateString());
 					// if (StringUtils.isEmpty(sessionID)) {
 					// sessionID = UniqueID.generateString();
@@ -58,21 +69,22 @@ public class RequestLogFilter implements Filter {
 				}
 				traceId = ContextUtil.getTraceId(true, sessionID);
 				MDC.put("traceId", traceId);
-				ContextUtil.map().put(AuditConstant.SESSION_ID_KEY, sessionID);
-				req.getSession().setAttribute(AuditConstant.SESSION_ID_KEY, sessionID);
-				LOGGER.info("getTraceId SET {} {} ", sessionID, traceId);
+				ContextUtil.map().put(AppConstants.SESSION_ID_KEY, sessionID);
+				req.getSession().setAttribute(AppConstants.SESSION_ID_KEY, sessionID);
 			} else {
+				ContextUtil.setTraceId(traceId);
 				MDC.put("traceId", traceId);
 			}
+			LOGGER.info("Request IN {}", req.getRequestURI());
 			// String mdcData = String.format("trace : %s", traceId);
 			chain.doFilter(request, response);
+			LOGGER.info("Request OUT {}", req.getRequestURI());
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
 			MDC.clear();
 			ContextUtil.clear();
 		}
-
 	}
 
 	@Override

@@ -29,6 +29,7 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -52,6 +53,8 @@ import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
+import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
@@ -132,10 +135,11 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private CurrencyMasterService currencyMasterService;
-
+	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -549,8 +553,17 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
+		AuditServiceClient.staticLogger(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
 
+	}
+
+	private AuditEvent createTransactionEvent(RemittanceApplicationResponseModel remiteAppModel,
+			JaxTransactionStatus status) {
+
+		AuditEvent trnxAuditEvent = new JaxTransactionEvent(status, remiteAppModel.getDocumentIdForPayment(),
+				remiteAppModel.getDocumentFinancialYear());
+		return trnxAuditEvent;
 	}
 
 	private void deactivatePreviousApplications() {

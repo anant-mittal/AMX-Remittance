@@ -42,13 +42,13 @@ import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
-import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.PayGService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
-import com.bootloaderjs.JsonUtil;
+import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

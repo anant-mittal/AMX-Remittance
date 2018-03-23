@@ -1,13 +1,12 @@
 package com.amx.jax.ui.response;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.ui.UIConstants;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ContextUtil;
 
 public class ResponseWrapper<T> implements Serializable {
 

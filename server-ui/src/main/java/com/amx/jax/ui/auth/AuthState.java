@@ -1,6 +1,6 @@
 package com.amx.jax.ui.auth;
 
-import com.bootloaderjs.EnumType;
+import com.amx.utils.EnumType;
 
 public class AuthState {
 

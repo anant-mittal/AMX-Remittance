@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 
-import com.bootloaderjs.Constants;
-import com.bootloaderjs.Utils;
+import com.amx.utils.Constants;
+import com.amx.utils.Utils;
 
 public class EmailTemplate {
 

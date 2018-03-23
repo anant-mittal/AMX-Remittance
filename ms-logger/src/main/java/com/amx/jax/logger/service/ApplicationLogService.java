@@ -43,7 +43,7 @@ public class ApplicationLogService {
 	 * @return matched log records sorted by match score
 	 */
 	public List<ApplicationLog> searchForText(String... text) {
-		logger.debug("searchForText(" + text + ")");
+		logger.info("searchForText(" + text + ")");
 		TextCriteria criteria = TextCriteria.forDefaultLanguage().matchingAny(text);
 		return applicationLogRepository.findAllByOrderByScoreDesc(criteria);
 	}

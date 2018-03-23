@@ -22,7 +22,7 @@ public class TaskController {
 
 	@RequestMapping(value = "/rate-alert/restart/", method = RequestMethod.POST)
 	public ApiResponse<BooleanResponse> restartRateAlertTask() {
-		logger.debug("restartRateAlertTask Request:");
+		logger.info("restartRateAlertTask Request:");
 		return rateAlertService.restartRateAlertTask();
 	}
 }

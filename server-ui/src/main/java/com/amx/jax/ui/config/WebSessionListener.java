@@ -7,13 +7,13 @@ import javax.servlet.http.HttpSessionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.config.AppConfig;
-import com.amx.jax.logger.AuditConstant;
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppConstants;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDevice;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class WebSessionListener implements HttpSessionListener {
@@ -29,7 +29,7 @@ public class WebSessionListener implements HttpSessionListener {
 		SessionEvent evt = new SessionEvent();
 		evt.setComponent(appConfig.getAppName());
 		evt.setType(SessionEvent.Type.SESSION_CREATED);
-		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AuditConstant.SESSION_ID_KEY)));
+		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_KEY)));
 		AuditServiceClient.staticLogger(evt);
 	}
 
@@ -40,7 +40,7 @@ public class WebSessionListener implements HttpSessionListener {
 		evt.setType(SessionEvent.Type.SESSION_DESTROYED);
 		HttpSession session = se.getSession();
 		if (session != null) {
-			evt.setSessionId(ArgUtil.parseAsString(session.getAttribute(AuditConstant.SESSION_ID_KEY)));
+			evt.setSessionId(ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_KEY)));
 		}
 
 		AuditServiceClient.staticLogger(evt);

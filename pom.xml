@@ -55,7 +55,8 @@
 	</build>
 
 	<modules>
-		<module>boot-utils</module>
+		<module>common-utils</module>
+		<module>common-lib</module>
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
 		<module>lib-cache</module>
@@ -64,9 +65,9 @@
 		<module>lib-logger</module>
 		<module>lib-monitor</module>
 
-		<module>ms-logger</module>
+		<!-- <module>ms-logger</module> -->
 
-		<module>ms-postman-client</module>
+		<module>lib-postman</module>
 		<module>ms-postman</module>
 
 		<module>amx-lib</module>

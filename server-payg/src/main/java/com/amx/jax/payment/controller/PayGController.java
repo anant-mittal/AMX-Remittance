@@ -17,15 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.amx.jax.payment.PayGServiceCode;
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
+import com.amx.jax.payment.gateway.PayGEvent;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PayGSession;
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 import io.swagger.annotations.Api;
@@ -48,6 +50,9 @@ public class PayGController {
 	@Autowired
 	private PayGSession payGSession;
 
+	@Autowired
+	private AuditService auditService;
+
 	@Value("${app.url}")
 	String redirectURL;
 
@@ -62,9 +67,9 @@ public class PayGController {
 		TenantContextHolder.setCurrent(tnt);
 
 		if (tnt.equals(Tenant.BHR)) {
-		    pg = "BENEFIT";
+			pg = "BENEFIT";
 		}
-		
+
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
 			String callback = new String(decodedBytes);
@@ -82,6 +87,8 @@ public class PayGController {
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
 		payGParams.setTenant(tnt);
+
+		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 
 		try {
 			payGClient.initialize(payGParams);
@@ -105,7 +112,15 @@ public class PayGController {
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
 
-		PayGResponse payGResponse = payGClient.capture(new PayGResponse());
+		PayGResponse payGResponse = new PayGResponse();
+		try {
+			payGResponse = payGClient.capture(new PayGResponse());
+		} catch (Exception e) {
+			LOGGER.error("payment service error in capturePayment method : ", e);
+			payGResponse.setPayGStatus(PayGStatus.ERROR);
+		}
+
+		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_CAPTURED, payGResponse));
 
 		String redirectUrl;
 

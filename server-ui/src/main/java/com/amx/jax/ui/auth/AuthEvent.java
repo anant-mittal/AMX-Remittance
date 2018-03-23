@@ -6,7 +6,7 @@ import java.util.Map;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
-import com.bootloaderjs.ArgUtil;
+import com.amx.utils.ArgUtil;
 
 public class AuthEvent extends AuditEvent {
 

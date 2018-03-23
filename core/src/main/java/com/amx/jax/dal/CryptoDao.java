@@ -30,7 +30,7 @@ public class CryptoDao {
 	public String decrypt(String saltKey, final String encryptedValue) {
 		String decStr = null;
 		try {
-			logger.debug("start decrypt");
+			logger.info("start decrypt");
 			String salt = new StringBuffer(saltKey).reverse().toString();
 			salt = salt.substring(0, 4);
 			final String key = "almullaexchangeonlineremitt2010" + salt;
@@ -53,7 +53,7 @@ public class CryptoDao {
 				}
 			}, declaredParameters);
 			decStr = output.get("output_str").toString();
-			logger.debug("Done decrypt=" + declaredParameters.get(0));
+			logger.info("Done decrypt=" + declaredParameters.get(0));
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}
@@ -64,7 +64,7 @@ public class CryptoDao {
 	public String encrypt(String saltKey, final String value) {
 		String encStr = null;
 		try {
-			logger.debug("start encrypt");
+			logger.info("start encrypt");
 			String salt = new StringBuffer(saltKey).reverse().toString();
 			salt = salt.substring(0, 4);
 			final String key = "almullaexchangeonlineremitt2010" + salt;
@@ -88,7 +88,7 @@ public class CryptoDao {
 				}
 			}, declaredParameters);
 			encStr = output.get("output_str").toString();
-			logger.debug("Done encrypt=" + encStr);
+			logger.info("Done encrypt=" + encStr);
 		} catch (Exception e) {
 			logger.error("error in ecnrypt", e);
 		}

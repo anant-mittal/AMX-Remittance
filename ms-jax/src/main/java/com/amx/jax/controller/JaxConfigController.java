@@ -23,7 +23,7 @@ public class JaxConfigController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public ApiResponse createorUpdateOtpSettings(@RequestBody OtpSettings otpSettings) {
-		logger.debug("createorUpdateOtpSettings Request:" + otpSettings.toString());
+		logger.info("createorUpdateOtpSettings Request:" + otpSettings.toString());
 		return jaxConfigService.saveOtpSettings(otpSettings);
 	}
 }

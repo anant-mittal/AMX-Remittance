@@ -28,7 +28,7 @@ public class LoyaltyInsuranceProDao {
 	private JdbcTemplate jdbcTemplate;
 
 	@Autowired
-	static LoyaltyInsuranceProDao loyaltyInsuranceProDao;
+	LoyaltyInsuranceProDao loyaltyInsuranceProDao;
 
 	@Transactional
 	public Map<String, Object> loyaltyInsuranceProcedure(final BigDecimal customerReference,

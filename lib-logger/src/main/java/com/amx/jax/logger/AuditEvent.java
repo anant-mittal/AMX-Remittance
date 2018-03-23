@@ -1,6 +1,6 @@
 package com.amx.jax.logger;
 
-import com.bootloaderjs.EnumType;
+import com.amx.utils.EnumType;
 
 public abstract class AuditEvent {
 

@@ -25,16 +25,14 @@ import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.client.ExchangeRateClient;
-import com.amx.jax.client.JaxClientErrorHanlder;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.scheduler.config.SchedulerConfig;
-import com.amx.jax.scheduler.ratealert.RateAlertConfig;
 import com.amx.jax.scheduler.task.RateAlertTask;
 import com.amx.jax.scheduler.task.trigger.RateAlertTrigger;
-import com.amx.jax.scope.Tenant;
 
 @SpringBootApplication
 @EnableAsync

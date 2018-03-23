@@ -1,5 +1,15 @@
 package com.amx.jax.scheduler.task;
 
+import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +23,10 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scheduler.ratealert.RateAlertData;
 import com.amx.jax.scheduler.ratealert.RateAlertNotificationDTO;
 import com.amx.jax.scheduler.service.NotificationService;
-
-import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 public class RateAlertTask implements Runnable {

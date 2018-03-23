@@ -34,8 +34,8 @@
 
 
 		<dependency>
-			<groupId>com.bootloaderjs</groupId>
-			<artifactId>boot-utils</artifactId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>common-lib</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

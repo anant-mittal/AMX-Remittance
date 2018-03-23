@@ -1,8 +1,9 @@
 package com.amx.jax.ui;
 
-import com.bootloaderjs.Random;
+import com.amx.utils.Constants;
+import com.amx.utils.Random;
 
-public final class UIConstants extends com.bootloaderjs.Constants {
+public final class UIConstants extends Constants {
 
 	public static final String EMPTY = "";
 	public static final String REFERRER = "agentId";
