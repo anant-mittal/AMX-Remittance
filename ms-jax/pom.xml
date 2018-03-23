@@ -82,7 +82,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>ms-postman-client</artifactId>
+			<artifactId>lib-postman</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -93,6 +93,12 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-logger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

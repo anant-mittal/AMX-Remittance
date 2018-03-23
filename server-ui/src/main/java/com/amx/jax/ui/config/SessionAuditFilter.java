@@ -7,8 +7,8 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDevice;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class SessionAuditFilter implements AuditFilter<SessionEvent> {
@@ -24,5 +24,5 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 		event.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_KEY)));
 		event.setDevice(userDevice.toMap());
 	}
-	
+
 }

@@ -27,7 +27,7 @@ import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
-import com.bootloaderjs.Random;
+import com.amx.utils.Random;
 
 /**
  * To Save Values to Session Use this class, only if these values are not

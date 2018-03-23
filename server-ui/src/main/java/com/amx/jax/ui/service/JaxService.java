@@ -17,7 +17,7 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.scope.TenantContextHolder;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {

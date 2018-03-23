@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
@@ -41,6 +43,13 @@ public class RequestLogFilter implements Filter {
 			throws IOException, ServletException {
 		try {
 			HttpServletRequest req = ((HttpServletRequest) request);
+
+			String siteId = request.getParameter(TenantContextHolder.TENANT);
+			req.getHeader(TenantContextHolder.TENANT);
+			
+			if (siteId != null && !Constants.BLANK.equals(siteId)) {
+				TenantContextHolder.setCurrent(siteId);
+			}
 
 			String traceId = req.getHeader(AppConstants.TRACE_ID_KEY);
 			if (StringUtils.isEmpty(traceId)) {
@@ -75,9 +84,7 @@ public class RequestLogFilter implements Filter {
 			// ( Important! Cleans up the ThreadLocal data again )
 			MDC.clear();
 			ContextUtil.clear();
-
 		}
-
 	}
 
 	@Override

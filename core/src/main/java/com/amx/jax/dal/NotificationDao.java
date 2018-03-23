@@ -40,7 +40,7 @@ public class NotificationDao {
 	public String sendSmsOtpProcedure(final String mobileNo, final String smsMsg) {
 		String decStr = null;
 		try {
-			logger.debug("start sendSmsOtpProcedure");
+			logger.info("start sendSmsOtpProcedure");
 			List<SqlParameter> declaredParameters = Arrays.asList(new SqlOutParameter("output_str", Types.VARCHAR),
 					new SqlParameter(Types.VARCHAR));
 
@@ -73,7 +73,7 @@ public class NotificationDao {
 
 			}, declaredParameters);
 			decStr = output.get("output_str").toString();
-			logger.debug("Done sendSmsOtpProcedure otp= " + declaredParameters.get(0));
+			logger.info("Done sendSmsOtpProcedure otp= " + declaredParameters.get(0));
 		} catch (Exception e) {
 			logger.error("error in decrypt", e);
 		}

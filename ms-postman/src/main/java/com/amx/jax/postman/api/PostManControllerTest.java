@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
@@ -29,6 +30,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,6 +51,9 @@ public class PostManControllerTest {
 
 	@Autowired
 	PostManClient postManClient;
+
+	@Autowired
+	PostManServiceImpl postManServiceImpl;
 
 	@Autowired
 	private ApplicationContext context;
@@ -72,6 +77,12 @@ public class PostManControllerTest {
 		} catch (Exception e) {
 			postManClient.notifyException("My Error", e);
 		}
+		return null;
+	}
+
+	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
+	public String print(@RequestParam Tenant tnt) throws PostManException {
+		postManServiceImpl.print();
 		return null;
 	}
 

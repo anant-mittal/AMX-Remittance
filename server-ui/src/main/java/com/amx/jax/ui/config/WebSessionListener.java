@@ -12,8 +12,8 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDevice;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class WebSessionListener implements HttpSessionListener {

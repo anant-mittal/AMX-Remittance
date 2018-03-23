@@ -16,10 +16,11 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.amx.utils.JsonUtil;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.JsonUtil;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
@@ -41,6 +42,17 @@ public class PostManServiceImpl implements PostManService {
 
 	@Autowired
 	private TemplateService templateService;
+
+	private String tnt = null;
+	private int counter = 0;
+
+	public void print() {
+		if (tnt == null) {
+			tnt = TenantContextHolder.currentSite().toString();
+			LOGGER.info("Settin new {}", tnt);
+		}
+		LOGGER.info("print {} {}", tnt, counter++);
+	}
 
 	@Override
 	public Email sendEmail(Email email) throws PostManException {

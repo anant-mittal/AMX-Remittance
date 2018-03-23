@@ -48,7 +48,7 @@ public class LoggerService {
 		logger.info(request.getParameterMap());
 
 		ApplicationLog applicationLog = LogMessageFactory.createApplicationLogMessage(request.getParameterMap());
-		logger.debug("Logging application log message [" + applicationLog + "]");
+		logger.info("Logging application log message [" + applicationLog + "]");
 		loggerService.log(Level.toLevel(level), applicationLog);
 	}
 
@@ -59,7 +59,7 @@ public class LoggerService {
 	@RequestMapping(AuditLoggerUrls.CUSTOMER_LOG)
 	public String customerLog(@RequestParam("level") String level, HttpServletRequest request) {
 		CustomerLog customerLog = LogMessageFactory.createCustomerLogMessage(request.getParameterMap());
-		logger.debug("Logging customer log message [" + customerLog + "]");
+		logger.info("Logging customer log message [" + customerLog + "]");
 		loggerService.log(Level.toLevel(level), customerLog);
 		return "ok";
 	}
@@ -67,7 +67,7 @@ public class LoggerService {
 	@RequestMapping(AuditLoggerUrls.SESSION_LOG)
 	public SessionLog sessionLog(@RequestParam("level") String level, @RequestBody SessionEvent sessionEvent) {
 		SessionLog sessionLog = new SessionLog(sessionEvent);
-		logger.debug("Logging customer log message [" + sessionEvent + "]");
+		logger.info("Logging customer log message [" + sessionEvent + "]");
 		sessionLogService.saveSessionLog(sessionLog);
 		return sessionLog;
 	}

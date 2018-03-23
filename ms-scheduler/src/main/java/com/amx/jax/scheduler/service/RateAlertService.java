@@ -1,7 +1,6 @@
 package com.amx.jax.scheduler.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.Trigger;
 import org.springframework.scheduling.TriggerContext;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scheduler.config.SchedulerConfig;
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 public class RateAlertTrigger implements Trigger {
