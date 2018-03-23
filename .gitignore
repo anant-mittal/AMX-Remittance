@@ -22,3 +22,4 @@ D:\\payment-service.log
 */target/*.jar
 lib-*/target/
 ms-*/target/
+common-*/target/
