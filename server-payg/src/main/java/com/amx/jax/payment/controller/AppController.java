@@ -35,7 +35,6 @@ public class AppController {
         if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
             return "redirect:" + payGSession.getCallback();
         }
-
         return "thymeleaf/pg_response";
     }
 
