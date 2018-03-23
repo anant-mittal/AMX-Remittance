@@ -4,21 +4,37 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.constant.JaxTransactionStatus;
 
-public class TransactionEvent extends JaxAuditEvent {
+public class JaxTransactionEvent extends JaxAuditEvent {
 
 	JaxTransactionStatus transactionStatus;
 
-	BigDecimal applicationDocumentNo;
+	String applicationDocumentNo;
 
 	BigDecimal applicationDocumentFinYear;
+	
+	
 
-	public BigDecimal getApplicationDocumentNo() {
+	public JaxTransactionEvent(JaxTransactionStatus transactionStatus, String applicationDocumentNo,
+			BigDecimal applicationDocumentFinYear) {
+		super();
+		this.transactionStatus = transactionStatus;
+		this.applicationDocumentNo = applicationDocumentNo;
+		this.applicationDocumentFinYear = applicationDocumentFinYear;
+	}
+
+	
+
+	public String getApplicationDocumentNo() {
 		return applicationDocumentNo;
 	}
 
-	public void setApplicationDocumentNo(BigDecimal applicationDocumentNo) {
+
+
+	public void setApplicationDocumentNo(String applicationDocumentNo) {
 		this.applicationDocumentNo = applicationDocumentNo;
 	}
+
+
 
 	public BigDecimal getApplicationDocumentFinYear() {
 		return applicationDocumentFinYear;
