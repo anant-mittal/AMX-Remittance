@@ -1,8 +1,10 @@
 package com.amx.jax.payment.gateway;
 
+import com.bootloaderjs.EnumType;
+
 public class PayGResponse {
 
-	public static enum PayGStatus {
+	public static enum PayGStatus implements EnumType {
 		INIT, CAPTURED, CANCELLED, ERROR
 	}
 
@@ -25,14 +27,14 @@ public class PayGResponse {
 	String collectionDocNumber;
 	String collectionDocCode;
 
-	PayGStatus payGStatus = PayGStatus.INIT;
+	PayGStatus status = PayGStatus.INIT;
 
 	public PayGStatus getPayGStatus() {
-		return payGStatus;
+		return status;
 	}
 
 	public void setPayGStatus(PayGStatus payGStatus) {
-		this.payGStatus = payGStatus;
+		this.status = payGStatus;
 	}
 
 	public String getCollectionFinYear() {
