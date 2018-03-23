@@ -1,7 +1,5 @@
 package com.amx.jax.payment.gateway;
 
-import com.bootloaderjs.EnumType;
-
 public class PayGResponse {
 
 	public static enum PayGStatus {
