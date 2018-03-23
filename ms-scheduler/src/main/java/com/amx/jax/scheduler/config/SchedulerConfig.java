@@ -3,7 +3,7 @@ package com.amx.jax.scheduler.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 @Component
 public class SchedulerConfig {
