@@ -310,7 +310,7 @@ public class RemittanceTransactionManager {
 
 		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
 		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
-		if (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue()) {
+		if (loyalityPointsAvailable == null || (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		} else {
 			responseModel.setCanRedeemLoyalityPoints(true);
