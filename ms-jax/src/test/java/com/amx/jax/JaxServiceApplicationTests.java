@@ -22,7 +22,6 @@ import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.repository.VwLoyalityEncashRepository;
-import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.WebUtils;

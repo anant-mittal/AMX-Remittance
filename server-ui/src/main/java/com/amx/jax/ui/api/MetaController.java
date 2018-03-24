@@ -23,7 +23,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.scope.sample.CalcLibs;
+import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.amx.amxlib.constant.JaxChannel;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.ViewCompanyDetails;

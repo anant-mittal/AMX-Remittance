@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
 
 @Service
 public class UserValidationContext extends TenantContext<UserValidation> {

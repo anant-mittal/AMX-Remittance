@@ -3,9 +3,10 @@ package com.amx.jax.logger.events;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.EnumType;
 
-public class SessionEvent extends DefaultEvent {
+public class SessionEvent extends AuditEvent {
 
 	public static enum Type implements EnumType {
 		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
