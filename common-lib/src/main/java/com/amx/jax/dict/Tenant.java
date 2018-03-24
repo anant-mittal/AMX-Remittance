@@ -19,7 +19,7 @@ public enum Tenant {
 
 	/** Baharain */
 	BRN("bhr", "104"),
-	
+
 	/** Baharain */
 	BHR("bhr", "104"),
 
@@ -33,10 +33,7 @@ public enum Tenant {
 
 	static {
 		// Additional Mappings
-		mapping.put("app-dev", KWT);
-		mapping.put("app-devq", KWT2);
-		mapping.put("app-devb", BRN);
-		mapping.put("appq-kwt", KWT2);
+		// mapping.put("app-devq", KWT2);
 
 		for (Tenant site : Tenant.values()) {
 			mapping.put(site.toString().toLowerCase(), site);
@@ -65,7 +62,7 @@ public enum Tenant {
 		return new BigDecimal(code);
 	}
 
-	public static Tenant fromString(String siteId) {
+	public static Tenant fromString(String siteId, Tenant defaultValue) {
 		if (siteId != null) {
 			String siteIdStr = siteId.toLowerCase();
 			Matcher matcher = pattern.matcher(siteIdStr);
@@ -82,7 +79,7 @@ public enum Tenant {
 				}
 			}
 		}
-		return Tenant.DEFAULT;
+		return defaultValue;
 	}
 
 }
