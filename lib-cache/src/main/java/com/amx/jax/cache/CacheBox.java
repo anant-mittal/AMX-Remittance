@@ -1,11 +1,11 @@
 package com.amx.jax.cache;
 
 import org.redisson.api.LocalCachedMapOptions;
-import org.redisson.api.RLocalCachedMap;
-import org.redisson.api.RedissonClient;
 import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
 import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
 import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
+import org.redisson.api.RLocalCachedMap;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class CacheBox<T> {

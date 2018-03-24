@@ -1,4 +1,4 @@
-package com.amx.jax.logger.filter;
+package com.amx.jax.filter;
 
 import java.io.IOException;
 

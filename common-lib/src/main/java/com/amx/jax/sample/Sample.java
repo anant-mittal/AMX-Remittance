@@ -1,4 +1,4 @@
-package com.amx.jax.scope.sample;
+package com.amx.jax.sample;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
