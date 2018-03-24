@@ -42,6 +42,7 @@ public class JaxMetaInfo {
 		info.setDeviceIp(this.getDeviceIp());
 		info.setReferrer(this.getReferrer());
 		info.setDeviceType(this.getDeviceType());
+		info.setAppType(this.getAppType());
 		return info;
 	};
 
