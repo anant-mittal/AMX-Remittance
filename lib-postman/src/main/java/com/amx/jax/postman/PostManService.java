@@ -4,7 +4,6 @@ import org.json.JSONObject;
 
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;

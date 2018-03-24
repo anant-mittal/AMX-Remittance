@@ -1,8 +1,8 @@
-package com.amx.jax.logger.client;
+package com.amx.jax.sample;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.logger.events.DefaultEvent;
+import com.amx.jax.logger.client.AuditFilter;
 
 @Component
 public class DefaultAuditFilter implements AuditFilter<DefaultEvent> {

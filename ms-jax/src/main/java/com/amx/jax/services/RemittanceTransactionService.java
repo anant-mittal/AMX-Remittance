@@ -22,7 +22,6 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
 import com.amx.jax.exception.GlobalException;
-import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;

@@ -1,4 +1,4 @@
-package com.amx.jax.scope.sample;
+package com.amx.jax.sample;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.amx.jax.logger.events;
+package com.amx.jax.sample;
 
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.EnumType;
