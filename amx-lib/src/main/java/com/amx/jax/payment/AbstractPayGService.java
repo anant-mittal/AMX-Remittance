@@ -26,7 +26,7 @@ public abstract class AbstractPayGService {
 				.addParameter("docFy", remittanceApplicationResponseModel.getDocumentFinancialYear())
 				.addParameter("docNo", remittanceApplicationResponseModel.getDocumentIdForPayment())
 				.addParameter("tnt", tnt).addParameter("callbackd", callbackd)
-				.addParameter(AppConstants.TRACE_ID_KEY, ContextUtil.getTraceId());
+				.addParameter(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
 		return builder.getURL();
 	}
 
