@@ -54,6 +54,7 @@ import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -309,7 +310,7 @@ public class RemittanceTransactionManager {
 
 		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
 		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
-		if (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue()) {
+		if (loyalityPointsAvailable == null || (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		} else {
 			responseModel.setCanRedeemLoyalityPoints(true);
@@ -533,6 +534,9 @@ public class RemittanceTransactionManager {
 		output.put("11", weeklyCount);
 		return output;
 	}
+	
+	@Autowired
+	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
@@ -553,7 +557,8 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		AuditServiceClient.staticLogger(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
+		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
+		//AuditServiceClient.staticLogger(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
 
 	}

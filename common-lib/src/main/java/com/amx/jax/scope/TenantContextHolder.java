@@ -12,7 +12,11 @@ public class TenantContextHolder {
 	}
 
 	public static void setCurrent(String siteId) {
-		ContextUtil.map().put(TENANT, fromString(siteId));
+		ContextUtil.map().put(TENANT, fromString(siteId, Tenant.DEFAULT));
+	}
+
+	public static void setCurrent(String siteId, Tenant defaultTnt) {
+		ContextUtil.map().put(TENANT, fromString(siteId, defaultTnt));
 	}
 
 	public static void setDefault() {
@@ -27,8 +31,8 @@ public class TenantContextHolder {
 		return (Tenant) site;
 	}
 
-	public static Tenant fromString(String siteId) {
-		return Tenant.fromString(siteId);
+	public static Tenant fromString(String siteId, Tenant defaultTnt) {
+		return Tenant.fromString(siteId, defaultTnt);
 	}
 
 }
