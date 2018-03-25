@@ -26,7 +26,6 @@ public abstract class AbstractJaxServiceClient {
 	JaxConfig jaxConfig;
 
 	public String getBaseUrl() {
-	    LOGGER.info("getBaseUrl:BASE URL IS BEING READ");
 		return jaxConfig.getSpServiceUrl();
 	}
 
