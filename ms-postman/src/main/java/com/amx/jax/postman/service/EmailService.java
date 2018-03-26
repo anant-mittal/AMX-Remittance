@@ -109,13 +109,13 @@ public class EmailService {
 
 		boolean isHtml = true;
 
-		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessage message = getMailSender().createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
-			eParams.setFrom(defaultSender);
+			eParams.setFrom(mailFrom);
 		}
 
 		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
