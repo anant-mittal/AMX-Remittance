@@ -89,7 +89,7 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
-			@RequestBody(required = false) Map<String, Object> data)
+			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt)
 			throws IOException, DocumentException, PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");

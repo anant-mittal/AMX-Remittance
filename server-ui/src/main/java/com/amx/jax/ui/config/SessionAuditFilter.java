@@ -21,7 +21,7 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 		if (userDevice.getFingerprint() == null) {
 			userDevice.resolve();
 		}
-		event.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_KEY)));
+		event.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY)));
 		event.setDevice(userDevice.toMap());
 	}
 

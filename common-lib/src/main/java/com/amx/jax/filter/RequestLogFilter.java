@@ -57,9 +57,9 @@ public class RequestLogFilter implements Filter {
 			}
 
 			Tenant tnt = TenantContextHolder.currentSite();
-			String traceId = req.getHeader(AppConstants.TRACE_ID_KEY);
+			String traceId = req.getHeader(AppConstants.TRACE_ID_XKEY);
 			if (StringUtils.isEmpty(traceId)) {
-				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_KEY));
+				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
 			}
 			if (StringUtils.isEmpty(traceId)) {
 				String sessionID = null;
@@ -67,18 +67,18 @@ public class RequestLogFilter implements Filter {
 				if (session == null) {
 					sessionID = UniqueID.generateString();
 				} else {
-					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_KEY),
+					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
 				traceId = ContextUtil.getTraceId(true, sessionID);
-				MDC.put("traceId", traceId);
-				MDC.put("tnt", tnt);
-				ContextUtil.map().put(AppConstants.SESSION_ID_KEY, sessionID);
-				req.getSession().setAttribute(AppConstants.SESSION_ID_KEY, sessionID);
+				MDC.put(ContextUtil.TRACE_ID, traceId);
+				MDC.put(TenantContextHolder.TENANT, tnt);
+				ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionID);
+				req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 			} else {
 				ContextUtil.setTraceId(traceId);
-				MDC.put("traceId", tnt);
-				MDC.put("tnt", tnt);
+				MDC.put(ContextUtil.TRACE_ID, traceId);
+				MDC.put(TenantContextHolder.TENANT, tnt);
 			}
 			LOGGER.info("Request IN {}", req.getRequestURI());
 			// String mdcData = String.format("trace : %s", traceId);

@@ -29,6 +29,23 @@ public class JaxMetaInfo {
 	private String deviceType;
 	private String appType;
 
+	public JaxMetaInfo copy() {
+		JaxMetaInfo info = new JaxMetaInfo();
+		info.setCountryId(this.getCountryId());
+		info.setChannel(this.getChannel());
+		info.setCompanyId(this.getCompanyId());
+		info.setCustomerId(this.getCustomerId());
+		info.setLanguageId(this.getLanguageId());
+		info.setCountryBranchId(this.getCountryBranchId());
+		info.setTenant(this.getTenant());
+		info.setDeviceId(this.getDeviceId());
+		info.setDeviceIp(this.getDeviceIp());
+		info.setReferrer(this.getReferrer());
+		info.setDeviceType(this.getDeviceType());
+		info.setAppType(this.getAppType());
+		return info;
+	};
+
 	public String getAppType() {
 		return appType;
 	}
