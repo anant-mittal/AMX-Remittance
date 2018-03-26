@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.bootloaderjs.Constants;
+import com.amx.utils.Constants;
 
 @Component
 public class ConverterFOP implements FileConverter {

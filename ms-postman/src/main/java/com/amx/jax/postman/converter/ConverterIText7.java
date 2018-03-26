@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.bootloaderjs.Constants;
+import com.amx.utils.Constants;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -19,11 +19,7 @@ import com.itextpdf.kernel.pdf.PdfDocumentInfo;
 import com.itextpdf.kernel.pdf.PdfViewerPreferences;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.WriterProperties;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.font.FontProvider;
-import com.itextpdf.layout.font.FontSet;
-import com.itextpdf.layout.property.Property;
 
 @Component
 public class ConverterIText7 implements FileConverter {
