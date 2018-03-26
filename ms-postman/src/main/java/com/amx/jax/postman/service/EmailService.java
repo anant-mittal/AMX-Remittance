@@ -97,7 +97,7 @@ public class EmailService {
 			try {
 				sendHtmlMail(eParams);
 			} catch (MessagingException | IOException e) {
-				LOGGER.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
+				log.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
 			}
 		} else {
 			sendPlainTextMail(eParams);
@@ -109,13 +109,13 @@ public class EmailService {
 
 		boolean isHtml = true;
 
-		MimeMessage message = getMailSender().createMimeMessage();
+		MimeMessage message = mailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
-			eParams.setFrom(mailFrom);
+			eParams.setFrom(defaultSender);
 		}
 
 		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
