@@ -29,7 +29,7 @@ public class WebSessionListener implements HttpSessionListener {
 		SessionEvent evt = new SessionEvent();
 		evt.setComponent(appConfig.getAppName());
 		evt.setType(SessionEvent.Type.SESSION_CREATED);
-		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_KEY)));
+		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY)));
 		AuditServiceClient.staticLogger(evt);
 	}
 
@@ -40,7 +40,7 @@ public class WebSessionListener implements HttpSessionListener {
 		evt.setType(SessionEvent.Type.SESSION_DESTROYED);
 		HttpSession session = se.getSession();
 		if (session != null) {
-			evt.setSessionId(ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_KEY)));
+			evt.setSessionId(ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY)));
 		}
 
 		AuditServiceClient.staticLogger(evt);

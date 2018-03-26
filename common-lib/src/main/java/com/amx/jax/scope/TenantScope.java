@@ -4,10 +4,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.Scope;
 
 public class TenantScope implements Scope {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(TenantScope.class);
 
 	private Map<String, Object> scopedObjects = Collections.synchronizedMap(new HashMap<String, Object>());
 	private Map<String, Runnable> destructionCallbacks = Collections.synchronizedMap(new HashMap<String, Runnable>());
@@ -16,7 +20,8 @@ public class TenantScope implements Scope {
 	public Object get(String name, ObjectFactory<?> objectFactory) {
 		String nameKey = getNameKey(name);
 		if (!scopedObjects.containsKey(nameKey)) {
-			scopedObjects.put(nameKey, objectFactory.getObject());
+			scopedObjects.put(nameKey, this.assignValues(objectFactory.getObject()));
+			LOGGER.info("Tenant bean registered {}", name);
 		}
 		return scopedObjects.get(nameKey);
 	}
@@ -48,8 +53,12 @@ public class TenantScope implements Scope {
 		if (TenantContextHolder.currentSite() == null) {
 			return null;
 		} else {
-			return TenantContextHolder.currentSite().getId();
+			return TenantContextHolder.currentSite().toString().toLowerCase();
 		}
+	}
+
+	private Object assignValues(Object object) {
+		return TenantProperties.assignValues(getConversationId(), object);
 	}
 
 }
