@@ -1,3 +1,4 @@
+package com.amx.jax.scope;
 
 import java.io.File;
 import java.io.IOException;
