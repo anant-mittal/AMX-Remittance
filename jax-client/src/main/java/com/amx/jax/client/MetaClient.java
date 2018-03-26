@@ -443,6 +443,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	/**
+	 * <p>
+	 * Gives the list of banks by country
+	 * </p>
+	 * 
+	 * @param countryId
+	 *            - Id value of country
+	 */
 	public ApiResponse<BankMasterDTO> getBankListForCountry(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<BankMasterDTO>> response;
 		try {

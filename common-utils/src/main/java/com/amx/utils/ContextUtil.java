@@ -16,7 +16,7 @@ public final class ContextUtil {
 	}
 
 	/** The Constant TRACE_ID. */
-	public static final String TRACE_ID = "trace_id";
+	public static final String TRACE_ID = "traceId";
 
 	/** The Constant context. */
 	private static final ThreadLocal<Map<String, Object>> context = new ThreadLocal<Map<String, Object>>() {
@@ -49,6 +49,7 @@ public final class ContextUtil {
 	 * Clear.
 	 */
 	public static void clear() {
+		context.get().clear();
 		context.remove();
 	}
 

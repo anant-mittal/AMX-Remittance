@@ -1,6 +1,8 @@
 package com.amx.jax.postman.client;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
@@ -18,6 +21,7 @@ import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
@@ -89,12 +93,19 @@ public class PostManClient implements PostManService {
 		return sendSMS(sms, Boolean.TRUE);
 	}
 
+	private Map<String, String> appheader() {
+		Map<String, String> headers = new HashMap<String, String>();
+		headers.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
+		headers.put(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
+		return headers;
+	}
+
 	public Email sendEmail(Email email, Boolean async) throws PostManException {
 		LOGGER.info("Sending email to {} ", email.getTo().get(0));
 		try {
 			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
 					.queryString(PARAM_LANG, getLang()).queryString(PARAM_ASYNC, async)
-					.header("content-type", "application/json").body(email).asObject(Email.class);
+					.header("content-type", "application/json").headers(appheader()).body(email).asObject(Email.class);
 			return response.getBody();
 		} catch (UnirestException e) {
 			throw new PostManException(e);
@@ -117,7 +128,7 @@ public class PostManClient implements PostManService {
 		try {
 			HttpResponse<Notipy> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)
 					.queryString(PARAM_LANG, getLang()).header("accept", "application/json")
-					.header("Content-Type", "application/json")
+					.header("Content-Type", "application/json").headers(appheader())
 
 					.body(msg).asObject(Notipy.class);
 			return response.getBody();
@@ -128,11 +139,12 @@ public class PostManClient implements PostManService {
 
 	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
+
 		try {
 			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
 					.queryString(PARAM_LANG, getLang())
 					// .header("content-type", "application/json")
-					.header("accept", "application/json").field("template", template)
+					.header("accept", "application/json").headers(appheader()).field("template", template)
 					.field("data", JsonUtil.toJson(data)).field("fileType", fileType).asObject(File.class);
 			return response.getBody();
 		} catch (UnirestException e) {
@@ -178,7 +190,7 @@ public class PostManClient implements PostManService {
 		LOGGER.info("Sending exception = {} ", title);
 		try {
 			HttpResponse<Exception> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK_EXCEP)
-					.header("content-type", "application/json").queryString("title", title).body(e)
+					.header("content-type", "application/json").headers(appheader()).queryString("title", title).body(e)
 					.asObject(Exception.class);
 		} catch (UnirestException e1) {
 			LOGGER.error("title", e1);
