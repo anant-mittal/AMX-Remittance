@@ -76,7 +76,7 @@ public class PostManClient implements PostManService {
 		try {
 			HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
 					.queryString(PARAM_LANG, getLang()).queryString(PARAM_ASYNC, async)
-					.header("content-type", "application/json").body(sms).asObject(SMS.class);
+					.header("content-type", "application/json").headers(appheader()).body(sms).asObject(SMS.class);
 			return response.getBody();
 		} catch (UnirestException e) {
 			throw new PostManException(e);
