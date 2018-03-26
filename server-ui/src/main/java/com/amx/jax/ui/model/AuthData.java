@@ -39,19 +39,30 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		this.identity = identity;
 	}
 
+	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String mOtp = null;
+
+	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String eOtp = null;
 
 	private String mOtpPrefix = null;
 	private String eOtpPrefix = null;
 
+	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String otp = null;
+
 	private String otpPrefix = null;
+
 	private String imageId = null;
+
 	private String imageCaption = null;
+
 	private String question = null;
+
 	private QuestModelDTO ques = null;
+
 	private SecurityQuestionModel answer = null;
+
 	private AuthState state = null;
 
 	@Override
