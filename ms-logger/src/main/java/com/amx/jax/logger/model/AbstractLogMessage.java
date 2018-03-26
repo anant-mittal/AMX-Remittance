@@ -4,17 +4,17 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.TextScore;
 
-import com.amx.jax.logger.events.AuditLogEvent;
-import com.amx.jax.logger.events.AuditLogEvent.EventType;;
+import com.amx.jax.logger.AuditEvent;
+import com.amx.utils.EnumType;
 
-public class AbstractLogMessage implements AuditLogEvent {
+public class AbstractLogMessage extends AuditEvent {
 
 	@Id
 	private String id;
 
 	public long timestamp;
 
-	private EventType type;
+	private EnumType type;
 
 	@TextIndexed
 	private String moduleName;
@@ -51,9 +51,9 @@ public class AbstractLogMessage implements AuditLogEvent {
 		this.score = score;
 	}
 
-	public AbstractLogMessage(AuditLogEvent event) {
+	public AbstractLogMessage(AuditEvent event) {
 		this.timestamp = event.getTimestamp();
-		this.moduleName = event.getModuleName();
+		this.moduleName = event.getComponent();
 		this.type = event.getType();
 		this.message = event.getMessage();
 	}
@@ -74,11 +74,11 @@ public class AbstractLogMessage implements AuditLogEvent {
 		this.moduleName = moduleName;
 	}
 
-	public EventType getType() {
+	public EnumType getType() {
 		return type;
 	}
 
-	public void setType(EventType type) {
+	public void setType(EnumType type) {
 		this.type = type;
 	}
 

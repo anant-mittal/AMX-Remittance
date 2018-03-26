@@ -22,7 +22,7 @@ public class AppController {
 	private Logger log = Logger.getLogger(AppController.class);
 
 	@ApiOperation(value = "Index page")
-	@RequestMapping(value = "/", method = RequestMethod.GET)
+	@RequestMapping(value = "/amxadmin", method = RequestMethod.GET)
 	public String index(Model model) {
 		return "index";
 	}

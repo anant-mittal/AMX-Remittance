@@ -17,12 +17,14 @@ import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
+import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 
 @RunWith(SpringRunner.class)
@@ -54,7 +56,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	 @Test
 		public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 				RemittanceTransactionValidationException, LimitExeededException {
 			jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -94,7 +96,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 	 
-	 @Test
+	// @Test
 		public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
 				RemittanceTransactionValidationException, LimitExeededException {
 			jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -139,4 +141,21 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+	//@Test
+	public void testfetchTransactionDetails() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		ApiResponse<RemittanceTransactionStatusResponseModel> response = null;
+		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
+		request.setApplicationDocumentNumber(new BigDecimal(27000545));
+		request.setDocumentFinancialYear(new BigDecimal(2017));
+		response = client.fetchTransactionDetails(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+	
 }

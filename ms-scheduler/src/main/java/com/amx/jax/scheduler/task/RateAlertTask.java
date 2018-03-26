@@ -1,5 +1,15 @@
 package com.amx.jax.scheduler.task;
 
+import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,22 +23,10 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.scheduler.ratealert.RateAlertData;
 import com.amx.jax.scheduler.ratealert.RateAlertNotificationDTO;
 import com.amx.jax.scheduler.service.NotificationService;
-
-import static com.amx.jax.scheduler.ratealert.RateAlertConfig.RATE_ALERT_DATA;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 public class RateAlertTask implements Runnable {
@@ -208,8 +206,8 @@ public class RateAlertTask implements Runnable {
 
 	private void setMetaInfo() {
 		// jaxMetaInfo.setCountryId(tenant.getBDCode());
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		// jaxMetaInfo.setTenant(tenant);
+		// jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setTenant(tenant);
 		TenantContextHolder.setCurrent(tenant);
 	}
 
@@ -241,10 +239,15 @@ public class RateAlertTask implements Runnable {
 
 		List<CurrencyMasterDTO> forCurrencyList = data.getForeignCurrencyList();
 		for (CurrencyMasterDTO currency : forCurrencyList) {
-			ApiResponse<ExchangeRateResponseModel> response = exchangeRateClient.getExchangeRate(
-					data.getDomesticCurrency().getCurrencyId(), currency.getCurrencyId(), new BigDecimal(1), null);
-			if (response != null && response.getResult() != null && response.getResult().getBankWiseRates() != null) {
-				exchangeRates.put(currency, response.getResult().getBankWiseRates());
+			try {
+				ApiResponse<ExchangeRateResponseModel> response = exchangeRateClient.getExchangeRate(
+						data.getDomesticCurrency().getCurrencyId(), currency.getCurrencyId(), new BigDecimal(1), null);
+				if (response != null && response.getResult() != null
+						&& response.getResult().getBankWiseRates() != null) {
+					exchangeRates.put(currency, response.getResult().getBankWiseRates());
+				}
+			} catch (Exception e) {
+				logger.error("error occured while fetching ex rates for foreign currency:" + currency.getQuoteName());
 			}
 		}
 		data.setExchangeRates(exchangeRates);

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.UserSession;
 
 import groovy.transform.Synchronized;
@@ -27,7 +27,7 @@ public class UserBean implements Serializable {
 	private UserSession userSession;
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
 	CurrencyMasterDTO defaultForCurrency;
 

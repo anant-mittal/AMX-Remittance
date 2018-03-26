@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.Constants;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 public abstract class AbstractException extends RuntimeException {
 

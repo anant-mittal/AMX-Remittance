@@ -5,9 +5,9 @@ import java.text.Bidi;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import com.bootloaderjs.ArgUtil;
-import com.bootloaderjs.Constants;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class TemplateUtils {

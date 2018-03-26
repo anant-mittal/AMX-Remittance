@@ -2,7 +2,6 @@
 package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,16 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.LoginData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
-import com.amx.jax.ui.response.ResponseStatus;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
-import com.amx.jax.ui.service.TenantContext;
+import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
+import com.amx.jax.ui.session.UserDevice;
+import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -38,55 +37,24 @@ public class UserController {
 	private UserService userService;
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
-	/**
-	 * Asks for user login and password
-	 * 
-	 * @param identity
-	 * @param password
-	 * @return
-	 */
-	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> login(@RequestParam(required = false) String identity,
-			@RequestParam(required = false) String password) {
-		return loginService.login(identity, password);
-	}
+	@Timed
+	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDevice.AppType appType,
+			@RequestParam(required = false) String appVersion) {
+		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
-	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> loginSecQues(@RequestBody SecurityQuestionModel guestanswer,
-			@CookieValue(value = UIConstants.SEQ_KEY, defaultValue = UIConstants.BLANK) String seqValue) {
-		return loginService.loginSecQues(guestanswer);
-	}
-
-	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> initReset(@RequestParam String identity,
-			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
-		if (mOtp == null && eOtp == null) {
-			return loginService.initResetPassword(identity);
-		} else {
-			return loginService.verifyResetPassword(identity, mOtp, eOtp);
+		if (appType != null) {
+			sessionService.getAppDevice().setAppType(appType);
 		}
-	}
 
-	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
-			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return loginService.updatepwd(password, mOtp, eOtp);
-	}
+		if (appVersion != null) {
+			sessionService.getAppDevice().setAppVersion(appVersion);
+		}
 
-	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
-	public ResponseWrapper<UserMetaData> logout() {
-		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-		sessionService.unauthorize();
-		wrapper.setMessage(ResponseStatus.LOGOUT_DONE, "User logged out successfully");
-		return wrapper;
-	}
-
-	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST })
-	public ResponseWrapper<UserMetaData> getMeta() {
-		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
-
+		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
+		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
@@ -98,15 +66,15 @@ public class UserController {
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerDto> profile() {
+		return userService.getProfileDetails();
+	}
+
 	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
-	}
-
-	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
-	public ResponseWrapper<CustomerDto> profile() {
-		return userService.getProfileDetails();
 	}
 
 	@RequestMapping(value = "/api/user/email", method = { RequestMethod.POST })
@@ -121,11 +89,16 @@ public class UserController {
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
 
+	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponse> updateSecQues(@RequestBody SecurityQuestionModel guestanswer) {
+		return loginService.loginSecQues(guestanswer, null);
+	}
+
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
-	public ResponseWrapper<LoginData> sendOTP(@RequestParam(required = false) String mOtp,
+	public ResponseWrapper<AuthResponse> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {
 		if (mOtp == null) {
-			return loginService.sendOTP(null);
+			return loginService.sendOTP(null, null);
 		} else {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}

@@ -1,29 +1,35 @@
 package com.amx.jax.postman.service;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.bootloaderjs.Constants;
-import com.bootloaderjs.Utils;
+import com.amx.jax.scope.TenantScoped;
+import com.amx.jax.scope.TenantValue;
+import com.amx.utils.Constants;
+import com.amx.utils.Utils;
 
+@TenantScoped
 @Component
 public class EmailService {
 
-	private Logger log = Logger.getLogger(getClass());
+	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
 	@Autowired
 	private TemplateService templateService;
@@ -31,11 +37,59 @@ public class EmailService {
 	@Autowired
 	private FileService fileService;
 
-	@Autowired
-	private JavaMailSender mailSender;
+	@TenantValue("${tenant}")
+	private String tenant;
+	@TenantValue("${spring.mail.from}")
+	private String mailFrom;
+	@TenantValue("${spring.mail.host}")
+	private String mailHost;
+	@TenantValue("${spring.mail.port}")
+	private int mailPort;
+	@TenantValue("${spring.mail.username}")
+	private String mailUsername;
+	@TenantValue("${spring.mail.password}")
+	private String mailPassword;
+	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
+	private Boolean mailSmtpAuth;
+	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
+	private boolean mailSmtpTls;
+	@TenantValue("${spring.mail.protocol}")
+	private String mailProtocol;
+	@TenantValue("${spring.mail.defaultEncoding}")
+	private String mailDefaultEncoding;
 
 	@Value("${spring.mail.from}")
 	private String defaultSender;
+
+	private JavaMailSender mailSender;
+
+	@Autowired
+	private JavaMailSender defaultMailSender;
+
+	public JavaMailSender getMailSender() {
+		if (mailSender == null) {
+			if (tenant != null) {
+				LOGGER.info("Using {} mailSender", tenant);
+				JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+				javaMailSender.setHost(this.mailHost);
+				javaMailSender.setPort(this.mailPort);
+				javaMailSender.setUsername(this.mailUsername);
+				javaMailSender.setPassword(this.mailPassword);
+				Properties mailProp = new Properties();
+				mailProp.put("mail.smtp.auth", mailSmtpAuth);
+				mailProp.put("mail.smtp.starttls.enable", mailSmtpTls);
+				javaMailSender.setJavaMailProperties(mailProp);
+				javaMailSender.setProtocol(this.mailProtocol);
+				javaMailSender.setDefaultEncoding(mailDefaultEncoding);
+				this.mailSender = javaMailSender;
+			} else {
+				LOGGER.info("Using Default mailSender");
+				this.mailSender = defaultMailSender;
+				this.mailFrom = defaultSender;
+			}
+		}
+		return this.mailSender;
+	}
 
 	public Email send(Email eParams) {
 
@@ -43,7 +97,7 @@ public class EmailService {
 			try {
 				sendHtmlMail(eParams);
 			} catch (MessagingException | IOException e) {
-				log.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
+				LOGGER.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
 			}
 		} else {
 			sendPlainTextMail(eParams);
@@ -55,13 +109,13 @@ public class EmailService {
 
 		boolean isHtml = true;
 
-		MimeMessage message = mailSender.createMimeMessage();
+		MimeMessage message = getMailSender().createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
-			eParams.setFrom(defaultSender);
+			eParams.setFrom(mailFrom);
 		}
 
 		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
@@ -93,7 +147,7 @@ public class EmailService {
 			}
 		}
 
-		mailSender.send(message);
+		getMailSender().send(message);
 	}
 
 	private void sendPlainTextMail(Email eParams) {
@@ -111,7 +165,7 @@ public class EmailService {
 			mailMessage.setCc(eParams.getCc().toArray(new String[eParams.getCc().size()]));
 		}
 
-		mailSender.send(mailMessage);
+		getMailSender().send(mailMessage);
 
 	}
 

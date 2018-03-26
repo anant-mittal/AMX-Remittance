@@ -2,45 +2,34 @@ package com.amx.jax.ui.service;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.ui.UIConstants;
+
+import eu.bitwalker.useragentutils.UserAgent;
 
 @Component
 public class HttpService {
 
-	private Logger LOGGER = LoggerFactory.getLogger(getClass());
+	private static final PolicyFactory policy = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
 
-	public class UserAgent {
-		String os = null;
-		String browser = null;
+	@Autowired(required = false)
+	private HttpServletRequest request;
 
-		public String getOs() {
-			return os;
-		}
-
-		public void setOs(String os) {
-			this.os = os;
-		}
-
-		public String getBrowser() {
-			return browser;
-		}
-
-		public void setBrowser(String browser) {
-			this.browser = browser;
-		}
-	}
+	@Autowired(required = false)
+	private HttpServletResponse response;
 
 	@Autowired
-	private HttpServletRequest request;
+	private AppConfig appConfig;
 
 	public String getIPAddress() {
 		String remoteAddr = null;
@@ -59,73 +48,52 @@ public class HttpService {
 
 	public String getDeviceId() {
 		String deviceId = null;
-		Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
-		if (cookie != null) {
-			deviceId = cookie.getValue();
+		if (request != null) {
+			Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
+			if (cookie != null) {
+				deviceId = cookie.getValue();
+			}
 		}
 		return deviceId;
 	}
 
+	public void clearSessionCookie() {
+		Cookie cookie = WebUtils.getCookie(request, UIConstants.SESSIONID);
+		if (cookie != null) {
+			cookie.setMaxAge(0);
+		}
+	}
+
+	public String getBrowserId(String browserIdNew) {
+		String browserId = null;
+		if (request != null) {
+			Cookie cookie = WebUtils.getCookie(request, UIConstants.BROWSER_ID_KEY);
+			if (cookie != null) {
+				browserId = cookie.getValue();
+			} else if (response != null) {
+				browserId = browserIdNew;
+				Cookie kooky = new Cookie(UIConstants.BROWSER_ID_KEY, browserIdNew);
+				kooky.setMaxAge(31622400);
+				kooky.setHttpOnly(appConfig.isCookieHttpOnly());
+				kooky.setSecure(appConfig.isCookieSecure());
+				kooky.setPath("/");
+				response.addCookie(kooky);
+			}
+		}
+		return browserId;
+	}
+
 	public UserAgent getUserAgent() {
-		String browserDetails = request.getHeader("User-Agent");
-		String userAgent = browserDetails;
-		String user = userAgent.toLowerCase();
-
-		String os = "";
-		String browser = "";
-
-		LOGGER.info("User Agent for the request is===>{}", browserDetails);
-		// =================OS=======================
-		if (userAgent.toLowerCase().indexOf("windows") >= 0) {
-			os = "Windows";
-		} else if (userAgent.toLowerCase().indexOf("mac") >= 0) {
-			os = "Mac";
-		} else if (userAgent.toLowerCase().indexOf("x11") >= 0) {
-			os = "Unix";
-		} else if (userAgent.toLowerCase().indexOf("android") >= 0) {
-			os = "Android";
-		} else if (userAgent.toLowerCase().indexOf("iphone") >= 0) {
-			os = "IPhone";
-		} else {
-			os = "UnKnown, More-Info: " + userAgent;
-		}
-		// ===============Browser===========================
-		if (user.contains("msie")) {
-			String substring = userAgent.substring(userAgent.indexOf("MSIE")).split(";")[0];
-			browser = substring.split(" ")[0].replace("MSIE", "IE") + "-" + substring.split(" ")[1];
-		} else if (user.contains("safari") && user.contains("version")) {
-			browser = (userAgent.substring(userAgent.indexOf("Safari")).split(" ")[0]).split("/")[0] + "-"
-					+ (userAgent.substring(userAgent.indexOf("Version")).split(" ")[0]).split("/")[1];
-		} else if (user.contains("opr") || user.contains("opera")) {
-			if (user.contains("opera"))
-				browser = (userAgent.substring(userAgent.indexOf("Opera")).split(" ")[0]).split("/")[0] + "-"
-						+ (userAgent.substring(userAgent.indexOf("Version")).split(" ")[0]).split("/")[1];
-			else if (user.contains("opr"))
-				browser = ((userAgent.substring(userAgent.indexOf("OPR")).split(" ")[0]).replace("/", "-"))
-						.replace("OPR", "Opera");
-		} else if (user.contains("chrome")) {
-			browser = (userAgent.substring(userAgent.indexOf("Chrome")).split(" ")[0]).replace("/", "-");
-		} else if ((user.indexOf("mozilla/7.0") > -1) || (user.indexOf("netscape6") != -1)
-				|| (user.indexOf("mozilla/4.7") != -1) || (user.indexOf("mozilla/4.78") != -1)
-				|| (user.indexOf("mozilla/4.08") != -1) || (user.indexOf("mozilla/3") != -1)) {
-			// browser=(userAgent.substring(userAgent.indexOf("MSIE")).split("
-			// ")[0]).replace("/", "-");
-			browser = "Netscape-?";
-
-		} else if (user.contains("firefox")) {
-			browser = (userAgent.substring(userAgent.indexOf("Firefox")).split(" ")[0]).replace("/", "-");
-		} else if (user.contains("rv")) {
-			browser = "IE-" + user.substring(user.indexOf("rv") + 3, user.indexOf(")"));
-		} else {
-			browser = "UnKnown, More-Info: " + userAgent;
-		}
-		LOGGER.info("Operating System======> {}", os);
-		LOGGER.info("Browser Name==========> {} ", browser);
 		UserAgent agent = new UserAgent();
-		agent.setBrowser(browser);
-		agent.setOs(os);
+		if (request != null) {
+			String browserDetails = request.getHeader("User-Agent");
+			return UserAgent.parseUserAgentString(browserDetails);
+		}
 		return agent;
+	}
 
+	public static String sanitze(String str) {
+		return policy.sanitize(str);
 	}
 
 }

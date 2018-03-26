@@ -1,16 +1,11 @@
 package com.amx.jax.ui.service;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
-import org.redisson.api.LocalCachedMapOptions;
-import org.redisson.api.LocalCachedMapOptions.EvictionPolicy;
-import org.redisson.api.LocalCachedMapOptions.ReconnectionStrategy;
-import org.redisson.api.LocalCachedMapOptions.SyncStrategy;
 import org.redisson.api.RLocalCachedMap;
-import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +16,14 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
-import com.amx.jax.logger.AuditLoggerService;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.session.LoggedInUsers;
+import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.AuthState.AuthFlow;
+import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
@@ -51,6 +51,9 @@ public class SessionService {
 	@Autowired
 	private UserDevice appDevice;
 
+	@Autowired
+	private HttpService httpService;
+
 	public UserDevice getAppDevice() {
 		return appDevice;
 	}
@@ -60,27 +63,17 @@ public class SessionService {
 	}
 
 	@Autowired
-	private TenantContext tenantContext;
+	private TenantService tenantContext;
 
 	@Autowired
-	private AuditLoggerService auditLoggerService;
+	private AuditService auditService;
 
-	public TenantContext getTenantContext() {
+	public TenantService getTenantContext() {
 		return tenantContext;
 	}
 
 	@Autowired
-	RedissonClient redisson;
-
-	@SuppressWarnings("rawtypes")
-	LocalCachedMapOptions localCacheOptions = LocalCachedMapOptions.defaults().evictionPolicy(EvictionPolicy.NONE)
-			.cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE).syncStrategy(SyncStrategy.INVALIDATE)
-			.timeToLive(10000).maxIdle(10000);
-
-	@SuppressWarnings("unchecked")
-	private RLocalCachedMap<String, String> getLoggedInUsers() {
-		return redisson.getLocalCachedMap("LoggedInUsers", localCacheOptions);
-	}
+	LoggedInUsers loggedInUsers;
 
 	public GuestSession getGuestSession() {
 		return guestSession;
@@ -105,12 +98,15 @@ public class SessionService {
 		token.setDetails(new WebAuthenticationDetails(request));
 		Authentication authentication = this.customerAuthProvider.authenticate(token);
 		userSession.setCustomerModel(customerModel);
-		this.indexUser();
+		this.indexUser(authentication);
 		userSession.setValid(valid);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		SessionEvent sessionEvent = new SessionEvent();
+
 		if (valid) {
-			auditLoggerService.log(sessionEvent);
+			SessionEvent sessionEvent = new SessionEvent();
+			sessionEvent.setUserKey(getUserKeyString());
+			sessionEvent.setType(SessionEvent.Type.SESSION_AUTHED);
+			auditService.log(sessionEvent);
 		}
 	}
 
@@ -139,8 +135,8 @@ public class SessionService {
 		if (userSession.getCustomerModel() == null) {
 			return null;
 		}
-		BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
-		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), customerId.toString());
+		// BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
+		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), guestSession.getIdentity());
 
 	}
 
@@ -149,13 +145,26 @@ public class SessionService {
 	 * multiple deployments.
 	 * 
 	 */
-	public void indexUser() {
+	public void indexUser(Authentication authentication) {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			String uuidToken = UUID.randomUUID().toString();
 			userSession.setUuidToken(uuidToken);
 			map.fastPut(userKeyString, uuidToken);
+		}
+	}
+
+	public void unIndexUser() {
+		if (guestSession.getIdentity() != null) {
+			// BigDecimal customerId = guestSession.getCustomerModel().getCustomerId();
+			String userKeyString = String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(),
+					guestSession.getIdentity());
+			if (userKeyString != null) {
+				RLocalCachedMap<String, String> map = loggedInUsers.map();
+				map.fastRemove(userKeyString);
+				auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.LOCKED));
+			}
 		}
 	}
 
@@ -170,7 +179,7 @@ public class SessionService {
 		String userKeyString = getUserKeyString();
 		if (userKeyString != null) {
 
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 
 			String uuidToken = userSession.getUuidToken();
 			if (map.containsKey(userKeyString) && uuidToken != null) {
@@ -181,19 +190,46 @@ public class SessionService {
 		return Boolean.FALSE;
 	}
 
+	public boolean validateSessionUnique() {
+		if (this.validatedUser() && !this.indexedUser()) {
+			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
+			this.unauthorize();
+			return false;
+		}
+		return true;
+	}
+
+	public void logout() {
+		this.unauthorize();
+	}
+
 	/**
 	 * Unauthorizes current user & deletes current session completely.
 	 * 
 	 */
 	public void unauthorize() {
+		String userKeyString = getUserKeyString();
+
 		if (this.indexedUser()) {
-			RLocalCachedMap<String, String> map = this.getLoggedInUsers();
-			String userKeyString = getUserKeyString();
+			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			map.fastRemove(userKeyString);
-			LOGGER.info("User is being unauthorized from current session userKeyString={}", userKeyString);
+			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
 		}
+
+		SessionEvent sessionEvent = new SessionEvent();
+		sessionEvent.setUserKey(userKeyString);
+		sessionEvent.setType(SessionEvent.Type.SESSION_UNAUTHED);
+		auditService.log(sessionEvent);
+
 		this.clear();
 		SecurityContextHolder.getContext().setAuthentication(null);
+		HttpSession session = request.getSession(false);
+		SecurityContextHolder.clearContext();
+		session = request.getSession(false);
+		if (session != null) {
+			session.invalidate();
+		}
+		httpService.clearSessionCookie();
 	}
 
 	/**
@@ -205,8 +241,7 @@ public class SessionService {
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
 		userSession.setUserid(null);
-		guestSession.setFlow(null);
-		guestSession.setAuthStep(null);
+		guestSession.setState(new AuthState());
 		guestSession.setCustomerModel(null);
 	}
 

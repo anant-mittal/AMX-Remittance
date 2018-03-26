@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -141,6 +142,7 @@ public class TransactionHistroyService extends AbstractService {
 			model.setBeneficiaryRelationSeqId(hist.getBeneficiaryRelationSeqId());
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
+			model.setTransactionReference(getTransactionReferece(hist));
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
@@ -159,6 +161,10 @@ public class TransactionHistroyService extends AbstractService {
 	
 	
 	
+	private String getTransactionReferece(CustomerRemittanceTransactionView hist) {
+		return hist.getDocumentNumber().toString() + hist.getDocumentFinanceYear().toString();
+	}
+
 	private BeneficiaryListDTO convertBeneModelToDto(BenificiaryListView beneModel) {
 		BeneficiaryListDTO dto = new BeneficiaryListDTO();
 		try {
@@ -169,7 +175,14 @@ public class TransactionHistroyService extends AbstractService {
 		return dto;
 	}
 	
-	
+	public CustomerRemittanceTransactionView getLastTransaction(BigDecimal custId) {
+		CustomerRemittanceTransactionView output = null;
+		List<CustomerRemittanceTransactionView> list = transactionHistroyDao.getLastTransaction(custId, new PageRequest(0, 1));
+		if(list != null && !list.isEmpty()) {
+			output = list.get(0);
+		}
+		return output;
+	}
 	
 	
 	

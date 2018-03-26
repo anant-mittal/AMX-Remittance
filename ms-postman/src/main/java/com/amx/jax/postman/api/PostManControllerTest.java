@@ -22,17 +22,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.Templates;
-import com.bootloaderjs.IoUtils;
-import com.bootloaderjs.JsonUtil;
+import com.amx.jax.postman.service.PostManServiceImpl;
+import com.amx.utils.IoUtils;
+import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
@@ -51,6 +51,9 @@ public class PostManControllerTest {
 
 	@Autowired
 	PostManClient postManClient;
+
+	@Autowired
+	PostManServiceImpl postManServiceImpl;
 
 	@Autowired
 	private ApplicationContext context;
@@ -77,21 +80,22 @@ public class PostManControllerTest {
 		return null;
 	}
 
+	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
+	public String print(@RequestParam Tenant tnt) throws PostManException {
+		postManServiceImpl.print();
+		return null;
+	}
+
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
-			@RequestBody(required = false) Map<String, Object> data)
+			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt)
 			throws IOException, DocumentException, PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
 		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
 		// localeResolver.resolveLocale(request)));
-
-		Notipy msg = new Notipy();
-		msg.setChannel(Channel.NOTIPY);
-		msg.setMessage("LT" + "\n is Up and Runnnig.");
-		postManClient.notifySlack(msg);
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 

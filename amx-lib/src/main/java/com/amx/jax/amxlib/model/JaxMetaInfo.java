@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -27,6 +27,32 @@ public class JaxMetaInfo {
 	private String deviceId;
 
 	private String deviceType;
+	private String appType;
+
+	public JaxMetaInfo copy() {
+		JaxMetaInfo info = new JaxMetaInfo();
+		info.setCountryId(this.getCountryId());
+		info.setChannel(this.getChannel());
+		info.setCompanyId(this.getCompanyId());
+		info.setCustomerId(this.getCustomerId());
+		info.setLanguageId(this.getLanguageId());
+		info.setCountryBranchId(this.getCountryBranchId());
+		info.setTenant(this.getTenant());
+		info.setDeviceId(this.getDeviceId());
+		info.setDeviceIp(this.getDeviceIp());
+		info.setReferrer(this.getReferrer());
+		info.setDeviceType(this.getDeviceType());
+		info.setAppType(this.getAppType());
+		return info;
+	};
+
+	public String getAppType() {
+		return appType;
+	}
+
+	public void setAppType(String appType) {
+		this.appType = appType;
+	}
 
 	public String getDeviceType() {
 		return deviceType;

@@ -39,7 +39,7 @@ public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
-
+	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
 

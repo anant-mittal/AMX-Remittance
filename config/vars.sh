@@ -1,45 +1,45 @@
 #!/bin/bash
 
 #80
-WEB_USER="devenvironment"
+WEB_USER="amxdev"
 WEB_PASSWORD="amx@123"
-WEB_HOST="10.28.42.83"
+WEB_HOST="10.28.42.36"
 
 # 80
-CDN_USER="devenvironment"
+CDN_USER="amxdev"
 CDN_PASSWORD="amx@123"
-CDN_HOST="10.28.42.83"
+CDN_HOST="10.28.42.36"
 CDN_URL="cdn.dev.modernexchange.com"
 
 # 8080
-UIS_HOST=10.28.42.83
-UIS_USER=devenvironment
+UIS_HOST=10.28.42.36
+UIS_USER=amxdev
 UIS_PASS=amx@123
 
 # 8081
-JAX_HOST=10.28.42.83
-JAX_USER=devenvironment
+JAX_HOST=10.28.42.36
+JAX_USER=amxdev
 JAX_PASS=amx@123
 JAX_PORT=8081
 
 # 8082
-PM_HOST=10.28.42.83
-PM_USER=devenvironment
+PM_HOST=10.28.42.36
+PM_USER=amxdev
 PM_PASS=amx@123
 
 # 8083
-PG_HOST=10.28.42.83
-PG_USER=devenvironment
+PG_HOST=10.28.42.36
+PG_USER=amxdev
 PG_PASS=amx@123
 
 # 8084
-ADMIN_HOST=10.28.42.83
-ADMIN_USER=devenvironment
+ADMIN_HOST=10.28.42.36
+ADMIN_USER=amxdev
 ADMIN_PASS=amx@123
 
 # 8085
-LOGGER_HOST=10.28.42.83
-LOGGER_USER=devenvironment
+LOGGER_HOST=10.28.42.36
+LOGGER_USER=amxdev
 LOGGER_PASS=amx@123
 
 

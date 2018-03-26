@@ -11,7 +11,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
@@ -115,7 +114,6 @@ public class CustomerDao {
 		
 		if (model.getPassword() != null) {
 			onlineCust.setPassword(cryptoUtil.getHash(userId, model.getPassword()));
-			onlineCust.setStatus(ConstantDocument.Yes);
 		}
 		
 		//update new email id
@@ -232,6 +230,10 @@ public class CustomerDao {
 			customer = list.get(0);
 		}
 		return customer;
+	}
+	
+	public void saveCustomer(Customer c) {
+		customerRepo.save(c);
 	}
 	
 }

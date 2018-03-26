@@ -9,7 +9,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.constant.Country;
-import com.amx.jax.scope.Tenant;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.services.AbstractServiceFactory;
 
 @Component
@@ -44,8 +44,7 @@ public class MetaData implements IMetaData {
 	private String deviceId;
     private String referrer;
     private String deviceType;
-    
-	
+    private String appType;
 
 	/**
 	 * This returns service factory object depending on site country
@@ -166,4 +165,13 @@ public class MetaData implements IMetaData {
 	public void setDeviceType(String deviceType) {
 		this.deviceType = deviceType;
 	}
+	
+	public String getAppType() {
+		return appType;
+	}
+
+	public void setAppType(String appType) {
+		this.appType = appType;
+	}
+
 }

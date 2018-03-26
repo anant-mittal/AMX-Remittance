@@ -17,12 +17,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.amx.jax.payment.PayGServiceCode;
+import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGClients;
+import com.amx.jax.payment.gateway.PayGConfig;
+import com.amx.jax.payment.gateway.PayGEvent;
 import com.amx.jax.payment.gateway.PayGParams;
+import com.amx.jax.payment.gateway.PayGResponse;
+import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.jax.payment.gateway.PayGSession;
-import com.amx.jax.scope.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 
 import io.swagger.annotations.Api;
@@ -35,64 +40,107 @@ import io.swagger.annotations.Api;
 @Api(value = "Payment APIs")
 public class PayGController {
 
-    private static final Logger LOGGER = Logger.getLogger(PayGController.class);
+	private static final Logger LOGGER = Logger.getLogger(PayGController.class);
 
-    @Autowired
-    private PayGClients payGClients;
+	private static String URL_PARAMS = "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s";
 
-    @Autowired
-    private PayGSession payGSession;
-    
-    @Value("${app.url}")
-    String redirectURL;
+	@Autowired
+	private PayGClients payGClients;
 
-    @RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-    public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
-            @RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
-            @RequestParam(required = false) String callbackd, Model model) {
+	@Autowired
+	private PayGSession payGSession;
 
-        TenantContextHolder.setCurrent(tnt);
+	@Autowired
+	private AuditService auditService;
 
-        if (callbackd != null) {
-            byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
-            String callback = new String(decodedBytes);
-            payGSession.setCallback(callback);
-        }
+	@Value("${app.url}")
+	String redirectURL;
 
-        LOGGER.info(String.format(
-                "Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
-                trckid, amount, docNo, tnt, pg));
+	@Autowired
+	PayGConfig payGConfig;
 
-        PayGClient payGClient = payGClients.getPayGClient(pg);
+	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
+			@RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam(required = false) String callbackd, Model model) {
 
-        PayGParams payGParams = new PayGParams();
-        payGParams.setAmount(amount);
-        payGParams.setTrackId(trckid);
-        payGParams.setDocNo(docNo);
-        payGParams.setTenant(tnt);
+		TenantContextHolder.setCurrent(tnt);
 
-        try {
-            payGClient.initialize(payGParams);
-        } catch (RuntimeException e) {
-            model.addAttribute("REDIRECTURL", redirectURL);
-            return "thymeleaf/pg_error";
-        }
+		if (tnt.equals(Tenant.BHR)) {
+			pg = "BENEFIT";
+		}
 
-        payGSession.setPayGParams(payGParams);
+		if (callbackd != null) {
+			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
+			String callback = new String(decodedBytes);
+			payGSession.setCallback(callback);
+		}
 
-        if (payGParams.getRedirectUrl() != null) {
-            return "redirect:" + payGParams.getRedirectUrl();
-        }
-        return null;
-    }
+		LOGGER.info(String.format(
+				"Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
+				trckid, amount, docNo, tnt, pg));
 
-    @RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-    public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
-            @PathVariable("paygCode") PayGServiceCode paygCode) {
-        TenantContextHolder.setCurrent(tnt);
-        LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
-        PayGClient payGClient = payGClients.getPayGClient(paygCode);
-        return payGClient.capture(model);
-    }
+		PayGClient payGClient = payGClients.getPayGClient(pg);
+
+		PayGParams payGParams = new PayGParams();
+		payGParams.setAmount(amount);
+		payGParams.setTrackId(trckid);
+		payGParams.setDocNo(docNo);
+		payGParams.setTenant(tnt);
+
+		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
+
+		try {
+			payGClient.initialize(payGParams);
+		} catch (RuntimeException e) {
+			model.addAttribute("REDIRECTURL", redirectURL);
+			return "thymeleaf/pg_error";
+		}
+
+		payGSession.setPayGParams(payGParams);
+
+		if (payGParams.getRedirectUrl() != null) {
+			return "redirect:" + payGParams.getRedirectUrl();
+		}
+		return null;
+	}
+
+	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
+	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
+			@PathVariable("paygCode") PayGServiceCode paygCode) {
+		TenantContextHolder.setCurrent(tnt);
+		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
+		PayGClient payGClient = payGClients.getPayGClient(paygCode);
+
+		PayGResponse payGResponse = new PayGResponse();
+		try {
+			payGResponse = payGClient.capture(new PayGResponse());
+		} catch (Exception e) {
+			LOGGER.error("payment service error in capturePayment method : ", e);
+			payGResponse.setPayGStatus(PayGStatus.ERROR);
+		}
+
+		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_CAPTURED, payGResponse));
+
+		String redirectUrl;
+
+		String urlParams = String.format(URL_PARAMS, payGResponse.getPaymentiId(), payGResponse.getResult(),
+				payGResponse.getAuth(), payGResponse.getRef(), payGResponse.getPostDate(), payGResponse.getTrackId(),
+				payGResponse.getTranxId(), payGResponse.getUdf1(), payGResponse.getUdf2(), payGResponse.getUdf3(),
+				payGResponse.getUdf4(), payGResponse.getUdf5(), payGResponse.getCollectionDocCode(),
+				payGResponse.getCollectionDocNumber(), payGResponse.getCollectionFinYear());
+
+		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
+		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
+		} else {
+			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
+		}
+
+		model.addAttribute("REDIRECT", redirectUrl);
+
+		return "thymeleaf/repback";
+	}
 
 }

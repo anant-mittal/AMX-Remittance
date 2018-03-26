@@ -32,6 +32,8 @@ public class MultiTenantJpaConfiguration {
 			org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = (org.apache.tomcat.jdbc.pool.DataSource) factory
 					.build();
 			tomcatDataSource.setTestOnBorrow(true);
+			tomcatDataSource.setValidationQuery("select 1 from dual");
+			tomcatDataSource.setTestWhileIdle(true);
 			result.put(dsProperties.getTenantId(), tomcatDataSource);
 		}
 		return result;

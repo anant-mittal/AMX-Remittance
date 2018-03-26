@@ -13,10 +13,10 @@ public class CustomerValidation {
 	private CountryUtil util;
 
 	public boolean validateCivilId(String civilId, String countryCode) {
+		if (StringUtils.isEmpty(civilId)) {
+			return false;
+		}
 		if (util.isKuwait(countryCode)) {
-			if (StringUtils.isEmpty(civilId)) {
-				return false;
-			}
 			if (civilId.length() != 12) {
 				return false;
 			}
@@ -36,6 +36,10 @@ public class CustomerValidation {
 				}
 			}
 
+		} else if (util.isBahrain(countryCode)) {
+			if (civilId.length() != 9) {
+				return false;
+			}
 		}
 		return true;
 	}

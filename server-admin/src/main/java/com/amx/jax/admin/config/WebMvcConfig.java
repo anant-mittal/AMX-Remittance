@@ -10,10 +10,10 @@ import com.amx.jax.admin.interceptor.HeaderInterceptor;
 
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
-	
+
 	@Autowired
 	private HeaderInterceptor interceptor;
-	
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(interceptor);

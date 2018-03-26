@@ -17,7 +17,7 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.dict.Language;
 import com.amx.jax.scope.TenantContextHolder;
-import com.bootloaderjs.ContextUtil;
+import com.amx.utils.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
@@ -116,12 +116,12 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
-		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getDeviceId());
-		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getDeviceIp());
-		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getDeviceType().toString());
-		
-		
-		log.info("referrer = {} ",sessionService.getUserSession().getReferrer());
+		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
+		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
+		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getType().toString());
+		jaxMetaInfo.setAppType(sessionService.getAppDevice().getAppType().toString());
+
+		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());

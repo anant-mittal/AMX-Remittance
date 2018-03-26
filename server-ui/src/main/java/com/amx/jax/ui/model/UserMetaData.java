@@ -3,6 +3,8 @@ package com.amx.jax.ui.model;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.session.UserDevice;
 
 public class UserMetaData extends AbstractModel {
 
@@ -11,6 +13,24 @@ public class UserMetaData extends AbstractModel {
 	public Boolean active = false;
 	PersonInfo personinfo = null;
 	CurrencyMasterDTO domCurrency = null;
+	UserDevice device = null;
+	AuthState state = null;
+
+	public AuthState getState() {
+		return state;
+	}
+
+	public void setState(AuthState state) {
+		this.state = state;
+	}
+
+	public UserDevice getDevice() {
+		return device;
+	}
+
+	public void setDevice(UserDevice device) {
+		this.device = device;
+	}
 
 	public CurrencyMasterDTO getDomCurrency() {
 		return domCurrency;

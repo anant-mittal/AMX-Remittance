@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -50,6 +51,9 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 	
 	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and myFavouriteBene='Y' and orsStatus <> 0  ORDER BY bl.totalTrnx desc")
 	public List<BenificiaryListView> getFavouriteBeneListFromViewForCountry(@Param("customerId") BigDecimal customerId,@Param("applicationCountryId") BigDecimal applicationCountryId);
+
+	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and orsStatus <> 0 and bl.lastJavaRemittance is not null ORDER BY bl.lastJavaRemittance desc")
+	public List<BenificiaryListView> getLastTransactionBene(@Param("customerId") BigDecimal customerId,@Param("applicationCountryId") BigDecimal applicationCountryId, Pageable pageble);
 	
-	
+	public BenificiaryListView findBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId);
 }
