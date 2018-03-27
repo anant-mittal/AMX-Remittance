@@ -20,8 +20,8 @@
 	<logger name="com.amx.jax.logger.AuditService" level="info"  additivity="false">
 		<appender-ref ref="AUDIT" />
 	</logger>
-	<logger name="org.springframework" level="info" additivity="false" />
-		<logger name="org.hibernate" level="info" additivity="false" />
+	<logger name="org.springframework" level="info" />
+		<logger name="org.hibernate" level="info" />
 	<logger name="org.apache.http.impl.conn.PoolingHttpClientConnectionManager" level="info" additivity="false" />
 	<root level="${log.level:-INFO}">
 		<appender-ref ref="STDOUT" />

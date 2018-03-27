@@ -44,21 +44,14 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 			throws Exception {
 
 		String metaInfo = request.getHeader("meta-info");
-		String tnt = request.getHeader(TenantContextHolder.TENANT);
-		if (StringUtils.isNotBlank(tnt)) {
-			logger.info("current tenant: " + tnt);
-			Tenant currentTenant = Tenant.valueOf(tnt);
-			metaData.setTenant(currentTenant);
-		}
+		
 		if (!StringUtils.isEmpty(metaInfo)) {
 			JaxMetaInfo metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
 			metaData.setDefaultCurrencyId(new BigDecimal(1));// TODO: get currencyId from above countryId from db
 			BeanUtils.copyProperties(metaData, metaInfoMap);
-			TenantContextHolder.setCurrent(metaData.getTenant());
 			MDC.put("customer-id", metaData.getCustomerId());
 			logger.info("Referrer = {}", metaData.getReferrer());
 		}
-		
 		resolveMetaDataFields();
 
 		return super.preHandle(request, response, handler);
