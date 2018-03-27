@@ -21,10 +21,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
@@ -94,24 +96,36 @@ public class ConverterAmxFlyingSaucer implements FileConverter {
 					ByteArrayOutputStream os = new ByteArrayOutputStream();
 					StringWriter writer = new StringWriter();
 					Node node = list.item(i);
+					
 					transformer.transform(new DOMSource(node), new StreamResult(writer));
 					String html = writer.toString();
-					
-					html = html.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+					//html = html.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
 					LOGGER.info("====HTML=={}",html);
 					
 					Html2Image img = Html2Image.fromHtml(html);
 					
-					
-					BufferedImage ImageFromConvert = img.getImageRenderer().getBufferedImage();
-					LOGGER.info("====TRANS=={}",ImageFromConvert.getTransparency());
-					ImageIO.write(ImageFromConvert, "png", os);
+					//img.getImageRenderer().setWidth(700);
+					String width = ((Element)node).getAttribute("width");
+					if(width!=null && !width.isEmpty()) {
+						img.getImageRenderer().setWidth(ArgUtil.parseAsInteger(width));
+					}
+					String height = ((Element)node).getAttribute("height");
+					if(height!=null && !height.isEmpty()) {
+						img.getImageRenderer().setHeight(ArgUtil.parseAsInteger(height));
+					}
+					//LOGGER.info("====WIDTH=={},{}x{}",width,img.getImageRenderer().getWidth(),img.getImageRenderer().getHeight());
+					//img.getImageRenderer().getRootBox().setStyle(style);
+					//BufferedImage imageFromConvert = img.getImageRenderer().getBufferedImage();
+					//ImageIO.write(imageFromConvert, "png", os);
 					img.getImageRenderer().saveImage(os, true);
 					Element imgtag = doc.createElement("img");
-					LOGGER.info("====IMG=={}","data:image/png;;base64,"
-							+ StringUtils.newStringUtf8(Base64.encodeBase64(os.toByteArray(), false)));
+//					LOGGER.info("====IMG=={}","data:image/png;;base64,"
+//							+ StringUtils.newStringUtf8(Base64.encodeBase64(os.toByteArray(), false)));
 					imgtag.setAttribute("src", "data:image/png;;base64,"
 							+ StringUtils.newStringUtf8(Base64.encodeBase64(os.toByteArray(), false)));
+					node.removeChild(node.getFirstChild());
+					//doc.replaceChild(imgtag, node);
+					//doc.appendChild(node);
 					node.replaceChild(imgtag, node.getFirstChild());
 				}
 				renderer.layout();
