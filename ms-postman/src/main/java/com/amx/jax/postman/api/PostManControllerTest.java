@@ -30,7 +30,6 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.postman.service.PdfService;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
