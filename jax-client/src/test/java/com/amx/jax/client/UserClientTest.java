@@ -185,7 +185,7 @@ public class UserClientTest extends AbstractTestClient{
         assertNotNull(response.getResult());
     }
     
-    @Test
+   // @Test
     public void customerLoggedIn(){
         jaxMetaInfo.setCountryId(new BigDecimal(91));
         jaxMetaInfo.setCompanyId(new BigDecimal(1));
