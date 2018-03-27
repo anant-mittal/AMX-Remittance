@@ -18,6 +18,7 @@ public final class UIConstants extends Constants {
 
 	public static class Validator {
 		public static final String IDENTITY = "^[0-9a-zA-Z]+$";
+		public static final String OTP = "^[0-9]{6}$";
 	}
 
 }
