@@ -81,7 +81,7 @@ public class TemplateUtils {
 	}
 
 	public static String fixBiDiCheck(String parseAsString) {
-		if (reverseFlag()) {
+		if (reverseFlag() && false) {
 			return fixBiDi(parseAsString);
 		}
 		return parseAsString;
