@@ -531,7 +531,10 @@ public class UserValidationService {
 	}
 
 	public void validateActiveCustomer(CustomerOnlineRegistration onlineCustReg, Boolean initRegistration) {
-		if (!initRegistration && !"Y".equals(onlineCustReg.getStatus())) {
+		if (initRegistration != null && initRegistration) {
+			return;
+		}
+		if (!"Y".equals(onlineCustReg.getStatus())) {
 			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
 		}
 	}
