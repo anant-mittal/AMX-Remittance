@@ -28,10 +28,11 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dict.Tenant;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class UserClientTest {
+public class UserClientTest extends AbstractTestClient{
     
     private static final Logger LOGGER = Logger.getLogger(UserClientTest.class);
 
@@ -204,4 +205,26 @@ public class UserClientTest {
         assertNotNull("Response is null", response);
         assertNotNull(response.getResult());
     }
+    
+    @Test
+  	public void sendResetOtp() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+  		setDefaults();
+  		jaxMetaInfo.setCustomerId(null);
+  		jaxMetaInfo.setTenant(Tenant.KWT2);
+  		ApiResponse<CivilIdOtpModel> response = null;
+  		response = client.sendResetOtpForCivilId("265041601498");
+  		assertNotNull("Response is null", response);
+  		assertNotNull(response.getResult());
+  	}
+    
+   // @Test
+  	public void testInitReg() throws IOException, ResourceNotFoundException, InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
+  		setDefaults();
+  		jaxMetaInfo.setCustomerId(null);
+  		jaxMetaInfo.setTenant(Tenant.KWT2);
+  		ApiResponse<CivilIdOtpModel> response = null;
+  		response = client.initRegistration("279110405405");
+  		assertNotNull("Response is null", response);
+  		assertNotNull(response.getResult());
+  	}
 }
