@@ -346,7 +346,7 @@ public class UserService extends AbstractUserService {
 		}
 
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
-		userValidationService.validateActiveCustomer(onlineCustReg);
+		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
 
 		try {
 			userValidationService.validateTokenDate(onlineCust);
