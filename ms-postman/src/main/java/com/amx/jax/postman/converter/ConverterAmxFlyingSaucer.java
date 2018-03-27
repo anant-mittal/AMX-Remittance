@@ -96,12 +96,20 @@ public class ConverterAmxFlyingSaucer implements FileConverter {
 					Node node = list.item(i);
 					transformer.transform(new DOMSource(node), new StreamResult(writer));
 					String html = writer.toString();
+					
+					html = html.replace("<?xml version=\"1.0\" encoding=\"UTF-8\"?>", "");
+					LOGGER.info("====HTML=={}",html);
+					
 					Html2Image img = Html2Image.fromHtml(html);
+					
+					
 					BufferedImage ImageFromConvert = img.getImageRenderer().getBufferedImage();
+					LOGGER.info("====TRANS=={}",ImageFromConvert.getTransparency());
 					ImageIO.write(ImageFromConvert, "png", os);
-
 					img.getImageRenderer().saveImage(os, true);
 					Element imgtag = doc.createElement("img");
+					LOGGER.info("====IMG=={}","data:image/png;;base64,"
+							+ StringUtils.newStringUtf8(Base64.encodeBase64(os.toByteArray(), false)));
 					imgtag.setAttribute("src", "data:image/png;;base64,"
 							+ StringUtils.newStringUtf8(Base64.encodeBase64(os.toByteArray(), false)));
 					node.replaceChild(imgtag, node.getFirstChild());
