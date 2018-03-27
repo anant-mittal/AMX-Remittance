@@ -23,6 +23,10 @@ public class File {
 		}
 	}
 
+	public enum PDFConverter {
+		AMXFS, FS, FOP, ITEXT5, ITEXT7, JASPER
+	}
+
 	Langs lang = null;
 
 	public Langs getLang() {
@@ -36,6 +40,16 @@ public class File {
 	private String content;
 	private String name;
 	private Type type;
+	private PDFConverter converter;
+
+	public PDFConverter getConverter() {
+		return converter;
+	}
+
+	public void setConverter(PDFConverter converter) {
+		this.converter = converter;
+	}
+
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	@Null
