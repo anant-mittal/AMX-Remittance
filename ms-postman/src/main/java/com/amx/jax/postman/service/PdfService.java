@@ -10,7 +10,7 @@ import com.amx.jax.postman.converter.ConverterIText5;
 import com.amx.jax.postman.converter.ConverterIText7;
 import com.amx.jax.postman.converter.ConverterJasper;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.ConverterType;
+import com.amx.jax.postman.model.File.PDFConverter;
 
 @Component
 public class PdfService {
@@ -35,19 +35,19 @@ public class PdfService {
 
 	public File convert(File file) {
 
-		ConverterType conv = file.getConverter();
-		if (conv == ConverterType.FOP) {
+		PDFConverter conv = file.getConverter();
+		if (conv == PDFConverter.FOP) {
 			return converterFOP.toPDF(file);
-		} else if (conv == ConverterType.FS) {
+		} else if (conv == PDFConverter.FS) {
 			return converterFlyingSaucer.toPDF(file);
-		} else if (conv == ConverterType.AMXFS) {
+		} else if (conv == PDFConverter.AMXFS) {
 			return converterAmxFlyingSaucer.toPDF(file);
-		} else if (conv == ConverterType.ITEXT5) {
+		} else if (conv == PDFConverter.ITEXT5) {
 			return converterIText5.toPDF(file);
-		} else if (conv == ConverterType.JASPER) {
+		} else if (conv == PDFConverter.JASPER) {
 			return converterJasper.toPDF(file);
 		}
-		return converterIText7.toPDF(file);
+		return converterAmxFlyingSaucer.toPDF(file);
 	}
 
 }

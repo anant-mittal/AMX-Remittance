@@ -109,10 +109,12 @@ public class PostManControllerTest {
 
 		if ("pdf".equals(ext)) {
 			File file = postManClient.processTemplate(template, map, File.Type.PDF);
+			file.setConverter(lib);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManClient.processTemplate(template, map, null);
+			file.setConverter(lib);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);
@@ -127,6 +129,7 @@ public class PostManControllerTest {
 				file2.setTemplate(template);
 				file2.setType(File.Type.PDF);
 				file2.setModel(map);
+				file2.setConverter(lib);
 
 				eml.addFile(file2);
 
