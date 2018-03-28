@@ -139,6 +139,8 @@ public class RemittanceTransactionManager {
 	private CurrencyMasterService currencyMasterService;
 	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
+	
+	private boolean isSaveRemittanceFlow;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -361,6 +363,9 @@ public class RemittanceTransactionManager {
 
 	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
 			Map<String, Object> routingDetails) {
+		if(isSaveRemittanceFlow) {
+			return;
+		}
 		BigDecimal netAmount = breakup.getNetAmount();
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
 		if (netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
@@ -549,6 +554,7 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
+		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
