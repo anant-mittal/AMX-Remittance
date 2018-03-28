@@ -201,18 +201,19 @@ public class RemittanceApplicationManager {
 		} catch (ParseException e) {
 			logger.error("Error in saving application", e);
 		}
-		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType());
+		logger.info("Created by Refereal :"+metaData.getReferrer()+"\t Device ID :"+metaData.getDeviceId()+"\t Device Type :"+metaData.getDeviceType()+"\t App type :"+metaData.getAppType());
 		if(!StringUtils.isBlank(metaData.getReferrer())){
 			remittanceApplication.setCreatedBy(metaData.getReferrer());
 		}else{
-			if(!StringUtils.isBlank(metaData.getDeviceType())){
-				if(metaData.getDeviceType().equalsIgnoreCase("NORMAL")){
+			if(!StringUtils.isBlank(metaData.getAppType())){
+				/*if(metaData.getDeviceType().equalsIgnoreCase("NORMAL")){
 					remittanceApplication.setCreatedBy("JOMAX_ONLINE");
 				}else{
 					remittanceApplication.setCreatedBy("ONLINE_"+metaData.getDeviceType());
-				}
+				}*/
+				remittanceApplication.setCreatedBy(metaData.getAppType());
 			}else{
-				remittanceApplication.setCreatedBy("JOMAX_ONLINE");
+				remittanceApplication.setCreatedBy("WEB");
 			 }
 		}
 		remittanceApplication.setCreatedDate(new Date());
