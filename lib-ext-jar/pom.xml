@@ -125,6 +125,22 @@
 					</execution>
 
 					<execution>
+						<id>bcpkix-jdk15on-1-48</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.bouncycastle</groupId>
+							<artifactId>bcpkix-jdk15on</artifactId>
+							<version>1.48</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/bcpkix-jdk15on-1.48.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
 						<id>bcprov-jdk15-145</id>
 						<phase>package</phase>
 						<goals>
@@ -140,7 +156,88 @@
 						</configuration>
 					</execution>
 
+					<execution>
+						<id>htmlcomponent</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>jasperreports</groupId>
+							<artifactId>htmlcomponent</artifactId>
+							<version>5.0.1</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/jasperreports-htmlcomponent-5.0.1.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>olap4j</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>org.olap4j</groupId>
+							<artifactId>olap4j</artifactId>
+							<version>0.9.7.309-JS-3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/olap4j-0.9.7.309-JS-3.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>itext218</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext</artifactId>
+							<version>2.1.8</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-4.2.0.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>itext-asian</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext-asian</artifactId>
+							<version>2.3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/itext-asian.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>itext-hyph-xml</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>com.lowagie</groupId>
+							<artifactId>itext-hyph-xml</artifactId>
+							<version>2.3</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/itext-2.3/itext-hyph-xml.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
 				</executions>
+
 			</plugin>
 		</plugins>
 	</build>

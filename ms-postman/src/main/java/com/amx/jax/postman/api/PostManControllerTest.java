@@ -34,6 +34,7 @@ import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ibm.icu.text.Transliterator;
 import com.itextpdf.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -81,15 +82,22 @@ public class PostManControllerTest {
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
-	public String print(@RequestParam Tenant tnt) throws PostManException {
+	public Message print(@RequestParam Tenant tnt) throws PostManException {
+
+		Message msg = new Message();
+		final String ENG_TO_DEV = "Latin-Devanagari";
+		Transliterator toDevnagiri = Transliterator.getInstance(ENG_TO_DEV);
+		String devnagiri = toDevnagiri.transliterate("lalit");
+
 		postManServiceImpl.print();
-		return null;
+		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
-			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt)
+			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
+			@RequestParam(required = false) File.PDFConverter lib)
 			throws IOException, DocumentException, PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
@@ -101,10 +109,12 @@ public class PostManControllerTest {
 
 		if ("pdf".equals(ext)) {
 			File file = postManClient.processTemplate(template, map, File.Type.PDF);
+			file.setConverter(lib);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManClient.processTemplate(template, map, null);
+			file.setConverter(lib);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);
@@ -119,6 +129,7 @@ public class PostManControllerTest {
 				file2.setTemplate(template);
 				file2.setType(File.Type.PDF);
 				file2.setModel(map);
+				file2.setConverter(lib);
 
 				eml.addFile(file2);
 

@@ -62,8 +62,8 @@ public class HomeController {
 			try {
 				JSONObject map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
 				if (map.has("version")) {
-					versionNew = ArgUtil.parseAsString(map.getLong("version"));
-				}
+					versionNew = ArgUtil.parseAsString(map.get("version"));
+				}											
 				checkTime = checkTimeNew;
 			} catch (Exception e) {
 				LOGGER.error("getVersion Exception", e);
