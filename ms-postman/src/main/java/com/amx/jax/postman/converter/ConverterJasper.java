@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
@@ -30,9 +28,6 @@ import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 public class ConverterJasper implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterJasper.class);
-
-	@Autowired
-	private ApplicationContext context;
 
 	@Override
 	public File toPDF(File file) {

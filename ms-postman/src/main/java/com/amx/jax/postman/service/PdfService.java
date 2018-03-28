@@ -1,24 +1,25 @@
 package com.amx.jax.postman.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.postman.converter.ConverterAmxFlyingSaucer;
 import com.amx.jax.postman.converter.ConverterFOP;
 import com.amx.jax.postman.converter.ConverterFlyingSaucer;
 import com.amx.jax.postman.converter.ConverterIText5;
 import com.amx.jax.postman.converter.ConverterIText7;
 import com.amx.jax.postman.converter.ConverterJasper;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.File.PDFConverter;
 
 @Component
 public class PdfService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PdfService.class);
-
 	@Autowired
 	private ConverterFlyingSaucer converterFlyingSaucer;
+
+	@Autowired
+	private ConverterAmxFlyingSaucer converterAmxFlyingSaucer;
 
 	@Autowired
 	private ConverterJasper converterJasper;
@@ -33,6 +34,19 @@ public class PdfService {
 	private ConverterFOP converterFOP;
 
 	public File convert(File file) {
+
+		PDFConverter conv = file.getConverter();
+		if (conv == PDFConverter.FOP) {
+			return converterFOP.toPDF(file);
+		} else if (conv == PDFConverter.FS) {
+			return converterFlyingSaucer.toPDF(file);
+		} else if (conv == PDFConverter.AMXFS) {
+			return converterAmxFlyingSaucer.toPDF(file);
+		} else if (conv == PDFConverter.ITEXT5) {
+			return converterIText5.toPDF(file);
+		} else if (conv == PDFConverter.JASPER) {
+			return converterJasper.toPDF(file);
+		}
 		return converterIText7.toPDF(file);
 	}
 

@@ -5,8 +5,6 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
@@ -26,11 +24,9 @@ public class ConverterIText7 implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterIText7.class);
 
-	@Autowired
-	private ApplicationContext context;
-
 	public ConverterIText7() {
-		com.itextpdf.licensekey.LicenseKey.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1520345049511_0.xml"));
+		com.itextpdf.licensekey.LicenseKey
+				.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1520345049511_0.xml"));
 	}
 
 	@Override
@@ -65,7 +61,8 @@ public class ConverterIText7 implements FileConverter {
 				ConverterProperties props = new ConverterProperties();
 				FontProvider fp = new FontProvider();
 				fp.addStandardPdfFonts();
-				//fp.addDirectory("/fonts");// The noto-nashk font file (.ttf extension) is placed in the resources
+				// fp.addDirectory("/fonts");// The noto-nashk font file (.ttf extension) is
+				// placed in the resources
 
 				fp.addFont("/fonts/arial.ttf");
 				fp.addFont("/fonts/arialbd.ttf");
@@ -93,7 +90,7 @@ public class ConverterIText7 implements FileConverter {
 				file.setBody(outputStream.toByteArray());
 				file.setType(Type.PDF);
 				pdfDoc.close();
-			    
+
 			}
 		} catch (IOException e) {
 			LOGGER.error("Some Error", e);

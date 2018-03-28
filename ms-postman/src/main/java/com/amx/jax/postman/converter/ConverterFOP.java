@@ -22,8 +22,6 @@ import org.apache.fop.apps.FopFactoryBuilder;
 import org.apache.fop.apps.MimeConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
@@ -34,12 +32,6 @@ import com.amx.utils.Constants;
 public class ConverterFOP implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterFOP.class);
-
-	@Autowired
-	private ApplicationContext context;
-
-	public ConverterFOP() {
-	}
 
 	@Override
 	public File toPDF(File file) {

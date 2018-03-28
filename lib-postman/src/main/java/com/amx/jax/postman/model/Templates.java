@@ -16,7 +16,8 @@ public enum Templates {
 	SERVER_PING("server-ping"),
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
-	RATE_ALERT("RateAlert");
+	RATE_ALERT("RateAlert"),
+	TEST("test");
 
 	String fileName;
 

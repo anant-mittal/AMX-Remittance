@@ -7,8 +7,6 @@ import java.io.InputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
@@ -25,12 +23,6 @@ public class ConverterIText5 implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterIText5.class);
 
-	@Autowired
-	private ApplicationContext context;
-
-	public ConverterIText5() {
-	}
-
 	@Override
 	public File toPDF(File file) {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -43,24 +35,23 @@ public class ConverterIText5 implements FileConverter {
 
 				PdfWriter pdfWriter = PdfWriter.getInstance(document, outputStream);
 				document.open();
-				
-		        XMLWorkerFontProvider fontImp = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);
-		        fontImp.register("/fonts/all/arialuni.ttf");
+
+				XMLWorkerFontProvider fontImp = new XMLWorkerFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS);
+				fontImp.register("/fonts/all/arialuni.ttf");
 
 				InputStream is = new ByteArrayInputStream(file.getContent().getBytes("UTF-8"));
 
-//				 XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, is, null,Charset.forName("UTF-8"),
-//						fontImp);
+				// XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, is,
+				// null,Charset.forName("UTF-8"),
+				// fontImp);
 
-				 XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document,
-						 is);
-					    
-					    
+				XMLWorkerHelper.getInstance().parseXHtml(pdfWriter, document, is);
+
 				file.setBody(outputStream.toByteArray());
 				document.close();
-				
+
 				file.setType(Type.PDF);
-				
+
 				LOGGER.info("Created");
 
 			}
@@ -71,8 +62,8 @@ public class ConverterIText5 implements FileConverter {
 				try {
 					outputStream.close();
 				} catch (IOException e) {
-					/* ignore */ 
-					}
+					/* ignore */
+				}
 			}
 		}
 		return file;
