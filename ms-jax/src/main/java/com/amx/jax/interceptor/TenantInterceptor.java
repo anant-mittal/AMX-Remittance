@@ -5,30 +5,30 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.amx.jax.multitenant.TenantContext;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.amx.jax.scope.TenantContextHolder;
 
 @Component
 public class TenantInterceptor extends HandlerInterceptorAdapter {
 
+	private Logger logger = LoggerFactory.getLogger(getClass());
+	
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		String metaInfo = request.getHeader("meta-info");
-		if (!StringUtils.isEmpty(metaInfo)) {
-			TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
-			};
-			HashMap<String, Object> metaInfoMap = new ObjectMapper().readValue(metaInfo, typeRef);
-			if (!StringUtils.isEmpty(metaInfoMap.get("tenant"))) {
-				String tenant = (String) metaInfoMap.get("tenant");
-				TenantContext.setCurrentTenant(tenant);
-			}
+		
+		String tnt = TenantContextHolder.currentSite().toString();
+		if (StringUtils.isNotBlank(tnt)) {
+			logger.info("current tenant: " + tnt);
+			TenantContext.setCurrentTenant(tnt);
 		}
 		return true;
 	}

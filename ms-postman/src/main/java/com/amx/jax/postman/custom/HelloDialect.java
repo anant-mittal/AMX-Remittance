@@ -26,6 +26,7 @@ public class HelloDialect extends AbstractProcessorDialect {
 	public Set<IProcessor> getProcessors(final String dialectPrefix) {
 		final Set<IProcessor> processors = new HashSet<IProcessor>();
 		processors.add(new SayToAttributeTagProcessor(TemplateMode.HTML, dialectPrefix));
+		//processors.add(new PanelTagProcessor(dialectPrefix));
 		return processors;
 	}
 

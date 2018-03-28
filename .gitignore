@@ -20,6 +20,4 @@ tmp/
 D:\\payment-service.log
 */target/maven-*
 */target/*.jar
-lib-*/target/
-ms-*/target/
-common-*/target/
+*/target/maven-*
