@@ -7,10 +7,12 @@ import java.math.BigDecimal;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.meta.MetaData;
@@ -282,4 +284,8 @@ public class MetaController {
 		return metaService.getOnlineConfig(applInd);
 	}
 		
+	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
+	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
+		return bankMasterService.getBankBranches(request);
+	}
 }

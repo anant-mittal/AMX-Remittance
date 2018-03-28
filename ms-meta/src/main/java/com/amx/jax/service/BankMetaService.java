@@ -13,7 +13,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -21,6 +23,7 @@ import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
+import com.amx.jax.repository.VwBankBranchRepository;
 import com.amx.jax.services.AbstractService;
 
 @Component
@@ -35,6 +38,10 @@ public class BankMetaService extends AbstractService {
 	
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
+	
+
+	@Autowired
+	private VwBankBranchRepository vwBankBranchRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
 		return repo.findBybankCountryId(countryId);
@@ -86,6 +93,17 @@ public class BankMetaService extends AbstractService {
 	
 	public CountryBranch getCountryBranchById(BigDecimal id) {
 		return countryBranchRepository.findOne(id);
+	}
+
+
+	public ApiResponse<BankBranchDto> getBankBranches(GetBankBranchRequest request) {
+		String sql = buildSQLForBranch(request);
+		return null;
+	}
+	
+	private String buildSQLForBranch(GetBankBranchRequest request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
