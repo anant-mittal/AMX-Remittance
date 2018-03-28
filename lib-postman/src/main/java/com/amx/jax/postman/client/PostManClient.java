@@ -7,11 +7,13 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
@@ -61,6 +63,9 @@ public class PostManClient implements PostManService {
 	@Value("${jax.postman.url}")
 	private String postManUrl;
 
+	@Autowired
+	AppService appService;
+
 	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
 	public void setLang(String lang) {
@@ -94,10 +99,7 @@ public class PostManClient implements PostManService {
 	}
 
 	private Map<String, String> appheader() {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
-		headers.put(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
-		return headers;
+		return appService.header();
 	}
 
 	public Email sendEmail(Email email, Boolean async) throws PostManException {

@@ -6,6 +6,7 @@ import java.util.concurrent.Future;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.concurrent.ListenableFuture;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ContextUtil;
 
@@ -14,7 +15,8 @@ public class ContextAwarePoolExecutor extends ThreadPoolTaskExecutor {
 	private static final long serialVersionUID = -3516799159622280946L;
 
 	public <T> ContextAwareCallable newContextAwareCallable(Callable<T> task) {
-		return new ContextAwareCallable(task, TenantContextHolder.currentSite(), ContextUtil.getTraceId());
+		String tranxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
+		return new ContextAwareCallable(task, TenantContextHolder.currentSite(), ContextUtil.getTraceId(), tranxId);
 	}
 
 	@Override
