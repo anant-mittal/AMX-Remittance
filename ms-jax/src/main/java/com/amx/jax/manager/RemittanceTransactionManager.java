@@ -363,7 +363,7 @@ public class RemittanceTransactionManager {
 
 	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
 			Map<String, Object> routingDetails) {
-		if(isSaveRemittanceFlow) {
+		if(!isSaveRemittanceFlow) {
 			return;
 		}
 		BigDecimal netAmount = breakup.getNetAmount();
