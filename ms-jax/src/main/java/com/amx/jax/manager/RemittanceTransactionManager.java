@@ -42,6 +42,7 @@ import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
@@ -182,7 +183,6 @@ public class RemittanceTransactionManager {
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, commission);
-		validateTransactionAmount(breakup.getNetAmount());
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -202,28 +202,7 @@ public class RemittanceTransactionManager {
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
-		BigDecimal decimalCurrencyValue = currencyMasterService.getCurrencyMasterById(currencyId).getDecinalNumber();
-		if (newCommission == null) {
-			Map<String,Object> commissionRangeMap = getCommissionRange(routingDetails, breakup);
-			String msg ="";
-			BigDecimal fromAmount =BigDecimal.ZERO;
-			BigDecimal toAmount =BigDecimal.ZERO;
-			BigDecimal fcAmount =RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),decimalCurrencyValue.intValue());
-			 if(commissionRangeMap.get("FROM_AMOUNT")!=null || commissionRangeMap.get("TO_AMOUNT")!=null){
-			 fromAmount =(BigDecimal)commissionRangeMap.get("FROM_AMOUNT");
-			 toAmount = (BigDecimal)commissionRangeMap.get("TO_AMOUNT");
-			 }
-			 
-			 if(fcAmount.compareTo(fromAmount)<0){
-				 msg = "Amount to be remitted, cannot be lesser than "+beneficiary.getCurrencyQuoteName()+" "+fromAmount +".Please increase the amount to be remitted.";
-			 }else if(fcAmount.compareTo(toAmount)>0){
-				 msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "+beneficiary.getCurrencyQuoteName()+" "+toAmount +".";
-			 }
-			 if(!StringUtils.isBlank(msg)){
-				 throw new GlobalException(msg,JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
-			 }
-			 
-		}
+		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
@@ -380,10 +359,41 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void validateTransactionAmount(BigDecimal equivalentLCAmount) {
+	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
+			Map<String, Object> routingDetails) {
+		BigDecimal netAmount = breakup.getNetAmount();
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
-		if (equivalentLCAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
-			throw new GlobalException("Online Transaction Amount should not exceed - KD " + onlineTxnLimit.getAuthLimit(),JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+		if (netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
+			throw new GlobalException(
+					"Online Transaction Amount should not exceed - KD " + onlineTxnLimit.getAuthLimit(),
+					JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+		}
+		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
+		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
+		String currencyQuoteName = beneCurrencyMaster.getQuoteName();
+		if (newCommission == null) {
+			Map<String, Object> commissionRangeMap = getCommissionRange(routingDetails, breakup);
+			String msg = "";
+			BigDecimal fromAmount = BigDecimal.ZERO;
+			BigDecimal toAmount = BigDecimal.ZERO;
+			BigDecimal fcAmount = RoundUtil.roundBigDecimal(breakup.getConvertedFCAmount(),
+					decimalCurrencyValue.intValue());
+			if (commissionRangeMap.get("FROM_AMOUNT") != null || commissionRangeMap.get("TO_AMOUNT") != null) {
+				fromAmount = (BigDecimal) commissionRangeMap.get("FROM_AMOUNT");
+				toAmount = (BigDecimal) commissionRangeMap.get("TO_AMOUNT");
+			}
+
+			if (fcAmount.compareTo(fromAmount) < 0) {
+				msg = "Amount to be remitted, cannot be lesser than " + currencyQuoteName + " " + fromAmount
+						+ ".Please increase the amount to be remitted.";
+			} else if (fcAmount.compareTo(toAmount) > 0) {
+				msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "
+						+ currencyQuoteName + " " + toAmount + ".";
+			}
+			if (!StringUtils.isBlank(msg)) {
+				throw new GlobalException(msg, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			}
+
 		}
 	}
 
