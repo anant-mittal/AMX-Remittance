@@ -9,11 +9,17 @@ public abstract class ATransactionModel<T> {
 
 	public abstract ICacheBox<T> getCacheBox();
 
-	public void save(T model) {
+	private String getTranxId() {
 		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 		if (Utils.isStringEmpty(key)) {
-			getCacheBox().put(key, model);
+			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
 		}
+		return key;
+	}
+
+	public void save(T model) {
+		getCacheBox().put(getTranxId(), model);
 	}
 
 	public T get() {
@@ -21,11 +27,7 @@ public abstract class ATransactionModel<T> {
 	}
 
 	public T get(T defaultValue) {
-		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-		if (Utils.isStringEmpty(key)) {
-			return getCacheBox().getOrDefault(key, defaultValue);
-		}
-		return defaultValue;
+		return getCacheBox().getOrDefault(getTranxId(), defaultValue);
 	}
 
 	public abstract T init();
