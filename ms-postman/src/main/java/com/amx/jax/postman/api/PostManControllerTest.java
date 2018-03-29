@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -79,6 +80,24 @@ public class PostManControllerTest {
 			postManClient.notifyException("My Error", e);
 		}
 		return null;
+	}
+
+	@Autowired
+	TestTranx testTranx;
+
+	public enum Ttype {
+		INIT, SET, COMMIT
+	}
+
+	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/init", method = RequestMethod.GET)
+	public Message print(@RequestParam(name = AppConstants.TRANX_ID_XKEY, required = false) String tranxid,
+			@RequestParam Ttype ttype, @RequestParam(required = false) String text) throws PostManException {
+		if (ttype == Ttype.SET) {
+			return testTranx.setMessage(text);
+		} else if (ttype == Ttype.COMMIT) {
+			return testTranx.commit();
+		}
+		return testTranx.init();
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)

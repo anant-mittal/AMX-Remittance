@@ -1,5 +1,6 @@
 package com.amx.jax.postman.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +11,9 @@ import javax.validation.constraints.Null;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Message {
+public class Message implements Serializable {
+
+	private static final long serialVersionUID = 1363933600245334964L;
 
 	protected Langs lang = null;
 	protected String subject;

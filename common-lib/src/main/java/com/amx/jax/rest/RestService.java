@@ -18,12 +18,16 @@ import com.amx.jax.filter.AppClientInterceptor;
 @Component
 public class RestService {
 
-	public static RestTemplate restTemplate;
+	public static RestTemplate staticRestTemplate;
 
-	@Autowired
-	RestService(RestTemplate restTemplate) {
-		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
-		RestService.restTemplate = restTemplate;
+	@Autowired(required = false)
+	RestTemplate restTemplate;
+
+	RestService() {
+		if (restTemplate != null) {
+			restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+			RestService.staticRestTemplate = restTemplate;
+		}
 	}
 
 	public Ajax ajax(String url) {
@@ -64,12 +68,12 @@ public class RestService {
 
 		public <T> T as(Class<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+			return staticRestTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+			return staticRestTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
 	}

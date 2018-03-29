@@ -221,6 +221,11 @@
 			<artifactId>lib-postman</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-cache</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 
 
