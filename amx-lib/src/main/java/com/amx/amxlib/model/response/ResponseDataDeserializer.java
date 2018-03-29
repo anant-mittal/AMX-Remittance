@@ -7,6 +7,7 @@ import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -182,6 +183,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "online-config":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<OnlineConfigurationDto>>(){});
 			break;
+		case "bank-branch-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BankBranchDto>>(){});
+			break;
+
 	}
 		
 		

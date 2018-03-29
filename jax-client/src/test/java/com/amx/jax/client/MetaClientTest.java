@@ -13,8 +13,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 
 @RunWith(SpringRunner.class)
@@ -25,7 +27,7 @@ public class MetaClientTest extends AbstractTestClient {
 	@Autowired
 	MetaClient metaclient;
 
-	@Test
+	//@Test
 	public void testdefaultBeneficiary() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<OnlineConfigurationDto> response = null;
@@ -35,7 +37,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getModelType());
 	}
 	
-	@Test
+	//@Test
 	public void testgetBankListForCountry() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BankMasterDTO> response = null;
@@ -45,5 +47,16 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 	
+	@Test
+	public void testgetBankBranchListByBankId() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<BankBranchDto> response = null;
+		GetBankBranchRequest request = new GetBankBranchRequest(new BigDecimal(2721), new BigDecimal(91), null, null,
+				null);
+		response = metaclient.getBankBranchList(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getBankId());
+	}
 
 }

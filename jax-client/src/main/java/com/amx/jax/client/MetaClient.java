@@ -17,6 +17,7 @@ import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -29,6 +30,7 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -620,5 +622,33 @@ public class MetaClient extends AbstractJaxServiceClient {
         } // end of try-catch
 		return response.getBody();
 	}
+	
+	
+	/**
+	 * <p>
+	 * Gives the list of bank branches based on parameters like ifsc, swift, name
+	 * etc
+	 * </p>
+	 * 
+	 * @param object
+	 *            of type {@code GetBankBranchRequest}
+	 */
+	public ApiResponse<BankBranchDto> getBankBranchList(GetBankBranchRequest request) {
+		ResponseEntity<ApiResponse<BankBranchDto>> response;
+		try {
 
+			LOGGER.info("In getBankBranchList :");
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/bankbranch/get/";
+			HttpEntity<GetBankBranchRequest> requestEntity = new HttpEntity<GetBankBranchRequest>(request, getHeader());
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BankBranchDto>>() {
+					});
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBankBranchList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catc
+		return response.getBody();
+	}
 }

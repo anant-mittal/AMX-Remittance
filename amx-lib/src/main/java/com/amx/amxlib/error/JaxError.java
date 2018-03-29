@@ -73,7 +73,8 @@ public enum JaxError {
     ALREADY_EXIST,
     JAX_SYSTEM_ERROR,
     USER_DATA_VERIFICATION_PENDING,
-    USER_DATA_VERIFICATION_PENDING_REG;;
+    USER_DATA_VERIFICATION_PENDING_REG,
+    BANK_BRANCH_NOT_FOUND;
 
     public String getCode() {
         return this.toString();

@@ -3,6 +3,7 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -13,11 +14,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.exception.GlobalException;
@@ -96,14 +99,60 @@ public class BankMetaService extends AbstractService {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	public ApiResponse<BankBranchDto> getBankBranches(GetBankBranchRequest request) {
-		String sql = buildSQLForBranch(request);
-		return null;
+
+		BigDecimal bankId = request.getBankId();
+		BigDecimal countryId = request.getCountryId();
+		String ifsc = request.getIfscCode();
+		String swift = request.getSwift();
+		String branchName = request.getBranchName();
+		List<BankBranchView> branchesList = new ArrayList<>();
+		boolean isparametersSet = false;
+		if (ifsc != null) {
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCode(countryId, bankId, ifsc));
+			isparametersSet = true;
+		}
+		if (swift != null) {
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwift(countryId, bankId, swift));
+			isparametersSet = true;
+		}
+		if (branchName != null) {
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameLike(countryId, bankId,
+					branchName));
+			isparametersSet = true;
+		}
+		if (!isparametersSet) {
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
+		}
+		ApiResponse response = getBlackApiResponse();
+		if (branchesList.isEmpty()) {
+			throw new GlobalException("bank branch list not found", JaxError.BANK_BRANCH_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertBranchView(branchesList));
+			response.getData().setType("bank-branch-dto");
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		return response;
 	}
 	
-	private String buildSQLForBranch(GetBankBranchRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	
+
+	private List<BankBranchDto> convertBranchView(List<BankBranchView> branchesList) {
+		List<BankBranchDto> output = new ArrayList<>();
+		branchesList.forEach( i -> output.add(convert(i)));
+		return output;
+		
+	}
+
+	private BankBranchDto convert(BankBranchView i) {
+		BankBranchDto dto = new BankBranchDto();
+		try {
+			BeanUtils.copyProperties(dto, i);
+		} catch (Exception e) {
+			logger.info("error in copy properties" ,e);
+		}
+		return dto;
 	}
 
 	@Override

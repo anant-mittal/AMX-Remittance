@@ -19,6 +19,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.util.ConverterUtil;
 
 /**
@@ -175,4 +176,13 @@ public class BeneficiaryController {
 
 	}
 	
+	@Autowired
+	BeneficiaryTrnxManager BeneficiaryTrnxManager;
+	
+	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
+	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
+		
+		return BeneficiaryTrnxManager.saveBeneBankTrnx(bankId);
+
+	}
 }
