@@ -177,8 +177,9 @@ public class TransactionHistroyService extends AbstractService {
 	
 	public CustomerRemittanceTransactionView getLastTransaction(BigDecimal custId) {
 		CustomerRemittanceTransactionView output = null;
-		List<CustomerRemittanceTransactionView> list = transactionHistroyDao.getLastTransaction(custId, new PageRequest(0, 1));
-		if(list != null && !list.isEmpty()) {
+		List<CustomerRemittanceTransactionView> list = transactionHistroyDao.getLastTransaction(custId,
+				ConstantDocument.REMITTANCE_DOCUMENT_CODE, new PageRequest(0, 1));
+		if (list != null && !list.isEmpty()) {
 			output = list.get(0);
 		}
 		return output;

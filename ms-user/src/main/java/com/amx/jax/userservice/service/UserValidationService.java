@@ -388,8 +388,9 @@ public class UserValidationService {
 		onlineCustomer.setLockCnt(new BigDecimal(lockCnt));
 		custDao.saveOnlineCustomer(onlineCustomer);
 		if (lockCnt >= MAX_OTP_ATTEMPTS) {
-			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt,
-					JaxError.USER_LOGIN_ATTEMPT_EXCEEDED);
+			String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
+			errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
+			throw new GlobalException("Customer is locked. No of attempts:- " + lockCnt, errorExpression);
 		}
 		return MAX_OTP_ATTEMPTS - lockCnt;
 	}
