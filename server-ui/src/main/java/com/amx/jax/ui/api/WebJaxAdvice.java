@@ -33,6 +33,7 @@ import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.utils.ArgUtil;
 
 @ControllerAdvice
 public class WebJaxAdvice {
@@ -53,7 +54,12 @@ public class WebJaxAdvice {
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
-		LOG.error(WebResponseStatus.UNKNOWN_JAX_ERROR.toString(), exc);
+		if (exc.getError() == null && exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
+			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()), exc);
+		} else {
+			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()));
+		}
+
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
 			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, exc.getError()));
