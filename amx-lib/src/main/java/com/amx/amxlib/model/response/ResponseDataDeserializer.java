@@ -26,6 +26,7 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -186,7 +187,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "bank-branch-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BankBranchDto>>(){});
 			break;
-
+		case "bene-relation-desc":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneRelationsDescriptionDto>>(){});
+			break;
 	}
 		
 		

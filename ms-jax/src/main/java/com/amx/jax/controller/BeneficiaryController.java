@@ -30,6 +30,7 @@ import com.amx.jax.util.ConverterUtil;
  */
 @RestController
 @RequestMapping(BENE_API_ENDPOINT)
+@SuppressWarnings("rawtypes")
 public class BeneficiaryController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(BeneficiaryController.class);
 	private static final String RELATIONSHIP_ID = "Relationship Id :";
@@ -46,6 +47,9 @@ public class BeneficiaryController {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	BeneficiaryTrnxManager BeneficiaryTrnxManager;
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
@@ -176,13 +180,16 @@ public class BeneficiaryController {
 
 	}
 	
-	@Autowired
-	BeneficiaryTrnxManager BeneficiaryTrnxManager;
-	
 	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
 	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
 		
 		return BeneficiaryTrnxManager.saveBeneBankTrnx(bankId);
 
+	}
+	
+	@RequestMapping(value = "/relations/", method = RequestMethod.GET)
+	public ApiResponse getAllRelations() {
+		LOGGER.info("In getAllRelations controller");
+		return beneService.getBeneRelations();
 	}
 }
