@@ -475,8 +475,9 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
-		if (onlineCustomer == null) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(userId);
+		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		if (onlineCustomer == null || !ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -485,10 +486,10 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		userValidationService.validateCustomerVerification(customer.getCustomerId());
+
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-		//afterLoginSteps(onlineCustomer);
+		// afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
