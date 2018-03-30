@@ -263,7 +263,7 @@ public class UserService extends AbstractUserService {
 		if (model.getPassword() != null) {
 			CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 
-			if (cv != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
+			if (cv != null && cv.getFieldValue() != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				throw new GlobalException(
 						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
 						JaxError.USER_DATA_VERIFICATION_PENDING);
