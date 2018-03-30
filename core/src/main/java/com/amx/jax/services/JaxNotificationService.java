@@ -1,7 +1,6 @@
-package com.amx.jax.userservice.service;
+package com.amx.jax.services;
 
-import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
-import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+import static com.amx.amxlib.constant.NotificationConstants.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
@@ -189,4 +189,15 @@ public class JaxNotificationService {
 		}
 	}
 
+	public void sendBranchSearchEmailNotification(BranchSearchNotificationModel model, String emailid) {
+		Email email = new Email();
+		email.setSubject(BRANCH_SEARCH);
+		email.addTo(emailid);
+		email.setTemplate(Templates.BRANCH_SEARCH_EMPTY);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, model);
+
+		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
+		sendEmail(email);
+	}
 }

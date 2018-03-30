@@ -3,6 +3,7 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
@@ -106,6 +109,9 @@ public class MetaController {
 	
 	@Autowired
 	BankMetaService bankMasterService;
+	
+	@Autowired
+	JaxNotificationManager jaxNotificationManager;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -286,6 +292,8 @@ public class MetaController {
 		
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
 	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
-		return bankMasterService.getBankBranches(request);
+		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
+		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse);
+		return apiResponse;
 	}
 }

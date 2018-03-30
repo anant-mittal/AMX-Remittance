@@ -49,7 +49,7 @@ public class BeneficiaryController {
 	MetaData metaData;
 	
 	@Autowired
-	BeneficiaryTrnxManager BeneficiaryTrnxManager;
+	BeneficiaryTrnxManager beneficiaryTrnxManager;
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
@@ -183,7 +183,7 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
 	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
 		
-		return BeneficiaryTrnxManager.saveBeneBankTrnx(bankId);
+		return beneficiaryTrnxManager.saveBeneBankTrnx(bankId);
 
 	}
 	

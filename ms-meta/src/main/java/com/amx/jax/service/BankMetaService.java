@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -28,6 +29,7 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -41,7 +43,9 @@ public class BankMetaService extends AbstractService {
 	
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
-	
+
+	@Autowired
+	private JaxNotificationService jaxNotificationService;
 
 	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
@@ -126,13 +130,11 @@ public class BankMetaService extends AbstractService {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
 		}
 		ApiResponse response = getBlackApiResponse();
-		if (branchesList.isEmpty()) {
-			throw new GlobalException("bank branch list not found", JaxError.BANK_BRANCH_NOT_FOUND);
-		} else {
-			response.getData().getValues().addAll(convertBranchView(branchesList));
-			response.getData().setType("bank-branch-dto");
-			response.setResponseStatus(ResponseStatus.OK);
-		}
+		// throw new GlobalException("bank branch list not found",
+		// JaxError.BANK_BRANCH_NOT_FOUND);
+		response.getData().getValues().addAll(convertBranchView(branchesList));
+		response.getData().setType("bank-branch-dto");
+		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
 	

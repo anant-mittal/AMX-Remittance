@@ -1,8 +1,9 @@
 package com.amx.amxlib.model.trnx;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class BeneficiaryTrnxModel {
+public class BeneficiaryTrnxModel implements Serializable {
 
 	BigDecimal bankId;
 

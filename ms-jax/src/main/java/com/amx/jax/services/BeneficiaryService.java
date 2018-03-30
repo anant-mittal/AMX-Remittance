@@ -482,6 +482,7 @@ public class BeneficiaryService extends AbstractService {
 		allRelationsDesc.forEach(i -> {
 			BeneRelationsDescriptionDto dto = new BeneRelationsDescriptionDto();
 			jaxUtil.convert(i, dto);
+			allRelationsDescDto.add(dto);
 		});
 		ApiResponse apiResponse = getBlackApiResponse();
 		apiResponse.getData().getValues().addAll(allRelationsDescDto);

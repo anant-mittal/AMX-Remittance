@@ -31,18 +31,4 @@ public class JaxServiceApplication {
 		return srb;
 	}
 
-	// @Autowired
-	// @Qualifier("dataSourcesJax")
-	// Map<String, DataSource> result;
-	//
-	// private void initDBCredentails() {
-	//
-	//
-	//
-	// DataSourceBuilder factory =
-	// DataSourceBuilder.create().url(dsProperties.getUrl())
-	// .username(dsProperties.getUsername()).password(dsProperties.getPassword())
-	// .driverClassName("oracle");
-	// result.put(dsProperties.getTenantId(), factory.build());
-	// }
 }

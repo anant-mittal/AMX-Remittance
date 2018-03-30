@@ -31,7 +31,7 @@ public class BeneClientTest extends AbstractTestClient{
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	@Test
+	//@Test
 	public void testdefaultBeneficiary() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
