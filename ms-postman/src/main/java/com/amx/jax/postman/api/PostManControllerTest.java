@@ -82,24 +82,6 @@ public class PostManControllerTest {
 		return null;
 	}
 
-	@Autowired
-	TestTranx testTranx;
-
-	public enum Ttype {
-		INIT, SET, COMMIT
-	}
-
-	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/init", method = RequestMethod.GET)
-	public Message print(@RequestParam(name = AppConstants.TRANX_ID_XKEY, required = false) String tranxid,
-			@RequestParam Ttype ttype, @RequestParam(required = false) String text) throws PostManException {
-		if (ttype == Ttype.SET) {
-			return testTranx.setMessage(text);
-		} else if (ttype == Ttype.COMMIT) {
-			return testTranx.commit();
-		}
-		return testTranx.init();
-	}
-
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
 	public Message print(@RequestParam Tenant tnt) throws PostManException {
 
