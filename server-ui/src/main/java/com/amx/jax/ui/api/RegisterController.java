@@ -95,7 +95,7 @@ public class RegisterController {
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
 			@RequestParam(required = false) String email) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email);
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email, false);
 	}
 
 }
