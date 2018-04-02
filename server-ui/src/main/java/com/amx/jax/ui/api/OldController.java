@@ -98,7 +98,7 @@ public class OldController {
 	@Deprecated
 	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
-		return registrationService.getSecQues();
+		return registrationService.getSecQues(false);
 	}
 
 	/**
@@ -140,6 +140,6 @@ public class OldController {
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
 			@RequestParam(required = false) String email) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email, true);
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email, false);
 	}
 }
