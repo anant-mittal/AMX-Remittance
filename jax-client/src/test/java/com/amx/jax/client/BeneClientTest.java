@@ -14,12 +14,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class BeneClientTest {
+public class BeneClientTest extends AbstractTestClient{
 
 	@Autowired
 	BeneClient client;
@@ -30,7 +31,7 @@ public class BeneClientTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	@Test
+	//@Test
 	public void testdefaultBeneficiary() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -44,5 +45,13 @@ public class BeneClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+	@Test
+	public void testgetBeneficiaryRelations() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<BeneRelationsDescriptionDto> response = null;
+		response = client.getBeneficiaryRelations();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
 
 }

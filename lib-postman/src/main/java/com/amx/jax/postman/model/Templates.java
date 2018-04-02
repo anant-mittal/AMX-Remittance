@@ -17,6 +17,7 @@ public enum Templates {
 	TXN_CRT_SUCC("TransactionCreationSuccess"),
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
 	RATE_ALERT("RateAlert"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"),
 	TEST("test");
 
 	String fileName;

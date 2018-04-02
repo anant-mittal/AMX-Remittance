@@ -31,7 +31,7 @@ public class GlobalControllerExceptionHandler {
 		setErrorHeaders(ex);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
-				+ ex.getErrorMessage(), ex);
+				+ ex.getErrorMessage() + " error code: "+ ex.getErrorCode(), ex);
 		return response;
 	}
 

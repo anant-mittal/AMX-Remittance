@@ -52,4 +52,16 @@ public class Utils {
 		}
 		return false;
 	}
+
+	public static boolean isStringEmpty(String object) {
+		if (object == null)
+			return true;
+		else if (object instanceof String) {
+			if (object.trim().length() == 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

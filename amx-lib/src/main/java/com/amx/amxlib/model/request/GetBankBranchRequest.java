@@ -13,6 +13,23 @@ public class GetBankBranchRequest {
 	String swift;
 
 	String branchName;
+	
+	
+
+	public GetBankBranchRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public GetBankBranchRequest(BigDecimal bankId, BigDecimal countryId, String ifscCode, String swift,
+			String branchName) {
+		super();
+		this.bankId = bankId;
+		this.countryId = countryId;
+		this.ifscCode = ifscCode;
+		this.swift = swift;
+		this.branchName = branchName;
+	}
 
 	public BigDecimal getBankId() {
 		return bankId;

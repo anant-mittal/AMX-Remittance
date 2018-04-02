@@ -25,6 +25,7 @@ public class JaxServiceClientApplication {
 	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
 		builder.rootUri(jaxConfig.getDefaultUrl());
 		RestTemplate restTemplate = builder.build();
+		//restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}

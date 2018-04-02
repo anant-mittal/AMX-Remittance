@@ -7,6 +7,7 @@ import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -25,6 +26,8 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -181,6 +184,15 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "online-config":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<OnlineConfigurationDto>>(){});
+			break;
+		case "bank-branch-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BankBranchDto>>(){});
+			break;
+		case "bene-relation-desc":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneRelationsDescriptionDto>>(){});
+			break;
+		case "bene-account-details":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneAccountModel>>(){});
 			break;
 	}
 		

@@ -31,6 +31,7 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.BeneficiaryDao;
@@ -40,6 +41,7 @@ import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -48,6 +50,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -83,6 +86,12 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	RelationsRepository relationsRepository;
+	
+	@Autowired
+	JaxUtil jaxUtil;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -462,5 +471,22 @@ public class BeneficiaryService extends AbstractService {
 	
 	public BenificiaryListView getBeneBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryOnlineDao.findBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
+	}
+	
+	/**
+	 * @return ApiResponse containing beneficiary relations
+	 * */
+	public ApiResponse getBeneRelations() {
+		List<RelationsDescription> allRelationsDesc = relationsRepository.findBylangId(metaData.getLanguageId());
+		List<BeneRelationsDescriptionDto> allRelationsDescDto = new ArrayList<>();
+		allRelationsDesc.forEach(i -> {
+			BeneRelationsDescriptionDto dto = new BeneRelationsDescriptionDto();
+			jaxUtil.convert(i, dto);
+			allRelationsDescDto.add(dto);
+		});
+		ApiResponse apiResponse = getBlackApiResponse();
+		apiResponse.getData().getValues().addAll(allRelationsDescDto);
+		apiResponse.getData().setType("bene-relation-desc");
+		return apiResponse;
 	}
 }

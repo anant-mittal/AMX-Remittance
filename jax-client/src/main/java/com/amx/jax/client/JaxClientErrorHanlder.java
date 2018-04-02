@@ -161,7 +161,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.USERNAME_ALREADY_EXISTS.getCode().equals(error.getErrorId())) {
 				throw new AlreadyExistsException(error);
 			}
-			
+
 			if (JaxError.ALREADY_EXIST.getCode().equals(error.getErrorId())) {
 				throw new AlreadyExistsException(error);
 			}
@@ -213,7 +213,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 			if (JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE.getCode().equals(error.getErrorId())) {
 				throw new LimitExeededException(error);
 			}
-			
+
 			if (JaxError.TRANSACTION_HISTORY_NOT_FOUND.getCode().equals(error.getErrorId())) {
 				throw new RemittanceTransactionValidationException(error);
 			}

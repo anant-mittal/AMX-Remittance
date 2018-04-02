@@ -21,6 +21,7 @@ import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.util.ConverterUtility;
 
@@ -226,4 +227,26 @@ public class BeneClient extends AbstractJaxServiceClient {
         } // end of try-catch
     }
 
+	/**
+	 * @return Gives the list of all beneficiary relations possible
+	 */
+	public ApiResponse<BeneRelationsDescriptionDto> getBeneficiaryRelations() {
+		try {
+			ResponseEntity<ApiResponse<BeneRelationsDescriptionDto>> response;
+
+			LOGGER.info("in getBeneficiaryRelations");
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/relations/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneRelationsDescriptionDto>>() {
+					});
+
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBeneficiaryRelations : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
 }
