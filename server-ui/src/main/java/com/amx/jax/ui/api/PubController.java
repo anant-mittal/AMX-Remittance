@@ -75,7 +75,7 @@ public class PubController {
 	}
 
 	@ApiOperation(value = "Current Location ofr client")
-	@RequestMapping(value = "/pub/location", method = { RequestMethod.POST })
+	@RequestMapping(value = "/pub/location", method = { RequestMethod.GET })
 	public GeoLocation getLocation() throws PostManException {
 		return geoLocationService.getLocation(httpService.getIPAddress());
 	}
