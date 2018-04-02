@@ -20,7 +20,7 @@ public class RestService {
 
 	public static RestTemplate staticRestTemplate;
 
-	@Autowired(required = true)
+	@Autowired(required = false)
 	RestTemplate restTemplate;
 
 	RestTemplate getRestTemplate() {
