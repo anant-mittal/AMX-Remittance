@@ -98,7 +98,7 @@ public class OldController {
 	@Deprecated
 	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
-		return registrationService.getSecQues();
+		return registrationService.getSecQues(false);
 	}
 
 	/**

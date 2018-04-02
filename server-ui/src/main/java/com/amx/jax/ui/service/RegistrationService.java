@@ -67,11 +67,13 @@ public class RegistrationService {
 
 	@Deprecated
 	public ResponseWrapper<UserUpdateData> loginWithOtp(String idnetity, String mOtp) {
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
 		CustomerModel model = response.getResult();
 		sessionService.authorize(model, true);
 		initActivation(wrapper);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
@@ -116,7 +118,6 @@ public class RegistrationService {
 		answers.add(answer);
 		CustomerModel response = jaxClient.setDefaults().getUserclient().validateDataVerificationQuestions(answers)
 				.getResult();
-
 		// update Session/State
 		sessionService.getGuestSession().getState().setValidDataVer(true);
 		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
@@ -131,7 +132,10 @@ public class RegistrationService {
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
 	}
 
-	public ResponseWrapper<UserUpdateData> getSecQues() {
+	public ResponseWrapper<UserUpdateData> getSecQues(boolean validate) {
+		if (validate) {
+			sessionService.getGuestSession().initStep(AuthStep.SECQ_SET);
+		}
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		initActivation(wrapper);
 		return wrapper;
@@ -170,11 +174,11 @@ public class RegistrationService {
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
-		
+
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
 		}
-		
+
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
 		wrapper.getData().setState(sessionService.getGuestSession().getState());

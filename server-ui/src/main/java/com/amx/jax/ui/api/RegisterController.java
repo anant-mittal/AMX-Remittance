@@ -64,7 +64,7 @@ public class RegisterController {
 
 	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
-		return registrationService.getSecQues();
+		return registrationService.getSecQues(true);
 	}
 
 	/**
