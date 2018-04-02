@@ -52,6 +52,11 @@ public class RestService {
 			builder = UriComponentsBuilder.fromUriString(url);
 		}
 
+		public Ajax path(String path) {
+			builder.path(path);
+			return this;
+		}
+
 		public Ajax pathParam(String paramKey, String paramValue) {
 			uriParams.put(paramKey, paramValue);
 			return this;
