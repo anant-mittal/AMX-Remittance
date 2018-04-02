@@ -31,6 +31,7 @@ public class ConstantDocument {
 	public static final String WU="WU";
 	public static final BigDecimal CONTACT_TYPE_FOR_LOCAL=new BigDecimal(49);
 	public static final BigDecimal CONTACT_TYPE_FOR_HOME=new BigDecimal(50);
+	public static final BigDecimal REMITTANCE_DOCUMENT_CODE=new BigDecimal(3);
 	
 	
 

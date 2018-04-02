@@ -94,8 +94,8 @@ public class CustomerRemittanceTransactionView implements Serializable {
 	@Column(name = "PURPOSE_OF_TRNX_ID")
 	private String purposeOfTrnx;
 	
-	
-	
+	@Column(name="DOCUMENT_CODE")
+	private BigDecimal documentCode;
 	
 	
 	
@@ -306,5 +306,13 @@ public class CustomerRemittanceTransactionView implements Serializable {
 
 	public void setPurposeOfTrnx(String purposeOfTrnx) {
 		this.purposeOfTrnx = purposeOfTrnx;
+	}
+
+	public BigDecimal getDocumentCode() {
+		return documentCode;
+	}
+
+	public void setDocumentCode(BigDecimal documentCode) {
+		this.documentCode = documentCode;
 	}
 }

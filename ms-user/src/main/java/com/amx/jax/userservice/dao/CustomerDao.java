@@ -188,6 +188,10 @@ public class CustomerDao {
 		return onlineCustRepo.getOnlineCustomerByLoginIdOrUserName(loginId);
 	}
 
+	public CustomerOnlineRegistration getOnlineCustomerWithStatusByLoginIdOrUserName(String loginId) {
+		return onlineCustRepo.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
+	}
+	
 	public UserVerificationCheckListModel getCheckListForUserId(String civilId) {
 		return checkListrepo.findOne(civilId);
 	}
