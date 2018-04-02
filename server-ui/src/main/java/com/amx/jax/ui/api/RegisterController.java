@@ -1,5 +1,7 @@
 package com.amx.jax.ui.api;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,6 +62,11 @@ public class RegisterController {
 		return registrationService.loginWithOtp(civilid, mOtp);
 	}
 
+	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.GET })
+	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
+		return registrationService.getSecQues();
+	}
+
 	/**
 	 * @param securityquestions
 	 * @return
@@ -95,7 +102,7 @@ public class RegisterController {
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
 			@RequestParam(required = false) String email) {
-		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email, false);
+		return registrationService.saveLoginIdAndPassword(loginId, password, mOtp, eOtp, email, true);
 	}
 
 }
