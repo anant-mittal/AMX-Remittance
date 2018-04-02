@@ -16,8 +16,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.postman.GeoLocationService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
@@ -47,6 +50,9 @@ public class PubController {
 	private PostManService postManService;
 
 	@Autowired
+	private GeoLocationService geoLocationService;
+
+	@Autowired
 	private GuestSession guestSession;
 
 	@Autowired
@@ -66,6 +72,12 @@ public class PubController {
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
 		ResponseWrapper<ResponseMeta> wrapper = new ResponseWrapper<ResponseMeta>(new ResponseMeta());
 		return wrapper;
+	}
+
+	@ApiOperation(value = "Current Location ofr client")
+	@RequestMapping(value = "/pub/location", method = { RequestMethod.POST })
+	public GeoLocation getLocation(@RequestParam String ip) throws PostManException {
+		return geoLocationService.getLocation(ip);
 	}
 
 	@Timed
