@@ -87,7 +87,7 @@ public class RegistrationService {
 		CustomerModel model = response.getResult();
 
 		sessionService.getGuestSession().setCustomerModel(model);
-		// sessionService.authorize(model, false);
+		sessionService.authorize(model, false);
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
 		if (model.getEmail() != null) {
@@ -107,10 +107,10 @@ public class RegistrationService {
 	}
 
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
-		sessionService.getGuestSession().initStep(AuthStep.DATA_VERIFY);
 		if (answer == null) {
 			return validateCustomer(idnetity, mOtp);
 		}
+		sessionService.getGuestSession().initStep(AuthStep.DATA_VERIFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		List<SecurityQuestionModel> answers = new ArrayList<SecurityQuestionModel>();
 		answers.add(answer);
