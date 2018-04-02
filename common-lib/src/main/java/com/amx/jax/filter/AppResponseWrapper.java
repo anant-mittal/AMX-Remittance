@@ -66,7 +66,7 @@ public class AppResponseWrapper extends HttpServletResponseWrapper {
 			if (!StringUtils.isEmpty(traceId)) {
 				super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
 			}
-			isheaderSet = false;
+			isheaderSet = true;
 		}
 	}
 

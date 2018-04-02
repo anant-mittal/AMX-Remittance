@@ -20,18 +20,23 @@ public class RestService {
 
 	public static RestTemplate staticRestTemplate;
 
-	@Autowired(required = false)
+	@Autowired(required = true)
 	RestTemplate restTemplate;
 
-	RestService() {
-		if (restTemplate != null) {
-			restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
-			RestService.staticRestTemplate = restTemplate;
+	RestTemplate getRestTemplate() {
+		if (staticRestTemplate == null) {
+			if (restTemplate != null) {
+				restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+				RestService.staticRestTemplate = restTemplate;
+			} else {
+				throw new RuntimeException("No RestTemplate bean found");
+			}
 		}
+		return restTemplate;
 	}
 
 	public Ajax ajax(String url) {
-		return new Ajax(url);
+		return new Ajax(getRestTemplate(), url);
 	}
 
 	public class Ajax {
@@ -40,8 +45,10 @@ public class RestService {
 		HttpEntity<?> requestEntity;
 		HttpMethod method;
 		Map<String, String> uriParams = new HashMap<String, String>();
+		RestTemplate restTemplate;
 
-		public Ajax(String url) {
+		public Ajax(RestTemplate restTemplate, String url) {
+			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(url);
 		}
 
@@ -68,12 +75,12 @@ public class RestService {
 
 		public <T> T as(Class<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return staticRestTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return staticRestTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
 	}

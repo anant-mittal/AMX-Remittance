@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -24,7 +26,7 @@ public final class FileUtil {
 	private static final String RESOURCE = "resource";
 
 	/** The Constant LOG. */
-	private static final Logger LOG = Logger.getLogger(FileUtil.class);
+	private static final Logger LOG = LoggerFactory.getLogger(FileUtil.class);
 
 	/** The Constant FILE_PREFIX. */
 	public static final String FILE_PREFIX = "file://";
@@ -132,10 +134,45 @@ public final class FileUtil {
 			}
 		}
 	}
-	
-	
-//	public readAsInputStream() {
-//        Resource resource = resourceLoader.getResource("classpath:GeoLite2-Country.mmdb");
-//        InputStream dbAsStream = resource.getInputStream(); // <-- this is the difference
-//	}
+
+	public static File getFile(String filePath) {
+
+		// Search in jar folder
+		File jarPath = new File(
+				FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
+		String propertiesPath = jarPath.getParent();
+		URL u = FileUtil.class.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		if (u != null) {
+			return new File(u.getPath());
+		}
+
+		File file = new File(propertiesPath + "/" + filePath);
+		if (file.exists()) {
+			return file;
+		}
+
+		// Search working folder
+		propertiesPath = System.getProperty("user.dir");
+		u = FileUtil.class.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		if (u != null) {
+			return new File(u.getPath());
+		}
+		file = new File(propertiesPath + "/" + filePath);
+		if (file.exists()) {
+			return file;
+		}
+
+		// Search in target folder
+		u = FileUtil.class.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
+		if (u != null) {
+			return new File(u.getPath());
+		}
+		file = new File(propertiesPath + "/target/" + filePath);
+		if (file.exists()) {
+			return file;
+		}
+		
+		//Return default
+		return new File(filePath);
+	}
 }

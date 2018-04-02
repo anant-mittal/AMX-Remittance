@@ -7,5 +7,6 @@ public final class PostManUrls {
 	public static final String NOTIFY_SLACK = "/postman/slack/notify";
 	public static final String NOTIFY_SLACK_EXCEP = "/postman/slack/exception";
 	public static final String PROCESS_TEMPLATE = "/postman/template/process";
+	public static final String GEO_LOC = "/geo/location";
 
 }

@@ -51,7 +51,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response;
 		try {
 			LOGGER.info("Get all the applciation country ");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -59,11 +59,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getApplicationCountry : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getApplicationCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -74,7 +74,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
 			LOGGER.info("Get all the applciation country ");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/" + countryId + "/" + companyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -82,11 +82,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -96,7 +96,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 		try {
 			LOGGER.info("Get all the applciation country ");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -104,11 +104,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getAllCountry : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -116,7 +116,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -124,11 +124,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getAllCountryByLanguageId : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -136,7 +136,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId + "/" + countryId;
 
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
@@ -145,11 +145,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getAllCountryByLanguageId : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -158,7 +158,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			LOGGER.info("Get all the applciation country " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/bc/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -166,11 +166,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getBusinessCountry : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBusinessCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -185,7 +185,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 
 			LOGGER.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -193,11 +193,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getSequrityQuestion : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getSequrityQuestion : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -210,7 +210,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			LOGGER.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
 					+ questionId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
@@ -219,11 +219,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getSequrityQuestionById : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getSequrityQuestionById : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -235,7 +235,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			LOGGER.info("Terms and Condition " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -243,11 +243,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getTermsAndCondition : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getTermsAndCondition : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -260,7 +260,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			LOGGER.info("Terms and Condition " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -268,11 +268,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getTermsAndConditionAsPerCountry : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getTermsAndConditionAsPerCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -282,11 +282,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
-				
+
 				languageId = new BigDecimal(1);
 			}
 			LOGGER.info("Terms and Condition " + languageId);
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -294,11 +294,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getWhyAskInfo : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getWhyAskInfo : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -306,7 +306,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<UserFinancialYearDTO>> response;
 		try {
 			LOGGER.info("Financial Year");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/fyear/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -314,11 +314,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getFinancialYear : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getFinancialYear : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -326,7 +326,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdtime/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -334,11 +334,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getContactUsTime : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getContactUsTime : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -346,7 +346,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdno/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -354,11 +354,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getHelpDeskNo : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getHelpDeskNo : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -366,7 +366,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<MultiCountryDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/multicountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
@@ -374,11 +374,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getMultiCountryList : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getMultiCountryList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -393,11 +393,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getAllOnlineCurrency : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllOnlineCurrency : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -411,11 +411,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getCurrencyByCountryId : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCurrencyByCountryId : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -430,18 +430,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId).append("&districtId=")
 					.append(districtId);
 			LOGGER.info("District Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtdesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getDistricDesc : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getDistricDesc : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -457,7 +457,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		ResponseEntity<ApiResponse<BankMasterDTO>> response;
 		try {
 			LOGGER.info("in getBankListForCountry");
-			
+
 			String endpoint = META_API_ENDPOINT + BANK_MASTER_BY_COUNTRY_API_ENDPOINT;
 			endpoint = endpoint.replaceAll("\\{country\\-id\\}", countryId.toPlainString());
 			String url = this.getBaseUrl() + endpoint;
@@ -467,35 +467,36 @@ public class MetaClient extends AbstractJaxServiceClient {
 					});
 
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getBankListForCountry : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBankListForCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
-	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal languageId, BigDecimal stateId) {
+	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal stateId) {
 		ResponseEntity<ApiResponse<ViewDistrictDto>> response;
 		try {
+			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
 			StringBuffer sb = new StringBuffer();
 			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId);
 			LOGGER.info("District Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getDistrictList : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getDistrictList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -510,18 +511,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 			StringBuffer sb = new StringBuffer();
 			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId);
 			LOGGER.info("State Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getStateList : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getStateList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -537,18 +538,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId).append("&stateId=")
 					.append(stateId);
 			LOGGER.info("State Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statedesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getStateDesc : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getStateDesc : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -562,18 +563,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 			StringBuffer sb = new StringBuffer();
 			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId);
 			LOGGER.info("City Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citylist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getCitytList : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCitytList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -589,18 +590,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId).append("&cityId=")
 					.append(cityId);
 			LOGGER.info("City Input :" + sb.toString());
-			
+
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getCitytDesc : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getCitytDesc : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 
@@ -615,15 +616,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
 		} catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in getOnlineConfig : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getOnlineConfig : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
-	
-	
+
 	/**
 	 * <p>
 	 * Gives the list of bank branches based on parameters like ifsc, swift, name
