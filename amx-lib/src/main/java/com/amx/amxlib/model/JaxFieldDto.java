@@ -1,39 +1,19 @@
-package com.amx.jax.dbmodel;
+package com.amx.amxlib.model;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+public class JaxFieldDto {
 
-@Entity
-@Table(name = "JAX_FIELD")
-public class JaxField implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Column(name = "NAME")
-	@Id
 	String name;
 
-	@Column(name = "REQUIRED")
 	String required;
 
-	@Column(name = "TYPE")
 	String type;
 
-	@Column(name = "DEFAULT_VALUE")
 	String defaultValue;
 
-	@Column(name = "MIN_LENGTH")
 	BigDecimal minLength;
 
-	@Column(name = "MAX_LENGTH")
 	BigDecimal maxLength;
 
 	public String getName() {
@@ -83,5 +63,4 @@ public class JaxField implements Serializable {
 	public void setMaxLength(BigDecimal maxLength) {
 		this.maxLength = maxLength;
 	}
-
 }
