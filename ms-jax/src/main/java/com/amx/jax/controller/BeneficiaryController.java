@@ -183,7 +183,8 @@ public class BeneficiaryController {
 	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
 	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
 		
-		return beneficiaryTrnxManager.saveBeneBankTrnx(bankId);
+		//return beneficiaryTrnxManager.saveBeneBankTrnx(bankId);
+		return null;
 
 	}
 	
