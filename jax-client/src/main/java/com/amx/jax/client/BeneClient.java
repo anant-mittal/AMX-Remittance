@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 
 import java.math.BigDecimal;
@@ -14,14 +15,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.CustomerValidationException;
+import com.amx.amxlib.exception.IncorrectInputException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.client.util.ConverterUtility;
 
@@ -246,6 +256,46 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryRelations : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<CivilIdOtpModel> sendOtp()
+			throws InvalidInputException, CustomerValidationException, LimitExeededException {
+		try {
+			ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
+			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
+			String sendOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/send-otp/";
+			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+			LOGGER.info("responce from  sendOtp api: " + util.marshall(response.getBody()));
+
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in sendOtp : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<CustomerModel> validateOtp(String mOtp, String eOtp)
+			throws IncorrectInputException, CustomerValidationException, LimitExeededException, UnknownJaxError {
+		try {
+			ResponseEntity<ApiResponse<CustomerModel>> response;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String validateOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/validate-otp/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
+					.queryParam("eOtp", eOtp);
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in validateOtp : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 	}

@@ -20,7 +20,7 @@ public class RestService {
 
 	public static RestTemplate staticRestTemplate;
 
-	@Autowired(required = true)
+	@Autowired(required = false)
 	RestTemplate restTemplate;
 
 	RestTemplate getRestTemplate() {
@@ -50,6 +50,11 @@ public class RestService {
 		public Ajax(RestTemplate restTemplate, String url) {
 			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(url);
+		}
+
+		public Ajax path(String path) {
+			builder.path(path);
+			return this;
 		}
 
 		public Ajax pathParam(String paramKey, String paramValue) {

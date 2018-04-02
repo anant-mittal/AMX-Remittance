@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.GeoLocation;
-import com.amx.jax.postman.service.GeoLocationService;
+import com.amx.jax.postman.service.GeoLocationServiceImpl;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 import io.swagger.annotations.ApiParam;
@@ -24,7 +24,7 @@ public class GeoServiceController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoServiceController.class);
 
 	@Autowired
-	GeoLocationService geoLocationService;
+	GeoLocationServiceImpl geoLocationService;
 
 	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
 	public GeoLocation geoLocation(@RequestParam @ApiParam(defaultValue = "171.50.210.63") String ip)

@@ -30,6 +30,7 @@ import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
@@ -193,6 +194,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "bene-account-details":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneAccountModel>>(){});
+			break;
+		case "jax-field-rules":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxConditionalFieldDto>>(){});
 			break;
 	}
 		

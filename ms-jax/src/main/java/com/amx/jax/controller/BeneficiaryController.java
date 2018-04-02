@@ -3,6 +3,8 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -20,6 +23,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
 
 /**
@@ -50,6 +54,9 @@ public class BeneficiaryController {
 	
 	@Autowired
 	BeneficiaryTrnxManager beneficiaryTrnxManager;
+	
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
@@ -192,5 +199,21 @@ public class BeneficiaryController {
 	public ApiResponse getAllRelations() {
 		LOGGER.info("In getAllRelations controller");
 		return beneService.getBeneRelations();
+	}
+	
+	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
+	public ApiResponse sendOtp() {
+		List<CommunicationChannel> channel = new ArrayList<>();
+		channel.add(CommunicationChannel.EMAIL);
+		channel.add(CommunicationChannel.MOBILE);
+		ApiResponse response = beneService.sendOtp(channel);
+		return response;
+	}
+	
+	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
+	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp,
+			@RequestParam(name = "eOtp", required = false) String eOtp) {
+		ApiResponse response = userService.validateOtp(null, mOtp, eOtp);
+		return response;
 	}
 }

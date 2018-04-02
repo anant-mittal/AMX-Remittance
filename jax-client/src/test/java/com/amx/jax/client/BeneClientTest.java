@@ -15,6 +15,8 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -45,13 +47,44 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testgetBeneficiaryRelations() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BeneRelationsDescriptionDto> response = null;
 		response = client.getBeneficiaryRelations();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
+	}
+	
+	@Test
+	public void testSendOtp() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+		ApiResponse<CivilIdOtpModel> response = null;
+		response = client.sendOtp();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+	
+	//@Test
+	public void testValidateOtp() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+		String mOtp="570605";
+		String eOtp="573782";
+		
+		ApiResponse<CustomerModel> response = null;
+		response = client.validateOtp(mOtp,eOtp);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
 	}
 
 }
