@@ -264,7 +264,7 @@ public class UserService extends AbstractUserService {
 		if (model.getPassword() != null) {
 			CustomerVerification cv = customerVerificationService.getVerification(cust, CustomerVerificationType.EMAIL);
 
-			if (cv != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
+			if (cv != null && cv.getFieldValue() != null && !ConstantDocument.Yes.equals(cv.getVerificationStatus())) {
 				throw new GlobalException(
 						"Thank you for registration, Our helpdesk will get in touch with you in 48 hours",
 						JaxError.USER_DATA_VERIFICATION_PENDING);
@@ -476,8 +476,13 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
+			throw new GlobalException("User with userId: " + userId + " is not registered",
+					JaxError.USER_NOT_REGISTERED);
+		}
+		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -486,10 +491,10 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		userValidationService.validateCustomerVerification(customer.getCustomerId());
+
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
-		//afterLoginSteps(onlineCustomer);
+		// afterLoginSteps(onlineCustomer);
 		response.getData().getValues().add(customerModel);
 		response.getData().setType(customerModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
