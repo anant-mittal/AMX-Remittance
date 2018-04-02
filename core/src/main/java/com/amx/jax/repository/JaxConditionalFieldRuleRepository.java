@@ -12,4 +12,6 @@ public interface JaxConditionalFieldRuleRepository extends CrudRepository<JaxCon
 
 	public List<JaxConditionalFieldRule> findByEntityNameAndConditionKeyAndConditionValue(JaxFieldEntity entity,
 			String conditionKey, String conditionValue);
+
+	public List<JaxConditionalFieldRule> findByEntityName(JaxFieldEntity entity);
 }

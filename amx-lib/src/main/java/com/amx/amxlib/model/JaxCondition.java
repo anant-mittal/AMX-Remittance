@@ -5,6 +5,19 @@ public class JaxCondition {
 
 	String conditionValue;
 
+	
+	
+	public JaxCondition() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public JaxCondition(String conditionKey, String conditionValue) {
+		super();
+		this.conditionKey = conditionKey;
+		this.conditionValue = conditionValue;
+	}
+
 	public String getConditionKey() {
 		return conditionKey;
 	}

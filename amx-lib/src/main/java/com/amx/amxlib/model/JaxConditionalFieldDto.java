@@ -4,17 +4,13 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
 
-public class JaxConditionalFieldRuleDto {
+public class JaxConditionalFieldDto {
 
 	BigDecimal id;
 
 	JaxFieldEntity entityName;
 
 	JaxFieldDto field;
-
-	String conditionKey;
-
-	String conditionValue;
 
 	public BigDecimal getId() {
 		return id;
@@ -40,19 +36,4 @@ public class JaxConditionalFieldRuleDto {
 		this.field = field;
 	}
 
-	public String getConditionKey() {
-		return conditionKey;
-	}
-
-	public void setConditionKey(String conditionKey) {
-		this.conditionKey = conditionKey;
-	}
-
-	public String getConditionValue() {
-		return conditionValue;
-	}
-
-	public void setConditionValue(String conditionValue) {
-		this.conditionValue = conditionValue;
-	}
 }

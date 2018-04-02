@@ -9,6 +9,17 @@ public class GetJaxFieldRequest {
 
 	JaxFieldEntity entity;
 
+	public GetJaxFieldRequest(JaxCondition condition, JaxFieldEntity entity) {
+		super();
+		this.condition = condition;
+		this.entity = entity;
+	}
+
+	public GetJaxFieldRequest() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public String toString() {
 		return "GetJaxFieldRequest [condition=" + condition + ", entity=" + entity + "]";
