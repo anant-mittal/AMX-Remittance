@@ -113,7 +113,7 @@ public class UserValidationService {
 		}
 	}
 
-	protected Customer validateCustomerForOnlineFlow(String civilId) {
+	public Customer validateCustomerForOnlineFlow(String civilId) {
 		Customer cust = custDao.getCustomerByCivilId(civilId);
 		if (cust == null) {
 			throw new UserNotFoundException("Civil id is not registered at branch, civil id no,: " + civilId);

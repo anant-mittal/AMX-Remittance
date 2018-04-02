@@ -405,7 +405,7 @@ public class UserService extends AbstractUserService {
 	}
 
 
-	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
+	public void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
 		String randmOtp = util.createRandomPassword(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
 		String randeOtp = util.createRandomPassword(6);

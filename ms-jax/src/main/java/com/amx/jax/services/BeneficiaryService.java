@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -32,11 +33,16 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -51,6 +57,8 @@ import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -92,6 +100,15 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	JaxUtil jaxUtil;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
+	
+	@Autowired
+	private UserValidationService userValidationService;
+	
+	@Autowired
+	UserService userService;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -488,5 +505,76 @@ public class BeneficiaryService extends AbstractService {
 		apiResponse.getData().getValues().addAll(allRelationsDescDto);
 		apiResponse.getData().setType("bene-relation-desc");
 		return apiResponse;
+	}
+	
+	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
+		
+		Customer customer = null;
+		String civilId=null;
+		BigDecimal customerId = null;
+		
+		if (metaData.getCustomerId() != null) {
+			customer = custDao.getCustById(metaData.getCustomerId());
+			civilId = customer.getIdentityInt();
+			customerId = customer.getCustomerId();
+		}else {
+			//customer is not logged-in
+			throw new GlobalException("Customer not logged-in", JaxError.CUSTOMER_NOT_FOUND);
+		}
+		
+		logger.info("customerId for sending OTPs is --> " + customerId);
+		CivilIdOtpModel model = new CivilIdOtpModel();
+		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
+		
+		userValidationService.validateCustomerForOnlineFlow(civilId);
+		
+		if (onlineCustReg != null) {
+			logger.info("validating customer lock count.");
+			userValidationService.validateCustomerLockCount(onlineCustReg);
+			model.setIsActiveCustomer(ConstantDocument.Yes.equals(onlineCustReg.getStatus()) ? true : false);
+		} else {
+			logger.info("onlineCustReg is null");
+		}
+		
+		try {
+			userValidationService.validateTokenDate(onlineCustReg);
+		} catch (GlobalException e) {
+			// reset sent token count
+			onlineCustReg.setTokenSentCount(BigDecimal.ZERO);
+		}
+		userValidationService.validateTokenSentCount(onlineCustReg);
+		userService.generateToken(civilId, model, channels);
+		onlineCustReg.setEmailToken(model.getHashedeOtp());
+		onlineCustReg.setSmsToken(model.getHashedmOtp());
+		onlineCustReg.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (onlineCustReg.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: onlineCustReg.getTokenSentCount().add(new BigDecimal(1));
+		onlineCustReg.setTokenSentCount(tokenSentCount);
+		custDao.saveOnlineCustomer(onlineCustReg);
+
+		model.setFirstName(customer.getFirstName());
+		model.setLastName(customer.getLastName());
+		model.setCustomerId(customer.getCustomerId());
+		model.setMiddleName(customer.getMiddleName());
+		model.setEmail(customer.getEmail());
+		model.setMobile(customer.getMobile());
+		
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(model);
+		response.getData().setType(model.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		}
+
+		jaxNotificationService.sendOtpSms(personinfo, model);
+
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			jaxNotificationService.sendOtpEmail(personinfo, model);
+		}
+		return response;
 	}
 }
