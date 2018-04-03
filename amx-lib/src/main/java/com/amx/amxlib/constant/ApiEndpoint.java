@@ -27,5 +27,11 @@ public class ApiEndpoint {
     public static final String RATE_ALERT_ENDPOINT = "/rate-alert/";
     
     public static final String JAX_FIELD_ENDPOINT = "/jax-field/";
+    
+    public static final String VALIDATE_OTP_ENDPOINT = "/validate-otp/";
+    
+    public static final String SEND_OTP_ENDPOINT = "/send-otp/";
+    
+    public static final String UPDAE_STATUS_ENDPOINT = "/update-status/";
 
 }

@@ -1,6 +1,9 @@
 package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -137,20 +141,14 @@ public class BeneficiaryController {
 	
 	@RequestMapping(value = "/disable/", method = RequestMethod.POST)
 	public ApiResponse beneDisable(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,@RequestParam("remarks") String remarks) {
-		LOGGER.info("Bene disable method Trnx Report:");
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		LOGGER.info(CUSTOMER_ID + beneDetails.getCustomerId());
-		LOGGER.info(RELATIONSHIP_ID + beneDetails.getBeneficiaryRelationShipSeqId());
-		LOGGER.info("Bene Master Id  :" + beneDetails.getBeneficaryMasterSeqId());
-		LOGGER.info("Bene Acccount Id :" + beneDetails.getBeneficiaryAccountSeqId());
-
 		return beneService.disableBeneficiary(beneDetails);
 	}
-
+	
 	@RequestMapping(value = "/favoritebeneupdate/", method = RequestMethod.POST)
 	public ApiResponse favoriteBeneUpdate(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId) {
 		LOGGER.info("Bene disable method Trnx Report:");
@@ -201,7 +199,7 @@ public class BeneficiaryController {
 		return beneService.getBeneRelations();
 	}
 	
-	@RequestMapping(value = "/send-otp/", method = RequestMethod.GET)
+	@RequestMapping(value = SEND_OTP_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
 		List<CommunicationChannel> channel = new ArrayList<>();
 		channel.add(CommunicationChannel.EMAIL);
@@ -210,10 +208,22 @@ public class BeneficiaryController {
 		return response;
 	}
 	
-	@RequestMapping(value = "/validate-otp/", method = RequestMethod.GET)
+	@RequestMapping(value = VALIDATE_OTP_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
 		ApiResponse response = userService.validateOtp(null, mOtp, eOtp);
 		return response;
+	}
+	
+	@RequestMapping(value = UPDAE_STATUS_ENDPOINT, method = RequestMethod.POST)
+	public ApiResponse updateStatus(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,
+			                        @RequestParam("remarks") String remarks,
+			                        @RequestParam("status") BeneStatus status) {
+		BigDecimal customerId = metaData.getCustomerId();
+		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
+		beneDetails.setCustomerId(customerId);
+		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
+		beneDetails.setRemarks(remarks);
+		return beneService.updateStatus(beneDetails,status);
 	}
 }

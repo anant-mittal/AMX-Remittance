@@ -1,8 +1,10 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -17,6 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
@@ -265,7 +268,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 		try {
 			ResponseEntity<ApiResponse<CivilIdOtpModel>> response;
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
-			String sendOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/send-otp/";
+			String sendOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + SEND_OTP_ENDPOINT;
 			response = restTemplate.exchange(sendOtpUrl, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
@@ -285,7 +288,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 		try {
 			ResponseEntity<ApiResponse<CustomerModel>> response;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String validateOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/validate-otp/";
+			String validateOtpUrl = this.getBaseUrl() + BENE_API_ENDPOINT + VALIDATE_OTP_ENDPOINT;
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
 			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
@@ -299,4 +302,27 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
+	
+    @SuppressWarnings("rawtypes")
+	public ApiResponse updateStatus(BigDecimal beneMasSeqId,String remarks,BeneStatus status) {
+        try {
+            ResponseEntity<ApiResponse> response;
+
+            StringBuffer sb = new StringBuffer();
+            sb.append("?beneMasSeqId=").append(beneMasSeqId);
+            sb.append("&remarks=").append(remarks);
+            sb.append("&status=").append(status);
+            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+            String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
+            response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+                    new ParameterizedTypeReference<ApiResponse>() {
+                    });
+            return response.getBody();
+        } catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in updateStatus : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    }
 }
