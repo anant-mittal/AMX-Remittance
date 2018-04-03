@@ -89,6 +89,7 @@ public class UserController {
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> updateSecQues(@RequestBody SecurityQuestionModel guestanswer) {
 		return loginService.loginSecQues(guestanswer, null);
