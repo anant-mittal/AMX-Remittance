@@ -1,6 +1,9 @@
 package com.bootloaderjs;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,6 +22,15 @@ public class App { // Noncompliant
 	 */
 	public static void main(String[] args) {
 		System.out.println();
+
+		String[] locales = Locale.getISOCountries();
+
+		for (String countryCode : locales) {
+
+			Locale obj = new Locale("", countryCode);
+			System.out.println(String.format("%s(\"%s\",91, \"%s\"),", obj.getISO3Country() ,obj.getCountry(),obj.getDisplayCountry()));
+			
+		}
 
 		String template = "/name/{name}/age/{age}";
 		UriTemplate uriTemplate = new UriTemplate(template);

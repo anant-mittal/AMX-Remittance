@@ -22,15 +22,22 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoLocationServiceImpl.class);
 
-	private DatabaseReader dbReader;
+	private DatabaseReader dbReader = null;
+
+	public DatabaseReader getDb() {
+		if (dbReader == null) {
+			File database = FileUtil.getFile("ext-resources/GeoLite2-City.mmdb");
+			try {
+				dbReader = new DatabaseReader.Builder(database).build();
+			} catch (IOException e) {
+				LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
+			}
+		}
+		return dbReader;
+	}
 
 	public GeoLocationServiceImpl() {
-		File database = FileUtil.getFile("ext-resources/GeoLite2-City.mmdb");
-		try {
-			dbReader = new DatabaseReader.Builder(database).build();
-		} catch (IOException e) {
-			LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
-		}
+		this.getDb();
 	}
 
 	@Override
@@ -50,6 +57,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 	}
 
 	public CityResponse getCity(String ip) throws IOException, GeoIp2Exception {
+		this.getDb();
 		InetAddress ipAddress = InetAddress.getByName(ip);
 		return dbReader.city(ipAddress);
 	}
