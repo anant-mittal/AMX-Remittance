@@ -11,7 +11,7 @@ import com.amx.utils.ArgUtil;
 public enum Tenant {
 
 	/** Dev Environments **/
-	KWT2("KW", 91, "Kuwait Alt"), BRNDEV("BH", 104, "Bahrain dev"), OMNDEV("OM", 82, "oman dev"),
+	KWT2("KW", 91, "Kuwait Alt", true), BRNDEV("BH", 104, "Bahrain dev", true), OMNDEV("OM", 82, "oman dev", true),
 
 	AND("AD", 91, "Andorra"), ARE("AE", 91, "United Arab Emirates"), AFG("AF", 91, "Afghanistan"),
 
@@ -27,7 +27,7 @@ public enum Tenant {
 
 	BIH("BA", 91, "Bosnia and Herzegovina"), BRB("BB", 91, "Barbados"), BGD("BD", 91, "Bangladesh"),
 
-	BEL("BE", 91, "Belgium"), BFA("BF", 91, "Burkina Faso"), BGR("BG", 91, "Bulgaria"), BHR("BH", 104, "Bahrain"),
+	BEL("BE", 91, "Belgium"), BFA("BF", 91, "Burkina Faso"), BGR("BG", 91, "Bulgaria"), BHR("BH", 104, "Bahrain", true),
 
 	BDI("BI", 91, "Burundi"), BEN("BJ", 91, "Benin"), BLM("BL", 91, "Saint Barthélemy"), BMU("BM", 91, "Bermuda"),
 
@@ -91,7 +91,8 @@ public enum Tenant {
 
 	COM("KM", 91, "Comoros"), KNA("KN", 91, "Saint Kitts And Nevis"), PRK("KP", 91, "North Korea"),
 
-	KOR("KR", 91, "South Korea"), KWT("KW", 91, "Kuwait"), CYM("KY", 91, "Cayman Islands"), KAZ("KZ", 91, "Kazakhstan"),
+	KOR("KR", 91, "South Korea"), KWT("KW", 91, "Kuwait", true), CYM("KY", 91, "Cayman Islands"), KAZ("KZ", 91,
+			"Kazakhstan"),
 
 	LAO("LA", 91, "Laos"), LBN("LB", 91, "Lebanon"), LCA("LC", 91, "Saint Lucia"), LIE("LI", 91, "Liechtenstein"),
 
@@ -121,7 +122,7 @@ public enum Tenant {
 
 	NIU("NU", 91, "Niue"), NZL("NZ", 91, "New Zealand"),
 
-	OMN("OM", 82, "Oman"),
+	OMN("OM", 82, "Oman", true),
 
 	PAN("PA", 91, "Panama"), PER("PE", 91, "Peru"), PYF("PF", 91, "French Polynesia"),
 
@@ -188,7 +189,6 @@ public enum Tenant {
 	static {
 		// Additional Mappings
 		// mapping.put("app-devq", KWT2);
-
 		for (Tenant site : Tenant.values()) {
 			mapping.put(site.toString().toLowerCase(), site);
 			mapping.put(site.getId().toLowerCase(), site);
@@ -199,10 +199,26 @@ public enum Tenant {
 
 	private String id;
 	private String code;
+	private boolean tenant;
+
+	public boolean isTenant() {
+		return tenant;
+	}
+
+	public void setTenant(boolean tenant) {
+		this.tenant = tenant;
+	}
 
 	Tenant(String id, int code, String name) {
 		this.id = id;
 		this.code = ArgUtil.parseAsString(code);
+		this.tenant = false;
+	}
+
+	Tenant(String id, int code, String name, boolean isTenantApp) {
+		this.id = id;
+		this.code = ArgUtil.parseAsString(code);
+		this.tenant = isTenantApp;
 	}
 
 	public String getId() {
@@ -235,6 +251,14 @@ public enum Tenant {
 			}
 		}
 		return defaultValue;
+	}
+
+	public static Tenant fromString(String siteId, Tenant defaultValue, boolean onlyTenant) {
+		Tenant tnt = fromString(siteId, defaultValue);
+		if (onlyTenant && (tnt != null && tnt.isTenant())) {
+			return defaultValue;
+		}
+		return tnt;
 	}
 
 }

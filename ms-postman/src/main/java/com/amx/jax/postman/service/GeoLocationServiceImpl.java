@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.GeoLocation;
@@ -50,8 +51,10 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setStateCode(response.getMostSpecificSubdivision().getIsoCode());
 			loc.setCountryCode(response.getCountry().getIsoCode());
 			loc.setContinentCode(response.getContinent().getCode());
+			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), Tenant.KWT, true));
 		} catch (Exception e) {
-			throw new PostManException(e);
+			loc.setTenant( Tenant.KWT);
+			LOGGER.error("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);
 	}

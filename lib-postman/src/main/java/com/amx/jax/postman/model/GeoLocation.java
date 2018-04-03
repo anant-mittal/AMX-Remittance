@@ -1,13 +1,31 @@
 package com.amx.jax.postman.model;
 
-public class GeoLocation {
-	private String ipAddress;
-	private String cityId;
-	private String cityName;
-	private String stateCode;
-	private String countryCode;
-	private String continentCode;
+import java.io.Serializable;
 
+import com.amx.jax.dict.Tenant;
+
+public class GeoLocation implements Serializable {
+
+	private static final long serialVersionUID = 4616644115138392356L;
+
+	private String ipAddress = null;
+	private String cityId = null;
+	private String cityName = null;
+	private String stateCode = null;
+	private String countryCode = null;
+	private String continentCode = null;
+	private Tenant tenant = null;
+
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
+	}
+
+	public GeoLocation() {
+	}
 	public GeoLocation(String ip) {
 		this.ipAddress = ip;
 	}
