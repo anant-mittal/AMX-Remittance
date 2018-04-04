@@ -46,8 +46,36 @@ public final class AuthDataInterface {
 		void seteOtp(String eOtp);
 	}
 
+	public interface AuthResponseOTPprefix {
+
+		public String getmOtpPrefix();
+
+		public void setmOtpPrefix(String getmOtpPrefix);
+
+		public String geteOtpPrefix();
+
+		public void seteOtpPrefix(String geteOtpPrefix);
+	}
+
 	@JsonDeserialize(as = AuthData.class)
 	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP {
+
+	}
+
+	public interface AuthResponse extends AuthResponseOTPprefix {
+		public AuthState getState();
+
+		public void setState(AuthState state);
+
+		@Deprecated
+		public String getQuestion();
+
+		@Deprecated
+		public void setQuestion(String description);
+
+		public QuestModelDTO getQues();
+
+		public void setQues(QuestModelDTO questModelDTO);
 
 	}
 
@@ -67,30 +95,17 @@ public final class AuthDataInterface {
 		public String getPhone();
 
 		public void setPhone(String phone);
+
+		public String getImageUrl();
+
+		public void setImageUrl(String imageUrl);
+
+		public String getCaption();
+
+		public void setCaption(String caption);
 	}
 
-	public interface AuthResponse {
-		public AuthState getState();
-
-		public void setState(AuthState state);
-
-		@Deprecated
-		public String getQuestion();
-
-		@Deprecated
-		public void setQuestion(String description);
-
-		public String getmOtpPrefix();
-
-		public void setmOtpPrefix(String getmOtpPrefix);
-
-		public String geteOtpPrefix();
-
-		public void seteOtpPrefix(String geteOtpPrefix);
-
-		public QuestModelDTO getQues();
-
-		public void setQues(QuestModelDTO questModelDTO);
+	public interface UserUpdateResponse extends AuthResponseOTPprefix {
 
 	}
 }

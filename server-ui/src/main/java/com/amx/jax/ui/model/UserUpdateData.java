@@ -9,8 +9,9 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
+import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 
-public class UserUpdateData implements UserUpdateRequest {
+public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 
 	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String mOtp = null;
@@ -25,6 +26,15 @@ public class UserUpdateData implements UserUpdateRequest {
 
 	@Pattern(regexp = UIConstants.Validator.PHONE)
 	private String phone = null;
+
+	private String imageUrl = null;
+
+	private String caption = null;
+
+	private String mOtpPrefix = null;
+	private String eOtpPrefix = null;
+
+	private List<QuestModelDTO> secQuesMeta = null;
 
 	@Override
 	public String getEmail() {
@@ -45,9 +55,6 @@ public class UserUpdateData implements UserUpdateRequest {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-
-	private String mOtpPrefix = null;
-	private String eOtpPrefix = null;
 
 	private AuthState state = null;
 
@@ -125,6 +132,22 @@ public class UserUpdateData implements UserUpdateRequest {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 
 }
