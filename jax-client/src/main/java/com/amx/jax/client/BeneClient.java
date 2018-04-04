@@ -333,6 +333,10 @@ public class BeneClient extends AbstractJaxServiceClient {
         } // end of try-catch
     }
     
+	/**
+	 * Saves beneficiary bank account details in transaction
+	 * @param beneAccountModel - Bene account model
+	 * */
 	public ApiResponse<JaxTransactionResponse> saveBeneAccountInTrnx(BeneAccountModel beneAccountModel) {
 		try {
 			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
@@ -352,6 +356,10 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	/**
+	 * Saves beneficiary personal details like contact, names etc
+	 * @param benePersonalDetailModel - BenePersonalDetail Model
+	 * */
 	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			BenePersonalDetailModel benePersonalDetailModel) {
 		try {
@@ -372,6 +380,11 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 	
+	/**
+	 * Commits the add beneficiary transaction in database by validating otp passed
+	 * @param mOtp - mobile otp
+	 * @param eOtp - email otp 
+	 * */
 	public ApiResponse<BeneficiaryTrnxModel> commitAddBeneTrnx(String mOtp, String eOtp) {
 		try {
 			ResponseEntity<ApiResponse<BeneficiaryTrnxModel>> response;
