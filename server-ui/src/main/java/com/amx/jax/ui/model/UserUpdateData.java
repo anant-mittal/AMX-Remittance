@@ -102,8 +102,6 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 		this.mOtp = mOtp;
 	}
 
-	private List<QuestModelDTO> secQuesMeta = null;
-
 	public List<QuestModelDTO> getSecQuesMeta() {
 		return secQuesMeta;
 	}
