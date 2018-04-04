@@ -27,6 +27,15 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	@Pattern(regexp = UIConstants.Validator.PHONE)
 	private String phone = null;
 
+	private String imageUrl = null;
+
+	private String caption = null;
+
+	private String mOtpPrefix = null;
+	private String eOtpPrefix = null;
+
+	private List<QuestModelDTO> secQuesMeta = null;
+
 	@Override
 	public String getEmail() {
 		return email;
@@ -46,9 +55,6 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
-
-	private String mOtpPrefix = null;
-	private String eOtpPrefix = null;
 
 	private AuthState state = null;
 
@@ -96,8 +102,6 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 		this.mOtp = mOtp;
 	}
 
-	private List<QuestModelDTO> secQuesMeta = null;
-
 	public List<QuestModelDTO> getSecQuesMeta() {
 		return secQuesMeta;
 	}
@@ -126,6 +130,22 @@ public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 	@Override
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
 	}
 
 }

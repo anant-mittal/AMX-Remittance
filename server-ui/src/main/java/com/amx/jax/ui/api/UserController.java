@@ -122,9 +122,15 @@ public class UserController {
 	 * @return
 	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateResponse> regSecQues(@RequestBody UserUpdateData userUpdateData) {
+	public ResponseWrapper<UserUpdateResponse> regSecQues(@RequestBody UserUpdateRequest userUpdateData) {
 		return userService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
 				userUpdateData.geteOtp());
+	}
+
+	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> updatePhising(@RequestBody UserUpdateRequest userUpdateData) {
+		return userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
+				userUpdateData.getmOtp(), userUpdateData.geteOtp());
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })

@@ -95,6 +95,14 @@ public final class AuthDataInterface {
 		public String getPhone();
 
 		public void setPhone(String phone);
+
+		public String getImageUrl();
+
+		public void setImageUrl(String imageUrl);
+
+		public String getCaption();
+
+		public void setCaption(String caption);
 	}
 
 	public interface UserUpdateResponse extends AuthResponseOTPprefix {

@@ -6,13 +6,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -32,9 +30,6 @@ public class UserService {
 	}
 
 	@Autowired
-	private PostManService postManService;
-
-	@Autowired
 	private JaxService jaxService;
 
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
@@ -44,38 +39,28 @@ public class UserService {
 
 	public ResponseWrapper<UserUpdateResponse> updateEmail(String email, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
-		try {
-			if (mOtp == null) {
-				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email)
-						.getResult();
-				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-				wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
-			} else {
-				jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
-				wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
-			}
-		} catch (AbstractException e) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_FAILED, e);
+		if (mOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForEmailUpdate(email).getResult();
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
+		} else {
+			jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
 		}
 		return wrapper;
 	}
 
 	public ResponseWrapper<UserUpdateResponse> updatePhone(String phone, String mOtp, String eOtp) {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
-		try {
-			if (mOtp == null) {
-				CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(phone)
-						.getResult();
-				wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
-				wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
-				wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
-			} else {
-				jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
-				wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
-			}
-		} catch (AbstractException e) {
-			wrapper.setMessage(WebResponseStatus.USER_UPDATE_FAILED, e);
+		if (mOtp == null) {
+			CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendOtpForMobileUpdate(phone).getResult();
+			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
+		} else {
+			jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
 		}
 		return wrapper;
 	}
@@ -87,6 +72,13 @@ public class UserService {
 				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 		// wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
+		return wrapper;
+	}
+
+	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
+		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
+		jaxService.setDefaults().getUserclient().savePhishiingImage(caption, imageUrl, mOtp, eOtp).getResult();
+		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Phishing Image Updated");
 		return wrapper;
 	}
 
