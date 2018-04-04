@@ -1,9 +1,7 @@
 package com.amx.jax.trnx;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -16,9 +14,6 @@ import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.JaxTransactionResponse;
-import com.amx.amxlib.model.response.ResponseData;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -131,6 +126,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setCreatedDate(new Date());
 		beneficaryRelationship.setCustomerId(metaData.getCustomerId());
 		beneficaryRelationship.setIsActive(ConstantDocument.Yes);
+		beneficaryRelationship.setOrsSatus(BigDecimal.ONE); // for online
 		beneficaryRelationship.setRelationsId(beneDetaisl.getRelationsId());
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 

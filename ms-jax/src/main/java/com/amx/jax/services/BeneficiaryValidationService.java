@@ -12,8 +12,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
+import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -26,7 +29,37 @@ public class BeneficiaryValidationService {
 	@Autowired
 	JaxUtil jaxUtil;
 
+	@Autowired
+	IBeneficiaryAccountDao beneficiaryAccountDao;
+
 	public void validateBeneAccount(BeneAccountModel beneAccountModel) {
+		validateBankAccountNumber(beneAccountModel);
+		validateDuplicateBankAccount(beneAccountModel);
+	}
+
+	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {
+		List<BeneficaryAccount> existingAccount;
+		if (beneAccountModel.getServicegropupId() != null) {
+			existingAccount = beneficiaryAccountDao
+					.findByServicegropupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+							beneAccountModel.getServicegropupId(), beneAccountModel.getBeneficaryCountryId(),
+							beneAccountModel.getBankId(), beneAccountModel.getCurrencyId(),
+							beneAccountModel.getBankBranchId(), beneAccountModel.getBankAccountNumber(),
+							ConstantDocument.Yes);
+		} else {
+			existingAccount = beneficiaryAccountDao
+					.findByBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+							beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getBankId(),
+							beneAccountModel.getCurrencyId(), beneAccountModel.getBankBranchId(),
+							beneAccountModel.getBankAccountNumber(), ConstantDocument.Yes);
+
+		}
+		if (existingAccount != null && !existingAccount.isEmpty()) {
+			throw new GlobalException("Duplicate Beneficiary Account", JaxError.DUPLICATE_BENE_BANK_ACCOUNT);
+		}
+	}
+
+	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
 		List<BankAccountLength> accontNumLength = bankService.getBankAccountLength(beneAccountModel.getBankId());
 		List<Integer> accNumLength = new ArrayList<>();
 		accontNumLength.forEach(i -> {
