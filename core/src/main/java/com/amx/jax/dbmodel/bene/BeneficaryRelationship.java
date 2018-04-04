@@ -33,6 +33,7 @@ public class BeneficaryRelationship implements Serializable {
 	private String remarks ;
 	private BigDecimal orsSatus;
 	private String myFavouriteBene;
+	private BigDecimal relationsId;
 	
 	
 	@Id
@@ -189,6 +190,15 @@ public class BeneficaryRelationship implements Serializable {
 	}
 	public void setMyFavouriteBene(String myFavouriteBene) {
 		this.myFavouriteBene = myFavouriteBene;
+	}
+
+	@Column(name="RELATIONS_ID")
+	public BigDecimal getRelationsId() {
+		return relationsId;
+	}
+
+	public void setRelationsId(BigDecimal relationsId) {
+		this.relationsId = relationsId;
 	}
 	 
 }

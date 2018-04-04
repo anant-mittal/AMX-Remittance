@@ -33,11 +33,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-ext-jar</artifactId>
 			<version>0.0.1-SNAPSHOT</version>

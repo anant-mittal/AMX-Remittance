@@ -22,6 +22,8 @@ import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
@@ -185,13 +187,21 @@ public class BeneficiaryController {
 
 	}
 	
-	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
-	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
-		
-		//return beneficiaryTrnxManager.saveBeneBankTrnx(bankId);
-		return null;
-
+	@RequestMapping(value = "/trnx/bene-account/", method = RequestMethod.POST)
+	public ApiResponse saveBeneBankTrnx(BeneAccountModel beneAccountModel) {
+		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
+	
+	@RequestMapping(value = "/trnx/bene-details/", method = RequestMethod.POST)
+	public ApiResponse saveBeneBankTrnx(BenePersonalDetailModel benePersonalDetailModel) {
+		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
+	}
+	
+	@RequestMapping(value = "/trnx/commit/", method = RequestMethod.POST)
+	public ApiResponse saveBeneBankTrnx() {
+		return beneficiaryTrnxManager.commitTransaction();
+	}
+
 	
 	@RequestMapping(value = "/relations/", method = RequestMethod.GET)
 	public ApiResponse getAllRelations() {

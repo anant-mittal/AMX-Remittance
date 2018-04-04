@@ -198,6 +198,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "jax-field-rules":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxConditionalFieldDto>>(){});
 			break;
+		case "jax-trnx-response":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxTransactionResponse>>(){});
+			break;
 	}
 		
 		

@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.amx.jax.AppConstants;
+
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.schema.ModelRef;
@@ -19,12 +21,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 public class JaxSwaggerConfig {
+	
 	@Bean
 	public Docket productApi() {
 		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
 				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT\"}")
 				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
-		List<Parameter> globalParams = Arrays.asList(headerParam);
+		Parameter jaxTrnxIdParam = new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
+				.modelRef(new ModelRef("string")).parameterType("header").required(false).build();
+		List<Parameter> globalParams = Arrays.asList(headerParam, jaxTrnxIdParam);
 
 		return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				.build().globalOperationParameters(globalParams);
