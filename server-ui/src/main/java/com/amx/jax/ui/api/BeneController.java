@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
@@ -60,11 +62,12 @@ public class BeneController {
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
-			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks) {
+			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks,
+			@RequestParam BeneStatus status) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		// Disable Beneficiary
-		wrapper.setData(
-				jaxService.setDefaults().getBeneClient().beneDisable(beneficaryMasterSeqId, remarks).getResult());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().updateStatus(beneficaryMasterSeqId, remarks, status)
+				.getResult());
 		return wrapper;
 	}
 
@@ -81,6 +84,22 @@ public class BeneController {
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneFavGet() {
 		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
 		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
+		return wrapper;
+	}
+
+	@ApiOperation(value = "Sends OTP for Beneficiary Add")
+	@RequestMapping(value = "/api/user/bnfcry/otp", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> sendOTP() {
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+		jaxService.setDefaults().getBeneClient().sendOtp().getResult();
+		return wrapper;
+	}
+
+	@ApiOperation(value = "Save the current beneficary in progress")
+	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> commit(@RequestParam String mOtp, @RequestParam String eOtp) {
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+		jaxService.setDefaults().getBeneClient().validateOtp(mOtp, eOtp).getResult();
 		return wrapper;
 	}
 

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.GeoLocation;
@@ -22,15 +23,22 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoLocationServiceImpl.class);
 
-	private DatabaseReader dbReader;
+	private DatabaseReader dbReader = null;
+
+	public DatabaseReader getDb() {
+		if (dbReader == null) {
+			File database = FileUtil.getFile("ext-resources/GeoLite2-City.mmdb");
+			try {
+				dbReader = new DatabaseReader.Builder(database).build();
+			} catch (IOException e) {
+				LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
+			}
+		}
+		return dbReader;
+	}
 
 	public GeoLocationServiceImpl() {
-		File database = FileUtil.getFile("ext-resources/GeoLite2-City.mmdb");
-		try {
-			dbReader = new DatabaseReader.Builder(database).build();
-		} catch (IOException e) {
-			LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
-		}
+		this.getDb();
 	}
 
 	@Override
@@ -43,13 +51,16 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setStateCode(response.getMostSpecificSubdivision().getIsoCode());
 			loc.setCountryCode(response.getCountry().getIsoCode());
 			loc.setContinentCode(response.getContinent().getCode());
+			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), Tenant.KWT, true));
 		} catch (Exception e) {
-			throw new PostManException(e);
+			loc.setTenant( Tenant.KWT);
+			LOGGER.error("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);
 	}
 
 	public CityResponse getCity(String ip) throws IOException, GeoIp2Exception {
+		this.getDb();
 		InetAddress ipAddress = InetAddress.getByName(ip);
 		return dbReader.city(ipAddress);
 	}

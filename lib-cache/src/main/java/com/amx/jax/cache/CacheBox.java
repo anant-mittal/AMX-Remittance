@@ -25,7 +25,15 @@ public class CacheBox<T> implements ICacheBox<T> {
 	String cahceName = getClass().getName();
 
 	public RLocalCachedMap<String, T> map() {
-		return redisson.getLocalCachedMap(cahceName, localCacheOptions);
+		return redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
+	}
+
+	public String getCahceName() {
+		return cahceName;
+	}
+
+	public void setCahceName(String cahceName) {
+		this.cahceName = cahceName;
 	}
 
 	protected CacheBox(String name) {

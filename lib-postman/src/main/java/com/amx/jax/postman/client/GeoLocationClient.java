@@ -20,8 +20,12 @@ public class GeoLocationClient implements GeoLocationService {
 	AppConfig appConfig;
 
 	public GeoLocation getLocation(String ip) throws PostManException {
-		return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.GEO_LOC).queryParam("ip", ip).get()
-				.as(GeoLocation.class);
+		try {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.GEO_LOC).queryParam("ip", ip).get()
+					.as(GeoLocation.class);
+		} catch (Exception e) {
+			throw new PostManException(e);
+		}
 	};
 
 }

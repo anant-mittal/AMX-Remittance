@@ -15,7 +15,7 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 	}
 
 	@Autowired
-	TCache cache ;
+	TCache cache;
 
 	@Override
 	public ICacheBox<T> getCacheBox() {

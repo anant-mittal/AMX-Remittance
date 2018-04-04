@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -56,7 +57,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void testSendOtp() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -85,6 +86,21 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
+	}
+	
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testUpdateStatus() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		BigDecimal beneMasSeqId = new BigDecimal(1424);
+
+		ApiResponse response = null;
+		response = client.updateStatus(beneMasSeqId,null,BeneStatus.DISABLE);
+		//response = client.updateStatus(beneMasSeqId,null,BeneStatus.ENABLE);
+		assertNotNull("Response is null", response);
 	}
 
 }

@@ -25,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
@@ -214,11 +215,6 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
 
-			BeneficaryRelationship beneRelation = null;
-
-			// beneRelation =
-			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
-
 			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
 
@@ -234,14 +230,11 @@ public class BeneficiaryService extends AbstractService {
 			} else {
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
-
 			return response;
 		} catch (Exception e) {
 			throw new GlobalException("Error while update");
 		}
-
 	}
-
 	
 	public ApiResponse updateFavoriteBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
@@ -576,5 +569,42 @@ public class BeneficiaryService extends AbstractService {
 			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
+	}
+	
+	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<BeneficaryRelationship> beneRelationList = null;
+
+			if (status!=null && status.equals(BeneStatus.DISABLE)) {
+				beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
+						beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+			}else {
+				beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForEnable(
+						beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+			}
+			
+			if (!beneRelationList.isEmpty()) {
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao
+						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				
+				if (status!=null && status.equals(BeneStatus.DISABLE)) {
+					beneRelationModel.setIsActive("D");
+				}else {
+					beneRelationModel.setIsActive("Y");
+				}
+				
+				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+				beneRelationModel.setModifiedDate(new Date());
+				beneRelationModel.setRemarks(beneDetails.getRemarks());
+				beneRelationShipDao.save(beneRelationModel);
+				response.setResponseStatus(ResponseStatus.OK);
+			} else {
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+			}
+			return response;
+		} catch (Exception e) {
+			throw new GlobalException("Error while update");
+		}
 	}
 }
