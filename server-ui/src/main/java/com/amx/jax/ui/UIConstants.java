@@ -20,6 +20,7 @@ public final class UIConstants extends Constants {
 	public static class Validator {
 		public static final String IDENTITY = "^[0-9a-zA-Z]+$";
 		public static final String OTP = "^[0-9]{6}$";
+		public static final String PHONE = "^[0-9]{15}$";
+		public static final String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 	}
-
 }

@@ -2,17 +2,28 @@ package com.amx.jax.ui.model;
 
 import java.util.List;
 
+import javax.validation.constraints.Pattern;
+
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 
 public class UserUpdateData implements UserUpdateRequest {
 
+	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String mOtp = null;
+
+	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String eOtp = null;
+
 	private String password = null;
+
+	@Pattern(regexp = UIConstants.Validator.EMAIL)
 	private String email = null;
+
+	@Pattern(regexp = UIConstants.Validator.PHONE)
 	private String phone = null;
 
 	@Override
