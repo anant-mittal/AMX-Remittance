@@ -103,6 +103,7 @@ public class UserController {
 				userUpdateRequest.geteOtp());
 	}
 
+	@Deprecated
 	@RequestMapping(value = "/api/user/phone", method = {
 			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
 	public ResponseWrapper<UserUpdateResponse> updatePhone(@RequestParam String phone,
