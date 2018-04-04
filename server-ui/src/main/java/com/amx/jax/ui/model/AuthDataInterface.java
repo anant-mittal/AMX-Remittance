@@ -1,5 +1,7 @@
 package com.amx.jax.ui.model;
 
+import java.util.List;
+
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.auth.AuthState;
@@ -24,15 +26,14 @@ public final class AuthDataInterface {
 		void setPassword(String password);
 	}
 
-	public interface AuthRequestSecQues {
+	public interface AuthRequestSecAns {
 
 		public SecurityQuestionModel getAnswer();
 
 		void setAnswer(SecurityQuestionModel answer);
 	}
 
-	@JsonDeserialize(as = AuthData.class)
-	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecQues {
+	public interface AuthRequestOTP {
 
 		@ApiModelProperty(example = "345678")
 		String getmOtp();
@@ -43,6 +44,29 @@ public final class AuthDataInterface {
 		String geteOtp();
 
 		void seteOtp(String eOtp);
+	}
+
+	@JsonDeserialize(as = AuthData.class)
+	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP {
+
+	}
+
+	@JsonDeserialize(as = UserUpdateData.class)
+	public interface UserUpdateRequest extends AuthRequestPassword, AuthRequestOTP {
+
+		public List<SecurityQuestionModel> getSecQuesAns();
+
+		public void setSecQuesAns(List<SecurityQuestionModel> secQuesAns);
+
+		@ApiModelProperty(example = "user@amx.com")
+		public String getEmail();
+
+		public void setEmail(String email);
+
+		@ApiModelProperty(example = "9876543210")
+		public String getPhone();
+
+		public void setPhone(String phone);
 	}
 
 	public interface AuthResponse {
