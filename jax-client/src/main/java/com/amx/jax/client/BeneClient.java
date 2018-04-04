@@ -5,6 +5,9 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -387,5 +390,51 @@ public class BeneClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in commitAddBeneTrnx : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
+	
+	public ApiResponse<BeneCountryDTO> getServiceProvider(BigDecimal beneCountryId) {
+
+	       try {
+	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
+	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+	            StringBuffer sb = new StringBuffer();
+	            sb.append("?beneCountryId=").append(beneCountryId);
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT + sb.toString();
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+	                    });
+
+	            return response.getBody();
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in getServiceProvider : ",e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
+	}
+	
+	public ApiResponse<BeneCountryDTO> getAgentMaster(BigDecimal beneCountryId, BigDecimal routingBankId, BigDecimal currencyId) {
+
+	       try {
+	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
+	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+	            StringBuffer sb = new StringBuffer();
+	            sb.append("?beneCountryId=").append(beneCountryId);
+	            sb.append("&routingBankId=").append(routingBankId);
+	            sb.append("&currencyId=").append(currencyId);
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT + sb.toString();
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+	                    });
+
+	            return response.getBody();
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in getAgentMaster : ",e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
 	}
 }

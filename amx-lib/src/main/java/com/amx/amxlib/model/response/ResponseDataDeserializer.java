@@ -19,6 +19,7 @@ import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -209,12 +210,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "service-group-model":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ServiceGroupMasterDescDto>>(){});
 			break;
-			
+		case "routingBankMaster":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RoutingBankMasterDTO>>(){});
+			break;	
 	}
-		
-		
-
-
 		responseData.setValues(models);
 		return responseData;
 	}
