@@ -9,8 +9,9 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
+import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 
-public class UserUpdateData implements UserUpdateRequest {
+public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 
 	@Pattern(regexp = UIConstants.Validator.OTP)
 	private String mOtp = null;
