@@ -1,11 +1,9 @@
 package com.amx.jax.postman.converter;
 
-import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 
-import javax.imageio.ImageIO;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -21,7 +19,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xhtmlrenderer.css.style.CalculatedStyle;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.amx.jax.postman.model.File;

@@ -2,9 +2,9 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 
 import java.math.BigDecimal;
 

@@ -1,6 +1,5 @@
 package com.amx.crypto;
 
-import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.security.InvalidKeyException;
 import java.security.Key;

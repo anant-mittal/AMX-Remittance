@@ -2,18 +2,10 @@ package com.bootloaderjs;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import com.amx.crypto.TimeBasedOneTimePasswordGenerator;
 
 public class App { // Noncompliant
 
