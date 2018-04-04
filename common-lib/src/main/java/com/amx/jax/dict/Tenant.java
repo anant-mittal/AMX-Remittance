@@ -255,7 +255,7 @@ public enum Tenant {
 
 	public static Tenant fromString(String siteId, Tenant defaultValue, boolean onlyTenant) {
 		Tenant tnt = fromString(siteId, defaultValue);
-		if (onlyTenant && (tnt != null && tnt.isTenant())) {
+		if (onlyTenant && (tnt != null && !tnt.isTenant())) {
 			return defaultValue;
 		}
 		return tnt;
