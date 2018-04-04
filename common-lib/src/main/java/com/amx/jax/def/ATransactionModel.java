@@ -7,9 +7,27 @@ import com.amx.utils.Utils;
 
 public abstract class ATransactionModel<T> {
 
+	public class CacheBoxWrapper {
+		T model = null;
+
+		public T getModel() {
+			return model;
+		}
+
+		public void setModel(T model) {
+			this.model = model;
+		}
+
+		public CacheBoxWrapper(T model) {
+			super();
+			this.model = model;
+		}
+
+	}
+
 	public abstract ICacheBox<T> getCacheBox();
 
-	private String getTranxId() {
+	protected String getTranxId() {
 		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 		if (Utils.isStringEmpty(key)) {
 			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));

@@ -253,7 +253,6 @@ public class BeneClient extends AbstractJaxServiceClient {
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<BeneRelationsDescriptionDto>>() {
 					});
-
 			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;

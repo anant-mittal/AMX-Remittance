@@ -85,6 +85,6 @@
 		<module>server-stomp</module>
 
 		<module>server-admin</module>
-
+		<module>server-sample</module>
 	</modules>
 </project>
