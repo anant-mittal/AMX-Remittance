@@ -23,6 +23,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.ViewCityDto;
@@ -647,6 +648,32 @@ public class MetaClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBankBranchList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catc
+		return response.getBody();
+	}
+	
+	/**
+	 * <p>
+	 * Gives the list of available service groups like bank, cash ,dd etc
+	 * etc
+	 * </p>
+	 * 
+	 */
+	public ApiResponse<ServiceGroupMasterDescDto> getServiceGroupList() {
+		ResponseEntity<ApiResponse<ServiceGroupMasterDescDto>> response;
+		try {
+
+			LOGGER.info("In getServiceGroupList :");
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/service-group/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<ServiceGroupMasterDescDto>>() {
+					});
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getServiceGroupList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catc
 		return response.getBody();

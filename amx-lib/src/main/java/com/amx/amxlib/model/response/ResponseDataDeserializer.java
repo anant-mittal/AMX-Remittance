@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -205,6 +206,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "bene-trnx-model":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneficiaryTrnxModel>>(){});
 			break;
+		case "service-group-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ServiceGroupMasterDescDto>>(){});
+			break;
+			
 	}
 		
 		

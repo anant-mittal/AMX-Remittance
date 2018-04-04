@@ -9,7 +9,7 @@ public class BeneAccountModel extends AbstractModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal beneficaryCountryId;
-	private BigDecimal bankId;
+	private BigDecimal bankId; //agent master
 	private BigDecimal bankBranchId;
 	private String bankAccountNumber;
 	private BigDecimal currencyId;
