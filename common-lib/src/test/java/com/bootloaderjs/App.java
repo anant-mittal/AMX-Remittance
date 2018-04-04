@@ -1,7 +1,5 @@
 package com.bootloaderjs;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
