@@ -74,7 +74,8 @@ public enum JaxError {
     JAX_SYSTEM_ERROR,
     USER_DATA_VERIFICATION_PENDING,
     USER_DATA_VERIFICATION_PENDING_REG,
-    BANK_BRANCH_NOT_FOUND;
+    BANK_BRANCH_NOT_FOUND,
+    INVALID_BANK_ACCOUNT_NUM_LENGTH;
 
     public String getCode() {
         return this.toString();

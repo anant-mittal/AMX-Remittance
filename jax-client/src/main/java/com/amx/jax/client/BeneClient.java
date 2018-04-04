@@ -32,10 +32,14 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
@@ -316,12 +320,71 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse>() {
+                    });
+            return response.getBody();
+        } catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in updateStatus : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    }
+    
+	public ApiResponse<JaxTransactionResponse> saveBeneAccountInTrnx(BeneAccountModel beneAccountModel) {
+		try {
+			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
+
+			HttpEntity<BeneAccountModel> requestEntity = new HttpEntity<BeneAccountModel>(beneAccountModel,
+					getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/bene/bene-account/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
 			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in updateStatus : ", e);
+			LOGGER.error("exception in saveBeneAccountInTrnx : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
+	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
+			BenePersonalDetailModel benePersonalDetailModel) {
+		try {
+			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
+
+			HttpEntity<BenePersonalDetailModel> requestEntity = new HttpEntity<BenePersonalDetailModel>(
+					benePersonalDetailModel, getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/bene/bene-details/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveBenePersonalDetailInTrnx : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<BeneficiaryTrnxModel> commitAddBeneTrnx(String mOtp, String eOtp) {
+		try {
+			ResponseEntity<ApiResponse<BeneficiaryTrnxModel>> response;
+
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String baseUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/addbene/commit/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).queryParam("mOtp", mOtp)
+					.queryParam("eOtp", eOtp);
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryTrnxModel>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in commitAddBeneTrnx : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 	}

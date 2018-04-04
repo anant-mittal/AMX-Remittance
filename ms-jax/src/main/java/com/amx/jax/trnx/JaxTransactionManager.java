@@ -24,4 +24,14 @@ public abstract class JaxTransactionManager<T> extends TransactionModel<T> {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
+	
+	protected ApiResponse getBlankApiResponse() {
+		ApiResponse response = new ApiResponse();
+		ResponseData data = new ResponseData();
+		List<Object> values = new ArrayList<Object>();
+		data.setValues(values);
+		response.setData(data);
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
+}
 }

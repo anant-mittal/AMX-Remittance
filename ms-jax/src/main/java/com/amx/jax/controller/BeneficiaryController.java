@@ -187,19 +187,21 @@ public class BeneficiaryController {
 
 	}
 	
-	@RequestMapping(value = "/trnx/bene-account/", method = RequestMethod.POST)
-	public ApiResponse saveBeneBankTrnx(BeneAccountModel beneAccountModel) {
+	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
+	public ApiResponse saveBeneAccountInTrnx(@RequestBody BeneAccountModel beneAccountModel) {
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
-	@RequestMapping(value = "/trnx/bene-details/", method = RequestMethod.POST)
-	public ApiResponse saveBeneBankTrnx(BenePersonalDetailModel benePersonalDetailModel) {
+	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
+	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
-	@RequestMapping(value = "/trnx/commit/", method = RequestMethod.POST)
-	public ApiResponse saveBeneBankTrnx() {
-		return beneficiaryTrnxManager.commitTransaction();
+	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
+	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
+			@RequestParam(name = "eOtp", required = false) String eOtp) {
+
+		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
 	}
 
 	

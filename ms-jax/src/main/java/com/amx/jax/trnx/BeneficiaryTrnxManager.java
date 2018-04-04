@@ -1,7 +1,9 @@
 package com.amx.jax.trnx;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -14,6 +16,9 @@ import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.model.response.ResponseData;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -27,6 +32,9 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.services.BankService;
+import com.amx.jax.services.BeneficiaryValidationService;
+import com.amx.jax.userservice.service.UserService;
 
 @Component
 @SuppressWarnings("rawtypes")
@@ -50,7 +58,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	BeneficaryStatusRepository beneficaryStatusRepository;
 
 	@Autowired
+	UserService userService;
+
+	@Autowired
 	MetaData metaData;
+
+	@Autowired
+	BankService bankService;
+
+	@Autowired
+	BeneficiaryValidationService beneficiaryValidationService;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -80,12 +97,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryAccount beneficaryAccount = new BeneficaryAccount();
 		beneficaryAccount.setBankAccountNumber(accountDetails.getBankAccountNumber());
 		beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
+		beneficaryAccount
+				.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
 		beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 		beneficaryAccount.setBankId(accountDetails.getBankId());
+		beneficaryAccount.setBankCode(bankService.getBankById(accountDetails.getBankId()).getBankCode());
 		beneficaryAccount.setBeneApplicationCountryId(metaData.getCountryId());
 		beneficaryAccount.setBeneficaryCountryId(accountDetails.getBeneficaryCountryId());
 		beneficaryAccount.setBeneficaryMasterId(beneficaryMasterId);
 		beneficaryAccount.setCreatedBy(metaData.getReferrer());
+		beneficaryAccount.setCreatedDate(new Date());
 		beneficaryAccount.setCurrencyId(accountDetails.getCurrencyId());
 		beneficaryAccount.setIsActive(ConstantDocument.Yes);
 		beneficaryAccount.setServicegropupId(accountDetails.getServicegropupId());
@@ -93,6 +114,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 		beneficiaryAccountDao.save(beneficaryAccount);
 		return beneficaryAccount;
+	}
+
+	private BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
+		return bankService.getBankBranchView(bankId, bankBranchId).getBranchCode();
 	}
 
 	private void commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
@@ -137,10 +162,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneMaster.setCreatedDate(new Date());
 		// names
 		setNames(beneMaster, benePersonalDetails);
-		beneMaster.setFsCityMaster(benePersonalDetails.getFsCityId());
-		beneMaster.setFsCountryMaster(benePersonalDetails.getFsCountryId());
-		beneMaster.setFsDistrictMaster(benePersonalDetails.getFsDistrictId());
-		beneMaster.setFsStateMaster(benePersonalDetails.getFsStateId());
+		beneMaster.setFsCityMaster(benePersonalDetails.getCityId());
+		beneMaster.setFsCountryMaster(benePersonalDetails.getCountryId());
+		beneMaster.setFsDistrictMaster(benePersonalDetails.getDistrictId());
+		beneMaster.setFsStateMaster(benePersonalDetails.getStateId());
 		beneMaster.setIsActive(ConstantDocument.Yes);
 		beneMaster.setNationality(benePersonalDetails.getNationality());
 
@@ -169,14 +194,18 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}
 	}
 
-	public ApiResponse commitTransaction() {
-		ApiResponse apiResponse = getJaxTransactionApiResponse();
+	public ApiResponse commitTransaction(String mOtp, String eOtp) {
+		userService.validateOtp(null, mOtp, eOtp);
+		commit();
+		ApiResponse apiResponse = getBlankApiResponse();
+		apiResponse.getData().setType("bene-trnx-model");
 		apiResponse.getData().getValues().add(get());
 
 		return apiResponse;
 	}
 
 	public ApiResponse saveBeneAccountTrnx(BeneAccountModel beneAccountModel) {
+		beneficiaryValidationService.validateBeneAccount(beneAccountModel);
 		BeneficiaryTrnxModel trnxModel = getWithInit();
 		trnxModel.setBeneAccountModel(beneAccountModel);
 		save(trnxModel);

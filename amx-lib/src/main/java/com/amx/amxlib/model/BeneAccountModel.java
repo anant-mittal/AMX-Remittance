@@ -19,8 +19,6 @@ public class BeneAccountModel extends AbstractModel {
 	private String swiftCode;
 	private BigDecimal bankAccountTypeId;
 
-	
-	
 	public BeneAccountModel() {
 		super();
 	}

@@ -1,0 +1,12 @@
+{
+  "bankAccountNumber": "67543217865",
+  "bankAccountTypeId": 4,
+  "bankBranchId": 247817,
+  "bankId": 2258,
+  "beneficaryCountryId": 94,
+  "currencyId": 4,
+  "serviceProviderBranchId": null,
+  "serviceProviderId": null,
+  "servicegropupId": null,
+  "swiftCode": null
+}

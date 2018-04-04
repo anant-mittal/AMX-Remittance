@@ -35,6 +35,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -200,6 +201,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "jax-trnx-response":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxTransactionResponse>>(){});
+			break;
+		case "bene-trnx-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneficiaryTrnxModel>>(){});
 			break;
 	}
 		

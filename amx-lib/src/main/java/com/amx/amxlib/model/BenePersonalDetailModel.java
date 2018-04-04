@@ -37,38 +37,6 @@ public class BenePersonalDetailModel extends AbstractModel {
 		return "bene-personal-details";
 	}
 
-	public BigDecimal getFsStateId() {
-		return stateId;
-	}
-
-	public void setFsStateId(BigDecimal fsStateId) {
-		this.stateId = fsStateId;
-	}
-
-	public BigDecimal getFsCityId() {
-		return cityId;
-	}
-
-	public void setFsCityId(BigDecimal fsCityId) {
-		this.cityId = fsCityId;
-	}
-
-	public BigDecimal getFsCountryId() {
-		return countryId;
-	}
-
-	public void setFsCountryId(BigDecimal fsCountryId) {
-		this.countryId = fsCountryId;
-	}
-
-	public BigDecimal getFsDistrictId() {
-		return districtId;
-	}
-
-	public void setFsDistrictId(BigDecimal fsDistrictId) {
-		this.districtId = fsDistrictId;
-	}
-
 	public String getFirstName() {
 		return firstName;
 	}
@@ -195,6 +163,38 @@ public class BenePersonalDetailModel extends AbstractModel {
 
 	public void setRelationsId(BigDecimal relationsId) {
 		this.relationsId = relationsId;
+	}
+
+	public BigDecimal getStateId() {
+		return stateId;
+	}
+
+	public void setStateId(BigDecimal stateId) {
+		this.stateId = stateId;
+	}
+
+	public BigDecimal getCityId() {
+		return cityId;
+	}
+
+	public void setCityId(BigDecimal cityId) {
+		this.cityId = cityId;
+	}
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+
+	public BigDecimal getDistrictId() {
+		return districtId;
+	}
+
+	public void setDistrictId(BigDecimal districtId) {
+		this.districtId = districtId;
 	}
 
 }
