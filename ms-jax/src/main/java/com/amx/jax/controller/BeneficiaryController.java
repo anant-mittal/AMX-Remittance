@@ -28,10 +28,10 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
-import com.amx.jax.services.RoutingBankMasterParam;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
@@ -244,20 +244,18 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = GET_SERVICE_PROVIDER_ENDPOINT, method = RequestMethod.GET)
-	public ApiResponse getServiceProviderListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+	public ApiResponse getServiceProviderListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,
+													  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		BigDecimal serviceGroupId =new BigDecimal (1);
-		
 		return beneService.getServiceProviderList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId));
 	}
 	
 	@RequestMapping(value = GET_AGENT_MASTER_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse getAgentMasterListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,
 												  @RequestParam("routingBankId") BigDecimal routingBankId,
-												  @RequestParam("currencyId") BigDecimal currencyId) {
+												  @RequestParam("currencyId") BigDecimal currencyId,
+												  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		BigDecimal serviceGroupId =new BigDecimal (1);
-		
 		return beneService.getAgentMasterList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId));
 	}
 	
@@ -265,10 +263,10 @@ public class BeneficiaryController {
 	public ApiResponse getAgentBranchListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,
 												  @RequestParam("routingBankId") BigDecimal routingBankId,
 												  @RequestParam("currencyId") BigDecimal currencyId,
-												  @RequestParam("agentBankId") BigDecimal agentBankId) {
+												  @RequestParam("agentBankId") BigDecimal agentBankId,
+												  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
+
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		BigDecimal serviceGroupId =new BigDecimal (1);
-		
 		return beneService.getAgentLocationList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId,agentBankId));
 	}
 }

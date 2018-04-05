@@ -43,6 +43,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
@@ -405,19 +406,22 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 	
-	public ApiResponse<BeneCountryDTO> getServiceProvider(BigDecimal beneCountryId) {
-
+	/**
+	 * Fetch list of service provider
+	 * @param param - object with routingCountryId and ServiceGroupId fields populated
+	 * */
+	public ApiResponse<BeneCountryDTO> getServiceProvider(RoutingBankMasterParam param) {
+		LOGGER.info("getServiceProvider called with Parametes : "+param.toString());
 	       try {
 	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
-	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 	            StringBuffer sb = new StringBuffer();
-	            sb.append("?beneCountryId=").append(beneCountryId);
+	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
+	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
 	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT + sb.toString();
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
 	                    });
-
 	            return response.getBody();
 	        } catch (AbstractException ae) {
 	            throw ae;
@@ -427,21 +431,55 @@ public class BeneClient extends AbstractJaxServiceClient {
 	        } // end of try-catch
 	}
 	
-	public ApiResponse<BeneCountryDTO> getAgentMaster(BigDecimal beneCountryId, BigDecimal routingBankId, BigDecimal currencyId) {
-
+	/**
+	 * Fetch list of agent master
+	 * @param param - object with routingCountryId, routingBankId, currencyId, serviceGroupId  fields populated
+	 * 
+	 * */
+	public ApiResponse<BeneCountryDTO> getAgentMaster(RoutingBankMasterParam param) {
+		LOGGER.info("getAgentMaster called with Parametes : "+param.toString());
 	       try {
 	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
-	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
 	            StringBuffer sb = new StringBuffer();
-	            sb.append("?beneCountryId=").append(beneCountryId);
-	            sb.append("&routingBankId=").append(routingBankId);
-	            sb.append("&currencyId=").append(currencyId);
+	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
+	            sb.append("&routingBankId=").append(param.getRoutingBankId());
+	            sb.append("&currencyId=").append(param.getCurrencyId());
+	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
 	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT + sb.toString();
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
 	                    });
+	            return response.getBody();
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in getAgentMaster : ",e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
+	}
 
+	/**
+	 * Fetch list of agent master
+	 * @param param - object with routingCountryId, routingBankId, currencyId, agentBankId and ServiceGroupId fields populated
+	 * 
+	 * */
+	  public ApiResponse<BeneCountryDTO> getAgentBranch(RoutingBankMasterParam param) {	
+		
+		  LOGGER.info("getAgentBranch called with Parametes : "+param.toString());
+	       try {
+	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
+	            StringBuffer sb = new StringBuffer();
+	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
+	            sb.append("&routingBankId=").append(param.getRoutingBankId());
+	            sb.append("&currencyId=").append(param.getCurrencyId());
+	            sb.append("&agentBankId=").append(param.getAgentBankId());
+	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_BRANCH_ENDPOINT + sb.toString();
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+	                    });
 	            return response.getBody();
 	        } catch (AbstractException ae) {
 	            throw ae;

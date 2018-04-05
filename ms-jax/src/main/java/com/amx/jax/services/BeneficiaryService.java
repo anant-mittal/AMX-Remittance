@@ -39,6 +39,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;

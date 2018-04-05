@@ -1,13 +1,12 @@
-package com.amx.jax.services;
+package com.amx.jax.amxlib.model;
 
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.amx.jax.dbmodel.AgentMasterModel;
 
 public class RoutingBankMasterParam {
 	
-	
+	public RoutingBankMasterParam() {
+		
+	}
 	
 	public RoutingBankMasterParam(BigDecimal applicationCountryId, BigDecimal routingCountryId,BigDecimal serviceGroupId){
 		this.applicationCountryId = applicationCountryId;
@@ -90,6 +89,14 @@ public class RoutingBankMasterParam {
 
 	public void setAgentBankId(BigDecimal agentBankId) {
 		this.agentBankId = agentBankId;
+	}
+
+	@Override
+	public String toString() {
+		return "RoutingBankMasterParam [applicationCountryId=" + applicationCountryId + ", routingCountryId="
+				+ routingCountryId + ", serviceGroupId=" + serviceGroupId + ", routingBankId=" + routingBankId
+				+ ", routingBankCode=" + routingBankCode + ", routingBankName=" + routingBankName + ", currencyId="
+				+ currencyId + ", agentBankId=" + agentBankId + "]";
 	}	
 
 }
