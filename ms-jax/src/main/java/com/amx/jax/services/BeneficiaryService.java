@@ -619,6 +619,7 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse getServiceProviderList(RoutingBankMasterParam param) {
 		
+		logger.info("getServiceProviderList called with Parameters : "+param.toString());		
 		List<ServiceProviderModel> serviceProviderList = routingBankMasterRepository.getServiceProvider(param.getApplicationCountryId(), 
 																										param.getRoutingCountryId(), 
 																										param.getServiceGroupId());
@@ -652,7 +653,7 @@ public class BeneficiaryService extends AbstractService {
 	}
 	
 	public ApiResponse getAgentMasterList(RoutingBankMasterParam param) {
-		
+		logger.info("getAgentMasterList called with Parameters : "+param.toString());
 		List<AgentMasterModel> agentMasterList = routingBankMasterRepository.getAgentMaster(param.getApplicationCountryId(), 
 																							param.getRoutingCountryId(), 
 																							param.getServiceGroupId(), 
@@ -688,6 +689,7 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse getAgentLocationList(RoutingBankMasterParam param) {
 		
+		logger.info("getAgentLocationList called with Parameters : "+param.toString());
 		List<AgentBranchModel> agentBranchList = routingAgentLocationRepository.getAgentBranch(param.getApplicationCountryId(),  
 																							   param.getRoutingCountryId(), 
 																							   param.getServiceGroupId(), 

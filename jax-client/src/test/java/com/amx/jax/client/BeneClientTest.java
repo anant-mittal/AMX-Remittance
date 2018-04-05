@@ -122,7 +122,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	@SuppressWarnings("rawtypes")
 	public void testAgentMaster() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -142,7 +142,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	@SuppressWarnings("rawtypes")
 	public void testAgentBranch() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

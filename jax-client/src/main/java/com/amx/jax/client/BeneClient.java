@@ -412,7 +412,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * @param param - object with routingCountryId and ServiceGroupId fields populated
 	 * */
 	public ApiResponse<RoutingBankMasterDTO> getServiceProvider(RoutingBankMasterParam param) {
-		LOGGER.info("getServiceProvider called with Parametes : "+param.toString());
+		
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
 	            StringBuffer sb = new StringBuffer();
@@ -438,7 +438,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * 
 	 * */
 	public ApiResponse<RoutingBankMasterDTO> getAgentMaster(RoutingBankMasterParam param) {
-		LOGGER.info("getAgentMaster called with Parametes : "+param.toString());
+		
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
 	            StringBuffer sb = new StringBuffer();
@@ -467,7 +467,6 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 * */
 	  public ApiResponse<RoutingBankMasterDTO> getAgentBranch(RoutingBankMasterParam param) {	
 		
-		  LOGGER.info("getAgentBranch called with Parametes : "+param.toString());
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
 	            StringBuffer sb = new StringBuffer();
