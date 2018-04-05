@@ -30,6 +30,7 @@ public final class FileUtil {
 
 	/** The Constant FILE_PREFIX. */
 	public static final String FILE_PREFIX = "file://";
+	public static final String CLASSPATH_PREFIX = "classpath:";
 
 	/**
 	 * Instantiates a new file util.
@@ -135,13 +136,64 @@ public final class FileUtil {
 		}
 	}
 
+	public static File getClassPathFile(String filePath) {
+		return getFile(filePath, FileUtil.class);
+	}
+
+	public static File getClassPathFile(String filePath, Class<?> clazz) {
+
+		if (clazz == null) {
+			return getClassPathFile(filePath);
+		}
+
+		File file = new File("classpath:" + filePath);
+		if (file.isFile()) {
+			LOG.info("STEP 1");
+			return file;
+		}
+
+		URL u = clazz.getClassLoader().getResource("classpath:" + filePath);
+		if (u != null) {
+			LOG.info("STEP 2");
+			return new File(u.getPath());
+		}
+
+		file = new File(filePath);
+		if (file.isFile()) {
+			LOG.info("STEP 3");
+			return file;
+		}
+
+		u = clazz.getClassLoader().getResource(filePath);
+		if (u != null) {
+			LOG.info("STEP 4");
+			return new File(u.getPath());
+		}
+
+		LOG.info("STEP 5");
+		return new File(filePath);
+	}
+
 	public static File getFile(String filePath) {
+		return getFile(filePath, FileUtil.class);
+	}
+
+	public static File getFile(String filePath, Class<?> clazz) {
+
+		boolean isClassPath = filePath.startsWith(CLASSPATH_PREFIX);
+		if (isClassPath) {
+			filePath = filePath.substring(CLASSPATH_PREFIX.length());
+			return getClassPathFile(filePath, clazz);
+		}
+
+		if (clazz == null) {
+			return getFile(filePath);
+		}
 
 		// Search in jar folder
-		File jarPath = new File(
-				FileUtil.class.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
+		File jarPath = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
 		String propertiesPath = jarPath.getParent();
-		URL u = FileUtil.class.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		URL u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
 		if (u != null) {
 			return new File(u.getPath());
 		}
@@ -153,7 +205,7 @@ public final class FileUtil {
 
 		// Search working folder
 		propertiesPath = System.getProperty("user.dir");
-		u = FileUtil.class.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
 		if (u != null) {
 			return new File(u.getPath());
 		}
@@ -163,7 +215,7 @@ public final class FileUtil {
 		}
 
 		// Search in target folder
-		u = FileUtil.class.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
+		u = clazz.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
 		if (u != null) {
 			return new File(u.getPath());
 		}
@@ -171,8 +223,8 @@ public final class FileUtil {
 		if (file.exists()) {
 			return file;
 		}
-		
-		//Return default
+
+		// Return default
 		return new File(filePath);
 	}
 }

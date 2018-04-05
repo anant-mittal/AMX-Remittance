@@ -3,7 +3,6 @@ package com.amx.jax.postman.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.PostManException;
@@ -23,11 +22,13 @@ public class SupportService {
 	private String supportContactFrom;
 
 	public Email createContactUsEmail(SupportEmail email) throws PostManException {
+		
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("name", email.getVisitorName());
 		map.put("cphone", email.getVisitorPhone());
 		map.put("cemail", email.getVisitorEmail());
 		map.put("message", email.getVisitorMessage());
+		
 		email.setFrom(this.supportContactFrom);
 		email.setReplyTo(email.getVisitorEmail());
 		email.addAllTo(supportContactTo);
@@ -35,7 +36,7 @@ public class SupportService {
 		email.setSubject("Inquiry");
 		email.setTemplate(Templates.CONTACT_US);
 		email.setHtml(true);
+		
 		return email;
 	}
-
 }

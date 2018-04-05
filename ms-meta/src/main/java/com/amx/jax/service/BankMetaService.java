@@ -40,7 +40,7 @@ public class BankMetaService extends AbstractService {
 
 	@Autowired
 	private BankMasterRepository repo;
-	
+
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
 
@@ -92,16 +92,15 @@ public class BankMetaService extends AbstractService {
 		}
 		return null;
 	}
-	
+
 	public BankMasterModel getBankMasterbyId(BigDecimal bankId) {
 		BankMasterModel dbModel = repo.findOne(bankId);
 		return dbModel;
 	}
-	
+
 	public CountryBranch getCountryBranchById(BigDecimal id) {
 		return countryBranchRepository.findOne(id);
 	}
-
 
 	@SuppressWarnings("unchecked")
 	public ApiResponse<BankBranchDto> getBankBranches(GetBankBranchRequest request) {
@@ -122,7 +121,8 @@ public class BankMetaService extends AbstractService {
 			isparametersSet = true;
 		}
 		if (branchName != null) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameLike(countryId, bankId,
+			branchName = "%" + branchName + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId,
 					branchName));
 			isparametersSet = true;
 		}
@@ -137,14 +137,12 @@ public class BankMetaService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-	
-	
 
 	private List<BankBranchDto> convertBranchView(List<BankBranchView> branchesList) {
 		List<BankBranchDto> output = new ArrayList<>();
-		branchesList.forEach( i -> output.add(convert(i)));
+		branchesList.forEach(i -> output.add(convert(i)));
 		return output;
-		
+
 	}
 
 	private BankBranchDto convert(BankBranchView i) {
@@ -152,7 +150,7 @@ public class BankMetaService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, i);
 		} catch (Exception e) {
-			logger.info("error in copy properties" ,e);
+			logger.info("error in copy properties", e);
 		}
 		return dto;
 	}
