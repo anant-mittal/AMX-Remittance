@@ -1,6 +1,5 @@
 package com.amx.jax.scope;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -9,8 +8,6 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.amx.utils.ArgUtil;
@@ -32,68 +29,26 @@ public class TenantProperties {
 		return properties;
 	}
 
-	private static Environment envProperties;
-
-	@Autowired
-	public TenantProperties(Environment envProperties) {
-		TenantProperties.envProperties = envProperties;
-	}
-
-	public TenantProperties() {
-	}
-
-	public static Environment getEnvProperties() {
-		return envProperties;
-	}
-
 	public static Properties getProperties(String tenant, Object object) {
 		Properties tenantProperties = new Properties();
 		String propertyFile = "application." + tenant + ".properties";
-		File jarPath = new File(
-				obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
-		String propertiesPath = jarPath.getParent();
-
 		InputStream inSideInputStream = null;
 		InputStream outSideInputStream = null;
 
 		try {
-//			inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(
-//					FileUtil.getFile(""));
-			
-			URL ufile = object.getClass().getClassLoader().getResource(propertyFile);
+
+			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
 			if (ufile != null) {
-				//LOG.info("STEP 2");
-				//return new File("classpath:" + filePath);
-			//}
-			
-			//File ufile = FileUtil.getFile("classpath:" + propertyFile, object.getClass());
-			//if (ufile.isFile()) {
-				inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(ufile.getPath());
-				if (inSideInputStream == null) {
-					inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(propertyFile);
-				}
+				inSideInputStream = ufile.openStream();
 				tenantProperties.load(inSideInputStream);
-				LOGGER.info("FOUND : inside file : {}", ufile.getPath());
-			} else {
-				LOGGER.info("NOFOUND : inside file : {}", ufile.getPath());
+				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
 			}
 
-			File u2file = FileUtil.getFile(propertyFile, object.getClass());
-			if (u2file.isFile()) {
-				outSideInputStream = object.getClass().getClassLoader().getResourceAsStream(u2file.getPath());
+			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
+			if (outSideInputStream != null) {
 				tenantProperties.load(outSideInputStream);
-				LOGGER.info("FOUND : outside file : {}", u2file.getPath());
-			} else {
-				LOGGER.info("NOFOUND : outside file : {}", u2file.getPath());
+				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
 			}
-
-			/**
-			 * URL u2 = object.getClass().getClassLoader().getResource(propertiesPath + "/"
-			 * + propertyFile); if (u2 != null) { outSideInputStream =
-			 * object.getClass().getClassLoader() .getResourceAsStream(propertiesPath + "/"
-			 * + propertyFile); tenantProperties.load(outSideInputStream);
-			 * LOGGER.info("reading outside property file : {}", u2.getPath()); }
-			 **/
 
 		} catch (IllegalArgumentException | IOException e) {
 			LOGGER.error("readPropertyException", e);
