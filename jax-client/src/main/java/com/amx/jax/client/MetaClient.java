@@ -113,6 +113,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	@Deprecated
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
 		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 		try {

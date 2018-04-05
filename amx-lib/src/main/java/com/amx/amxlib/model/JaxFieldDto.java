@@ -1,6 +1,7 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class JaxFieldDto {
 
@@ -16,6 +17,8 @@ public class JaxFieldDto {
 
 	BigDecimal maxLength;
 
+	List<ValidationRegexDto> validationRegex;
+	
 	public String getName() {
 		return name;
 	}
@@ -63,4 +66,13 @@ public class JaxFieldDto {
 	public void setMaxLength(BigDecimal maxLength) {
 		this.maxLength = maxLength;
 	}
+
+	public List<ValidationRegexDto> getValidationRegex() {
+		return validationRegex;
+	}
+
+	public void setValidationRegex(List<ValidationRegexDto> validationRegex) {
+		this.validationRegex = validationRegex;
+	}
+
 }

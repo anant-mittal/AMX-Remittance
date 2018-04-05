@@ -23,7 +23,14 @@ public class RoutingBankMasterParam {
 		this.currencyId = currencyId;
 	}
 	
-	
+	public RoutingBankMasterParam(BigDecimal applicationCountryId, BigDecimal routingCountryId,BigDecimal serviceGroupId, BigDecimal routingBankId, BigDecimal currencyId, BigDecimal agentBankId ){
+		this.applicationCountryId = applicationCountryId;
+		this.routingCountryId = routingCountryId;
+		this.serviceGroupId = serviceGroupId;
+		this.routingBankId = routingBankId;
+		this.currencyId = currencyId;
+		this.agentBankId = agentBankId;
+	}
 	
 	private BigDecimal applicationCountryId;
 	private BigDecimal routingCountryId;
@@ -32,6 +39,7 @@ public class RoutingBankMasterParam {
 	private String routingBankCode;	
 	private String routingBankName;
 	private BigDecimal currencyId;
+	private BigDecimal agentBankId;
 	
 	public BigDecimal getApplicationCountryId() {
 		return applicationCountryId;
@@ -74,6 +82,14 @@ public class RoutingBankMasterParam {
 	}
 	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getAgentBankId() {
+		return agentBankId;
+	}
+
+	public void setAgentBankId(BigDecimal agentBankId) {
+		this.agentBankId = agentBankId;
 	}	
 
 }

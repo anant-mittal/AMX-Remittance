@@ -12,6 +12,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.services.AbstractService;
 /**
@@ -25,10 +26,12 @@ public class CountryService extends AbstractService {
 	@Autowired
 	CountryRepository countryRepository;
 	
+	@Autowired
+	MetaData meta;
 	
 	
 	public ApiResponse getCountryListResponse(){
-		List<CountryMasterView> countryList = countryRepository.findAll();
+		List<CountryMasterView> countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 		ApiResponse response = getBlackApiResponse();
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Country list is not abaliable");
@@ -41,7 +44,7 @@ public class CountryService extends AbstractService {
 	}
 	
 	
-	
+	@Deprecated
 	public ApiResponse getCountryListByLanguageIdResponse(BigDecimal languageId){
 		List<CountryMasterView> countryList = countryRepository.findByLanguageId(languageId);
 		ApiResponse response = getBlackApiResponse();
