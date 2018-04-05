@@ -14,12 +14,23 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 
+@TenantScoped
 @Component
 public class TenantProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
-	private static TenantProperties properties = new TenantProperties();
+	private static TenantProperties obj = new TenantProperties();
+
+	private Properties properties = null;
+
+	public Properties getProperties() {
+		if (properties == null) {
+			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+		}
+		return properties;
+	}
 
 	private static Environment envProperties;
 
@@ -35,33 +46,75 @@ public class TenantProperties {
 		return envProperties;
 	}
 
-	public static Object assignValues(String tenant, Object object) {
+	public static Properties getProperties(String tenant, Object object) {
 		Properties tenantProperties = new Properties();
 		String propertyFile = "application." + tenant + ".properties";
 		File jarPath = new File(
-				properties.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
+				obj.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
 		String propertiesPath = jarPath.getParent();
 
 		InputStream inSideInputStream = null;
 		InputStream outSideInputStream = null;
 
 		try {
-
-			URL u = properties.getClass().getClassLoader().getResource("classpath:" + propertyFile);
-			if (u != null) {
-				inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(u.getPath());
+//			inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(
+//					FileUtil.getFile(""));
+			
+			URL ufile = object.getClass().getClassLoader().getResource(propertyFile);
+			if (ufile != null) {
+				//LOG.info("STEP 2");
+				//return new File("classpath:" + filePath);
+			//}
+			
+			//File ufile = FileUtil.getFile("classpath:" + propertyFile, object.getClass());
+			//if (ufile.isFile()) {
+				inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(ufile.getPath());
+				if (inSideInputStream == null) {
+					inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(propertyFile);
+				}
 				tenantProperties.load(inSideInputStream);
-				LOGGER.info("reading inside property file : {}", u.getPath());
+				LOGGER.info("FOUND : inside file : {}", ufile.getPath());
+			} else {
+				LOGGER.info("NOFOUND : inside file : {}", ufile.getPath());
 			}
 
-			URL u2 = object.getClass().getClassLoader().getResource(propertiesPath + "/" + propertyFile);
-			if (u2 != null) {
-				outSideInputStream = object.getClass().getClassLoader()
-						.getResourceAsStream(propertiesPath + "/" + propertyFile);
+			File u2file = FileUtil.getFile(propertyFile, object.getClass());
+			if (u2file.isFile()) {
+				outSideInputStream = object.getClass().getClassLoader().getResourceAsStream(u2file.getPath());
 				tenantProperties.load(outSideInputStream);
-				LOGGER.info("reading outside property file : {}", u2.getPath());
+				LOGGER.info("FOUND : outside file : {}", u2file.getPath());
+			} else {
+				LOGGER.info("NOFOUND : outside file : {}", u2file.getPath());
 			}
 
+			/**
+			 * URL u2 = object.getClass().getClassLoader().getResource(propertiesPath + "/"
+			 * + propertyFile); if (u2 != null) { outSideInputStream =
+			 * object.getClass().getClassLoader() .getResourceAsStream(propertiesPath + "/"
+			 * + propertyFile); tenantProperties.load(outSideInputStream);
+			 * LOGGER.info("reading outside property file : {}", u2.getPath()); }
+			 **/
+
+		} catch (IllegalArgumentException | IOException e) {
+			LOGGER.error("readPropertyException", e);
+		} finally {
+			try {
+				if (outSideInputStream != null) {
+					outSideInputStream.close();
+				}
+				if (inSideInputStream != null) {
+					inSideInputStream.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			}
+		}
+		return tenantProperties;
+	}
+
+	public static Object assignValues(String tenant, Object object) {
+		Properties tenantProperties = getProperties(tenant, object);
+		try {
 			for (Field field : object.getClass().getDeclaredFields()) {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
@@ -81,19 +134,8 @@ public class TenantProperties {
 					}
 				}
 			}
-		} catch (IllegalArgumentException | IllegalAccessException | IOException e) {
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			LOGGER.error("readPropertyException", e);
-		} finally {
-			try {
-				if (outSideInputStream != null) {
-					outSideInputStream.close();
-				}
-				if (inSideInputStream != null) {
-					inSideInputStream.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-			}
 		}
 		return object;
 	}
