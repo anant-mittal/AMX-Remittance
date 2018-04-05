@@ -71,4 +71,10 @@ public class GetBankBranchRequest {
 		this.branchName = branchName;
 	}
 
+	@Override
+	public String toString() {
+		return "GetBankBranchRequest [bankId=" + bankId + ", countryId=" + countryId + ", ifscCode=" + ifscCode
+				+ ", swift=" + swift + ", branchName=" + branchName + "]";
+	}
+
 }
