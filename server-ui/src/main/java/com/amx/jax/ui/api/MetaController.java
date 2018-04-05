@@ -13,6 +13,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -45,6 +46,12 @@ public class MetaController {
 	public ResponseWrapper<List<SourceOfIncomeDto>> remittPurpose() {
 		return new ResponseWrapper<List<SourceOfIncomeDto>>(
 				jaxService.setDefaults().getRemitClient().getSourceOfIncome().getResults());
+	}
+
+	@RequestMapping(value = "/api/meta/services/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<ServiceGroupMasterDescDto>> servicesList() {
+		return new ResponseWrapper<List<ServiceGroupMasterDescDto>>(
+				jaxService.setDefaults().getMetaClient().getServiceGroupList().getResults());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)

@@ -33,6 +33,7 @@ public final class AuthDataInterface {
 		void setAnswer(SecurityQuestionModel answer);
 	}
 
+	@JsonDeserialize(as = AuthData.class)
 	public interface AuthRequestOTP {
 
 		@ApiModelProperty(example = "345678")
