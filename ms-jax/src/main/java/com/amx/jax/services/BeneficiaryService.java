@@ -39,6 +39,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
@@ -48,7 +49,6 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
-import com.amx.jax.dbmodel.RoutingBankMasterView;
 import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -253,11 +253,6 @@ public class BeneficiaryService extends AbstractService {
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
-
-			BeneficaryRelationship beneRelation = null;
-
-			// beneRelation =
-			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
 
 			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
@@ -624,6 +619,7 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse getServiceProviderList(RoutingBankMasterParam param) {
 		
+		logger.info("getServiceProviderList called with Parameters : "+param.toString());		
 		List<ServiceProviderModel> serviceProviderList = routingBankMasterRepository.getServiceProvider(param.getApplicationCountryId(), 
 																										param.getRoutingCountryId(), 
 																										param.getServiceGroupId());
@@ -657,7 +653,7 @@ public class BeneficiaryService extends AbstractService {
 	}
 	
 	public ApiResponse getAgentMasterList(RoutingBankMasterParam param) {
-		
+		logger.info("getAgentMasterList called with Parameters : "+param.toString());
 		List<AgentMasterModel> agentMasterList = routingBankMasterRepository.getAgentMaster(param.getApplicationCountryId(), 
 																							param.getRoutingCountryId(), 
 																							param.getServiceGroupId(), 
@@ -693,6 +689,7 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse getAgentLocationList(RoutingBankMasterParam param) {
 		
+		logger.info("getAgentLocationList called with Parameters : "+param.toString());
 		List<AgentBranchModel> agentBranchList = routingAgentLocationRepository.getAgentBranch(param.getApplicationCountryId(),  
 																							   param.getRoutingCountryId(), 
 																							   param.getServiceGroupId(), 

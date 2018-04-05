@@ -292,6 +292,7 @@ public class MetaController {
 		
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
 	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
+		LOGGER.info("in getbankBranches" + request.toString());
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
 		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse);
 		return apiResponse;

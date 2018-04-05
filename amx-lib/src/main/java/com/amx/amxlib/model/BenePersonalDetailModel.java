@@ -197,4 +197,16 @@ public class BenePersonalDetailModel extends AbstractModel {
 		this.districtId = districtId;
 	}
 
+	@Override
+	public String toString() {
+		return "BenePersonalDetailModel [stateId=" + stateId + ", cityId=" + cityId + ", countryId=" + countryId
+				+ ", districtId=" + districtId + ", firstName=" + firstName + ", secondName=" + secondName
+				+ ", thirdName=" + thirdName + ", fourthName=" + fourthName + ", fifthName=" + fifthName
+				+ ", nationality=" + nationality + ", localFirstName=" + localFirstName + ", localSecondName="
+				+ localSecondName + ", localThirdName=" + localThirdName + ", localFourthName=" + localFourthName
+				+ ", localFifthName=" + localFifthName + ", telephoneNumber=" + telephoneNumber + ", mobileNumber="
+				+ mobileNumber + ", countryTelCode=" + countryTelCode + ", remarks=" + remarks + ", relationsId="
+				+ relationsId + "]";
+	}
+
 }

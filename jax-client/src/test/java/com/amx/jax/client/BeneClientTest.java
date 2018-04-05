@@ -20,6 +20,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -88,7 +89,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull(response.getResult().getModelType());
 	}
 	
-	@Test
+	//@Test
 	@SuppressWarnings("rawtypes")
 	public void testUpdateStatus() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -100,6 +101,65 @@ public class BeneClientTest extends AbstractTestClient{
 		ApiResponse response = null;
 		response = client.updateStatus(beneMasSeqId,null,BeneStatus.DISABLE);
 		//response = client.updateStatus(beneMasSeqId,null,BeneStatus.ENABLE);
+		assertNotNull("Response is null", response);
+	}
+	
+	@Test
+	@SuppressWarnings("rawtypes")
+	public void testServiceProvider() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+
+		ApiResponse response = null;
+		RoutingBankMasterParam param = new RoutingBankMasterParam();
+		param.setRoutingCountryId(new BigDecimal(107));
+		param.setServiceGroupId(new BigDecimal(1));
+		
+		response = client.getServiceProvider(param);
+		
+		assertNotNull("Response is null", response);
+	}
+	
+	//@Test
+	@SuppressWarnings("rawtypes")
+	public void testAgentMaster() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+
+		ApiResponse response = null;
+		RoutingBankMasterParam param = new RoutingBankMasterParam();
+		param.setRoutingCountryId(new BigDecimal(107));
+		param.setCurrencyId(new BigDecimal(8));
+		param.setRoutingBankId(new BigDecimal(237));
+		param.setServiceGroupId(new BigDecimal(1));
+		
+		response = client.getAgentMaster(param);
+		
+		assertNotNull("Response is null", response);
+	}
+	
+	//@Test
+	@SuppressWarnings("rawtypes")
+	public void testAgentBranch() {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+
+		ApiResponse response = null;
+		RoutingBankMasterParam param = new RoutingBankMasterParam();
+		param.setRoutingCountryId(new BigDecimal(107));
+		param.setCurrencyId(new BigDecimal(8));
+		param.setRoutingBankId(new BigDecimal(237));
+		param.setServiceGroupId(new BigDecimal(1));
+		param.setAgentBankId(new BigDecimal(237));
+		
+		response = client.getAgentBranch(param);
+		
 		assertNotNull("Response is null", response);
 	}
 

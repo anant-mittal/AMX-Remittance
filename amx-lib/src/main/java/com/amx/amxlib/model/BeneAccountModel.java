@@ -124,4 +124,13 @@ public class BeneAccountModel extends AbstractModel {
 		this.bankAccountTypeId = bankAccountTypeId;
 	}
 
+	@Override
+	public String toString() {
+		return "BeneAccountModel [beneficaryCountryId=" + beneficaryCountryId + ", bankId=" + bankId + ", bankBranchId="
+				+ bankBranchId + ", bankAccountNumber=" + bankAccountNumber + ", currencyId=" + currencyId
+				+ ", servicegropupId=" + servicegropupId + ", serviceProviderId=" + serviceProviderId
+				+ ", serviceProviderBranchId=" + serviceProviderBranchId + ", swiftCode=" + swiftCode
+				+ ", bankAccountTypeId=" + bankAccountTypeId + "]";
+	}
+
 }
