@@ -49,7 +49,6 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
-import com.amx.jax.dbmodel.RoutingBankMasterView;
 import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -254,11 +253,6 @@ public class BeneficiaryService extends AbstractService {
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
-
-			BeneficaryRelationship beneRelation = null;
-
-			// beneRelation =
-			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
 
 			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
