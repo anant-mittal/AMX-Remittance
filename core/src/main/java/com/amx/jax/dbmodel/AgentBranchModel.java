@@ -1,31 +1,44 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 
-public class RoutingBankMasterDTO {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+public class AgentBranchModel {
+	
+
+	public AgentBranchModel(BigDecimal applicationCountryId,
+							BigDecimal routingCountryId,
+							BigDecimal serviceGroupId,
+							BigDecimal routingBankId,
+							BigDecimal currencyId,
+							BigDecimal agentBankId,
+							BigDecimal bankBranchId,
+							BigDecimal routingBranchId,
+		                    String branchFullName) {
+		
+		this.applicationCountryId = applicationCountryId;
+		this.routingCountryId =routingCountryId;
+		this.serviceGroupId = serviceGroupId;
+		this.routingBankId=routingBankId;
+		this.currencyId= currencyId;
+		this.agentBankId=agentBankId;
+		this.bankBranchId = bankBranchId;
+		this.routingBranchId=routingBranchId;
+		this.branchFullName=branchFullName;
+	}
 	
 	private BigDecimal applicationCountryId;
-	
 	private BigDecimal routingCountryId;
-	
 	private BigDecimal serviceGroupId;
-	
-	private BigDecimal serviceBankId;
-	
-	private String serviceBankCode;	
-	
-	private String serviceBankName;
-	
+	private BigDecimal routingBankId;
+	private BigDecimal currencyId;
 	private BigDecimal agentBankId;
-	
-	private String agentBankName;
-	
-	private String agentBankCode;
-	
 	private BigDecimal bankBranchId;
-	
 	private BigDecimal routingBranchId;
-	
 	private String branchFullName;
 	
 	public BigDecimal getApplicationCountryId() {
@@ -46,41 +59,23 @@ public class RoutingBankMasterDTO {
 	public void setServiceGroupId(BigDecimal serviceGroupId) {
 		this.serviceGroupId = serviceGroupId;
 	}
-	public BigDecimal getServiceBankId() {
-		return serviceBankId;
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
 	}
-	public void setServiceBankId(BigDecimal serviceBankId) {
-		this.serviceBankId = serviceBankId;
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
 	}
-	public String getServiceBankCode() {
-		return serviceBankCode;
+	public BigDecimal getCurrencyId() {
+		return currencyId;
 	}
-	public void setServiceBankCode(String serviceBankCode) {
-		this.serviceBankCode = serviceBankCode;
-	}
-	public String getServiceBankName() {
-		return serviceBankName;
-	}
-	public void setServiceBankName(String serviceBankName) {
-		this.serviceBankName = serviceBankName;
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
 	}
 	public BigDecimal getAgentBankId() {
 		return agentBankId;
 	}
 	public void setAgentBankId(BigDecimal agentBankId) {
 		this.agentBankId = agentBankId;
-	}
-	public String getAgentBankName() {
-		return agentBankName;
-	}
-	public void setAgentBankName(String agentBankName) {
-		this.agentBankName = agentBankName;
-	}
-	public String getAgentBankCode() {
-		return agentBankCode;
-	}
-	public void setAgentBankCode(String agentBankCode) {
-		this.agentBankCode = agentBankCode;
 	}
 	public BigDecimal getBankBranchId() {
 		return bankBranchId;
@@ -99,5 +94,6 @@ public class RoutingBankMasterDTO {
 	}
 	public void setBranchFullName(String branchFullName) {
 		this.branchFullName = branchFullName;
-	}	
+	}
+
 }
