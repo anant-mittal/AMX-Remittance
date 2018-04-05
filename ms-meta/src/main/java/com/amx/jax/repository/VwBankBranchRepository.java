@@ -13,7 +13,7 @@ public interface VwBankBranchRepository extends CrudRepository<BankBranchView, B
 
 	List<BankBranchView> findByCountryIdAndBankIdAndSwift(BigDecimal countryId, BigDecimal bankId, String swift);
 
-	List<BankBranchView> findByCountryIdAndBankIdAndBranchFullNameLike(BigDecimal countryId, BigDecimal bankId,
+	List<BankBranchView> findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(BigDecimal countryId, BigDecimal bankId,
 			String branchName);
 	
 	List<BankBranchView> findByCountryIdAndBankId(BigDecimal countryId, BigDecimal bankId);

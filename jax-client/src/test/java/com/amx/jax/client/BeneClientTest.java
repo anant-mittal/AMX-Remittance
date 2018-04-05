@@ -104,7 +104,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	@SuppressWarnings("rawtypes")
 	public void testServiceProvider() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
