@@ -1,6 +1,8 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,11 +10,9 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StringUtils;
 
-import com.amx.jax.AppConstants;
-import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
+import com.amx.jax.AppUtil;
 
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
@@ -22,10 +22,12 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 
-		request.getHeaders().add(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
-		request.getHeaders().add(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
-		request.getHeaders().add(AppConstants.TRANX_ID_XKEY,
-				ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY)));
+		Map<String, String> header = AppUtil.header();
+		for (Entry<String, String> b : header.entrySet()) {
+			if (!StringUtils.isEmpty(b.getValue())) {
+				request.getHeaders().add(b.getKey(), b.getValue());
+			}
+		}
 
 		LOGGER.info("REQT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
 		ClientHttpResponse response = execution.execute(request, body);
