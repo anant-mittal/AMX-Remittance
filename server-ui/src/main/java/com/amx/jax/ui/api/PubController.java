@@ -21,6 +21,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.ui.UIConstants;
@@ -143,24 +144,15 @@ public class PubController {
 	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
 			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
-
 		try {
 			if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
-				Map<String, String> map = new HashMap<String, String>();
-				map.put("name", name);
-				map.put("cphone", cphone);
-				map.put("cemail", cemail);
-				map.put("message", message);
-				Email email = new Email();
-				email.setFrom("exch-online@almullagroup.com");
-				email.setReplyTo(cemail);
-				email.addTo("alexander.jacob@almullagroup.com", "exch-online1@almullagroup.com",
-						"exch-amx@almullagroup.com");
-				email.getModel().put(UIConstants.RESP_DATA_KEY, map);
-				email.setSubject("Inquiry");
-				email.setTemplate(Templates.CONTACT_US);
-				email.setHtml(true);
-				postManService.sendEmail(email);
+				SupportEmail email = new SupportEmail();
+				email.setCaptchaCode(verify);
+				email.setVisitorName(name);
+				email.setVisitorPhone(cphone);
+				email.setVisitorEmail(cemail);
+				email.setVisitorMessage(message);
+				postManService.sendEmailToSupprt(email);
 				wrapper.setData(email);
 			} else {
 				wrapper.setStatusKey(WebResponseStatus.ERROR);
@@ -169,9 +161,7 @@ public class PubController {
 			wrapper.setStatusKey(WebResponseStatus.ERROR);
 			log.error("/pub/contact", e);
 		}
-
 		return wrapper;
-
 	}
 
 }

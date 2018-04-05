@@ -19,6 +19,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -115,6 +116,19 @@ public class PostManClient implements PostManService {
 	@Override
 	public Email sendEmailAsync(Email email) throws PostManException {
 		return sendEmail(email, Boolean.TRUE);
+	}
+
+	@Override
+	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
+		LOGGER.info("Sending support email from {}", email.getVisitorName());
+		try {
+			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL_SUPPORT)
+					.queryString(PARAM_LANG, getLang()).header("content-type", "application/json").headers(appheader())
+					.body(email).asObject(Email.class);
+			return response.getBody();
+		} catch (UnirestException e) {
+			throw new PostManException(e);
+		}
 	}
 
 	@Override

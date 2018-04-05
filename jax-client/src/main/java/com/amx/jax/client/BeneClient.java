@@ -5,6 +5,9 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -32,10 +35,14 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
@@ -316,13 +323,131 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse>() {
+                    });
+            return response.getBody();
+        } catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in updateStatus : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    }
+    
+	/**
+	 * Saves beneficiary bank account details in transaction
+	 * @param beneAccountModel - Bene account model
+	 * */
+	public ApiResponse<JaxTransactionResponse> saveBeneAccountInTrnx(BeneAccountModel beneAccountModel) {
+		try {
+			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
+
+			HttpEntity<BeneAccountModel> requestEntity = new HttpEntity<BeneAccountModel>(beneAccountModel,
+					getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/bene/bene-account/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
 			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in updateStatus : ", e);
+			LOGGER.error("exception in saveBeneAccountInTrnx : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
+
+	/**
+	 * Saves beneficiary personal details like contact, names etc
+	 * @param benePersonalDetailModel - BenePersonalDetail Model
+	 * */
+	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
+			BenePersonalDetailModel benePersonalDetailModel) {
+		try {
+			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
+
+			HttpEntity<BenePersonalDetailModel> requestEntity = new HttpEntity<BenePersonalDetailModel>(
+					benePersonalDetailModel, getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/bene/bene-details/";
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveBenePersonalDetailInTrnx : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	/**
+	 * Commits the add beneficiary transaction in database by validating otp passed
+	 * @param mOtp - mobile otp
+	 * @param eOtp - email otp 
+	 * */
+	public ApiResponse<BeneficiaryTrnxModel> commitAddBeneTrnx(String mOtp, String eOtp) {
+		try {
+			ResponseEntity<ApiResponse<BeneficiaryTrnxModel>> response;
+
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String baseUrl = this.getBaseUrl() + BENE_API_ENDPOINT + "/trnx/addbene/commit/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl).queryParam("mOtp", mOtp)
+					.queryParam("eOtp", eOtp);
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BeneficiaryTrnxModel>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in commitAddBeneTrnx : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<BeneCountryDTO> getServiceProvider(BigDecimal beneCountryId) {
+
+	       try {
+	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
+	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+	            StringBuffer sb = new StringBuffer();
+	            sb.append("?beneCountryId=").append(beneCountryId);
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT + sb.toString();
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+	                    });
+
+	            return response.getBody();
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in getServiceProvider : ",e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
+	}
+	
+	public ApiResponse<BeneCountryDTO> getAgentMaster(BigDecimal beneCountryId, BigDecimal routingBankId, BigDecimal currencyId) {
+
+	       try {
+	            ResponseEntity<ApiResponse<BeneCountryDTO>> response;
+	            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+	            StringBuffer sb = new StringBuffer();
+	            sb.append("?beneCountryId=").append(beneCountryId);
+	            sb.append("&routingBankId=").append(routingBankId);
+	            sb.append("&currencyId=").append(currencyId);
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT + sb.toString();
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	                    new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+	                    });
+
+	            return response.getBody();
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in getAgentMaster : ",e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
 	}
 }

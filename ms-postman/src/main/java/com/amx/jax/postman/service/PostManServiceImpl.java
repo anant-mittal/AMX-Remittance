@@ -18,6 +18,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;
@@ -27,6 +28,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 public class PostManServiceImpl implements PostManService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManServiceImpl.class);
+
+	@Autowired
+	private SupportService supportService;
 
 	@Autowired
 	private EmailService emailService;
@@ -161,6 +165,11 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	public JSONObject getMap(String url) throws PostManException {
 		return null;
+	}
+
+	@Override
+	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
+		return this.sendEmail(supportService.createContactUsEmail(email));
 	}
 
 }

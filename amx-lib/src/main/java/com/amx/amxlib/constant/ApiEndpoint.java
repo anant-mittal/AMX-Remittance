@@ -33,5 +33,11 @@ public class ApiEndpoint {
     public static final String SEND_OTP_ENDPOINT = "/send-otp/";
     
     public static final String UPDAE_STATUS_ENDPOINT = "/update-status/";
+    
+    public static final String GET_SERVICE_PROVIDER_ENDPOINT = "/service-provider/";
+    
+    public static final String GET_AGENT_MASTER_ENDPOINT = "/agent-master/";
+    
+    public static final String GET_AGENT_BRANCH_ENDPOINT = "/agent-branch/";
 
 }

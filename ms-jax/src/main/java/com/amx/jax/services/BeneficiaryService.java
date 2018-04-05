@@ -32,6 +32,7 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -40,11 +41,14 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
+import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.RoutingBankMasterView;
+import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
@@ -56,6 +60,7 @@ import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
+import com.amx.jax.repository.RoutingBankMasterRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
@@ -110,6 +115,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	RoutingBankMasterRepository routingBankMasterRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -607,4 +615,78 @@ public class BeneficiaryService extends AbstractService {
 			throw new GlobalException("Error while update");
 		}
 	}
+	
+	
+	public ApiResponse getServiceProviderList(RoutingBankMasterParam param) {
+		
+		List<ServiceProviderModel> serviceProviderList = routingBankMasterRepository.getServiceProvider(param.getApplicationCountryId(), 
+																										param.getRoutingCountryId(), 
+																										param.getServiceGroupId());
+		
+		ApiResponse response = getBlackApiResponse();
+		if (serviceProviderList.isEmpty()) {
+			throw new GlobalException("Service provider list is not found.",JaxError.SERVICE_PROVIDER_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertSeriviceList(serviceProviderList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("routingBankMaster");
+		return response;
+	}
+	
+	private List<RoutingBankMasterDTO> convertSeriviceList(List<ServiceProviderModel> serviceProviderList) {
+		
+		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
+		
+		for (ServiceProviderModel routingMasterRecord : serviceProviderList) {
+			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
+			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
+			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());
+			routingMasterDTO.setServiceGroupId(routingMasterRecord.getServiceGroupId());
+			routingMasterDTO.setRoutingBankId(routingMasterRecord.getRoutingBankId());
+			routingMasterDTO.setRoutingBankName(routingMasterRecord.getRoutingBankName());
+			routingMasterDTO.setRoutingBankCode(routingMasterRecord.getRoutingBankCode());
+			list.add(routingMasterDTO);
+		}
+		return list;
+	}
+	
+	public ApiResponse getAgentMasterList(RoutingBankMasterParam param) {
+		
+		List<AgentMasterModel> agentMasterList = routingBankMasterRepository.getAgentMaster(param.getApplicationCountryId(), 
+																							param.getRoutingCountryId(), 
+																							param.getServiceGroupId(), 
+																							param.getRoutingBankId(), 
+																							param.getCurrencyId());
+		
+		ApiResponse response = getBlackApiResponse();
+		if (agentMasterList.isEmpty()) {
+			throw new GlobalException("Agent Master List is not found.",JaxError.AGENT_BANK_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertAgentList(agentMasterList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("routingBankMaster");
+		return response;
+	}
+	
+	private List<RoutingBankMasterDTO> convertAgentList(List<AgentMasterModel> agentMasterList) {
+		
+		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
+		
+		for (AgentMasterModel routingMasterRecord : agentMasterList) {
+			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
+			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
+			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());
+			routingMasterDTO.setServiceGroupId(routingMasterRecord.getServiceGroupId());
+			routingMasterDTO.setRoutingBankId(routingMasterRecord.getRoutingBankId());
+			routingMasterDTO.setAgentBankId(routingMasterRecord.getAgentBankId());
+			routingMasterDTO.setAgentBankCode(routingMasterRecord.getAgentBankCode());
+			routingMasterDTO.setAgentBankName(routingMasterRecord.getAgentBankName());
+			
+			list.add(routingMasterDTO);
+		}
+		return list;
+	}
+	
 }

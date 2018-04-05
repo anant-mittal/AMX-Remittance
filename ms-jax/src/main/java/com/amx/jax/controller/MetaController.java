@@ -296,4 +296,9 @@ public class MetaController {
 		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse);
 		return apiResponse;
 	}
+	
+	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
+	public ApiResponse getServiceGroup(){
+		return metaService.getServiceGroups();
+	}
 }

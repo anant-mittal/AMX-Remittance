@@ -4,6 +4,9 @@ import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,10 +25,13 @@ import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
+import com.amx.jax.services.RoutingBankMasterParam;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
@@ -185,13 +191,23 @@ public class BeneficiaryController {
 
 	}
 	
-	@RequestMapping(value = "/trnx/savebenebank/", method = RequestMethod.POST)
-	public ApiResponse saveBeneBankTrnx(BigDecimal bankId) {
-		
-		//return beneficiaryTrnxManager.saveBeneBankTrnx(bankId);
-		return null;
-
+	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
+	public ApiResponse saveBeneAccountInTrnx(@RequestBody BeneAccountModel beneAccountModel) {
+		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
+	
+	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
+	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
+	}
+	
+	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
+	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
+			@RequestParam(name = "eOtp", required = false) String eOtp) {
+
+		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
+	}
+
 	
 	@RequestMapping(value = "/relations/", method = RequestMethod.GET)
 	public ApiResponse getAllRelations() {
@@ -225,5 +241,23 @@ public class BeneficiaryController {
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
 		return beneService.updateStatus(beneDetails,status);
+	}
+	
+	@RequestMapping(value = GET_SERVICE_PROVIDER_ENDPOINT, method = RequestMethod.GET)
+	public ApiResponse getServiceProviderListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal serviceGroupId =new BigDecimal (1);
+		
+		return beneService.getServiceProviderList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId));
+	}
+	
+	@RequestMapping(value = GET_AGENT_MASTER_ENDPOINT, method = RequestMethod.GET)
+	public ApiResponse getAgentMasterListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,
+												  @RequestParam("routingBankId") BigDecimal routingBankId,
+												  @RequestParam("currencyId") BigDecimal currencyId) {
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal serviceGroupId =new BigDecimal (1);
+		
+		return beneService.getAgentMasterList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId));
 	}
 }

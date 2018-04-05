@@ -26,5 +26,6 @@ public abstract class AbstractTestClient {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		jaxMetaInfo.setTenant(Tenant.KWT);
+		jaxMetaInfo.setReferrer("DEV-TESTING");
 	}
 }

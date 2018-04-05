@@ -51,4 +51,15 @@ public abstract class ATransactionModel<T> {
 	public abstract T init();
 
 	public abstract T commit();
+	
+	/**
+	 * Checks if transaction model is present if not then create new by calling init and return model
+	 * */
+	public T getWithInit() {
+		T existingModel = this.get();
+		if(existingModel == null) {
+			init();
+		}
+		return this.get();
+	}
 }

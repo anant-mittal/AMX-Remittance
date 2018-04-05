@@ -10,12 +10,19 @@ import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 
-public interface IBeneficiaryAccountDao extends JpaRepository<BeneficaryAccount, Serializable>{
+public interface IBeneficiaryAccountDao extends JpaRepository<BeneficaryAccount, Serializable> {
 
 	@Query("select ba from BeneficaryAccount ba where ba.beneApplicationCountryId=:applicationCountryId "
-			+ "and ba.beneficaryMasterId=:beneMasterSeqId and ba.beneficaryAccountSeqId=:beneAccountSeqId and ba.isActive='Y'")	
-	public List<BeneficaryAccount> getBeneficiaryByBeneAccountId(
-			@Param("beneAccountSeqId") BigDecimal beneAccountSeqId,
+			+ "and ba.beneficaryMasterId=:beneMasterSeqId and ba.beneficaryAccountSeqId=:beneAccountSeqId and ba.isActive='Y'")
+	public List<BeneficaryAccount> getBeneficiaryByBeneAccountId(@Param("beneAccountSeqId") BigDecimal beneAccountSeqId,
 			@Param("beneMasterSeqId") BigDecimal beneMasterSeqId,
 			@Param("applicationCountryId") BigDecimal applicationCountryId);
+
+	public List<BeneficaryAccount> findByBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+			BigDecimal countryId, BigDecimal bankId, BigDecimal currencyId, BigDecimal branchId,
+			String bankAccountNumber,String isActive);
+
+	public List<BeneficaryAccount> findByServicegropupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+			BigDecimal serviceGroupId, BigDecimal countryId, BigDecimal bankId, BigDecimal currencyId,
+			BigDecimal branchId, String bankAccountNumber, String isActive);
 }

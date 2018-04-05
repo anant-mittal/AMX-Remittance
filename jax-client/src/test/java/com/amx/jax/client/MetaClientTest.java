@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -105,5 +107,14 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getDistrictDesc());
+	}
+	
+	@Test
+	public void testgetServiceGroupList() {
+		setDefaults();
+		ApiResponse<ServiceGroupMasterDescDto> response = null;
+		response = metaclient.getServiceGroupList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
 	}
 }

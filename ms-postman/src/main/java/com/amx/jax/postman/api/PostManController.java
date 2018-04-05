@@ -21,6 +21,7 @@ import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
@@ -102,6 +103,16 @@ public class PostManController {
 		} else {
 			postManService.sendEmail(email);
 		}
+		return email;
+	}
+
+	@RequestMapping(value = PostManUrls.SEND_EMAIL_SUPPORT, method = RequestMethod.POST)
+	public Email sendEmail(@RequestBody SupportEmail email) throws PostManException {
+		Langs lang = getLang();
+		if (email.getLang() == null) {
+			email.setLang(lang);
+		}
+		postManService.sendEmailToSupprt(email);
 		return email;
 	}
 
