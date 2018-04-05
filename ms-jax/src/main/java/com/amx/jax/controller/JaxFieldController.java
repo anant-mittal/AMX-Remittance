@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.request.AddJaxFieldRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
@@ -33,6 +34,13 @@ public class JaxFieldController {
 	public ApiResponse getJaxFieldsForEntity(@RequestBody GetJaxFieldRequest request) {
 		logger.info("In getJaxFieldsForEntity  with entity: " + request.toString());
 		ApiResponse response = jaxFieldService.getJaxFieldsForEntity(request);
+		return response;
+	}
+	
+	@RequestMapping(value = "/add", method = RequestMethod.POST)
+	public ApiResponse addJaxFieldsForEntity(@RequestBody AddJaxFieldRequest request) {
+		logger.info("In addJaxFieldsForEntity  with entity: " + request.toString());
+		ApiResponse response = jaxFieldService.addJaxField(request);
 		return response;
 	}
 

@@ -1,50 +1,25 @@
-package com.amx.jax.dbmodel;
+package com.amx.amxlib.model.request;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import com.amx.amxlib.model.ValidationRegexDto;
 
-@Entity
-@Table(name = "JAX_FIELD")
-public class JaxField implements Serializable {
+public class AddJaxFieldRequest {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	@Column(name = "NAME")
-	@Id
 	String name;
 
-	@Column(name = "REQUIRED")
 	String required;
 
-	@Column(name = "TYPE")
 	String type;
 
-	@Column(name = "DEFAULT_VALUE")
 	String defaultValue;
 
-	@Column(name = "MIN_LENGTH")
 	BigDecimal minLength;
 
-	@Column(name = "MAX_LENGTH")
 	BigDecimal maxLength;
 
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "JAX_FIELD_REGEX_MAPPING", joinColumns = {
-			@JoinColumn(name = "FIELD_NAME") }, inverseJoinColumns = { @JoinColumn(name = "REGEX_KEY") })
-	List<ValidationRegex> validationRegex;
+	List<ValidationRegexDto> validationRegex;
 
 	public String getName() {
 		return name;
@@ -94,11 +69,11 @@ public class JaxField implements Serializable {
 		this.maxLength = maxLength;
 	}
 
-	public List<ValidationRegex> getValidationRegex() {
+	public List<ValidationRegexDto> getValidationRegex() {
 		return validationRegex;
 	}
 
-	public void setValidationRegex(List<ValidationRegex> validationRegex) {
+	public void setValidationRegex(List<ValidationRegexDto> validationRegex) {
 		this.validationRegex = validationRegex;
 	}
 

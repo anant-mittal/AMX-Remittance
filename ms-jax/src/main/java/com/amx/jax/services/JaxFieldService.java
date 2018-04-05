@@ -8,11 +8,16 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.ValidationRegexDto;
+import com.amx.amxlib.model.request.AddJaxFieldRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxField;
+import com.amx.jax.dbmodel.ValidationRegex;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
+import com.amx.jax.repository.JaxFieldRepository;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -23,6 +28,9 @@ public class JaxFieldService extends AbstractService {
 
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
+
+	@Autowired
+	JaxFieldRepository jaxFieldRepository;
 
 	@Override
 	public String getModelType() {
@@ -45,6 +53,30 @@ public class JaxFieldService extends AbstractService {
 		return apiResponse;
 	}
 
+	public ApiResponse addJaxField(AddJaxFieldRequest request) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		BooleanResponse resp = new BooleanResponse(true);
+		JaxField jaxfield = new JaxField();
+		List<ValidationRegex> validationRegex = convertValidationDto(request.getValidationRegex());
+		jaxUtil.convert(request, jaxfield);
+		jaxfield.setValidationRegex(validationRegex);
+		jaxFieldRepository.save(jaxfield);
+		apiResponse.getData().getValues().add(resp);
+
+		return apiResponse;
+	}
+
+	private List<ValidationRegex> convertValidationDto(List<ValidationRegexDto> validationRegexDto) {
+		List<ValidationRegex> validationRegex = new ArrayList<>();
+		for (ValidationRegexDto dto : validationRegexDto) {
+			ValidationRegex entity = new ValidationRegex();
+			jaxUtil.convert(dto, entity);
+			validationRegex.add(entity);
+		}
+
+		return validationRegex;
+	}
+
 	private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
 		List<JaxConditionalFieldDto> list = new ArrayList<>();
 		fieldList.forEach(i -> {
@@ -56,8 +88,8 @@ public class JaxFieldService extends AbstractService {
 	private JaxConditionalFieldDto convert(JaxConditionalFieldRule i) {
 		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
 		dto.setEntityName(i.getEntityName());
-		JaxFieldDto field = convert(i.getField());
-		dto.setField(field);
+		JaxFieldDto fieldDto = convert(i.getField());
+		dto.setField(fieldDto);
 		dto.setId(i.getId());
 		return dto;
 	}
@@ -65,6 +97,15 @@ public class JaxFieldService extends AbstractService {
 	private JaxFieldDto convert(JaxField field) {
 		JaxFieldDto dto = new JaxFieldDto();
 		jaxUtil.convert(field, dto);
+		List<ValidationRegexDto> validationdtos = new ArrayList<>();
+		if (field.getValidationRegex() != null) {
+			field.getValidationRegex().forEach(validation -> {
+				ValidationRegexDto regexdto = new ValidationRegexDto();
+				jaxUtil.convert(validation, regexdto);
+				validationdtos.add(regexdto);
+			});
+		}
+		dto.setValidationRegex(validationdtos);
 		return dto;
 	}
 
