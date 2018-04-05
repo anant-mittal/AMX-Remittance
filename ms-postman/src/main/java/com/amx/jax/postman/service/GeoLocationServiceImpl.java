@@ -27,7 +27,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 
 	public DatabaseReader getDb() {
 		if (dbReader == null) {
-			File database = FileUtil.getFile("ext-resources/GeoLite2-City.mmdb");
+			File database = FileUtil.getExternalFile("ext-resources/GeoLite2-City.mmdb");
 			try {
 				dbReader = new DatabaseReader.Builder(database).build();
 			} catch (IOException e) {
@@ -53,7 +53,7 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setContinentCode(response.getContinent().getCode());
 			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), Tenant.KWT, true));
 		} catch (Exception e) {
-			loc.setTenant( Tenant.KWT);
+			loc.setTenant(Tenant.KWT);
 			LOGGER.error("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);

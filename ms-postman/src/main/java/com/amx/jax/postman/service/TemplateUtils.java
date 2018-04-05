@@ -3,8 +3,10 @@ package com.amx.jax.postman.service;
 import java.text.Bidi;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.scope.TenantProperties;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
@@ -13,6 +15,13 @@ import com.amx.utils.ContextUtil;
 public class TemplateUtils {
 
 	private static Logger log = Logger.getLogger(TemplateUtils.class);
+
+	@Autowired
+	TenantProperties tenantProperties;
+
+	public String prop(String key) {
+		return tenantProperties.getProperties().getProperty(key);
+	}
 
 	public static void reverseFlag(boolean set) {
 		ContextUtil.map().put("reverseflag", true);

@@ -19,10 +19,10 @@ public class TenantScope implements Scope {
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
 		String nameKey = getNameKey(name);
-		//if (!scopedObjects.containsKey(nameKey)) {
+		if (!scopedObjects.containsKey(nameKey)) {
 			scopedObjects.put(nameKey, this.assignValues(objectFactory.getObject()));
 			LOGGER.info("Tenant bean registered {}", name);
-		//}
+		}
 		return scopedObjects.get(nameKey);
 	}
 

@@ -30,6 +30,7 @@ public final class FileUtil {
 
 	/** The Constant FILE_PREFIX. */
 	public static final String FILE_PREFIX = "file://";
+	public static final String FILE_PREFIX2 = "file:/";
 	public static final String CLASSPATH_PREFIX = "classpath:";
 
 	/**
@@ -136,67 +137,99 @@ public final class FileUtil {
 		}
 	}
 
-	public static File getClassPathFile(String filePath) {
-		return getFile(filePath, FileUtil.class);
-	}
-
-	public static File getClassPathFile(String filePath, Class<?> clazz) {
-
+	/**
+	 * 
+	 * Can be used to load file inside classpath ie: src/resources
+	 * 
+	 * @param filePath
+	 * @param clazz
+	 * @return
+	 */
+	public static URL getResource(String filePath, Class<?> clazz) {
+		boolean isClassPath = filePath.startsWith(CLASSPATH_PREFIX);
+		if (isClassPath) {
+			return getResource(filePath.substring(CLASSPATH_PREFIX.length()), clazz);
+		}
 		if (clazz == null) {
-			return getClassPathFile(filePath);
+			return getResource(filePath);
 		}
-
-		File file = new File("classpath:" + filePath);
-		if (file.isFile()) {
-			LOG.info("STEP 1");
-			return file;
-		}
-
 		URL u = clazz.getClassLoader().getResource("classpath:" + filePath);
 		if (u != null) {
-			LOG.info("STEP 2");
-			return new File(u.getPath());
-		}
-
-		file = new File(filePath);
-		if (file.isFile()) {
-			LOG.info("STEP 3");
-			return file;
+			return u;
 		}
 
 		u = clazz.getClassLoader().getResource(filePath);
 		if (u != null) {
-			LOG.info("STEP 4");
-			return new File(u.getPath());
+			return u;
 		}
-
-		LOG.info("STEP 5");
-		return new File(filePath);
+		return u;
 	}
 
-	public static File getFile(String filePath) {
-		return getFile(filePath, FileUtil.class);
+	public static URL getResource(String filePath) {
+		return getResource(filePath, FileUtil.class);
 	}
 
-	public static File getFile(String filePath, Class<?> clazz) {
+	public static File getExternalFile(String filePath) {
+		return getExternalFile(filePath, FileUtil.class);
+	}
 
-		boolean isClassPath = filePath.startsWith(CLASSPATH_PREFIX);
-		if (isClassPath) {
-			filePath = filePath.substring(CLASSPATH_PREFIX.length());
-			return getClassPathFile(filePath, clazz);
+	public static URL getExternalResource(String filePath) {
+		return getExternalResource(filePath, FileUtil.class);
+	}
+
+	public static URL getExternalResource(String filePath, Class<?> clazz) {
+		if (clazz == null) {
+			return getExternalResource(filePath);
 		}
+		// Search in jar folder
+		File jarPath = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
+		String propertiesPath = jarPath.getParent();
+
+		URL u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		if (u != null) {
+			return u;
+		}
+
+		// Search working folder
+		propertiesPath = System.getProperty("user.dir");
+		u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
+		if (u != null) {
+			return u;
+		}
+
+		// Search in target folder
+		u = clazz.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
+		if (u != null) {
+			LOG.info("Step 5 URL:{}", u.getPath());
+			return u;
+		}
+
+		// Return default
+		return null;
+	}
+
+	/**
+	 * Is used to load file relative to project or jar
+	 * 
+	 * @param filePath
+	 * @param clazz
+	 * @return
+	 */
+	public static File getExternalFile(String filePath, Class<?> clazz) {
 
 		if (clazz == null) {
-			return getFile(filePath);
+			return getExternalFile(filePath);
 		}
 
 		// Search in jar folder
 		File jarPath = new File(clazz.getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
-		String propertiesPath = jarPath.getParent();
-		URL u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
-		if (u != null) {
-			return new File(u.getPath());
-		}
+		String propertiesPath = jarPath.getParentFile().getPath();
+
+		propertiesPath = propertiesPath.startsWith(FILE_PREFIX2) ? propertiesPath.substring(FILE_PREFIX2.length())
+				: propertiesPath;
+		propertiesPath = propertiesPath.startsWith(FILE_PREFIX) ? propertiesPath.substring(FILE_PREFIX.length())
+				: propertiesPath;
+		propertiesPath = "/" + propertiesPath;
 
 		File file = new File(propertiesPath + "/" + filePath);
 		if (file.exists()) {
@@ -205,20 +238,12 @@ public final class FileUtil {
 
 		// Search working folder
 		propertiesPath = System.getProperty("user.dir");
-		u = clazz.getClassLoader().getResource(propertiesPath + "/" + filePath);
-		if (u != null) {
-			return new File(u.getPath());
-		}
 		file = new File(propertiesPath + "/" + filePath);
 		if (file.exists()) {
 			return file;
 		}
 
 		// Search in target folder
-		u = clazz.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
-		if (u != null) {
-			return new File(u.getPath());
-		}
 		file = new File(propertiesPath + "/target/" + filePath);
 		if (file.exists()) {
 			return file;
@@ -226,5 +251,25 @@ public final class FileUtil {
 
 		// Return default
 		return new File(filePath);
+	}
+
+	public static InputStream getExternalResourceAsStream(String filePath) throws IOException {
+		return getExternalResourceAsStream(filePath, FileUtil.class);
+	}
+
+	public static InputStream getExternalResourceAsStream(String filePath, Class<?> clazz) throws IOException {
+		if (clazz == null) {
+			return getExternalResourceAsStream(filePath);
+		}
+		InputStream in = null;
+		URL url = getExternalResource(filePath, clazz);
+		if (url != null) {
+			return url.openStream();
+		}
+		File file = getExternalFile(filePath, clazz);
+		if (file.isFile()) {
+			return new FileInputStream(file);
+		}
+		return in;
 	}
 }
