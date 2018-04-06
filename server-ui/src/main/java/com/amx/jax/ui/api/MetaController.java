@@ -99,9 +99,9 @@ public class MetaController {
 
 	@ApiOperation(value = "Get beneficiary Relations")
 	@RequestMapping(value = "/api/meta/bnfcry/relations", method = { RequestMethod.GET })
-	public ResponseWrapper<BeneRelationsDescriptionDto> getBeneficiaryRelations() {
-		return new ResponseWrapper<BeneRelationsDescriptionDto>(
-				jaxService.setDefaults().getBeneClient().getBeneficiaryRelations().getResult());
+	public ResponseWrapper<List<BeneRelationsDescriptionDto>> getBeneficiaryRelations() {
+		return new ResponseWrapper<List<BeneRelationsDescriptionDto>>(
+				jaxService.setDefaults().getBeneClient().getBeneficiaryRelations().getResults());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
