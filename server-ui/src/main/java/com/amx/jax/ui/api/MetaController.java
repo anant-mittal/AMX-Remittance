@@ -109,18 +109,14 @@ public class MetaController {
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
-	@RequestMapping(value = "/api/meta/bank_branch/list", method = { RequestMethod.GET })
-	public ResponseWrapper<List<BankBranchDto>> getListOfBankBranches(
-			@RequestParam(required = false) BigDecimal countryId, @RequestParam(required = false) BigDecimal bankId,
-			@RequestParam(required = false) String ifscCode, @RequestParam(required = false) String swift,
-			@RequestParam(required = false) String branchName) {
-		return new ResponseWrapper<List<BankBranchDto>>(jaxService.setDefaults().getMetaClient()
-				.getBankBranchList(new GetBankBranchRequest(bankId, countryId, ifscCode, swift, branchName))
-				.getResults());
+	@RequestMapping(value = "/api/meta/bank_branch/list", method = { RequestMethod.POST })
+	public ResponseWrapper<List<BankBranchDto>> getListOfBankBranches(@RequestBody GetBankBranchRequest param) {
+		return new ResponseWrapper<List<BankBranchDto>>(
+				jaxService.setDefaults().getMetaClient().getBankBranchList(param).getResults());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
-	@RequestMapping(value = "/api/meta/service_provider/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/meta/service_provider/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfSetviceProviders(
 			@RequestBody RoutingBankMasterParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
@@ -128,14 +124,14 @@ public class MetaController {
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
-	@RequestMapping(value = "/api/meta/agent/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/meta/agent/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgents(@RequestBody RoutingBankMasterParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentMaster(param).getResults());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
-	@RequestMapping(value = "/api/meta/agent_branch/list", method = { RequestMethod.GET })
+	@RequestMapping(value = "/api/meta/agent_branch/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgentBranches(
 			@RequestBody RoutingBankMasterParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
