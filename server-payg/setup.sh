@@ -9,4 +9,4 @@ cd ext-jars
 #mvn install:install-file -Dfile=bouncycastle-1.20.jar -DgroupId=bouncycastle-1.20 -DartifactId=bouncycastle-1.20 -Dversion=1.0 -Dpackaging=jar
 #mvn install:install-file -Dfile=cryptix32.jar -DgroupId=cryptix32 -DartifactId=cryptix32 -Dversion=1.0 -Dpackaging=jar
 #mvn install:install-file -Dfile=bcprov-jdk15-145.jar -DgroupId=bcprov-jdk15-145 -DartifactId=bcprov-jdk15-145 -Dversion=1.0 -Dpackaging=jar
-mvn install:install-file -Dfile=benefit.jar -DgroupId=com.benefit.test -DartifactId=benefit.test -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=benefit.jar -DgroupId=com.benefit -DartifactId=benefit -Dversion=1.0 -Dpackaging=jar

@@ -81,8 +81,8 @@
 			<id>dev</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.benefit.test</groupId>
-					<artifactId>benefit.test</artifactId>
+					<groupId>com.benefit</groupId>
+					<artifactId>benefit</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>
@@ -97,8 +97,8 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>com.benefit.test</groupId>
-					<artifactId>benefit.test</artifactId>
+					<groupId>com.benefit</groupId>
+					<artifactId>benefit</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>
