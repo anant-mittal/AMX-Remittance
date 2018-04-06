@@ -1,8 +1,5 @@
 package com.amx.jax.ui.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -22,9 +19,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
 import com.amx.jax.sample.CalcLibs;
-import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
