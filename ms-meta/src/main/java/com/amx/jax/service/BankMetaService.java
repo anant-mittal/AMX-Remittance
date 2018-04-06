@@ -3,8 +3,9 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -17,7 +18,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -106,18 +106,19 @@ public class BankMetaService extends AbstractService {
 	public ApiResponse<BankBranchDto> getBankBranches(GetBankBranchRequest request) {
 
 		BigDecimal bankId = request.getBankId();
+		validateGetBankBrancheRequest(request);
 		BigDecimal countryId = request.getCountryId();
 		String ifsc = request.getIfscCode();
 		String swift = request.getSwift();
 		String branchName = request.getBranchName();
-		List<BankBranchView> branchesList = new ArrayList<>();
+		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
 		if (ifsc != null) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCode(countryId, bankId, ifsc));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCase(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
 		if (swift != null) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwift(countryId, bankId, swift));
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCase(countryId, bankId, swift));
 			isparametersSet = true;
 		}
 		if (branchName != null) {
@@ -130,15 +131,20 @@ public class BankMetaService extends AbstractService {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
 		}
 		ApiResponse response = getBlackApiResponse();
-		// throw new GlobalException("bank branch list not found",
-		// JaxError.BANK_BRANCH_NOT_FOUND);
 		response.getData().getValues().addAll(convertBranchView(branchesList));
 		response.getData().setType("bank-branch-dto");
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
 
-	private List<BankBranchDto> convertBranchView(List<BankBranchView> branchesList) {
+	private void validateGetBankBrancheRequest(GetBankBranchRequest request) {
+
+		if (request.getBankId() == null) {
+			throw new GlobalException("No Bank Id provided", JaxError.BANK_ID_NOT_PRESENT);
+		}
+	}
+
+	private List<BankBranchDto> convertBranchView(Set<BankBranchView> branchesList) {
 		List<BankBranchDto> output = new ArrayList<>();
 		branchesList.forEach(i -> output.add(convert(i)));
 		return output;

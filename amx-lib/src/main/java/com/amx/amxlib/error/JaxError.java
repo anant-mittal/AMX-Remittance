@@ -79,7 +79,8 @@ public enum JaxError {
     DUPLICATE_BENE_BANK_ACCOUNT,
     SERVICE_PROVIDER_LIST_NOT_FOUND,
     AGENT_BANK_LIST_NOT_FOUND,
-    AGENT_BRANCH_LIST_NOT_FOUND;
+    AGENT_BRANCH_LIST_NOT_FOUND,
+    BANK_ID_NOT_PRESENT,;
 
     public String getCode() {
         return this.toString();
