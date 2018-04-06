@@ -16,7 +16,6 @@ import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
-import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
@@ -35,7 +34,7 @@ public class BeneController {
 
 	@Autowired
 	private JaxService jaxService;
-	
+
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
