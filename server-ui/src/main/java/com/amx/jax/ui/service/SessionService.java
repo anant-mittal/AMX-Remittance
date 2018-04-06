@@ -20,7 +20,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.session.LoggedInUsers;
-import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
@@ -164,7 +164,7 @@ public class SessionService {
 			if (userKeyString != null) {
 				RLocalCachedMap<String, String> map = loggedInUsers.map();
 				map.fastRemove(userKeyString);
-				auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.LOCKED));
+				auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.LOCKED));
 			}
 		}
 	}
@@ -193,7 +193,7 @@ public class SessionService {
 
 	public boolean validateSessionUnique() {
 		if (this.validatedUser() && !this.indexedUser()) {
-			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
+			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
 			this.unauthorize();
 			return false;
 		}
@@ -214,7 +214,7 @@ public class SessionService {
 		if (this.indexedUser()) {
 			RLocalCachedMap<String, String> map = loggedInUsers.map();
 			map.fastRemove(userKeyString);
-			auditService.log(new AuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
+			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH));
 		}
 
 		SessionEvent sessionEvent = new SessionEvent();

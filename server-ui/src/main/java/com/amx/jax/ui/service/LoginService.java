@@ -16,7 +16,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
@@ -133,7 +133,7 @@ public class LoginService {
 			// wrapper.getData().setAnswer(answer);
 			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 			auditService.log(
-					new AuthEvent(sessionService.getGuestSession().getState(), AuthEvent.Result.FAIL, e.getError()));
+					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));
 		}
 		return wrapper;
 	}

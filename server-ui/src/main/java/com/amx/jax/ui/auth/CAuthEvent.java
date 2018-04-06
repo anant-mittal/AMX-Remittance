@@ -8,30 +8,30 @@ import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.utils.ArgUtil;
 
-public class AuthEvent extends AuditEvent {
+public class CAuthEvent extends AuditEvent {
 
 	public enum Result {
 		PASS, FAIL;
 	}
 
-	public AuthEvent(AuthFlow flow, AuthStep step) {
+	public CAuthEvent(AuthFlow flow, AuthStep step) {
 		super(flow);
 		this.step = step;
 	}
 
-	public AuthEvent(AuthState state, Result result) {
+	public CAuthEvent(AuthState state, Result result) {
 		this(state.flow, state.getnStep());
 		this.step = state.getnStep();
 		this.result = result;
 		this.description = this.getDescription();
 	}
 
-	public AuthEvent(AuthState state, Result result, Object message) {
+	public CAuthEvent(AuthState state, Result result, Object message) {
 		this(state, result);
 		this.message = ArgUtil.parseAsString(message);
 	}
 
-	public AuthEvent(AuthState state) {
+	public CAuthEvent(AuthState state) {
 		this(state, Result.PASS);
 	}
 

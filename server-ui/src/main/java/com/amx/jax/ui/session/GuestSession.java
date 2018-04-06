@@ -21,7 +21,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
@@ -78,17 +78,17 @@ public class GuestSession implements Serializable {
 	public void initStep(AuthStep step) {
 		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.nStep) {
-			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
 	}
 
 	public AuthState endStep(AuthStep step) {
-		auditService.log(new AuthEvent(state));
+		auditService.log(new CAuthEvent(state));
 		state.cStep = step;
 		state.nStep = tenantContext.get().getNextAuthStep(state);
 		if (state.nStep == AuthStep.COMPLETED) {
-			auditService.log(new AuthEvent(state, AuthEvent.Result.PASS));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.PASS));
 			state.flow = null;
 		}
 		return state;
