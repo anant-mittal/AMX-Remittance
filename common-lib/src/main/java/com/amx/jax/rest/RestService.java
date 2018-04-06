@@ -23,7 +23,7 @@ public class RestService {
 	@Autowired(required = false)
 	RestTemplate restTemplate;
 
-	RestTemplate getRestTemplate() {
+	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {
 			if (restTemplate != null) {
 				restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
