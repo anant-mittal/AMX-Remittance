@@ -8,6 +8,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -230,19 +231,16 @@ public class BeneClient extends AbstractJaxServiceClient {
 	public ApiResponse<AccountTypeDto> getBeneficiaryAccountType(BigDecimal beneCountryId) {
 		try {
 			ResponseEntity<ApiResponse<AccountTypeDto>> response;
-
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
-			StringBuffer sb = new StringBuffer();
-			sb.append("?beneCountryId=").append(beneCountryId);
-			LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/accounttype/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + ACCOUNT_TYPE_ENDPOINT;
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("countryId", beneCountryId);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<AccountTypeDto>>() {
 					});
 
 			return response.getBody();
 		} catch (AbstractException ae) {
+				ae.printStackTrace();
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryAccountType : ", e);

@@ -39,5 +39,7 @@ public class ApiEndpoint {
     public static final String GET_AGENT_MASTER_ENDPOINT = "/agent-master/";
     
     public static final String GET_AGENT_BRANCH_ENDPOINT = "/agent-branch/";
+    
+    public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
 
 }
