@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -103,7 +104,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	//@Test
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void testServiceProvider() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -121,7 +122,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	//@Test
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void testAgentMaster() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -141,7 +142,7 @@ public class BeneClientTest extends AbstractTestClient{
 		assertNotNull("Response is null", response);
 	}
 	
-	//@Test
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void testAgentBranch() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

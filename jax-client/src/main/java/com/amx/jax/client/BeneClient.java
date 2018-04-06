@@ -415,12 +415,11 @@ public class BeneClient extends AbstractJaxServiceClient {
 		
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-	            StringBuffer sb = new StringBuffer();
-	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
-	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
-	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT + sb.toString();
 	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT;
+				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
+																					.queryParam("serviceGroupId", param.getServiceGroupId());
+	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 	                    });
 	            return response.getBody();
@@ -441,14 +440,13 @@ public class BeneClient extends AbstractJaxServiceClient {
 		
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-	            StringBuffer sb = new StringBuffer();
-	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
-	            sb.append("&routingBankId=").append(param.getRoutingBankId());
-	            sb.append("&currencyId=").append(param.getCurrencyId());
-	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
-	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT + sb.toString();
 	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT;
+				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
+																					.queryParam("serviceGroupId", param.getServiceGroupId())
+																					.queryParam("routingBankId", param.getRoutingBankId())
+																					.queryParam("currencyId", param.getCurrencyId());
+	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 	                    });
 	            return response.getBody();
@@ -469,15 +467,14 @@ public class BeneClient extends AbstractJaxServiceClient {
 		
 	       try {
 	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-	            StringBuffer sb = new StringBuffer();
-	            sb.append("?beneCountryId=").append(param.getRoutingCountryId());
-	            sb.append("&routingBankId=").append(param.getRoutingBankId());
-	            sb.append("&currencyId=").append(param.getCurrencyId());
-	            sb.append("&agentBankId=").append(param.getAgentBankId());
-	            sb.append("&serviceGroupId=").append(param.getServiceGroupId());
-	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_BRANCH_ENDPOINT + sb.toString();
+				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_BRANCH_ENDPOINT;
+				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
+																					.queryParam("serviceGroupId", param.getServiceGroupId())
+																					.queryParam("routingBankId", param.getRoutingBankId())
+																					.queryParam("agentBankId", param.getAgentBankId())
+																					.queryParam("currencyId", param.getCurrencyId());
 	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-	            response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 	                    });
 	            return response.getBody();
