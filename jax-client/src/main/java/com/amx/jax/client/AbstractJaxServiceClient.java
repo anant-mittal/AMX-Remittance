@@ -39,11 +39,19 @@ public abstract class AbstractJaxServiceClient {
 		try {
 			headers.add(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
 			headers.add(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
+			setMetaInfo();
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
 		}
 		return headers;
+	}
+	
+
+	private void setMetaInfo() {
+
+		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
+		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 	}
 
 }
