@@ -24,6 +24,7 @@ public class ServiceGroupMasterDesc implements Serializable {
 	private ServiceGroupMaster serviceGroupMasterId;
 	private BigDecimal serviceGroupMasterDescId;
 	private String serviceGroupDesc;
+	private String serviceGroupShortDesc;
 	private BigDecimal languageId;
 
 	public ServiceGroupMasterDesc() {
@@ -66,6 +67,15 @@ public class ServiceGroupMasterDesc implements Serializable {
 
 	public void setLanguageId(BigDecimal languageId) {
 		this.languageId = languageId;
+	}
+
+	@Column(name = "SERVICE_GROUP_SHORT_DESC")
+	public String getServiceGroupShortDesc() {
+		return serviceGroupShortDesc;
+	}
+
+	public void setServiceGroupShortDesc(String serviceGroupShortDesc) {
+		this.serviceGroupShortDesc = serviceGroupShortDesc;
 	}
 
 }

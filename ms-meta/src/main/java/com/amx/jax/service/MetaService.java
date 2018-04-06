@@ -139,6 +139,7 @@ public class MetaService extends AbstractService {
 			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
 			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 			dto.setServiceGroupDesc(i.getServiceGroupDesc());
+			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
 			outputDto.add(dto);
 		});
 		response.getData().setType("service-group-model");

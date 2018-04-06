@@ -39,10 +39,10 @@ public class BeneficiaryValidationService {
 
 	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {
 		List<BeneficaryAccount> existingAccount;
-		if (beneAccountModel.getServicegropupId() != null) {
+		if (beneAccountModel.getServiceGroupId() != null) {
 			existingAccount = beneficiaryAccountDao
 					.findByServicegropupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
-							beneAccountModel.getServicegropupId(), beneAccountModel.getBeneficaryCountryId(),
+							beneAccountModel.getServiceGroupId(), beneAccountModel.getBeneficaryCountryId(),
 							beneAccountModel.getBankId(), beneAccountModel.getCurrencyId(),
 							beneAccountModel.getBankBranchId(), beneAccountModel.getBankAccountNumber(),
 							ConstantDocument.Yes);
