@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
@@ -19,6 +20,7 @@ import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.ui.UIConstants;
@@ -83,6 +85,20 @@ public class MetaController {
 	public ResponseWrapper<List<ViewDistrictDto>> getListOfDistrictsForState(@RequestParam BigDecimal stateId) {
 		return new ResponseWrapper<List<ViewDistrictDto>>(
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());
+	}
+
+	@CacheControl(maxAge = UIConstants.CACHE_TIME)
+	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
+	public ResponseWrapper<List<AccountTypeDto>> getListOfAccountTypes(@RequestParam BigDecimal countryId) {
+		return new ResponseWrapper<List<AccountTypeDto>>(
+				jaxService.setDefaults().getBeneClient().getBeneficiaryAccountType(countryId).getResults());
+	}
+
+	@ApiOperation(value = "Get beneficiary Relations")
+	@RequestMapping(value = "/api/meta/bnfcry/relations", method = { RequestMethod.GET })
+	public ResponseWrapper<BeneRelationsDescriptionDto> getBeneficiaryRelations() {
+		return new ResponseWrapper<BeneRelationsDescriptionDto>(
+				jaxService.setDefaults().getBeneClient().getBeneficiaryRelations().getResult());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
