@@ -1,5 +1,6 @@
 package com.amx.jax.client;
 
+import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
@@ -8,7 +9,6 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 
 import java.math.BigDecimal;
 
@@ -45,7 +45,9 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
-import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.client.util.ConverterUtility;
 
 @Component
@@ -240,7 +242,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 
 			return response.getBody();
 		} catch (AbstractException ae) {
-				ae.printStackTrace();
+			ae.printStackTrace();
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryAccountType : ", e);
@@ -323,20 +325,22 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse>() {
-                    });
-            return response.getBody();
-        } catch (AbstractException ae) {
-            throw ae;
-        } catch (Exception e) {
-            LOGGER.error("exception in updateStatus : ",e);
-            throw new JaxSystemError();
-        } // end of try-catch
-    }
-    
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in updateStatus : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
 	/**
 	 * Saves beneficiary bank account details in transaction
-	 * @param beneAccountModel - Bene account model
-	 * */
+	 * 
+	 * @param beneAccountModel
+	 *            - Bene account model
+	 */
 	public ApiResponse<JaxTransactionResponse> saveBeneAccountInTrnx(BeneAccountModel beneAccountModel) {
 		try {
 			ResponseEntity<ApiResponse<JaxTransactionResponse>> response;
@@ -358,8 +362,10 @@ public class BeneClient extends AbstractJaxServiceClient {
 
 	/**
 	 * Saves beneficiary personal details like contact, names etc
-	 * @param benePersonalDetailModel - BenePersonalDetail Model
-	 * */
+	 * 
+	 * @param benePersonalDetailModel
+	 *            - BenePersonalDetail Model
+	 */
 	public ApiResponse<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			BenePersonalDetailModel benePersonalDetailModel) {
 		try {
@@ -379,12 +385,15 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
+
 	/**
 	 * Commits the add beneficiary transaction in database by validating otp passed
-	 * @param mOtp - mobile otp
-	 * @param eOtp - email otp 
-	 * */
+	 * 
+	 * @param mOtp
+	 *            - mobile otp
+	 * @param eOtp
+	 *            - email otp
+	 */
 	public ApiResponse<BeneficiaryTrnxModel> commitAddBeneTrnx(String mOtp, String eOtp) {
 		try {
 			ResponseEntity<ApiResponse<BeneficiaryTrnxModel>> response;
@@ -404,83 +413,93 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
+
 	/**
 	 * Fetch list of service provider
-	 * @param param - object with routingCountryId and ServiceGroupId fields populated
-	 * */
-	public ApiResponse<RoutingBankMasterDTO> getServiceProvider(RoutingBankMasterParam param) {
-		
-	       try {
-	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT;
-				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
-																					.queryParam("serviceGroupId", param.getServiceGroupId());
-	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
-	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
-	                    });
-	            return response.getBody();
-	        } catch (AbstractException ae) {
-	            throw ae;
-	        } catch (Exception e) {
-	            LOGGER.error("exception in getServiceProvider : ",e);
-	            throw new JaxSystemError();
-	        } // end of try-catch
-	}
-	
-	/**
-	 * Fetch list of agent master
-	 * @param param - object with routingCountryId, routingBankId, currencyId, serviceGroupId  fields populated
 	 * 
-	 * */
-	public ApiResponse<RoutingBankMasterDTO> getAgentMaster(RoutingBankMasterParam param) {
-		
-	       try {
-	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT;
-				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
-																					.queryParam("serviceGroupId", param.getServiceGroupId())
-																					.queryParam("routingBankId", param.getRoutingBankId())
-																					.queryParam("currencyId", param.getCurrencyId());
-	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
-	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
-	                    });
-	            return response.getBody();
-	        } catch (AbstractException ae) {
-	            throw ae;
-	        } catch (Exception e) {
-	            LOGGER.error("exception in getAgentMaster : ",e);
-	            throw new JaxSystemError();
-	        } // end of try-catch
+	 * @param param
+	 *            - object with routingCountryId and ServiceGroupId fields populated
+	 */
+	public ApiResponse<RoutingBankMasterDTO> getServiceProvider(RoutingBankMasterServiceProviderParam param) {
+
+		try {
+			ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_SERVICE_PROVIDER_ENDPOINT;
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneCountryId", param.getRoutingCountryId())
+					.queryParam("serviceGroupId", param.getServiceGroupId());
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getServiceProvider : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 	/**
 	 * Fetch list of agent master
-	 * @param param - object with routingCountryId, routingBankId, currencyId, agentBankId and ServiceGroupId fields populated
 	 * 
-	 * */
-	  public ApiResponse<RoutingBankMasterDTO> getAgentBranch(RoutingBankMasterParam param) {	
-		
-	       try {
-	            ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
-				String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_BRANCH_ENDPOINT;
-				UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneCountryId", param.getRoutingCountryId())
-																					.queryParam("serviceGroupId", param.getServiceGroupId())
-																					.queryParam("routingBankId", param.getRoutingBankId())
-																					.queryParam("agentBankId", param.getAgentBankId())
-																					.queryParam("currencyId", param.getCurrencyId());
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-	            response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
-	                    new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
-	                    });
-	            return response.getBody();
-	        } catch (AbstractException ae) {
-	            throw ae;
-	        } catch (Exception e) {
-	            LOGGER.error("exception in getAgentMaster : ",e);
-	            throw new JaxSystemError();
-	        } // end of try-catch
+	 * @param param
+	 *            - object with routingCountryId, routingBankId, currencyId,
+	 *            serviceGroupId fields populated
+	 * 
+	 */
+	public ApiResponse<RoutingBankMasterDTO> getAgentMaster(RoutingBankMasterAgentParam param) {
+
+		try {
+			ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_MASTER_ENDPOINT;
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneCountryId", param.getRoutingCountryId())
+					.queryParam("serviceGroupId", param.getServiceGroupId())
+					.queryParam("routingBankId", param.getRoutingBankId())
+					.queryParam("currencyId", param.getCurrencyId());
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAgentMaster : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
+	/**
+	 * Fetch list of agent master
+	 * 
+	 * @param param
+	 *            - object with routingCountryId, routingBankId, currencyId,
+	 *            agentBankId and ServiceGroupId fields populated
+	 * 
+	 */
+	public ApiResponse<RoutingBankMasterDTO> getAgentBranch(RoutingBankMasterAgentBranchParam param) {
+
+		try {
+			ResponseEntity<ApiResponse<RoutingBankMasterDTO>> response;
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + GET_AGENT_BRANCH_ENDPOINT;
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneCountryId", param.getRoutingCountryId())
+					.queryParam("serviceGroupId", param.getServiceGroupId())
+					.queryParam("routingBankId", param.getRoutingBankId())
+					.queryParam("agentBankId", param.getAgentBankId()).queryParam("currencyId", param.getCurrencyId());
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAgentMaster : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 }
