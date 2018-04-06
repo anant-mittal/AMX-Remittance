@@ -13,6 +13,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppUtil;
+import com.amx.utils.JsonUtil;
 
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
@@ -28,6 +29,8 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 				request.getHeaders().add(b.getKey(), b.getValue());
 			}
 		}
+		
+		LOGGER.info("header ---- ", JsonUtil.toJson(header));
 
 		LOGGER.info("REQT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
 		ClientHttpResponse response = execution.execute(request, body);
