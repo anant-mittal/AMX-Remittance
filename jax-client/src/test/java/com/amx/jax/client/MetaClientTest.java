@@ -51,12 +51,12 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	// @Test
+	 @Test
 	public void testgetBankBranchListByBankId() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BankBranchDto> response = null;
-		GetBankBranchRequest request = new GetBankBranchRequest(new BigDecimal(2258), new BigDecimal(94), "SBMY0040296", null,
-				"YELANDUR");
+		GetBankBranchRequest request = new GetBankBranchRequest(new BigDecimal(2258),null, null, null,
+				"asfds");
 		response = metaclient.getBankBranchList(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
