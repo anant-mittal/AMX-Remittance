@@ -67,11 +67,13 @@ public class RegistrationService {
 
 	@Deprecated
 	public ResponseWrapper<UserUpdateData> loginWithOtp(String idnetity, String mOtp) {
+		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		ApiResponse<CustomerModel> response = jaxClient.setDefaults().getUserclient().validateOtp(idnetity, mOtp, null);
 		CustomerModel model = response.getResult();
 		sessionService.authorize(model, true);
 		initActivation(wrapper);
+		sessionService.getGuestSession().endStep(AuthStep.MOTPVFY);
 		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
 		return wrapper;
 	}
@@ -86,6 +88,7 @@ public class RegistrationService {
 
 		CustomerModel model = response.getResult();
 
+		sessionService.getGuestSession().setCustomerModel(model);
 		sessionService.authorize(model, false);
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
@@ -106,16 +109,15 @@ public class RegistrationService {
 	}
 
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
-		sessionService.getGuestSession().initStep(AuthStep.DATA_VERIFY);
 		if (answer == null) {
 			return validateCustomer(idnetity, mOtp);
 		}
+		sessionService.getGuestSession().initStep(AuthStep.DATA_VERIFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
 		List<SecurityQuestionModel> answers = new ArrayList<SecurityQuestionModel>();
 		answers.add(answer);
 		CustomerModel response = jaxClient.setDefaults().getUserclient().validateDataVerificationQuestions(answers)
 				.getResult();
-
 		// update Session/State
 		sessionService.getGuestSession().getState().setValidDataVer(true);
 		wrapper.setMessage(WebResponseStatus.VERIFY_SUCCESS, ResponseMessage.AUTH_SUCCESS);
@@ -130,7 +132,10 @@ public class RegistrationService {
 		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
 	}
 
-	public ResponseWrapper<UserUpdateData> getSecQues() {
+	public ResponseWrapper<UserUpdateData> getSecQues(boolean validate) {
+		if (validate) {
+			sessionService.getGuestSession().initStep(AuthStep.SECQ_SET);
+		}
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 		initActivation(wrapper);
 		return wrapper;
@@ -163,12 +168,16 @@ public class RegistrationService {
 		return wrapper;
 	}
 
-	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(String loginId, String password, String mOtp,
-			String eOtp, String email) {
+	public ResponseWrapper<UserUpdateData> setCredentials(String loginId, String password, String mOtp, String eOtp,
+			String email, boolean doLogin) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
 		jaxClient.setDefaults().getUserclient().saveCredentials(loginId, password, mOtp, eOtp, email).getResult();
+
+		if (doLogin) {
+			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
+		}
 
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);
