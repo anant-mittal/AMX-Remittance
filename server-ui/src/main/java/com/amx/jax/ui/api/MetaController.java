@@ -23,6 +23,9 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
@@ -118,14 +121,14 @@ public class MetaController {
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/service_provider/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfSetviceProviders(
-			@RequestBody RoutingBankMasterParam param) {
+			@RequestBody RoutingBankMasterServiceProviderParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getServiceProvider(param).getResults());
 	}
 
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/agent/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgents(@RequestBody RoutingBankMasterParam param) {
+	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgents(@RequestBody RoutingBankMasterAgentParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentMaster(param).getResults());
 	}
@@ -133,7 +136,7 @@ public class MetaController {
 	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/agent_branch/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgentBranches(
-			@RequestBody RoutingBankMasterParam param) {
+			@RequestBody RoutingBankMasterAgentBranchParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentBranch(param).getResults());
 	}

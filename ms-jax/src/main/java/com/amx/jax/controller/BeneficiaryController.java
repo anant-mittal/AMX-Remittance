@@ -7,6 +7,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -183,7 +184,7 @@ public class BeneficiaryController {
 		return beneService.beneficiaryUpdate(beneficiaryDto);
 	}
 	
-	@RequestMapping(value = "/accounttype/", method = RequestMethod.GET)
+	@RequestMapping(value = ACCOUNT_TYPE_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryAccountType(@RequestParam("countryId") BigDecimal countryId) {
 		LOGGER.info("getBeneficiaryAccountType countryId :"+countryId);
 		
