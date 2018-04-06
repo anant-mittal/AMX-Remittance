@@ -248,7 +248,7 @@ public class BeneficiaryController {
 	public ApiResponse getServiceProviderListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId,
 													  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		return beneService.getServiceProviderList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId));
+		return beneService.getServiceProviderList(new RoutingBankMasterParam.RoutingBankMasterServiceImpl(applicationCountryId,beneCountryId,serviceGroupId));
 	}
 	
 	@RequestMapping(value = GET_AGENT_MASTER_ENDPOINT, method = RequestMethod.GET)
@@ -257,7 +257,7 @@ public class BeneficiaryController {
 												  @RequestParam("currencyId") BigDecimal currencyId,
 												  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		return beneService.getAgentMasterList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId));
+		return beneService.getAgentMasterList(new RoutingBankMasterParam.RoutingBankMasterServiceImpl(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId));
 	}
 	
 	@RequestMapping(value = GET_AGENT_BRANCH_ENDPOINT, method = RequestMethod.GET)
@@ -268,6 +268,6 @@ public class BeneficiaryController {
 												  @RequestParam("serviceGroupId") BigDecimal serviceGroupId) {
 
 		BigDecimal applicationCountryId = metaData.getCountryId();
-		return beneService.getAgentLocationList(new RoutingBankMasterParam(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId,agentBankId));
+		return beneService.getAgentLocationList(new RoutingBankMasterParam.RoutingBankMasterServiceImpl(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId,agentBankId));
 	}
 }
