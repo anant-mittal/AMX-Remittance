@@ -1,7 +1,5 @@
 package com.amx.jax.client;
 
-import java.util.Collections;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +9,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.client.config.JaxConfig;
-import com.amx.jax.filter.AppClientInterceptor;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.amx.jax")
