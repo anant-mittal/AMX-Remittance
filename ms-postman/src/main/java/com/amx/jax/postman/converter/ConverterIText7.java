@@ -26,7 +26,7 @@ public class ConverterIText7 implements FileConverter {
 
 	public ConverterIText7() {
 		com.itextpdf.licensekey.LicenseKey
-				.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1520345049511_0.xml"));
+				.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1522954615146_0.xml"));
 	}
 
 	@Override
