@@ -36,13 +36,6 @@ public class BeneController {
 	@Autowired
 	private JaxService jaxService;
 	
-	@ApiOperation(value = "Get beneficiary Relations")
-	@RequestMapping(value = "/api/user/bnfcry/relations", method = { RequestMethod.GET })
-	public ResponseWrapper<BeneRelationsDescriptionDto> getBeneficiaryRelations() {
-		return new ResponseWrapper<BeneRelationsDescriptionDto>(
-				jaxService.setDefaults().getBeneClient().getBeneficiaryRelations().getResult());
-	}
-
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
