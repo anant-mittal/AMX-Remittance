@@ -34,19 +34,18 @@ public class WebTenantFilter implements Filter {
         HttpServletRequest request = ((HttpServletRequest) req);
         String url = request.getRequestURI();
         String siteId = request.getParameter(TenantContextHolder.TENANT);
+
+        LOGGER.info("Payment URL is :"+ url);
         
-//        String siteId = null;
-//        LOGGER.info("Payment URL is :"+ url);
-//        
-//        if (siteId != null && !Constants.BLANK.equals(siteId)) {
-//            TenantContextHolder.setCurrent(siteId);
-//        } else {
-//            TenantContextHolder.setDefault();
-//        }
+        if (siteId != null && !Constants.BLANK.equals(siteId)) {
+            TenantContextHolder.setCurrent(siteId);
+        } else {
+            TenantContextHolder.setDefault();
+        }
         LOGGER.info("URL is :"+ url);
         LOGGER.info("site id  is :"+ siteId);
         
-        TenantContextHolder.setCurrent(Tenant.BHR);
+        //TenantContextHolder.setCurrent(Tenant.BHR);
         
         chain.doFilter(req, resp);
     }
