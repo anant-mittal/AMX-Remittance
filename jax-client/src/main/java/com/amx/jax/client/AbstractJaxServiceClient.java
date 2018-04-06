@@ -36,6 +36,9 @@ public abstract class AbstractJaxServiceClient {
 
 		HttpHeaders headers = new HttpHeaders();
 		try {
+			headers.add(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
+			headers.add(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
+			setMetaInfo();
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfo.copy()));
 			headers.add(AppConstants.TRANX_ID_XKEY,
 					ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY)));
@@ -43,6 +46,13 @@ public abstract class AbstractJaxServiceClient {
 			LOGGER.error("error in getheader of jaxclient", e);
 		}
 		return headers;
+	}
+	
+
+	private void setMetaInfo() {
+
+		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
+		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 	}
 
 }
