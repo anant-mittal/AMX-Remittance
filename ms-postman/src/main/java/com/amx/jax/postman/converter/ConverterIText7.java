@@ -5,11 +5,14 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.Constants;
+import com.amx.utils.FileUtil;
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -18,15 +21,21 @@ import com.itextpdf.kernel.pdf.PdfViewerPreferences;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.WriterProperties;
 import com.itextpdf.layout.font.FontProvider;
+import com.itextpdf.licensekey.LicenseKeyException;
 
 @Component
 public class ConverterIText7 implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterIText7.class);
 
-	public ConverterIText7() {
-		com.itextpdf.licensekey.LicenseKey
-				.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1522954615146_0.xml"));
+	@Autowired
+	public ConverterIText7(@Value("${itext.key.path}") String keyFileSearch) {
+		try {
+			com.itextpdf.licensekey.LicenseKey
+					.loadLicenseFile(FileUtil.getExternalResourceAsStream(keyFileSearch, ConverterIText7.class));
+		} catch (LicenseKeyException | IOException e) {
+			LOGGER.error("While Loading iText7 key ", e);
+		}
 	}
 
 	@Override
