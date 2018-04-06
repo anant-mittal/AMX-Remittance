@@ -258,7 +258,7 @@ public class MetaController {
 		return districtService.getDistrict(stateId, districtId, languageId);
 	}
 	
-	@RequestMapping(value = "/districtlist/{languageId}/{stateId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/districtlist/{languageId}/{stateId}/", method = RequestMethod.GET)
 	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
 		return districtService.getAllDistrict(stateId, languageId);
 	}
@@ -268,7 +268,7 @@ public class MetaController {
 		return stateService.getState(countryId, stateId, languageId);
 	}
 	
-	@RequestMapping(value = "/statelist/{languageId}/{countryId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/statelist/{languageId}/{countryId}/", method = RequestMethod.GET)
 	public ApiResponse getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return stateService.getStateAll(countryId, languageId);
 	}
