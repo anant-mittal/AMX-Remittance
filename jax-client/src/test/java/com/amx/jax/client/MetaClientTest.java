@@ -94,7 +94,7 @@ public class MetaClientTest extends AbstractTestClient {
 		// assertNotNull(response.getResult().getStateName());
 	}
 
-	// @Test
+	@Test
 	public void testGetDistrictList() {
 
 		// 1 is for english
@@ -109,7 +109,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getDistrictDesc());
 	}
 	
-	@Test
+	//@Test
 	public void testgetServiceGroupList() {
 		setDefaults();
 		ApiResponse<ServiceGroupMasterDescDto> response = null;

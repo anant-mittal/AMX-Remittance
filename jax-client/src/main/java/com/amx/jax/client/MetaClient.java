@@ -484,11 +484,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&stateId=").append(stateId);
-			LOGGER.info("District Input :" + sb.toString());
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + languageId +"/"+stateId+"/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
@@ -510,11 +506,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&countryId=").append(countryId);
-			LOGGER.info("State Input :" + sb.toString());
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + sb.toString();
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/"+ languageId +"/"+ countryId +"/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
