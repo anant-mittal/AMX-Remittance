@@ -52,6 +52,7 @@ public class AccountTypeService extends AbstractService {
 		AccountTypeDto dto = new AccountTypeDto();
 		try {
 			BeanUtils.copyProperties(dto, accountTypeFromViewModel);
+			dto.setBankAccountTypeId(accountTypeFromViewModel.getAdditionalAmiecId());
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			logger.error("unable to convert currency", e);
 		}

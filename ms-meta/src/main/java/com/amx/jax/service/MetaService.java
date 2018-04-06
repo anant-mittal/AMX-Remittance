@@ -17,13 +17,16 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
 import com.amx.jax.repository.ICustomerRepository;
@@ -31,7 +34,9 @@ import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.OnlineConfigurationRepository;
+import com.amx.jax.repository.ServiceGroupMasterDescRepository;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.util.JaxUtil;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -59,6 +64,15 @@ public class MetaService extends AbstractService {
 
 	@Autowired
 	OnlineConfigurationRepository onlineConfigurationRepository;
+	
+	@Autowired
+	ServiceGroupMasterDescRepository serviceGroupMasterDescRepository;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	JaxUtil jaxUtil;
 
 	public ApiResponse getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -113,6 +127,22 @@ public class MetaService extends AbstractService {
 		}
 		response.getData().setType("online-config");
 		response.getData().getValues().add(dto);
+		return response;
+	}
+	
+	public ApiResponse getServiceGroups() {
+		ApiResponse response = getBlackApiResponse();
+		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
+				.findActiveByLanguageId(metaData.getLanguageId());
+		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
+		output.forEach(i -> {
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
+			dto.setServiceGroupDesc(i.getServiceGroupDesc());
+			outputDto.add(dto);
+		});
+		response.getData().setType("service-group-model");
+		response.getData().getValues().addAll(outputDto);
 		return response;
 	}
 

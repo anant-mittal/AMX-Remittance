@@ -11,6 +11,7 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.ExchangeRateClient;
+import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
@@ -51,52 +52,35 @@ public class JaxService extends AbstractJaxServiceClient {
 	@Autowired
 	private RateAlertClient rateAlertClient;
 
-	public RateAlertClient getRateAlertClient() {
-		return rateAlertClient;
+	@Autowired
+	private JaxFieldClient jaxFieldClient;
+
+	public JaxFieldClient getJaxFieldClient() {
+		return jaxFieldClient;
 	}
 
-	public void setRateAlertClient(RateAlertClient rateAlertClient) {
-		this.rateAlertClient = rateAlertClient;
+	public RateAlertClient getRateAlertClient() {
+		return rateAlertClient;
 	}
 
 	public BeneClient getBeneClient() {
 		return beneClient;
 	}
 
-	public void setBeneClient(BeneClient beneClient) {
-		this.beneClient = beneClient;
-	}
-
 	public ExchangeRateClient getxRateClient() {
 		return xRateClient;
-	}
-
-	public void setxRateClient(ExchangeRateClient xRateClient) {
-		this.xRateClient = xRateClient;
 	}
 
 	public RemitClient getRemitClient() {
 		return remitClient;
 	}
 
-	public void setRemitClient(RemitClient remitClient) {
-		this.remitClient = remitClient;
-	}
-
 	public UserClient getUserclient() {
 		return userclient;
 	}
 
-	public void setUserclient(UserClient userclient) {
-		this.userclient = userclient;
-	}
-
 	public MetaClient getMetaClient() {
 		return metaClient;
-	}
-
-	public void setMetaClient(MetaClient metaClient) {
-		this.metaClient = metaClient;
 	}
 
 	@Autowired

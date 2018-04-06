@@ -25,9 +25,11 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
+import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
@@ -68,6 +70,9 @@ public class PostManControllerTest {
 	@Autowired
 	private LocaleResolver localeResolver;
 
+	@Autowired
+	GeoLocationClient geoLocationClient;
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
 	@RequestMapping(value = "exception")
@@ -79,6 +84,18 @@ public class PostManControllerTest {
 			postManClient.notifyException("My Error", e);
 		}
 		return null;
+	}
+
+	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
+	public GeoLocation location() throws PostManException {
+		String remoteAddr = null;
+		if (request != null) {
+			remoteAddr = request.getHeader("X-FORWARDED-FOR");
+			if (remoteAddr == null || "".equals(remoteAddr)) {
+				remoteAddr = request.getRemoteAddr();
+			}
+		}
+		return geoLocationClient.getLocation(remoteAddr);
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)

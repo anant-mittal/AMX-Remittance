@@ -7,6 +7,7 @@ import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -17,6 +18,8 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
+import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -25,12 +28,16 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -182,11 +189,31 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "online-config":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<OnlineConfigurationDto>>(){});
 			break;
+		case "bank-branch-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BankBranchDto>>(){});
+			break;
+		case "bene-relation-desc":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneRelationsDescriptionDto>>(){});
+			break;
+		case "bene-account-details":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneAccountModel>>(){});
+			break;
+		case "jax-field-rules":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxConditionalFieldDto>>(){});
+			break;
+		case "jax-trnx-response":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxTransactionResponse>>(){});
+			break;
+		case "bene-trnx-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneficiaryTrnxModel>>(){});
+			break;
+		case "service-group-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<ServiceGroupMasterDescDto>>(){});
+			break;
+		case "routingBankMaster":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<RoutingBankMasterDTO>>(){});
+			break;	
 	}
-		
-		
-
-
 		responseData.setValues(models);
 		return responseData;
 	}

@@ -76,11 +76,11 @@ public class BenefitClient implements PayGClient {
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
+				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
-		LOGGER.info("Baharain KNET payment configuration : " + JsonUtil.toJson(configMap));
+		LOGGER.info("Baharain BENEFIT payment configuration : " + JsonUtil.toJson(configMap));
 
 		e24PaymentPipe pipe = new e24PaymentPipe();
 		HashMap<String, String> responseMap = new HashMap<String, String>();
@@ -121,7 +121,7 @@ public class BenefitClient implements PayGClient {
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
 
-			String url = payURL + "?paymentId=" + payID;
+			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
 			payGParams.setRedirectUrl(url);
 
@@ -137,7 +137,7 @@ public class BenefitClient implements PayGClient {
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
 		// Capturing GateWay Response
-		gatewayResponse.setPaymentiId(request.getParameter("paymentid"));
+		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
 		gatewayResponse.setRef(request.getParameter("ref"));
@@ -150,24 +150,26 @@ public class BenefitClient implements PayGClient {
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
-		gatewayResponse.setCountryId(Tenant.KWT.getCode());
+		gatewayResponse.setCountryId(Tenant.BHR.getCode());
+		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 
-		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
+		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
+			// Capturing JAX Response
+			gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+			gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+			gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+		} else if ("NOT CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		} else {
 			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
 		}
-		gatewayResponse.setPayGStatus(PayGStatus.ERROR);
 		return gatewayResponse;
 	}// end of capture
 

@@ -25,21 +25,35 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
+import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.BeneRelationsDescriptionDto;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
+import com.amx.jax.dbmodel.AgentBranchModel;
+import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficaryContactDao;
@@ -47,7 +61,12 @@ import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
+import com.amx.jax.repository.RoutingAgentLocationRepository;
+import com.amx.jax.repository.RoutingBankMasterRepository;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.RelationsRepository;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -83,6 +102,27 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	RelationsRepository relationsRepository;
+	
+	@Autowired
+	JaxUtil jaxUtil;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
+	
+	@Autowired
+	private UserValidationService userValidationService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	RoutingBankMasterRepository routingBankMasterRepository;
+	
+	@Autowired
+	RoutingAgentLocationRepository routingAgentLocationRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -188,11 +228,6 @@ public class BeneficiaryService extends AbstractService {
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
 
-			BeneficaryRelationship beneRelation = null;
-
-			// beneRelation =
-			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
-
 			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
 
@@ -208,24 +243,16 @@ public class BeneficiaryService extends AbstractService {
 			} else {
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
-
 			return response;
 		} catch (Exception e) {
 			throw new GlobalException("Error while update");
 		}
-
 	}
-
 	
 	public ApiResponse updateFavoriteBeneficiary(BeneficiaryListDTO beneDetails) {
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
-
-			BeneficaryRelationship beneRelation = null;
-
-			// beneRelation =
-			// beneRelationShipDao.findOne(beneDetails.getBeneficiaryRelationShipSeqId());
 
 			beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
 					beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
@@ -462,5 +489,240 @@ public class BeneficiaryService extends AbstractService {
 	
 	public BenificiaryListView getBeneBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId) {
 		return beneficiaryOnlineDao.findBybeneficiaryRelationShipSeqId(beneficiaryRelationShipSeqId);
+	}
+	
+	/**
+	 * @return ApiResponse containing beneficiary relations
+	 * */
+	public ApiResponse getBeneRelations() {
+		List<RelationsDescription> allRelationsDesc = relationsRepository.findBylangId(metaData.getLanguageId());
+		List<BeneRelationsDescriptionDto> allRelationsDescDto = new ArrayList<>();
+		allRelationsDesc.forEach(i -> {
+			BeneRelationsDescriptionDto dto = new BeneRelationsDescriptionDto();
+			jaxUtil.convert(i, dto);
+			allRelationsDescDto.add(dto);
+		});
+		ApiResponse apiResponse = getBlackApiResponse();
+		apiResponse.getData().getValues().addAll(allRelationsDescDto);
+		apiResponse.getData().setType("bene-relation-desc");
+		return apiResponse;
+	}
+	
+	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
+		
+		Customer customer = null;
+		String civilId=null;
+		BigDecimal customerId = null;
+		
+		if (metaData.getCustomerId() != null) {
+			customer = custDao.getCustById(metaData.getCustomerId());
+			civilId = customer.getIdentityInt();
+			customerId = customer.getCustomerId();
+		}else {
+			//customer is not logged-in
+			throw new GlobalException("Customer not logged-in", JaxError.CUSTOMER_NOT_FOUND);
+		}
+		
+		logger.info("customerId for sending OTPs is --> " + customerId);
+		CivilIdOtpModel model = new CivilIdOtpModel();
+		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
+		
+		userValidationService.validateCustomerForOnlineFlow(civilId);
+		
+		if (onlineCustReg != null) {
+			logger.info("validating customer lock count.");
+			userValidationService.validateCustomerLockCount(onlineCustReg);
+			model.setIsActiveCustomer(ConstantDocument.Yes.equals(onlineCustReg.getStatus()) ? true : false);
+		} else {
+			logger.info("onlineCustReg is null");
+		}
+		
+		try {
+			userValidationService.validateTokenDate(onlineCustReg);
+		} catch (GlobalException e) {
+			// reset sent token count
+			onlineCustReg.setTokenSentCount(BigDecimal.ZERO);
+		}
+		userValidationService.validateTokenSentCount(onlineCustReg);
+		userService.generateToken(civilId, model, channels);
+		onlineCustReg.setEmailToken(model.getHashedeOtp());
+		onlineCustReg.setSmsToken(model.getHashedmOtp());
+		onlineCustReg.setTokenDate(new Date());
+		BigDecimal tokenSentCount = (onlineCustReg.getTokenSentCount() == null) ? BigDecimal.ZERO
+				: onlineCustReg.getTokenSentCount().add(new BigDecimal(1));
+		onlineCustReg.setTokenSentCount(tokenSentCount);
+		custDao.saveOnlineCustomer(onlineCustReg);
+
+		model.setFirstName(customer.getFirstName());
+		model.setLastName(customer.getLastName());
+		model.setCustomerId(customer.getCustomerId());
+		model.setMiddleName(customer.getMiddleName());
+		model.setEmail(customer.getEmail());
+		model.setMobile(customer.getMobile());
+		
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(model);
+		response.getData().setType(model.getModelType());
+		response.setResponseStatus(ResponseStatus.OK);
+
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customer);
+		} catch (Exception e) {
+		}
+
+		jaxNotificationService.sendOtpSms(personinfo, model);
+
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			jaxNotificationService.sendOtpEmail(personinfo, model);
+		}
+		return response;
+	}
+	
+	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<BeneficaryRelationship> beneRelationList = null;
+
+			if (status!=null && status.equals(BeneStatus.DISABLE)) {
+				beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForDisable(
+						beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+			}else {
+				beneRelationList = beneRelationShipDao.getBeneRelationshipByBeneMasterIdForEnable(
+						beneDetails.getBeneficaryMasterSeqId(), beneDetails.getCustomerId());
+			}
+			
+			if (!beneRelationList.isEmpty()) {
+				BeneficaryRelationship beneRelationModel = beneRelationShipDao
+						.findOne((beneRelationList.get(0).getBeneficaryRelationshipId()));
+				
+				if (status!=null && status.equals(BeneStatus.DISABLE)) {
+					beneRelationModel.setIsActive("D");
+				}else {
+					beneRelationModel.setIsActive("Y");
+				}
+				
+				beneRelationModel.setModifiedBy(beneDetails.getCustomerId().toString());
+				beneRelationModel.setModifiedDate(new Date());
+				beneRelationModel.setRemarks(beneDetails.getRemarks());
+				beneRelationShipDao.save(beneRelationModel);
+				response.setResponseStatus(ResponseStatus.OK);
+			} else {
+				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
+			}
+			return response;
+		} catch (Exception e) {
+			throw new GlobalException("Error while update");
+		}
+	}
+	
+	
+	public ApiResponse getServiceProviderList(RoutingBankMasterParam.RoutingBankMasterServiceImpl param) {
+		
+		logger.info("getServiceProviderList called with Parameters : "+param.toString());		
+		List<ServiceProviderModel> serviceProviderList = routingBankMasterRepository.getServiceProvider(param.getApplicationCountryId(), 
+																										param.getRoutingCountryId(), 
+																										param.getServiceGroupId());
+		
+		ApiResponse response = getBlackApiResponse();
+		if (serviceProviderList.isEmpty()) {
+			throw new GlobalException("Service provider list is not found.",JaxError.SERVICE_PROVIDER_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertSeriviceList(serviceProviderList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("routingBankMaster");
+		return response;
+	}
+	
+	private List<RoutingBankMasterDTO> convertSeriviceList(List<ServiceProviderModel> serviceProviderList) {
+		
+		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
+		
+		for (ServiceProviderModel routingMasterRecord : serviceProviderList) {
+			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
+			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
+			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());
+			routingMasterDTO.setServiceGroupId(routingMasterRecord.getServiceGroupId());
+			routingMasterDTO.setServiceBankId(routingMasterRecord.getRoutingBankId());
+			routingMasterDTO.setServiceBankName(routingMasterRecord.getRoutingBankName());
+			routingMasterDTO.setServiceBankCode(routingMasterRecord.getRoutingBankCode());
+			list.add(routingMasterDTO);
+		}
+		return list;
+	}
+	
+	public ApiResponse getAgentMasterList(RoutingBankMasterParam.RoutingBankMasterServiceImpl param) {
+		logger.info("getAgentMasterList called with Parameters : "+param.toString());
+		List<AgentMasterModel> agentMasterList = routingBankMasterRepository.getAgentMaster(param.getApplicationCountryId(), 
+																							param.getRoutingCountryId(), 
+																							param.getServiceGroupId(), 
+																							param.getRoutingBankId(), 
+																							param.getCurrencyId());
+		ApiResponse response = getBlackApiResponse();
+		if (agentMasterList.isEmpty()) {
+			throw new GlobalException("Agent Master List is not found.",JaxError.AGENT_BANK_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertAgentList(agentMasterList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("routingBankMaster");
+		return response;
+	}
+	
+	private List<RoutingBankMasterDTO> convertAgentList(List<AgentMasterModel> agentMasterList) {
+		
+		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
+		for (AgentMasterModel routingMasterRecord : agentMasterList) {
+			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
+			routingMasterDTO.setApplicationCountryId(routingMasterRecord.getApplicationCountryId());
+			routingMasterDTO.setRoutingCountryId(routingMasterRecord.getRoutingCountryId());
+			routingMasterDTO.setServiceGroupId(routingMasterRecord.getServiceGroupId());
+			routingMasterDTO.setServiceBankId(routingMasterRecord.getRoutingBankId());
+			routingMasterDTO.setAgentBankId(routingMasterRecord.getAgentBankId());
+			routingMasterDTO.setAgentBankCode(routingMasterRecord.getAgentBankCode());
+			routingMasterDTO.setAgentBankName(routingMasterRecord.getAgentBankName());
+			list.add(routingMasterDTO);
+		}
+		return list;
+	}
+	
+	public ApiResponse getAgentLocationList(RoutingBankMasterParam.RoutingBankMasterServiceImpl param) {
+		
+		logger.info("getAgentLocationList called with Parameters : "+param.toString());
+		List<AgentBranchModel> agentBranchList = routingAgentLocationRepository.getAgentBranch(param.getApplicationCountryId(),  
+																							   param.getRoutingCountryId(), 
+																							   param.getServiceGroupId(), 
+																							   param.getRoutingBankId(), 
+																							   param.getCurrencyId(),
+																							   param.getAgentBankId());
+		ApiResponse response = getBlackApiResponse();
+		if (agentBranchList.isEmpty()) {
+			throw new GlobalException("Agent Branch List is not found.",JaxError.AGENT_BRANCH_LIST_NOT_FOUND);
+		} else {
+			response.getData().getValues().addAll(convertBranchList(agentBranchList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("routingBankMaster");
+		return response;
+	}
+	
+	private List<RoutingBankMasterDTO> convertBranchList(List<AgentBranchModel> agentBranchList) {
+		
+		List<RoutingBankMasterDTO> list = new ArrayList<RoutingBankMasterDTO>();
+		
+		for (AgentBranchModel branchRecord : agentBranchList) {
+			RoutingBankMasterDTO routingMasterDTO = new RoutingBankMasterDTO();
+			routingMasterDTO.setApplicationCountryId(branchRecord.getApplicationCountryId());
+			routingMasterDTO.setRoutingCountryId(branchRecord.getRoutingCountryId());
+			routingMasterDTO.setServiceGroupId(branchRecord.getServiceGroupId());
+			routingMasterDTO.setServiceBankId(branchRecord.getRoutingBankId());
+			routingMasterDTO.setAgentBankId(branchRecord.getAgentBankId());
+			routingMasterDTO.setBankBranchId(branchRecord.getBankBranchId());
+			routingMasterDTO.setRoutingBranchId(branchRecord.getRoutingBranchId());
+			routingMasterDTO.setBranchFullName(branchRecord.getBranchFullName());
+			list.add(routingMasterDTO);
+		}
+		return list;
 	}
 }

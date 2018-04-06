@@ -12,6 +12,7 @@ public class AccountTypeDto {
 	BigDecimal additionalBankRuleId;
 	BigDecimal additionalAmiecId;
 	String modelType;
+	BigDecimal bankAccountTypeId;
 	
 	
 	public String getModelType() {
@@ -63,6 +64,14 @@ public class AccountTypeDto {
 
 	public void setModelType(String modelType) {
 		this.modelType = modelType;
+	}
+
+	public BigDecimal getBankAccountTypeId() {
+		return bankAccountTypeId;
+	}
+
+	public void setBankAccountTypeId(BigDecimal bankAccountTypeId) {
+		this.bankAccountTypeId = bankAccountTypeId;
 	}
 
 }

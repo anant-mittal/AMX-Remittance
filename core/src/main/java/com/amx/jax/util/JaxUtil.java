@@ -1,5 +1,6 @@
 package com.amx.jax.util;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.util.ArrayList;
@@ -10,11 +11,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JaxUtil {
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+	
 	public String createRandomPassword(int length) {
 		String validChars = "1234567890";
 		String password = "";
@@ -117,5 +123,13 @@ public class JaxUtil {
 
 		String[] monthCodes = new DateFormatSymbols().getShortMonths();
 		return monthCodes[index];
+	}
+	
+	public <T, E> void convert(T fromObject, E toObject) {
+		try {
+			BeanUtils.copyProperties(toObject, fromObject);
+		} catch (Exception e) {
+			logger.error("error in convert", e);
+		}
 	}
 }

@@ -46,6 +46,8 @@ public class PdfService {
 			return converterIText5.toPDF(file);
 		} else if (conv == PDFConverter.JASPER) {
 			return converterJasper.toPDF(file);
+		} else if (conv == PDFConverter.ITEXT7) {
+			return converterIText7.toPDF(file);
 		}
 		return converterIText7.toPDF(file);
 	}

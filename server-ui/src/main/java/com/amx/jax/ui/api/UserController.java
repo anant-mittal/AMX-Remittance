@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
+import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
+import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -22,6 +24,7 @@ import com.amx.jax.ui.session.UserDevice;
 import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @Api(value = "User APIs")
@@ -71,28 +74,64 @@ public class UserController {
 		return userService.getProfileDetails();
 	}
 
-	@RequestMapping(value = "/api/user/password", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> changePassword(@RequestParam(required = false) String oldPassword,
+	@Deprecated
+	@ApiOperation(value = "Old API to update password with Form")
+	@RequestMapping(value = "/api/user/password", method = {
+			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
-		return loginService.updatepwd(password, mOtp, eOtp);
+		return userService.updatepwd(password, mOtp, eOtp);
 	}
 
-	@RequestMapping(value = "/api/user/email", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> updateEmail(@RequestParam String email,
+	@ApiOperation(value = "new API to update password with Object")
+	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateResponse> changePasswordJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
+		return userService.updatepwd(userUpdateRequest.getPassword(), userUpdateRequest.getmOtp(),
+				userUpdateRequest.geteOtp());
+	}
+
+	@Deprecated
+	@RequestMapping(value = "/api/user/email", method = {
+			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+	public ResponseWrapper<UserUpdateResponse> updateEmail(@RequestParam String email,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updateEmail(email, mOtp, eOtp);
 	}
 
-	@RequestMapping(value = "/api/user/phone", method = { RequestMethod.POST })
-	public ResponseWrapper<UserUpdateData> updatePhone(@RequestParam String phone,
+	@RequestMapping(value = "/api/user/email/**", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateResponse> updateEmailJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
+		return userService.updateEmail(userUpdateRequest.getEmail(), userUpdateRequest.getmOtp(),
+				userUpdateRequest.geteOtp());
+	}
+
+	@Deprecated
+	@RequestMapping(value = "/api/user/phone", method = {
+			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+	public ResponseWrapper<UserUpdateResponse> updatePhone(@RequestParam String phone,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
 
-	@Deprecated
+	@RequestMapping(value = "/api/user/phone/**", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateResponse> updatePhoneJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
+		return userService.updatePhone(userUpdateRequest.getPhone(), userUpdateRequest.getmOtp(),
+				userUpdateRequest.geteOtp());
+	}
+
+	/**
+	 * @param securityquestions
+	 * @return
+	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthResponse> updateSecQues(@RequestBody SecurityQuestionModel guestanswer) {
-		return loginService.loginSecQues(guestanswer, null);
+	public ResponseWrapper<UserUpdateResponse> regSecQues(@RequestBody UserUpdateRequest userUpdateData) {
+		return userService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
+				userUpdateData.geteOtp());
+	}
+
+	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> updatePhising(@RequestBody UserUpdateRequest userUpdateData) {
+		return userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
+				userUpdateData.getmOtp(), userUpdateData.geteOtp());
 	}
 
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })

@@ -1,5 +1,7 @@
 package com.amx.jax.ui.model;
 
+import java.util.List;
+
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.auth.AuthState;
@@ -24,7 +26,7 @@ public final class AuthDataInterface {
 		void setPassword(String password);
 	}
 
-	public interface AuthRequestSecQues {
+	public interface AuthRequestSecAns {
 
 		public SecurityQuestionModel getAnswer();
 
@@ -32,7 +34,7 @@ public final class AuthDataInterface {
 	}
 
 	@JsonDeserialize(as = AuthData.class)
-	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecQues {
+	public interface AuthRequestOTP {
 
 		@ApiModelProperty(example = "345678")
 		String getmOtp();
@@ -45,7 +47,23 @@ public final class AuthDataInterface {
 		void seteOtp(String eOtp);
 	}
 
-	public interface AuthResponse {
+	public interface AuthResponseOTPprefix {
+
+		public String getmOtpPrefix();
+
+		public void setmOtpPrefix(String getmOtpPrefix);
+
+		public String geteOtpPrefix();
+
+		public void seteOtpPrefix(String geteOtpPrefix);
+	}
+
+	@JsonDeserialize(as = AuthData.class)
+	public interface AuthRequest extends AuthRequestIdentity, AuthRequestPassword, AuthRequestSecAns, AuthRequestOTP {
+
+	}
+
+	public interface AuthResponse extends AuthResponseOTPprefix {
 		public AuthState getState();
 
 		public void setState(AuthState state);
@@ -56,17 +74,39 @@ public final class AuthDataInterface {
 		@Deprecated
 		public void setQuestion(String description);
 
-		public String getmOtpPrefix();
-
-		public void setmOtpPrefix(String getmOtpPrefix);
-
-		public String geteOtpPrefix();
-
-		public void seteOtpPrefix(String geteOtpPrefix);
-
 		public QuestModelDTO getQues();
 
 		public void setQues(QuestModelDTO questModelDTO);
+
+	}
+
+	@JsonDeserialize(as = UserUpdateData.class)
+	public interface UserUpdateRequest extends AuthRequestPassword, AuthRequestOTP {
+
+		public List<SecurityQuestionModel> getSecQuesAns();
+
+		public void setSecQuesAns(List<SecurityQuestionModel> secQuesAns);
+
+		@ApiModelProperty(example = "user@amx.com")
+		public String getEmail();
+
+		public void setEmail(String email);
+
+		@ApiModelProperty(example = "9876543210")
+		public String getPhone();
+
+		public void setPhone(String phone);
+
+		public String getImageUrl();
+
+		public void setImageUrl(String imageUrl);
+
+		public String getCaption();
+
+		public void setCaption(String caption);
+	}
+
+	public interface UserUpdateResponse extends AuthResponseOTPprefix {
 
 	}
 }

@@ -11,8 +11,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.BeneAccountModel;
+import com.amx.amxlib.model.BenePersonalDetailModel;
+import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.response.JaxTransactionResponse;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
@@ -60,11 +69,12 @@ public class BeneController {
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
-			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks) {
+			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks,
+			@RequestParam BeneStatus status) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		// Disable Beneficiary
-		wrapper.setData(
-				jaxService.setDefaults().getBeneClient().beneDisable(beneficaryMasterSeqId, remarks).getResult());
+		wrapper.setData(jaxService.setDefaults().getBeneClient().updateStatus(beneficaryMasterSeqId, remarks, status)
+				.getResult());
 		return wrapper;
 	}
 
@@ -79,9 +89,41 @@ public class BeneController {
 	@ApiOperation(value = "get List Of Favorite Beneficiary ")
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.GET })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneFavGet() {
-		ResponseWrapper<List<BeneficiaryListDTO>> wrapper = new ResponseWrapper<List<BeneficiaryListDTO>>();
-		wrapper.setData(jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
+		return new ResponseWrapper<List<BeneficiaryListDTO>>(
+				jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
+	}
+
+	@ApiOperation(value = "Save Bene Account Info")
+	@RequestMapping(value = "/api/user/bnfcry/account", method = { RequestMethod.POST })
+	public ResponseWrapper<JaxTransactionResponse> saveBeneAccountInTrnx(
+			@RequestBody BeneAccountModel beneAccountModel) {
+		return new ResponseWrapper<JaxTransactionResponse>(
+				jaxService.setDefaults().getBeneClient().saveBeneAccountInTrnx(beneAccountModel).getResult());
+	}
+
+	@ApiOperation(value = "Save Bene Personal Detail")
+	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
+	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
+			@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+		return new ResponseWrapper<JaxTransactionResponse>(jaxService.setDefaults().getBeneClient()
+				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());
+	}
+
+	@ApiOperation(value = "Sends OTP for Beneficiary Add")
+	@RequestMapping(value = "/api/user/bnfcry/otp", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthResponseOTPprefix> sendOTP() {
+		ResponseWrapper<AuthResponseOTPprefix> wrapper = new ResponseWrapper<AuthResponseOTPprefix>(new AuthData());
+		CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
+		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
+		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 		return wrapper;
+	}
+
+	@ApiOperation(value = "Save the current beneficary in progress")
+	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
+	public ResponseWrapper<BeneficiaryTrnxModel> commitAddBeneTrnx(@RequestBody AuthRequestOTP req) {
+		return new ResponseWrapper<BeneficiaryTrnxModel>(
+				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult());
 	}
 
 }

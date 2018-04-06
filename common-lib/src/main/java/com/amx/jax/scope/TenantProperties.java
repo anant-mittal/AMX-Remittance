@@ -1,6 +1,5 @@
 package com.amx.jax.scope;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -9,59 +8,68 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.amx.utils.ArgUtil;
+import com.amx.utils.FileUtil;
 
+@TenantScoped
 @Component
 public class TenantProperties {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(TenantProperties.class);
-	private static TenantProperties properties = new TenantProperties();
+	private static TenantProperties obj = new TenantProperties();
 
-	private static Environment envProperties;
+	private Properties properties = null;
 
-	@Autowired
-	public TenantProperties(Environment envProperties) {
-		TenantProperties.envProperties = envProperties;
+	public Properties getProperties() {
+		if (properties == null) {
+			properties = getProperties(TenantContextHolder.currentSite().toString().toLowerCase(), obj);
+		}
+		return properties;
 	}
 
-	public TenantProperties() {
-	}
-
-	public static Environment getEnvProperties() {
-		return envProperties;
-	}
-
-	public static Object assignValues(String tenant, Object object) {
+	public static Properties getProperties(String tenant, Object object) {
 		Properties tenantProperties = new Properties();
 		String propertyFile = "application." + tenant + ".properties";
-		File jarPath = new File(
-				properties.getClass().getProtectionDomain().getCodeSource().getLocation().getPath().split("!")[0]);
-		String propertiesPath = jarPath.getParent();
-
 		InputStream inSideInputStream = null;
 		InputStream outSideInputStream = null;
 
 		try {
 
-			URL u = properties.getClass().getClassLoader().getResource("classpath:" + propertyFile);
-			if (u != null) {
-				inSideInputStream = object.getClass().getClassLoader().getResourceAsStream(u.getPath());
+			URL ufile = FileUtil.getResource(propertyFile, object.getClass());
+			if (ufile != null) {
+				inSideInputStream = ufile.openStream();
 				tenantProperties.load(inSideInputStream);
-				LOGGER.info("reading inside property file : {}", u.getPath());
+				LOGGER.info("Loaded Properties from classpath: {}", ufile.getPath());
 			}
 
-			URL u2 = object.getClass().getClassLoader().getResource(propertiesPath + "/" + propertyFile);
-			if (u2 != null) {
-				outSideInputStream = object.getClass().getClassLoader()
-						.getResourceAsStream(propertiesPath + "/" + propertyFile);
+			outSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, object.getClass());
+			if (outSideInputStream != null) {
 				tenantProperties.load(outSideInputStream);
-				LOGGER.info("reading outside property file : {}", u2.getPath());
+				LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
 			}
 
+		} catch (IllegalArgumentException | IOException e) {
+			LOGGER.error("readPropertyException", e);
+		} finally {
+			try {
+				if (outSideInputStream != null) {
+					outSideInputStream.close();
+				}
+				if (inSideInputStream != null) {
+					inSideInputStream.close();
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+			}
+		}
+		return tenantProperties;
+	}
+
+	public static Object assignValues(String tenant, Object object) {
+		Properties tenantProperties = getProperties(tenant, object);
+		try {
 			for (Field field : object.getClass().getDeclaredFields()) {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
@@ -81,19 +89,8 @@ public class TenantProperties {
 					}
 				}
 			}
-		} catch (IllegalArgumentException | IllegalAccessException | IOException e) {
+		} catch (IllegalArgumentException | IllegalAccessException e) {
 			LOGGER.error("readPropertyException", e);
-		} finally {
-			try {
-				if (outSideInputStream != null) {
-					outSideInputStream.close();
-				}
-				if (inSideInputStream != null) {
-					inSideInputStream.close();
-				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-			}
 		}
 		return object;
 	}

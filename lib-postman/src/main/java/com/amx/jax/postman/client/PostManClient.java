@@ -1,7 +1,6 @@
 package com.amx.jax.postman.client;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppConstants;
+import com.amx.jax.AppUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
@@ -20,8 +19,8 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
@@ -94,10 +93,7 @@ public class PostManClient implements PostManService {
 	}
 
 	private Map<String, String> appheader() {
-		Map<String, String> headers = new HashMap<String, String>();
-		headers.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
-		headers.put(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
-		return headers;
+		return AppUtil.header();
 	}
 
 	public Email sendEmail(Email email, Boolean async) throws PostManException {
@@ -120,6 +116,19 @@ public class PostManClient implements PostManService {
 	@Override
 	public Email sendEmailAsync(Email email) throws PostManException {
 		return sendEmail(email, Boolean.TRUE);
+	}
+
+	@Override
+	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
+		LOGGER.info("Sending support email from {}", email.getVisitorName());
+		try {
+			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL_SUPPORT)
+					.queryString(PARAM_LANG, getLang()).header("content-type", "application/json").headers(appheader())
+					.body(email).asObject(Email.class);
+			return response.getBody();
+		} catch (UnirestException e) {
+			throw new PostManException(e);
+		}
 	}
 
 	@Override

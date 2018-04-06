@@ -6,6 +6,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 
 public interface PostManService {
@@ -14,6 +15,8 @@ public interface PostManService {
 	public static final String PARAM_ASYNC = "async";
 
 	public Email sendEmail(Email email) throws PostManException;
+
+	public Email sendEmailToSupprt(SupportEmail email) throws PostManException;
 
 	public SMS sendSMS(SMS sms) throws PostManException;
 

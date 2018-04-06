@@ -15,10 +15,12 @@ public final class UIConstants extends Constants {
 	public static final String SESSIONID = "JSESSIONID";
 	public static final String CDN_VERSION = "CDN_VERSION";
 	public static final String SEQ_KEY = Random.randomAlpha(1, "LMNOPQR") + Random.randomAlpha(3);
+	public static final int CACHE_TIME = 31556926;
 
 	public static class Validator {
 		public static final String IDENTITY = "^[0-9a-zA-Z]+$";
 		public static final String OTP = "^[0-9]{6}$";
+		public static final String PHONE = "^[0-9]{15}$";
+		public static final String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 	}
-
 }

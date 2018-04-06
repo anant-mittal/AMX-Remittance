@@ -1,16 +1,5 @@
 package com.amx.jax.postman.custom;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-
-import javax.lang.model.element.Element;
-
-import org.thymeleaf.context.ITemplateContext;
-import org.thymeleaf.model.IModel;
-import org.thymeleaf.processor.AbstractProcessor;
-import org.thymeleaf.processor.element.IElementModelStructureHandler;
-import org.thymeleaf.templatemode.TemplateMode;
-
 //public class PanelTagProcessor extends AbstractProcessor {
 //
 //	public PanelTagProcessor(TemplateMode templateMode, int precedence) {

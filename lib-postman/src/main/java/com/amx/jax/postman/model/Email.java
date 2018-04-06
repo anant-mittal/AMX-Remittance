@@ -119,4 +119,8 @@ public class Email extends Message {
 		return toSplit;
 	}
 
+	public void addAllTo(String toMultiple) {
+		this.to.addAll(Arrays.asList(splitByComma(toMultiple)));
+	}
+
 }

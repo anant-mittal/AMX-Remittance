@@ -15,6 +15,8 @@ public class ConstantDocument {
 	// peronsl remittancew
 	public static final String Individual = "I";
 	public static final String Online = "O";
+	public static final String INDIVIDUAL_STRING = "Individual";
+	public static final String NON_INDIVIDUAL_STRING = "Non-Individual";
 
 	public static final String VOCHERCODE = new String("V");
 	public static final String CR = "\u062C.\u0635.";

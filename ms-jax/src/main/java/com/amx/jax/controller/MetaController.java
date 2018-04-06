@@ -3,16 +3,21 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.BankBranchDto;
+import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
@@ -104,6 +109,9 @@ public class MetaController {
 	
 	@Autowired
 	BankMetaService bankMasterService;
+	
+	@Autowired
+	JaxNotificationManager jaxNotificationManager;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -250,7 +258,7 @@ public class MetaController {
 		return districtService.getDistrict(stateId, districtId, languageId);
 	}
 	
-	@RequestMapping(value = "/districtlist/{languageId}/{stateId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/districtlist/{languageId}/{stateId}/", method = RequestMethod.GET)
 	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
 		return districtService.getAllDistrict(stateId, languageId);
 	}
@@ -260,7 +268,7 @@ public class MetaController {
 		return stateService.getState(countryId, stateId, languageId);
 	}
 	
-	@RequestMapping(value = "/statelist/{languageId}/{countryId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/statelist/{languageId}/{countryId}/", method = RequestMethod.GET)
 	public ApiResponse getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return stateService.getStateAll(countryId, languageId);
 	}
@@ -282,4 +290,16 @@ public class MetaController {
 		return metaService.getOnlineConfig(applInd);
 	}
 		
+	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
+	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
+		LOGGER.info("in getbankBranches" + request.toString());
+		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
+		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse);
+		return apiResponse;
+	}
+	
+	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
+	public ApiResponse getServiceGroup(){
+		return metaService.getServiceGroups();
+	}
 }

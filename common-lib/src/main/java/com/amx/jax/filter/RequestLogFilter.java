@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.MDC;
@@ -44,6 +45,7 @@ public class RequestLogFilter implements Filter {
 			throws IOException, ServletException {
 		try {
 			HttpServletRequest req = ((HttpServletRequest) request);
+			HttpServletResponse resp = ((HttpServletResponse) response);
 
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
 			if (StringUtils.isEmpty(siteId)) {
@@ -52,11 +54,22 @@ public class RequestLogFilter implements Filter {
 					siteId = Urly.getSubDomainName(request.getServerName());
 				}
 			}
+
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
 			}
 
 			Tenant tnt = TenantContextHolder.currentSite();
+
+			String tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
+			if (StringUtils.isEmpty(tranxId)) {
+				tranxId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRANX_ID_XKEY));
+			}
+
+			if (!StringUtils.isEmpty(tranxId)) {
+				ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
+			}
+
 			String traceId = req.getHeader(AppConstants.TRACE_ID_XKEY);
 			if (StringUtils.isEmpty(traceId)) {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
@@ -82,7 +95,7 @@ public class RequestLogFilter implements Filter {
 			}
 			LOGGER.info("Request IN {}", req.getRequestURI());
 			// String mdcData = String.format("trace : %s", traceId);
-			chain.doFilter(request, response);
+			chain.doFilter(request, new AppResponseWrapper(resp));
 			LOGGER.info("Request OUT {}", req.getRequestURI());
 		} finally {
 			// Tear down MDC data:

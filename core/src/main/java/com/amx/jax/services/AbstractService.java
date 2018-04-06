@@ -20,6 +20,8 @@ public abstract class AbstractService {
 
 	public abstract String getModelType();
 
-	public abstract Class<?> getModelClass();
+	public Class<?> getModelClass(){
+		return this.getClass();
+	}
 
 }

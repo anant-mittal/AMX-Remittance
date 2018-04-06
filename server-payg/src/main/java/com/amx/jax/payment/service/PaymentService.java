@@ -85,7 +85,7 @@ public class PaymentService {
 		paymentResponseDto.setUdf3(payGServiceResponse.getUdf3());
 		paymentResponseDto.setUdf4(payGServiceResponse.getUdf4());
 		paymentResponseDto.setUdf5(payGServiceResponse.getUdf5());
-		paymentResponseDto.setPaymentId(payGServiceResponse.getPaymentiId());
+		paymentResponseDto.setPaymentId(payGServiceResponse.getPaymentId());
 
 		return paymentResponseDto;
 	}

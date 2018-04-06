@@ -25,5 +25,21 @@ public class ApiEndpoint {
     public static final String BANK_MASTER_BY_COUNTRY_API_ENDPOINT = "/bank/{country-id}";
 
     public static final String RATE_ALERT_ENDPOINT = "/rate-alert/";
+    
+    public static final String JAX_FIELD_ENDPOINT = "/jax-field/";
+    
+    public static final String VALIDATE_OTP_ENDPOINT = "/validate-otp/";
+    
+    public static final String SEND_OTP_ENDPOINT = "/send-otp/";
+    
+    public static final String UPDAE_STATUS_ENDPOINT = "/update-status/";
+    
+    public static final String GET_SERVICE_PROVIDER_ENDPOINT = "/service-provider/";
+    
+    public static final String GET_AGENT_MASTER_ENDPOINT = "/agent-master/";
+    
+    public static final String GET_AGENT_BRANCH_ENDPOINT = "/agent-branch/";
+    
+    public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
 
 }
