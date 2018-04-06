@@ -104,7 +104,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryAccount.setCreatedDate(new Date());
 		beneficaryAccount.setCurrencyId(accountDetails.getCurrencyId());
 		beneficaryAccount.setIsActive(ConstantDocument.Yes);
-		beneficaryAccount.setServicegropupId(accountDetails.getServicegropupId());
+		beneficaryAccount.setServicegropupId(accountDetails.getServiceGroupId());
 		beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 		beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 		beneficiaryAccountDao.save(beneficaryAccount);

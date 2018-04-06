@@ -13,6 +13,7 @@ import com.amx.amxlib.model.request.AddJaxFieldRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.dbmodel.ValidationRegex;
@@ -97,6 +98,7 @@ public class JaxFieldService extends AbstractService {
 	private JaxFieldDto convert(JaxField field) {
 		JaxFieldDto dto = new JaxFieldDto();
 		jaxUtil.convert(field, dto);
+		dto.setRequired(ConstantDocument.Yes.equals(field.getRequired()) ? true : false);
 		List<ValidationRegexDto> validationdtos = new ArrayList<>();
 		if (field.getValidationRegex() != null) {
 			field.getValidationRegex().forEach(validation -> {
