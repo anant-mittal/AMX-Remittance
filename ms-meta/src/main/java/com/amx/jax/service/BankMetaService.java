@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -113,15 +114,15 @@ public class BankMetaService extends AbstractService {
 		String branchName = request.getBranchName();
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
-		if (ifsc != null) {
+		if (StringUtils.isNotBlank(ifsc)) {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCase(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
-		if (swift != null) {
+		if (StringUtils.isNotBlank(swift)) {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCase(countryId, bankId, swift));
 			isparametersSet = true;
 		}
-		if (branchName != null) {
+		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId,
 					branchName));
