@@ -1,6 +1,7 @@
 package com.amx.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -692,6 +693,44 @@ public final class ArgUtil {
 				return defaultValue;
 			}
 		}
+	}
+
+	/**
+	 * Checks if is object empty.
+	 *
+	 * @param object
+	 *            the object
+	 * @return true, if is object empty
+	 */
+	public static boolean isEmpty(Object object) {
+		if (object == null)
+			return true;
+		else if (object instanceof String) {
+			if (((String) object).trim().length() == 0) {
+				return true;
+			}
+		} else if (object instanceof Collection) {
+			return ArgUtil.isCollectionEmpty((Collection<?>) object);
+		}
+		return false;
+	}
+
+	/**
+	 * Checks if is collection empty.
+	 *
+	 * @param collection
+	 *            the collection
+	 * @return true, if is collection empty
+	 */
+	static boolean isCollectionEmpty(Collection<?> collection) {
+		if (collection == null || collection.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
+
+	public static boolean isEmptyString(String str) {
+		return (str == null || Constants.BLANK.equals(str));
 	}
 
 }

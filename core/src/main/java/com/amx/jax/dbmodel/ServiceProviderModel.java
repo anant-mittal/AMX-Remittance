@@ -2,11 +2,6 @@ package com.amx.jax.dbmodel;
 
 import java.math.BigDecimal;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 public class ServiceProviderModel {
 	
 

@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 import org.slf4j.Logger;
-import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.logger.LoggerService;
@@ -16,8 +15,6 @@ import com.amx.utils.ContextUtil;
 public class AppResponseWrapper extends HttpServletResponseWrapper {
 
 	Logger LOGGER = LoggerService.getLogger(getClass());
-
-	private boolean isheaderSet = false;
 
 	public AppResponseWrapper(HttpServletResponse response) {
 		super(response);
@@ -63,10 +60,10 @@ public class AppResponseWrapper extends HttpServletResponseWrapper {
 	private void handleStatus(int code) {
 		String tranxId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 		String traceId = ContextUtil.getTraceId();
-		if (!StringUtils.isEmpty(tranxId)) {
+		if (!ArgUtil.isEmptyString(super.getHeader(AppConstants.TRANX_ID_XKEY)) && !ArgUtil.isEmptyString(tranxId)) {
 			super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
 		}
-		if (!StringUtils.isEmpty(traceId)) {
+		if (!ArgUtil.isEmptyString(super.getHeader(AppConstants.TRACE_ID_XKEY)) && !ArgUtil.isEmptyString(traceId)) {
 			super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
 		}
 	}

@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Map;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.Utils;
 
 public class EmailTemplate {
 
@@ -40,7 +40,7 @@ public class EmailTemplate {
 	public String getTemplate(Map<String, String> replacements) {
 		String cTemplate = this.getTemplate();
 
-		if (!Utils.isObjectEmpty(cTemplate)) {
+		if (!ArgUtil.isEmpty(cTemplate)) {
 			for (Map.Entry<String, String> entry : replacements.entrySet()) {
 				cTemplate = cTemplate.replace("{{" + entry.getKey() + "}}", entry.getValue());
 			}
