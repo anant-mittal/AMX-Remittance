@@ -1,7 +1,9 @@
 package com.amx.jax.services;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,7 @@ public class BeneficiaryValidationService {
 
 	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
 		List<BankAccountLength> accontNumLength = bankService.getBankAccountLength(beneAccountModel.getBankId());
-		List<Integer> accNumLength = new ArrayList<>();
+		Set<Integer> accNumLength = new HashSet<>();
 		accontNumLength.forEach(i -> {
 			if (i.getAcLength() != null && i.getAcLength().intValue() > 0) {
 				accNumLength.add(i.getAcLength().intValue());
