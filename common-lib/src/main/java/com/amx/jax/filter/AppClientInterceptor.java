@@ -28,7 +28,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 				request.getHeaders().add(b.getKey(), b.getValue());
 			}
 		}
-
+		
 		LOGGER.info("REQT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
 		ClientHttpResponse response = execution.execute(request, body);
 		LOGGER.info("RESP {}={} : {}", response.getStatusCode(), response.getStatusText(), response.getHeaders());

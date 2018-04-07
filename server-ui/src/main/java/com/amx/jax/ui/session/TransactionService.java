@@ -31,8 +31,12 @@ public class TransactionService implements Serializable {
 		return wrapper;
 	}
 
-	public <T> ResponseWrapper<T> track(ResponseWrapper<T> wrapper) {
+	public void track() {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, this.transactionId);
+	}
+
+	public <T> ResponseWrapper<T> track(ResponseWrapper<T> wrapper) {
+		this.track();
 		return wrapper;
 	}
 
