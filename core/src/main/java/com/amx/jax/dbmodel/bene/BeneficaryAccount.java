@@ -27,7 +27,7 @@ public class BeneficaryAccount implements Serializable {
 	private BigDecimal bankBranchId;
 	private String bankAccountNumber;
 	private BigDecimal currencyId;
-	private BigDecimal servicegropupId ;
+	private BigDecimal serviceGroupId ;
 	private String aliasFirstName;
 	private String aliasSecondName;
 	private String aliasThirdName;
@@ -78,7 +78,6 @@ public class BeneficaryAccount implements Serializable {
 		this.beneficaryCountryId = beneficaryCountryId;
 	}
 	
-	
 	@Column(name = "BENEFICARY_MASTER_SEQ_ID")
 	public BigDecimal getBeneficaryMasterId() {
 		return beneficaryMasterId;
@@ -106,13 +105,7 @@ public class BeneficaryAccount implements Serializable {
 	}
 	
 	
-	@Column(name = "SERVICE_GROUP_ID")
-	public BigDecimal getServicegropupId() {
-		return servicegropupId;
-	}
-	public void setServicegropupId(BigDecimal servicegropupId) {
-		this.servicegropupId = servicegropupId;
-	}
+	
 
 	@Column(name = "BANK_ACCOUNT_NUMBER")
 	public String getBankAccountNumber() {
@@ -276,6 +269,14 @@ public class BeneficaryAccount implements Serializable {
 
 	public void setLastEmosRemittance(Date lastEmosRemittance) {
 		this.lastEmosRemittance = lastEmosRemittance;
+	}
+	
+	@Column(name = "SERVICE_GROUP_ID")
+	public BigDecimal getServiceGroupId() {
+		return serviceGroupId;
+	}
+	public void setServiceGroupId(BigDecimal serviceGroupId) {
+		this.serviceGroupId = serviceGroupId;
 	}
 	
 }

@@ -203,7 +203,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				errorListDto.add(errorStatusDto);
 
-			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServicegropupId().compareTo(new BigDecimal(2)) == 0) {
+			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
 
 				beneDto.setUpdateNeeded(true);
 

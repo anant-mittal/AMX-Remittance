@@ -41,7 +41,7 @@ public class BeneficiaryValidationService {
 		List<BeneficaryAccount> existingAccount;
 		if (beneAccountModel.getServiceGroupId() != null) {
 			existingAccount = beneficiaryAccountDao
-					.findByServicegropupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+					.findByServiceGroupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
 							beneAccountModel.getServiceGroupId(), beneAccountModel.getBeneficaryCountryId(),
 							beneAccountModel.getBankId(), beneAccountModel.getCurrencyId(),
 							beneAccountModel.getBankBranchId(), beneAccountModel.getBankAccountNumber(),
