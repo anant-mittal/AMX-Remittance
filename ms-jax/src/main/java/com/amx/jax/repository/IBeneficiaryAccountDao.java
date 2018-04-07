@@ -22,7 +22,7 @@ public interface IBeneficiaryAccountDao extends JpaRepository<BeneficaryAccount,
 			BigDecimal countryId, BigDecimal bankId, BigDecimal currencyId, BigDecimal branchId,
 			String bankAccountNumber,String isActive);
 
-	public List<BeneficaryAccount> findByServicegropupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
+	public List<BeneficaryAccount> findByServiceGroupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
 			BigDecimal serviceGroupId, BigDecimal countryId, BigDecimal bankId, BigDecimal currencyId,
 			BigDecimal branchId, String bankAccountNumber, String isActive);
 }
