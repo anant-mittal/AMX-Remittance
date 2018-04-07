@@ -26,11 +26,11 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		Map<String, String> header = AppUtil.header();
 		for (Entry<String, String> b : header.entrySet()) {
 			if (!StringUtils.isEmpty(b.getValue())) {
-				request.getHeaders().add(b.getKey(), b.getValue());
+				//request.getHeaders().add(b.getKey(), b.getValue());
 			}
 		}
 		
-		LOGGER.info("header ---- ", JsonUtil.toJson(header));
+		LOGGER.info("header ---- "+ JsonUtil.toJson(header));
 
 		LOGGER.info("REQT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
 		ClientHttpResponse response = execution.execute(request, body);
