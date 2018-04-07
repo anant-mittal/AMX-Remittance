@@ -28,7 +28,6 @@ import com.amx.jax.ui.session.TransactionService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.bytebuddy.asm.Advice.Unused;
 
 @RestController
 @Api(value = "Beneficiary APIs")
