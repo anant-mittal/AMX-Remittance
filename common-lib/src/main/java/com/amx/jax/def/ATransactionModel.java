@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import com.amx.jax.AppConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
-import com.amx.utils.Utils;
 
 public abstract class ATransactionModel<T> {
 

@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.Constants;
 
 @Component
 public class WebTenantFilter implements Filter {
