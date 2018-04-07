@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.client.AuditFilter;
-import com.amx.jax.ui.auth.AuthEvent;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDevice;
 import com.amx.utils.ArgUtil;
 
 @Component
-public class AuthEventFilter implements AuditFilter<AuthEvent> {
+public class AuthEventFilter implements AuditFilter<CAuthEvent> {
 
 	@Autowired
 	UserDevice userDevice;
@@ -23,7 +23,7 @@ public class AuthEventFilter implements AuditFilter<AuthEvent> {
 	AppConfig appConfig;
 
 	@Override
-	public void doFilter(AuthEvent event) {
+	public void doFilter(CAuthEvent event) {
 		event.setIdentiy(guestSession.getIdentity());
 		if (guestSession.getCustomerModel() != null) {
 			event.setUserId(ArgUtil.parseAsString(guestSession.getCustomerModel().getCustomerId()));

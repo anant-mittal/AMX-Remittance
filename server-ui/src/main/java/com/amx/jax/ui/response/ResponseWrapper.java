@@ -115,7 +115,7 @@ public class ResponseWrapper<T> implements Serializable {
 		this.statusKey = status;
 		this.status = status.getCode();
 	}
-	
+
 	public String getMessage() {
 		return message;
 	}
