@@ -63,15 +63,11 @@ public class AppResponseWrapper extends HttpServletResponseWrapper {
 	private void handleStatus(int code) {
 		String tranxId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 		String traceId = ContextUtil.getTraceId();
-		LOGGER.info("======handleStatus=={}===={}", tranxId, traceId);
-		if (!isheaderSet) {
-			if (!StringUtils.isEmpty(tranxId)) {
-				super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
-			}
-			if (!StringUtils.isEmpty(traceId)) {
-				super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
-			}
-			isheaderSet = true;
+		if (!StringUtils.isEmpty(tranxId)) {
+			super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
+		}
+		if (!StringUtils.isEmpty(traceId)) {
+			super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
 		}
 	}
 
