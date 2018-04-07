@@ -21,11 +21,11 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.utils.Random;
 
