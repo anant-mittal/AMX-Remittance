@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.slf4j.Logger;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 public class AppResponseWrapper extends HttpServletResponseWrapper {
 
@@ -58,8 +58,8 @@ public class AppResponseWrapper extends HttpServletResponseWrapper {
 	}
 
 	private void handleStatus(int code) {
-		String tranxId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-		String traceId = ContextUtil.getTraceId();
+		String tranxId = AppContextUtil.getTranxId();
+		String traceId = AppContextUtil.getTraceId();
 		if (!ArgUtil.isEmptyString(super.getHeader(AppConstants.TRANX_ID_XKEY)) && !ArgUtil.isEmptyString(tranxId)) {
 			super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
 		}

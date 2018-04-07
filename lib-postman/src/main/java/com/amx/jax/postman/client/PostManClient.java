@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppUtil;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
@@ -93,7 +93,7 @@ public class PostManClient implements PostManService {
 	}
 
 	private Map<String, String> appheader() {
-		return AppUtil.header();
+		return AppContextUtil.header();
 	}
 
 	public Email sendEmail(Email email, Boolean async) throws PostManException {

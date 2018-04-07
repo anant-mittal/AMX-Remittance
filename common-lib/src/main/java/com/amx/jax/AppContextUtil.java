@@ -10,7 +10,7 @@ import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
-public class AppUtil {
+public class AppContextUtil {
 	public static Map<String, String> header() {
 		return header(new HashMap<String, String>());
 	}
@@ -29,6 +29,18 @@ public class AppUtil {
 				ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxids.get(0));
 			}
 		}
+	}
+
+	public static String getTraceId() {
+		return ContextUtil.getTraceId();
+	}
+
+	public static String getTranxId() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
+	}
+
+	public static String getTenant() {
+		return TenantContextHolder.currentSite().toString();
 	}
 
 }
