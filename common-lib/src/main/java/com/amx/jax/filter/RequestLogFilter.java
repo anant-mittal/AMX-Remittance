@@ -49,7 +49,7 @@ public class RequestLogFilter implements Filter {
 		Enumeration<String> headerNames = request.getHeaderNames();
 		while (headerNames.hasMoreElements()) {
 			String headerName = headerNames.nextElement();
-			sb.append(headerName + "=" + request.getHeader(headerName));
+			sb.append(headerName + "=[" + request.getHeader(headerName) + "],");
 		}
 		sb.append("}");
 		return sb.toString();
@@ -60,7 +60,7 @@ public class RequestLogFilter implements Filter {
 		sb.append("{");
 		Collection<String> headerNames = response.getHeaderNames();
 		for (String headerName : headerNames) {
-			sb.append(headerName + "=" + response.getHeader(headerName));
+			sb.append(headerName + "=[" + response.getHeader(headerName) + "],");
 		}
 		sb.append("}");
 		return sb.toString();
