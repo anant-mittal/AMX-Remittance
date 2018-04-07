@@ -12,7 +12,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.StringUtils;
 
-import com.amx.jax.AppUtil;
+import com.amx.jax.AppContextUtil;
 
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
@@ -22,21 +22,20 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 
-		Map<String, String> header = AppUtil.header();
+		Map<String, String> header = AppContextUtil.header();
 		for (Entry<String, String> b : header.entrySet()) {
 			if (!StringUtils.isEmpty(b.getValue())) {
 				request.getHeaders().add(b.getKey(), b.getValue());
 			}
 		}
 
-		LOGGER.info("REQT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
+		LOGGER.info("REQT-OUT {}={} : {}", request.getMethod(), request.getURI(), request.getHeaders());
 		ClientHttpResponse response = execution.execute(request, body);
-		LOGGER.info("RESP {}={} : {}", response.getStatusCode(), response.getStatusText(), response.getHeaders());
-		
-		AppUtil.readHeader(response.getHeaders());
+		LOGGER.info("RESP-IN {}={} : {}", response.getStatusCode(), request.getURI(), response.getHeaders());
+
+		AppContextUtil.readHeader(response.getHeaders());
 
 		return response;
 	}
 
 }
-

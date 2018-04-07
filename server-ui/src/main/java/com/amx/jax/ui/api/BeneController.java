@@ -28,6 +28,7 @@ import com.amx.jax.ui.session.TransactionService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import net.bytebuddy.asm.Advice.Unused;
 
 @RestController
 @Api(value = "Beneficiary APIs")
@@ -60,6 +61,7 @@ public class BeneController {
 		return wrapper;
 	}
 
+	@Deprecated
 	@ApiOperation(value = "Update Beneficiary Details")
 	@RequestMapping(value = "/api/user/bnfcry/update", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneCountryDTO> beneDetails(@RequestBody BeneCountryDTO beneficiary) {
@@ -73,8 +75,7 @@ public class BeneController {
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
-			@RequestParam(required = false) BigDecimal beneRelSeqId, @RequestParam String remarks,
-			@RequestParam BeneStatus status) {
+			@RequestParam(required = false) String remarks, @RequestParam BeneStatus status) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		// Disable Beneficiary
 		wrapper.setData(jaxService.setDefaults().getBeneClient().updateStatus(beneficaryMasterSeqId, remarks, status)

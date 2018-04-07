@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.amx.jax.AppConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.amx.utils.Utils;
 
 public abstract class ATransactionModel<T> {
 
@@ -37,6 +38,8 @@ public abstract class ATransactionModel<T> {
 			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
 			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
+		}else {
+			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);
 		}
 		return key;
 	}

@@ -1,6 +1,8 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Enumeration;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
@@ -38,6 +41,29 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
+	}
+
+	public String header(HttpServletRequest request) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		Enumeration<String> headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String headerName = headerNames.nextElement();
+			sb.append(headerName + "=[" + request.getHeader(headerName) + "],");
+		}
+		sb.append("}");
+		return sb.toString();
+	}
+
+	private Object header(HttpServletResponse response) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("{");
+		Collection<String> headerNames = response.getHeaderNames();
+		for (String headerName : headerNames) {
+			sb.append(headerName + "=[" + response.getHeader(headerName) + "],");
+		}
+		sb.append("}");
+		return sb.toString();
 	}
 
 	@Override
@@ -93,10 +119,10 @@ public class RequestLogFilter implements Filter {
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 			}
-			LOGGER.info("Request IN {}", req.getRequestURI());
+			LOGGER.info("REQT-IN {}={} : {}", req.getMethod(), req.getRequestURI(), header(req));
 			// String mdcData = String.format("trace : %s", traceId);
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			LOGGER.info("Request OUT {}", req.getRequestURI());
+			LOGGER.info("RESP-OUT {}={} : {}", resp.getStatus(), req.getRequestURI(), header(resp));
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
