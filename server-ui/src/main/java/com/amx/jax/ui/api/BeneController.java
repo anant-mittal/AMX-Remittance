@@ -109,15 +109,16 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
-		return transactionService.track(new ResponseWrapper<JaxTransactionResponse>(jaxService.setDefaults()
-				.getBeneClient().saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult()));
+		transactionService.track();
+		return new ResponseWrapper<JaxTransactionResponse>(jaxService.setDefaults().getBeneClient()
+				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());
 	}
 
 	@ApiOperation(value = "Sends OTP for Beneficiary Add")
 	@RequestMapping(value = "/api/user/bnfcry/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponseOTPprefix> sendOTP() {
-		ResponseWrapper<AuthResponseOTPprefix> wrapper = transactionService
-				.track(new ResponseWrapper<AuthResponseOTPprefix>(new AuthData()));
+		transactionService.track();
+		ResponseWrapper<AuthResponseOTPprefix> wrapper = new ResponseWrapper<AuthResponseOTPprefix>(new AuthData());
 		CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
@@ -127,8 +128,9 @@ public class BeneController {
 	@ApiOperation(value = "Save the current beneficary in progress")
 	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneficiaryTrnxModel> commitAddBeneTrnx(@RequestBody AuthRequestOTP req) {
-		return transactionService.track(new ResponseWrapper<BeneficiaryTrnxModel>(
-				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult()));
+		transactionService.track();
+		return new ResponseWrapper<BeneficiaryTrnxModel>(
+				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult());
 	}
 
 }
