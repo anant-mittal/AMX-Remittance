@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -300,5 +302,10 @@ public class MetaController {
 	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
 	public ApiResponse getServiceGroup(){
 		return metaService.getServiceGroups();
+	}
+	
+	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryCurrencyList(@NotNull BigDecimal beneficiaryCountryId){
+		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
 	}
 }

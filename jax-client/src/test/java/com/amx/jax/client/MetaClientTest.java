@@ -51,7 +51,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	 @Test
+	// @Test
 	public void testgetBankBranchListByBankId() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BankBranchDto> response = null;
@@ -114,6 +114,17 @@ public class MetaClientTest extends AbstractTestClient {
 		setDefaults();
 		ApiResponse<ServiceGroupMasterDescDto> response = null;
 		response = metaclient.getServiceGroupList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+
+	@Test
+	public void test() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<CurrencyMasterDTO> response = null;
+
+		BigDecimal beneficiaryCountryId = new BigDecimal(94);
+		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

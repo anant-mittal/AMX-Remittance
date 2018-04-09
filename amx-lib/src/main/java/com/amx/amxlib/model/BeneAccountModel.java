@@ -2,21 +2,30 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 public class BeneAccountModel extends AbstractModel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@NotNull
 	private BigDecimal beneficaryCountryId;
+	@NotNull
 	private BigDecimal bankId; //agent master
+	@NotNull
 	private BigDecimal bankBranchId;
+	@NotNull
 	private String bankAccountNumber;
+	@NotNull
 	private BigDecimal currencyId;
+	@NotNull
 	private BigDecimal serviceGroupId;// cash or bank
 	private BigDecimal serviceProviderId; // service provider
 	private BigDecimal serviceProviderBranchId; // agent branch
 	private String swiftCode;
+	@NotNull
 	private BigDecimal bankAccountTypeId;
 
 	public BeneAccountModel() {

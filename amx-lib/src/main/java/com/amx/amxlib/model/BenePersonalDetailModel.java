@@ -2,6 +2,8 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 public class BenePersonalDetailModel extends AbstractModel {
 
 	/**
@@ -9,12 +11,18 @@ public class BenePersonalDetailModel extends AbstractModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	// bene master
+	@NotNull
 	private BigDecimal stateId;
+	@NotNull
 	private BigDecimal cityId;
+	@NotNull
 	private BigDecimal countryId;
+	@NotNull
 	private BigDecimal districtId;
+	@NotNull
 	private String firstName;
 	private String secondName;
+	@NotNull
 	private String thirdName;
 	private String fourthName;
 	private String fifthName;
@@ -26,10 +34,13 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private String localFifthName;
 	// bene contact
 	private String telephoneNumber;
+	@NotNull
 	private BigDecimal mobileNumber;
+	@NotNull
 	private String countryTelCode;
 	// bene relationship
 	private String remarks;
+	@NotNull
 	private BigDecimal relationsId;
 
 	@Override

@@ -80,7 +80,8 @@ public enum JaxError {
     SERVICE_PROVIDER_LIST_NOT_FOUND,
     AGENT_BANK_LIST_NOT_FOUND,
     AGENT_BRANCH_LIST_NOT_FOUND,
-    BANK_ID_NOT_PRESENT,;
+    BANK_ID_NOT_PRESENT,
+    JAX_FIELD_VALIDATION_FAILURE;
 
     public String getCode() {
         return this.toString();
