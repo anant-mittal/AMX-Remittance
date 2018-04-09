@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,12 +195,12 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
-	public ApiResponse saveBeneAccountInTrnx(@RequestBody BeneAccountModel beneAccountModel) {
+	public ApiResponse saveBeneAccountInTrnx(@Valid  @RequestBody BeneAccountModel beneAccountModel) {
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
-	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+	public ApiResponse saveBenePersonalDetailInTrnx(@Valid @RequestBody BenePersonalDetailModel benePersonalDetailModel) {
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
