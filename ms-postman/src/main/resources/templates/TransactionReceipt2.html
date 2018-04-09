@@ -396,7 +396,7 @@ html, body {
 					<tr class="mode" th:each="mode : ${remittance.collectionDetailList}">
 						<td>Payment Mode</td>
 						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
-						<td th:text="${mode.approvalNo}">Approved No : 1234</td>
+						<td><span th:if="${mode.approvalNo}">Approved No : <span th:text="${mode.approvalNo}"></</span></span></td>
 						<td th:text="${#messages.msg('label.approvalNo')}"></td>
 					</tr>
 				</table> <!--Payment Details table end--> 

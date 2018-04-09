@@ -30,7 +30,7 @@ public class WebSessionListener implements HttpSessionListener {
 		evt.setComponent(appConfig.getAppName());
 		evt.setType(SessionEvent.Type.SESSION_CREATED);
 		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY)));
-		AuditServiceClient.staticLogger(evt);
+		AuditServiceClient.logStatic(evt);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class WebSessionListener implements HttpSessionListener {
 			evt.setSessionId(ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY)));
 		}
 
-		AuditServiceClient.staticLogger(evt);
+		AuditServiceClient.logStatic(evt);
 	}
 
 }
