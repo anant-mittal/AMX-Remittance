@@ -25,14 +25,12 @@ import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
-import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import net.rossillo.spring.web.mvc.CacheControl;
 
 @RestController
 @Api(value = "Meta APIs")
@@ -62,34 +60,35 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getServiceGroupList().getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/country/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllCountry().getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/state/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewStateDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<ViewStateDto>>(
 				jaxService.setDefaults().getMetaClient().getStateList(countryId).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/district/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewDistrictDto>> getListOfDistrictsForState(@RequestParam BigDecimal stateId) {
 		return new ResponseWrapper<List<ViewDistrictDto>>(
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
+	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId) {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(
+				jaxService.setDefaults().getMetaClient().getBeneficiaryCurrency(countryId).getResults());
+	}
+
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
 	public ResponseWrapper<List<AccountTypeDto>> getListOfAccountTypes(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<AccountTypeDto>>(
@@ -103,7 +102,6 @@ public class MetaController {
 				jaxService.setDefaults().getBeneClient().getBeneficiaryRelations().getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/bank/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<BankMasterDTO>> getListOfBanks(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<BankMasterDTO>>(

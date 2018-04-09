@@ -106,11 +106,16 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 		beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 
-		if (accountDetails.getBankId() != null && accountDetails.getBankBranchId() != null) {
+		// cash
+		if (BigDecimal.ONE.equals(beneficaryAccount.getServiceGroupId())) {
+			BigDecimal bankBranchId = accountDetails.getServiceProviderBranchId();
+			beneficaryAccount.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), bankBranchId));
+			beneficaryAccount.setBankBranchId(bankBranchId);
+		} else {
 			beneficaryAccount
 					.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
+			beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 		}
-		beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 		beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
 
 		beneficiaryAccountDao.save(beneficaryAccount);
