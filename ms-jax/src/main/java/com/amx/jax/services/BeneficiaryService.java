@@ -613,7 +613,9 @@ public class BeneficiaryService extends AbstractService {
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
-		} catch (Exception e) {
+		} catch (GlobalException ge) {
+            throw ge;
+        }catch (Exception e) {
 			throw new GlobalException("Error while update");
 		}
 	}
