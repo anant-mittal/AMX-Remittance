@@ -61,7 +61,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryValidationService beneficiaryValidationService;
-	
+
 	@Autowired
 	MetaService metaService;
 
@@ -92,10 +92,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
 		BeneficaryAccount beneficaryAccount = new BeneficaryAccount();
 		beneficaryAccount.setBankAccountNumber(accountDetails.getBankAccountNumber());
-		beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
-		beneficaryAccount
-				.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
-		beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
+
 		beneficaryAccount.setBankId(accountDetails.getBankId());
 		beneficaryAccount.setBankCode(bankService.getBankById(accountDetails.getBankId()).getBankCode());
 		beneficaryAccount.setBeneApplicationCountryId(metaData.getCountryId());
@@ -108,6 +105,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
 		beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 		beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
+
+		if (accountDetails.getBankId() != null && accountDetails.getBankBranchId() != null) {
+			beneficaryAccount
+					.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
+		}
+		beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
+		beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
+
 		beneficiaryAccountDao.save(beneficaryAccount);
 		return beneficaryAccount;
 	}
