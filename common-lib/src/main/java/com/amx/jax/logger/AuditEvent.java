@@ -1,7 +1,9 @@
 package com.amx.jax.logger;
 
 import com.amx.utils.EnumType;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
 public abstract class AuditEvent {
 
 	protected String component;

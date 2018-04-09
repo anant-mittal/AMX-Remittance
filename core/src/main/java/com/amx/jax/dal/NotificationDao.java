@@ -25,6 +25,7 @@ import com.amx.jax.util.CountryUtil;
 @Component
 public class NotificationDao {
 
+	
 	private Logger logger = Logger.getLogger(NotificationDao.class);
 
 	@Autowired

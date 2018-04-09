@@ -1,8 +1,6 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -24,6 +22,8 @@ import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -40,29 +40,6 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
-	}
-
-	public String header(HttpServletRequest request) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = headerNames.nextElement();
-			sb.append(headerName + "=[" + request.getHeader(headerName) + "],");
-		}
-		sb.append("}");
-		return sb.toString();
-	}
-
-	private Object header(HttpServletResponse response) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("{");
-		Collection<String> headerNames = response.getHeaderNames();
-		for (String headerName : headerNames) {
-			sb.append(headerName + "=[" + response.getHeader(headerName) + "],");
-		}
-		sb.append("}");
-		return sb.toString();
 	}
 
 	@Override
@@ -118,10 +95,10 @@ public class RequestLogFilter implements Filter {
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 			}
-			LOGGER.info("REQT-IN {}={} : {}", req.getMethod(), req.getRequestURI(), header(req));
-			// String mdcData = String.format("trace : %s", traceId);
+			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			LOGGER.info("RESP-OUT {}={} : {}", resp.getStatus(), req.getRequestURI(), header(resp));
+			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req));
+
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
