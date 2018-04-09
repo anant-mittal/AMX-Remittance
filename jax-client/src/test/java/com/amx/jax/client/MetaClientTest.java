@@ -123,7 +123,7 @@ public class MetaClientTest extends AbstractTestClient {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;
 
-		BigDecimal beneficiaryCountryId = new BigDecimal(94);
+		BigDecimal beneficiaryCountryId = null;
 		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());

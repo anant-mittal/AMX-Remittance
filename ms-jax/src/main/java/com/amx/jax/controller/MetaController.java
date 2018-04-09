@@ -4,6 +4,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.BankBranchDto;
@@ -305,7 +307,7 @@ public class MetaController {
 	}
 	
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCurrencyList(@NotNull BigDecimal beneficiaryCountryId){
+	public ApiResponse getBeneficiaryCurrencyList(@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId){
 		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
 	}
 }

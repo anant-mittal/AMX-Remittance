@@ -22,8 +22,11 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
+import com.amx.jax.dbmodel.ViewDistrict;
+import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
@@ -145,6 +148,14 @@ public class MetaService extends AbstractService {
 		response.getData().setType("service-group-model");
 		response.getData().getValues().addAll(outputDto);
 		return response;
+	}
+	
+	public ViewDistrict getDistrictMasterById(BigDecimal id) {
+		return districtDao.findOne(id);
+	}
+	
+	public ViewState getStateMasterById(BigDecimal id) {
+		return stateDao.findOne(id);
 	}
 
 	@Override

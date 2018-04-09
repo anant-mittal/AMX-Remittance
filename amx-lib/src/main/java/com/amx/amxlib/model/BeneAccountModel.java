@@ -16,7 +16,6 @@ public class BeneAccountModel extends AbstractModel {
 	private BigDecimal bankId; //agent master
 	@NotNull
 	private BigDecimal bankBranchId;
-	@NotNull
 	private String bankAccountNumber;
 	@NotNull
 	private BigDecimal currencyId;
@@ -25,7 +24,6 @@ public class BeneAccountModel extends AbstractModel {
 	private BigDecimal serviceProviderId; // service provider
 	private BigDecimal serviceProviderBranchId; // agent branch
 	private String swiftCode;
-	@NotNull
 	private BigDecimal bankAccountTypeId;
 
 	public BeneAccountModel() {

@@ -27,6 +27,7 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.service.MetaService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
@@ -60,6 +61,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	BeneficiaryValidationService beneficiaryValidationService;
+	
+	@Autowired
+	MetaService metaService;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -158,7 +162,11 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneMaster.setFsCityMaster(benePersonalDetails.getCityId());
 		beneMaster.setFsCountryMaster(benePersonalDetails.getCountryId());
 		beneMaster.setFsDistrictMaster(benePersonalDetails.getDistrictId());
+		String districtName = metaService.getDistrictMasterById(benePersonalDetails.getDistrictId()).getDistrictDesc();
+		beneMaster.setDistrictName(districtName);
 		beneMaster.setFsStateMaster(benePersonalDetails.getStateId());
+		String stateName = metaService.getStateMasterById(benePersonalDetails.getStateId()).getStateName();
+		beneMaster.setStateName(stateName);
 		beneMaster.setIsActive(ConstantDocument.Yes);
 		beneMaster.setNationality(benePersonalDetails.getNationality());
 
