@@ -21,8 +21,8 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private BigDecimal districtId;
 	@NotNull
 	private String firstName;
-	@NotNull
 	private String secondName;
+	@NotNull
 	private String thirdName;
 	private String fourthName;
 	private String fifthName;
