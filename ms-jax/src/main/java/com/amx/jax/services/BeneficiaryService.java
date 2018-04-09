@@ -38,6 +38,7 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.constant.ConstantDocument;
@@ -607,11 +608,14 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				response.getData().getValues().add(new BooleanResponse(Boolean.TRUE));
 			} else {
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
-		} catch (Exception e) {
+		} catch (GlobalException ge) {
+            throw ge;
+        }catch (Exception e) {
 			throw new GlobalException("Error while update");
 		}
 	}
