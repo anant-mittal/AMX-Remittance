@@ -35,7 +35,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	public ApiResponse handleInvalidInputException(AbstractException ex) {
 
 		ApiResponse response = getApiResponse(ex);
-		setErrorHeaders(ex);
+		
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorCode(), ex);
@@ -53,6 +53,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		ApiError error = new ApiError(ex.getErrorCode(), ex.getErrorMessage());
 		errors.add(error);
 		response.setError(errors);
+		setErrorHeaders(ex);
 		return response;
 	}
 
