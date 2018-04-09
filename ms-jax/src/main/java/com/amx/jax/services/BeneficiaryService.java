@@ -609,6 +609,7 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().getValues().add(new BooleanResponse(Boolean.TRUE));
+				response.getData().setType("boolean_response");
 			} else {
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
