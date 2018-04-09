@@ -13,7 +13,6 @@ public class BenePersonalDetailModel extends AbstractModel {
 	// bene master
 	@NotNull
 	private BigDecimal stateId;
-	@NotNull
 	private BigDecimal cityId;
 	@NotNull
 	private BigDecimal countryId;
