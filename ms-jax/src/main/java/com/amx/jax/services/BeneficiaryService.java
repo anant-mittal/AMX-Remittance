@@ -400,6 +400,7 @@ public class BeneficiaryService extends AbstractService {
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			logger.error("bene list display", e);
 		}
+		beneCheck.setCanTransact(dto);
 		return dto;
 	}
 

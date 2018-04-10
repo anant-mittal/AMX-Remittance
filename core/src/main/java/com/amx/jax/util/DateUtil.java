@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Component;
 
 /*
@@ -86,6 +87,14 @@ public class DateUtil {
 
 		System.out.println(Calendar.getInstance().get(Calendar.MONTH));
 		return "01/" + data.get(Calendar.getInstance().get(Calendar.MONTH)) + "/" + year;
+	}
+	
+	public static boolean isToday(Date date) {
+		if (date == null) {
+			return false;
+		}
+		Date today = Calendar.getInstance().getTime();
+		return DateUtils.isSameDay(today, date);
 	}
 
 }

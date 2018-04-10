@@ -89,6 +89,7 @@ public class BeneficiaryListDTO {
 	private String myFavouriteBene;
 	
 	private String bankShortNames;
+	private Boolean canTransact;
 	
 	
 	
@@ -547,6 +548,12 @@ public class BeneficiaryListDTO {
 	}
 	public void setBankShortNames(String bankShortNames) {
 		this.bankShortNames = bankShortNames;
+	}
+	public Boolean getCanTransact() {
+		return canTransact;
+	}
+	public void setCanTransact(Boolean canTransact) {
+		this.canTransact = canTransact;
 	}
 	
 	

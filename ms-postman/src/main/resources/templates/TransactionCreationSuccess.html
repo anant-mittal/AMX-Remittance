@@ -243,7 +243,7 @@
                         <div class="content" style="padding:15px;  max-width:600px; margin:0 auto; display:block;">
                             <table bgcolor="#000000" width="100%">
                                 <tr>
-                                    <td align="center"><img src="cid:images/logo.png"/></td>
+                                    <td align="center"><img th:attr="src=${_tu.prop('company.logo.path')}" /></td>
                                 </tr>
                             </table>
                         </div><!-- /content -->
@@ -272,7 +272,7 @@
 
                                         <!-- A Real Hero (and a real human being) -->
                                         <p><img src="cid:images/product-1.png"/></p><!-- /hero -->
-                                        <h4>There are a lot of reasons to continue transacting with Al Mulla Exchange and few of these are:</h4>
+                                        <h4>There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>
                                     </td>
                                 </tr>
                             </table>
@@ -356,12 +356,12 @@
                                     <td>
 
                                         <!-- Callout Panel -->
-                                        <p class="callout">Our online solution <a href="http://www.almullaexchange.com">www.almullaexchange.com</a>
+                                        <p class="callout">Our online solution <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>
                                             provides even finer rates and a bonus 250 loyalty points with each transaction.<br /><br />
                                             Follow us on social media, facebook and instagram @Almullaexchange for our latest
                                             updates, product roll outs, special offers and events.<br /><br />
                                             We would love to hear your opinion and suggestions to make us better. You can write to
-                                            us on <a href="mailto:exch-online1@almullagroup.com">exch-online1@almullagroup.com</a>
+                                            us on <a th:href="@{'mailto:' + ${_tu.prop('support.contact.from')}}" th:text="${_tu.prop('support.contact.from')}"></a>
                                             and give us your valuable feedback.</p><!-- /callout panel -->
 
                                     </td>
@@ -378,7 +378,7 @@
                                         <!-- Callout Panel -->
                                         <h4>
                                             <small>Warm Regards,</small>
-                                            <br/>Al Mulla Exchange Team
+                                            <br/><span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Team
                                         </h4><!-- /callout panel -->
 
                                     </td>
@@ -405,13 +405,13 @@
 
                                                                     <h5 class="">Connect with Us:</h5>
                                                                     <p class=""><a
-                                                                            href="https://www.facebook.com/pages/Almullaexchange/340766049286854?fref=ts"
+                                                                    		  th:href="${_tu.prop('company.facebook.url')}"
                                                                             class="soc-btn fb" style="text-decoration: none;"><img src="cid:images/facebook.png" width="50" height="50" /></a> <a
-                                                                            href="https://twitter.com/AlMullaExchange"
+                                                                            th:href="${_tu.prop('company.twitter.url')}"
                                                                             class="soc-btn tw" style="text-decoration: none;"><img src="cid:images/twitter.png" width="50" height="50" /></a> <a
-                                                                            href="http://instagram.com/almullaexchange"
+                                                                            th:href="${_tu.prop('company.instagram.url')}"
                                                                             class="soc-btn in" style="text-decoration: none;"><img src="cid:images/instagram.png" width="50" height="50" /></a>
-                                                                        <a href="https://www.youtube.com/channel/UC9Oro-xJNfsUGNZqC8EzgmQ"
+                                                                        <a th:href="${_tu.prop('company.youtube.url')}"
                                                                            class="soc-btn gp" style="text-decoration: none;"><img src="cid:images/youtube.png"
                                                                                                                                   width="50" height="50" /></a></p>
 
@@ -428,10 +428,9 @@
                                                                 <td>
 
                                                                     <h5 class="">Contact Info:</h5>
-                                                                    <p>Phone: <strong>+965 22057194 (4 LINES)</strong><br/>
-                                                                        <span style="white-space: nowrap">Email: <strong><a
-                                                                                href="emailto:exch-online1@almullagroup.com">exch-online1@almullagroup.com</a></strong></span><br/>
-                                                                        Time: <strong>8.00 AM TO 8.00 PM</strong><br/>
+                                                                    <p>Phone: <strong th:text="${_tu.prop('company.telephone')}"></strong><br/>
+                                                                        <span style="white-space: nowrap">Email: <strong><a th:href="@{'mailto:' + ${_tu.prop('support.contact.from')}}" th:text="${_tu.prop('support.contact.from')}"></a></strong></span><br/>
+                                                                        Time: <strong th:text="${_tu.prop('company.time')}"></strong><br/>
                                                                     </p>
 
                                                                 </td>
@@ -467,8 +466,8 @@
                             <table width="100%" style="width: 100%">
                                 <tr>
                                     <td align="center">
-                                        <a href="http://almullaexchange.com/PrivacyPolicy">Privacy Policy</a>
-                                    </td>
+<!--                                         <a href="http://almullaexchange.com/PrivacyPolicy">Privacy Policy</a>
+ -->                                    </td>
                                 </tr>
                             </table>
                         </div><!-- /content -->
