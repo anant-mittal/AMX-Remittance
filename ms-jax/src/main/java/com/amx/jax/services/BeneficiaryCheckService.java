@@ -467,6 +467,8 @@ public class BeneficiaryCheckService extends AbstractService {
 			now.add(Calendar.MINUTE, authLimit.intValue());
 			if (now.getTime().compareTo(beneCreatedDate) > 0) {
 				canTransact = true;
+			}else {
+				canTransact = false;
 			}
 		}
 
