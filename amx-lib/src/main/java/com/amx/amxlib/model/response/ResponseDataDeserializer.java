@@ -14,6 +14,7 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -213,6 +214,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "routingBankMaster":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RoutingBankMasterDTO>>(){});
 			break;	
+		case "jaxmetaparameter":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxMetaParameter>>(){});
+			break;	
+			
 	}
 		responseData.setValues(models);
 		return responseData;

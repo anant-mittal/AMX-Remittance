@@ -17,6 +17,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -118,13 +119,23 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	@Test
+	//@Test
 	public void testgetBeneficiaryCurrency() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;
 
 		BigDecimal beneficiaryCountryId = new BigDecimal(94);
 		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	@Test
+	public void getJaxMetaParameter() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<JaxMetaParameter> response = null;
+
+		response = metaclient.getJaxMetaParameter();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
