@@ -270,7 +270,7 @@ a {
 				<div class="content">
 					<table class="main" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td class="alert alert-warning" align="center" bgcolor="#000000"><img src="cid:images/logo.png"/></td>
+							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${_tu.prop('company.logo.path')}" /></td>
 						</tr>
 						<tr>
 							<td class="content-wrap">
@@ -280,18 +280,18 @@ a {
 										</td>
 									</tr>
 									<tr th:switch="${change_type}">
-										<td class="content-block" th:case="'PASSWORD_CHANGE'">Your Al Mulla Online account password have been changed. If it's not you, please contact our customer care executive @ +96522057194 or exch-online1@almullagroup.com for more information.</td>
-										<td class="content-block" th:case="'SECURITY_QUESTION_CHANGE'">Your Al Mulla Online account security credentials have been changed. If it's not you, please contact our customer care executive @ +96522057194 or exch-online1@almullagroup.com for more information.</td>
-										<td class="content-block" th:case="'IMAGE_CHANGE'">Your Al Mulla Online account security credentials have been changed. If it's not you, please contact our customer care executive @ +96522057194 or exch-online1@almullagroup.com for more information.</td>
-										<td class="content-block" th:case="'MOBILE_CHANGE'">Your registered mobile number with Al Mulla Online account have been changed. If it's not you, please contact our customer care executive @ +96522057194 or exch-online1@almullagroup.com for more information.</td>
-										<td class="content-block" th:case="'EMAIL_CHANGE'">Your registered email address with Al Mulla Online account have been changed. If it's not you, please contact our customer care executive @ +96522057194 or exch-online1@almullagroup.com for more information.</td>
+										<td class="content-block" th:case="'PASSWORD_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account password have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
+										<td class="content-block" th:case="'SECURITY_QUESTION_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account security credentials have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
+										<td class="content-block" th:case="'IMAGE_CHANGE'">Your <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account security credentials have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
+										<td class="content-block" th:case="'MOBILE_CHANGE'">Your registered mobile number with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
+										<td class="content-block" th:case="'EMAIL_CHANGE'">Your registered email address with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> Online account have been changed. If it's not you, please contact our customer care executive @ <span th:text="${_tu.prop('company.telephone')}" th:remove="tag"></span> or <span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span> for more information.</td>
 									</tr>								
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
-											<strong>AL MULLA INTERNATIONAL EXCHANGE COMPANY K.S.C.C,</strong><br/>
-											KUWAIT<br/>
-											exchange@almullagroup.com<br/>
-											</td>
+											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
+											<span th:text="${_tu.prop('company.country')}" th:remove="tag"></span><br/>
+											<span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span><br/>
+										</td>
 									</tr>
 								</table>
 							</td>

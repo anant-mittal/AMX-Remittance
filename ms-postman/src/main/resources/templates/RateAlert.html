@@ -270,7 +270,7 @@ a {
 				<div class="content">
 					<table class="main" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td class="alert alert-warning" align="center" bgcolor="#000000"><img src="cid:images/logo.png"/>
+							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${_tu.prop('company.logo.path')}" />
 							<h2 style='color:#fff; margin-top:15px'>Rate Alert!</h2></td>
 						</tr>
 						<tr>
@@ -297,9 +297,9 @@ a {
 								
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
-											<strong>AL MULLA INTERNATIONAL EXCHANGE COMPANY K.S.C.C,</strong><br/>
-											KUWAIT<br/>
-											exchange@almullagroup.com<br/>
+											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
+											<span th:text="${_tu.prop('company.country')}" th:remove="tag"></span><br/>
+											<span th:text="${_tu.prop('support.contact.from')}" th:remove="tag"></span><br/>
 											</td>
 									</tr>
 								</table>

@@ -276,16 +276,31 @@ a {
 							<td class="content-wrap">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td class="content-block">From : <span th:text="${data.name}"></span></td>
+										<td class="content-block">Below branch details needs to be updated in Al Mulla Exchange records -</td>
 									</tr>
 									<tr>
-										<td class="content-block">Email : <span th:text="${data.cemail}"></span></td>
+										<td class="content-block">Customer Name : <span th:text="${data.customerName}"></span></td>
 									</tr>
 									<tr>
-										<td class="content-block">Phone : <span th:text="${data.cphone}"></span></td>
+										<td class="content-block">Civil ID  : <span th:text="${data.identityId}"></span></td>
 									</tr>
 									<tr>
-										<td class="content-block">Message : <span th:text="${data.message}"></span></td>
+										<td class="content-block">Bank Name : <span th:text="${data.bankFullName}"></span></td>
+									</tr>
+									<tr>
+										<td class="content-block">Branch Name : <span th:text="${data.customerQuery.branchName}"></span></td>
+									</tr>
+									<tr>
+										<td class="content-block">IFSC Code : <span th:text="${data.customerQuery.ifscCode}"></span></td>
+									</tr>
+									<tr>
+										<td class="content-block">SWIFT Code : <span th:text="${data.customerQuery.swift}"></span></td>
+									</tr>
+									<tr>
+										<td class="content-block">Country ID : <span th:text="${data.customerQuery.countryId}"></span></td>
+									</tr>
+									<tr>
+										<td class="content-block">SWIFT Code : <span th:text="${data.customerQuery.bankId}"></span></td>
 									</tr>
 									<tr>
 										<td class="content-block">&nbsp;</td>
