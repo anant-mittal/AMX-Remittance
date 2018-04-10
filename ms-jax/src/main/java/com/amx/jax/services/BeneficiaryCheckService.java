@@ -464,11 +464,13 @@ public class BeneficiaryCheckService extends AbstractService {
 		if (authView != null && beneCreatedDate != null) {
 			BigDecimal authLimit = authView.getAuthLimit();
 			Calendar now = Calendar.getInstance();
-			now.add(Calendar.MINUTE, authLimit.intValue());
-			if (now.getTime().compareTo(beneCreatedDate) > 0) {
-				canTransact = true;
-			}else {
+			Calendar beneCreatedTime = Calendar.getInstance();
+			beneCreatedTime.setTime(beneCreatedDate);
+			beneCreatedTime.add(Calendar.MINUTE, authLimit.intValue());
+			if (now.compareTo(beneCreatedTime) < 0) {
 				canTransact = false;
+			} else {
+				canTransact = true;
 			}
 		}
 
