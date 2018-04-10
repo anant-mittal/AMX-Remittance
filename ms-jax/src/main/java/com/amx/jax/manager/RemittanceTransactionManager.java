@@ -425,7 +425,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private void validateNewBeneTransactionAmount(ExchangeRateBreakup breakup) {
-		AuthenticationView authLimit = parameterService
+		AuthenticationLimitCheckView authLimit = parameterService
 				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_AMOUNT_LIMIT.getAuthType());
 		BigDecimal netAmount = breakup.getNetAmount();
 		BenificiaryListView benificiary = (BenificiaryListView) validatedObjects.get("BENEFICIARY");

@@ -1,6 +1,7 @@
 package com.amx.jax.repository;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,5 +25,7 @@ public interface AuthenticationLimitCheckDAO extends JpaRepository<Authenticatio
 	
 	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType='13'")
 	public AuthenticationLimitCheckView getPerBeneTxnLimit();
+	
+	public AuthenticationLimitCheckView findByAuthorizationType(String authType);
 	
 }

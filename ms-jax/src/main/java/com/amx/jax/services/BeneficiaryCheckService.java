@@ -19,6 +19,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -458,7 +459,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 	public Boolean canTransact(Date beneCreatedDate) {
 		boolean canTransact = true;
-		AuthenticationView authView = parameterService
+		AuthenticationLimitCheckView authView = parameterService
 				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType());
 
 		if (authView != null && beneCreatedDate != null) {

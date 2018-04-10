@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
@@ -97,13 +99,27 @@ public class ParameterService extends AbstractService {
 		return authLimits;
 	}
 	
-	public AuthenticationView getAuthenticationViewRepository(BigDecimal authType) {
-		return authenticationViewRepository.findOne(authType);
+	public AuthenticationLimitCheckView getAuthenticationViewRepository(BigDecimal authType) {
+		return authentication.findByAuthorizationType(authType.toString());
 	}
 	
 	public AuthenticationLimitCheckView getPerCustomerPerBeneTrnxLimit() {
 		AuthenticationLimitCheckView authLimits = authentication.getPerBeneTxnLimit();
 		return authLimits;
+	}
+	
+	public ApiResponse getJaxMetaParameter() {
+		AuthenticationLimitCheckView newBeneTransactionTimeLimitPObje = getAuthenticationViewRepository(
+				AuthType.NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType());
+		JaxMetaParameter metaParams = new JaxMetaParameter();
+		if (newBeneTransactionTimeLimitPObje != null) {
+			metaParams.setNewBeneTransactionTimeLimit(newBeneTransactionTimeLimitPObje.getAuthLimit());
+		}
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(metaParams);
+		response.getData().setType("jaxmetaparameter");
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 	}
 	
 }

@@ -10,12 +10,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
@@ -27,6 +30,7 @@ import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.service.MetaService;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
@@ -63,6 +67,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	MetaService metaService;
+
+	@Autowired
+	ParameterService parameterService;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -211,7 +218,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		commit();
 		ApiResponse apiResponse = getBlankApiResponse();
 		apiResponse.getData().setType("bene-trnx-model");
-		apiResponse.getData().getValues().add(get());
+		BeneficiaryTrnxModel output = get();
+		AuthenticationLimitCheckView authLimit = parameterService
+				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_AMOUNT_LIMIT.getAuthType());
+		if (authLimit != null) {
+			output.setBeneTransactionAmountLimit(authLimit.getAuthLimit());
+		}
+		apiResponse.getData().getValues().add(output);
 
 		return apiResponse;
 	}

@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -693,6 +694,31 @@ public class MetaClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getServiceGroupList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catc
+		return response.getBody();
+	}
+	
+
+	/**
+	 * <p>
+	 * Gives jax meta parameters like new newBeneTransactionTimeLimit 
+	 * </p>
+	 * 
+	 */
+	public ApiResponse<JaxMetaParameter> getJaxMetaParameter() {
+		ResponseEntity<ApiResponse<JaxMetaParameter>> response;
+		try {
+			LOGGER.info("In getJaxMetaParameter :");
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/meta-parameter/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<JaxMetaParameter>>() {
+					});
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getJaxMetaParameter : ", e);
 			throw new JaxSystemError();
 		} // end of try-catc
 		return response.getBody();

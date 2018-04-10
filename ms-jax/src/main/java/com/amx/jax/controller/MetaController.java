@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -306,5 +307,10 @@ public class MetaController {
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryCurrencyList(@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId){
 		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
+	}
+	
+	@RequestMapping(value = "/meta-parameter/", method = RequestMethod.GET)
+	public ApiResponse getAuthParameter(){
+		return parameterService.getJaxMetaParameter();
 	}
 }

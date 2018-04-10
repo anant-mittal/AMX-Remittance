@@ -196,11 +196,13 @@ public class BeneficiaryController {
 	
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
 	public ApiResponse saveBeneAccountInTrnx(@Valid  @RequestBody BeneAccountModel beneAccountModel) {
+		LOGGER.info("saveBeneAccountInTrnx request: " + beneAccountModel.toString());
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
 	public ApiResponse saveBenePersonalDetailInTrnx(@Valid @RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+		LOGGER.info("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
