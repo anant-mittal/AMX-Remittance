@@ -410,7 +410,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>Cashier Signature</td>
-						<td><img height="50"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
+						<td><img height="50" th:if="${remittance.cashierSignature} != null"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
 						<td th:text="${#messages.msg('label.cashierSignature')}"></td>
 					</tr>
 				</table>
@@ -429,7 +429,7 @@ html, body {
 				</td>
 			</tr>
 			<tr>
-				<td align="center"><img height="50"  th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
+				<td align="center"><img height="50"  th:if="${remittance.signature} != null"   th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
 				<td></td>
 			</tr>
 			
