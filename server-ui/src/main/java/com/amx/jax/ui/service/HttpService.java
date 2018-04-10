@@ -52,6 +52,8 @@ public class HttpService {
 			Cookie cookie = WebUtils.getCookie(request, UIConstants.DEVICE_ID_KEY);
 			if (cookie != null) {
 				deviceId = cookie.getValue();
+			} else {
+				deviceId = request.getHeader(UIConstants.DEVICE_ID_XKEY);
 			}
 		}
 		return deviceId;
