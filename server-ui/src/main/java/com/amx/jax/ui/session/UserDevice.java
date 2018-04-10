@@ -48,11 +48,15 @@ public class UserDevice implements Serializable {
 	private HttpService httpService;
 
 	public UserDevice resolve() {
+
 		Device currentDevice = httpService.getCurrentDevice();
 		this.ip = httpService.getIPAddress();
-		this.type = (currentDevice.isMobile() ? DeviceType.MOBILE
-				: (currentDevice.isTablet() ? DeviceType.TABLET : DeviceType.NORMAL));
-		this.platform = currentDevice.getDevicePlatform();
+		if (currentDevice != null) {
+			this.type = (currentDevice.isMobile() ? DeviceType.MOBILE
+					: (currentDevice.isTablet() ? DeviceType.TABLET : DeviceType.NORMAL));
+			this.platform = currentDevice.getDevicePlatform();
+		}
+
 		this.fingerprint = httpService.getDeviceId();
 		UserAgent userAgent = httpService.getUserAgent();
 		if (this.id == null) {
