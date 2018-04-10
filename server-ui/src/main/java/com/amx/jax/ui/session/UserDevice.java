@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -14,6 +15,7 @@ import org.springframework.mobile.device.DeviceType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.utils.ArgUtil;
@@ -28,6 +30,8 @@ import eu.bitwalker.useragentutils.Version;
 public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
+
+	Logger LOGGER = LoggerService.getLogger(UserDevice.class);
 
 	public enum AppType {
 		WEB, ANDROID, IOS;
@@ -55,6 +59,8 @@ public class UserDevice implements Serializable {
 			this.type = (currentDevice.isMobile() ? DeviceType.MOBILE
 					: (currentDevice.isTablet() ? DeviceType.TABLET : DeviceType.NORMAL));
 			this.platform = currentDevice.getDevicePlatform();
+		} else {
+			LOGGER.warn("DeviceUtils by Springframework is not able to determin UserDevice");
 		}
 
 		this.fingerprint = httpService.getDeviceId();
