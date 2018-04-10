@@ -78,9 +78,6 @@ public class RemittanceTransactionManager {
 	private BlackListDao blistDao;
 
 	@Autowired
-	private JdbcTemplate jdbcTemplate;
-
-	@Autowired
 	private MetaData meta;
 
 	@Autowired

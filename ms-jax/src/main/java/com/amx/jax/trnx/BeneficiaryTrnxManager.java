@@ -21,7 +21,6 @@ import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.BeneficaryStatus;
-import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.BeneficaryStatusRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
