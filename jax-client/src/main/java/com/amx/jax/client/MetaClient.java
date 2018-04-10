@@ -393,7 +393,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
-			LOGGER.info("in getAllOnlineCurrency");
+			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId", beneficiaryCountryId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
@@ -404,7 +404,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in getAllOnlineCurrency : ", e);
+			LOGGER.error("exception in getBeneficiaryCurrency : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 		return response.getBody();
