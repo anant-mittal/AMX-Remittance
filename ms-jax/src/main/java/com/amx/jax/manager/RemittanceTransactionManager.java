@@ -20,8 +20,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.error.JaxError;
+
+import static com.amx.amxlib.error.JaxError.*;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
@@ -37,6 +40,7 @@ import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -62,9 +66,12 @@ import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.util.DateUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
 
 @Component
@@ -134,9 +141,15 @@ public class RemittanceTransactionManager {
 	@Autowired
 	private CurrencyMasterService currencyMasterService;
 	
+	@Autowired
+	private BeneficiaryCheckService beneCheckService;
+	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 	
 	private boolean isSaveRemittanceFlow;
+	
+	@Autowired
+	private JaxUtil jaxUtil;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -171,7 +184,7 @@ public class RemittanceTransactionManager {
 		logger.info("currencyId :"+currencyId+"\t rountingCountryId :"+rountingCountryId+"\t routingBankId :"+routingBankId+"\t serviceMasterId :"+serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId, meta.getCountryBranchId(),rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
 		if (exchangeRates == null || exchangeRates.isEmpty()) {
-			throw new GlobalException("No exchange rate found for bank- " + routingBankId, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+			throw new GlobalException("No exchange rate found for bank- " + routingBankId, REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
@@ -271,12 +284,12 @@ public class RemittanceTransactionManager {
 			}
 			if (outputMap.size() > 2) {
 				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+						REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
 				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
-						JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+						REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 			}
 			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
@@ -300,12 +313,20 @@ public class RemittanceTransactionManager {
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
 		
-		logger.info("customer Id :"+customer.getCustomerReference()+"\t  beneficiary.getBankCode() :"+ beneficiary.getBankCode()+"\t Acc No :"+beneficiary.getBankAccountNumber()+"\t Bene Name :"+beneficiary.getBenificaryName());
-		
 		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(), beneficiary.getBankCode(),beneficiary.getBankAccountNumber()==null?"":beneficiary.getBankAccountNumber(), beneficiary.getBenificaryName(), new BigDecimal(90));
 		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null && transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
-			throw new GlobalException(beneficiaryPerDayLimit.getAuthMessage(),JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
+			throw new GlobalException(beneficiaryPerDayLimit.getAuthMessage(),TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE);
+		}
+		validateNewBeneficiaryTransactionLimit(beneficiary);
+	}
+
+	private void validateNewBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
+
+		Boolean canTransact = beneCheckService.canTransact(beneficiary.getCreatedDate());
+		if (!canTransact) {
+			throw new GlobalException("Newly added beneficiary cant transact util certain time",
+					JaxError.NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT);
 		}
 	}
 
@@ -317,11 +338,11 @@ public class RemittanceTransactionManager {
 		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
-					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 		if (availableLoyaltyPoints.intValue() - todaysLoyalityPointsEncashedInt < 0) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
-					JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
 	}
 
@@ -367,7 +388,7 @@ public class RemittanceTransactionManager {
 		if (netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
 			throw new GlobalException(
 					"Online Transaction Amount should not exceed - KD " + onlineTxnLimit.getAuthLimit(),
-					JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+					TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
 		}
 		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
@@ -392,9 +413,23 @@ public class RemittanceTransactionManager {
 						+ currencyQuoteName + " " + toAmount + ".";
 			}
 			if (!StringUtils.isBlank(msg)) {
-				throw new GlobalException(msg, JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+				throw new GlobalException(msg, REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 			}
 
+		}
+		validateNewBeneTransactionAmount(breakup);
+	}
+
+	private void validateNewBeneTransactionAmount(ExchangeRateBreakup breakup) {
+		AuthenticationView authLimit = parameterService
+				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_AMOUNT_LIMIT.getAuthType());
+		BigDecimal netAmount = breakup.getNetAmount();
+		BenificiaryListView benificiary = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
+		boolean isNewBene = DateUtil.isToday(benificiary.getCreatedDate());
+		if (isNewBene && authLimit != null && netAmount.intValue() > authLimit.getAuthLimit().intValue()) {
+			String errorExpr = jaxUtil.buildErrorExpression(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE.toString(),
+					authLimit.getAuthLimit());
+			throw new GlobalException("New beneficiary max allowed limit exceeds", errorExpr);
 		}
 	}
 
@@ -408,7 +443,7 @@ public class RemittanceTransactionManager {
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
 			logger.info("Trnx Count for Limit Check :"+txnCount);
 			if (txnCount >= limitView.getAuthLimit().intValue()) {
-				throw new GlobalException(limitView.getAuthMessage(), JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED);
+				throw new GlobalException(limitView.getAuthMessage(), NO_OF_TRANSACTION_LIMIT_EXCEEDED);
 			}
 		}
 
@@ -503,12 +538,12 @@ public class RemittanceTransactionManager {
 	private void validateBlackListedBene(BenificiaryListView beneficiary) {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Beneficiary name found matching with black list ", JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("Beneficiary name found matching with black list ", BLACK_LISTED_CUSTOMER.getCode());
 		}
 		if (beneficiary.getArbenificaryName() != null) {
 			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Beneficiary local name found matching with black list ", JaxError.BLACK_LISTED_CUSTOMER.getCode());
+				throw new GlobalException("Beneficiary local name found matching with black list ", BLACK_LISTED_CUSTOMER.getCode());
 			}
 		}
 	}

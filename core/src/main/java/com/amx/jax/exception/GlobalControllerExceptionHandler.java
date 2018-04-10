@@ -19,6 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.JaxFieldError;
 import com.amx.amxlib.model.response.ResponseStatus;
 
 @ControllerAdvice
@@ -64,7 +65,8 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		JaxFieldValidationException exception = new JaxFieldValidationException(ex.getBindingResult().toString());
 		ApiResponse apiResponse = getApiResponse(exception);
 		List<ApiError> errors = apiResponse.getError();
-		errors.get(0).setValidationErrorField(ex.getBindingResult().getFieldError());
+		JaxFieldError validationErrorField = new JaxFieldError(ex.getBindingResult().getFieldError().getField());
+		errors.get(0).setValidationErrorField(validationErrorField);
 		return new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
 	}
 }

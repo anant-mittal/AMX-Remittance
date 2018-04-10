@@ -13,4 +13,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 public interface CurrencyRepository extends CrudRepository<CurrencyMasterModel, BigDecimal> {
 
 	List<CurrencyMasterModel> findByquoteName(String quoteName);
+	
+	List<CurrencyMasterModel> findAll();
+
 }

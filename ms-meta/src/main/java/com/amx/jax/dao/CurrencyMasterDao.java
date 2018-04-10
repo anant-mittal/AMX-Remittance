@@ -1,6 +1,10 @@
 package com.amx.jax.dao;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,6 +24,11 @@ public class CurrencyMasterDao {
 
 	public CurrencyMasterModel getCurrencyMasterByQuote(String quoteName) {
 		return repo.findByquoteName(quoteName).get(0);
+	}
+
+	public Map<BigDecimal, CurrencyMasterModel> getAllCurrencyMap() {
+		List<CurrencyMasterModel> list = repo.findAll();
+		return list.stream().collect(Collectors.toMap(CurrencyMasterModel::getCurrencyId, c -> c));
 	}
 
 }

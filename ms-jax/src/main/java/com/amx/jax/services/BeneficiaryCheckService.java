@@ -2,6 +2,8 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,10 +14,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -42,6 +46,7 @@ import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
+import com.amx.jax.service.ParameterService;
 import com.amx.jax.util.JaxUtil;
 
 @Component
@@ -91,6 +96,9 @@ public class BeneficiaryCheckService extends AbstractService {
 
 	@Autowired
 	JaxMetaInfo jaxMetaInfo;
+	
+	@Autowired
+	ParameterService parameterService;
 
 	public BeneficiaryListDTO beneCheck(BeneficiaryListDTO beneDto) {
 		boolean isUpdateNeeded = false;
@@ -422,6 +430,28 @@ public class BeneficiaryCheckService extends AbstractService {
 	public Class<?> getModelClass() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void setCanTransact(BeneficiaryListDTO dto) {
+
+		dto.setCanTransact(canTransact(dto.getCreatedDate()));
+	}
+
+	public Boolean canTransact(Date beneCreatedDate) {
+		boolean canTransact = true;
+		AuthenticationView authView = parameterService
+				.getAuthenticationViewRepository(AuthType.NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType());
+		BigDecimal authLimit = authView.getAuthLimit();
+
+		if (authLimit != null && beneCreatedDate != null) {
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.MINUTE, authLimit.intValue());
+			if (now.getTime().compareTo(beneCreatedDate) > 0) {
+				canTransact = true;
+			}
+		}
+		
+		return canTransact;
 	}
 
 	// NVL(ISACTIVE,' ')

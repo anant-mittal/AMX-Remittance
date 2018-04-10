@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -148,22 +149,16 @@ public class CurrencyMasterService extends AbstractService {
 		return dto;
 	}
 	
-	private CurrencyMasterDTO convertModel(ViewBeneServiceCurrency currency) {
-		CurrencyMasterDTO dto = new CurrencyMasterDTO();
-		try {
-			BeanUtils.copyProperties(dto, currency);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			logger.error("unable to convert currency", e);
-		}
-		return dto;
-	}
 
 
 	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId) {
 		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
 				.findByBeneCountryId(beneCountryId);
+		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
-		currencyList.forEach(currency -> currencyListDto.add(convertModel(currency)));
+		currencyList.forEach(currency -> {
+			currencyListDto.add(convertModel(allCurrencies.get(currency.getCurrencyId())));
+		});
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(currencyListDto);
 		response.setResponseStatus(ResponseStatus.OK);

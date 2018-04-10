@@ -20,8 +20,8 @@ public class BenePersonalDetailModel extends AbstractModel {
 	private BigDecimal districtId;
 	@NotNull
 	private String firstName;
-	private String secondName;
 	@NotNull
+	private String secondName;
 	private String thirdName;
 	private String fourthName;
 	private String fifthName;

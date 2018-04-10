@@ -57,6 +57,8 @@ public enum JaxError {
 
     /* Maximum amount allowed for transaction */
     TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED,
+    TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE,
+    NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT,
     
     /* Maximum amount allowed for transaction for perticular bene */
     TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE, 
