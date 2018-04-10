@@ -83,7 +83,7 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());
 	}
 
-	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.GET })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getBeneficiaryCurrency(countryId).getResults());
