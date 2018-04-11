@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;

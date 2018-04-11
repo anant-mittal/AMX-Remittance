@@ -45,4 +45,28 @@
 ## BUILD
 http://www.codetab.org/apache-maven-tutorial/maven-multi-module-project/
 
-
+## Projects
+* common-utils - 
+* common-lib
+* lib-ext-jar
+* lib-swagger
+* lib-cache
+* lib-tunnel
+* lib-session
+* lib-logger
+* lib-monitor
+* ms-logger
+* lib-postman
+* ms-postman
+* amx-lib
+* core
+* ms-meta
+* ms-user
+* ms-exchangerate
+* ms-jax
+* jax-client
+* ms-scheduler
+* server-payg
+* server-ui
+* server-stomp
+* server-admin

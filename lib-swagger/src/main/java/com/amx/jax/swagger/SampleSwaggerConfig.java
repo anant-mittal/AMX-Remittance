@@ -22,6 +22,9 @@ public class SampleSwaggerConfig {
 
 	@Autowired(required = false)
 	public Parameter swaggerHeaderParam;
+	
+	@Autowired(required = false)
+	public Parameter swaggerTenantParam;
 
 	@Bean
 	public Docket productApi() {
@@ -31,6 +34,9 @@ public class SampleSwaggerConfig {
 				.build();
 		if (swaggerHeaderParam != null) {
 			docket.globalOperationParameters(Arrays.asList(swaggerHeaderParam));
+		}
+		if (swaggerTenantParam != null) {
+			docket.globalOperationParameters(Arrays.asList(swaggerTenantParam));
 		}
 
 		return docket;

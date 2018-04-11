@@ -34,6 +34,9 @@ public abstract class AbstractJaxServiceClient {
 
 		HttpHeaders headers = new HttpHeaders();
 		try {
+			headers.add(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
+			headers.add(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
+			setMetaInfo();
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
