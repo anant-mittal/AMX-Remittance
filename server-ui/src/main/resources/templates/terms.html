@@ -6,7 +6,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport"
 	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Terms</title>
+<title>Terms and Condition</title>
 <style type="text/css">
 	body,html{
 		font-family:arial;
@@ -19,8 +19,10 @@
 </head>
 <body>
 	<div id="app">
-		<ol class="page-break" th:each="term : ${terms}">
-			<li th:text="${term.description}"></li>
+		<ol>
+			<li class="page-break" th:each="term : ${terms}">
+				<span th:text="${term.description}"></span>
+			</li>
 		</ol>
 	</div>
 </body>
