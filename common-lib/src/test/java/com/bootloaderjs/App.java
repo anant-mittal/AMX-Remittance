@@ -21,13 +21,14 @@ public class App { // Noncompliant
 	public static void main(String[] args) {
 		System.out.println();
 
-		String[] locales = Locale.getISOCountries();
+		String[] locales = Locale.getISOLanguages();
 
 		for (String countryCode : locales) {
 
-			Locale obj = new Locale("", countryCode);
-			System.out.println(String.format("%s(\"%s\",91, \"%s\"),", obj.getISO3Country() ,obj.getCountry(),obj.getDisplayCountry()));
-			
+			Locale obj = new Locale(countryCode);
+			System.out.println(String.format("%s(\"%s\",1, \"%s\"),", obj.getLanguage().toUpperCase(),
+					obj.getISO3Language(), obj.getDisplayLanguage()));
+
 		}
 
 		String template = "/name/{name}/age/{age}";

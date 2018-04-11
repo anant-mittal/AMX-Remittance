@@ -15,6 +15,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
@@ -39,6 +40,9 @@ public class UserController {
 	private UserService userService;
 
 	@Autowired
+	private JaxService jaxService;
+
+	@Autowired
 	private TenantService tenantContext;
 
 	@Timed
@@ -55,6 +59,7 @@ public class UserController {
 			sessionService.getAppDevice().setAppVersion(appVersion);
 		}
 
+		wrapper.getData().setTenant(tenantContext.getTenant());
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());
@@ -63,6 +68,7 @@ public class UserController {
 			wrapper.getData().setActive(true);
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
+			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 		}
 
 		return wrapper;

@@ -12,8 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.dict.Language;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
@@ -21,6 +23,7 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.HttpService;
+import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
@@ -40,6 +43,9 @@ public class HomeController {
 
 	@Autowired
 	private UserDeviceBean userDevice;
+
+	@Autowired
+	private JaxService jaxService;
 
 	@Autowired
 	private SessionService sessionService;
@@ -63,7 +69,7 @@ public class HomeController {
 				JSONObject map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
 				if (map.has("version")) {
 					versionNew = ArgUtil.parseAsString(map.get("version"));
-				}											
+				}
 				checkTime = checkTimeNew;
 			} catch (Exception e) {
 				LOGGER.error("getVersion Exception", e);
@@ -113,5 +119,11 @@ public class HomeController {
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
+	}
+
+	@RequestMapping(value = "/app/terms", method = { RequestMethod.GET })
+	public String termsPage(Model model, @RequestParam Language lang) {
+		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
+		return "terms";
 	}
 }
