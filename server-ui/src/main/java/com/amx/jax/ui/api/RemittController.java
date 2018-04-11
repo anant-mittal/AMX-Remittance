@@ -132,7 +132,8 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
-
+		
+		//System.out.println(JsonUtil.toJson(wrapper));
 		if (skipd == null || skipd.booleanValue() == false) {
 			File file = postManService.processTemplate(
 					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
