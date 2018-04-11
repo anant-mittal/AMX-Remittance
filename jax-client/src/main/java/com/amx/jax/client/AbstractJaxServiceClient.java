@@ -6,9 +6,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ContextUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -34,13 +36,13 @@ public abstract class AbstractJaxServiceClient {
 
 		HttpHeaders headers = new HttpHeaders();
 		try {
+			setMetaInfo();
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(jaxMetaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
 		}
 		return headers;
 	}
-	
 
 	private void setMetaInfo() {
 
