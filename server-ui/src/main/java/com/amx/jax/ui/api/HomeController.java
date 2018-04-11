@@ -123,6 +123,7 @@ public class HomeController {
 
 	@RequestMapping(value = "/app/terms", method = { RequestMethod.GET })
 	public String termsPage(Model model, @RequestParam Language lang) {
+		sessionService.getGuestSession().setLang(lang);
 		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
 		return "terms";
 	}
