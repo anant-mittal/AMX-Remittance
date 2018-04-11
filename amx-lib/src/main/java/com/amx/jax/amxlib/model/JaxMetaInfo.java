@@ -29,6 +29,7 @@ public class JaxMetaInfo {
 	private String deviceType;
 	private String appType;
 
+
 	public JaxMetaInfo copy() {
 		JaxMetaInfo info = new JaxMetaInfo();
 		info.setCountryId(this.getCountryId());

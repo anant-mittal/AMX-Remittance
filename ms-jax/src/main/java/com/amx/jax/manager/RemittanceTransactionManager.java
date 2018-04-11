@@ -208,7 +208,11 @@ public class RemittanceTransactionManager {
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
+		if(customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO)>0){
 		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
+		}else{
+			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
+		}
 		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
 		setLoyalityPointIndicaters(responseModel);
