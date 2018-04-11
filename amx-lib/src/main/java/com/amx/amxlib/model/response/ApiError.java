@@ -1,5 +1,6 @@
 package com.amx.amxlib.model.response;
 
+import org.springframework.validation.FieldError;
 
 public class ApiError {
 
@@ -9,6 +10,8 @@ public class ApiError {
 
 	// warning error
 	private String errorType;
+	
+	private FieldError validationErrorField;
 
 	public ApiError(String errorId, String errorMessage, String errorType) {
 		super();
@@ -50,5 +53,13 @@ public class ApiError {
 
 	public void setErrorType(String errorType) {
 		this.errorType = errorType;
+	}
+
+	public FieldError getValidationErrorField() {
+		return validationErrorField;
+	}
+
+	public void setValidationErrorField(FieldError validationErrorField) {
+		this.validationErrorField = validationErrorField;
 	}
 }

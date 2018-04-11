@@ -6,6 +6,7 @@ public class ServiceGroupMasterDescDto {
 
 	private BigDecimal serviceGroupMasterId;
 	private String serviceGroupDesc;
+	private String serviceGroupShortDesc;
 
 	public BigDecimal getServiceGroupMasterId() {
 		return serviceGroupMasterId;
@@ -21,5 +22,13 @@ public class ServiceGroupMasterDescDto {
 
 	public void setServiceGroupDesc(String serviceGroupDesc) {
 		this.serviceGroupDesc = serviceGroupDesc;
+	}
+
+	public String getServiceGroupShortDesc() {
+		return serviceGroupShortDesc;
+	}
+
+	public void setServiceGroupShortDesc(String serviceGroupShortDesc) {
+		this.serviceGroupShortDesc = serviceGroupShortDesc;
 	}
 }

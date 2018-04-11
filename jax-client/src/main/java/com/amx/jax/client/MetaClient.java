@@ -12,6 +12,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.JaxSystemError;
@@ -383,7 +384,32 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
+	
+	
+	/**
+	 * @param beneficiaryCountryId - Beneficiary Country Id
+	 * @return List of currency master for passed beneficiary currency
+	 * */
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
+		try {
+			LOGGER.info("in getAllOnlineCurrency");
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId", beneficiaryCountryId);
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
 
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllOnlineCurrency : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+		return response.getBody();
+	}
+	
 	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {

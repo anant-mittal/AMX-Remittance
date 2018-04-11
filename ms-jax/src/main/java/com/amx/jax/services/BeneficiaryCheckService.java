@@ -94,7 +94,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 	public BeneficiaryListDTO beneCheck(BeneficiaryListDTO beneDto) {
 		boolean isUpdateNeeded = false;
-		logger.info("bene Check " + beneDto.getCustomerId() + "\n beneMa :" + beneDto.getBeneficaryMasterSeqId() + "\n Account Id:" + beneDto.getBeneficiaryAccountSeqId() + "\n Rel Seq Id :"
+		logger.debug("bene Check " + beneDto.getCustomerId() + "\n beneMa :" + beneDto.getBeneficaryMasterSeqId() + "\n Account Id:" + beneDto.getBeneficiaryAccountSeqId() + "\n Rel Seq Id :"
 				+ beneDto.getBeneficiaryRelationShipSeqId() + "\n Bank Id " + beneDto.getBankId() + "\n Acc No :" + beneDto.getBankAccountNumber() + "\n Service Id :" + beneDto.getServiceGroupId()
 				+ "\n Name :" + beneDto.getBenificaryName() + "\n Bene Country :" + beneDto.getBenificaryCountry() + "\n State :" + beneDto.getStateId() + "\n District :" + beneDto.getDistrictId());
 		beneDto.setUpdateNeeded(false);
@@ -203,7 +203,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 				errorListDto.add(errorStatusDto);
 
-			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServicegropupId().compareTo(new BigDecimal(2)) == 0) {
+			} else if (!JaxUtil.isNullZeroBigDecimalCheck(beneAccountList.get(0).getBankAccountTypeId()) && beneAccountList.get(0).getServiceGroupId().compareTo(new BigDecimal(2)) == 0) {
 
 				beneDto.setUpdateNeeded(true);
 

@@ -17,8 +17,10 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
+import com.amx.jax.dbmodel.bene.ViewBeneServiceCurrency;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ICurrencyDao;
+import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.ConverterUtil;
@@ -38,6 +40,9 @@ public class CurrencyMasterService extends AbstractService {
 
 	@Autowired
 	ConverterUtil converterUtil;
+	
+	@Autowired
+	ViewBeneficiaryCurrencyRepository viewBeneficiaryCurrencyRepository;
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -141,6 +146,29 @@ public class CurrencyMasterService extends AbstractService {
 			logger.error("unable to convert currency", e);
 		}
 		return dto;
+	}
+	
+	private CurrencyMasterDTO convertModel(ViewBeneServiceCurrency currency) {
+		CurrencyMasterDTO dto = new CurrencyMasterDTO();
+		try {
+			BeanUtils.copyProperties(dto, currency);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			logger.error("unable to convert currency", e);
+		}
+		return dto;
+	}
+
+
+	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId) {
+		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
+				.findByBeneCountryId(beneCountryId);
+		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
+		currencyList.forEach(currency -> currencyListDto.add(convertModel(currency)));
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().addAll(currencyListDto);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType("currencyMaster");
+		return response;
 	}
 
 }

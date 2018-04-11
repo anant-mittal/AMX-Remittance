@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.ui.auth.AuthEvent;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.response.ResponseError;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
@@ -62,7 +62,7 @@ public class WebJaxAdvice {
 
 		AuthState state = guestSession.getState();
 		if (state.getFlow() != null) {
-			auditService.log(new AuthEvent(state, AuthEvent.Result.FAIL, exc.getError()));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, exc.getError()));
 		}
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
 			sessionService.unIndexUser();

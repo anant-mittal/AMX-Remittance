@@ -3,7 +3,8 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
-import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,12 +295,17 @@ public class MetaController {
 	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
 		LOGGER.info("in getbankBranches" + request.toString());
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
-		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse);
+		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse, request);
 		return apiResponse;
 	}
 	
 	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
 	public ApiResponse getServiceGroup(){
 		return metaService.getServiceGroups();
+	}
+	
+	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryCurrencyList(@NotNull BigDecimal beneficiaryCountryId){
+		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
 	}
 }

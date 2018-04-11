@@ -56,7 +56,6 @@ import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;

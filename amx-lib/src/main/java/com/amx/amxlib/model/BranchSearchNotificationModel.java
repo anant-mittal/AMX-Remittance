@@ -7,6 +7,8 @@ public class BranchSearchNotificationModel {
 	String customerName;
 
 	String identityId;
+	
+	String bankFullName;
 
 	GetBankBranchRequest customerQuery;
 
@@ -33,4 +35,14 @@ public class BranchSearchNotificationModel {
 	public void setCustomerQuery(GetBankBranchRequest customerQuery) {
 		this.customerQuery = customerQuery;
 	}
+
+	public String getBankFullName() {
+		return bankFullName;
+	}
+
+	public void setBankFullName(String bankFullName) {
+		this.bankFullName = bankFullName;
+	}
+
+	
 }

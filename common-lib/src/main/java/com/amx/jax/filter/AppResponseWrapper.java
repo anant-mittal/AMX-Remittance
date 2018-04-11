@@ -5,15 +5,16 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import org.springframework.util.StringUtils;
+import org.slf4j.Logger;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 public class AppResponseWrapper extends HttpServletResponseWrapper {
 
-	private boolean isheaderSet = false;
+	Logger LOGGER = LoggerService.getLogger(getClass());
 
 	public AppResponseWrapper(HttpServletResponse response) {
 		super(response);
@@ -57,16 +58,13 @@ public class AppResponseWrapper extends HttpServletResponseWrapper {
 	}
 
 	private void handleStatus(int code) {
-		if (!isheaderSet) {
-			String tranxId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-			String traceId = ContextUtil.getTraceId();
-			if (!StringUtils.isEmpty(tranxId)) {
-				super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
-			}
-			if (!StringUtils.isEmpty(traceId)) {
-				super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
-			}
-			isheaderSet = true;
+		String tranxId = AppContextUtil.getTranxId();
+		String traceId = AppContextUtil.getTraceId();
+		if (ArgUtil.isEmptyString(super.getHeader(AppConstants.TRANX_ID_XKEY)) && !ArgUtil.isEmptyString(tranxId)) {
+			super.addHeader(AppConstants.TRANX_ID_XKEY, tranxId);
+		}
+		if (ArgUtil.isEmptyString(super.getHeader(AppConstants.TRACE_ID_XKEY)) && !ArgUtil.isEmptyString(traceId)) {
+			super.addHeader(AppConstants.TRACE_ID_XKEY, traceId);
 		}
 	}
 

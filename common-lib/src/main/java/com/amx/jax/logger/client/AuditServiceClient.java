@@ -17,6 +17,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -25,14 +26,14 @@ public class AuditServiceClient implements AuditService {
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
 	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
+	private static final Marker trackmarker = MarkerFactory.getMarker("TRACK");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
-
-	@Autowired
-	AppConfig appConfig;
+	private static String appName = null;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
-	public AuditServiceClient(List<AuditFilter> filters) {
+	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters) {
+		appName = appConfig.getAppName();
 		for (AuditFilter filter : filters) {
 			Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 			if (matcher.find()) {
@@ -42,7 +43,7 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	public AuditLoggerResponse log(AuditEvent event) {
-		event.setComponent(appConfig.getAppName());
+		event.setComponent(appName);
 		if (filtersMap.containsKey(event.getClass().getName())) {
 			AuditFilter<AuditEvent> filter = filtersMap.get(event.getClass().getName());
 			filter.doFilter(event);
@@ -58,9 +59,20 @@ public class AuditServiceClient implements AuditService {
 	 * @param event
 	 * @return
 	 */
-	public static AuditLoggerResponse staticLogger(AuditEvent event) {
+	public static AuditLoggerResponse logStatic(AuditEvent event) {
+		event.setComponent(appName);
 		LOGGER.info(auditmarker, JsonUtil.toJson(event));
 		return null;
+	}
+
+	public static AuditLoggerResponse trackStatic(RequestTrackEvent event) {
+		event.setComponent(appName);
+		LOGGER.info(trackmarker, JsonUtil.toJson(event));
+		return null;
+	}
+
+	public AuditLoggerResponse log(RequestTrackEvent event) {
+		return AuditServiceClient.trackStatic(event);
 	}
 
 }

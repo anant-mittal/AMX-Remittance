@@ -1,6 +1,8 @@
 package com.amx.jax.services;
 
-import static com.amx.amxlib.constant.NotificationConstants.*;
+import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
+import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

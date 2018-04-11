@@ -2,21 +2,30 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 public class BeneAccountModel extends AbstractModel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@NotNull
 	private BigDecimal beneficaryCountryId;
+	@NotNull
 	private BigDecimal bankId; //agent master
+	@NotNull
 	private BigDecimal bankBranchId;
+	@NotNull
 	private String bankAccountNumber;
+	@NotNull
 	private BigDecimal currencyId;
-	private BigDecimal servicegropupId;// cash or bank
+	@NotNull
+	private BigDecimal serviceGroupId;// cash or bank
 	private BigDecimal serviceProviderId; // service provider
 	private BigDecimal serviceProviderBranchId; // agent branch
 	private String swiftCode;
+	@NotNull
 	private BigDecimal bankAccountTypeId;
 
 	public BeneAccountModel() {
@@ -32,7 +41,7 @@ public class BeneAccountModel extends AbstractModel {
 		this.bankBranchId = bankBranchId;
 		this.bankAccountNumber = bankAccountNumber;
 		this.currencyId = currencyId;
-		this.servicegropupId = servicegropupId;
+		this.serviceGroupId = servicegropupId;
 		this.serviceProviderId = serviceProviderId;
 		this.serviceProviderBranchId = serviceProviderBranchId;
 		this.swiftCode = swiftCode;
@@ -84,14 +93,6 @@ public class BeneAccountModel extends AbstractModel {
 		this.currencyId = currencyId;
 	}
 
-	public BigDecimal getServicegropupId() {
-		return servicegropupId;
-	}
-
-	public void setServicegropupId(BigDecimal servicegropupId) {
-		this.servicegropupId = servicegropupId;
-	}
-
 	public BigDecimal getServiceProviderId() {
 		return serviceProviderId;
 	}
@@ -128,9 +129,17 @@ public class BeneAccountModel extends AbstractModel {
 	public String toString() {
 		return "BeneAccountModel [beneficaryCountryId=" + beneficaryCountryId + ", bankId=" + bankId + ", bankBranchId="
 				+ bankBranchId + ", bankAccountNumber=" + bankAccountNumber + ", currencyId=" + currencyId
-				+ ", servicegropupId=" + servicegropupId + ", serviceProviderId=" + serviceProviderId
+				+ ", servicegropupId=" + serviceGroupId + ", serviceProviderId=" + serviceProviderId
 				+ ", serviceProviderBranchId=" + serviceProviderBranchId + ", swiftCode=" + swiftCode
 				+ ", bankAccountTypeId=" + bankAccountTypeId + "]";
+	}
+
+	public BigDecimal getServiceGroupId() {
+		return serviceGroupId;
+	}
+
+	public void setServiceGroupId(BigDecimal serviceGroupId) {
+		this.serviceGroupId = serviceGroupId;
 	}
 
 }

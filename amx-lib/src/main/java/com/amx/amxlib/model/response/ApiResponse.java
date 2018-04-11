@@ -40,10 +40,10 @@ public class ApiResponse<T> {
 	@SuppressWarnings("unchecked")
 	@JsonIgnore
 	public List<T> getResults() {
-		List<T> result = null;
+		List<T> result = new ArrayList<>();
 		if (this.getData() != null && this.getData().getValues() != null && this.getData().getValues().size() > 0) {
 			List<Object> values = this.getData().getValues();
-			result = new ArrayList<>();
+			
 			for (Object value : values) {
 				result.add((T) value);
 			}

@@ -56,9 +56,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	UserService userService;
 
 	@Autowired
-	MetaData metaData;
-
-	@Autowired
 	BankService bankService;
 
 	@Autowired
@@ -100,11 +97,11 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryAccount.setBeneApplicationCountryId(metaData.getCountryId());
 		beneficaryAccount.setBeneficaryCountryId(accountDetails.getBeneficaryCountryId());
 		beneficaryAccount.setBeneficaryMasterId(beneficaryMasterId);
-		beneficaryAccount.setCreatedBy(metaData.getReferrer());
+		beneficaryAccount.setCreatedBy(getCreatedBy());
 		beneficaryAccount.setCreatedDate(new Date());
 		beneficaryAccount.setCurrencyId(accountDetails.getCurrencyId());
 		beneficaryAccount.setIsActive(ConstantDocument.Yes);
-		beneficaryAccount.setServicegropupId(accountDetails.getServicegropupId());
+		beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
 		beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 		beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
 		beneficiaryAccountDao.save(beneficaryAccount);
@@ -122,7 +119,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setApplicationCountry(metaData.getCountryId());
 		beneficaryRelationship.setBeneficaryMasterId(beneficaryMasterId);
 		beneficaryRelationship.setBeneficaryAccountId(beneficaryAccountId);
-		beneficaryRelationship.setCreatedBy(metaData.getReferrer());
+		beneficaryRelationship.setCreatedBy(getCreatedBy());
 		beneficaryRelationship.setCreatedDate(new Date());
 		beneficaryRelationship.setCustomerId(metaData.getCustomerId());
 		beneficaryRelationship.setIsActive(ConstantDocument.Yes);
@@ -138,7 +135,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryContact.setApplicationCountryId(metaData.getCountryId());
 		beneficaryContact.setBeneficaryMasterId(beneficaryMasterId);
 		beneficaryContact.setCountryTelCode(beneDetails.getCountryTelCode());
-		beneficaryContact.setCreatedBy(metaData.getReferrer());
+		beneficaryContact.setCreatedBy(getCreatedBy());
 		beneficaryContact.setCreatedDate(new Date());
 		beneficaryContact.setIsActive(ConstantDocument.Yes);
 		beneficaryContact.setMobileNumber(beneDetails.getMobileNumber());
@@ -154,7 +151,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneficaryStatus beneStatus = getbeneStatus();
 		beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
 		beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
-		beneMaster.setCreatedBy(metaData.getReferrer());
+		beneMaster.setCreatedBy(getCreatedBy());
 		beneMaster.setCreatedDate(new Date());
 		// names
 		setNames(beneMaster, benePersonalDetails);

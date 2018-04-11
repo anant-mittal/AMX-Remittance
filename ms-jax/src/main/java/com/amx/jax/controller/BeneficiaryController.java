@@ -1,17 +1,19 @@
 package com.amx.jax.controller;
 
+import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.BENE_API_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.UPDAE_STATUS_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.VALIDATE_OTP_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.SEND_OTP_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.GET_SERVICE_PROVIDER_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_MASTER_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.GET_AGENT_BRANCH_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.ACCOUNT_TYPE_ENDPOINT;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -193,19 +195,19 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
-	public ApiResponse saveBeneAccountInTrnx(@RequestBody BeneAccountModel beneAccountModel) {
+	public ApiResponse saveBeneAccountInTrnx(@Valid  @RequestBody BeneAccountModel beneAccountModel) {
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
-	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+	public ApiResponse saveBenePersonalDetailInTrnx(@Valid @RequestBody BenePersonalDetailModel benePersonalDetailModel) {
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
 	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
 	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
-
+		LOGGER.info("in commit bene request with param , eOtp: "+eOtp + " motp: "+mOtp );
 		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
 	}
 

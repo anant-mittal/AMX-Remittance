@@ -1,11 +1,15 @@
 package com.amx.jax.def;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amx.jax.AppConstants;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
-import com.amx.utils.Utils;
 
 public abstract class ATransactionModel<T> {
+
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public class CacheBoxWrapper {
 		T model = null;
@@ -29,9 +33,12 @@ public abstract class ATransactionModel<T> {
 
 	protected String getTranxId() {
 		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
-		if (Utils.isStringEmpty(key)) {
+		if (ArgUtil.isEmptyString(key)) {
 			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
+			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
+		}else {
+			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);
 		}
 		return key;
 	}
@@ -51,13 +58,14 @@ public abstract class ATransactionModel<T> {
 	public abstract T init();
 
 	public abstract T commit();
-	
+
 	/**
-	 * Checks if transaction model is present if not then create new by calling init and return model
-	 * */
+	 * Checks if transaction model is present if not then create new by calling init
+	 * and return model
+	 */
 	public T getWithInit() {
 		T existingModel = this.get();
-		if(existingModel == null) {
+		if (existingModel == null) {
 			init();
 		}
 		return this.get();

@@ -22,6 +22,8 @@ import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -93,10 +95,10 @@ public class RequestLogFilter implements Filter {
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 			}
-			LOGGER.info("Request IN {}", req.getRequestURI());
-			// String mdcData = String.format("trace : %s", traceId);
+			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			LOGGER.info("Request OUT {}", req.getRequestURI());
+			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req));
+
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )

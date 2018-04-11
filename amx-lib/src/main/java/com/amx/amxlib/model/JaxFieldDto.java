@@ -7,7 +7,7 @@ public class JaxFieldDto {
 
 	String name;
 
-	String required;
+	Boolean required;
 
 	String type;
 
@@ -25,14 +25,6 @@ public class JaxFieldDto {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getRequired() {
-		return required;
-	}
-
-	public void setRequired(String required) {
-		this.required = required;
 	}
 
 	public String getType() {
@@ -73,6 +65,14 @@ public class JaxFieldDto {
 
 	public void setValidationRegex(List<ValidationRegexDto> validationRegex) {
 		this.validationRegex = validationRegex;
+	}
+
+	public Boolean getRequired() {
+		return required;
+	}
+
+	public void setRequired(Boolean required) {
+		this.required = required;
 	}
 
 }

@@ -25,7 +25,8 @@ public class JaxSwaggerConfig {
 	@Bean
 	public Docket productApi() {
 		Parameter headerParam = new ParameterBuilder().name("meta-info").description("meta-info").defaultValue(
-				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT\"}")
+				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT\""
+				+ ",\"languageId\":1 }")
 				.modelRef(new ModelRef("string")).parameterType("header").required(true).build();
 		Parameter jaxTrnxIdParam = new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
 				.modelRef(new ModelRef("string")).parameterType("header").required(false).build();

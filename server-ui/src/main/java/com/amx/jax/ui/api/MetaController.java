@@ -22,7 +22,6 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.jax.amxlib.model.RoutingBankMasterParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
@@ -111,14 +110,12 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getBankListForCountry(countryId).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/bank_branch/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<BankBranchDto>> getListOfBankBranches(@RequestBody GetBankBranchRequest param) {
 		return new ResponseWrapper<List<BankBranchDto>>(
 				jaxService.setDefaults().getMetaClient().getBankBranchList(param).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/service_provider/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfSetviceProviders(
 			@RequestBody RoutingBankMasterServiceProviderParam param) {
@@ -126,14 +123,12 @@ public class MetaController {
 				jaxService.setDefaults().getBeneClient().getServiceProvider(param).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/agent/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgents(@RequestBody RoutingBankMasterAgentParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentMaster(param).getResults());
 	}
 
-	@CacheControl(maxAge = UIConstants.CACHE_TIME)
 	@RequestMapping(value = "/api/meta/agent_branch/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<RoutingBankMasterDTO>> getListOfAgentBranches(
 			@RequestBody RoutingBankMasterAgentBranchParam param) {

@@ -1,5 +1,5 @@
 {
-  "bankAccountNumber": "67543217865",
+  "bankAccountNumber": "67543217860",
   "bankAccountTypeId": 4,
   "bankBranchId": 247822,
   "bankId": 2258,
@@ -7,6 +7,6 @@
   "currencyId": 4,
   "serviceProviderBranchId": null,
   "serviceProviderId": null,
-  "servicegropupId": null,
+  "serviceGroupId": 1,
   "swiftCode": null
 }
