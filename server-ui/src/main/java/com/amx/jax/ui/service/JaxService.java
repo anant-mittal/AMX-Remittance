@@ -17,6 +17,7 @@ import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 @Component
@@ -101,8 +102,8 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
 		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
-		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getType().toString());
-		jaxMetaInfo.setAppType(sessionService.getAppDevice().getAppType().toString());
+		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
+		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
 		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
