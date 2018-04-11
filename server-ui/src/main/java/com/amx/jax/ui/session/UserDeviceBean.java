@@ -18,6 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.HttpService;
+import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
 
 import eu.bitwalker.useragentutils.Browser;
@@ -27,27 +28,17 @@ import eu.bitwalker.useragentutils.Version;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserDevice implements Serializable {
+public class UserDeviceBean extends UserDevice implements Serializable {
 
 	private static final long serialVersionUID = -6869375666742059912L;
+	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
 
-	Logger LOGGER = LoggerService.getLogger(UserDevice.class);
-
-	public enum AppType {
-		WEB, ANDROID, IOS;
-	}
-
-	private String fingerprint = null;
-	private String ip = null;
-	private String id = null;
-	private DeviceType type = null;
+	public DeviceType type = null;
 	private DevicePlatform platform = null;
 	private OperatingSystem operatingSystem = null;
 	private Browser browser = null;
-	private Version browserVersion = null;
-	private String appVersion = null;
-	private AppType appType = null;
-
+	private Version browserVersionInfo = null;
+	
 	@Autowired
 	private HttpService httpService;
 
@@ -75,7 +66,7 @@ public class UserDevice implements Serializable {
 			this.id = httpService.getBrowserId(ArgUtil.parseAsString(idn));
 		}
 		this.browser = userAgent.getBrowser();
-		this.browserVersion = userAgent.getBrowserVersion();
+		this.browserVersionInfo = userAgent.getBrowserVersion();
 		this.operatingSystem = userAgent.getOperatingSystem();
 
 		/**
@@ -118,6 +109,27 @@ public class UserDevice implements Serializable {
 		return this;
 	}
 
+	public String getFingerprint() {
+		if (type == null) {
+			this.resolve();
+		}
+		return fingerprint;
+	}
+
+	public String getId() {
+		if (type == null) {
+			this.resolve();
+		}
+		return id;
+	}
+
+	public String getAppVersion() {
+		if (type == null) {
+			this.resolve();
+		}
+		return appVersion;
+	}
+
 	public String getIp() {
 		if (type == null) {
 			this.resolve();
@@ -139,13 +151,6 @@ public class UserDevice implements Serializable {
 		return platform;
 	}
 
-	public String getFingerprint() {
-		if (type == null) {
-			this.resolve();
-		}
-		return fingerprint;
-	}
-
 	public OperatingSystem getOperatingSystem() {
 		if (type == null) {
 			this.resolve();
@@ -164,25 +169,7 @@ public class UserDevice implements Serializable {
 		if (type == null) {
 			this.resolve();
 		}
-		return browserVersion;
-	}
-
-	public String getId() {
-		if (type == null) {
-			this.resolve();
-		}
-		return id;
-	}
-
-	public String getAppVersion() {
-		if (type == null) {
-			this.resolve();
-		}
-		return appVersion;
-	}
-
-	public void setAppVersion(String appVersion) {
-		this.appVersion = appVersion;
+		return browserVersionInfo;
 	}
 
 	public Map<String, Object> toMap() {
@@ -193,7 +180,7 @@ public class UserDevice implements Serializable {
 		map.put("type", type);
 		map.put("ip", ip);
 		map.put("browser", browser);
-		map.put("browserVersion", browserVersion);
+		map.put("browserVersion", browserVersionInfo);
 		map.put("os", operatingSystem);
 		map.put("appVersion", appVersion);
 		map.put("appType", appType);
@@ -201,7 +188,7 @@ public class UserDevice implements Serializable {
 	}
 
 	public UserDevice toUserDevice() {
-		UserDevice device = new UserDevice();
+		UserDeviceBean device = new UserDeviceBean();
 		device.setId(getId());
 		device.setFingerprint(getFingerprint());
 		device.setPlatform(getPlatform());
@@ -216,19 +203,7 @@ public class UserDevice implements Serializable {
 	}
 
 	public void setBrowserVersion(Version browserVersion) {
-		this.browserVersion = browserVersion;
-	}
-
-	public void setFingerprint(String fingerprint) {
-		this.fingerprint = fingerprint;
-	}
-
-	public void setIp(String ip) {
-		this.ip = ip;
-	}
-
-	public void setId(String id) {
-		this.id = id;
+		this.browserVersionInfo = browserVersion;
 	}
 
 	public void setType(DeviceType type) {
@@ -245,16 +220,5 @@ public class UserDevice implements Serializable {
 
 	public void setBrowser(Browser browser) {
 		this.browser = browser;
-	}
-
-	public AppType getAppType() {
-		if (this.appType == null) {
-			return AppType.WEB;
-		}
-		return appType;
-	}
-
-	public void setAppType(AppType appType) {
-		this.appType = appType;
 	}
 }

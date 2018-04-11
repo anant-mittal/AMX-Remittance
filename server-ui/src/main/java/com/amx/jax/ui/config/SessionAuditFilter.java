@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConstants;
 import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.logger.events.SessionEvent;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -14,7 +14,7 @@ import com.amx.utils.ContextUtil;
 public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 
 	@Autowired
-	UserDevice userDevice;
+	UserDeviceBean userDevice;
 
 	@Override
 	public void doFilter(SessionEvent event) {

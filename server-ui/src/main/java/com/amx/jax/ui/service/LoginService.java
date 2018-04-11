@@ -105,6 +105,8 @@ public class LoginService {
 			if (customerModel == null) {
 				throw new JaxSystemError();
 			}
+			
+			jaxService.getUserclient().customerLoggedIn();
 
 			sessionService.authorize(customerModel,
 					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));

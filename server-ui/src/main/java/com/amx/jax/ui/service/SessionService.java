@@ -26,7 +26,7 @@ import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.jax.ui.session.UserSession;
 
 @Component
@@ -49,16 +49,16 @@ public class SessionService {
 	private UserSession userSession;
 
 	@Autowired
-	private UserDevice appDevice;
+	private UserDeviceBean appDevice;
 
 	@Autowired
 	private HttpService httpService;
 
-	public UserDevice getAppDevice() {
+	public UserDeviceBean getAppDevice() {
 		return appDevice;
 	}
 
-	public void setAppDevice(UserDevice appDevice) {
+	public void setAppDevice(UserDeviceBean appDevice) {
 		this.appDevice = appDevice;
 	}
 

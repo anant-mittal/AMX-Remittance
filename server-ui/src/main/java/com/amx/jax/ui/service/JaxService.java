@@ -104,7 +104,6 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
 		jaxMetaInfo.setDeviceType(sessionService.getAppDevice().getType().toString());
 		jaxMetaInfo.setAppType(sessionService.getAppDevice().getAppType().toString());
-
 		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
@@ -115,6 +114,7 @@ public class JaxService extends AbstractJaxServiceClient {
 			log.info("Customer Model Found in Guest Session : {}", jaxMetaInfo.getCustomerId());
 		}
 		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
+
 		return this;
 	}
 

@@ -4,7 +4,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.ui.auth.AuthState;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.user.UserDevice;
 
 public class UserMetaData extends AbstractModel {
 
