@@ -10,7 +10,6 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.ContextUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
