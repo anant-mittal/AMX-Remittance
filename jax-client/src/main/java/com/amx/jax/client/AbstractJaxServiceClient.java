@@ -6,7 +6,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.amx.jax.AppConstants;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.scope.TenantContextHolder;

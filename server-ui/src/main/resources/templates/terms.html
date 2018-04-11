@@ -6,18 +6,28 @@
 <meta charset="UTF-8" />
 <meta name="viewport"
 	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Terms</title>
+<title>Terms and Condition</title>
+<style type="text/css">
+	body,html{
+		font-family:arial;
+		font-size:14px;
+		color:#000;
+		margin:0;
+		padding:0;
+	}
+	ol li {
+    		padding-bottom: 16px;
+    		line-height: 18px;
+	}
+</style>
 </head>
 <body>
 	<div id="app">
-		<div class="page-break" th:each="term : ${terms}">
-			<div th:text="${term.termsConditionId}"></div>
-			<div th:text="${term.companyId}"></div>
-			<div th:text="${term.languageId}"></div>
-			<div th:text="${term.countryId}"></div>
-			<div th:text="${term.status}"></div>
-			<div th:text="${term.description}"></div>
-		</div>
+		<ol>
+			<li class="page-break" th:each="term : ${terms}">
+				<span th:text="${term.description}"></span>
+			</li>
+		</ol>
 	</div>
 </body>
 </html>
