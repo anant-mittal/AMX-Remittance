@@ -27,7 +27,7 @@ import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.session.GuestSession;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
@@ -55,7 +55,7 @@ public class PubController {
 	private HttpService httpService;
 
 	@Autowired
-	private UserDevice userDevice;
+	private UserDeviceBean userDevice;
 
 	@Autowired
 	private CalcLibs calcLibs;

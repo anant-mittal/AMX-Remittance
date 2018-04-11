@@ -22,7 +22,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.SessionService;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.codahale.metrics.annotation.Timed;
@@ -39,7 +39,7 @@ public class HomeController {
 	private String applicationTitle;
 
 	@Autowired
-	private UserDevice userDevice;
+	private UserDeviceBean userDevice;
 
 	@Autowired
 	private SessionService sessionService;

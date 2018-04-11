@@ -7,14 +7,14 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.session.GuestSession;
-import com.amx.jax.ui.session.UserDevice;
+import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 
 @Component
 public class AuthEventFilter implements AuditFilter<CAuthEvent> {
 
 	@Autowired
-	UserDevice userDevice;
+	UserDeviceBean userDevice;
 
 	@Autowired
 	GuestSession guestSession;
