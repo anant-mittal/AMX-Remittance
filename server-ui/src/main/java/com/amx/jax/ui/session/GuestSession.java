@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.dict.Language;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContext;
@@ -48,6 +49,16 @@ public class GuestSession implements Serializable {
 
 	@Autowired
 	AuditService auditService;
+
+	Language lang = Language.DEFAULT;
+
+	public Language getLang() {
+		return lang;
+	}
+
+	public void setLang(Language lang) {
+		this.lang = lang;
+	}
 
 	public AuthState state = new AuthState();
 
