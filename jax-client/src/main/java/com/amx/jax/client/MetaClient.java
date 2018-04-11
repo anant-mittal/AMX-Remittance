@@ -231,6 +231,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	/**
+	 * Gives terms and conditions based on metadata like lang id etc
+	 * */
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition() {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response;
 		try {

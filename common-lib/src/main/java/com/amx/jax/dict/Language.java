@@ -3,7 +3,7 @@ package com.amx.jax.dict;
 import java.math.BigDecimal;
 
 public enum Language {
-	ENG("1");
+	ENG("1"), ARABIC("2");
 
 	public static final Language DEFAULT = ENG;
 

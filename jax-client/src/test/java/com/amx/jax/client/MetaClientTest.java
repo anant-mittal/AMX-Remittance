@@ -19,11 +19,13 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -31,6 +33,9 @@ public class MetaClientTest extends AbstractTestClient {
 
 	@Autowired
 	MetaClient metaclient;
+	
+	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
 
 	// @Test
 	public void testdefaultBeneficiary() throws IOException, ResourceNotFoundException, InvalidInputException {
@@ -95,7 +100,7 @@ public class MetaClientTest extends AbstractTestClient {
 		// assertNotNull(response.getResult().getStateName());
 	}
 
-	@Test
+	//@Test
 	public void testGetDistrictList() {
 
 		// 1 is for english
@@ -136,6 +141,14 @@ public class MetaClientTest extends AbstractTestClient {
 		ApiResponse<JaxMetaParameter> response = null;
 
 		response = metaclient.getJaxMetaParameter();
+	}
+	
+	@Test
+	public void testgetTermsAndCondition() {
+		setDefaults();
+		jaxMetaInfo.setLanguageId(new BigDecimal(2));
+		ApiResponse<TermsAndConditionDTO> response = null;
+		response = metaclient.getTermsAndCondition();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
