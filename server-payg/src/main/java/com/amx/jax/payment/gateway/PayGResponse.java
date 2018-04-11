@@ -1,14 +1,12 @@
 package com.amx.jax.payment.gateway;
 
-import com.amx.utils.EnumType;
-
 public class PayGResponse {
 
-	public static enum PayGStatus implements EnumType {
-		INIT, CAPTURED, CANCELLED, ERROR
+	public static enum PayGStatus {
+		INIT, CAPTURED, CANCELLED, ERROR, NOT_CAPTURED
 	}
 
-	String paymentiId = null;
+	String paymentId = null;
 	String result = null;
 	String auth = null;
 	String ref = null;
@@ -22,7 +20,8 @@ public class PayGResponse {
 	String udf4 = null;
 	String udf5 = null;
 	String countryId = null;
-
+	String errorText = null;
+	
 	String collectionFinYear;
 	String collectionDocNumber;
 	String collectionDocCode;
@@ -165,12 +164,26 @@ public class PayGResponse {
 		this.udf5 = udf5;
 	}
 
-	public String getPaymentiId() {
-		return paymentiId;
+	public String getPaymentId() {
+		return paymentId;
 	}
 
-	public void setPaymentiId(String paymentiId) {
-		this.paymentiId = paymentiId;
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
 	}
+
+    /**
+     * @return the errorText
+     */
+    public String getErrorText() {
+        return errorText;
+    }
+
+    /**
+     * @param errorText the errorText to set
+     */
+    public void setErrorText(String errorText) {
+        this.errorText = errorText;
+    }
 
 }

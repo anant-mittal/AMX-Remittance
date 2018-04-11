@@ -108,6 +108,7 @@ public class PayGController {
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
 	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
 			@PathVariable("paygCode") PayGServiceCode paygCode) {
+	    
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
 		PayGClient payGClient = payGClients.getPayGClient(paygCode);
@@ -124,19 +125,27 @@ public class PayGController {
 
 		String redirectUrl;
 
-		String urlParams = String.format(URL_PARAMS, payGResponse.getPaymentiId(), payGResponse.getResult(),
+		String urlParams = String.format(URL_PARAMS, payGResponse.getPaymentId(), payGResponse.getResult(),
 				payGResponse.getAuth(), payGResponse.getRef(), payGResponse.getPostDate(), payGResponse.getTrackId(),
 				payGResponse.getTranxId(), payGResponse.getUdf1(), payGResponse.getUdf2(), payGResponse.getUdf3(),
 				payGResponse.getUdf4(), payGResponse.getUdf5(), payGResponse.getCollectionDocCode(),
 				payGResponse.getCollectionDocNumber(), payGResponse.getCollectionFinYear());
 
-		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
-		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
-		} else {
-			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
-		}
+//		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
+//		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
+//		} else {
+//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
+//		}
+		
+	      if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success" ;
+	        } else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled";
+	        } else {
+	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error";
+	        }
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
