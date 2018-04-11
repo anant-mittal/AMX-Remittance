@@ -288,12 +288,12 @@ public class RemittanceTransactionManager {
 			}
 			if (outputMap.size() > 2) {
 				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
 				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
-						REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
+						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
