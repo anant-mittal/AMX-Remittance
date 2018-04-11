@@ -20,7 +20,6 @@ import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
-import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CountryMasterView;

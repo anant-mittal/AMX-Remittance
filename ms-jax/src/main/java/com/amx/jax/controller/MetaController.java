@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
