@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport"
+	content="initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Terms</title>
+</head>
+<body>
+	<div id="app">
+		<div class="page-break" th:each="term : ${terms}">
+			<div th:text="${term.termsConditionId}"></div>
+			<div th:text="${term.companyId}"></div>
+			<div th:text="${term.languageId}"></div>
+			<div th:text="${term.countryId}"></div>
+			<div th:text="${term.status}"></div>
+			<div th:text="${term.description}"></div>
+		</div>
+	</div>
+</body>
+</html>

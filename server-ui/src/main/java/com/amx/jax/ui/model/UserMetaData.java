@@ -1,8 +1,10 @@
 package com.amx.jax.ui.model;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.user.UserDevice;
 
@@ -11,10 +13,28 @@ public class UserMetaData extends AbstractModel {
 	private static final long serialVersionUID = 1243745569228714127L;
 	public Boolean validSession = false;
 	public Boolean active = false;
-	PersonInfo personinfo = null;
+	PersonInfo info = null;
 	CurrencyMasterDTO domCurrency = null;
 	UserDevice device = null;
 	AuthState state = null;
+	Tenant tenant = null;
+	JaxMetaParameter config = null;
+
+	public JaxMetaParameter getConfig() {
+		return config;
+	}
+
+	public void setConfig(JaxMetaParameter config) {
+		this.config = config;
+	}
+
+	public Tenant getTenant() {
+		return tenant;
+	}
+
+	public void setTenant(Tenant tenant) {
+		this.tenant = tenant;
+	}
 
 	public AuthState getState() {
 		return state;
@@ -57,10 +77,10 @@ public class UserMetaData extends AbstractModel {
 	}
 
 	public void setInfo(PersonInfo personinfo) {
-		this.personinfo = personinfo;
+		this.info = personinfo;
 	}
 
 	public PersonInfo getInfo() {
-		return this.personinfo;
+		return this.info;
 	}
 }
