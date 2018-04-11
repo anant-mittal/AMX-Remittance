@@ -13,7 +13,6 @@ import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
-import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.AuthenticationViewRepository;

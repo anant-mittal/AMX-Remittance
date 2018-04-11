@@ -22,7 +22,6 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;

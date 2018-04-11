@@ -18,7 +18,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
-import com.amx.jax.dbmodel.AuthenticationView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
