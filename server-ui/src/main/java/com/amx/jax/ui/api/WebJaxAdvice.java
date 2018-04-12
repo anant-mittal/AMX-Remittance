@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.response.ResponseError;
@@ -47,6 +48,9 @@ public class WebJaxAdvice {
 	@Autowired
 	private GuestSession guestSession;
 
+	@Autowired
+	private PostManClient postManClient;
+
 	private Logger LOG = LoggerFactory.getLogger(WebJaxAdvice.class);
 
 	@ExceptionHandler(AbstractException.class)
@@ -56,6 +60,7 @@ public class WebJaxAdvice {
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		if (exc.getError() == null && exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
 			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()), exc);
+			postManClient.notifyException(JaxError.UNKNOWN_JAX_ERROR.toString(), exc);
 		} else {
 			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()));
 		}
