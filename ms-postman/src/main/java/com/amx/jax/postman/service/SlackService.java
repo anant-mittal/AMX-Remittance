@@ -3,6 +3,8 @@ package com.amx.jax.postman.service;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -10,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.model.Notipy;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
@@ -62,12 +66,24 @@ public class SlackService {
 	}
 
 	public Exception sendException(String to, Exception e) {
-		LOGGER.error("Exception to=" + to, e);
+		AppContext context = AppContextUtil.getContext();
 		try {
 			StackTraceElement[] traces = e.getStackTrace();
 
 			Map<String, Object> message = new HashMap<>();
-			message.put("text", String.format("%s = %s", to, URLEncoder.encode(e.getMessage(), "UTF-8")));
+			message.put("text", to);
+			List<Map<String, String>> attachments = new LinkedList<Map<String, String>>();
+
+			Map<String, String> attachmentTrace = new HashMap<>();
+			attachmentTrace.put("text", String.format("TraceId = %s-%s \n Tranx = %s", context.getTenant(),
+					context.getTraceId(), context.getTranxId()));
+			attachmentTrace.put("color", "danger");
+			attachments.add(attachmentTrace);
+
+			Map<String, String> attachmentTitle = new HashMap<>();
+			attachmentTitle.put("text", URLEncoder.encode(e.getMessage(), "UTF-8"));
+			attachmentTitle.put("color", "danger");
+			attachments.add(attachmentTitle);
 
 			if (traces.length > 0 && traces[0].toString().length() > 0) {
 				Map<String, String> attachment = new HashMap<>();
@@ -80,8 +96,11 @@ public class SlackService {
 
 				attachment.put("text", tracetext.toString());
 				attachment.put("color", "danger");
-				message.put("attachments", Collections.singletonList(attachment));
+				// message.put("attachments", Collections.singletonList(attachment));
+				attachments.add(attachment);
 			}
+
+			message.put("attachments", attachments);
 
 			HttpResponse<String> response = Unirest.post(sendException).header("content-type", "application/json")
 					.body(message).asString();
