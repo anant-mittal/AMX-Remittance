@@ -195,6 +195,7 @@ public class PostManClient implements PostManService {
 	}
 
 	@Override
+	@Async
 	public Exception notifyException(String title, Exception e) {
 		LOGGER.info("Sending exception = {} ", title);
 		try {
