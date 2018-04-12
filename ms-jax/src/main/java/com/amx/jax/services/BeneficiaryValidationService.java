@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -61,6 +62,9 @@ public class BeneficiaryValidationService {
 	}
 
 	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
+		if(StringUtils.isBlank(beneAccountModel.getBankAccountNumber())) {
+			return;
+		}
 		List<BankAccountLength> accontNumLength = bankService.getBankAccountLength(beneAccountModel.getBankId());
 		Set<Integer> accNumLength = new HashSet<>();
 		accontNumLength.forEach(i -> {
