@@ -58,11 +58,12 @@ public class WebJaxAdvice {
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
-		if (exc.getError() == null && exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
-			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()), exc);
-			postManService.notifyException(JaxError.UNKNOWN_JAX_ERROR.toString(), exc);
+		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
+		if (exc.getError() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
+			LOG.error(errorKey, exc);
+			postManService.notifyException(errorKey, exc);
 		} else {
-			LOG.error(ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString()));
+			LOG.error(ArgUtil.parseAsString(errorKey, WebResponseStatus.UNKNOWN_JAX_ERROR.toString()));
 		}
 
 		AuthState state = guestSession.getState();
