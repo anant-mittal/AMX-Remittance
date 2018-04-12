@@ -9,6 +9,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.rest.RestService;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "com.amx.jax")
@@ -29,5 +30,11 @@ public class JaxServiceClientApplication {
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}
+	
+    @Bean
+    public RestService dRestService(RestService restService) {
+        restService.getRestTemplate();
+        return restService;
+    }
 
 }
