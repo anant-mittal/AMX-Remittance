@@ -50,9 +50,49 @@
 			</plugin>
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
-
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>validate-the-git-infos</id>
+						<goals>
+							<goal>validateRevision</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<dotGitDirectory>${basedir}/.git</dotGitDirectory>
+					<prefix>git</prefix>
+					<verbose>false</verbose>
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+					<format>json</format>
+					<runOnlyOnce>false</runOnlyOnce>
+					<gitDescribe>
+						<skip>false</skip>
+						<always>false</always>	
+						<dirty>-dirty</dirty>
+					</gitDescribe>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
 
 	<modules>
 		<module>common-utils</module>
@@ -60,7 +100,7 @@
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
 		<module>lib-cache</module>
- 		<module>lib-tunnel</module>
+		<module>lib-tunnel</module>
 		<module>lib-session</module>
 		<module>lib-monitor</module>
 
@@ -68,7 +108,6 @@
 
 		<module>lib-postman</module>
 		<module>ms-postman</module>
-
 		<module>amx-lib</module>
 		<module>core</module>
 		<module>ms-meta</module>
@@ -76,14 +115,10 @@
 		<module>ms-exchangerate</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
-
 		<module>ms-scheduler</module>
-
 		<module>server-payg</module>
-
 		<module>server-ui</module>
 		<module>server-stomp</module>
-
 		<module>server-admin</module>
 		<module>server-sample</module>
 	</modules>
