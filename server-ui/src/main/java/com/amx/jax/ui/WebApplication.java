@@ -40,14 +40,6 @@ public class WebApplication extends SpringBootServletInitializer {
 		// context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
-	@NotNull
-	@Bean
-	ServletListenerRegistrationBean<ServletContextListener> myServletListener() {
-		ServletListenerRegistrationBean<ServletContextListener> srb = new ServletListenerRegistrationBean<>();
-		srb.setListener(new PostManContextListener());
-		return srb;
-	}
-
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
 		return applicationBuilder.sources(WebApplication.class);

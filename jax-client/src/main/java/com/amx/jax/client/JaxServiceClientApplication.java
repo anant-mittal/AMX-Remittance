@@ -15,26 +15,26 @@ import com.amx.jax.rest.RestService;
 @ComponentScan(basePackages = "com.amx.jax")
 public class JaxServiceClientApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(JaxServiceClientApplication.class, args);
-    }
+	public static void main(String[] args) {
+		SpringApplication.run(JaxServiceClientApplication.class, args);
+	}
 
-    @Autowired
-    protected JaxConfig jaxConfig;
+	@Autowired
+	protected JaxConfig jaxConfig;
 
-    @Bean
-    public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
-        builder.rootUri(jaxConfig.getDefaultUrl());
-        RestTemplate restTemplate = builder.build();
-        // restTemplate.setInterceptors(Collections.singletonList(new
-        // AppClientInterceptor()));
-        restTemplate.setErrorHandler(errorHandler);
-        return restTemplate;
-    }
-
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
+		builder.rootUri(jaxConfig.getDefaultUrl());
+		RestTemplate restTemplate = builder.build();
+		//restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+		restTemplate.setErrorHandler(errorHandler);
+		return restTemplate;
+	}
+	
     @Bean
     public RestService dRestService(RestService restService) {
         restService.getRestTemplate();
         return restService;
     }
+
 }
