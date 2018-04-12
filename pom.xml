@@ -100,7 +100,7 @@
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
 		<module>lib-cache</module>
-		<module>lib-tunnel</module>
+ 		<module>lib-tunnel</module>
 		<module>lib-session</module>
 		<module>lib-monitor</module>
 
@@ -108,6 +108,7 @@
 
 		<module>lib-postman</module>
 		<module>ms-postman</module>
+
 		<module>amx-lib</module>
 		<module>core</module>
 		<module>ms-meta</module>
@@ -115,10 +116,14 @@
 		<module>ms-exchangerate</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
+
 		<module>ms-scheduler</module>
+
 		<module>server-payg</module>
+
 		<module>server-ui</module>
 		<module>server-stomp</module>
+
 		<module>server-admin</module>
 		<module>server-sample</module>
 	</modules>
