@@ -254,6 +254,7 @@ public class PurposeOfTransactionService extends AbstractService {
 
 	@SuppressWarnings("rawtypes")
 	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
+		logger.info("in getPurposeOfTransaction with params: "+ model.toString());
 		ApiResponse response = getBlackApiResponse();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
