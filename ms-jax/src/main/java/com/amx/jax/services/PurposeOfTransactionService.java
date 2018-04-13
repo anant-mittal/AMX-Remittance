@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -38,7 +39,7 @@ import com.amx.jax.repository.IBeneficiaryOnlineDao;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PurposeOfTransactionService extends AbstractService {
 
-	private Logger logger = Logger.getLogger(PurposeOfTransactionService.class);
+	private Logger logger = LoggerFactory.getLogger(PurposeOfTransactionService.class);
 
 	@Autowired
 	IAdditionalDataDisplayDao additionalDataDisplayDao;
@@ -117,11 +118,14 @@ public class PurposeOfTransactionService extends AbstractService {
 			for (AddDynamicLabel dyamicLabel : listDynamicLabel) {
 				AddAdditionalBankDataDto adddata = new AddAdditionalBankDataDto();
 				if (dyamicLabel.getValidation() != null && dyamicLabel.getValidation().equalsIgnoreCase("Y")) {
-
+					logger.info("check 1:{} {} {} {} {} {}", routingCountry, dyamicLabel.getFlexiField());
+				
 					List<AdditionalBankRuleMap> listAdditinalBankfield = additionalBankRuleMapDao
 							.getDynamicLevelMatch(routingCountry, dyamicLabel.getFlexiField());
 					if (!listAdditinalBankfield.isEmpty()) {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
+							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
+									routingCountry, dyamicLabel.getFlexiField());
 							List<AdditionalBankDetailsView> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
 											routingCountry, dyamicLabel.getFlexiField());
