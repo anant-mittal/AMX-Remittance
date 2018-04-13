@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.jax.AppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
@@ -49,6 +50,9 @@ public class UserController {
 	@Autowired
 	private HttpService httpService;
 
+	@Autowired
+	private AppConfig appConfig;
+
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
@@ -65,6 +69,8 @@ public class UserController {
 
 		wrapper.getData().setTenant(tenantContext.getTenant());
 		wrapper.getData().setLang(httpService.getLanguage());
+		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
+
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());

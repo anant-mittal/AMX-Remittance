@@ -21,6 +21,7 @@ public class UserMetaData extends AbstractModel {
 	Tenant tenant = null;
 	Language lang = null;
 	JaxMetaParameter config = null;
+	String cdnUrl = null;
 
 	public JaxMetaParameter getConfig() {
 		return config;
@@ -92,5 +93,13 @@ public class UserMetaData extends AbstractModel {
 
 	public void setLang(Language lang) {
 		this.lang = lang;
+	}
+
+	public String getCdnUrl() {
+		return cdnUrl;
+	}
+
+	public void setCdnUrl(String cdnUrl) {
+		this.cdnUrl = cdnUrl;
 	}
 }
