@@ -1,5 +1,6 @@
 package com.amx.jax.payment.service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.jax.client.RemitClient;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -61,6 +63,9 @@ public class BenefitClient implements PayGClient {
 
 	@Autowired
 	private PaymentService paymentService;
+	
+	@Autowired
+	private RemitClient remitClient;
 
 	@Override
 	public PayGServiceCode getClientCode() {
@@ -117,7 +122,13 @@ public class BenefitClient implements PayGClient {
 
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
-
+			
+			PaymentResponseDto paymentDto = new PaymentResponseDto();
+			paymentDto.setPaymentId(payID);
+			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
+			paymentDto.setUdf3(payGParams.getDocNo());
+			remitClient.savePaymentId(paymentDto);
+			
 			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
 			payGParams.setRedirectUrl(url);

@@ -9,6 +9,7 @@ public class PayGParams {
 	String name = null;
 	String redirectUrl = null;
 	Tenant tenant = null;
+	String payId = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;
@@ -62,6 +63,14 @@ public class PayGParams {
 	 */
 	public void setTenant(Tenant tenant) {
 		this.tenant = tenant;
+	}
+
+	public String getPayId() {
+		return payId;
+	}
+
+	public void setPayId(String payId) {
+		this.payId = payId;
 	}
 
 
