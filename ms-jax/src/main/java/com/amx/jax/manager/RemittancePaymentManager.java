@@ -144,26 +144,28 @@ public class RemittancePaymentManager extends AbstractService{
 					response.setResponseStatus(ResponseStatus.OK);
 				    //response.getData().setType("pg_remit_response");
 				}
-				try {
-					RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
-							lstPayIdDetails.get(0).getDocumentNo(), lstPayIdDetails.get(0).getDocumentFinancialyear());
-					TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
-							paymentResponse.getCustomerId(), remittanceTransaction.getDocumentFinancialyear(),
-							remittanceTransaction.getDocumentNo());
-					Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
-					setMetaInfo(trxnDto, paymentResponse);
-					reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
-					List<RemittanceReceiptSubreport> rrsrl = reportManagerService.getRemittanceReceiptSubreportList();
-					PersonInfo personinfo = new PersonInfo();
 					try {
-						BeanUtils.copyProperties(personinfo, customer);
-					} catch (Exception e) {
-					}
-					notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(
+								lstPayIdDetails.get(0).getDocumentNo(),
+								lstPayIdDetails.get(0).getDocumentFinancialyear());
+						TransactionHistroyDTO trxnDto = transactionHistroyService.getTransactionHistoryDto(
+								paymentResponse.getCustomerId(), remittanceTransaction.getDocumentFinancialyear(),
+								remittanceTransaction.getDocumentNo());
+						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
+						setMetaInfo(trxnDto, paymentResponse);
+						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
+								.getRemittanceReceiptSubreportList();
+						PersonInfo personinfo = new PersonInfo();
+						try {
+							BeanUtils.copyProperties(personinfo, customer);
+						} catch (Exception e) {
+						}
+						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
-					
+
 				}else {
 					logger.info("PaymentResponseDto "+paymentResponse.getPaymentId()+"\t Result :"+paymentResponse.getResultCode()+"\t Custoemr Id :"+paymentResponse.getCustomerId());
 					

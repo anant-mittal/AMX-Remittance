@@ -656,22 +656,24 @@ public class UserService extends AbstractUserService {
 						contactList.get(0).getFsCountryMaster().getCountryId());
 				if (!countryMasterView.isEmpty()) {
 					customerInfo.setLocalContactCountry(countryMasterView.get(0).getCountryName());
-					List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),
-							contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
-					if (!stateMasterView.isEmpty()) {
-						customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
-						DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
-						if (distictMaster != null) {
-							List<ViewDistrict> districtMas = districtDao.getDistrict(
-									stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),
-									new BigDecimal(1));
-							if (!districtMas.isEmpty()) {
-								customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
-								List<ViewCity> cityDetails = cityDao.getCityDescription(
-										districtMas.get(0).getDistrictId(),
-										contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
-								if (!cityDetails.isEmpty()) {
-									customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+					if (contactList.get(0).getFsStateMaster() != null) {
+						List<ViewState> stateMasterView = stateDao.getState(countryMasterView.get(0).getCountryId(),
+								contactList.get(0).getFsStateMaster().getStateId(), new BigDecimal(1));
+						if (!stateMasterView.isEmpty()) {
+							customerInfo.setLocalContactState(stateMasterView.get(0).getStateName());
+							DistrictMaster distictMaster = contactList.get(0).getFsDistrictMaster();
+							if (distictMaster != null) {
+								List<ViewDistrict> districtMas = districtDao.getDistrict(
+										stateMasterView.get(0).getStateId(), distictMaster.getDistrictId(),
+										new BigDecimal(1));
+								if (!districtMas.isEmpty()) {
+									customerInfo.setLocalContactDistrict(districtMas.get(0).getDistrictDesc());
+									List<ViewCity> cityDetails = cityDao.getCityDescription(
+											districtMas.get(0).getDistrictId(),
+											contactList.get(0).getFsCityMaster().getCityId(), new BigDecimal(1));
+									if (!cityDetails.isEmpty()) {
+										customerInfo.setLocalContactCity(cityDetails.get(0).getCityName());
+									}
 								}
 							}
 						}
