@@ -27,6 +27,7 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
+import com.amx.jax.user.UserDevice;
 import com.amx.utils.ListManager;
 
 @Service
@@ -105,11 +106,17 @@ public class LoginService {
 			if (customerModel == null) {
 				throw new JaxSystemError();
 			}
-			
-			jaxService.getUserclient().customerLoggedIn();
 
+			/*
+			 * TODO:- need to evaluate this condition it has some backward compatibility
+			 * consideration
+			 */
 			sessionService.authorize(customerModel,
 					sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN));
+
+			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
+				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
+			}
 
 			wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);
 			sessionService.getGuestSession().endStep(AuthStep.SECQUES);

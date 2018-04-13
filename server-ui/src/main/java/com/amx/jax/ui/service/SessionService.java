@@ -108,7 +108,7 @@ public class SessionService {
 			sessionEvent.setType(SessionEvent.Type.SESSION_AUTHED);
 			auditService.log(sessionEvent);
 		}
-		
+
 	}
 
 	/**

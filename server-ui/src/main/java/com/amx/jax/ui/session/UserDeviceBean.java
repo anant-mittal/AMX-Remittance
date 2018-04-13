@@ -33,17 +33,10 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 	private static final long serialVersionUID = -6869375666742059912L;
 	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
 
-	public DeviceType type = null;
-	private DevicePlatform platform = null;
-	private OperatingSystem operatingSystem = null;
-	private Browser browser = null;
-	private Version browserVersionInfo = null;
-	
 	@Autowired
 	private HttpService httpService;
 
 	public UserDevice resolve() {
-
 		Device currentDevice = httpService.getCurrentDevice();
 		this.ip = httpService.getIPAddress();
 		if (currentDevice != null) {
@@ -56,6 +49,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 
 		this.fingerprint = httpService.getDeviceId();
 		UserAgent userAgent = httpService.getUserAgent();
+		
 		if (this.id == null) {
 			String idn = null;
 			if (this.fingerprint != null) {
@@ -66,7 +60,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 			this.id = httpService.getBrowserId(ArgUtil.parseAsString(idn));
 		}
 		this.browser = userAgent.getBrowser();
-		this.browserVersionInfo = userAgent.getBrowserVersion();
+		this.browserVersion = userAgent.getBrowserVersion();
 		this.operatingSystem = userAgent.getOperatingSystem();
 
 		/**
@@ -109,6 +103,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return this;
 	}
 
+	@Override
 	public String getFingerprint() {
 		if (type == null) {
 			this.resolve();
@@ -116,6 +111,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return fingerprint;
 	}
 
+	@Override
 	public String getId() {
 		if (type == null) {
 			this.resolve();
@@ -123,6 +119,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return id;
 	}
 
+	@Override
 	public String getAppVersion() {
 		if (type == null) {
 			this.resolve();
@@ -130,6 +127,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return appVersion;
 	}
 
+	@Override
 	public String getIp() {
 		if (type == null) {
 			this.resolve();
@@ -137,6 +135,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return ip;
 	}
 
+	@Override
 	public DeviceType getType() {
 		if (type == null) {
 			this.resolve();
@@ -144,6 +143,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return type;
 	}
 
+	@Override
 	public DevicePlatform getPlatform() {
 		if (type == null) {
 			this.resolve();
@@ -151,6 +151,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return platform;
 	}
 
+	@Override
 	public OperatingSystem getOperatingSystem() {
 		if (type == null) {
 			this.resolve();
@@ -158,6 +159,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return operatingSystem;
 	}
 
+	@Override
 	public Browser getBrowser() {
 		if (type == null) {
 			this.resolve();
@@ -165,11 +167,12 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return browser;
 	}
 
+	@Override
 	public Version getBrowserVersion() {
 		if (type == null) {
 			this.resolve();
 		}
-		return browserVersionInfo;
+		return browserVersion;
 	}
 
 	public Map<String, Object> toMap() {
@@ -180,7 +183,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		map.put("type", type);
 		map.put("ip", ip);
 		map.put("browser", browser);
-		map.put("browserVersion", browserVersionInfo);
+		map.put("browserVersion", browserVersion);
 		map.put("os", operatingSystem);
 		map.put("appVersion", appVersion);
 		map.put("appType", appType);
@@ -202,23 +205,4 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return device;
 	}
 
-	public void setBrowserVersion(Version browserVersion) {
-		this.browserVersionInfo = browserVersion;
-	}
-
-	public void setType(DeviceType type) {
-		this.type = type;
-	}
-
-	public void setPlatform(DevicePlatform platform) {
-		this.platform = platform;
-	}
-
-	public void setOperatingSystem(OperatingSystem operatingSystem) {
-		this.operatingSystem = operatingSystem;
-	}
-
-	public void setBrowser(Browser browser) {
-		this.browser = browser;
-	}
 }

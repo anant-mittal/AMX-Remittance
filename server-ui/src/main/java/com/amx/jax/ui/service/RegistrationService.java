@@ -89,7 +89,7 @@ public class RegistrationService {
 		CustomerModel model = response.getResult();
 
 		sessionService.getGuestSession().setCustomerModel(model);
-		sessionService.authorize(model, false);
+		sessionService.authorize(model, false); // TODO:- validate this
 		sessionService.getGuestSession().getState().setValidMotp(true);
 
 		if (model.getEmail() != null) {
@@ -177,6 +177,7 @@ public class RegistrationService {
 
 		if (doLogin) {
 			sessionService.authorize(sessionService.getGuestSession().getCustomerModel(), true);
+			jaxClient.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
 		}
 
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
