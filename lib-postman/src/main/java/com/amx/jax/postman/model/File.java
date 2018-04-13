@@ -8,10 +8,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.Null;
 
+import org.slf4j.Logger;
+
+import com.amx.jax.dict.Language;
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class File {
+
+	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
 	public enum Type {
 		PDF("application/pdf"), CSV("text/csv"), PNG("image/png");
@@ -27,13 +33,13 @@ public class File {
 		AMXFS, FS, FOP, ITEXT5, ITEXT7, JASPER
 	}
 
-	Langs lang = null;
+	Language lang = null;
 
-	public Langs getLang() {
+	public Language getLang() {
 		return lang;
 	}
 
-	public void setLang(Langs lang) {
+	public void setLang(Language lang) {
 		this.lang = lang;
 	}
 
@@ -125,7 +131,7 @@ public class File {
 			if (body != null) {
 				outputStream = response.getOutputStream();
 				outputStream.write(this.body);
-				System.out.println("PDF created successfully");
+				LOGGER.info("PDF created successfully :  Template {} {}", this.getTemplate(), this.getLang());
 			}
 		} finally {
 			if (outputStream != null) {

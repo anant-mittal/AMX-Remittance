@@ -96,6 +96,7 @@ public class HomeController {
 	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
+		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
@@ -114,6 +115,7 @@ public class HomeController {
 
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
+		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
@@ -123,6 +125,7 @@ public class HomeController {
 
 	@RequestMapping(value = { "/app/terms", "/pub/terms" }, method = { RequestMethod.GET })
 	public String termsPage(Model model, @RequestParam Language lang) {
+		model.addAttribute("lang", httpService.getLanguage());
 		sessionService.getGuestSession().setLang(lang);
 		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
 		return "terms";

@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.validation.constraints.Null;
 
+import com.amx.jax.dict.Language;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,7 +16,7 @@ public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1363933600245334964L;
 
-	protected Langs lang = null;
+	protected Language lang = null;
 	protected String subject;
 	protected String message = null;
 	private List<String> to;
@@ -72,11 +73,11 @@ public class Message implements Serializable {
 		this.template = template;
 	}
 
-	public Langs getLang() {
+	public Language getLang() {
 		return lang;
 	}
 
-	public void setLang(Langs lang) {
+	public void setLang(Language lang) {
 		this.lang = lang;
 	}
 

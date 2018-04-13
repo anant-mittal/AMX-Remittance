@@ -4,6 +4,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.user.UserDevice;
@@ -18,6 +19,7 @@ public class UserMetaData extends AbstractModel {
 	UserDevice device = null;
 	AuthState state = null;
 	Tenant tenant = null;
+	Language lang = null;
 	JaxMetaParameter config = null;
 
 	public JaxMetaParameter getConfig() {
@@ -82,5 +84,13 @@ public class UserMetaData extends AbstractModel {
 
 	public PersonInfo getInfo() {
 		return this.info;
+	}
+
+	public Language getLang() {
+		return lang;
+	}
+
+	public void setLang(Language lang) {
+		this.lang = lang;
 	}
 }

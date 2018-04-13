@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.dict.Language;
 import com.amx.jax.ui.UIConstants;
+import com.amx.utils.ArgUtil;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -40,6 +42,10 @@ public class HttpService {
 			}
 		}
 		return remoteAddr;
+	}
+
+	public Language getLanguage() {
+		return (Language) ArgUtil.parseAsEnum(request.getLocale().getLanguage(), Language.DEFAULT);
 	}
 
 	public Device getCurrentDevice() {

@@ -18,6 +18,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
@@ -37,8 +38,6 @@ public class EmailService {
 	@Autowired
 	private FileService fileService;
 
-	@TenantValue("${tenant}")
-	private String tenant;
 	@TenantValue("${spring.mail.from}")
 	private String mailFrom;
 	@TenantValue("${spring.mail.host}")
@@ -66,10 +65,13 @@ public class EmailService {
 	@Autowired
 	private JavaMailSender defaultMailSender;
 
+	@Autowired
+	private PostManConfig postManConfig;
+
 	public JavaMailSender getMailSender() {
 		if (mailSender == null) {
-			if (tenant != null) {
-				LOGGER.info("Using {} mailSender", tenant);
+			if (postManConfig.getTenant() != null) {
+				LOGGER.info("Using {} mailSender", postManConfig.getTenant());
 				JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
 				javaMailSender.setHost(this.mailHost);
 				javaMailSender.setPort(this.mailPort);

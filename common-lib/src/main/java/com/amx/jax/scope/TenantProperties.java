@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.dict.Language;
+import com.amx.jax.dict.Tenant;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
 
@@ -85,6 +87,10 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsInteger(propertyValue));
 						} else if ("boolean".equals(typeName) || "java.lang.Boolean".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsBoolean(propertyValue));
+						} else if (Language.class.getName().equals(typeName)) {
+							field.set(object, ArgUtil.parseAsEnum(propertyValue, Language.DEFAULT));
+						} else if (Tenant.class.getName().equals(typeName)) {
+							field.set(object, ArgUtil.parseAsEnum(propertyValue, Tenant.DEFAULT));
 						}
 					}
 				}
