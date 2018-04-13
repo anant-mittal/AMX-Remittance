@@ -55,7 +55,7 @@ public class ApiResponse<T> {
 	public T getResult() {
 		List<T> results = getResults();
 		T result = null;
-		if (results != null) {
+		if (results != null && !results.isEmpty()) {
 			result = results.get(0);
 		}
 		return result;
