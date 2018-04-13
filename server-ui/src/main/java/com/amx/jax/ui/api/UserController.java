@@ -15,6 +15,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -45,6 +46,9 @@ public class UserController {
 	@Autowired
 	private TenantService tenantContext;
 
+	@Autowired
+	private HttpService httpService;
+
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
@@ -60,6 +64,7 @@ public class UserController {
 		}
 
 		wrapper.getData().setTenant(tenantContext.getTenant());
+		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());
 		wrapper.getData().setValidSession(sessionService.getUserSession().isValid());

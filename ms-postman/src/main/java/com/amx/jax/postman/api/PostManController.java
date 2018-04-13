@@ -16,11 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
@@ -42,11 +42,11 @@ public class PostManController {
 	private HttpServletRequest request;
 
 	@Autowired
-	private Langs defaultLang;
+	private PostManConfig postManConfig;
 
-	public Langs getLang() {
+	public Language getLang() {
 		String langString = request.getParameter(PostManServiceImpl.PARAM_LANG);// localeResolver.resolveLocale(request).toString();
-		Langs lang = (Langs) ArgUtil.parseAsEnum(langString, defaultLang);
+		Language lang = (Language) ArgUtil.parseAsEnum(langString, postManConfig.getTenantLang());
 		return lang;
 	}
 
@@ -55,7 +55,7 @@ public class PostManController {
 	public File processTemplate(@RequestParam Templates template, @RequestParam(required = false) String data,
 			@RequestParam(required = false) String fileName, @RequestParam(required = false) File.Type fileType) {
 
-		Langs lang = getLang();
+		Language lang = getLang();
 		File file = new File();
 		file.setLang(lang);
 
@@ -77,7 +77,7 @@ public class PostManController {
 	public SMS sendSMS(@RequestBody SMS sms, @RequestParam(required = false, defaultValue = "false") Boolean async)
 			throws PostManException {
 
-		Langs lang = getLang();
+		Language lang = getLang();
 
 		if (sms.getLang() == null) {
 			sms.setLang(lang);
@@ -92,10 +92,6 @@ public class PostManController {
 	}
 
 	/**
-	 * http://192.168.100.190:8080/email/api/send/transaction/email?
-	 * to=viki.sangani@almullagroup.com&customer=Viki&amount=345&loyaltypoints=2312
-	 * &refno=2017 / 20035&date=04/NOV/2017&languageid=1
-	 * 
 	 * @param tnt
 	 * @param lang
 	 * @param to
@@ -114,9 +110,9 @@ public class PostManController {
 		Email email = new Email();
 
 		if ("2".equals(languageid)) {
-			email.setLang(Langs.AR_KW);
+			email.setLang(Language.AR);
 		} else {
-			email.setLang(Langs.EN_US);
+			email.setLang(Language.EN);
 		}
 
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -147,7 +143,7 @@ public class PostManController {
 	public Email sendEmail(@RequestBody Email email,
 			@RequestParam(required = false, defaultValue = "false") Boolean async) throws PostManException {
 
-		Langs lang = getLang();
+		Language lang = getLang();
 
 		if (email.getLang() == null) {
 			email.setLang(lang);
@@ -163,7 +159,7 @@ public class PostManController {
 
 	@RequestMapping(value = PostManUrls.SEND_EMAIL_SUPPORT, method = RequestMethod.POST)
 	public Email sendEmail(@RequestBody SupportEmail email) throws PostManException {
-		Langs lang = getLang();
+		Language lang = getLang();
 		if (email.getLang() == null) {
 			email.setLang(lang);
 		}

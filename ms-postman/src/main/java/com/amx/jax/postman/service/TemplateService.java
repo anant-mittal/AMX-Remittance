@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Langs;
 import com.amx.jax.postman.model.Templates;
 import com.amx.utils.IoUtils;
 
@@ -67,9 +67,12 @@ public class TemplateService {
 	@Autowired
 	private TemplateUtils templateUtils;
 
+	@Autowired
+	private PostManConfig postManConfig;
+
 	private Locale getLocal(File file) {
 		if (file == null || file.getLang() == null) {
-			return new Locale(Langs.DEFAULT.getCode());
+			return new Locale(postManConfig.getTenantLang().getCode());
 		}
 		return new Locale(file.getLang().getCode());
 	}

@@ -100,32 +100,28 @@ public enum Language {
 
 	public static final Language DEFAULT = EN;
 
-	private String code;
+	private String iso3code;
 	private int id;
 
-	Language(String code, int id, String name) {
+	Language(String iso3code, int id, String name) {
 		this.id = id;
-		this.code = code;
+		this.iso3code = iso3code;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
+	public String getISO3Code() {
+		return iso3code;
 	}
 
 	public int getId() {
 		return id;
 	}
 
-	public BigDecimal getBDCode() {
-		return new BigDecimal(id);
+	public String getCode() {
+		return this.toString();
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public BigDecimal getBDCode() {
+		return new BigDecimal(id);
 	}
 
 }
