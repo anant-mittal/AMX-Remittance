@@ -125,6 +125,7 @@ public class PostManController {
 		modeldata.put("languageid", languageid);
 
 		email.setModel(modeldata);
+		email.addTo(to);
 
 		email.setTemplate(template);
 		postManService.sendEmailAsync(email);
