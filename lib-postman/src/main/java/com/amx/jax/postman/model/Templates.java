@@ -18,8 +18,8 @@ public enum Templates {
 	PROFILE_CHANGE("AccoutDetailsUpdate"),
 	RATE_ALERT("RateAlert"),
 	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"),
-	TEST("test");
-
+	TEST("test"),
+	BRANCH_FEEDBACK("BranchTemplate");
 	String fileName;
 
 	public String getFileName() {
