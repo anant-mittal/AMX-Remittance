@@ -240,5 +240,30 @@ public class RemitClient extends AbstractJaxServiceClient {
         } // end of try-catch
 
 	}
+	
+	public ApiResponse<PaymentResponseDto> savePaymentId(PaymentResponseDto paymentResponseDto)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+
+		try {
+			ResponseEntity<ApiResponse<PaymentResponseDto>> response;
+			jaxMetaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
+			jaxMetaInfo.setCustomerId(paymentResponseDto.getCustomerId());
+			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "save-payment-id";
+			LOGGER.info("calling jax url: " + url);
+			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in saveRemittanceTransaction : ",e);
+            throw new JaxSystemError();
+        } // end of try-catch
+
+	}
 
 }

@@ -96,10 +96,6 @@ public class RemittancePaymentManager extends AbstractService{
 		logger.info("Company Id:"+paymentResponse.getCompanyId());
 		logger.info("UDF 1:"+paymentResponse.getUdf1()+"\t UDF 2 :"+paymentResponse.getUdf2()+"\t UDF 3 :"+paymentResponse.getUdf3()+"\t UDF4 :"+paymentResponse.getUdf4());
 		
-		
-		
-		
-		
 		try {
 			 response = getBlackApiResponse();
 			if(!StringUtils.isBlank(paymentResponse.getPaymentId()) && !StringUtils.isBlank(paymentResponse.getResultCode()) 
@@ -206,9 +202,6 @@ public class RemittancePaymentManager extends AbstractService{
 		return response;
 	}
 
-
-
-
 	private void setMetaInfo(TransactionHistroyDTO transactionHistroyDTO, PaymentResponseDto paymentResponse) {
 		transactionHistroyDTO.setApplicationCountryId(paymentResponse.getApplicationCountryId());
 		transactionHistroyDTO.setCompanyId(paymentResponse.getCompanyId());
@@ -216,22 +209,22 @@ public class RemittancePaymentManager extends AbstractService{
 		transactionHistroyDTO.setCustomerId(paymentResponse.getCustomerId());		
 	}
 
-
-
-
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-
-
-
 	@Override
 	public Class<?> getModelClass() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public ApiResponse savePaymentId(PaymentResponseDto paymentResponse) {
+		ApiResponse response = null;
+		logger.info("paymment capture :"+paymentResponse.toString());
+		return response;
+	}	
 
 }

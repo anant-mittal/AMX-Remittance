@@ -166,5 +166,25 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
+	
+	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
+	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal companyId = metaData.getCompanyId();
+		if(customerId!=null) {
+		paymentResponse.setCustomerId(customerId);
+		}else {
+		    paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
+		}
+		paymentResponse.setApplicationCountryId(applicationCountryId);
+		paymentResponse.setCompanyId(companyId);
+		logger.info(String.format("save-payment-id : for customer - %s, payment_id - %s",paymentResponse.getTrackId(),paymentResponse.getPaymentId()));
+		
+		ApiResponse response = remittancePaymentManager.savePaymentId(paymentResponse);
+		return response;
+	}
 
 }
