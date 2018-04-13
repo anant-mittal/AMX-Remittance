@@ -160,6 +160,7 @@ public class BenefitClient implements PayGClient {
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.BHR.getCode());
 		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+		gatewayResponse.setError(request.getParameter("Error"));
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
