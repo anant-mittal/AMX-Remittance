@@ -1,5 +1,6 @@
 package com.amx.jax.postman.api;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.dict.Language;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
@@ -86,6 +89,58 @@ public class PostManController {
 			postManService.sendSMS(sms);
 		}
 		return sms;
+	}
+
+	/**
+	 * http://192.168.100.190:8080/email/api/send/transaction/email?
+	 * to=viki.sangani@almullagroup.com&customer=Viki&amount=345&loyaltypoints=2312
+	 * &refno=2017 / 20035&date=04/NOV/2017&languageid=1
+	 * 
+	 * @param tnt
+	 * @param lang
+	 * @param to
+	 * @param customer
+	 * @param amount
+	 * @param amount
+	 * @return
+	 */
+	@Deprecated
+	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.GET)
+	public Map<String, Object> sendEmailGet(@RequestParam Tenant tnt, @RequestParam(required = false) Language language,
+			@RequestParam String to, @RequestParam String customer, @RequestParam String amount,
+			@RequestParam String loyaltypoints, @RequestParam String refno, @RequestParam String date,
+			@RequestParam(required = false) String languageid, @RequestParam Templates template)
+			throws PostManException {
+		Email email = new Email();
+
+		if ("2".equals(languageid)) {
+			email.setLang(Langs.AR_KW);
+		} else {
+			email.setLang(Langs.EN_US);
+		}
+
+		Map<String, Object> modeldata = new HashMap<String, Object>();
+		modeldata.put("to", to);
+		modeldata.put("customer", customer);
+		modeldata.put("amount", amount);
+		modeldata.put("loyaltypoints", loyaltypoints);
+		modeldata.put("refno", refno);
+		modeldata.put("date", date);
+		modeldata.put("languageid", languageid);
+
+		email.setModel(modeldata);
+
+		email.setTemplate(template);
+		postManService.sendEmailAsync(email);
+		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, String> data = new HashMap<String, String>();
+		data.put("msg", String.format("Email is send to %s and Ref NO. is %s", customer, refno));
+		map.put("data", data);
+		map.put("error", null);
+		map.put("meta", null);
+		map.put("responseCode", "SUCCESS");
+		map.put("responseMessage", "Email is successfully sent.");
+		return map;
 	}
 
 	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.POST)
