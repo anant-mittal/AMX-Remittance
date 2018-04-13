@@ -36,6 +36,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.rest.RestService;
+import com.amx.jax.user.UserDevice;
 
 @Component
 public class UserClient extends AbstractJaxServiceClient {
@@ -667,7 +668,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		}
 	}
 
-	public ApiResponse<CustomerModel> customerLoggedIn() {
+	public ApiResponse<CustomerModel> customerLoggedIn(UserDevice userDevice) {
 		try {
 			ResponseEntity<ApiResponse<CustomerModel>> response;
 			CustomerModel custModel = new CustomerModel();

@@ -21,6 +21,7 @@ public class PayGResponse {
 	String udf5 = null;
 	String countryId = null;
 	String errorText = null;
+	String error = null;
 	
 	String collectionFinYear;
 	String collectionDocNumber;
@@ -185,5 +186,13 @@ public class PayGResponse {
     public void setErrorText(String errorText) {
         this.errorText = errorText;
     }
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
 
 }
