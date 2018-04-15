@@ -107,14 +107,9 @@ public class PostManController {
 			@RequestParam String loyaltypoints, @RequestParam String refno, @RequestParam String date,
 			@RequestParam(required = false) String languageid, @RequestParam Templates template)
 			throws PostManException {
-		Email email = new Email();
 
-		if ("2".equals(languageid)) {
-			email.setLang(Language.AR);
-		} else {
-			email.setLang(Language.EN);
-		}
 
+		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", to);
 		modeldata.put("customer", customer);
@@ -122,10 +117,23 @@ public class PostManController {
 		modeldata.put("loyaltypoints", loyaltypoints);
 		modeldata.put("refno", refno);
 		modeldata.put("date", date);
-		modeldata.put("languageid", languageid);
+		wrapper.put("data", modeldata);
+		
+		Email email = new Email();
 
-		email.setModel(modeldata);
-
+		if ("2".equals(languageid)) {
+			email.setLang(Language.AR);
+			modeldata.put("languageid", Language.AR);
+		} else {
+			email.setLang(Language.EN);
+			modeldata.put("languageid", Language.EN);
+		}
+		email.setModel(wrapper);
+		email.addTo(to);
+		email.setHtml(true);
+		email.setSubject("Feedback Email"); //Given by Umesh
+		
+		
 		email.setTemplate(template);
 		postManService.sendEmailAsync(email);
 		Map<String, Object> map = new HashMap<String, Object>();
