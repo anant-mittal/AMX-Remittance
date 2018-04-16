@@ -19,6 +19,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.service.HttpService;
 import com.amx.jax.session.LoggedInUsers;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;

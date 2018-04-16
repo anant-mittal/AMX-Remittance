@@ -6,25 +6,25 @@ import javax.validation.constraints.Pattern;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
+import com.amx.jax.AppConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 
 public class UserUpdateData implements UserUpdateRequest, UserUpdateResponse {
 
-	@Pattern(regexp = UIConstants.Validator.OTP)
+	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String mOtp = null;
 
-	@Pattern(regexp = UIConstants.Validator.OTP)
+	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
 
 	private String password = null;
 
-	@Pattern(regexp = UIConstants.Validator.EMAIL)
+	@Pattern(regexp = AppConstants.Validator.EMAIL)
 	private String email = null;
 
-	@Pattern(regexp = UIConstants.Validator.PHONE)
+	@Pattern(regexp = AppConstants.Validator.PHONE)
 	private String phone = null;
 
 	private String imageUrl = null;

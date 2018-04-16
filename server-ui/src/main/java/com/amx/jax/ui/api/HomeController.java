@@ -15,14 +15,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
-import com.amx.jax.ui.service.HttpService;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
@@ -100,7 +101,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 
@@ -119,7 +120,7 @@ public class HomeController {
 		model.addAttribute("applicationTitle", applicationTitle);
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
-		model.addAttribute(UIConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
 		return "app";
 	}
 

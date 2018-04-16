@@ -9,6 +9,10 @@ public class SupportEmail extends Email {
 	private String visitorMessage = null;
 	private String captchaCode = null;
 
+	public SupportEmail() {
+		super();
+	}
+
 	public String getVisitorName() {
 		return visitorName;
 	}
