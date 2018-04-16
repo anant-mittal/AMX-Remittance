@@ -103,6 +103,7 @@
  		<module>lib-tunnel</module>
 		<module>lib-session</module>
 		<module>lib-monitor</module>
+		<module>lib-sso</module>
 
 		<!-- <module>ms-logger</module> -->
 
