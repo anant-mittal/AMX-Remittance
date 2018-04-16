@@ -86,17 +86,16 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	 @Test
 	public void saveMobile() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(239));
+		setBahrainDefaults();
 		ApiResponse<CustomerModel> response = null;
+		ApiResponse<CivilIdOtpModel> otpResp = client.sendResetOtpForCivilId("450501485");
+		
 		String mobile = "1234567890";
-		String mOtp = "570605";
-		String eOtp = "573782";
+		String mOtp = otpResp.getResult().getmOtp();
+		String eOtp = otpResp.getResult().geteOtp();
 		response = client.saveMobile(mobile, mOtp, eOtp);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
@@ -213,7 +212,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	@Test
+	//@Test
 	public void sendResetOtp() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();

@@ -34,6 +34,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.payment.PayGService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -45,7 +46,6 @@ import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
-import com.amx.jax.ui.service.PayGService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.utils.JsonUtil;
@@ -132,8 +132,8 @@ public class RemittController {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
-		
-		//System.out.println(JsonUtil.toJson(wrapper));
+
+		// System.out.println(JsonUtil.toJson(wrapper));
 		if (skipd == null || skipd.booleanValue() == false) {
 			File file = postManService.processTemplate(
 					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
@@ -266,7 +266,7 @@ public class RemittController {
 
 			wrapper.setData(respTxMdl);
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
-					"https://" + request.getServerName() + "/app/landing/remittance", tenantContext.getTenant()));
+					"https://" + request.getServerName() + "/app/landing/remittance"));
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(WebResponseStatus.ERROR, e);

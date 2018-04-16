@@ -14,19 +14,28 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.BeneAccountModel;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
+import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
+import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
+import com.google.common.collect.Iterables;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeneficiaryValidationService {
 
 	@Autowired
+	BeneficiaryService beneficiaryService ;
+	
+	@Autowired
 	BankService bankService;
+
+	@Autowired
+	CountryService countryService;
 
 	@Autowired
 	JaxUtil jaxUtil;
@@ -34,35 +43,32 @@ public class BeneficiaryValidationService {
 	@Autowired
 	IBeneficiaryAccountDao beneficiaryAccountDao;
 
+	@Autowired
+	BeneficiaryAccountPredicateCreator BeneficiaryAccountPredicateCreator;
+
 	public void validateBeneAccount(BeneAccountModel beneAccountModel) {
 		validateBankAccountNumber(beneAccountModel);
 		validateDuplicateBankAccount(beneAccountModel);
 	}
 
 	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {
-		List<BeneficaryAccount> existingAccount;
-		if (beneAccountModel.getServiceGroupId() != null) {
-			existingAccount = beneficiaryAccountDao
-					.findByServiceGroupIdAndBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
-							beneAccountModel.getServiceGroupId(), beneAccountModel.getBeneficaryCountryId(),
-							beneAccountModel.getBankId(), beneAccountModel.getCurrencyId(),
-							beneAccountModel.getBankBranchId(), beneAccountModel.getBankAccountNumber(),
-							ConstantDocument.Yes);
-		} else {
-			existingAccount = beneficiaryAccountDao
-					.findByBeneficaryCountryIdAndBankIdAndCurrencyIdAndBankBranchIdAndBankAccountNumberAndIsActive(
-							beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getBankId(),
-							beneAccountModel.getCurrencyId(), beneAccountModel.getBankBranchId(),
-							beneAccountModel.getBankAccountNumber(), ConstantDocument.Yes);
-
-		}
-		if (existingAccount != null && !existingAccount.isEmpty()) {
-			throw new GlobalException("Duplicate Beneficiary Account", JaxError.DUPLICATE_BENE_BANK_ACCOUNT);
+		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
+		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
+				BeneficiaryAccountPredicateCreator.createBeneSearchPredicate(beneAccountModel, isBangladeshBene));
+		int size = Iterables.size(existingAccountItr);
+		if (size > 0) {
+			existingAccountItr.forEach(itr -> {
+				List<BeneficaryRelationship> beneRelationShip = beneficiaryService
+						.getBeneRelationShip(itr.getBeneficaryMasterId(), itr.getBeneficaryAccountSeqId());
+				if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
+					throw new GlobalException("Duplicate Beneficiary Account", JaxError.DUPLICATE_BENE_BANK_ACCOUNT);
+				}
+			});
 		}
 	}
 
 	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
-		if(StringUtils.isBlank(beneAccountModel.getBankAccountNumber())) {
+		if (StringUtils.isBlank(beneAccountModel.getBankAccountNumber())) {
 			return;
 		}
 		List<BankAccountLength> accontNumLength = bankService.getBankAccountLength(beneAccountModel.getBankId());

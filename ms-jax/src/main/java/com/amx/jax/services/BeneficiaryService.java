@@ -731,4 +731,12 @@ public class BeneficiaryService extends AbstractService {
 		}
 		return list;
 	}
+	
+	public List<BeneficaryRelationship> getBeneRelationShip(BigDecimal beneMasterId, BigDecimal beneAccountId) {
+		List<BeneficaryRelationship> beneRelationShips = beneRelationShipDao
+				.findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerId(beneMasterId, beneAccountId,
+						metaData.getCustomerId());
+
+		return beneRelationShips;
+	}
 }

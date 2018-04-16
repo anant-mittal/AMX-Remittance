@@ -25,7 +25,7 @@ public class MetaServiceStartUpInit {
 
 	@Autowired
 	OtpSettings otpSettings;
-
+	
 	Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@PostConstruct

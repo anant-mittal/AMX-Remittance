@@ -31,7 +31,7 @@ import com.amx.jax.client.util.ConverterUtility;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class JaxClientApplicationTests {
+public class JaxClientApplicationTests extends AbstractTestClient {
 
 	private Logger logger = Logger.getLogger(getClass());
 
@@ -111,7 +111,7 @@ public class JaxClientApplicationTests {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	public void testSaveCustomerApiWithEmail() throws IOException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -186,11 +186,9 @@ public class JaxClientApplicationTests {
 		assertNotNull("\"Response is null", response.getResult());
 	}
 	
-	//@Test
+	@Test
 	public void sendOtpForMobileUpdate() throws IncorrectInputException, CustomerValidationException, LimitExeededException {
-		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
-		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		setBahrainDefaults();
 		String mobile = "9920027200";
 		
 		ApiResponse<CivilIdOtpModel> response = client.sendOtpForMobileUpdate(mobile);

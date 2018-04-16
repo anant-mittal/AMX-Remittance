@@ -45,6 +45,9 @@ public class CurrencyMasterService extends AbstractService {
 	@Autowired
 	ViewBeneficiaryCurrencyRepository viewBeneficiaryCurrencyRepository;
 	
+	@Autowired
+	ApplicationSetupService applicationSetupService;
+	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
 	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
@@ -105,7 +108,7 @@ public class CurrencyMasterService extends AbstractService {
 	}
 
 	public ApiResponse getCurrencyByCountryId(BigDecimal countryId) {
-		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyListByCountryId(countryId);
+		List<CurrencyMasterModel> currencyList = getCurrencyMasterByCountryId(countryId);
 		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
@@ -115,6 +118,10 @@ public class CurrencyMasterService extends AbstractService {
 		}
 		response.getData().setType("currencyMaster");
 		return response;
+	}
+	
+	public List<CurrencyMasterModel> getCurrencyMasterByCountryId(BigDecimal countryId){
+		return currencyDao.getCurrencyListByCountryId(countryId);
 	}
 
 	private List<CurrencyMasterDTO> convert(List<ViewOnlineCurrency> currencyList) {
@@ -164,6 +171,11 @@ public class CurrencyMasterService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType("currencyMaster");
 		return response;
+	}
+	
+	public String getApplicationCountryCurrencyQuote() {
+		BigDecimal countryId = applicationSetupService.getApplicationSetUp().getApplicationCountryId();
+		return getCurrencyMasterByCountryId(countryId).get(0).getQuoteName();
 	}
 
 }

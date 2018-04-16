@@ -5,7 +5,7 @@ import javax.validation.constraints.Pattern;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
+import com.amx.jax.AppConstants;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -15,7 +15,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 	private static final long serialVersionUID = 3734088232108133496L;
 	private String nounce = null;
 
-	@Pattern(regexp = UIConstants.Validator.IDENTITY)
+	@Pattern(regexp = AppConstants.Validator.IDENTITY)
 	private String identity = null;
 
 	private String password = null;
@@ -39,16 +39,16 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		this.identity = identity;
 	}
 
-	@Pattern(regexp = UIConstants.Validator.OTP)
+	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String mOtp = null;
 
-	@Pattern(regexp = UIConstants.Validator.OTP)
+	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String eOtp = null;
 
 	private String mOtpPrefix = null;
 	private String eOtpPrefix = null;
 
-	@Pattern(regexp = UIConstants.Validator.OTP)
+	@Pattern(regexp = AppConstants.Validator.OTP)
 	private String otp = null;
 
 	private String otpPrefix = null;

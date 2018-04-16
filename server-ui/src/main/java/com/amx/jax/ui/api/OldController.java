@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.UIConstants;
+import com.amx.jax.AppConstants;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -53,7 +53,7 @@ public class OldController {
 	@Deprecated
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(
-			@RequestParam(required = false) @Pattern(regexp = UIConstants.Validator.IDENTITY) String identity,
+			@RequestParam(required = false) @Pattern(regexp = AppConstants.Validator.IDENTITY) String identity,
 			@RequestParam(required = false) String password) {
 		return loginService.login(identity, password);
 	}

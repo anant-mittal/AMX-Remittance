@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 public class BahrainValidationClient implements ValidationClient {
 	
 	Logger logger = Logger.getLogger(BahrainValidationClient.class);
+	
+	private static Integer MOBILE_LENGTH = new Integer(8);
 
 	/* (non-Javadoc)
 	 * @see com.amx.jax.validation.ValidationClient#getClientCode()
@@ -30,8 +32,12 @@ public class BahrainValidationClient implements ValidationClient {
 	 */
 	@Override
 	public Boolean isValidMobileNumber(String mobile) {
-		// TODO Auto-generated method stub
-		return null;
+		
+		if (mobile.length()== MOBILE_LENGTH) {
+			return true;
+		}
+		
+		return false;
 	}
 
 	/* (non-Javadoc)

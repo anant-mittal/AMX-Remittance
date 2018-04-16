@@ -10,6 +10,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
+import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -22,6 +24,11 @@ public class RestService {
 
 	@Autowired(required = false)
 	RestTemplate restTemplate;
+
+	public void setErrorHandler(ResponseErrorHandler errorHandler) {
+		Assert.notNull(errorHandler, "ResponseErrorHandler must not be null");
+		this.restTemplate.setErrorHandler(errorHandler);
+	}
 
 	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {

@@ -37,5 +37,8 @@ public interface IBeneficiaryRelationshipDao extends JpaRepository<BeneficaryRel
 	public List<BeneficaryRelationship> getBeneRelationshipByBeneMasterIdForEnable(
 			@Param("beneMasterId") BigDecimal beneMasterId,
 			@Param("customerId") BigDecimal customerId);
+
+	public List<BeneficaryRelationship> findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerId(
+			BigDecimal beneMasterId, BigDecimal beneAccountId, BigDecimal customerId);
 	
 }

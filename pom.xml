@@ -103,6 +103,7 @@
  		<module>lib-tunnel</module>
 		<module>lib-session</module>
 		<module>lib-monitor</module>
+		<module>lib-sso</module>
 
 		<!-- <module>ms-logger</module> -->
 
@@ -125,6 +126,8 @@
 		<module>server-stomp</module>
 
 		<module>server-admin</module>
+ 		<module>server-sso</module>
+		<module>server-kiosk</module>
 		<module>server-sample</module>
 	</modules>
 </project>

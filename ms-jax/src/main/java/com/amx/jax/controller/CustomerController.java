@@ -111,7 +111,7 @@ public class CustomerController {
 
 	@RequestMapping(value = "{customer-id}/random-questions/", method = RequestMethod.GET)
 	public ApiResponse getRandomQuestion(@RequestParam Integer size, @PathVariable("customer-id") Integer customerId) {
-		logger.info("getCheckList Request: customerId" + customerId + " size= " + size);
+		logger.info("getRandomQuestion Request: customerId" + customerId + " size= " + size);
 		ApiResponse response = userService.generateRandomQuestions(size, customerId);
 		return response;
 	}
