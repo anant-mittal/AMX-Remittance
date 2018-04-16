@@ -22,6 +22,7 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
@@ -52,7 +53,7 @@ public class BankMetaService extends AbstractService {
 	private VwBankBranchRepository vwBankBranchRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
-		return repo.findBybankCountryId(countryId);
+		return repo.findBybankCountryIdAndRecordStatus(countryId, ConstantDocument.Yes);
 	}
 
 	public ApiResponse getBanksApiResponseByCountryId(BigDecimal countryId) {
