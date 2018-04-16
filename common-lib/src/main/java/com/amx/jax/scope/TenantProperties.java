@@ -68,7 +68,7 @@ public class TenantProperties {
 		}
 		return tenantProperties;
 	}
-
+	
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
 		try {
@@ -91,6 +91,8 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, Language.DEFAULT));
 						} else if (Tenant.class.getName().equals(typeName)) {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, Tenant.DEFAULT));
+						} else if ("java.lang.String[]".equals(typeName)) {
+							field.set(object, ArgUtil.parseAsStringArray(propertyValue));
 						}
 					}
 				}

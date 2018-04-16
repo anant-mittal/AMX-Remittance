@@ -661,6 +661,20 @@ public final class ArgUtil {
 	}
 
 	/**
+	 * Parses the as string.
+	 *
+	 * @param object
+	 *            the object
+	 * @param defaultValue
+	 *            - if passed value is null or empty then default is returned.
+	 * @return the string
+	 */
+	public static String[] parseAsStringArray(Object object) {
+		String str = parseAsString(object, Constants.BLANK);
+		return str.split(",");
+	}
+
+	/**
 	 * Parses the as enum.
 	 *
 	 * @param value
