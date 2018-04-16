@@ -2,9 +2,6 @@ package com.amx.jax.ui;
 
 import java.util.ArrayList;
 
-import javax.servlet.ServletContextListener;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -14,14 +11,12 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.amx.jax.postman.client.PostManContextListener;
 import com.amx.jax.ui.config.WebTenantFilter;
 
 @ServletComponentScan
