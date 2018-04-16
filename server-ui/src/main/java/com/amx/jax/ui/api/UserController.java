@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
 import com.amx.jax.service.HttpService;
+import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
@@ -57,6 +58,9 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
+	@Autowired
+	private WebAppConfig webAppConfig;
+
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
@@ -75,6 +79,7 @@ public class UserController {
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(elementToSearch);
+		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
 		wrapper.getData().setState(sessionService.getGuestSession().getState());

@@ -20,6 +20,7 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -39,8 +40,8 @@ public class HomeController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
-	@Value("${application.title}")
-	private String applicationTitle;
+	@Autowired
+	private WebAppConfig webAppConfig;
 
 	@Autowired
 	private UserDeviceBean userDevice;
@@ -98,7 +99,7 @@ public class HomeController {
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
-		model.addAttribute("applicationTitle", applicationTitle);
+		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
@@ -117,7 +118,7 @@ public class HomeController {
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
-		model.addAttribute("applicationTitle", applicationTitle);
+		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());

@@ -12,12 +12,15 @@ public class WebAppConfig {
 	@TenantValue("${ui.features}")
 	private String[] features;
 
-	public String[] getTenant() {
+	@TenantValue("${application.title}")
+	private String appTitle;
+
+	public String[] getFeatures() {
 		return features;
 	}
 
-	public String[] getTenantLang() {
-		return features;
+	public String getAppTitle() {
+		return appTitle;
 	}
 
 }
