@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 
-public interface IBeneficiaryAccountDao extends JpaRepository<BeneficaryAccount, Serializable> {
+public interface IBeneficiaryAccountDao extends DaoRepository<BeneficaryAccount, BigDecimal> {
 
 	@Query("select ba from BeneficaryAccount ba where ba.beneApplicationCountryId=:applicationCountryId "
 			+ "and ba.beneficaryMasterId=:beneMasterSeqId and ba.beneficaryAccountSeqId=:beneAccountSeqId and ba.isActive='Y'")

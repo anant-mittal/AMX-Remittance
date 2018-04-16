@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
@@ -123,5 +124,13 @@ public class CountryService extends AbstractService {
 		return null;
 	}
 	
+	public boolean isBangladeshCountry(BigDecimal countryId) {
+		String countryAlfa3Code = countryRepository.findByLanguageIdAndCountryId(meta.getLanguageId(), countryId).get(0)
+				.getCountryAlpha3Code();
+		if (ConstantDocument.BANGLADESH_ALPHA3_CODE.equals(countryAlfa3Code)) {
+			return true;
+		}
+		return false;
+	}
 	
 }

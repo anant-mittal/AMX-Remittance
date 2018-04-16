@@ -37,7 +37,7 @@ public class ConstantDocument {
 	
 	public static final String JOAMX_USER = "JOAMX_USER";
 	
-	
+	public static final String BANGLADESH_ALPHA3_CODE = "BGD";	
 	
 
 }
