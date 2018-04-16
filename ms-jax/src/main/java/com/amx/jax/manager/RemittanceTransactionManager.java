@@ -38,6 +38,7 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.JaxApplicationSetup;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
@@ -45,6 +46,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
@@ -68,6 +70,7 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
+import com.amx.jax.service.ApplicationSetupService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
@@ -155,7 +158,7 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private JaxUtil jaxUtil;
-
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 
@@ -392,12 +395,14 @@ public class RemittanceTransactionManager {
 		if(!isSaveRemittanceFlow) {
 			return;
 		}
+		String appCurrencyQuote = currencyMasterService.getApplicationCountryCurrencyQuote();
 		BigDecimal netAmount = breakup.getNetAmount();
 		AuthenticationLimitCheckView onlineTxnLimit = parameterService.getOnlineTxnLimit();
 		if (netAmount.compareTo(onlineTxnLimit.getAuthLimit()) > 0) {
-			throw new GlobalException(
-					"Online Transaction Amount should not exceed - KD " + onlineTxnLimit.getAuthLimit(),
-					TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
+			StringBuilder errorMessage = new StringBuilder();
+			errorMessage.append("Online Transaction Amount should not exceed - ").append(appCurrencyQuote);
+			errorMessage.append(" ").append(onlineTxnLimit.getAuthLimit());
+			throw new GlobalException(errorMessage.toString(), TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED);
 		}
 		CurrencyMasterModel beneCurrencyMaster = currencyMasterService.getCurrencyMasterById(currencyId);
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
@@ -614,7 +619,6 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
-		//AuditServiceClient.staticLogger(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
 
 	}
