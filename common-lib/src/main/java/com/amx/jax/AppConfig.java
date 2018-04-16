@@ -1,8 +1,11 @@
 package com.amx.jax;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
@@ -36,7 +39,7 @@ public class AppConfig {
 	private String postmapURL;
 
 	@Value("${jax.payment.url}")
-	private String poaygURL;
+	private String paygURL;
 
 	@Value("${jax.logger.url}")
 	private String loggerURL;
@@ -91,12 +94,19 @@ public class AppConfig {
 		return postmapURL;
 	}
 
-	public String getPoaygURL() {
-		return poaygURL;
+	public String getPaygURL() {
+		return paygURL;
 	}
 
 	public String getLoggerURL() {
 		return loggerURL;
+	}
+
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		builder.rootUri("https://localhost.com");
+		RestTemplate restTemplate = builder.build();
+		return restTemplate;
 	}
 
 }

@@ -1,32 +1,44 @@
-package com.amx.jax.payment;
+package com.amx.jax.payg;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.Base64;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
-import com.amx.jax.dict.Tenant;
-import com.amx.utils.ContextUtil;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.payment.PayGService;
 import com.amx.utils.URLBuilder;
 
-public abstract class AbstractPayGService {
+@Component
+public class PayGServiceClient implements PayGService {
 
-	public abstract String getPayGServiceHost();
+	@Autowired
+	private AppConfig appConfig;
 
-	public String getPaymentUrl(RemittanceApplicationResponseModel remittanceApplicationResponseModel, String callback,
-			Tenant tnt) throws MalformedURLException, URISyntaxException {
-		URLBuilder builder = new URLBuilder(getPayGServiceHost());
+	public String getPaymentUrl(RemittanceApplicationResponseModel remittanceApplicationResponseModel, String callback)
+			throws MalformedURLException, URISyntaxException {
+
+		AppContext context = AppContextUtil.getContext();
+
+		URLBuilder builder = new URLBuilder(appConfig.getPaygURL());
+
 		String callbackUrl = callback + "?docNo=" + remittanceApplicationResponseModel.getDocumentIdForPayment()
 				+ "&docFy=" + remittanceApplicationResponseModel.getDocumentFinancialYear();
 		String callbackd = Base64.getEncoder().encodeToString(callbackUrl.getBytes());
+
 		builder.setPath("app/payment").addParameter("amount", remittanceApplicationResponseModel.getNetPayableAmount())
 				.addParameter("trckid", remittanceApplicationResponseModel.getMerchantTrackId())
 				.addParameter("pg", remittanceApplicationResponseModel.getPgCode())
 				.addParameter("docFy", remittanceApplicationResponseModel.getDocumentFinancialYear())
 				.addParameter("docNo", remittanceApplicationResponseModel.getDocumentIdForPayment())
-				.addParameter("tnt", tnt).addParameter("callbackd", callbackd)
-				.addParameter(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
+				.addParameter("tnt", context.getTenant()).addParameter("callbackd", callbackd)
+				.addParameter(AppConstants.TRACE_ID_XKEY, context.getTraceId());
 		return builder.getURL();
 	}
 

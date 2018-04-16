@@ -7,7 +7,7 @@ import com.amx.jax.dict.Tenant;
 public class AppContext implements Serializable {
 
 	private static final long serialVersionUID = -6073379040253976816L;
-	
+
 	Tenant tenant = null;
 	String traceId = null;
 	String tranxId = null;
@@ -35,5 +35,4 @@ public class AppContext implements Serializable {
 	public void setTranxId(String tranxId) {
 		this.tranxId = tranxId;
 	}
-
 }

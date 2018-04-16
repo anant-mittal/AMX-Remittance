@@ -1,15 +1,14 @@
 package com.amx.jax.client.config;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import com.amx.jax.client.AbstractJaxServiceClient;
+import com.amx.jax.client.JaxClientErrorHanlder;
+import com.amx.jax.rest.RestService;
 
-@Component
+@Configuration
 public class JaxConfig {
-
-	private Logger log = Logger.getLogger(AbstractJaxServiceClient.class);
 
 	@Value("${jaxservice.url}")
 	private String spServiceUrl;
@@ -24,6 +23,12 @@ public class JaxConfig {
 
 	public void setSpServiceUrl(String spServiceUrl) {
 		this.spServiceUrl = spServiceUrl;
+	}
+
+	@Bean
+	public RestService jaxRestService(RestService restService, JaxClientErrorHanlder errorHandler) {
+		restService.setErrorHandler(errorHandler);
+		return restService;
 	}
 
 }
