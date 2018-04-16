@@ -408,38 +408,18 @@ html, body {
 						<td th:text="${remittance.userName}">KANMANI1</td>
 						<td th:text="${#messages.msg('label.userName')}"> </td>
 					</tr>
+					
+				</table>
+		<!--Cashier table end-->
+</td></tr>
+<tr><td class="mainTable-border"><!--Cashier table-->
+				<table class="table col-3">
 					<tr>
-						<td>Cashier Signature</td>
-						<td><img height="50" th:if="${remittance.cashierSignature} != null"  th:src="'data:image/png;base64,' + ${remittance.cashierSignature}" /></td>
-						<td th:text="${#messages.msg('label.cashierSignature')}"></td>
+						<td align="center">This is a computer generated receipt. No signature is required.</td>
 					</tr>
 				</table>
 		<!--Cashier table end-->
 </td></tr>
-				<tr><td>
-		<table class="table noborder">
-			<tr>
-				<td valign="top">
-					<div>I /We confirm that the beneficiary details furnished above are correct.</div>
-					<div>I / We have read the terms and conditions overleaf and confirm to have fully understood and accepted the same without any reservations</div>
-				</td>
-				<td valign="top" align="right">
-					<div th:text="${#messages.msg('label.iagree1')}"></div>
-					<div th:text="${#messages.msg('label.iagree2')}"></div>
-				</td>
-			</tr>
-			<tr>
-				<td align="center"><img height="50"  th:if="${remittance.signature} != null"   th:src="'data:image/png;base64,'+ ${remittance.signature}" /></td>
-				<td></td>
-			</tr>
-			
-			<tr>
-				<td align="center"><strong>(Signature Of Remitter)</strong></td>
-				<td align="center"><strong th:text="${#messages.msg('label.signatureOfRemitter')}"></strong></td>
-			</tr>
-		</table>
-		</td>
-		</tr>
 	</table>
 	</div>
 </body>
