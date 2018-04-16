@@ -85,7 +85,8 @@
 		</dependency>
 		
 	</dependencies>
-	<build>
+	
+	<!-- <build>
 		<plugins>
 			<plugin>
 				<groupId>com.mysema.maven</groupId>
@@ -106,6 +107,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-	</build>
+	</build> -->
 
 </project>
