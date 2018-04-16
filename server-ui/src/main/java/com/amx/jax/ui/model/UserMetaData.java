@@ -22,6 +22,8 @@ public class UserMetaData extends AbstractModel {
 	Language lang = null;
 	JaxMetaParameter config = null;
 	String cdnUrl = null;
+	// List<String> features = new ArrayList<String>();
+	String[] features = null;
 
 	public JaxMetaParameter getConfig() {
 		return config;
@@ -101,5 +103,13 @@ public class UserMetaData extends AbstractModel {
 
 	public void setCdnUrl(String cdnUrl) {
 		this.cdnUrl = cdnUrl;
+	}
+
+	public String[] getFeatures() {
+		return features;
+	}
+
+	public void setFeatures(String[] features) {
+		this.features = features;
 	}
 }
