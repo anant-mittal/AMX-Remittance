@@ -2,7 +2,7 @@ package com.amx.jax.exception;
 
 import com.amx.amxlib.error.JaxError;
 
-public class UserNotFoundException extends AbstractAppException {
+public class UserNotFoundException extends AbstractException {
 
 	public UserNotFoundException(String errorMessage) {
 		super(errorMessage);
