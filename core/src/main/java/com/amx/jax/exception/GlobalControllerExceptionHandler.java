@@ -31,9 +31,9 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	@Autowired
 	private HttpServletResponse httpResponse;
 
-	@ExceptionHandler(AbstractException.class)
+	@ExceptionHandler(AbstractAppException.class)
 	@ResponseBody
-	public ApiResponse handleInvalidInputException(AbstractException ex) {
+	public ApiResponse handleInvalidInputException(AbstractAppException ex) {
 
 		ApiResponse response = getApiResponse(ex);
 		
@@ -43,12 +43,12 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		return response;
 	}
 
-	private void setErrorHeaders(AbstractException ex) {
+	private void setErrorHeaders(AbstractAppException ex) {
 		httpResponse.addHeader("ERROR_CODE", ex.getErrorCode());
 		httpResponse.addHeader("ERROR_MESSAGE", ex.getErrorMessage());
 	}
 
-	private ApiResponse getApiResponse(AbstractException ex) {
+	private ApiResponse getApiResponse(AbstractAppException ex) {
 		ApiResponse response = new ApiResponse();
 		List<ApiError> errors = new ArrayList<>();
 		ApiError error = new ApiError(ex.getErrorCode(), ex.getErrorMessage());
