@@ -2,7 +2,7 @@ package com.amx.jax.exception;
 
 import com.amx.amxlib.error.JaxError;
 
-public class InvalidOtpException extends AbstractException {
+public class InvalidOtpException extends AbstractAppException {
 
 	/**
 	 * 

@@ -1,6 +1,6 @@
 package com.amx.jax.exception;
 
-public class InvalidJsonInputException extends AbstractException {
+public class InvalidJsonInputException extends AbstractAppException {
 
 	public InvalidJsonInputException(String errorMessage) {
 		super(errorMessage);

@@ -1,6 +1,8 @@
 package com.amx.amxlib.error;
 
-public enum JaxError {
+import com.amx.jax.exception.IExceptionEnum;
+
+public enum JaxError implements IExceptionEnum {
 
     INVALID_CIVIL_ID, 
     CUSTOMER_NOT_FOUND, 
