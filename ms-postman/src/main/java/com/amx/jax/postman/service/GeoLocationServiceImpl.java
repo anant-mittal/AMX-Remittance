@@ -6,6 +6,7 @@ import java.net.InetAddress;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Tenant;
@@ -41,8 +42,14 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 		this.getDb();
 	}
 
+	@Value("${default.tenant}")
+	String defaultTennatId;
+
 	@Override
 	public GeoLocation getLocation(String ip) throws PostManException {
+
+		Tenant tnt = Tenant.fromString(defaultTennatId, Tenant.KWT);
+
 		GeoLocation loc = new GeoLocation(ip);
 		try {
 			CityResponse response = this.getCity(ip);
@@ -51,9 +58,9 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			loc.setStateCode(response.getMostSpecificSubdivision().getIsoCode());
 			loc.setCountryCode(response.getCountry().getIsoCode());
 			loc.setContinentCode(response.getContinent().getCode());
-			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), Tenant.KWT, true));
+			loc.setTenant(Tenant.fromString(response.getCountry().getIsoCode(), tnt, true));
 		} catch (Exception e) {
-			loc.setTenant(Tenant.KWT);
+			loc.setTenant(tnt);
 			LOGGER.error("No location or IP " + ip, e);
 		}
 		return loc;// new GeoLocation(ip);
