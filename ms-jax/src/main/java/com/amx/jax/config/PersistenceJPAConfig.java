@@ -13,15 +13,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.web.context.WebApplicationContext;
+
+import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 
 @Configuration
 public class PersistenceJPAConfig {
 
 	@Autowired
 	private JpaProperties jpaProperties;
+	
+	@Autowired
+	private MultiTenantConnectionProviderImpl multiTenantConnectionProviderImpl;
 
 	@Bean
 	public JpaVendorAdapter jpaVendorAdapter() {
@@ -44,5 +53,12 @@ public class PersistenceJPAConfig {
 		em.setJpaVendorAdapter(jpaVendorAdapter());
 		em.setJpaPropertyMap(properties);
 		return em;
+	}
+	
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public JdbcTemplate jdbcTemplate( ) {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(multiTenantConnectionProviderImpl.getDataSource());
+		return jdbcTemplate;
 	}
 }
