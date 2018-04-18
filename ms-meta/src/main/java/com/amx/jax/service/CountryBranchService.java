@@ -1,5 +1,7 @@
 package com.amx.jax.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,7 @@ public class CountryBranchService {
 	CountryBranchRepository repo;
 
 	public CountryBranch getOnlineCountryBranch() {
-		return repo.findBybranchName("ONLINE");
+		return repo.findByBranchId(new BigDecimal(90));
 	}
 
 }
