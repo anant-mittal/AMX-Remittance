@@ -1,11 +1,15 @@
 package com.amx.jax;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.client.RestTemplate;
+
+import com.amx.jax.filter.AppClientInterceptor;
 
 @Configuration
 @PropertySource("classpath:application-lib.properties")
@@ -106,6 +110,7 @@ public class AppConfig {
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
+		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
 		return restTemplate;
 	}
 

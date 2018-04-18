@@ -31,7 +31,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	@Autowired
 	private HttpServletResponse httpResponse;
 
-	@ExceptionHandler(AbstractException.class)
+	@ExceptionHandler(GlobalException.class)
 	@ResponseBody
 	public ApiResponse handleInvalidInputException(AbstractException ex) {
 
