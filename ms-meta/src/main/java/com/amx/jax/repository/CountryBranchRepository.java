@@ -12,4 +12,6 @@ import com.amx.jax.dbmodel.CountryBranch;
 public interface CountryBranchRepository extends CrudRepository<CountryBranch, BigDecimal> {
 
 	public CountryBranch findBybranchName(String branchName);
+	
+	public CountryBranch findByBranchId(BigDecimal branchId);
 }
