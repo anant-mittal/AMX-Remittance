@@ -107,8 +107,8 @@ public class UserValidationService {
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-		List<CustomerOnlineRegistration> existingCust = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
-		if (existingCust != null && !existingCust.isEmpty()) {
+		CustomerOnlineRegistration existingCust = custDao.getOnlineCustomerByLoginIdOrUserName(loginId);
+		if (existingCust != null) {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
 		}
 	}
