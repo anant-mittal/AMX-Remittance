@@ -69,7 +69,6 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		if (JaxError.UNKNOWN_JAX_ERROR.getCode().equals(apiError.getErrorId())) {
 			throw new UnknownJaxError(apiError);
 		}
-
 	}
 
 	protected void checkInvalidInputErrors(ApiError error) throws InvalidInputException {

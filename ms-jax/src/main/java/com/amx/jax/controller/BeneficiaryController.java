@@ -207,8 +207,8 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
-	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
-			@RequestParam(name = "eOtp", required = false) String eOtp) {
+	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp, 
+								@RequestParam(name = "eOtp") String eOtp) {
 		LOGGER.info("in commit bene request with param , eOtp: "+eOtp + " motp: "+mOtp );
 		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
 	}

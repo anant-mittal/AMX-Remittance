@@ -85,7 +85,7 @@ public class WebJaxAdvice {
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
 			ResponseError newError = new ResponseError();
 			newError.setField(responseError.getPropertyPath().toString());
-			newError.setDescription(responseError.getMessage());
+			newError.setDescription(HttpService.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
 		wrapper.setErrors(errors);
@@ -126,14 +126,14 @@ public class WebJaxAdvice {
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			ResponseError newError = new ResponseError();
 			newError.setField(error.getField());
-			newError.setDescription(error.getDefaultMessage());
+			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			ResponseError newError = new ResponseError();
 			newError.setObzect(error.getObjectName());
-			newError.setDescription(error.getDefaultMessage());
+			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
