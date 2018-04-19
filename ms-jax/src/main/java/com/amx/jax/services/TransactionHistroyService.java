@@ -150,8 +150,9 @@ public class TransactionHistroyService extends AbstractService {
 			if(beneDtoCheck != null){
 				model.setBeneficiaryErrorStatus(beneDtoCheck.getBeneficiaryErrorStatus());
 			}
-			if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName())
-					&& !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU)) {
+			if (!StringUtils.isBlank(hist.getBeneficaryCorespondingBankName()) 
+				&& !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.WU) 
+				&& !hist.getBeneficaryCorespondingBankName().equalsIgnoreCase(ConstantDocument.MONEY)) {
 				list.add(model);
 			}
 
