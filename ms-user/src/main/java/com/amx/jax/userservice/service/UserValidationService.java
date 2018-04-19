@@ -535,6 +535,9 @@ public class UserValidationService {
 		if (initRegistration != null && initRegistration) {
 			return;
 		}
+		if (onlineCustReg == null) {
+			throw new GlobalException("User is not registered", JaxError.USER_NOT_REGISTERED);
+		}
 		if (initRegistration == null && !"Y".equals(onlineCustReg.getStatus())) {
 			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
 		}
