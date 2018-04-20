@@ -62,6 +62,9 @@ public class PurposeOfTransactionService extends AbstractService {
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
+		logger.info(
+				"in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
+				applicationCountryId, countryId, currencyId, remittanceModeId, deliveryModeId, bankId);
 		List<AddAdditionalBankDataDto> listAdditionalBankDataTable = null;
 		List<AddDynamicLabel> listDynamicLabel = null;
 		// List<AddAdditionalBankDataDto>

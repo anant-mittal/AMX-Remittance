@@ -3,6 +3,8 @@ package com.amx.jax.exrateservice.dao;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +25,13 @@ public class PipsMasterDao {
 	
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	private static final Logger logger = LoggerFactory.getLogger(PipsMasterDao.class);
 
 	public List<PipsMaster> getPipsForOnline(BigDecimal toCurrency) {
+		logger.info("in getPipsForOnline params toCurrency:{} countryBranchId:{} ", toCurrency,
+				metaData.getCountryBranchId());
 		CountryBranch onlineBranch = new CountryBranch();
 		onlineBranch.setCountryBranchId(metaData.getCountryBranchId());
 		return repo.getPipsMasterForBranch(onlineBranch, new CurrencyMasterModel(toCurrency));
