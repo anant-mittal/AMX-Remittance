@@ -124,7 +124,7 @@ public class PostManClient implements PostManService {
 		try {
 			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL_SUPPORT)
 					.queryString(PARAM_LANG, getLang()).header("content-type", "application/json").headers(appheader())
-					.body(email).asObject(Email.class);
+					.body(email).asObject(SupportEmail.class);
 			return response.getBody();
 		} catch (UnirestException e) {
 			throw new PostManException(e);
