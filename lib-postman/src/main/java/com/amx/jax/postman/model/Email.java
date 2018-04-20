@@ -7,8 +7,13 @@ import java.util.List;
 public class Email extends Message {
 
 	private static final long serialVersionUID = 9210306073311369368L;
-	private String from;
-	private String replyTo;
+	private String from = null;
+	private String replyTo = null;
+	private List<String> cc = null;
+
+	private boolean isHtml;
+
+	private List<File> files = null;
 
 	public String getReplyTo() {
 		return replyTo;
@@ -17,14 +22,6 @@ public class Email extends Message {
 	public void setReplyTo(String replyTo) {
 		this.replyTo = replyTo;
 	}
-
-	private List<String> to;
-
-	private List<String> cc;
-
-	private boolean isHtml;
-
-	private List<File> files;
 
 	public List<File> getFiles() {
 		return files;

@@ -168,6 +168,7 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
+	@Async
 	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
 		return this.sendEmail(supportService.createContactUsEmail(email));
 	}

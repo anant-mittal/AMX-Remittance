@@ -19,7 +19,7 @@ public class Message implements Serializable {
 	protected Language lang = null;
 	protected String subject;
 	protected String message = null;
-	private List<String> to;
+	protected List<String> to = null;
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 
