@@ -121,7 +121,7 @@ public class PurposeOfTransactionService extends AbstractService {
 			for (AddDynamicLabel dyamicLabel : listDynamicLabel) {
 				AddAdditionalBankDataDto adddata = new AddAdditionalBankDataDto();
 				if (dyamicLabel.getValidation() != null && dyamicLabel.getValidation().equalsIgnoreCase("Y")) {
-					logger.info("check 1:{} {} {} {} {} {}", routingCountry, dyamicLabel.getFlexiField());
+					logger.info("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
 				
 					List<AdditionalBankRuleMap> listAdditinalBankfield = additionalBankRuleMapDao
 							.getDynamicLevelMatch(routingCountry, dyamicLabel.getFlexiField());

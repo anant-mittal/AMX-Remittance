@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
+import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 
 /**
  * 
@@ -112,6 +114,9 @@ public class MetaController {
 	
 	@Autowired
 	JaxNotificationManager jaxNotificationManager;
+	
+	@Autowired
+	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -291,8 +296,9 @@ public class MetaController {
 	}
 		
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
-	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request){
+	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request,BindingResult bindingResult){
 		LOGGER.info("in getbankBranches" + request.toString());
+		bankBranchSearchRequestlValidator.validate(request, bindingResult);
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
 		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse, request);
 		return apiResponse;

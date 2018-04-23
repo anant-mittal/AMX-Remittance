@@ -31,7 +31,6 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.services.JaxNotificationService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -45,9 +44,6 @@ public class BankMetaService extends AbstractService {
 
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
-
-	@Autowired
-	private JaxNotificationService jaxNotificationService;
 
 	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
