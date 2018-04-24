@@ -18,7 +18,7 @@ import com.amx.jax.scope.TenantContextHolder;
 public abstract class AbstractTestClient {
 
 	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
+	protected JaxMetaInfo jaxMetaInfo;
 
 	protected void setDefaults() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

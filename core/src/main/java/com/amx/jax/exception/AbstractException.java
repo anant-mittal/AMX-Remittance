@@ -1,5 +1,7 @@
 package com.amx.jax.exception;
 
+import com.amx.amxlib.model.response.JaxFieldError;
+
 public abstract class AbstractException extends RuntimeException {
 
 	/**
@@ -10,7 +12,13 @@ public abstract class AbstractException extends RuntimeException {
 	protected String errorMessage;
 
 	protected String errorCode;
+	
+	private JaxFieldError validationErrorField;
 
+	public AbstractException() {
+		super();
+	}
+	
 	public AbstractException(String errorMessage) {
 		super();
 		this.errorMessage = errorMessage;
@@ -36,5 +44,13 @@ public abstract class AbstractException extends RuntimeException {
 
 	public void setErrorCode(String errorCode) {
 		this.errorCode = errorCode;
+	}
+
+	public JaxFieldError getValidationErrorField() {
+		return validationErrorField;
+	}
+
+	public void setValidationErrorField(JaxFieldError validationErrorField) {
+		this.validationErrorField = validationErrorField;
 	}
 }
