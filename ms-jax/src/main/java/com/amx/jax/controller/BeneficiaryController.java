@@ -18,6 +18,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -38,6 +39,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 
 /**
  * 
@@ -70,6 +72,9 @@ public class BeneficiaryController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	BenePersonalDetailValidator benePersonalDetailValidator;
 	
 	@RequestMapping(value = "/beneList/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryListResponse(@RequestParam("beneCountryId") BigDecimal beneCountryId) {
@@ -195,13 +200,13 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
-	public ApiResponse saveBeneAccountInTrnx(@Valid  @RequestBody BeneAccountModel beneAccountModel) {
+	public ApiResponse saveBeneAccountInTrnx( @RequestBody @Valid  BeneAccountModel beneAccountModel) {
 		LOGGER.info("saveBeneAccountInTrnx request: " + beneAccountModel.toString());
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
-	public ApiResponse saveBenePersonalDetailInTrnx(@Valid @RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody @Valid  BenePersonalDetailModel benePersonalDetailModel) {
 		LOGGER.info("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}

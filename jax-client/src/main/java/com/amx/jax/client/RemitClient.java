@@ -251,7 +251,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			HttpEntity<PaymentResponseDto> requestEntity = new HttpEntity<PaymentResponseDto>(paymentResponseDto,
 					getHeader());
 
-			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "save-payment-id";
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-payment-id/";
 			LOGGER.info("calling jax url: " + url);
 			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
@@ -260,7 +260,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} catch (AbstractException ae) {
             throw ae;
         } catch (Exception e) {
-            LOGGER.error("exception in saveRemittanceTransaction : ",e);
+            LOGGER.error("exception in savePaymentId : ",e);
             throw new JaxSystemError();
         } // end of try-catch
 

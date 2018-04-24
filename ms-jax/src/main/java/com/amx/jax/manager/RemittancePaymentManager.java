@@ -7,7 +7,8 @@ import java.util.Map;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -45,7 +46,7 @@ import com.amx.jax.util.JaxUtil;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 public class RemittancePaymentManager extends AbstractService{
-	private Logger logger = Logger.getLogger(RemittancePaymentManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(RemittancePaymentManager.class);
 	
 	@Autowired
 	IShoppingCartDetailsDao shoppingCartApplDao;
@@ -222,9 +223,18 @@ public class RemittancePaymentManager extends AbstractService{
 	}
 	
 	public ApiResponse savePaymentId(PaymentResponseDto paymentResponse) {
-		ApiResponse response = null;
-		logger.info("paymment capture :"+paymentResponse.toString());
+		ApiResponse response = getBlackApiResponse();
+		logger.info("in savePaymentId  :" + paymentResponse.toString());
+		List<RemittanceApplication> lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(
+				paymentResponse.getUdf3(), new Customer(paymentResponse.getCustomerId()));
+		if (lstPayIdDetails == null || lstPayIdDetails.isEmpty()) {
+			throw new GlobalException("No Application data found for given payment id: " + paymentResponse.getUdf3());
+		}
+		lstPayIdDetails.get(0).setPaymentId(paymentResponse.getPaymentId());
+		applicationDao.save(lstPayIdDetails.get(0));
+		response.getData().getValues().add(paymentResponse);
+		response.getData().setType("pg_remit_response");
 		return response;
-	}	
+	}
 
 }
