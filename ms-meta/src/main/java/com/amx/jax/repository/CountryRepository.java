@@ -15,14 +15,14 @@ import com.amx.jax.dbmodel.CountryMasterView;
  *
  */
 public interface CountryRepository extends JpaRepository<CountryMasterView, BigDecimal>{
-	
-	@Query("Select c from CountryMasterView c where  languageId=?1")
+					
+	@Query("Select c from CountryMasterView c where  languageId=?1 ORDER BY countryName asc")
 	List<CountryMasterView> findByLanguageId(BigDecimal languageId);
 	
-	@Query("Select c from CountryMasterView c where  languageId=?1 and countryId=?2")
+	@Query("Select c from CountryMasterView c where  languageId=?1 and countryId=?2 ORDER BY countryName asc")
 	List<CountryMasterView> findByLanguageIdAndCountryId(BigDecimal languageId,BigDecimal countryId);
 	
-	@Query("Select c from CountryMasterView c where  languageId=?1 and businessCountry='Y'")
+	@Query("Select c from CountryMasterView c where  languageId=?1 and businessCountry='Y' ORDER BY countryName asc")
 	List<CountryMasterView> getBusinessCountry(BigDecimal languageId);
 	
 	
