@@ -130,7 +130,7 @@ public class JaxNotificationService {
 		sms.setTemplate(Templates.RESET_OTP_SMS);
 
 		try {
-			postManService.sendSMS(sms);
+			postManService.sendSMSAsync(sms);
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 			}
