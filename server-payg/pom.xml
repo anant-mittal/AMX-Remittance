@@ -89,8 +89,8 @@
 			<id>dev</id>
 			<dependencies>
 				<dependency>
-					<groupId>com.benefit</groupId>
-					<artifactId>benefit</artifactId>
+					<groupId>com.knet.test</groupId>
+					<artifactId>knet.test</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>
@@ -105,8 +105,8 @@
 			</activation>
 			<dependencies>
 				<dependency>
-					<groupId>com.benefit</groupId>
-					<artifactId>benefit</artifactId>
+					<groupId>com.knet</groupId>
+					<artifactId>knet</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>
