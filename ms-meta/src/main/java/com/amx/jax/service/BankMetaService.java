@@ -49,7 +49,7 @@ public class BankMetaService extends AbstractService {
 	private VwBankBranchRepository vwBankBranchRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
-		return repo.findBybankCountryIdAndRecordStatus(countryId, ConstantDocument.Yes);
+		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
 	}
 
 	public ApiResponse getBanksApiResponseByCountryId(BigDecimal countryId) {

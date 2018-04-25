@@ -9,6 +9,6 @@ import com.amx.jax.dbmodel.BankMasterModel;
 
 public interface BankMasterRepository extends CrudRepository<BankMasterModel, BigDecimal> {
 
-	public List<BankMasterModel> findBybankCountryIdAndRecordStatus(BigDecimal bankCountryId, String isActive);
+	public List<BankMasterModel> findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(BigDecimal bankCountryId, String isActive);
 
 }
