@@ -14,6 +14,9 @@ import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.AppConstants;
+import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
@@ -22,15 +25,17 @@ import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
 /**
  * 
  * @author lalittanwar
+ * @param <T>
  *
  */
 @Component
-public class BenefitClient implements PayGClient {
+public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient{
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
 
@@ -127,7 +132,16 @@ public class BenefitClient implements PayGClient {
 			paymentDto.setPaymentId(payID);
 			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
 			paymentDto.setUdf3(payGParams.getDocNo());
-			remitClient.savePaymentId(paymentDto);
+			
+			//remitClient.savePaymentId(paymentDto);
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
+			save(paymentDto);
+			
+//			PaymentResponseDto model = get();
+//			
+//			LOGGER.info("############### BenefitClient START ###################################################");
+//			LOGGER.info("Values ---> " + model.toString());
+//			LOGGER.info("############### BenefitClient END   ##################################################");
 			
 			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
@@ -164,6 +178,12 @@ public class BenefitClient implements PayGClient {
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
+		PaymentResponseDto model = get();
+		
+		LOGGER.info("############### BenefitClient START ###################################################");
+		LOGGER.info("Values ---> " + model.toString());
+		LOGGER.info("############### BenefitClient END   ##################################################");
+		
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
@@ -181,5 +201,17 @@ public class BenefitClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}// end of capture
+
+	@Override
+	public PaymentResponseDto init() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PaymentResponseDto commit() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
