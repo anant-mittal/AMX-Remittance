@@ -29,6 +29,7 @@ import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.scope.TenantContextHolder;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

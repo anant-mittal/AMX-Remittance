@@ -112,6 +112,7 @@ public class ParameterService extends AbstractService {
 	public ApiResponse getJaxMetaParameter() {
 		List<AuthenticationLimitCheckView> allAuthLimits = authentication.findAll();
 		Map<String, BigDecimal> authMap = allAuthLimits.stream()
+				.filter(x -> (x.getAuthorizationType() != null && x.getAuthLimit() != null))
 				.collect(Collectors.toMap(x -> x.getAuthorizationType(), x -> x.getAuthLimit()));
 		JaxMetaParameter metaParams = new JaxMetaParameter();
 		metaParams.setNewBeneTransactionTimeLimit(authMap.get(NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType()));
