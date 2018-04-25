@@ -1,10 +1,11 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.AbstractModel;
 
-public class PaymentResponseDto extends AbstractModel{
+public class PaymentResponseDto extends AbstractModel implements Serializable{
 	
 	    /**
 	 * 
@@ -31,12 +32,7 @@ public class PaymentResponseDto extends AbstractModel{
 	    BigDecimal collectionFinanceYear;
 	    BigDecimal collectionDocumentNumber;
 	    BigDecimal collectionDocumentCode;
-	    
-	    
-	   
-
-
-	    
+	    String error = null;
 	    
 		public String getPaymentId() {
 			return paymentId;
@@ -164,6 +160,12 @@ public class PaymentResponseDto extends AbstractModel{
 		}
 		public void setCollectionDocumentCode(BigDecimal collectionDocumentCode) {
 			this.collectionDocumentCode = collectionDocumentCode;
+		}
+		public String getError() {
+			return error;
+		}
+		public void setError(String error) {
+			this.error = error;
 		}
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()
