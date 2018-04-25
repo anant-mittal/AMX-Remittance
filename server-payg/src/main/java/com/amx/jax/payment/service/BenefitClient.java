@@ -178,6 +178,8 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
+		LOGGER.info("Paymentid is ---> " + request.getParameter("paymentid"));
+		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
 		PaymentResponseDto model = get();
 		
 		LOGGER.info("############### BenefitClient START ###################################################");
