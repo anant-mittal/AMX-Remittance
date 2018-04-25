@@ -140,7 +140,7 @@ public class PostManControllerTest {
 				eml.setTemplate(template);
 				eml.setHtml(true);
 				eml.setModel(map);
-				this.readImageWithObjectMapper(null);
+				//this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
 				file2.setTemplate(template);
