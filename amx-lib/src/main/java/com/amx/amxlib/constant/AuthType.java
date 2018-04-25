@@ -1,22 +1,21 @@
 package com.amx.amxlib.constant;
 
-import java.math.BigDecimal;
-
 public enum AuthType {
 
-	NEW_BENE_TRANSACT_AMOUNT_LIMIT("29"), NEW_BENE_TRANSACT_TIME_LIMIT("31");
+	NEW_BENE_TRANSACT_AMOUNT_LIMIT("29"), NEW_BENE_TRANSACT_TIME_LIMIT("31"), MAX_DOM_AMOUNT_LIMIT("100");
 
-	BigDecimal authType;
+	String authType;
 
 	private AuthType(String authType) {
-		this.authType = new BigDecimal(authType);
+		this.authType = authType;
 	}
 
-	public BigDecimal getAuthType() {
+	public String getAuthType() {
 		return authType;
 	}
 
-	public void setAuthType(BigDecimal authType) {
+	public void setAuthType(String authType) {
 		this.authType = authType;
 	}
+
 }
