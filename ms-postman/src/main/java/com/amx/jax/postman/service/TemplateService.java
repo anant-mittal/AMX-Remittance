@@ -86,6 +86,7 @@ public class TemplateService {
 	public File process(File file) {
 		Locale locale = getLocal(file);
 		String reverse = messageSource.getMessage("flag.reverse.char", null, locale);
+		
 
 		if (("true".equalsIgnoreCase(reverse)) && file.getType() == File.Type.PDF) {
 			TemplateUtils.reverseFlag(true);

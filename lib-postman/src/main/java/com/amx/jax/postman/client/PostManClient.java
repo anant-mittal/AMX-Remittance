@@ -147,6 +147,20 @@ public class PostManClient implements PostManService {
 	}
 
 	@Override
+	public File processTemplate(File file) throws PostManException {
+
+		try {
+			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE_FILE)
+					.queryString(PARAM_LANG, getLang())
+					.header("content-type", "application/json")
+					.header("accept", "application/json").headers(appheader()).body(file).asObject(File.class);
+			return response.getBody();
+		} catch (UnirestException e) {
+			throw new PostManException(e);
+		}
+	}
+
+	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
 
 		try {

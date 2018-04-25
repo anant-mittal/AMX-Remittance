@@ -37,7 +37,7 @@ import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.text.Transliterator;
-import com.itextpdf.text.DocumentException;
+//import com.itextpdf.text.DocumentException;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -115,7 +115,7 @@ public class PostManControllerTest {
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
 			@RequestParam(required = false) File.PDFConverter lib)
-			throws IOException, DocumentException, PostManException {
+			throws IOException, /*DocumentException,*/ PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
 
@@ -124,14 +124,18 @@ public class PostManControllerTest {
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 
+		File file = new File();
+		file.setModel(map);
+		file.setTemplate(template);
+		file.setConverter(lib);
+
 		if ("pdf".equals(ext)) {
-			File file = postManClient.processTemplate(template, map, File.Type.PDF);
-			file.setConverter(lib);
+			file.setType(File.Type.PDF);
+			file = postManClient.processTemplate(file);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManClient.processTemplate(template, map, null);
-			file.setConverter(lib);
+			file = postManClient.processTemplate(file);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);
