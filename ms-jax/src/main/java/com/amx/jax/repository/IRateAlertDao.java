@@ -15,7 +15,7 @@ public interface IRateAlertDao extends JpaRepository<RateAlert, Serializable> {
 	@Query("select r from RateAlert r where r.onlineRateAlertId=:onlineRateAlertId and isActive='Y'")
 	public List<RateAlert> getRateAlertDetails(@Param("onlineRateAlertId") BigDecimal onlineRateAlertId);
 
-	@Query("select r from RateAlert r where r.customerId=:customerId and isActive='Y'")
+	@Query("select r from RateAlert r where r.customerId=:customerId and isActive='Y' and trunc(sysdate) >= trunc(fromDate) and trunc(sysdate) <= trunc(toDate)")
 	public List<RateAlert> getRateAlertForCustomer(@Param("customerId") BigDecimal customerId);
 
 	@Query("select r from RateAlert r where isActive='Y' and trunc(sysdate) >= trunc(fromDate) and trunc(sysdate) <= trunc(toDate) ")

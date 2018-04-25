@@ -250,7 +250,9 @@ public class BeneficiaryController {
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		return beneService.updateStatus(beneDetails,status);
+		ApiResponse resp = beneService.updateStatus(beneDetails,status);
+		LOGGER.info("######## Values #######################   -- "+resp.getResult());
+		return resp;
 	}
 	
 	@RequestMapping(value = GET_SERVICE_PROVIDER_ENDPOINT, method = RequestMethod.GET)
