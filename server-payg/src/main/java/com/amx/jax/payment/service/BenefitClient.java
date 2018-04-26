@@ -166,16 +166,13 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		//to handle error scenario
 		if (gatewayResponse.getUdf3()== null) {
-		        LOGGER.info("Paymentid is ---> " + request.getParameter("paymentid"));
 		        ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
-		        PaymentResponseDto model = get();
-		        LOGGER.info("### START ###");
-		        LOGGER.info("Values ---> " + model.toString());
-		        gatewayResponse.setUdf3(model.getUdf3());
+		        PaymentResponseDto paymentCacheModel = get();
+		        LOGGER.info("Values ---> " + paymentCacheModel.toString());
+		        gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
 		        gatewayResponse.setResponseCode("NOT CAPTURED");
 		        gatewayResponse.setResult("NOT CAPTURED");
-		        gatewayResponse.setTrackId(model.getTrackId());
-		        LOGGER.info("### END ###");
+		        gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
