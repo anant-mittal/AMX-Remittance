@@ -6,10 +6,13 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -21,6 +24,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
@@ -57,6 +61,12 @@ public class PostManClient implements PostManService {
 		});
 	}
 
+	@Autowired
+	RestService restService;
+
+	@Autowired
+	AppConfig appConfig;
+
 	@Value("${jax.postman.url}")
 	private String postManUrl;
 
@@ -72,12 +82,12 @@ public class PostManClient implements PostManService {
 
 	public SMS sendSMS(SMS sms, Boolean async) throws PostManException {
 		LOGGER.info("Sending SMS to {} ", sms.getTo().get(0));
+
 		try {
-			HttpResponse<SMS> response = Unirest.post(postManUrl + PostManUrls.SEND_SMS)
-					.queryString(PARAM_LANG, getLang()).queryString(PARAM_ASYNC, async)
-					.header("content-type", "application/json").headers(appheader()).body(sms).asObject(SMS.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_SMS)
+					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(new HttpEntity<SMS>(sms))
+					.as(SMS.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
@@ -99,11 +109,10 @@ public class PostManClient implements PostManService {
 	public Email sendEmail(Email email, Boolean async) throws PostManException {
 		LOGGER.info("Sending email to {} ", email.getTo().get(0));
 		try {
-			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL)
-					.queryString(PARAM_LANG, getLang()).queryString(PARAM_ASYNC, async)
-					.header("content-type", "application/json").headers(appheader()).body(email).asObject(Email.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL)
+					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(new HttpEntity<Email>(email))
+					.as(Email.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
@@ -122,11 +131,9 @@ public class PostManClient implements PostManService {
 	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
 		LOGGER.info("Sending support email from {}", email.getVisitorName());
 		try {
-			HttpResponse<Email> response = Unirest.post(postManUrl + PostManUrls.SEND_EMAIL_SUPPORT)
-					.queryString(PARAM_LANG, getLang()).header("content-type", "application/json").headers(appheader())
-					.body(email).asObject(SupportEmail.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_SUPPORT)
+					.queryParam(PARAM_LANG, getLang()).post(new HttpEntity<SupportEmail>(email)).as(Email.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
@@ -135,13 +142,9 @@ public class PostManClient implements PostManService {
 	@Async
 	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
-			HttpResponse<Notipy> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK)
-					.queryString(PARAM_LANG, getLang()).header("accept", "application/json")
-					.header("Content-Type", "application/json").headers(appheader())
-
-					.body(msg).asObject(Notipy.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK)
+					.queryParam(PARAM_LANG, getLang()).post(new HttpEntity<Notipy>(msg)).as(Notipy.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
@@ -162,7 +165,6 @@ public class PostManClient implements PostManService {
 
 	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-
 		try {
 			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
 					.queryString(PARAM_LANG, getLang())
