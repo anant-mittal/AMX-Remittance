@@ -165,16 +165,16 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		//to handle error scenario
-		if (gatewayResponse.getUdf3()==null) {
+		if (gatewayResponse.getUdf3()== null) {
 		        LOGGER.info("Paymentid is ---> " + request.getParameter("paymentid"));
 		        ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
 		        PaymentResponseDto model = get();
-		        LOGGER.info("############### BenefitClient START ###################################################");
+		        LOGGER.info("############### START ##########################");
 		        LOGGER.info("Values ---> " + model.toString());
 		        gatewayResponse.setUdf3(model.getUdf3());
 		        gatewayResponse.setResponseCode("NOT CAPTURED");
 		        gatewayResponse.setTrackId(model.getTrackId());
-		        LOGGER.info("############### BenefitClient END   ##################################################");
+		        LOGGER.info("############### END   #########################");
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);

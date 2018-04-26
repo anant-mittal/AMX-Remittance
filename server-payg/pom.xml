@@ -69,6 +69,13 @@
 			<artifactId>lib-cache</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+		<dependency>
+    <groupId>io.netty</groupId>
+    <artifactId>netty-codec-http</artifactId>
+    <version>4.1.0.Final</version>
+</dependency>
+		
 	</dependencies>
 
 	<profiles>
@@ -86,7 +93,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>dev</id>
+			<id>knetDev</id>
 			<dependencies>
 				<dependency>
 					<groupId>com.knet.test</groupId>
@@ -99,7 +106,7 @@
 			</build>
 		</profile>
 		<profile>
-			<id>prod</id>
+			<id>knetProd</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>
