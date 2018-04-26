@@ -169,12 +169,13 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		        LOGGER.info("Paymentid is ---> " + request.getParameter("paymentid"));
 		        ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
 		        PaymentResponseDto model = get();
-		        LOGGER.info("############### START ##########################");
+		        LOGGER.info("### START ###");
 		        LOGGER.info("Values ---> " + model.toString());
 		        gatewayResponse.setUdf3(model.getUdf3());
 		        gatewayResponse.setResponseCode("NOT CAPTURED");
+		        gatewayResponse.setResult("NOT CAPTURED");
 		        gatewayResponse.setTrackId(model.getTrackId());
-		        LOGGER.info("############### END   #########################");
+		        LOGGER.info("### END ###");
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
