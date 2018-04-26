@@ -117,7 +117,7 @@ public class PostManControllerTest {
 			@RequestParam(required = false) File.PDFConverter lib)
 			throws IOException, /*DocumentException,*/ PostManException {
 
-		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
+		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getSampleJSON());
 
 		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
 		// localeResolver.resolveLocale(request)));

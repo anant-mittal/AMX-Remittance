@@ -1,19 +1,5 @@
 package com.amx.jax.postman.converter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import javax.xml.transform.Result;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.sax.SAXResult;
-import javax.xml.transform.stream.StreamSource;
-
 //import org.apache.fop.apps.FOPException;
 //import org.apache.fop.apps.FOUserAgent;
 //import org.apache.fop.apps.Fop;
@@ -25,8 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
-import com.amx.utils.Constants;
 
 @Component
 public class ConverterFOP implements FileConverter {
