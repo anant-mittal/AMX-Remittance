@@ -1,0 +1,34 @@
+<jasperReport name="yes">
+	<parameter name="title" class="java.lang.String" />
+	<parameter name="condition" class="java.lang.String" />
+	<parameter name="minSalary" class="java.lang.Double" />
+	<parameter name="model" class="java.util.HashMap"/>
+	<detail>
+		<band height="100">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" />
+				<textElement>
+					<font fontName="Arial" size="10" isItalic="true" isBold="true" isUnderline="false" />
+				</textElement>
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$P{title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="30" width="500" height="20" />
+				<textElement>
+					<font fontName="Arial" size="10" isItalic="true" isBold="true" isUnderline="true" pdfFontName="fonts/arialbd.ttf"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$R{label.test.text}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="60" width="100" height="20" />
+				<textElement>
+					<font fontName="Arial" size="10" isItalic="true" pdfFontName="fonts/all/arialuni.ttf"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$P{model}.get("statusKey")]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
