@@ -160,7 +160,7 @@ public class CurrencyMasterService extends AbstractService {
 
 	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId) {
 		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
-				.findByBeneCountryId(beneCountryId);
+				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
 		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
