@@ -21,6 +21,7 @@ import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxFieldError;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.utils.JsonUtil;
 
 @ControllerAdvice
 @SuppressWarnings(value = { "unchecked", "rawtypes" })
@@ -36,16 +37,15 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	public ApiResponse handleInvalidInputException(AbstractException ex) {
 
 		ApiResponse response = getApiResponse(ex);
-		
+		setErrorHeaders((ApiError) response.getError().get(0));
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorCode(), ex);
 		return response;
 	}
 
-	private void setErrorHeaders(AbstractException ex) {
-		httpResponse.addHeader("ERROR_CODE", ex.getErrorCode());
-		httpResponse.addHeader("ERROR_MESSAGE", ex.getErrorMessage());
+	private void setErrorHeaders(ApiError error) {
+		httpResponse.addHeader("apiErrorJson", JsonUtil.toJson(error));
 	}
 
 	private ApiResponse getApiResponse(AbstractException ex) {
@@ -54,7 +54,6 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		ApiError error = new ApiError(ex.getErrorCode(), ex.getErrorMessage());
 		errors.add(error);
 		response.setError(errors);
-		setErrorHeaders(ex);
 		return response;
 	}
 
@@ -67,6 +66,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		List<ApiError> errors = apiResponse.getError();
 		JaxFieldError validationErrorField = new JaxFieldError(ex.getBindingResult().getFieldError().getField());
 		errors.get(0).setValidationErrorField(validationErrorField);
+		setErrorHeaders((errors.get(0)));
 		return new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
 	}
 }
