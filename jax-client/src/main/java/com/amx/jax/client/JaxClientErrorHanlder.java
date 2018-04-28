@@ -3,6 +3,7 @@ package com.amx.jax.client;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -29,8 +30,8 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode() != HttpStatus.OK) {
 			return true;
 		}
-		List<String> errorCode = response.getHeaders().get("ERROR_CODE");
-		if (errorCode != null && !errorCode.isEmpty()) {
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		if (StringUtils.isNotBlank(apiErrorJson)) {
 			return true;
 		}
 		return false;
