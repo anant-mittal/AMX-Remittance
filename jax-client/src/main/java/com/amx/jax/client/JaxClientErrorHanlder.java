@@ -19,6 +19,7 @@ import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.model.response.ApiError;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class JaxClientErrorHanlder implements ResponseErrorHandler {
@@ -38,15 +39,8 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
 
-		List<String> errorCodes = response.getHeaders().get("ERROR_CODE");
-		List<String> errorMessages = response.getHeaders().get("ERROR_MESSAGE");
-		ApiError apiError = new ApiError();
-		if (errorCodes != null && !errorCodes.isEmpty()) {
-			apiError.setErrorId(errorCodes.get(0));
-		}
-		if (errorMessages != null && !errorMessages.isEmpty()) {
-			apiError.setErrorMessage(errorMessages.get(0));
-		}
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		ApiError apiError = JsonUtil.fromJson(apiErrorJson, ApiError.class);
 		checkUnknownJaxError(apiError);
 		checkInvalidInputErrors(apiError);
 		checkCustomerValidationErrors(apiError);

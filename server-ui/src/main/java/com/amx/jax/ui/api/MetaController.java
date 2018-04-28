@@ -60,24 +60,24 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getServiceGroupList().getResults());
 	}
 
-	@RequestMapping(value = "/api/meta/ccy/list", method = { RequestMethod.POST, RequestMethod.GET })
+	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
-	@RequestMapping(value = "/api/meta/country/list", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllCountry().getResults());
 	}
 
-	@RequestMapping(value = "/api/meta/state/list", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/api/meta/state/list", "/pub/meta/state/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewStateDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<ViewStateDto>>(
 				jaxService.setDefaults().getMetaClient().getStateList(countryId).getResults());
 	}
 
-	@RequestMapping(value = "/api/meta/district/list", method = { RequestMethod.GET })
+	@RequestMapping(value = { "/api/meta/district/list", "/pub/meta/district/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewDistrictDto>> getListOfDistrictsForState(@RequestParam BigDecimal stateId) {
 		return new ResponseWrapper<List<ViewDistrictDto>>(
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());

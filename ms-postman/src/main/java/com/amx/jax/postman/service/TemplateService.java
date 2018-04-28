@@ -98,8 +98,10 @@ public class TemplateService {
 		context.setVariable("_tu", templateUtils);
 
 		context.setVariables(file.getModel());
-		String content = this.processHtml(file.getTemplate(), context);
-		file.setContent(content);
+		if (file.getTemplate().isThymleaf()) {
+			String content = this.processHtml(file.getTemplate(), context);
+			file.setContent(content);
+		}
 		return file;
 	}
 
