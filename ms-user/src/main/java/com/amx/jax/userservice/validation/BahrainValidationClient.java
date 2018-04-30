@@ -4,7 +4,11 @@
 package com.amx.jax.userservice.validation;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.userservice.dao.CustomerDao;
 
 /**
  * @author Viki Sangani
@@ -15,6 +19,9 @@ import org.springframework.stereotype.Component;
 public class BahrainValidationClient implements ValidationClient {
 	
 	Logger logger = Logger.getLogger(BahrainValidationClient.class);
+	
+	@Autowired
+	private CustomerDao custDao;
 	
 	private static Integer MOBILE_LENGTH = new Integer(8);
 
@@ -45,8 +52,12 @@ public class BahrainValidationClient implements ValidationClient {
 	 */
 	@Override
 	public Boolean isMobileExist(String mobile) {
-		// TODO Auto-generated method stub
-		return null;
+
+		Customer cust = custDao.getCustomerByMobile(mobile);
+		if (cust != null) {
+			return true;
+		}
+		return false;
 	}
 
 }

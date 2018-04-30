@@ -3,6 +3,7 @@ package com.amx.jax.client;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.model.response.ApiError;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class JaxClientErrorHanlder implements ResponseErrorHandler {
@@ -28,8 +30,8 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode() != HttpStatus.OK) {
 			return true;
 		}
-		List<String> errorCode = response.getHeaders().get("ERROR_CODE");
-		if (errorCode != null && !errorCode.isEmpty()) {
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		if (StringUtils.isNotBlank(apiErrorJson)) {
 			return true;
 		}
 		return false;
@@ -38,15 +40,8 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
 
-		List<String> errorCodes = response.getHeaders().get("ERROR_CODE");
-		List<String> errorMessages = response.getHeaders().get("ERROR_MESSAGE");
-		ApiError apiError = new ApiError();
-		if (errorCodes != null && !errorCodes.isEmpty()) {
-			apiError.setErrorId(errorCodes.get(0));
-		}
-		if (errorMessages != null && !errorMessages.isEmpty()) {
-			apiError.setErrorMessage(errorMessages.get(0));
-		}
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		ApiError apiError = JsonUtil.fromJson(apiErrorJson, ApiError.class);
 		checkUnknownJaxError(apiError);
 		checkInvalidInputErrors(apiError);
 		checkCustomerValidationErrors(apiError);

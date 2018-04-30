@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.exceptions.TemplateInputException;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
@@ -33,7 +34,11 @@ public class FileService {
 			/**
 			 * from template to content
 			 */
-			templateService.process(file);
+			try {
+				templateService.process(file);
+			} catch (TemplateInputException e) {
+				LOGGER.error("Template Process Exception", e);
+			}
 
 			if (file.getName() == null) {
 				if (file.getType() == Type.PDF) {

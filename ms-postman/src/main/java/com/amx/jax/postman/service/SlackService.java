@@ -9,12 +9,16 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.model.Notipy;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -34,6 +38,9 @@ public class SlackService {
 
 	@Value("${slack.send.exception}")
 	private String sendException;
+
+	@Autowired
+	AppConfig appConfig;
 
 	public Notipy sendNotification(Notipy msg) throws UnirestException {
 
@@ -66,6 +73,12 @@ public class SlackService {
 	}
 
 	public Exception sendException(String to, Exception e) {
+
+		if (appConfig.isDebug()) {
+			LOGGER.error("Slack-Notify-Exception ", e);
+			return e;
+		}
+
 		AppContext context = AppContextUtil.getContext();
 		try {
 			StackTraceElement[] traces = e.getStackTrace();
@@ -81,7 +94,8 @@ public class SlackService {
 			attachments.add(attachmentTrace);
 
 			Map<String, String> attachmentTitle = new HashMap<>();
-			attachmentTitle.put("text", URLEncoder.encode(e.getMessage(), "UTF-8"));
+			attachmentTitle.put("text",
+					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8"));
 			attachmentTitle.put("color", "danger");
 			attachments.add(attachmentTitle);
 

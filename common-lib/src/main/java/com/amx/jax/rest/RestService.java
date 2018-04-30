@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class RestService {
@@ -64,12 +65,12 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax pathParam(String paramKey, String paramValue) {
-			uriParams.put(paramKey, paramValue);
+		public Ajax pathParam(String paramKey, Object paramValue) {
+			uriParams.put(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
 		}
 
-		public Ajax queryParam(String paramKey, String paramValue) {
+		public Ajax queryParam(String paramKey, Object paramValue) {
 			builder.queryParam(paramKey, paramValue);
 			return this;
 		}

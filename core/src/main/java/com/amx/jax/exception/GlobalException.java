@@ -1,6 +1,11 @@
 package com.amx.jax.exception;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.amx.amxlib.error.JaxError;
+import com.amx.jax.util.JaxUtil;
 
 public class GlobalException extends AbstractException {
 
@@ -19,5 +24,12 @@ public class GlobalException extends AbstractException {
 
 	public GlobalException(String errorMessage, JaxError error) {
 		super(errorMessage, error.getCode());
+	}
+
+	public GlobalException(JaxError error, Object... expressions) {
+		JaxUtil util = new JaxUtil();
+		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
+		this.errorCode = util.buildErrorExpressions(error.getCode(), list);
+
 	}
 }

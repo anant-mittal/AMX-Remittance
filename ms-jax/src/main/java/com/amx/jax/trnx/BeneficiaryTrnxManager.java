@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Validator;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxChannel;
@@ -33,6 +35,7 @@ import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BankService;
 import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 
 @Component
 @SuppressWarnings("rawtypes")
@@ -69,6 +72,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	@Autowired
 	ParameterService parameterService;
+
+	@Autowired
+	BenePersonalDetailValidator benePersonalDetailValidator;
 
 	@Override
 	public BeneficiaryTrnxModel init() {
@@ -239,8 +245,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	}
 
 	public ApiResponse savePersonalDetailTrnx(BenePersonalDetailModel benePersonalDetailModel) {
+		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
+				"benePersonalDetailModel");
+		
 		BeneficiaryTrnxModel trnxModel = getWithInit();
 		trnxModel.setBenePersonalDetailModel(benePersonalDetailModel);
+		benePersonalDetailValidator.validate(trnxModel, errors);
 		save(trnxModel);
 		ApiResponse apiResponse = getJaxTransactionApiResponse();
 

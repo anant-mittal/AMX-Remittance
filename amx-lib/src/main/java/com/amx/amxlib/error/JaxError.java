@@ -87,7 +87,14 @@ public enum JaxError implements IExceptionEnum {
     AGENT_BANK_LIST_NOT_FOUND,
     AGENT_BRANCH_LIST_NOT_FOUND,
     BANK_ID_NOT_PRESENT,
-    JAX_FIELD_VALIDATION_FAILURE;
+    JAX_FIELD_VALIDATION_FAILURE,
+    
+    /*validation errors*/
+    VALIDATION_MINIMUM_LENGTH_MOBILE,
+    VALIDATION_MAXIMUM_LENGTH_MOBILE,
+    VALIDATION_NOT_NULL, 
+    
+    INVALID_BANK_IFSC, INVALID_BANK_SWIFT;
 
     public String getCode() {
         return this.toString();

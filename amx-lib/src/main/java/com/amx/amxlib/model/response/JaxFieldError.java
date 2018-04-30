@@ -3,6 +3,13 @@ package com.amx.amxlib.model.response;
 public class JaxFieldError {
 
 	String fieldName;
+	
+	
+
+	public JaxFieldError() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
 	public JaxFieldError(String fieldName) {
 		super();

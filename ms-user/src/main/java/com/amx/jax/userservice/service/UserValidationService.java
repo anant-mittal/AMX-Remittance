@@ -107,7 +107,7 @@ public class UserValidationService {
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
 	protected void validateLoginId(String loginId) {
-		CustomerOnlineRegistration existingCust = custDao.getCustomerByLoginId(loginId);
+		CustomerOnlineRegistration existingCust = custDao.getOnlineCustomerByLoginIdOrUserName(loginId);
 		if (existingCust != null) {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
 		}
@@ -534,6 +534,9 @@ public class UserValidationService {
 	public void validateActiveCustomer(CustomerOnlineRegistration onlineCustReg, Boolean initRegistration) {
 		if (initRegistration != null && initRegistration) {
 			return;
+		}
+		if (onlineCustReg == null) {
+			throw new GlobalException("User is not registered", JaxError.USER_NOT_REGISTERED);
 		}
 		if (initRegistration == null && !"Y".equals(onlineCustReg.getStatus())) {
 			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);

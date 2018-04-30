@@ -34,8 +34,6 @@ public class WebTenantFilter implements Filter {
         String url = request.getRequestURI();
         String siteId = request.getParameter(TenantContextHolder.TENANT);
 
-        LOGGER.info("Payment URL is :"+ url);
-        
 //        if (siteId != null && !Constants.BLANK.equals(siteId)) {
 //            TenantContextHolder.setCurrent(siteId);
 //        } else {

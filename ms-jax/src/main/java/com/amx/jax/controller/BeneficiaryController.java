@@ -38,6 +38,7 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.validation.BenePersonalDetailValidator;
 
 /**
  * 
@@ -195,20 +196,20 @@ public class BeneficiaryController {
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
-	public ApiResponse saveBeneAccountInTrnx(@Valid  @RequestBody BeneAccountModel beneAccountModel) {
+	public ApiResponse saveBeneAccountInTrnx( @RequestBody @Valid  BeneAccountModel beneAccountModel) {
 		LOGGER.info("saveBeneAccountInTrnx request: " + beneAccountModel.toString());
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
-	public ApiResponse saveBenePersonalDetailInTrnx(@Valid @RequestBody BenePersonalDetailModel benePersonalDetailModel) {
+	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody @Valid  BenePersonalDetailModel benePersonalDetailModel) {
 		LOGGER.info("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
 	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
-	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp,
-			@RequestParam(name = "eOtp", required = false) String eOtp) {
+	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp, 
+								@RequestParam(name = "eOtp") String eOtp) {
 		LOGGER.info("in commit bene request with param , eOtp: "+eOtp + " motp: "+mOtp );
 		return beneficiaryTrnxManager.commitTransaction(mOtp, eOtp);
 	}
@@ -245,7 +246,9 @@ public class BeneficiaryController {
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		return beneService.updateStatus(beneDetails,status);
+		ApiResponse resp = beneService.updateStatus(beneDetails,status);
+		LOGGER.info("######## Values #######################   -- "+resp.getResult());
+		return resp;
 	}
 	
 	@RequestMapping(value = GET_SERVICE_PROVIDER_ENDPOINT, method = RequestMethod.GET)

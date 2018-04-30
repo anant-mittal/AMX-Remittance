@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.jax.client.RemitClient;
+import com.amx.jax.AppConstants;
+import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -22,15 +23,17 @@ import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
+import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
 /**
  * 
  * @author lalittanwar
+ * @param <T>
  *
  */
 @Component
-public class BenefitClient implements PayGClient {
+public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient{
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
 
@@ -64,9 +67,6 @@ public class BenefitClient implements PayGClient {
 	@Autowired
 	private PaymentService paymentService;
 	
-	@Autowired
-	private RemitClient remitClient;
-
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
@@ -94,7 +94,6 @@ public class BenefitClient implements PayGClient {
 
 			pipe.setAction((String) configMap.get("action"));
 			pipe.setCurrency((String) configMap.get("currency"));
-			// pipe.setCurrency((configMap.get("currency")).toString());
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
 			pipe.setErrorURL((String) configMap.get("responseUrl"));
@@ -127,7 +126,10 @@ public class BenefitClient implements PayGClient {
 			paymentDto.setPaymentId(payID);
 			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
 			paymentDto.setUdf3(payGParams.getDocNo());
-			remitClient.savePaymentId(paymentDto);
+			paymentDto.setTrackId(payGParams.getTrackId());
+			
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
+			save(paymentDto);
 			
 			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
@@ -137,10 +139,8 @@ public class BenefitClient implements PayGClient {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
 	}
 
-	@SuppressWarnings("finally")
 	@Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
@@ -164,6 +164,17 @@ public class BenefitClient implements PayGClient {
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
+		//to handle error scenario
+		if (gatewayResponse.getUdf3()== null) {
+		        ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
+		        PaymentResponseDto paymentCacheModel = get();
+		        LOGGER.info("Values ---> " + paymentCacheModel.toString());
+		        gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
+		        gatewayResponse.setResponseCode("NOT CAPTURED");
+		        gatewayResponse.setResult("NOT CAPTURED");
+		        gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
+		}
+
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
@@ -181,5 +192,17 @@ public class BenefitClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}// end of capture
+
+	@Override
+	public PaymentResponseDto init() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public PaymentResponseDto commit() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

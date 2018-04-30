@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -177,7 +178,7 @@ public class ReportManagerService extends AbstractService{
 				} else if (view.getCustomerReference() != null && view.getFirstName() != null && view.getMiddleName() == null && view.getLastName()!=null) {
 					obj.setFirstName(view.getCustomerReference().toString() + " " + view.getFirstName()+" "+view.getLastName());
 				}
-				if(view.getContactNumber()!=null){
+				if (StringUtils.isNotBlank(view.getContactNumber())) {
 					obj.setMobileNo(new BigDecimal(view.getContactNumber()));
 				}
 				obj.setCivilId(view.getIdentityInt());

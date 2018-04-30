@@ -124,21 +124,7 @@ public class PayGController {
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_CAPTURED, payGResponse));
 
 		String redirectUrl;
-
-		String urlParams = String.format(URL_PARAMS, payGResponse.getPaymentId(), payGResponse.getResult(),
-				payGResponse.getAuth(), payGResponse.getRef(), payGResponse.getPostDate(), payGResponse.getTrackId(),
-				payGResponse.getTranxId(), payGResponse.getUdf1(), payGResponse.getUdf2(), payGResponse.getUdf3(),
-				payGResponse.getUdf4(), payGResponse.getUdf5(), payGResponse.getCollectionDocCode(),
-				payGResponse.getCollectionDocNumber(), payGResponse.getCollectionFinYear());
-
-//		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
-//		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
-//		} else {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
-//		}
-		
+	
 	      if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
 	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success" ;
 	        } else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {

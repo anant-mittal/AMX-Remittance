@@ -18,6 +18,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.AppConfig;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.ChangeType;
@@ -25,8 +26,10 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.scope.TenantContextHolder;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -46,7 +49,15 @@ public class JaxNotificationService {
 
 		logger.info("Sending txn notification to customer");
 		Email email = new Email();
-		email.setSubject("Your transaction on AMX is successful");
+		
+		logger.info("Tenant is ----> "+TenantContextHolder.currentSite());
+		
+		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
+		    email.setSubject("Your transaction on AMX is successful");
+		}else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+		    email.setSubject("Your transaction on MEC is successful");
+		}
+		
 		email.addTo(pinfo.getEmail());
 		email.setTemplate(Templates.TXN_CRT_SUCC);
 		email.setHtml(true);

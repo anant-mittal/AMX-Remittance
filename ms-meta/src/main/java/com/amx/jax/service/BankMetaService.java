@@ -31,7 +31,6 @@ import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
 import com.amx.jax.services.AbstractService;
-import com.amx.jax.services.JaxNotificationService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -47,13 +46,10 @@ public class BankMetaService extends AbstractService {
 	private CountryBranchRepository countryBranchRepository;
 
 	@Autowired
-	private JaxNotificationService jaxNotificationService;
-
-	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
-		return repo.findBybankCountryIdAndRecordStatus(countryId, ConstantDocument.Yes);
+		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
 	}
 
 	public ApiResponse getBanksApiResponseByCountryId(BigDecimal countryId) {

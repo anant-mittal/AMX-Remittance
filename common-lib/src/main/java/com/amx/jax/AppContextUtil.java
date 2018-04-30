@@ -39,9 +39,10 @@ public class AppContextUtil {
 	}
 
 	private static Map<String, String> header(Map<String, String> map) {
-		map.put(TenantContextHolder.TENANT, TenantContextHolder.currentSite().toString());
-		map.put(AppConstants.TRACE_ID_XKEY, ContextUtil.getTraceId());
-		map.put(AppConstants.TRANX_ID_XKEY, ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY)));
+		AppContext context = getContext();
+		map.put(TenantContextHolder.TENANT, context.getTenant().toString());
+		map.put(AppConstants.TRACE_ID_XKEY, context.getTraceId());
+		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
 		return map;
 	}
 

@@ -83,7 +83,7 @@ public class BeneTrnxClientTest extends AbstractTestClient {
 		ApiResponse<CivilIdOtpModel> otpResponse = client.sendOtp();
 		String mOtp = otpResponse.getResult().getmOtp();
 		String eOtp = otpResponse.getResult().geteOtp();
-		response = client.commitAddBeneTrnx(mOtp, eOtp);
+		response = client.commitAddBeneTrnx(mOtp, null);
 
 		assertNotNull("Response is null", response);
 		assertNotNull("Response is null", response.getResult());

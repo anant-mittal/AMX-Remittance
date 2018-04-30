@@ -86,7 +86,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 @Test
+	// @Test
 	public void saveMobile() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setBahrainDefaults();
@@ -224,14 +224,14 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	 @Test
 	public void testInitReg() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();
 		jaxMetaInfo.setCustomerId(null);
 		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<CivilIdOtpModel> response = null;
-		response = client.initRegistration("279110405405");
+		response = client.initRegistration("123");
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
