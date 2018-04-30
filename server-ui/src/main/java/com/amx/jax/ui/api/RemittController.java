@@ -34,6 +34,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
+import com.amx.jax.dict.Language;
 import com.amx.jax.payment.PayGService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -97,6 +98,7 @@ public class RemittController {
 		List<TransactionHistroyDTO> data = jaxService.setDefaults().getRemitClient()
 				.getTransactionHistroy(docfyr, null, fromDate, toDate).getResults();
 		File file = new File();
+		file.setLang(Language.EN);
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
