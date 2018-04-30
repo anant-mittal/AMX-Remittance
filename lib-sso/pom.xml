@@ -19,6 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+	
 		<!-- Security infos -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -29,7 +30,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-
+		
 	</dependencies>
 
 </project>
