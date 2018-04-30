@@ -55,6 +55,7 @@ import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
@@ -658,10 +659,19 @@ public class RemittanceTransactionManager {
 					remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
 		}
+		model.setTransactionReference(getTransactionReference(application));
 		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
 		return model;
+	}
+
+	private String getTransactionReference(RemittanceApplication application) {
+		try {
+			return application.getDocumentNo().toString() + application.getDocumentFinancialyear().toString();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	private JaxTransactionStatus getJaxTransactionStatus(RemittanceApplication remittanceApplication) {
