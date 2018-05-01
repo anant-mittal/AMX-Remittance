@@ -68,7 +68,7 @@ import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
-import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
+import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -139,7 +139,7 @@ public class UserService extends AbstractUserService {
 	CustomerVerificationService customerVerificationService;
 	
 	@Autowired
-	TenantContext<UserValidation> tenantContext;
+	TenantContext<CustomerValidation> tenantContext;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {

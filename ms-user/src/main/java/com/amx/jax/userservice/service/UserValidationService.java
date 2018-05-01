@@ -46,12 +46,12 @@ import com.amx.jax.userservice.dao.CusmosDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
-import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
+import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.userservice.validation.ValidationClient;
 import com.amx.jax.userservice.validation.ValidationClients;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
-import com.amx.jax.util.validation.CustomerValidation;
+import com.amx.jax.util.validation.CustomerValidationService;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -60,7 +60,7 @@ public class UserValidationService {
 	Logger logger = Logger.getLogger(UserValidationService.class);
 
 	@Autowired
-	private CustomerValidation custValidation;
+	private CustomerValidationService custValidation;
 
 	@Autowired
 	private ContactDetailService contactDetailService;
@@ -102,7 +102,7 @@ public class UserValidationService {
 	private CustomerVerificationService customerVerificationService;
 	
 	@Autowired
-	TenantContext<UserValidation> tenantContext;
+	TenantContext<CustomerValidation> tenantContext;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
