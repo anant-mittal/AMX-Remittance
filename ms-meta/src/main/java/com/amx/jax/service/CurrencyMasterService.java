@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
@@ -47,6 +48,9 @@ public class CurrencyMasterService extends AbstractService {
 	
 	@Autowired
 	ApplicationSetupService applicationSetupService;
+	
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -94,6 +98,31 @@ public class CurrencyMasterService extends AbstractService {
 	public ApiResponse getAllOnlineCurrencyDetails() {
 		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
 				.findAll(new Sort("quoteName"));
+		ApiResponse response = getBlackApiResponse();
+		if (currencyList.isEmpty()) {
+			throw new GlobalException("Currency details not avaliable");
+		} else {
+			List<CurrencyMasterDTO> list = convert(currencyList);
+			response.getData().getValues().addAll(list);
+			response.getData().setType(list.get(0).getModelType());
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+
+		return response;
+	}
+	
+	// added by chetan 30/04/2018 because some countries exchange rate is not
+	// display
+	public ApiResponse getAllExchangeRateCurrencyList() {
+		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
+				.findAll(new Sort("quoteName"));
+		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
+		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {
+			for (int i = 0; i < currencyList.size(); i++) {
+				if (!uniqueCurrency.contains(currencyList.get(i).getCurrencyId()))
+					currencyList.remove(i);
+			}
+		}
 		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");

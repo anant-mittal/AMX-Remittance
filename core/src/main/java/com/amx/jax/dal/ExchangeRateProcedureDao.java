@@ -111,6 +111,21 @@ public class ExchangeRateProcedureDao {
 	
 	
 	@Transactional
+	public List<BigDecimal> getDistinctCurrencyList()
+	{
+		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE";
+		List<BigDecimal> list = new ArrayList<>();
+		try
+		{
+			list = jdbcTemplate.queryForList(sql, BigDecimal.class);
+		}
+		catch (Exception e) {
+			LOGGER.info("error in getDistinctCurrencyList : ", e);
+		}
+		return list;
+	}
+	
+	@Transactional
 	public Map<String, Object> getCommissionRange(Map<String, Object> inputMap) {
 
 		String sql = " SELECT MIN(B.FROM_AMOUNT) FROM_AMOUNT ,MAX(B.TO_AMOUNT) TO_AMOUNT " + "        FROM   EX_BANK_SERVICE_RULE A,"
