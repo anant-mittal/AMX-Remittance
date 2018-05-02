@@ -51,14 +51,14 @@ public class BenePersonalDetailValidator implements Validator {
 			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMinLenght())) {
 				int minLength = i.getMinLenght().intValue();
 				if (minLength > 0 && benePhoneLength < minLength) {
-					throw new GlobalException(JaxError.VALIDATION_MINIMUM_LENGTH, minLength);
+					throw new GlobalException(JaxError.VALIDATION_MINIMUM_LENGTH_MOBILE, minLength);
 				}
 
 			}
 			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMaxLenght())) {
 				int maxLength = i.getMaxLenght().intValue();
 				if (maxLength > 0 && benePhoneLength > maxLength) {
-					throw new GlobalException(JaxError.VALIDATION_MAXIMUM_LENGTH, maxLength);
+					throw new GlobalException(JaxError.VALIDATION_MAXIMUM_LENGTH_MOBILE, maxLength);
 				}
 			}
 		});

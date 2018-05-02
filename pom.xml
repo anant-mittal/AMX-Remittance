@@ -50,39 +50,6 @@
 			</plugin>
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>get-the-git-infos</id>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>validate-the-git-infos</id>
-						<goals>
-							<goal>validateRevision</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<dotGitDirectory>${basedir}/.git</dotGitDirectory>
-					<prefix>git</prefix>
-					<verbose>false</verbose>
-					<generateGitPropertiesFile>true</generateGitPropertiesFile>
-					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
-					<format>json</format>
-					<runOnlyOnce>false</runOnlyOnce>
-					<gitDescribe>
-						<skip>false</skip>
-						<always>false</always>	
-						<dirty>-dirty</dirty>
-					</gitDescribe>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
 
