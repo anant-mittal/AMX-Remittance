@@ -46,9 +46,11 @@ public class WebTenantFilter implements Filter {
             while (stok.hasMoreTokens()) {
                 if (stok.nextToken().equalsIgnoreCase(BHR)) {
                     TenantContextHolder.setCurrent(Tenant.BHR);
+                    LOGGER.info("Tenant is :"+ Tenant.BHR);
                     break;
                 }else if (stok.nextToken().equalsIgnoreCase(KWT)) {
                     TenantContextHolder.setCurrent(Tenant.KWT);
+                    LOGGER.info("Tenant is :"+ Tenant.KWT);
                     break;
                 }
             }
