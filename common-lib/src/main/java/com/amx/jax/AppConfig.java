@@ -47,6 +47,9 @@ public class AppConfig {
 
 	@Value("${jax.logger.url}")
 	private String loggerURL;
+	
+	@Value("${jax.sso.url}")
+	private String ssoURL;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -112,6 +115,10 @@ public class AppConfig {
 		RestTemplate restTemplate = builder.build();
 		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
 		return restTemplate;
+	}
+
+	public String getSsoURL() {
+		return ssoURL;
 	}
 
 }

@@ -32,10 +32,10 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 				// App Pages
 				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
-				// Login Formas
+				// Login Forms
 				.and().formLogin().loginPage("/sso/login").successHandler(successHandler()).permitAll()
 				.failureUrl("/sso/login?error").permitAll()
-				// Logiut Pages
+				// Logout Pages
 				.and().logout().permitAll().logoutSuccessUrl("/sso/login?logout").deleteCookies("JSESSIONID")
 				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()
 				.disable().headers().disable();
