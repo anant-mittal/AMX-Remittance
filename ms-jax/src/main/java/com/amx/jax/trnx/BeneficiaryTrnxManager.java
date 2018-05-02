@@ -257,4 +257,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return apiResponse;
 	}
 
+	@Override
+	public String getJaxTransactionId() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

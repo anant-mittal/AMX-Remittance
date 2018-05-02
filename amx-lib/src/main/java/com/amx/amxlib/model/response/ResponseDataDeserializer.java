@@ -36,6 +36,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
+import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
@@ -216,6 +217,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;	
 		case "jaxmetaparameter":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxMetaParameter>>(){});
+			break;	
+		case "send-otp-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<SendOtpModel>>(){});
 			break;	
 			
 	}
