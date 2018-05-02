@@ -67,4 +67,12 @@ public class CustomerHomeAddress {
 				+ ", mobile=" + mobile + ", telPrefix=" + telPrefix + "]";
 	}
 
+	public String getTelPrefix() {
+		return telPrefix;
+	}
+
+	public void setTelPrefix(String telPrefix) {
+		this.telPrefix = telPrefix;
+	}
+
 }

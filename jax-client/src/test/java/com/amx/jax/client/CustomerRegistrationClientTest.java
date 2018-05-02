@@ -27,6 +27,7 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -58,6 +59,9 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 		CustomerPersonalDetail personalDetail = JsonUtil.fromJson(json, CustomerPersonalDetail.class);
 		response = client.sendOtp(personalDetail);
 		// client.validateOtp("1234", "1234");
+		json = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/home-addr.json").toURI())));
+		CustomerHomeAddress customerHomeAddress = JsonUtil.fromJson(json, CustomerHomeAddress.class);
+		client.saveHomeAddress(customerHomeAddress);
 		trnxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
