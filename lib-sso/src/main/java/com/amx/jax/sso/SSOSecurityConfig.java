@@ -26,7 +26,7 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 				// Publics Calls
 				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
 				// Login Calls
-				.and().authorizeRequests().antMatchers("/sso/login/**").permitAll()
+				.and().authorizeRequests().antMatchers("/sso/**").permitAll()
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// App Pages

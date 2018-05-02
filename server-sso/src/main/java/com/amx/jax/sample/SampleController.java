@@ -28,7 +28,7 @@ public class SampleController {
 	@Autowired
 	TestTranx testTranx;
 
-	@RequestMapping(value = "/tranx", method = RequestMethod.GET)
+	@RequestMapping(value = "/sso/auth/{}", method = RequestMethod.GET)
 	public Message unlockCustomer(@RequestParam(AppConstants.TRANX_ID_XKEY) String tranxId,
 			@RequestParam TestTranx.Action action, @RequestParam(required = false) String message) {
 		if (action == TestTranx.Action.COMMIT) {

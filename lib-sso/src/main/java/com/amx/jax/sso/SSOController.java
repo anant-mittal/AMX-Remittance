@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 
 @Controller
@@ -26,12 +27,16 @@ public class SSOController {
 	@Autowired
 	AppConfig appConfig;
 
+	@Autowired
+	SSOTranx sSOTranx;
+
 	@RequestMapping(value = "/sso/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		if (!ssoUser.isAuthDone()) {
-			return "redirect:" + appConfig.getSsoURL() + "/sso/login";
+			sSOTranx.init();
+			return String.format("redirect:%s/sso/auth/%s", appConfig.getSsoURL(), AppContextUtil.getTranxId());
 		}
-		return "login";
+		return "home";
 	}
 
 }

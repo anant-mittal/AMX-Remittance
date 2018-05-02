@@ -1,20 +1,23 @@
 package com.amx.jax.sso;
 
+import java.io.Serializable;
+
 import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.sso.TestTranx.SSOModel;
+import com.amx.jax.sso.SSOTranx.SSOModel;
 
 @Component
-public class TestTranx extends TransactionModel<SSOModel> {
+public class SSOTranx extends TransactionModel<SSOModel> {
 
-	public static class SSOModel {
-		
+	private Logger LOGGER = LoggerService.getLogger(SSOTranx.class);
+
+	public static class SSOModel implements Serializable {
+		private static final long serialVersionUID = -2178734153442648084L;
+
 	}
-
-	private Logger LOGGER = LoggerService.getLogger(TestTranx.class);
 
 	public static enum Action {
 		INIT, SET, COMMIT
