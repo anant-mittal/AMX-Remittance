@@ -45,5 +45,5 @@ public class TenantService extends AbstractTenantService {
 			this.loadOnlineCurrencies();
 		}
 		return onlineCurrencies;
-	}
+	}	
 }
