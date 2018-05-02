@@ -433,7 +433,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
-	// added by chetan 30/04/2018 to shown proper exchange rate countries on UI.
+	// added by chetan 30/04/2018 list the country for currency.
 	public ApiResponse<CurrencyMasterDTO> getAllExchangeRateCurrencyList() {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {

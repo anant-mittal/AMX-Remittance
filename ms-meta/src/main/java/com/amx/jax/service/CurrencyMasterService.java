@@ -111,8 +111,7 @@ public class CurrencyMasterService extends AbstractService {
 		return response;
 	}
 	
-	// added by chetan 30/04/2018 because some countries exchange rate is not
-	// display
+	// added by chetan 30/04/2018 list the country for currency.
 	public ApiResponse getAllExchangeRateCurrencyList() {
 		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
 				.findAll(new Sort("quoteName"));
