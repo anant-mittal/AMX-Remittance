@@ -69,11 +69,21 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	// @Test
+	@Test
 	public void testGetAllOnlineCurrency() {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;
 		response = metaclient.getAllOnlineCurrency();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		// assertNotNull(response.getResult().getCurrencyName());
+	}
+	
+	//@Test
+	public void testAllExchangeRateCurrencyList() {
+		setDefaults();
+		ApiResponse<CurrencyMasterDTO> response = null;
+		response = metaclient.getAllExchangeRateCurrencyList();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		// assertNotNull(response.getResult().getCurrencyName());
@@ -135,7 +145,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void getJaxMetaParameter() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<JaxMetaParameter> response = null;

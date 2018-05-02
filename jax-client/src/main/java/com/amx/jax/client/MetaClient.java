@@ -432,6 +432,28 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
+	
+	// added by chetan 30/04/2018 list the country for currency.
+	public ApiResponse<CurrencyMasterDTO> getAllExchangeRateCurrencyList() {
+		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
+		try {
+			LOGGER.info("in getAllExchangeRateCurrencyList");
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/exchange-rate-currency/list/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
+
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllExchangeRateCurrencyList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+		return response.getBody();
+	}
+	
+	
 
 	public ApiResponse<CurrencyMasterDTO> getCurrencyByCountryId(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
