@@ -21,6 +21,7 @@ import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
+import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 
@@ -38,18 +39,16 @@ public class CustomerRegistrationService extends AbstractService {
 
 	@Autowired
 	JaxUtil util;
-
 	@Autowired
 	CryptoUtil cryptoUtil;
-
 	@Autowired
 	CustomerRegistrationManager customerRegistrationManager;
-
 	@Autowired
 	CustomerPersonalDetailValidator customerPersonalDetailValidator;
-
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
+	@Autowired
+	CustomerPhishigImageValidator customerPhishigImageValidator;
 
 	/**
 	 * Sends otp initiating trnx
@@ -77,13 +76,32 @@ public class CustomerRegistrationService extends AbstractService {
 		return getBooleanResponse();
 	}
 
+	/**
+	 * Save the customer home address
+	 */
 	public ApiResponse saveCustomerHomeAddress(CustomerHomeAddress customerHomeAddress) {
 		customerRegistrationManager.saveHomeAddress(customerHomeAddress);
 		return getBooleanResponse();
 	}
 
+	/**
+	 * Saves the customer security question and answer
+	 */
 	public ApiResponse saveCustomerSecQuestions(List<SecurityQuestionModel> securityquestions) {
 		customerRegistrationManager.saveCustomerSecQuestions(securityquestions);
+		return getBooleanResponse();
+	}
+
+	/**
+	 * @param caption
+	 *            caption
+	 * @param imageUrl
+	 *            image url
+	 */
+	public ApiResponse savePhishingImage(String caption, String imageUrl) {
+		CustomerRegistrationTrnxModel model = customerRegistrationManager.setPhishingImage(caption, imageUrl);
+		customerPhishigImageValidator.validate(model, null);
+		customerRegistrationManager.save(model);
 		return getBooleanResponse();
 	}
 }

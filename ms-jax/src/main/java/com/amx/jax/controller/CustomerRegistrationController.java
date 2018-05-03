@@ -75,5 +75,15 @@ public class CustomerRegistrationController {
 		ApiResponse response = customerRegistrationService.saveCustomerSecQuestions(securityquestions);
 		return response;
 	}
+	
+	/**
+	 * save savePhishingImage
+	 */
+	@RequestMapping(value = "/save-phishing-image/", method = RequestMethod.POST)
+	public ApiResponse savePhishingImage(@RequestParam String caption, @RequestParam String imageUrl) {
+		logger.info("in savePhishingImage: ");
+		ApiResponse response = customerRegistrationService.savePhishingImage(caption, imageUrl);
+		return response;
+	}
 
 }

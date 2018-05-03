@@ -130,4 +130,31 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		}
 	}
+	
+	/**
+	 * @param caption
+	 *            - Caption as string
+	 * @param imageUrl
+	 *            - url of image as string
+	 * @return BooleanResponse - return success or failure
+	 */
+	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
+		try {
+			ResponseEntity<ApiResponse<BooleanResponse>> response;
+			LOGGER.info("calling savePhishiingImage api: ");
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-phishing-image/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("caption", caption)
+					.queryParam("imageUrl", imageUrl);
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in savePhishiingImage : ", e);
+			throw new JaxSystemError();
+		}
+	}
 }

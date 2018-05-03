@@ -163,4 +163,11 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		model.setSecurityquestions(securityquestions);
 		save(model);
 	}
+
+	public CustomerRegistrationTrnxModel setPhishingImage(String caption, String imageUrl) {
+		CustomerRegistrationTrnxModel model = get();
+		model.setCaption(caption);
+		model.setImageUrl(imageUrl);
+		return model;
+	}
 }
