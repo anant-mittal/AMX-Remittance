@@ -95,15 +95,16 @@ public class EmailService {
 
 	public Email send(Email eParams) {
 
-		if (eParams.isHtml()) {
-			try {
+		try {
+			if (eParams.isHtml()) {
 				sendHtmlMail(eParams);
-			} catch (MessagingException | IOException e) {
-				LOGGER.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
+			} else {
+				sendPlainTextMail(eParams);
 			}
-		} else {
-			sendPlainTextMail(eParams);
+		} catch (Exception e) {
+			LOGGER.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
 		}
+
 		return eParams;
 	}
 

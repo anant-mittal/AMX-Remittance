@@ -68,7 +68,7 @@
 	text-decoration: none;
 }
 
-.form .register-form {
+.form .confirm-form {
 	display: none;
 }
 
@@ -128,23 +128,25 @@ body {
 <body>
 	<div class="login-page">
 		<div class="form">
-			<form class="register-form">
-				<input type="text" placeholder="name" /> <input type="password"
-					placeholder="password" /> <input type="text"
-					placeholder="email address" />
-				<button>create</button>
-				<p class="message">
+			<form class="login-form">
+				<input type="text" placeholder="Username" /> <input type="hidden"
+					value="${x-tranx-id}" /><input type="password"
+					placeholder="password" />
+				<button>Login</button>
+				<p class="message" hidden="hidden">
 					Already registered? <a href="#">Sign In</a>
 				</p>
 			</form>
-			<form class="login-form">
-				<input type="text" placeholder="username" /> <input type="password"
-					placeholder="password" />
-				<button>login</button>
-				<p class="message">
-					Not registered? <a href="#">Create an account</a>
+			<form class="confirm-form">
+				<input type="text" placeholder="Civil ID" readonly="readonly" /> <input
+					type="password" placeholder="password" readonly="readonly" /> <input
+					type="password" placeholder="OTP" />
+				<button>Login</button>
+				<p class="message" hidden="hidden">
+					Already registered? <a href="#">Sign In</a>
 				</p>
 			</form>
+
 		</div>
 	</div>
 	<script
