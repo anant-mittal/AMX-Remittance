@@ -1,19 +1,37 @@
 package com.amx.jax.userservice.manager;
 
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.JaxTransactionModel;
+import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.DistrictMaster;
+import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.trnx.model.OtpData;
+import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.repository.ContactDetailsRepository;
+import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.JaxUtil;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -24,6 +42,16 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerRegistrationManager.class);
 
 	private String identityInt;
+	@Autowired
+	private JaxUtil jaxUtil;
+	@Autowired
+	private CustomerRepository customerRepository;
+	@Autowired
+	private ContactDetailsRepository contactDetailsRepository;
+	@Autowired
+	private CustomerDao customerDao;
+	@Autowired
+	private CryptoUtil cryptoUtil;
 
 	@Override
 	public CustomerRegistrationTrnxModel init() {
@@ -36,10 +64,14 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		return model;
 	}
 
+	/**
+	 * Init method
+	 */
 	public CustomerRegistrationTrnxModel init(CustomerPersonalDetail customerPersonalDetail) {
 		CustomerRegistrationTrnxModel model = get();
 		if (model == null) {
 			model = new CustomerRegistrationTrnxModel();
+			model.setOtpData(new OtpData());
 		}
 		model.setCustomerPersonalDetail(customerPersonalDetail);
 		save(model);
@@ -47,9 +79,48 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	}
 
 	@Override
+	@Transactional
 	public CustomerRegistrationTrnxModel commit() {
-		// TODO Auto-generated method stub
-		return null;
+		CustomerRegistrationTrnxModel model = get();
+		Customer customer = commitCustomer(model.getCustomerPersonalDetail());
+		commitCustomerContact(model.getCustomerHomeAddress(), customer);
+		commitOnlineCustomer(model, customer);
+		return model;
+	}
+
+	private void commitOnlineCustomer(CustomerRegistrationTrnxModel model, Customer customer) {
+		CustomerOnlineRegistration customerOnlineRegistration = new CustomerOnlineRegistration(customer);
+		String userName = customerOnlineRegistration.getUserName();
+		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
+		customerDao.setSecurityQuestions(secQuestions, customerOnlineRegistration);
+		customerOnlineRegistration.setCaption(cryptoUtil.encrypt(userName, model.getCaption()));
+		customerOnlineRegistration.setImageUrl(model.getImageUrl());
+		customerOnlineRegistration.setLoginId(model.getLoginId());
+		customerOnlineRegistration.setPassword(cryptoUtil.getHash(userName, model.getPassword()));
+		customerDao.saveOnlineCustomer(customerOnlineRegistration);
+	}
+
+	/**
+	 * @param customerHomeAddress
+	 *            customer home address saves customer contact in db
+	 */
+	private void commitCustomerContact(CustomerHomeAddress customerHomeAddress, Customer customer) {
+
+		ContactDetail contactDetail = new ContactDetail();
+		contactDetail.setFsCountryMaster(new CountryMaster(customerHomeAddress.getCountryId()));
+		contactDetail.setFsDistrictMaster(new DistrictMaster(customerHomeAddress.getDistrictId()));
+		contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
+		contactDetail.setMobile(customerHomeAddress.getMobile());
+		contactDetail.setFsCustomer(customer);
+		contactDetailsRepository.save(contactDetail);
+	}
+
+	private Customer commitCustomer(CustomerPersonalDetail customerPersonalDetail) {
+		Customer customer = new Customer();
+		jaxUtil.convert(customerPersonalDetail, customer);
+		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
+		customerRepository.save(customer);
+		return customer;
 	}
 
 	public String getJaxTransactionId() {
@@ -84,6 +155,12 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	public void saveHomeAddress(CustomerHomeAddress addr) {
 		CustomerRegistrationTrnxModel model = get();
 		model.setCustomerHomeAddress(addr);
+		save(model);
+	}
+
+	public void saveCustomerSecQuestions(List<SecurityQuestionModel> securityquestions) {
+		CustomerRegistrationTrnxModel model = get();
+		model.setSecurityquestions(securityquestions);
 		save(model);
 	}
 }

@@ -1,5 +1,7 @@
 package com.amx.jax.userservice.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.services.AbstractService;
@@ -76,6 +79,11 @@ public class CustomerRegistrationService extends AbstractService {
 
 	public ApiResponse saveCustomerHomeAddress(CustomerHomeAddress customerHomeAddress) {
 		customerRegistrationManager.saveHomeAddress(customerHomeAddress);
+		return getBooleanResponse();
+	}
+
+	public ApiResponse saveCustomerSecQuestions(List<SecurityQuestionModel> securityquestions) {
+		customerRegistrationManager.saveCustomerSecQuestions(securityquestions);
 		return getBooleanResponse();
 	}
 }

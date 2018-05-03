@@ -77,6 +77,10 @@ public class CustomerRegistrationOtpManager {
 	public SendOtpModel generateOtpTokens(String userId) {
 		SendOtpModel sendOtpModel = new SendOtpModel();
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
+		if (otpData == null) {
+			logger.info("otp data not found in trnx, creating new one");
+			otpData = new OtpData();
+		}
 		String eOtp = util.createRandomPassword(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));

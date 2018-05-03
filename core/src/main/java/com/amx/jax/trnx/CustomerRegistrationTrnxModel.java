@@ -16,7 +16,6 @@ public class CustomerRegistrationTrnxModel implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	CustomerPersonalDetail customerPersonalDetail;
-	OtpData otpData;
 	CustomerHomeAddress customerHomeAddress;
 	List<SecurityQuestionModel> securityquestions;
 
@@ -25,6 +24,8 @@ public class CustomerRegistrationTrnxModel implements Serializable {
 
 	String loginId;
 	String password;
+
+	OtpData otpData;
 
 	public CustomerPersonalDetail getCustomerPersonalDetail() {
 		return customerPersonalDetail;
@@ -56,6 +57,38 @@ public class CustomerRegistrationTrnxModel implements Serializable {
 
 	public void setSecurityquestions(List<SecurityQuestionModel> securityquestions) {
 		this.securityquestions = securityquestions;
+	}
+
+	public String getCaption() {
+		return caption;
+	}
+
+	public void setCaption(String caption) {
+		this.caption = caption;
+	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
+	public String getLoginId() {
+		return loginId;
+	}
+
+	public void setLoginId(String loginId) {
+		this.loginId = loginId;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

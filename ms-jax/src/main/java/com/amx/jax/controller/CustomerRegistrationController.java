@@ -2,6 +2,8 @@ package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_REG_ENDPOINT;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.userservice.service.UserService;
+
 
 /**
  * @author Prashant
@@ -53,12 +57,22 @@ public class CustomerRegistrationController {
 	}
 
 	/**
-	 * validates otp
+	 * save customer home addr
 	 */
 	@RequestMapping(value = "/save-home-addr/", method = RequestMethod.POST)
 	public ApiResponse saveCustomerHomeAddress(@RequestBody CustomerHomeAddress customerHomeAddress) {
 		logger.info("in saveCustomerHomeAddress: {} ", customerHomeAddress);
 		ApiResponse response = customerRegistrationService.saveCustomerHomeAddress(customerHomeAddress);
+		return response;
+	}
+
+	/**
+	 * save customer security questions
+	 */
+	@RequestMapping(value = "/save-security-questions/", method = RequestMethod.POST)
+	public ApiResponse saveCustomerSecQuestions(@RequestBody List<SecurityQuestionModel> securityquestions) {
+		logger.info("in securityquestions: ");
+		ApiResponse response = customerRegistrationService.saveCustomerSecQuestions(securityquestions);
 		return response;
 	}
 

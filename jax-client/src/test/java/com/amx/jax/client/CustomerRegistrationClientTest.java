@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,6 +63,9 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 		json = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/home-addr.json").toURI())));
 		CustomerHomeAddress customerHomeAddress = JsonUtil.fromJson(json, CustomerHomeAddress.class);
 		client.saveHomeAddress(customerHomeAddress);
+		json = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/sec-quest.json").toURI())));
+		List<SecurityQuestionModel> securityquestions = JsonUtil.<SecurityQuestionModel>getListFromJsonString(json);
+		client.saveSecurityQuestions(securityquestions);
 		trnxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());

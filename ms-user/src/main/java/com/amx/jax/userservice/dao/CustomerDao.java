@@ -140,7 +140,7 @@ public class CustomerDao {
 		return onlineCust;
 	}
 
-	private void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
+	public void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
 		String userId = onlineCust.getUserName();
 		if (secQuestions.get(0).getAnswer() != null) {
 			onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
