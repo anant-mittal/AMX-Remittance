@@ -730,7 +730,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	
 	/**
 	 * 
-	 * @return Give the Prefix list like Mr, Mrs...
+	 * @return To fetch list of PrefixDTO use getResults method of ApiResponse
 	 * 
 	 */
 
