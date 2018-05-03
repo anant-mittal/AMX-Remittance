@@ -3,6 +3,8 @@ package com.amx.jax.controller;
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -32,6 +35,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.service.PrefixService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
@@ -117,6 +121,9 @@ public class MetaController {
 	
 	@Autowired
 	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
+	
+	@Autowired
+	PrefixService prefixService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -323,5 +330,10 @@ public class MetaController {
 	@RequestMapping(value = "/meta-parameter/", method = RequestMethod.GET)
 	public ApiResponse getAuthParameter(){
 		return parameterService.getJaxMetaParameter();
+	}
+	
+	@RequestMapping(value = "/prefix/", method = RequestMethod.GET)
+	public ApiResponse getPrefixList() {
+		return prefixService.getPrefixListResponse();
 	}
 }

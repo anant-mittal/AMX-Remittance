@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
@@ -161,5 +162,14 @@ public class MetaClientTest extends AbstractTestClient {
 		response = metaclient.getTermsAndCondition();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
+	}
+	
+	@Test
+	public void testGetAllPrefix() {
+		setDefaults();
+		ApiResponse<PrefixDTO> response = null;
+		response = metaclient.getAllPrefix();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
 	}
 }
