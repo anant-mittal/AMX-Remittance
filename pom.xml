@@ -97,5 +97,7 @@
  		<module>server-sso</module>
 		<module>server-kiosk</module>
 		<module>server-sample</module>
+		<module>lib-benefit/original</module>
+		<module>lib-benefit/shaded</module>
 	</modules>
 </project>
