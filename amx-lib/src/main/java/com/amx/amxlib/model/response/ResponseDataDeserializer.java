@@ -16,6 +16,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -220,6 +221,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;	
 		case "send-otp-model":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<SendOtpModel>>(){});
+			break;	
+		case "prefix":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PrefixDTO>>() {
+			});
 			break;	
 			
 	}

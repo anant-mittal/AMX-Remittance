@@ -24,6 +24,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
@@ -724,6 +725,32 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getJaxMetaParameter : ", e);
 			throw new JaxSystemError();
 		} // end of try-catc
+		return response.getBody();
+	}
+	
+	/**
+	 * 
+	 * @return Give the Prefix list like Mr, Mrs...
+	 * 
+	 */
+
+	public ApiResponse<PrefixDTO> getAllPrefix() {
+		ResponseEntity<ApiResponse<PrefixDTO>> response;
+		try {
+			LOGGER.info("Get all the Prefix ");
+
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/prefix/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
+					});
+
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllPrefix : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 		return response.getBody();
 	}
 }
