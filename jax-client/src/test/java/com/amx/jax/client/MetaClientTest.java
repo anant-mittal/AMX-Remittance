@@ -70,7 +70,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	//@Test
+	@Test
 	public void testGetAllOnlineCurrency() {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;
@@ -80,7 +80,7 @@ public class MetaClientTest extends AbstractTestClient {
 		// assertNotNull(response.getResult().getCurrencyName());
 	}
 	
-	@Test
+	//@Test
 	public void testAllExchangeRateCurrencyList() {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;

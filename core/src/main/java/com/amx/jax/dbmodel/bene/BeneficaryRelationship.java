@@ -34,6 +34,16 @@ public class BeneficaryRelationship implements Serializable {
 	private BigDecimal orsSatus;
 	private String myFavouriteBene;
 	private BigDecimal relationsId;
+	private String firstName;
+	private String secondName;
+	private String thirdName;
+	private String fourthName;
+	private String fifthName;
+	private String localFirstName;
+	private String localSecondName;
+	private String localThirdName;
+	private String localFourthName;
+	private String localFifthName;
 	
 	
 	@Id

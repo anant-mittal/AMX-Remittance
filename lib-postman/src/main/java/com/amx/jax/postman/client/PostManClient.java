@@ -151,30 +151,48 @@ public class PostManClient implements PostManService {
 
 	@Override
 	public File processTemplate(File file) throws PostManException {
-
 		try {
-			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE_FILE)
-					.queryString(PARAM_LANG, getLang())
-					.header("content-type", "application/json")
-					.header("accept", "application/json").headers(appheader()).body(file).asObject(File.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.PROCESS_TEMPLATE_FILE)
+					.queryParam(PARAM_LANG, getLang()).header("content-type", "application/json")
+					.header("accept", "application/json").post(new HttpEntity<File>(file)).as(File.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
+
+		// try {
+		// HttpResponse<File> response = Unirest.post(postManUrl +
+		// PostManUrls.PROCESS_TEMPLATE_FILE)
+		// .queryString(PARAM_LANG, getLang()).header("content-type",
+		// "application/json")
+		// .header("accept",
+		// "application/json").headers(appheader()).body(file).asObject(File.class);
+		// return response.getBody();
+		// } catch (UnirestException e) {
+		// throw new PostManException(e);
+		// }
 	}
 
 	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-		try {
-			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
-					.queryString(PARAM_LANG, getLang())
-					// .header("content-type", "application/json")
-					.header("accept", "application/json").headers(appheader()).field("template", template)
-					.field("data", JsonUtil.toJson(data)).field("fileType", fileType).asObject(File.class);
-			return response.getBody();
-		} catch (UnirestException e) {
-			throw new PostManException(e);
-		}
+		File file = new File();
+		file.setTemplate(template);
+		file.setType(fileType);
+		file.setObject(data);
+		return this.processTemplate(file);
+
+		// try {
+		// HttpResponse<File> response = Unirest.post(postManUrl +
+		// PostManUrls.PROCESS_TEMPLATE)
+		// .queryString(PARAM_LANG, getLang())
+		// // .header("content-type", "application/json")
+		// .header("accept", "application/json").headers(appheader()).field("template",
+		// template)
+		// .field("data", JsonUtil.toJson(data)).field("fileType",
+		// fileType).asObject(File.class);
+		// return response.getBody();
+		// } catch (UnirestException e) {
+		// throw new PostManException(e);
+		// }
 	}
 
 	@Override
@@ -224,5 +242,4 @@ public class PostManClient implements PostManService {
 		return e;
 	}
 
-	
 }
