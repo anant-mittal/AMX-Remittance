@@ -1,6 +1,5 @@
 package com.amx.jax.postman.client;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -27,35 +26,11 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.ObjectMapper;
-import com.mashape.unirest.http.Unirest;
 
 @Component
 public class PostManClient implements PostManService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManClient.class);
-
-	{
-		Unirest.setObjectMapper(new ObjectMapper() {
-
-			public <T> T readValue(String value, Class<T> valueType) {
-				try {
-					return JsonUtil.getMapper().readValue(value, valueType);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
-
-			public String writeValue(Object value) {
-				try {
-					return JsonUtil.getMapper().writeValueAsString(value);
-				} catch (JsonProcessingException e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
-	}
 
 	@Autowired
 	RestService restService;
