@@ -18,12 +18,9 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.scope.TenantValue;
+import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class SlackService {
@@ -50,7 +47,17 @@ public class SlackService {
 	@Autowired
 	PostManConfig postManConfig;
 
-	public Notipy sendNotification(Notipy msg) throws UnirestException {
+	@Autowired
+	RestService restService;
+
+	private String send(Map<String, Object> message) {
+		return restService.ajax("https://slack.com/api/chat.postMessage")
+				.header("Authorization",
+						"Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171")
+				.postJson(message).asString();
+	}
+
+	public Notipy sendNotification(Notipy msg) {
 
 		Map<String, Object> message = new HashMap<>();
 		message.put("text", msg.getMessage());
@@ -70,23 +77,16 @@ public class SlackService {
 			message.put("attachments", Collections.singletonList(attachment));
 		}
 
-		HttpResponse<String> response = send(message);
-		LOGGER.info("Slack Sent", response.getBody());
+		String response = send(message);
+		LOGGER.info("Slack Sent", response);
 		return msg;
-	}
-
-	private HttpResponse<String> send(Map<String, Object> message) throws UnirestException {
-		return Unirest.post("https://slack.com/api/chat.postMessage")
-				.header("Authorization",
-						"Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171")
-				.header("content-type", "application/json").body(message).asString();
 	}
 
 	public Exception sendException(String to, Exception e) {
 
 		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
-			return e;
+			// return e;
 		}
 
 		AppContext context = AppContextUtil.getContext();
@@ -133,7 +133,7 @@ public class SlackService {
 
 			message.put("attachments", attachments);
 
-			HttpResponse<String> response = send(message);
+			send(message);
 
 		} catch (Exception e1) {
 			LOGGER.error("NestedException ", e1);

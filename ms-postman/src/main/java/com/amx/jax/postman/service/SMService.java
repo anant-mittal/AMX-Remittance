@@ -16,7 +16,6 @@ import com.amx.jax.scope.TenantValue;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 @TenantScoped
@@ -48,7 +47,7 @@ public class SMService {
 	public static JsonPath messagePath = new JsonPath("sms/[0]/message");
 	public static JsonPath toPath = new JsonPath("sms/[0]/to/[0]");
 
-	public SMS sendSMS(SMS sms) throws UnirestException {
+	public SMS sendSMS(SMS sms) {
 
 		String phone = sms.getTo().get(0);
 
@@ -68,9 +67,9 @@ public class SMService {
 			String response = restService.ajax(remoteUrl).header("authkey", authKey)
 					.header("content-type", "application/json").post(
 
-					JsonUtil.toJson(map)
+							JsonUtil.toJson(map)
 
-			).asString();
+					).asString();
 
 			logger.info("SMS Sent   " + response);
 		} else if (phone != null && phone.length() == 8) {
@@ -84,8 +83,8 @@ public class SMService {
 			} else if (tnt == Tenant.KWT) {
 				String response = restService
 						.ajax("https://applications2.almullagroup.com/Login_Enhanced/LoginEnhancedServlet")
-						.field("destination_mobile", "965" + phone).field("message_to_send", sms.toText())
-						.postForm().asString();
+						.field("destination_mobile", "965" + phone).field("message_to_send", sms.toText()).postForm()
+						.asString();
 				logger.info("SMS Sent   " + response);
 			}
 		}

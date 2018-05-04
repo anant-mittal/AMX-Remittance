@@ -21,7 +21,6 @@ import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManServiceImpl implements PostManService {
@@ -134,7 +133,7 @@ public class PostManServiceImpl implements PostManService {
 	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
 			return slackService.sendNotification(msg);
-		} catch (UnirestException e) {
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
