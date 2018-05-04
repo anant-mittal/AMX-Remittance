@@ -3,7 +3,6 @@ package com.amx.jax.postman.client;
 import java.io.IOException;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +28,8 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @Component
 public class PostManClient implements PostManService {
@@ -151,61 +147,96 @@ public class PostManClient implements PostManService {
 
 	@Override
 	public File processTemplate(File file) throws PostManException {
-
 		try {
-			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE_FILE)
-					.queryString(PARAM_LANG, getLang())
-					.header("content-type", "application/json")
-					.header("accept", "application/json").headers(appheader()).body(file).asObject(File.class);
-			return response.getBody();
-		} catch (UnirestException e) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.PROCESS_TEMPLATE_FILE)
+					.queryParam(PARAM_LANG, getLang()).header("content-type", "application/json")
+					.header("accept", "application/json").post(file).as(File.class);
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
+
+		// try {
+		// HttpResponse<File> response = Unirest.post(postManUrl +
+		// PostManUrls.PROCESS_TEMPLATE_FILE)
+		// .queryString(PARAM_LANG, getLang()).header("content-type",
+		// "application/json")
+		// .header("accept",
+		// "application/json").headers(appheader()).body(file).asObject(File.class);
+		// return response.getBody();
+		// } catch (UnirestException e) {
+		// throw new PostManException(e);
+		// }
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-		try {
-			HttpResponse<File> response = Unirest.post(postManUrl + PostManUrls.PROCESS_TEMPLATE)
-					.queryString(PARAM_LANG, getLang())
-					// .header("content-type", "application/json")
-					.header("accept", "application/json").headers(appheader()).field("template", template)
-					.field("data", JsonUtil.toJson(data)).field("fileType", fileType).asObject(File.class);
-			return response.getBody();
-		} catch (UnirestException e) {
-			throw new PostManException(e);
-		}
+		File file = new File();
+		file.setTemplate(template);
+		file.setType(fileType);
+		// file.setObject(data);
+		file.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+		return this.processTemplate(file);
+
+		// try {
+		// HttpResponse<File> response = Unirest.post(postManUrl +
+		// PostManUrls.PROCESS_TEMPLATE)
+		// .queryString(PARAM_LANG, getLang())
+		// // .header("content-type", "application/json")
+		// .header("accept", "application/json").headers(appheader()).field("template",
+		// template)
+		// .field("data", JsonUtil.toJson(data)).field("fileType",
+		// fileType).asObject(File.class);
+		// return response.getBody();
+		// } catch (UnirestException e) {
+		// throw new PostManException(e);
+		// }
 	}
 
 	@Override
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException {
 		// TODO Auto-generated method stub
 		try {
-			HttpResponse<JsonNode> response = Unirest.post("https://www.google.com/recaptcha/api/siteverify")
-					// .header("content-type", "application/json")
+			@SuppressWarnings("unchecked")
+			Map<String, Object> resp = restService.ajax("https://www.google.com/recaptcha/api/siteverify")
 					.header("accept", "application/json").field("secret", googleSecret).field("response", responseKey)
-					.field("remoteip", remoteIP).asJson();
-			if (response != null) {
-				return response.getBody().getObject().getBoolean("success");
+					.field("remoteip", remoteIP).postForm().as(Map.class);
+			if (resp != null) {
+				return ArgUtil.parseAsBoolean(resp.get("success"));
 			}
-			return false;
-		} catch (UnirestException e) {
+			return null;
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
+		// try {
+		// HttpResponse<JsonNode> response =
+		// Unirest.post("https://www.google.com/recaptcha/api/siteverify")
+		// // .header("content-type", "application/json")
+		// .header("accept", "application/json").field("secret",
+		// googleSecret).field("response", responseKey)
+		// .field("remoteip", remoteIP).asJson();
+		// if (response != null) {
+		// return response.getBody().getObject().getBoolean("success");
+		// }
+		// return false;
+		// } catch (UnirestException e) {
+		// throw new PostManException(e);
+		// }
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public JSONObject getMap(String url) throws PostManException {
+	public Map<String, Object> getMap(String url) throws PostManException {
 		try {
-			HttpResponse<JsonNode> response = Unirest.get(url)
+			Map<String, Object> response = restService.ajax(url)
 					// .header("content-type", "application/json")
-					.header("accept", "application/json").asJson();
+					.header("accept", "application/json").get().as(Map.class);
 			if (response != null) {
-				return response.getBody().getObject();
+				return response;
 			}
 			return null;
-		} catch (UnirestException e) {
+		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
@@ -214,15 +245,24 @@ public class PostManClient implements PostManService {
 	@Async
 	public Exception notifyException(String title, Exception e) {
 		LOGGER.info("Sending exception = {} ", title);
+
 		try {
-			HttpResponse<Exception> response = Unirest.post(postManUrl + PostManUrls.NOTIFY_SLACK_EXCEP)
-					.header("content-type", "application/json").headers(appheader()).queryString("title", title).body(e)
-					.asObject(Exception.class);
-		} catch (UnirestException e1) {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
+					.header("content-type", "application/json").queryParam("title", title).post(e).as(Exception.class);
+		} catch (Exception e1) {
 			LOGGER.error("title", e1);
 		}
+
+		// try {
+		// HttpResponse<Exception> response = Unirest.post(postManUrl +
+		// PostManUrls.NOTIFY_SLACK_EXCEP)
+		// .header("content-type",
+		// "application/json").headers(appheader()).queryString("title", title).body(e)
+		// .asObject(Exception.class);
+		// } catch (UnirestException e1) {
+		// LOGGER.error("title", e1);
+		// }
 		return e;
 	}
 
-	
 }

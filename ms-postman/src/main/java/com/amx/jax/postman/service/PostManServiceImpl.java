@@ -3,7 +3,6 @@ package com.amx.jax.postman.service;
 import java.util.Locale;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,14 +163,24 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	public JSONObject getMap(String url) throws PostManException {
+	public Map<String, Object> getMap(String url) throws PostManException {
 		return null;
 	}
 
 	@Override
 	@Async
-	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
-		return this.sendEmail(supportService.createContactUsEmail(email));
+	public Email sendEmailToSupprt(SupportEmail supportEmail) throws PostManException {
+		Email email = this.sendEmail(supportService.createContactUsEmail(supportEmail));
+		Notipy msg = new Notipy();
+		msg.setMessage(supportEmail.getSubject());
+		msg.addLine("VisitorName : " + supportEmail.getVisitorName());
+		msg.addLine("VisitorEmail : " + supportEmail.getVisitorEmail());
+		msg.addLine("VisitorPhone : " + supportEmail.getVisitorPhone());
+		msg.addLine("VisitorMessage : " + supportEmail.getVisitorMessage());
+		msg.setSubject(supportEmail.getSubject());
+		msg.setChannel(Notipy.Channel.INQUIRY);
+		this.notifySlack(msg);
+		return email;
 	}
 
 }

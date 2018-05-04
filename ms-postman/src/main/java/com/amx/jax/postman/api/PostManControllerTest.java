@@ -131,7 +131,8 @@ public class PostManControllerTest {
 
 		if ("pdf".equals(ext)) {
 			file.setType(File.Type.PDF);
-			file = postManClient.processTemplate(file);
+			//file = postManClient.processTemplate(file);
+			file = postManClient.processTemplate(template,map,File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {

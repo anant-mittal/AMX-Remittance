@@ -136,12 +136,13 @@ public class RemittController {
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		// System.out.println(JsonUtil.toJson(wrapper));
+		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
-			File file = postManService.processTemplate(
+			file = postManService.processTemplate(
 					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
 			file.create(response, true);
 		}
-		return JsonUtil.toJson(wrapper);
+		return JsonUtil.toJson(file);
 	}
 
 	@ApiOperation(value = "Returns transaction reciept:")

@@ -16,7 +16,9 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.mashape.unirest.http.HttpResponse;
@@ -39,8 +41,14 @@ public class SlackService {
 	@Value("${slack.send.exception}")
 	private String sendException;
 
+	@Value("${slack.exception.channel}")
+	private String exceptionChannelCode;
+
 	@Autowired
 	AppConfig appConfig;
+
+	@Autowired
+	PostManConfig postManConfig;
 
 	public Notipy sendNotification(Notipy msg) throws UnirestException {
 
@@ -62,14 +70,16 @@ public class SlackService {
 			message.put("attachments", Collections.singletonList(attachment));
 		}
 
-		HttpResponse<String> response = Unirest.post("https://slack.com/api/chat.postMessage")
+		HttpResponse<String> response = send(message);
+		LOGGER.info("Slack Sent", response.getBody());
+		return msg;
+	}
+
+	private HttpResponse<String> send(Map<String, Object> message) throws UnirestException {
+		return Unirest.post("https://slack.com/api/chat.postMessage")
 				.header("Authorization",
 						"Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171")
 				.header("content-type", "application/json").body(message).asString();
-
-		LOGGER.info("Slack Sent", response.getBody());
-
-		return msg;
 	}
 
 	public Exception sendException(String to, Exception e) {
@@ -85,6 +95,13 @@ public class SlackService {
 
 			Map<String, Object> message = new HashMap<>();
 			message.put("text", to);
+
+			if (appConfig.isProdMode()) {
+				message.put("channel", postManConfig.getExceptionChannelCode());
+			} else {
+				message.put("channel", exceptionChannelCode);
+			}
+
 			List<Map<String, String>> attachments = new LinkedList<Map<String, String>>();
 
 			Map<String, String> attachmentTrace = new HashMap<>();
@@ -116,8 +133,7 @@ public class SlackService {
 
 			message.put("attachments", attachments);
 
-			HttpResponse<String> response = Unirest.post(sendException).header("content-type", "application/json")
-					.body(message).asString();
+			HttpResponse<String> response = send(message);
 
 		} catch (Exception e1) {
 			LOGGER.error("NestedException ", e1);
