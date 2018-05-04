@@ -23,7 +23,7 @@ public class Notipy extends Message {
 	}
 
 	public static enum Channel {
-		NOTIPY("C9AK11W2K"), DEPLOYER("C8L3GL92A"), GENERAL("C7F823MLJ");
+		NOTIPY("C9AK11W2K"), DEPLOYER("C8L3GL92A"), GENERAL("C7F823MLJ"), INQUIRY("CAJEF6Q13");
 
 		String code;
 

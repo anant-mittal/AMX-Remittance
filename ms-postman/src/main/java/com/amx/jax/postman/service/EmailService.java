@@ -23,6 +23,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
 
@@ -127,7 +128,8 @@ public class EmailService {
 		helper.setFrom(eParams.getFrom());
 		helper.setReplyTo(eParams.getReplyTo());
 
-		helper.setSubject(eParams.getSubject());
+		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();
+		helper.setSubject(subject);
 		helper.setText(eParams.getMessage(), isHtml);
 
 		if (eParams.getCc().size() > 0) {

@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.postman.converter.ConverterAmxFlyingSaucer;
@@ -30,6 +31,9 @@ public class PdfService {
 	@Autowired
 	private ConverterIText7 converterIText7;
 
+	@Value("${default.pDFConverter}")
+	private PDFConverter pDFConverter;
+
 	// @Autowired
 	// private ConverterIText5 converterIText5;
 
@@ -41,6 +45,9 @@ public class PdfService {
 		PDFConverter conv = file.getConverter();
 		if (conv == null) {
 			conv = file.getTemplate().getConverter();
+			if (conv == null) {
+				conv = pDFConverter;
+			}
 		}
 
 		if (conv == PDFConverter.FOP) {
