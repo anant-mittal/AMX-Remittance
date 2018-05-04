@@ -51,7 +51,7 @@ public enum Templates {
 	}
 	
 	Templates(String fileName) {
-		this(fileName,PDFConverter.FS);
+		this(fileName, null, null);
 	}
 
 	public PDFConverter getConverter() {
