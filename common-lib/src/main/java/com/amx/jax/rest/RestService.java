@@ -110,6 +110,10 @@ public class RestService {
 			return this.post(new HttpEntity<MultiValueMap<String, String>>(parameters, headers));
 		}
 
+		public <T> Ajax postJson(T body) {
+			return this.header("content-type", "application/json").post(body);
+		}
+
 		public Ajax get() {
 			this.method = HttpMethod.GET;
 			return this;
