@@ -2,6 +2,7 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 	
 	/**
 	 * 
@@ -38,6 +39,7 @@ import java.util.Date;
 		private String direction;
 		private String languageCode;
 		private String languageName;
+		private List<ServiceGroupMasterDescDto> supportedServiceGroup;	
 
 		public CountryMasterDTO() {
 			super();
@@ -207,5 +209,16 @@ import java.util.Date;
 			this.languageName = languageName;
 		}
 
+
+		public List<ServiceGroupMasterDescDto> getSupportedServiceGroup() {
+			return supportedServiceGroup;
+		}
+
+
+		public void setSupportedServiceGroup(List<ServiceGroupMasterDescDto> supportedServiceGroup) {
+			this.supportedServiceGroup = supportedServiceGroup;
+		}
+
+		
 	}
 

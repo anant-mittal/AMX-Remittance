@@ -3,6 +3,7 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -116,10 +117,12 @@ public class CurrencyMasterService extends AbstractService {
 		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
 				.findAll(new Sort("quoteName"));
 		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
+		Iterator<ViewOnlineCurrency> itr = currencyList.iterator();
 		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {
-			for (int i = 0; i < currencyList.size(); i++) {
-				if (!uniqueCurrency.contains(currencyList.get(i).getCurrencyId()))
-					currencyList.remove(i);
+			while (itr.hasNext()) {
+				if (!uniqueCurrency.contains(itr.next().getCurrencyId())) {
+					itr.remove();
+				}
 			}
 		}
 		ApiResponse response = getBlackApiResponse();
@@ -131,7 +134,6 @@ public class CurrencyMasterService extends AbstractService {
 			response.getData().setType(list.get(0).getModelType());
 			response.setResponseStatus(ResponseStatus.OK);
 		}
-
 		return response;
 	}
 

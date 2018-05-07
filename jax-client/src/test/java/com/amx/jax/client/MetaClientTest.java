@@ -89,7 +89,7 @@ public class MetaClientTest extends AbstractTestClient {
 		// assertNotNull(response.getResult().getCurrencyName());
 	}
 
-	// @Test
+	 @Test
 	public void testGetAllCountry() {
 		setDefaults();
 		ApiResponse<CountryMasterDTO> response = null;

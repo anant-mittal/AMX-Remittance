@@ -112,15 +112,12 @@ public class ExchangeRateProcedureDao {
 	
 	
 	@Transactional
-	public List<BigDecimal> getDistinctCurrencyList()
-	{
-		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE";
+	public List<BigDecimal> getDistinctCurrencyList() {
+		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE where BANK_ID IS NOT NULL";
 		List<BigDecimal> list = new ArrayList<>();
-		try
-		{
+		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.info("error in getDistinctCurrencyList : ", e);
 		}
 		return list;

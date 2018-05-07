@@ -277,4 +277,14 @@ public class BeneficiaryController {
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		return beneService.getAgentLocationList(new RoutingBankMasterParam.RoutingBankMasterServiceImpl(applicationCountryId,beneCountryId,serviceGroupId,routingBankId,currencyId,agentBankId));
 	}
+	
+	// Added by chetan 03-05-2018 for country with channeling
+	@RequestMapping(value = "/bene/country/", method = RequestMethod.GET)
+	public ApiResponse getBeneficiaryCountryListWithChannelingResponse() {
+		BigDecimal customerId = metaData.getCustomerId();
+		JaxChannel channel = metaData.getChannel();
+		LOGGER.info("userType :" + channel + "\t customerId :" + customerId);
+		return beneService.getBeneficiaryCountryListWithChannelingForOnline(customerId);
+
+	}
 }
