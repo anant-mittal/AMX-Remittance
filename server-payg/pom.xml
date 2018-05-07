@@ -69,30 +69,32 @@
 			<artifactId>lib-cache</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
+ 		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-codec-http</artifactId>
+			<version>4.1.0.Final</version>
+		</dependency>
+
+<!-- 		<dependency>
+			<groupId>com.knet.test</groupId>
+			<artifactId>knet.test</artifactId>
+			<version>1.0</version>
+		</dependency> -->
+
 		<dependency>
-    <groupId>io.netty</groupId>
-    <artifactId>netty-codec-http</artifactId>
-    <version>4.1.0.Final</version>
-</dependency>
-		
+			<groupId>bhr.com.benefit</groupId>
+			<artifactId>bhr-benefit</artifactId>
+			<version>1.0</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>com.knet</groupId> <artifactId>knet</artifactId> 
+			<version>1.0</version> </dependency> -->
+
 	</dependencies>
 
 	<profiles>
-	  <profile>
-			<id>bhr</id>
-			<dependencies>
-				<dependency>
-					<groupId>com.benefit</groupId>
-					<artifactId>benefit</artifactId>
-					<version>1.0</version>
-				</dependency>
-			</dependencies>
-			<build>
-				<finalName>${project.artifactId}-${project.version}-bhr</finalName>
-			</build>
-		</profile>
-		<profile>
+ 		<profile>
 			<id>knetDev</id>
 			<dependencies>
 				<dependency>
@@ -105,7 +107,7 @@
 				<finalName>${project.artifactId}-${project.version}-knet-dev</finalName>
 			</build>
 		</profile>
-		<profile>
+	    <profile>
 			<id>knetProd</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
