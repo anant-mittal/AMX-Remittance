@@ -1,6 +1,7 @@
 package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class BeneCountryDTO {
 
@@ -18,6 +19,7 @@ public class BeneCountryDTO {
 
 	private String countryName;
 	
+	private List<ServiceGroupMasterDescDto> supportedServiceGroup;	
 
 	private BigDecimal orsStatus;
 	
@@ -62,6 +64,14 @@ public class BeneCountryDTO {
 	}
 	public void setOrsStatus(BigDecimal orsStatus) {
 		this.orsStatus = orsStatus;
+	}
+
+	public List<ServiceGroupMasterDescDto> getSupportedServiceGroup() {
+		return supportedServiceGroup;
+	}
+
+	public void setSupportedServiceGroup(List<ServiceGroupMasterDescDto> supportedServiceGroup) {
+		this.supportedServiceGroup = supportedServiceGroup;
 	}
 	
 }
