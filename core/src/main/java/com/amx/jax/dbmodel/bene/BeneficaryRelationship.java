@@ -316,7 +316,5 @@ public class BeneficaryRelationship implements Serializable {
 			this.localFifthName = localFifthName;
 		
 		}
-	  	
-	
 	 
 }
