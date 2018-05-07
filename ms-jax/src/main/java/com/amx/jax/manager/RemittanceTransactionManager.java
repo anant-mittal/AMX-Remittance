@@ -180,6 +180,9 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		/** Added by Rabil on 03 May 2018 **/
+		remitApplParametersMap.put("P_BENE_RELATION_SEQ_ID", beneficiary.getBeneficiaryRelationShipSeqId());
+		/** End here **/
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
@@ -296,13 +299,11 @@ public class RemittanceTransactionManager {
 				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
 			}
 			if (outputMap.size() > 2) {
-				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
-				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
-						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
