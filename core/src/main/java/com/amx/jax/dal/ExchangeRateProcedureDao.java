@@ -38,6 +38,7 @@ public class ExchangeRateProcedureDao {
 				+ "  AND A.ROUTING_BANK_ID = B.BANK_ID" + "  AND A.REMITTANCE_MODE_ID = B.REMITTANCE_MODE_ID"
 				+ "  AND A.DELIVERY_MODE_ID = B.DELIVERY_MODE_ID" + "  AND B.APPROVED_BY IS NOT NULL"
 				+ "  AND B.BANK_SERVICE_RULE_ID = C.BANK_SERVICE_RULE_ID" + "  AND C.CHARGES_TYPE = 'C'"
+				+ "  AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
 				+ "  AND C.CHARGES_FOR = ?" + "" + "  AND ? BETWEEN C.FROM_AMOUNT AND C.TO_AMOUNT";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_APPLICATION_COUNTRY_ID"));
@@ -111,15 +112,12 @@ public class ExchangeRateProcedureDao {
 	
 	
 	@Transactional
-	public List<BigDecimal> getDistinctCurrencyList()
-	{
-		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE";
+	public List<BigDecimal> getDistinctCurrencyList() {
+		String sql = "select DISTINCT(CURRENCY_ID) from VW_EX_TRATE where BANK_ID IS NOT NULL";
 		List<BigDecimal> list = new ArrayList<>();
-		try
-		{
+		try {
 			list = jdbcTemplate.queryForList(sql, BigDecimal.class);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			LOGGER.info("error in getDistinctCurrencyList : ", e);
 		}
 		return list;

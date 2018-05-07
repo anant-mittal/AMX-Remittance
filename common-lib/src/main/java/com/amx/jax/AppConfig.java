@@ -7,6 +7,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.filter.AppClientInterceptor;
@@ -110,6 +111,7 @@ public class AppConfig {
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
 		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
 		return restTemplate;
 	}
