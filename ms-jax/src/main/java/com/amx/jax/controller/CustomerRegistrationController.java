@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
@@ -85,5 +86,16 @@ public class CustomerRegistrationController {
 		ApiResponse response = customerRegistrationService.savePhishingImage(caption, imageUrl);
 		return response;
 	}
+	
 
+	/**
+	 * save credentails
+	 */
+	@RequestMapping(value = "/save-login-detail/", method = RequestMethod.POST)
+	public ApiResponse saveLoginDetail(@RequestBody CustomerCredential customerCredential ) {
+		logger.info("in saveLoginDetail: ");
+		ApiResponse response = customerRegistrationService.saveLoginDetail(customerCredential);
+		return response;
+	}
+	
 }

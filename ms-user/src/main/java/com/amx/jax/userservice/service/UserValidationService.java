@@ -112,6 +112,13 @@ public class UserValidationService {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
 		}
 	}
+	
+	public void validateAllLoginId(String loginId) {
+		List<CustomerOnlineRegistration> existingCust = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
+		if (existingCust != null && !existingCust.isEmpty()) {
+			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
+		}
+	}
 
 	public Customer validateCustomerForOnlineFlow(String civilId) {
 		Customer cust = custDao.getCustomerByCivilId(civilId);

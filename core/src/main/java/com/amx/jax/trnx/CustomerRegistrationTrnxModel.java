@@ -3,6 +3,7 @@ package com.amx.jax.trnx;
 import java.io.Serializable;
 import java.util.List;
 
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -22,8 +23,7 @@ public class CustomerRegistrationTrnxModel implements Serializable {
 	String caption;
 	String imageUrl;
 
-	String loginId;
-	String password;
+	CustomerCredential customerCredential;
 
 	OtpData otpData;
 
@@ -75,20 +75,12 @@ public class CustomerRegistrationTrnxModel implements Serializable {
 		this.imageUrl = imageUrl;
 	}
 
-	public String getLoginId() {
-		return loginId;
+	public CustomerCredential getCustomerCredential() {
+		return customerCredential;
 	}
 
-	public void setLoginId(String loginId) {
-		this.loginId = loginId;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
+	public void setCustomerCredential(CustomerCredential customerCredential) {
+		this.customerCredential = customerCredential;
 	}
 
 }

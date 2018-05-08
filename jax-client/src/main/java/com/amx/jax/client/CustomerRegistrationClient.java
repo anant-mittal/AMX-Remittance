@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -130,7 +131,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		}
 	}
-	
+
 	/**
 	 * @param caption
 	 *            - Caption as string
@@ -154,6 +155,32 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in savePhishiingImage : ", e);
+			throw new JaxSystemError();
+		}
+	}
+
+	/**
+	 * @param loginId
+	 *            - login id
+	 * @param password
+	 *            - password
+	 * @return BooleanResponse - return success or failure
+	 */
+	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
+		try {
+			ResponseEntity<ApiResponse<BooleanResponse>> response;
+			LOGGER.info("calling saveLoginDetail api: ");
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerCredential, getHeader());
+			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-login-detail/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveLoginDetail : ", e);
 			throw new JaxSystemError();
 		}
 	}

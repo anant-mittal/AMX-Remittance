@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -20,6 +21,7 @@ import com.amx.jax.services.AbstractService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
+import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
 import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
@@ -49,6 +51,8 @@ public class CustomerRegistrationService extends AbstractService {
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
 	@Autowired
 	CustomerPhishigImageValidator customerPhishigImageValidator;
+	@Autowired
+	CustomerCredentialValidator customerCredentialValidator;
 
 	/**
 	 * Sends otp initiating trnx
@@ -102,6 +106,21 @@ public class CustomerRegistrationService extends AbstractService {
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.setPhishingImage(caption, imageUrl);
 		customerPhishigImageValidator.validate(model, null);
 		customerRegistrationManager.save(model);
+		return getBooleanResponse();
+	}
+
+	/**
+	 * @param -
+	 *            customerCredential user id and password of cusotmer
+	 *            <p>
+	 * 			commit trnx
+	 *            </p>
+	 */
+	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
+		customerCredentialValidator.validate(customerCredential, null);
+		CustomerRegistrationTrnxModel model = customerRegistrationManager.saveLoginDetail(customerCredential);
+		customerRegistrationManager.save(model);
+		customerRegistrationManager.commit();
 		return getBooleanResponse();
 	}
 }

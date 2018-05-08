@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
@@ -95,8 +96,9 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customerDao.setSecurityQuestions(secQuestions, customerOnlineRegistration);
 		customerOnlineRegistration.setCaption(cryptoUtil.encrypt(userName, model.getCaption()));
 		customerOnlineRegistration.setImageUrl(model.getImageUrl());
-		customerOnlineRegistration.setLoginId(model.getLoginId());
-		customerOnlineRegistration.setPassword(cryptoUtil.getHash(userName, model.getPassword()));
+		customerOnlineRegistration.setLoginId(model.getCustomerCredential().getLoginId());
+		customerOnlineRegistration
+				.setPassword(cryptoUtil.getHash(userName, model.getCustomerCredential().getPassword()));
 		customerDao.saveOnlineCustomer(customerOnlineRegistration);
 	}
 
@@ -168,6 +170,12 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		CustomerRegistrationTrnxModel model = get();
 		model.setCaption(caption);
 		model.setImageUrl(imageUrl);
+		return model;
+	}
+
+	public CustomerRegistrationTrnxModel saveLoginDetail(CustomerCredential customerCredential) {
+		CustomerRegistrationTrnxModel model = get();
+		model.setCustomerCredential(customerCredential);
 		return model;
 	}
 }
