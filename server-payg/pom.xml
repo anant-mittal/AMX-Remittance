@@ -80,13 +80,6 @@
 			<version>1.0</version> </dependency> -->
 
 		<dependency>
-			<groupId>com.amx.benefit</groupId>
-			<artifactId>lib-benefit</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-			<type>pom</type>
-		</dependency>
-
-		<dependency>
 			<groupId>bhr.com.benefit</groupId>
 			<artifactId>bhr-benefit</artifactId>
 			<version>1.0.shaded</version>
