@@ -5,7 +5,7 @@
 	<artifactId>original</artifactId>
 	<packaging>jar</packaging>
 	<name>original</name>
-	<description>benefit original</description>
+	<description>copy benefit original to local maven repo</description>
 	<url>http://maven.apache.org</url>
 
 	<parent>
@@ -39,7 +39,7 @@
 						<configuration>
 							<groupId>com.benefit</groupId>
 							<artifactId>benefit</artifactId>
-							<version>1.0</version>
+							<version>1.0.original</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/../../ext-jars/benefit.jar</file>
 							<generatePom>true</generatePom>

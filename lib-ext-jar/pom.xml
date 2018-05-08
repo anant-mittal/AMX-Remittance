@@ -18,14 +18,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
 	<dependencies>
-
-	<dependency>
-		<groupId>com.amx.benefit</groupId>
-		<artifactId>lib-benefit</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<type>pom</type>
-	</dependency>
 	</dependencies>
 
 	<build>
@@ -124,9 +118,9 @@
 						<configuration>
 							<groupId>bhr.com.benefit</groupId>
 							<artifactId>bhr-benefit</artifactId>
-							<version>1.0</version>
+							<version>1.0.shaded</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../lib-benefit/shaded/target/bhr-benefit.jar</file>
+							<file>${basedir}/../ext-jars/bhr-benefit.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>

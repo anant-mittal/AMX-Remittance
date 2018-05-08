@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>com.benefit</groupId>
 			<artifactId>benefit</artifactId>
-			<version>1.0</version>
+			<version>1.0.original</version>
 		</dependency>
 	</dependencies>
 
@@ -46,6 +46,7 @@
 						</goals>
 						<configuration>
 							<finalName>bhr-benefit</finalName>
+							<outputDirectory>${basedir}/../../ext-jars/</outputDirectory>
 							<relocations>
 								<relocation>
 									<pattern>com.aciworldwide.commerce.gateway.plugins</pattern>
