@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
+import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
@@ -33,7 +33,7 @@ import com.amx.utils.JsonUtil;
  *
  */
 @Component
-public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient{
+public class BenefitClient extends TransactionModel<PaymentResponseDto> implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient.class);
 
@@ -66,7 +66,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 	@Autowired
 	private PaymentService paymentService;
-	
+
 	@Override
 	public PayGServiceCode getClientCode() {
 		return PayGServiceCode.BENEFIT;
@@ -121,16 +121,16 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 			responseMap.put("payid", new String(payID));
 			responseMap.put("payurl", new String(payURL));
-			
+
 			PaymentResponseDto paymentDto = new PaymentResponseDto();
 			paymentDto.setPaymentId(payID);
 			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
 			paymentDto.setUdf3(payGParams.getDocNo());
 			paymentDto.setTrackId(payGParams.getTrackId());
-			
+
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
 			save(paymentDto);
-			
+
 			String url = payURL + "?PaymentID=" + payID;
 			LOGGER.info("Generated url is ---> " + url);
 			payGParams.setRedirectUrl(url);
@@ -164,15 +164,15 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
-		//to handle error scenario
-		if (gatewayResponse.getUdf3()== null) {
-		        ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
-		        PaymentResponseDto paymentCacheModel = get();
-		        LOGGER.info("Values ---> " + paymentCacheModel.toString());
-		        gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
-		        gatewayResponse.setResponseCode("NOT CAPTURED");
-		        gatewayResponse.setResult("NOT CAPTURED");
-		        gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
+		// to handle error scenario
+		if (gatewayResponse.getUdf3() == null) {
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
+			PaymentResponseDto paymentCacheModel = get();
+			LOGGER.info("Values ---> " + paymentCacheModel.toString());
+			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
+			gatewayResponse.setResponseCode("NOT CAPTURED");
+			gatewayResponse.setResult("NOT CAPTURED");
+			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
