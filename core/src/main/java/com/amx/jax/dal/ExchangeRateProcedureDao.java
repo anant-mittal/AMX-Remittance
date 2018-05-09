@@ -40,6 +40,8 @@ public class ExchangeRateProcedureDao {
 				+ "  AND B.BANK_SERVICE_RULE_ID = C.BANK_SERVICE_RULE_ID" + "  AND C.CHARGES_TYPE = 'C'"
 				+ "  AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
 				+ "  AND C.CHARGES_FOR = ?" + "" + "  AND ? BETWEEN C.FROM_AMOUNT AND C.TO_AMOUNT";
+		
+		
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_APPLICATION_COUNTRY_ID"));
 		inputList.add((BigDecimal) inputMap.get("P_BENEFICIARY_COUNTRY_ID"));
@@ -54,6 +56,7 @@ public class ExchangeRateProcedureDao {
 		inputList.add((BigDecimal) inputMap.get("P_CALCULATED_FC_AMOUNT"));
 		Map<String, Object> output = new HashMap<>();
 		try {
+			LOGGER.info("SQL  findRemittanceAndDevlieryModeId : " +sql+"\n inputList.toArray() :"+inputList.toArray());
 			Map<String, Object> outputMap = jdbcTemplate.queryForMap(sql, inputList.toArray());
 			output.put("P_REMITTANCE_MODE_ID", outputMap.get("REMITTANCE_MODE_ID"));
 			output.put("P_DELIVERY_MODE_ID", outputMap.get("DELIVERY_MODE_ID"));
@@ -75,6 +78,7 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
 				+ "        AND    ? BETWEEN B.FROM_AMOUNT AND B.TO_AMOUNT"
 				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
+				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    "  /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
@@ -132,7 +136,8 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.COUNTRY_ID            =   ?" + "        AND    A.CURRENCY_ID           =   ?"
 				+ "        AND    A.BANK_ID               =   ?" + "        AND    A.REMITTANCE_MODE_ID    =   ?"
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
-				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
+				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE            =  'Y'"
+				+ " 	   AND    A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
