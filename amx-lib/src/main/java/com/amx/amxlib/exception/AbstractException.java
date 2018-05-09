@@ -20,8 +20,12 @@ public abstract class AbstractException extends RuntimeException {
 	protected String errorKey;
 
 	protected JaxError error;
-	
-	protected JaxFieldError jaxFieldError; 
+
+	protected JaxFieldError jaxFieldError;
+
+	public AbstractException(Exception e) {
+		super(e);
+	}
 
 	public AbstractException(ApiError error) {
 		try {
