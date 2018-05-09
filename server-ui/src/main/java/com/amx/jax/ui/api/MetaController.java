@@ -65,6 +65,11 @@ public class MetaController {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
+	@RequestMapping(value = { "/pub/meta/name_prefix/list" }, method = { RequestMethod.POST, RequestMethod.GET })
+	public ResponseWrapper<List<CurrencyMasterDTO>> getNamePrefixList() {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
+	}
+	
 	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(

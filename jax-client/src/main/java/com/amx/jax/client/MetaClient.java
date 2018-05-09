@@ -36,6 +36,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.rest.RestService;
 
 /**
  * 
@@ -49,6 +50,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
+
+	@Autowired
+	RestService restService;
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
 		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response;
@@ -748,4 +752,24 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catc
 		return response.getBody();
 	}
+
+	/**
+	 * 
+	 * @return To fetch list of PrefixDTO use getResults method of ApiResponse
+	 * 
+	 */
+//	public ApiResponse<PrefixDTO> getAllPrefix() {
+//		ApiResponse<PrefixDTO> response;
+//		try {
+//			response = restService.ajax(this.getBaseUrl() + META_API_ENDPOINT + "/prefix/")
+//					.post(new HttpEntity<Object>(getHeader()))
+//					.as(new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
+//					});
+//		} catch (AbstractException ae) {
+//			throw ae;
+//		} catch (Exception e) {
+//			throw new JaxSystemError(e);
+//		} // end of try-catch
+//		return response.getBody();
+//	}
 }
