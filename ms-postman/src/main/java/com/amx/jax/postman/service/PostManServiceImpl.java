@@ -19,7 +19,6 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -45,22 +44,12 @@ public class PostManServiceImpl implements PostManService {
 	@Autowired
 	private TemplateService templateService;
 
-	private String tnt = null;
-	private int counter = 0;
-
-	public void print() {
-		if (tnt == null) {
-			tnt = TenantContextHolder.currentSite().toString();
-			LOGGER.info("Settin new {}", tnt);
-		}
-		LOGGER.info("print {} {}", tnt, counter++);
-	}
-
 	@Override
 	public Email sendEmail(Email email) throws PostManException {
 		String to = null;
 		try {
-			to = email.getTo().get(0);
+			to = email.getTo() != null ? email.getTo().get(0) : null;
+			LOGGER.info("Sending {} Email to {} = {} ", email.getTemplate(), to);
 			if (email.getTemplate() != null) {
 				File file = new File();
 				file.setTemplate(email.getTemplate());
@@ -78,7 +67,7 @@ public class PostManServiceImpl implements PostManService {
 				}
 			}
 			emailService.send(email);
-			LOGGER.info("Email sent to {} = {} ", to, email.getTemplate());
+			LOGGER.info("Sent {} Email to {} = {} ", email.getTemplate(), to);
 		} catch (Exception e) {
 			this.notifyException(to, e);
 		}
@@ -114,14 +103,15 @@ public class PostManServiceImpl implements PostManService {
 	public SMS sendSMS(SMS sms) throws PostManException {
 		String to = null;
 		try {
-			to = sms.getTo().get(0);
+			to = sms.getTo() != null ? sms.getTo().get(0) : null;
+			LOGGER.info("Sending {} SMS to {} = {} ", sms.getTemplate(), to);
 			if (sms.getTemplate() != null) {
 				Context context = new Context(new Locale(sms.getLang().toString()));
 				context.setVariables(sms.getModel());
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}
 			this.smsService.sendSMS(sms);
-			LOGGER.info("Email sent to {} = {} ", to, sms.getTemplate());
+			LOGGER.info("Sent {} SMS to {} = {} ", sms.getTemplate(), to);
 		} catch (Exception e) {
 			this.notifyException(to, e);
 		}
