@@ -46,7 +46,7 @@
 
 
 		<!-- UNIREST DEPENDCY -->
-		<dependency>
+<!-- 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
 			<version>4.3.6</version>
@@ -70,7 +70,7 @@
 			<groupId>com.mashape.unirest</groupId>
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
-		</dependency>
+		</dependency> -->
 
 		<!-- Swagger infos -->
 		<dependency>

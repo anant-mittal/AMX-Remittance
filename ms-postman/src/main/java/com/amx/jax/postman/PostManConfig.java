@@ -19,6 +19,9 @@ public class PostManConfig {
 	@TenantValue("${tenant.lang}")
 	private Language tenantLang;
 
+	@TenantValue("${slack.exception.channel}")
+	private String exceptionChannelCode;
+
 	public String getTenant() {
 		return tenant;
 	}
@@ -32,6 +35,10 @@ public class PostManConfig {
 			return new Locale(tenantLang.getCode());
 		}
 		return new Locale(file.getLang().getCode());
+	}
+
+	public String getExceptionChannelCode() {
+		return exceptionChannelCode;
 	}
 
 }

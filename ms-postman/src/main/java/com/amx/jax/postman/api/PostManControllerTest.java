@@ -37,10 +37,6 @@ import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.text.Transliterator;
-//import com.itextpdf.text.DocumentException;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @RestController
 @RequestMapping("test/")
@@ -76,7 +72,7 @@ public class PostManControllerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
 	@RequestMapping(value = "exception")
-	public Message notifySlack() throws UnirestException {
+	public Message notifySlack() {
 
 		try {
 			throw new Exception("Some Error");
@@ -106,7 +102,6 @@ public class PostManControllerTest {
 		Transliterator toDevnagiri = Transliterator.getInstance(ENG_TO_DEV);
 		String devnagiri = toDevnagiri.transliterate("lalit");
 
-		postManServiceImpl.print();
 		return msg;
 	}
 
@@ -115,7 +110,7 @@ public class PostManControllerTest {
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
 			@RequestParam(required = false) File.PDFConverter lib)
-			throws IOException, /*DocumentException,*/ PostManException {
+			throws IOException, /* DocumentException, */ PostManException {
 
 		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getSampleJSON());
 
@@ -132,6 +127,7 @@ public class PostManControllerTest {
 		if ("pdf".equals(ext)) {
 			file.setType(File.Type.PDF);
 			file = postManClient.processTemplate(file);
+			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
@@ -144,7 +140,7 @@ public class PostManControllerTest {
 				eml.setTemplate(template);
 				eml.setHtml(true);
 				eml.setModel(map);
-				//this.readImageWithObjectMapper(null);
+				// this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
 				file2.setTemplate(template);
@@ -161,15 +157,6 @@ public class PostManControllerTest {
 			return JsonUtil.toJson(map);
 		}
 
-	}
-
-	public File processTemplate(Templates template, Map<String, Object> map, File.Type fileType)
-			throws UnirestException {
-		HttpResponse<File> response = Unirest.post(postmanUrl + PostManUrls.PROCESS_TEMPLATE)
-				// .header("content-type", "application/json")
-				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(map))
-				.field("fileType", fileType).asObject(File.class);
-		return response.getBody();
 	}
 
 	@SuppressWarnings("unchecked")

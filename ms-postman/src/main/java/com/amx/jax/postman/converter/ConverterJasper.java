@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +18,11 @@ import com.amx.jax.postman.converter.jasper.SimpleReportExporter;
 import com.amx.jax.postman.converter.jasper.SimpleReportFiller;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.postman.service.TemplateUtils;
+import com.amx.utils.FlatMap;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JRParameter;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperExportManager;
@@ -49,6 +49,9 @@ public class ConverterJasper implements FileConverter {
 	@Autowired
 	private MessageSource messageSource;
 
+	@Autowired
+	private TemplateUtils templateUtils;
+
 	@Override
 	public File toPDF(File file) {
 
@@ -60,18 +63,18 @@ public class ConverterJasper implements FileConverter {
 
 		Map<String, Object> parameters = new HashMap<>();
 		parameters.put("title", "Employee Report Example");
-		parameters.put("minSalary", 15000.0);
-		parameters.put("model", file.getModel());
+		parameters.put("model", new FlatMap(file.getModel()));
+		parameters.put("TU", templateUtils);
 		parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE,
 				new MessageSourceResourceBundle(messageSource, postManConfig.getLocal(file)));
 
-		LOGGER.info("===== {} {}",postManConfig.getLocal(file),file.getLang());
+		LOGGER.info("===== {} {}", postManConfig.getLocal(file), file.getLang());
 		simpleReportFiller.setParameters(parameters);
 		simpleReportFiller.fillReport();
-		//simpleReportFiller.getJasperPrint().getDefaultStyle().setFontSize(50f);
-		//simpleReportFiller.getJasperPrint().getDefaultStyle().setPdfFontName("Arial");
+		// simpleReportFiller.getJasperPrint().getDefaultStyle().setFontSize(50f);
+		// simpleReportFiller.getJasperPrint().getDefaultStyle().setPdfFontName("Arial");
 
-		//simpleExporter.setJasperPrint(simpleReportFiller.getJasperPrint());
+		// simpleExporter.setJasperPrint(simpleReportFiller.getJasperPrint());
 
 		// simpleExporter.exportToPdf("employeeReport.pdf", "baeldung");
 		// simpleExporter.exportToXlsx("employeeReport.xlsx", "Employee Data");

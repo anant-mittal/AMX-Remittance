@@ -1,5 +1,6 @@
 package com.amx.jax.postman.service;
 
+import java.awt.Image;
 import java.text.Bidi;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,9 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.SimpleJasperReportsContext;
+
 @Component
 public class TemplateUtils {
 
@@ -21,6 +25,16 @@ public class TemplateUtils {
 
 	public String prop(String key) {
 		return tenantProperties.getProperties().getProperty(key);
+	}
+
+	public String image(String key) {
+		return tenantProperties.getProperties().getProperty(key).replace("data:image/png;base64,", "");
+	}
+
+	public Image imageJasper(String key) throws JRException {
+		return net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext())
+				.loadAwtImageFromBytes(javax.xml.bind.DatatypeConverter.parseBase64Binary(
+						tenantProperties.getProperties().getProperty(key).replace("data:image/png;base64,", "")));
 	}
 
 	public static void reverseFlag(boolean set) {

@@ -93,5 +93,17 @@ public class BeneficiaryValidationService {
 			}
 		}
 	}
+	
+	public BeneficaryAccount getBeneficaryAccount(BeneAccountModel beneAccountModel) {
+		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
+		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(BeneficiaryAccountPredicateCreator.createBeneSearchPredicate(beneAccountModel, isBangladeshBene));
+		
+		int size = Iterables.size(existingAccountItr);
+		if (size > 0) {
+			return existingAccountItr.iterator().next();
+		}else {
+			return null;
+		}
+	}
 
 }

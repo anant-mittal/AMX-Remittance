@@ -34,6 +34,7 @@ import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.model.AbstractUserModel;
@@ -86,19 +87,25 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	public ApiResponse<BeneCountryDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
+	// returning beneficiary country list with channeling
+	/**
+	 * 
+	 * 
+	 * @param beneCountryId
+	 *            - beneficiaryCountryId
+	 * @return beneficiaryCountry List
+	 */
+	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
 		try {
-			ResponseEntity<ApiResponse<BeneCountryDTO>> response;
-			MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+			ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
 			LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/benecountry/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(headers);
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/bene/country/" + sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BeneCountryDTO>>() {
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-
 			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;

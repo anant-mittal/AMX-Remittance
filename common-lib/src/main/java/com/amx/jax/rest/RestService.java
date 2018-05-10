@@ -8,9 +8,12 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -53,7 +56,10 @@ public class RestService {
 		HttpEntity<?> requestEntity;
 		HttpMethod method;
 		Map<String, String> uriParams = new HashMap<String, String>();
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		RestTemplate restTemplate;
+		HttpHeaders headers = new HttpHeaders();
+		boolean isForm = false;
 
 		public Ajax(RestTemplate restTemplate, String url) {
 			this.restTemplate = restTemplate;
@@ -75,10 +81,37 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax field(String paramKey, String paramValue) {
+			parameters.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax header(String paramKey, String paramValue) {
+			headers.add(paramKey, paramValue);
+			return this;
+		}
+
 		public Ajax post(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.POST;
 			this.requestEntity = requestEntity;
 			return this;
+		}
+
+		public <T> Ajax post(T body) {
+			return this.post(new HttpEntity<T>(body, headers));
+		}
+
+		public Ajax post() {
+			return this.post(new HttpEntity<Object>(null, headers));
+		}
+
+		public Ajax postForm() {
+			this.isForm = true;
+			return this.post(new HttpEntity<MultiValueMap<String, String>>(parameters, headers));
+		}
+
+		public <T> Ajax postJson(T body) {
+			return this.header("content-type", "application/json").post(body);
 		}
 
 		public Ajax get() {
@@ -94,6 +127,10 @@ public class RestService {
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+		}
+
+		public String asString() {
+			return this.as(String.class);
 		}
 
 	}

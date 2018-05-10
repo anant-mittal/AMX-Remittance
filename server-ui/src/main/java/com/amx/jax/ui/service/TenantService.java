@@ -6,13 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.def.CacheBoxEnabled;
 import com.amx.jax.scope.AbstractTenantService;
 import com.amx.jax.scope.TenantScoped;
 
 import groovy.transform.Synchronized;
 
+
 @Component
 @TenantScoped
+@CacheBoxEnabled
 public class TenantService extends AbstractTenantService {
 
 	@Autowired
@@ -45,5 +48,5 @@ public class TenantService extends AbstractTenantService {
 			this.loadOnlineCurrencies();
 		}
 		return onlineCurrencies;
-	}
+	}	
 }

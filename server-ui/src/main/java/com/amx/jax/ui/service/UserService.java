@@ -47,9 +47,9 @@ public class UserService {
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
-			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 		} else {
-			jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
 		}
 		return wrapper;
@@ -62,9 +62,9 @@ public class UserService {
 			wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
-			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 		} else {
-			jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
 		}
 		return wrapper;

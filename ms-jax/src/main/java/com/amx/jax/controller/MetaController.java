@@ -222,6 +222,12 @@ public class MetaController {
 		return currencyMasterService.getAllOnlineCurrencyDetails();
 	}
 	
+	// added by chetan 30/04/2018 list the country for currency.
+	@RequestMapping(value = "/exchange-rate-currency/list/", method = RequestMethod.GET)
+	public ApiResponse getAllExchangeRateCurrencyDetails() {
+		return currencyMasterService.getAllExchangeRateCurrencyList();
+	}
+	
 	
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
 	public ApiResponse getCurrencyDetailsByCountryId(@PathVariable("countryId") BigDecimal countryId){

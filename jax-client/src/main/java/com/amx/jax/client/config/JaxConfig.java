@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import com.amx.jax.client.JaxClientErrorHanlder;
@@ -40,6 +41,7 @@ public class JaxConfig {
 	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
+		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
 		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;

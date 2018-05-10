@@ -18,6 +18,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	
 	<dependencies>
 	</dependencies>
 
@@ -104,6 +105,22 @@
 							<version>1.0</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/../ext-jars/knet_test.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>bhr-benefit</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>bhr.com.benefit</groupId>
+							<artifactId>bhr-benefit</artifactId>
+							<version>1.0.shaded</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/bhr-benefit.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -235,9 +252,7 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-
 				</executions>
-
 			</plugin>
 		</plugins>
 	</build>
