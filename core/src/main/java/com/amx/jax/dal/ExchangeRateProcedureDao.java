@@ -78,7 +78,7 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
 				+ "        AND    ? BETWEEN B.FROM_AMOUNT AND B.TO_AMOUNT"
 				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
-				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    "  /** Added by Rabil for IMPS **/
+				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
