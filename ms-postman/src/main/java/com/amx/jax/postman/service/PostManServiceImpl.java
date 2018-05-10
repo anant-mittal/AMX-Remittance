@@ -19,6 +19,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -55,7 +56,12 @@ public class PostManServiceImpl implements PostManService {
 				file.setTemplate(email.getTemplate());
 				file.setModel(email.getModel());
 				file.setLang(email.getLang());
+
 				email.setMessage(this.processTemplate(file).getContent());
+
+				if (ArgUtil.isEmptyString(email.getSubject())) {
+					email.setSubject(file.getTitle());
+				}
 			}
 
 			if (email.getFiles() != null && email.getFiles().size() > 0) {

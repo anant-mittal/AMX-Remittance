@@ -17,6 +17,7 @@ import org.thymeleaf.exceptions.TemplateInputException;
 
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class FileService {
@@ -29,6 +30,9 @@ public class FileService {
 	@Autowired
 	private TemplateService templateService;
 
+	@Autowired
+	TemplateUtils templateUtils;
+
 	public File create(File file) {
 		if (file.getTemplate() != null) {
 			/**
@@ -38,6 +42,10 @@ public class FileService {
 				templateService.process(file);
 			} catch (TemplateInputException e) {
 				LOGGER.error("Template Process Exception", e);
+			}
+
+			if (ArgUtil.isEmptyString(file.getTitle())) {
+				file.setTitle(templateUtils.prop("template." + file.getTemplate() + ".title"));
 			}
 
 			if (file.getName() == null) {
