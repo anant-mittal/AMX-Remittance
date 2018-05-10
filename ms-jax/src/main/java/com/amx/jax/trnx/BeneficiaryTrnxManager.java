@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Validator;
 
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxChannel;

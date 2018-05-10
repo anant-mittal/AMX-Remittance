@@ -74,18 +74,27 @@ public class CustomerRegistrationOtpManager {
 
 	}
 
+	/**
+	 * generates otp
+	 */
 	public SendOtpModel generateOtpTokens(String userId) {
 		SendOtpModel sendOtpModel = new SendOtpModel();
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
+		if (otpData == null) {
+			logger.info("otp data not found in trnx, creating new one");
+			otpData = new OtpData();
+		}
 		String eOtp = util.createRandomPassword(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
+		sendOtpModel.seteOtp(eOtp);
 		otpData.seteOtp(eOtp);
 		otpData.setHashedeOtp(hashedeOtp);
 		otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
 
 		String mOtp = util.createRandomPassword(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, eOtp);
+		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
 		otpData.setmOtp(mOtp);
 		otpData.setHashedmOtp(hashedmOtp);
@@ -95,6 +104,9 @@ public class CustomerRegistrationOtpManager {
 		return sendOtpModel;
 	}
 
+	/**
+	 * Validates the otp
+	 */
 	public void validateOtp(String mOtp, String eOtp) {
 
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
@@ -118,6 +130,7 @@ public class CustomerRegistrationOtpManager {
 		}
 	}
 
+	/** resets attempts of otp */
 	private void resetAttempts(OtpData otpData) {
 		Date midnightToday = dateUtil.getMidnightToday();
 

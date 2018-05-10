@@ -2,6 +2,7 @@ package com.amx.jax.userservice.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -11,11 +12,15 @@ import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.service.CompanyService;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoyaltyPointRepository;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
@@ -28,27 +33,25 @@ public class CustomerDao {
 
 	@Autowired
 	private CustomerRepository repo;
-
 	@Autowired
 	private OnlineCustomerRepository onlineCustRepo;
-
 	@Autowired
 	private CustomerRepository customerRepo;
-	
 	@Autowired
 	private UserVerificationCheckListModelRepository checkListrepo;
-
 	@Autowired
 	private ViewOnlineCustomerCheckRepository onlineCustViewRepo;
-
 	@Autowired
 	private MetaData meta;
-
 	@Autowired
 	private CryptoUtil cryptoUtil;
-
 	@Autowired
 	private LoyaltyPointRepository loyaltyPointRepo;
+	@Autowired
+	private ApplicationCoreProcedureDao applicationCoreProcedureDao;
+	@Autowired
+	private CompanyService companyService;
+	
 
 	@Transactional
 	public Customer getCustomerByCivilId(String civilId) {
@@ -59,6 +62,10 @@ public class CustomerDao {
 			cust = customers.get(0);
 		}
 		return cust;
+	}
+	
+	public Customer getCustomerByIdentityInt(String identityInt) {
+		return repo.findByIdentityInt(identityInt);
 	}
 
 	@Transactional
@@ -140,7 +147,7 @@ public class CustomerDao {
 		return onlineCust;
 	}
 
-	private void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
+	public void setSecurityQuestions(List<SecurityQuestionModel> secQuestions, CustomerOnlineRegistration onlineCust) {
 		String userId = onlineCust.getUserName();
 		if (secQuestions.get(0).getAnswer() != null) {
 			onlineCust.setSecurityQuestion1(secQuestions.get(0).getQuestionSrNo());
@@ -238,6 +245,15 @@ public class CustomerDao {
 	
 	public void saveCustomer(Customer c) {
 		customerRepo.save(c);
+	}
+	
+	public BigDecimal generateCustomerReference() {
+		ViewCompanyDetails company = companyService.getCompanyDetail();
+		BigDecimal docFinYear = new BigDecimal(2001);
+
+		Map<String, Object> output = applicationCoreProcedureDao.callProcedureCustReferenceNumber(
+				company.getCompanyCode(), ConstantDocument.DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER, docFinYear);
+		return (BigDecimal) output.get("P_DOCNO");
 	}
 	
 }

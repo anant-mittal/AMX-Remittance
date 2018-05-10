@@ -36,6 +36,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -347,6 +348,9 @@ public class UserService extends AbstractUserService {
 		}
 
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
+		if (initRegistration != null && initRegistration) {
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
+		}
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
 
 		try {
@@ -482,12 +486,14 @@ public class UserService extends AbstractUserService {
 					JaxError.USER_NOT_REGISTERED);
 		}
 		CustomerOnlineRegistration onlineCustomer = onlineCustomerList.get(0);
+		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customer.getIdentityInt(), JaxApiFlow.LOGIN);
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
-		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+		
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());

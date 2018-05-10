@@ -1,5 +1,7 @@
 package com.amx.jax.userservice.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,15 +11,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
+import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
+import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 
@@ -35,18 +41,18 @@ public class CustomerRegistrationService extends AbstractService {
 
 	@Autowired
 	JaxUtil util;
-
 	@Autowired
 	CryptoUtil cryptoUtil;
-
 	@Autowired
 	CustomerRegistrationManager customerRegistrationManager;
-
 	@Autowired
 	CustomerPersonalDetailValidator customerPersonalDetailValidator;
-
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
+	@Autowired
+	CustomerPhishigImageValidator customerPhishigImageValidator;
+	@Autowired
+	CustomerCredentialValidator customerCredentialValidator;
 
 	/**
 	 * Sends otp initiating trnx
@@ -74,8 +80,47 @@ public class CustomerRegistrationService extends AbstractService {
 		return getBooleanResponse();
 	}
 
+	/**
+	 * Save the customer home address
+	 */
 	public ApiResponse saveCustomerHomeAddress(CustomerHomeAddress customerHomeAddress) {
 		customerRegistrationManager.saveHomeAddress(customerHomeAddress);
+		return getBooleanResponse();
+	}
+
+	/**
+	 * Saves the customer security question and answer
+	 */
+	public ApiResponse saveCustomerSecQuestions(List<SecurityQuestionModel> securityquestions) {
+		customerRegistrationManager.saveCustomerSecQuestions(securityquestions);
+		return getBooleanResponse();
+	}
+
+	/**
+	 * @param caption
+	 *            caption
+	 * @param imageUrl
+	 *            image url
+	 */
+	public ApiResponse savePhishingImage(String caption, String imageUrl) {
+		CustomerRegistrationTrnxModel model = customerRegistrationManager.setPhishingImage(caption, imageUrl);
+		customerPhishigImageValidator.validate(model, null);
+		customerRegistrationManager.save(model);
+		return getBooleanResponse();
+	}
+
+	/**
+	 * @param -
+	 *            customerCredential user id and password of cusotmer
+	 *            <p>
+	 * 			commit trnx
+	 *            </p>
+	 */
+	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
+		customerCredentialValidator.validate(customerCredential, null);
+		CustomerRegistrationTrnxModel model = customerRegistrationManager.saveLoginDetail(customerCredential);
+		customerRegistrationManager.save(model);
+		customerRegistrationManager.commit();
 		return getBooleanResponse();
 	}
 }

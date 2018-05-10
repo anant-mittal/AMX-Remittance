@@ -1,5 +1,6 @@
 package com.amx.amxlib.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
@@ -8,7 +9,12 @@ import javax.validation.constraints.Size;
 import org.springframework.format.annotation.NumberFormat;
 
 /** THis model represents customer's home address */
-public class CustomerHomeAddress {
+public class CustomerHomeAddress implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	@NotNull
 	private BigDecimal countryId;
