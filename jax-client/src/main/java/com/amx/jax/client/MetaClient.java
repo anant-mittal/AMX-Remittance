@@ -20,6 +20,7 @@ import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
@@ -768,5 +769,31 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} catch (Exception e) {
 			throw new JaxSystemError(e);
 		}
+	}
+	
+	/**
+	 * 
+	 * @return To fetch list of Branch Details
+	 * 
+	 */
+	
+	public ApiResponse<BranchDetailDTO> getAllBranchDetail() {
+		ResponseEntity<ApiResponse<BranchDetailDTO>> response;
+		try {
+			LOGGER.info("Get all the Branch Details ");
+
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/branchdetail/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<BranchDetailDTO>>() {
+					});
+
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllBranchDetail : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+		return response.getBody();
 	}
 }

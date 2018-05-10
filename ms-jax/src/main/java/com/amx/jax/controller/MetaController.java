@@ -22,6 +22,7 @@ import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
+import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
@@ -121,6 +122,9 @@ public class MetaController {
 	
 	@Autowired
 	PrefixService prefixService;
+	
+	@Autowired
+	BranchDetailService branchDetailService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -332,5 +336,10 @@ public class MetaController {
 	@RequestMapping(value = "/prefix/", method = RequestMethod.GET)
 	public ApiResponse getPrefixList() {
 		return prefixService.getPrefixListResponse();
+	}
+	
+	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
+	public ApiResponse getBranchDetail() {
+		return branchDetailService.getBracnchDetailResponse();
 	}
 }

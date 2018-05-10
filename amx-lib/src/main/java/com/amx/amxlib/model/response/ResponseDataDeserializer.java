@@ -11,6 +11,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
@@ -226,6 +227,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PrefixDTO>>() {
 			});
 			break;	
+		case "branch-detail":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
+			});
+			break;
 			
 	}
 		responseData.setValues(models);

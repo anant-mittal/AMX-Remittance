@@ -15,6 +15,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
@@ -164,11 +165,20 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void testGetAllPrefix() {
 		setDefaults();
 		ApiResponse<PrefixDTO> response = null;
 		response = metaclient.getAllPrefix();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	@Test
+	public void testGetAllBranchDetail() {
+		setDefaults();
+		ApiResponse<BranchDetailDTO> response = null;
+		response = metaclient.getAllBranchDetail();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
 	}
