@@ -53,8 +53,11 @@ public class PayGController {
 	@Autowired
 	private AuditService auditService;
 
-	@Value("${app.url}")
-	String redirectURL;
+	@Value("${app.url.kwt}")
+	String kwtRedirectURL;
+	
+	@Value("${app.url.bhr}")
+	String bhrRedirectURL;
 
 	@Autowired
 	PayGConfig payGConfig;
@@ -65,9 +68,13 @@ public class PayGController {
 			@RequestParam(required = false) String callbackd, Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
-
+        String appRedirectUrl=null;
+        
 		if (tnt.equals(Tenant.BHR)) {
 			pg = "BENEFIT";
+			appRedirectUrl = bhrRedirectURL;
+		}else if (tnt.equals(Tenant.KWT)) {
+			appRedirectUrl = kwtRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -93,7 +100,7 @@ public class PayGController {
 		try {
 			payGClient.initialize(payGParams);
 		} catch (RuntimeException e) {
-			model.addAttribute("REDIRECTURL", redirectURL);
+			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			return "thymeleaf/pg_error";
 		}
 

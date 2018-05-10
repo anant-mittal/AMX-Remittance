@@ -8,10 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 
 public interface IBeneficiaryMasterDao extends JpaRepository<BeneficaryMaster, Serializable>{
 
 	@Query("select bm from BeneficaryMaster bm where bm.beneficaryMasterSeqId=:beneMasterSeqId and bm.isActive='Y'")	
 	public List<BeneficaryMaster> getBeneficiaryByBeneMasterId(@Param("beneMasterSeqId") BigDecimal beneMasterSeqId);
+	
+	public BeneficaryMaster findByBeneficaryMasterSeqId(BigDecimal beneficaryMasterSeqId);
 }
