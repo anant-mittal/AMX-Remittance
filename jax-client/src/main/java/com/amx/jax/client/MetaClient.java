@@ -238,7 +238,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	/**
 	 * Gives terms and conditions based on metadata like lang id etc
-	 * */
+	 */
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition() {
 		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response;
 		try {
@@ -393,18 +393,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
-	
-	
+
 	/**
-	 * @param beneficiaryCountryId - Beneficiary Country Id
+	 * @param beneficiaryCountryId
+	 *            - Beneficiary Country Id
 	 * @return List of currency master for passed beneficiary currency
-	 * */
+	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId", beneficiaryCountryId);
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId",
+					beneficiaryCountryId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
@@ -418,7 +419,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
@@ -437,7 +438,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
-	
+
 	// added by chetan 30/04/2018 list the country for currency.
 	public ApiResponse<CurrencyMasterDTO> getAllExchangeRateCurrencyList() {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
@@ -457,8 +458,6 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 		return response.getBody();
 	}
-	
-	
 
 	public ApiResponse<CurrencyMasterDTO> getCurrencyByCountryId(BigDecimal countryId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
@@ -541,7 +540,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + languageId +"/"+stateId+"/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + languageId + "/" + stateId + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
@@ -563,7 +562,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/"+ languageId +"/"+ countryId +"/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + languageId + "/" + countryId + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
@@ -702,11 +701,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catc
 		return response.getBody();
 	}
-	
+
 	/**
 	 * <p>
-	 * Gives the list of available service groups like bank, cash ,dd etc
-	 * etc
+	 * Gives the list of available service groups like bank, cash ,dd etc etc
 	 * </p>
 	 * 
 	 */
@@ -728,11 +726,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catc
 		return response.getBody();
 	}
-	
 
 	/**
 	 * <p>
-	 * Gives jax meta parameters like new newBeneTransactionTimeLimit 
+	 * Gives jax meta parameters like new newBeneTransactionTimeLimit
 	 * </p>
 	 * 
 	 */
@@ -753,7 +750,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catc
 		return response.getBody();
 	}
-	
+
 	/**
 	 * 
 	 * @return To fetch list of PrefixDTO use getResults method of ApiResponse
@@ -761,22 +758,15 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 */
 
 	public ApiResponse<PrefixDTO> getAllPrefix() {
-		ResponseEntity<ApiResponse<PrefixDTO>> response;
 		try {
-			LOGGER.info("Get all the Prefix ");
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/prefix/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
+			return restService.ajax(this.getBaseUrl() + META_API_ENDPOINT + "/prefix/")
+					.post(new HttpEntity<Object>(getHeader()))
+					.as(new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in getAllPrefix : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-		return response.getBody();
+			throw new JaxSystemError(e);
+		}
 	}
 }
