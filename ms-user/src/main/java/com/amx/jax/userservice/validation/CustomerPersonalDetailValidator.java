@@ -47,7 +47,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 	protected void validateMobileNumberLength(BigDecimal countryId, String mobile) {
 
 		ValidationClient validationClient = validationClients.getValidationClient(countryId.toString());
-		if (!validationClient.isValidMobileNumber(mobile)) {
+		if (validationClient != null && !validationClient.isValidMobileNumber(mobile)) {
 			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
 		}
 	}

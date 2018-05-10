@@ -951,4 +951,42 @@ public class ApplicationProcedureDao {
 		return output;
 	}
 
+	public Map<String, Object> callProcedureCustReferenceNumber(BigDecimal companyCode, BigDecimal documentCode,
+			BigDecimal docFinYear, String branchId) {
+
+		LOGGER.info("!!!!!!callProcedureCustReferenceNumber UPDNXT" + companyCode);
+		Map<String, Object> output = null;
+
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlOutParameter("P_DOCNO", Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC) // 5
+			);
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = " { call UPDNXT (?, ?, ?, ?, ?) } ";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, companyCode);
+					cs.setBigDecimal(2, documentCode);
+					cs.setBigDecimal(3, new BigDecimal(2001));
+					cs.registerOutParameter(4, java.sql.Types.NUMERIC);
+					if (companyCode != null && companyCode.equals((new BigDecimal(20)))) {
+						cs.setBigDecimal(5, new BigDecimal(1));
+					} else if (companyCode != null && companyCode.equals((new BigDecimal(21)))) {
+						cs.setBigDecimal(5, new BigDecimal(99));
+					}
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+			LOGGER.info("UPDNXT Out put Parameters :" + output.toString());
+		} catch (DataAccessException e) {
+			LOGGER.info(OUT_PARAMETERS, e);
+		}
+		return output;
+	}
 }

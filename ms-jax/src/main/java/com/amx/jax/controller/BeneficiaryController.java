@@ -38,7 +38,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
-import com.amx.jax.validation.BenePersonalDetailValidator;
 
 /**
  * 

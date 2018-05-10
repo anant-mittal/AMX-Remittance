@@ -28,6 +28,7 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
@@ -54,18 +55,22 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 	@Test
 	public void testSendOtp() throws URISyntaxException, IOException {
 		setDefaults();
-		ApiResponse<SendOtpModel> response = null;
+		ApiResponse<BooleanResponse> response = null;
 		String json = new String(
 				Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/person-detail.json").toURI())));
 		CustomerPersonalDetail personalDetail = JsonUtil.fromJson(json, CustomerPersonalDetail.class);
-		response = client.sendOtp(personalDetail);
-		// client.validateOtp("1234", "1234");
+		ApiResponse<SendOtpModel> sendOtpresponse = client.sendOtp(personalDetail);
+		client.validateOtp(sendOtpresponse.getResult().getmOtp(), sendOtpresponse.getResult().geteOtp());
 		json = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/home-addr.json").toURI())));
 		CustomerHomeAddress customerHomeAddress = JsonUtil.fromJson(json, CustomerHomeAddress.class);
 		client.saveHomeAddress(customerHomeAddress);
 		json = new String(Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/sec-quest.json").toURI())));
 		List<SecurityQuestionModel> securityquestions = JsonUtil.<SecurityQuestionModel>getListFromJsonString(json);
 		client.saveSecurityQuestions(securityquestions);
+		client.savePhishiingImage("test", "5");
+		CustomerCredential customerCredential = new CustomerCredential(personalDetail.getIdentityInt(), "Amx@1234");
+		response = client.saveLoginDetail(customerCredential);
+
 		trnxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());

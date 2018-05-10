@@ -25,6 +25,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -100,7 +101,7 @@ public class UserValidationService {
 
 	@Autowired
 	private CustomerVerificationService customerVerificationService;
-	
+
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
 
@@ -112,7 +113,7 @@ public class UserValidationService {
 			throw new GlobalException("Username already taken", JaxError.USERNAME_ALREADY_EXISTS);
 		}
 	}
-	
+
 	public void validateAllLoginId(String loginId) {
 		List<CustomerOnlineRegistration> existingCust = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(loginId);
 		if (existingCust != null && !existingCust.isEmpty()) {
@@ -175,7 +176,7 @@ public class UserValidationService {
 		if (tenantContext.get() != null) {
 			tenantContext.get().validateCustIdProofs(custId);
 			return;
-		} 
+		}
 		List<CustomerIdProof> idProofs = idproofDao.getCustomerIdProofs(custId);
 		for (CustomerIdProof idProof : idProofs) {
 			validateIdProof(idProof);
@@ -421,12 +422,12 @@ public class UserValidationService {
 	}
 
 	public void validateOtpFlow(CustomerModel model) {
-		if(model.isRegistrationFlow()) {
+		if (model.isRegistrationFlow()) {
 			return;
 		}
 		BigDecimal custId = meta.getCustomerId();
 		Customer customer = custDao.getCustById(custId);
-		
+
 		boolean isMOtpFlowRequired = isMOtpFlowRequired(model);
 		boolean isEOtpFlowRequired = isEOtpFlowRequired(model, customer);
 
@@ -547,6 +548,29 @@ public class UserValidationService {
 		}
 		if (initRegistration == null && !"Y".equals(onlineCustReg.getStatus())) {
 			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
+		}
+	}
+
+	/**
+	 * validates inactive or not registered customers status
+	 */
+	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
+		if (customer == null) {
+			throw new GlobalException("Customer not registered in branch", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+		}
+		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
+			throw new GlobalException("Customer not active in branch, go to branch", JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+		}
+		if (apiFlow == JaxApiFlow.SIGNUP_ONLINE) {
+			return;
+		}
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
+		}
+		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
+			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
 		}
 	}
 
