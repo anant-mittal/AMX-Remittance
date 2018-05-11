@@ -92,6 +92,10 @@ public class ReportManagerService extends AbstractService{
 	/**
 	 *  For HTML Template 
 	 */
+	/**
+	 * @param transactionHistroyDTO
+	 * @return
+	 */
 	public ApiResponse generatePersonalRemittanceReceiptReportDetails(TransactionHistroyDTO transactionHistroyDTO){
 		
 		ApiResponse response = null;
@@ -236,10 +240,14 @@ public class ReportManagerService extends AbstractService{
 					obj.setLoyalityPointExpiring(prLtyStr2);
 				}
 
-
-				if(!prInsStr1.trim().equals("") && !prInsStrAr1.trim().equals("")){
+				/**
+				 * @author Chetan Pawar
+				 * comment if condition because of code duplication. 
+				 * 11-05-2018
+				 */
+				/*if(!prInsStr1.trim().equals("") && !prInsStrAr1.trim().equals("")){
 					obj.setInsurence1(prInsStr1+"  \n"+prInsStrAr1);
-				}else if(!prInsStr1.trim().equals("")){
+				}else*/ if(!prInsStr1.trim().equals("")){
 					obj.setInsurence1(prInsStr1);
 				}else if(!prInsStrAr1.trim().equals("")){
 					obj.setInsurence1(prInsStrAr1);
