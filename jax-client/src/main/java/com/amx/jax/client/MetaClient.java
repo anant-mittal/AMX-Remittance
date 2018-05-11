@@ -50,6 +50,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
+	
+	@Autowired
+	private BeneClient beneClient;
 
 	@Autowired
 	RestService restService;
@@ -98,26 +101,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	// CountryMasterDTO
-
+	/**
+	 * @author Chetan Pawar
+	 * @return duplicate method call through beneClient 11-05-2018	 
+	 * countryList
+	 */
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
-		try {
-			LOGGER.info("Get all the applciation country ");
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
-					});
-
-		} catch (AbstractException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getAllCountry : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-		return response.getBody();
-	}
+		return beneClient.getBeneficiaryCountryList();
+		}
 
 	@Deprecated
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
