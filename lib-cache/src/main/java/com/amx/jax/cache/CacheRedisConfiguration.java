@@ -1,20 +1,27 @@
 package com.amx.jax.cache;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 import org.redisson.config.SingleServerConfig;
+import org.redisson.spring.cache.CacheConfig;
+import org.redisson.spring.cache.RedissonSpringCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.amx.jax.AppConstants;
 
 @Configuration
 // @EnableRedissonHttpSession
@@ -68,4 +75,13 @@ public class CacheRedisConfiguration
 		config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);
 	}
+
+	@Bean
+	CacheManager cacheManager(RedissonClient redissonClient) {
+		Map<String, CacheConfig> config = new HashMap<String, CacheConfig>();
+		// create "testMap" cache with ttl = 24 minutes and maxIdleTime = 12 minutes
+		config.put(AppConstants.CACHE_NAME_HTTP, new CacheConfig(24 * 60 * 1000, 12 * 60 * 1000));
+		return new RedissonSpringCacheManager(redissonClient, config);
+	}
+
 }

@@ -757,11 +757,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @return To fetch list of PrefixDTO use getResults method of ApiResponse
 	 * 
 	 */
-
 	public ApiResponse<PrefixDTO> getAllPrefix() {
 		try {
-			return restService.ajax(this.getBaseUrl() + META_API_ENDPOINT + "/prefix/")
-					.post(new HttpEntity<Object>(getHeader()))
+			return restService.ajax(this.getBaseUrl() + META_API_ENDPOINT + "/prefix/").header(getHeader()).get()
 					.as(new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
 					});
 		} catch (AbstractException ae) {

@@ -9,6 +9,7 @@ public class AppConstants extends Constants {
 		public static final String PHONE = "^[0-9]{15}$";
 		public static final String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 	}
+
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
@@ -17,4 +18,6 @@ public class AppConstants extends Constants {
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";
 	public static final String SESSIONID = "JSESSIONID";
+	public static final String CACHE_NAME_HTTP = "http";
+
 }

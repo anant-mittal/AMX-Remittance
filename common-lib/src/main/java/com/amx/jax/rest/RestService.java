@@ -91,6 +91,11 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax header(HttpHeaders header) {
+			this.headers = header;
+			return this;
+		}
+
 		public Ajax post(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.POST;
 			this.requestEntity = requestEntity;
@@ -114,9 +119,14 @@ public class RestService {
 			return this.header("content-type", "application/json").post(body);
 		}
 
-		public Ajax get() {
+		public Ajax get(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.GET;
+			this.requestEntity = requestEntity;
 			return this;
+		}
+
+		public Ajax get() {
+			return this.get(new HttpEntity<Object>(null, headers));
 		}
 
 		public <T> T as(Class<T> responseType) {
