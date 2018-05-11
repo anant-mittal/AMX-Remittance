@@ -26,8 +26,8 @@ public class BranchDetailDao {
 	 * @return get branch detail
 	 */
 	public List<BranchDetailModel> getBranchDetailList(BigDecimal countryId) {
-		List<BranchDetailModel> branchDetail = jdbcTemplate.query("select BRANCH_NAME,  A.AREADESC, TELEPHONE_NUMBER from EX_COUNTRY_BRANCH B INNER join v_ex_area A on B.AREA_CODE=A.SEQ_ID  where B.isactive='Y' and\r\n" + 
-				"B.COUNTRY_ID=?", new BranchDetailRowMapper(), countryId);
+		List<BranchDetailModel> branchDetail = jdbcTemplate.query("SELECT BRANCH_NAME, AREA, TELEPHONE_NUMBER, ADDRESS from EX_COUNTRY_BRANCH  WHERE ISACTIVE='Y' AND\r\n" + 
+				"COUNTRY_ID=?", new BranchDetailRowMapper(), countryId);
 		
 		return branchDetail;
 	}
