@@ -100,13 +100,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	private BeneficaryAccount commitBeneAccount(BeneficiaryTrnxModel beneficiaryTrnxModel,
 			BigDecimal beneficaryMasterId) {
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
-		
-		// TODO : check for existing account, logic in BeneficiaryValidationService checkduplicate bene
+
+		// TODO : check for existing account, logic in BeneficiaryValidationService
+		// checkduplicate bene
 		// if not exist then create new
 		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
 
-		if (beneficaryAccount==null) {
-			
+		if (beneficaryAccount == null) {
+
 			beneficaryAccount = new BeneficaryAccount();
 			beneficaryAccount.setBankAccountNumber(accountDetails.getBankAccountNumber());
 			beneficaryAccount.setBankId(accountDetails.getBankId());
@@ -128,13 +129,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 				beneficaryAccount.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), bankBranchId));
 				beneficaryAccount.setBankBranchId(bankBranchId);
 			} else {
-				beneficaryAccount
-						.setBankBranchCode(getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
+				beneficaryAccount.setBankBranchCode(
+						getBankBranchCode(accountDetails.getBankId(), accountDetails.getBankBranchId()));
 				beneficaryAccount.setBankBranchId(accountDetails.getBankBranchId());
 			}
 			beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
 
-			beneficiaryAccountDao.save(beneficaryAccount);			
+			beneficiaryAccountDao.save(beneficaryAccount);
 		}
 
 		return beneficaryAccount;
@@ -146,7 +147,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	private void commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
 			BigDecimal beneficaryAccountId) {
-		// TODO: set all 10 bene names in bene relationship 
+		// TODO: set all 10 bene names in bene relationship
 		BenePersonalDetailModel beneDetaisl = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneficaryRelationship beneficaryRelationship = new BeneficaryRelationship();
 		beneficaryRelationship.setApplicationCountry(metaData.getCountryId());
@@ -158,7 +159,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setIsActive(ConstantDocument.Yes);
 		beneficaryRelationship.setOrsSatus(BigDecimal.ONE); // for online
 		beneficaryRelationship.setRelationsId(beneDetaisl.getRelationsId());
-		
+
 		beneficaryRelationship.setFirstName(beneDetaisl.getFirstName());
 		beneficaryRelationship.setSecondName(beneDetaisl.getSecondName());
 		beneficaryRelationship.setThirdName(beneDetaisl.getThirdName());
@@ -169,7 +170,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setLocalThirdName(beneDetaisl.getLocalThirdName());
 		beneficaryRelationship.setLocalFourthName(beneDetaisl.getLocalFourthName());
 		beneficaryRelationship.setLocalFifthName(beneDetaisl.getLocalFifthName());
-		
+
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 
 	}
@@ -196,36 +197,39 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
 		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
 		BeneficaryMaster beneMaster = null;
-		if(beneficaryAccount != null) {
-			beneMaster = beneficaryMasterRepository.findByBeneficaryMasterSeqId(beneficaryAccount.getBeneficaryMasterId());
+		if (beneficaryAccount != null) {
+			beneMaster = beneficaryMasterRepository
+					.findByBeneficaryMasterSeqId(beneficaryAccount.getBeneficaryMasterId());
 		}
-		
-		if (beneMaster==null) {
-	
-		// TODO: check if alreay exisitng benemaster linked to beneaccount table if null then create new one
-		beneMaster = new BeneficaryMaster();
-		beneMaster.setApplicationCountryId(metaData.getCountryId());
-		BeneficaryStatus beneStatus = getbeneStatus();
-		beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
-		beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
-		beneMaster.setCreatedBy(getCreatedBy());
-		beneMaster.setCreatedDate(new Date());
-		// names
-		setNames(beneMaster, benePersonalDetails);
-		beneMaster.setFsCityMaster(benePersonalDetails.getCityId());
-		beneMaster.setFsCountryMaster(benePersonalDetails.getCountryId());
-		beneMaster.setFsDistrictMaster(benePersonalDetails.getDistrictId());
-		String districtName = metaService.getDistrictMasterById(benePersonalDetails.getDistrictId()).getDistrictDesc();
-		beneMaster.setDistrictName(districtName);
-		beneMaster.setFsStateMaster(benePersonalDetails.getStateId());
-		String stateName = metaService.getStateMasterById(benePersonalDetails.getStateId()).getStateName();
-		beneMaster.setStateName(stateName);
-		beneMaster.setIsActive(ConstantDocument.Yes);
-		beneMaster.setNationality(benePersonalDetails.getNationality());
-		
-		 beneficaryMasterRepository.save(beneMaster);
+
+		if (beneMaster == null) {
+
+			// TODO: check if alreay exisitng benemaster linked to beneaccount table if null
+			// then create new one
+			beneMaster = new BeneficaryMaster();
+			beneMaster.setApplicationCountryId(metaData.getCountryId());
+			BeneficaryStatus beneStatus = getbeneStatus();
+			beneMaster.setBeneficaryStatus(beneStatus.getBeneficaryStatusId());
+			beneMaster.setBeneficaryStatusName(beneStatus.getBeneficaryStatusName());
+			beneMaster.setCreatedBy(getCreatedBy());
+			beneMaster.setCreatedDate(new Date());
+			// names
+			setNames(beneMaster, benePersonalDetails);
+			beneMaster.setFsCityMaster(benePersonalDetails.getCityId());
+			beneMaster.setFsCountryMaster(benePersonalDetails.getCountryId());
+			beneMaster.setFsDistrictMaster(benePersonalDetails.getDistrictId());
+			String districtName = metaService.getDistrictMasterById(benePersonalDetails.getDistrictId())
+					.getDistrictDesc();
+			beneMaster.setDistrictName(districtName);
+			beneMaster.setFsStateMaster(benePersonalDetails.getStateId());
+			String stateName = metaService.getStateMasterById(benePersonalDetails.getStateId()).getStateName();
+			beneMaster.setStateName(stateName);
+			beneMaster.setIsActive(ConstantDocument.Yes);
+			beneMaster.setNationality(benePersonalDetails.getNationality());
+
+			beneficaryMasterRepository.save(beneMaster);
 		}
-		
+
 		return beneMaster;
 	}
 
@@ -279,8 +283,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	public ApiResponse savePersonalDetailTrnx(BenePersonalDetailModel benePersonalDetailModel) {
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
 				"benePersonalDetailModel");
-		
 		BeneficiaryTrnxModel trnxModel = getWithInit();
+		// TODO add cash check here
+		boolean isCash = true;
+		if (isCash) {
+			beneficiaryValidationService.validateDuplicateCashBeneficiary(trnxModel);
+		}
 		trnxModel.setBenePersonalDetailModel(benePersonalDetailModel);
 		benePersonalDetailValidator.validate(trnxModel, errors);
 		save(trnxModel);
