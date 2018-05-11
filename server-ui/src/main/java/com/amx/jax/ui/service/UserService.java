@@ -50,6 +50,7 @@ public class UserService {
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
 		}
 		return wrapper;
@@ -65,6 +66,7 @@ public class UserService {
 		} else {
 			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
 			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
 		}
 		return wrapper;
