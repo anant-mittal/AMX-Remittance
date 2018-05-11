@@ -1,5 +1,6 @@
 package com.amx.jax.services;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -59,8 +60,12 @@ public class BeneficiaryValidationService {
 	BeneficiaryPersonalDetailPredicateCreator beneficiaryPersonalDetailPredicateCreator;
 
 	public void validateBeneAccount(BeneAccountModel beneAccountModel) {
-		validateBankAccountNumber(beneAccountModel);
-		validateDuplicateBankAccount(beneAccountModel);
+
+		// validate only for BANK channel and not for CASH channel
+		if (! BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+			validateBankAccountNumber(beneAccountModel);
+			validateDuplicateBankAccount(beneAccountModel);
+		}
 	}
 
 	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {

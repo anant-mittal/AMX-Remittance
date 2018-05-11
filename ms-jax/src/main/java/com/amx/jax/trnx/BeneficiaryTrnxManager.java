@@ -284,9 +284,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
 				"benePersonalDetailModel");
 		BeneficiaryTrnxModel trnxModel = getWithInit();
-		// TODO add cash check here
-		boolean isCash = true;
-		if (isCash) {
+
+		// check for CASH channel only
+		if (trnxModel.getBeneAccountModel()!= null && 
+			BigDecimal.ONE.equals(trnxModel.getBeneAccountModel().getServiceGroupId())) {
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(trnxModel);
 		}
 		trnxModel.setBenePersonalDetailModel(benePersonalDetailModel);
