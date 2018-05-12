@@ -13,6 +13,7 @@ public class AppConstants extends Constants {
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
+	public static final String USER_ID_XKEY = "x-user-id";
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String APP_DETAILS = "app";

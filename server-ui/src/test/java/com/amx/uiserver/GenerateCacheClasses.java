@@ -10,7 +10,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.def.CacheBoxEnabled;
+import com.amx.jax.def.CacheForTenant;
 import com.amx.utils.FileUtil;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
@@ -49,7 +49,7 @@ public class GenerateCacheClasses { // Noncompliant
 		launcher.buildModel();
 		CtModel model = launcher.getModel();
 		for (CtType<?> string : model.getAllTypes()) {
-			CacheBoxEnabled isThere = string.getActualClass().getAnnotation(CacheBoxEnabled.class);
+			CacheForTenant isThere = string.getActualClass().getAnnotation(CacheForTenant.class);
 			if (isThere != null) {
 				System.out.println("===" + string.getActualClass().getSimpleName());
 				createClass(string.getActualClass());

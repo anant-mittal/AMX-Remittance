@@ -26,7 +26,7 @@ import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
-import com.amx.jax.def.CacheBoxEnabled;
+import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantService;
@@ -67,21 +67,21 @@ public class MetaController {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
-	@CacheBoxEnabled
+	@CacheForTenant
 	@RequestMapping(value = { "/pub/meta/name_prefix/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<PrefixDTO>> getNamePrefixList() {
 		return new ResponseWrapper<List<PrefixDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllPrefix().getResults());
 	}
 
-	@CacheBoxEnabled
+	@CacheForTenant
 	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllCountry().getResults());
 	}
 
-	@CacheBoxEnabled
+	@CacheForTenant
 	@RequestMapping(value = { "/api/meta/state/list", "/pub/meta/state/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewStateDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<ViewStateDto>>(

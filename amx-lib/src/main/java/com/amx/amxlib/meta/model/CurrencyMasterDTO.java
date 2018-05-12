@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CurrencyMasterDTO extends AbstractModel {
 
+	private static final long serialVersionUID = -8611903515046787912L;
 	private BigDecimal currencyId;
 	private String currencyCode;
 	private String currencyName;
@@ -14,7 +15,7 @@ public class CurrencyMasterDTO extends AbstractModel {
 
 	@JsonProperty("decimalNumber")
 	private BigDecimal decinalNumber;
-	
+
 	private BigDecimal countryId;
 
 	@Override

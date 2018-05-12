@@ -10,10 +10,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.def.CacheForUser;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.UserSession;
-
-import groovy.transform.Synchronized;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -32,14 +31,6 @@ public class UserBean implements Serializable {
 	CurrencyMasterDTO defaultForCurrency;
 
 	public CurrencyMasterDTO getDefaultForCurrency() {
-		if (defaultForCurrency == null) {
-			this.loadDefaultForCurrency();
-		}
-		return defaultForCurrency;
-	}
-
-	@Synchronized
-	public void loadDefaultForCurrency() {
 		BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
 		if (nationalityId == null) {
 			defaultForCurrency = tenantContext.getOnlineCurrencies().get(0);
@@ -51,6 +42,21 @@ public class UserBean implements Serializable {
 				}
 			}
 		}
+		return defaultForCurrency;
+	}
+
+	@CacheForUser
+	public CurrencyMasterDTO getDefaultForCurrency(BigDecimal forCur) {
+		if (forCur == null) {
+			return this.getDefaultForCurrency();
+		} else {
+			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
+				if (currency.getCurrencyId().equals(forCur)) {
+					return currency;
+				}
+			}
+		}
+		return null;
 	}
 
 }

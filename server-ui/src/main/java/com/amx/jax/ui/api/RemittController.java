@@ -138,8 +138,8 @@ public class RemittController {
 		// System.out.println(JsonUtil.toJson(wrapper));
 		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
-			file = postManService.processTemplate(
-					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+			file = postManService.processTemplate(duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT,
+					wrapper, File.Type.PDF);
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(file);
@@ -183,20 +183,9 @@ public class RemittController {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
-		CurrencyMasterDTO forCurcy = null;
+		CurrencyMasterDTO forCurcy = userBean.getDefaultForCurrency(forCur);
 
 		wrapper.getData().setDomCur(domCur);
-
-		if (forCur == null) {
-			forCurcy = userBean.getDefaultForCurrency();
-		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
-				if (currency.getCurrencyId().equals(forCur)) {
-					forCurcy = currency;
-					break;
-				}
-			}
-		}
 
 		if (forCurcy != null) {
 			wrapper.getData().setForCur(forCurcy);

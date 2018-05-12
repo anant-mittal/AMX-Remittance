@@ -79,8 +79,8 @@ public class CacheRedisConfiguration
 	@Bean
 	CacheManager cacheManager(RedissonClient redissonClient) {
 		Map<String, CacheConfig> config = new HashMap<String, CacheConfig>();
-		// create "testMap" cache with ttl = 24 minutes and maxIdleTime = 12 minutes
-		config.put(AppConstants.CACHE_NAME_HTTP, new CacheConfig(24 * 60 * 1000, 12 * 60 * 1000));
+		// create "testMap" cache with ttl = 10 minutes and maxIdleTime = 5 minutes
+		config.put(AppConstants.CACHE_NAME_HTTP, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
 		return new RedissonSpringCacheManager(redissonClient, config);
 	}
 

@@ -6,47 +6,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.jax.def.CacheBoxEnabled;
-import com.amx.jax.scope.AbstractTenantService;
+import com.amx.jax.def.CacheForTenant;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
-
-import groovy.transform.Synchronized;
-
 
 @Component
 @TenantScoped
-@CacheBoxEnabled
-public class TenantService extends AbstractTenantService {
+public class TenantService {
 
 	@Autowired
 	private JaxService jaxService;
 
-	CurrencyMasterDTO domCurrency = null;
-
-	List<CurrencyMasterDTO> onlineCurrencies = null;
-
-	@Synchronized
-	public void loadDomCurrency() {
-		this.domCurrency = jaxService.setDefaults().getMetaClient().getCurrencyByCountryId(getTenant().getBDCode())
-				.getResult();
-	}
-
+	@CacheForTenant
 	public CurrencyMasterDTO getDomCurrency() {
-		if (domCurrency == null) {
-			this.loadDomCurrency();
-		}
-		return domCurrency;
+		return jaxService.setDefaults().getMetaClient()
+				.getCurrencyByCountryId(TenantContextHolder.currentSite().getBDCode()).getResult();
 	}
 
-	@Synchronized
-	public void loadOnlineCurrencies() {
-		this.onlineCurrencies = jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
-	}
-
+	@CacheForTenant
 	public List<CurrencyMasterDTO> getOnlineCurrencies() {
-		if (onlineCurrencies == null) {
-			this.loadOnlineCurrencies();
-		}
-		return onlineCurrencies;
-	}	
+		return jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
+	}
+
 }

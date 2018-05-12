@@ -5,17 +5,15 @@ import java.lang.reflect.Method;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppContextUtil;
-
 @Component
-public class TenantMethodKey implements KeyGenerator {
+public class CacheForThisKey implements KeyGenerator {
 
-	public static final String KEY = "tenantMethodKey";
+	public static final String KEY = "cacheForThisKey";
 
 	@Override
 	public Object generate(Object target, Method method, Object... params) {
 		StringBuilder b = new StringBuilder(
-				AppContextUtil.getTenant() + "#" + target.getClass().getName() + "#" + method.getName());
+				target.getClass().getName() + "#" + String.valueOf(target.hashCode()) + "#" + method.getName());
 		if (params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				b.append("#" + params[i]);

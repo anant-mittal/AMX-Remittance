@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
@@ -49,6 +50,7 @@ public class RequestLogFilter implements Filter {
 			HttpServletRequest req = ((HttpServletRequest) request);
 			HttpServletResponse resp = ((HttpServletResponse) response);
 
+			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
 			if (StringUtils.isEmpty(siteId)) {
 				siteId = ArgUtil.parseAsString(request.getParameter(TenantContextHolder.TENANT));
@@ -56,22 +58,32 @@ public class RequestLogFilter implements Filter {
 					siteId = Urly.getSubDomainName(request.getServerName());
 				}
 			}
-
 			if (!StringUtils.isEmpty(siteId)) {
 				TenantContextHolder.setCurrent(siteId, null);
 			}
-
 			Tenant tnt = TenantContextHolder.currentSite();
 
+			// Tranx Id Tracking
 			String tranxId = req.getHeader(AppConstants.TRANX_ID_XKEY);
 			if (StringUtils.isEmpty(tranxId)) {
 				tranxId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRANX_ID_XKEY));
 			}
 
 			if (!StringUtils.isEmpty(tranxId)) {
-				ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
+				AppContextUtil.setTranxId(tranxId);
 			}
 
+			// User Id Tracking
+			String userId = req.getHeader(AppConstants.USER_ID_XKEY);
+			if (StringUtils.isEmpty(userId)) {
+				userId = ArgUtil.parseAsString(req.getParameter(AppConstants.USER_ID_XKEY));
+			}
+
+			if (!StringUtils.isEmpty(userId)) {
+				AppContextUtil.setUserId(userId);
+			}
+
+			// Trace Id Tracking
 			String traceId = req.getHeader(AppConstants.TRACE_ID_XKEY);
 			if (StringUtils.isEmpty(traceId)) {
 				traceId = ArgUtil.parseAsString(req.getParameter(AppConstants.TRACE_ID_XKEY));
@@ -88,13 +100,15 @@ public class RequestLogFilter implements Filter {
 				traceId = ContextUtil.getTraceId(true, sessionID);
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
-				ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionID);
+				AppContextUtil.setSessionId(sessionID);
 				req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 			} else {
 				ContextUtil.setTraceId(traceId);
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 			}
+
+			// Actual Request Handling
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
 			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req));

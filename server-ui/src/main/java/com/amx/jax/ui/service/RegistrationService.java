@@ -60,8 +60,6 @@ public class RegistrationService {
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
-		userSessionInfo.setUserid(identity);
-
 		return wrapper;
 	}
 

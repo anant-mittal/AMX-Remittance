@@ -7,8 +7,8 @@ import org.springframework.cache.annotation.Cacheable;
 
 import com.amx.jax.AppConstants;
 
-@Cacheable(value = AppConstants.CACHE_NAME_HTTP, keyGenerator = TenantMethodKey.KEY)
+@Cacheable(value = AppConstants.CACHE_NAME_HTTP, keyGenerator = CacheForUserKey.KEY)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface CacheBoxEnabled {
+public @interface CacheForUser {
 
 }
