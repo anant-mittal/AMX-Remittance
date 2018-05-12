@@ -80,7 +80,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtp : ", e);
-			throw new JaxSystemError();
+			throw new JaxSystemError(e);
 		}
 	}
 

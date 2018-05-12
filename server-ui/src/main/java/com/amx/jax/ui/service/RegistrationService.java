@@ -9,9 +9,14 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.model.AuthData;
