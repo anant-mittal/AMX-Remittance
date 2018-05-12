@@ -2,7 +2,6 @@ package com.amx.jax.ui.service;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,18 +18,12 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
-import com.amx.jax.ui.session.UserSession;
 
 @Service
 public class PartialRegService {
 
-	private Logger LOG = Logger.getLogger(UserService.class);
-
 	@Autowired
-	private UserSession userSessionInfo;
-
-	@Autowired
-	SessionService sessionService;
+	private SessionService sessionService;
 
 	@Autowired
 	private JaxService jaxClient;
