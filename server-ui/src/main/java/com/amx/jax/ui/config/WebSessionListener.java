@@ -14,7 +14,6 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 @Component
 public class WebSessionListener implements HttpSessionListener {

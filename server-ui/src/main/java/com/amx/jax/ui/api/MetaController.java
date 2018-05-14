@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
@@ -143,6 +144,13 @@ public class MetaController {
 			@RequestBody RoutingBankMasterAgentBranchParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentBranch(param).getResults());
+	}
+
+	@CacheForTenant
+	@RequestMapping(value = { "/pub/meta/branch/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<BranchDetailDTO>> getExchangeBranches() {
+		return new ResponseWrapper<List<BranchDetailDTO>>(
+				jaxService.setDefaults().getMetaClient().getAllBranchDetail().getResults());
 	}
 
 }

@@ -10,17 +10,19 @@ import com.amx.jax.AppContextUtil;
 @Component
 public class CacheForUserKey implements KeyGenerator {
 
+	public static final String CACHE = "ouser";
 	public static final String KEY = "cacheForUserKey";
 
 	@Override
 	public Object generate(Object target, Method method, Object... params) {
 		StringBuilder b = new StringBuilder(AppContextUtil.getTenant() + "#" + target.getClass().getName() + "#"
-				+ String.valueOf(target.hashCode()) + "#" + method.getName());
+				+ AppContextUtil.getUserId() + "#" + method.getName());
 		if (params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				b.append("#" + params[i]);
 			}
 		}
+
 		return b.toString();
 	}
 

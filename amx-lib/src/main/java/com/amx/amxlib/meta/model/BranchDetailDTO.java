@@ -1,5 +1,6 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -7,13 +8,15 @@ import java.math.BigDecimal;
  *
  */
 
-public class BranchDetailDTO {
+public class BranchDetailDTO implements Serializable {
+
+	private static final long serialVersionUID = -6918862071933405769L;
 
 	private String area;
 	private String branchName;
 	private BigDecimal contactNumber;
 	private String branchAddress;
-	
+
 	public BranchDetailDTO() {
 		super();
 	}
@@ -48,5 +51,5 @@ public class BranchDetailDTO {
 
 	public void setBranchAddress(String branchAddress) {
 		this.branchAddress = branchAddress;
-	}	
+	}
 }

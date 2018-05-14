@@ -5,9 +5,14 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.springframework.cache.annotation.Cacheable;
 
-import com.amx.jax.AppConstants;
-
-@Cacheable(value = AppConstants.CACHE_NAME_HTTP, keyGenerator = CacheForUserKey.KEY)
+/**
+ * If this annotation is assigned to any method, output of that method will be
+ * cached, for user scope using userId as unique ID
+ * 
+ * @author lalittanwar
+ *
+ */
+@Cacheable(value = CacheForUserKey.CACHE, keyGenerator = CacheForUserKey.KEY)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CacheForUser {
 

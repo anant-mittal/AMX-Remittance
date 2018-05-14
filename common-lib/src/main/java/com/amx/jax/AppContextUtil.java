@@ -3,6 +3,8 @@ package com.amx.jax;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.http.HttpHeaders;
 
@@ -27,6 +29,19 @@ public class AppContextUtil {
 
 	public static String getSessionId() {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY));
+	}
+
+	public static final Pattern pattern = Pattern.compile("^([A-Z]{3})-([\\w]+)-(\\w+)$");
+
+	public static String getSessionIdFromTraceId() {
+		String traceId = getTraceId();
+		if (ArgUtil.isEmptyString(traceId)) {
+			Matcher matcher = pattern.matcher(traceId);
+			if (matcher.find()) {
+				setSessionId(matcher.group(1) + "-" + matcher.group(2));
+			}
+		}
+		return getSessionId();
 	}
 
 	public static Tenant getTenant() {
