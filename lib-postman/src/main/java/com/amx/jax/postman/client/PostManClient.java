@@ -73,10 +73,6 @@ public class PostManClient implements PostManService {
 		return sendSMS(sms, Boolean.TRUE);
 	}
 
-	private Map<String, String> appheader() {
-		return AppContextUtil.header();
-	}
-
 	public Email sendEmail(Email email, Boolean async) throws PostManException {
 		LOGGER.info("Sending email to {} ", email.getTo().get(0));
 		try {
@@ -130,17 +126,6 @@ public class PostManClient implements PostManService {
 			throw new PostManException(e);
 		}
 
-		// try {
-		// HttpResponse<File> response = Unirest.post(postManUrl +
-		// PostManUrls.PROCESS_TEMPLATE_FILE)
-		// .queryString(PARAM_LANG, getLang()).header("content-type",
-		// "application/json")
-		// .header("accept",
-		// "application/json").headers(appheader()).body(file).asObject(File.class);
-		// return response.getBody();
-		// } catch (UnirestException e) {
-		// throw new PostManException(e);
-		// }
 	}
 
 	@SuppressWarnings("unchecked")
@@ -152,20 +137,6 @@ public class PostManClient implements PostManService {
 		// file.setObject(data);
 		file.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
 		return this.processTemplate(file);
-
-		// try {
-		// HttpResponse<File> response = Unirest.post(postManUrl +
-		// PostManUrls.PROCESS_TEMPLATE)
-		// .queryString(PARAM_LANG, getLang())
-		// // .header("content-type", "application/json")
-		// .header("accept", "application/json").headers(appheader()).field("template",
-		// template)
-		// .field("data", JsonUtil.toJson(data)).field("fileType",
-		// fileType).asObject(File.class);
-		// return response.getBody();
-		// } catch (UnirestException e) {
-		// throw new PostManException(e);
-		// }
 	}
 
 	@Override
@@ -183,20 +154,6 @@ public class PostManClient implements PostManService {
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
-		// try {
-		// HttpResponse<JsonNode> response =
-		// Unirest.post("https://www.google.com/recaptcha/api/siteverify")
-		// // .header("content-type", "application/json")
-		// .header("accept", "application/json").field("secret",
-		// googleSecret).field("response", responseKey)
-		// .field("remoteip", remoteIP).asJson();
-		// if (response != null) {
-		// return response.getBody().getObject().getBoolean("success");
-		// }
-		// return false;
-		// } catch (UnirestException e) {
-		// throw new PostManException(e);
-		// }
 
 	}
 
@@ -223,20 +180,11 @@ public class PostManClient implements PostManService {
 
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
-					.header("content-type", "application/json").queryParam("title", title).post(e).as(Exception.class);
+					.header("content-type", "application/json").queryParam("appname", appConfig.getAppName())
+					.queryParam("title", title).post(e).as(Exception.class);
 		} catch (Exception e1) {
 			LOGGER.error("title", e1);
 		}
-
-		// try {
-		// HttpResponse<Exception> response = Unirest.post(postManUrl +
-		// PostManUrls.NOTIFY_SLACK_EXCEP)
-		// .header("content-type",
-		// "application/json").headers(appheader()).queryString("title", title).body(e)
-		// .asObject(Exception.class);
-		// } catch (UnirestException e1) {
-		// LOGGER.error("title", e1);
-		// }
 		return e;
 	}
 

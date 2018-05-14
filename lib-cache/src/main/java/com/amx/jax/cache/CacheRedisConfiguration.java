@@ -21,7 +21,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.amx.jax.AppConstants;
+import com.amx.jax.def.CacheForSessionKey;
+import com.amx.jax.def.CacheForTenantKey;
+import com.amx.jax.def.CacheForThisKey;
+import com.amx.jax.def.CacheForUserKey;
 
 @Configuration
 // @EnableRedissonHttpSession
@@ -80,7 +83,11 @@ public class CacheRedisConfiguration
 	CacheManager cacheManager(RedissonClient redissonClient) {
 		Map<String, CacheConfig> config = new HashMap<String, CacheConfig>();
 		// create "testMap" cache with ttl = 10 minutes and maxIdleTime = 5 minutes
-		config.put(AppConstants.CACHE_NAME_HTTP, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+		config.put(CacheForUserKey.CACHE, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+		config.put(CacheForThisKey.CACHE, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+		config.put(CacheForSessionKey.CACHE, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+		config.put(CacheForTenantKey.CACHE, new CacheConfig(10 * 60 * 1000, 5 * 60 * 1000));
+
 		return new RedissonSpringCacheManager(redissonClient, config);
 	}
 

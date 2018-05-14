@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CacheForThisKey implements KeyGenerator {
 
+	public static final String CACHE = "othis";
 	public static final String KEY = "cacheForThisKey";
 
 	@Override
