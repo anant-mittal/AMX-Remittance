@@ -387,14 +387,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	
+	/**
+	 * @param beneficiaryCountryId
+	 * @return
+	 * ApiResponse<CurrencyMasterDTO>
+	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
-		return this.getBeneficiaryCurrency(beneficiaryCountryId,null,null);
+		return this.getBeneficiaryCurrency(beneficiaryCountryId, null, null);
 	}
 	
 	/**
 	 * @param beneficiaryCountryId
-	 * @param serviceGroupId
-	 * @param routingBankId
+	 * @param serviceGroupId - bank or cash
+	 * @param routingBankId - service provider id in case of cash or bank id in case of bank
 	 * @return CurrencyMasterDTO
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
