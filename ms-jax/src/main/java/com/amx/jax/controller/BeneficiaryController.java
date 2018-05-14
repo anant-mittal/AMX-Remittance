@@ -136,16 +136,14 @@ public class BeneficiaryController {
 		LOGGER.info("getFavouriteBeneficiaryList controller :");
 		ApiResponse response=null;
 		
-		try {
+		
 			BigDecimal customerId = metaData.getCustomerId();
 			BigDecimal applicationCountryId = metaData.getCountryId();
 			LOGGER.info("favouritebene customerId Id :" + customerId);
 			LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
 			
 			response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
-		}catch(Exception e) {
-			LOGGER.error("Error while fetching favourite BeneficiaryList : ",e);
-		}
+		
 		return response;
 	}
 	
