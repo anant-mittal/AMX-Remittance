@@ -95,19 +95,10 @@ public class MetaController {
 				jaxService.setDefaults().getMetaClient().getDistrictList(stateId).getResults());
 	}
 
-	
-	/**
-	 * @author Chetan Pawar
-	 * @param countryId
-	 * @param serviceGroupId
-	 * @param routingBankId
-	 * @return List<CurrencyMasterDTO>
-	 */
 	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId,
-			@RequestParam BigDecimal serviceGroupId, @RequestParam BigDecimal routingBankId) {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(jaxService.setDefaults().getMetaClient()
-				.getBeneficiaryCurrency(countryId).getResults());
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId) {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(
+				jaxService.setDefaults().getMetaClient().getBeneficiaryCurrency(countryId).getResults());
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
