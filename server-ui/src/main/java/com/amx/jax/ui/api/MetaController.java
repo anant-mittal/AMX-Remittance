@@ -100,7 +100,7 @@ public class MetaController {
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId,
 			@RequestParam BigDecimal serviceGroupId, @RequestParam BigDecimal routingBankId) {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(jaxService.setDefaults().getMetaClient()
-				.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId).getResults());
+				.getBeneficiaryCurrency(countryId).getResults());
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
