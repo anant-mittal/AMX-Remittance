@@ -384,17 +384,25 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+		return this.getBeneficiaryCurrency(beneficiaryCountryId,null,null);
+	}
 	
 	/**
-	 * @param beneficiaryCountryId - Beneficiary Country Id
-	 * @return List of currency master for passed beneficiary currency
-	 * */
-	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+	 * @param beneficiaryCountryId
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return CurrencyMasterDTO
+	 */
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId", beneficiaryCountryId);
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
+					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {

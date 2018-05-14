@@ -46,6 +46,10 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  * @param <T>
  *
  */
+/**
+ * @author Chetan Pawar
+ *
+ */
 @RestController
 @RequestMapping(META_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
@@ -315,9 +319,19 @@ public class MetaController {
 		return metaService.getServiceGroups();
 	}
 	
+	
+	/**
+	 * @param beneficiaryCountryId
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return CurrencyMasterDTO
+	 */
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCurrencyList(@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId){
-		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
+	public ApiResponse getBeneficiaryCurrencyList(
+			@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId,
+			@RequestParam(value = "serviceGroupId") BigDecimal serviceGroupId,
+			@RequestParam(value = "routingBankId") BigDecimal routingBankId) {
+		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId, serviceGroupId, routingBankId);
 	}
 	
 	@RequestMapping(value = "/meta-parameter/", method = RequestMethod.GET)

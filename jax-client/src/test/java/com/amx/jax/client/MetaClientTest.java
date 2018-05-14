@@ -140,6 +140,21 @@ public class MetaClientTest extends AbstractTestClient {
 		ApiResponse<CurrencyMasterDTO> response = null;
 
 		BigDecimal beneficiaryCountryId = new BigDecimal(94);
+		BigDecimal serviceGroupId = new BigDecimal(1);
+		BigDecimal routingBankId = new BigDecimal(2520);
+		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId, serviceGroupId, routingBankId);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	@Test
+	public void testOldGetBeneficiaryCurrency() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<CurrencyMasterDTO> response = null;
+
+		BigDecimal beneficiaryCountryId = new BigDecimal(94);
+		BigDecimal serviceGroupId = new BigDecimal(1);
+		BigDecimal routingBankId = new BigDecimal(2520);
 		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
