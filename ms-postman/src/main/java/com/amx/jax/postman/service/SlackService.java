@@ -82,7 +82,7 @@ public class SlackService {
 		return msg;
 	}
 
-	public Exception sendException(String to, Exception e) {
+	public Exception sendException(String appname, String title, Exception e) {
 
 		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
@@ -94,7 +94,7 @@ public class SlackService {
 			StackTraceElement[] traces = e.getStackTrace();
 
 			Map<String, Object> message = new HashMap<>();
-			message.put("text", to);
+			message.put("text", title);
 
 			if (appConfig.isProdMode()) {
 				message.put("channel", postManConfig.getExceptionChannelCode());
@@ -104,13 +104,18 @@ public class SlackService {
 
 			List<Map<String, String>> attachments = new LinkedList<Map<String, String>>();
 
-			Map<String, String> attachmentTrace = new HashMap<>();
+			Map<String, String> attachmentApp = new HashMap<String, String>();
+			attachmentApp.put("text", String.format("%s ->> %s", appname, appConfig.getAppName()));
+			attachmentApp.put("color", "danger");
+			attachments.add(attachmentApp);
+
+			Map<String, String> attachmentTrace = new HashMap<String, String>();
 			attachmentTrace.put("text", String.format("TraceId = %s-%s \n Tranx = %s", context.getTenant(),
 					context.getTraceId(), context.getTranxId()));
 			attachmentTrace.put("color", "danger");
 			attachments.add(attachmentTrace);
 
-			Map<String, String> attachmentTitle = new HashMap<>();
+			Map<String, String> attachmentTitle = new HashMap<String, String>();
 			attachmentTitle.put("text",
 					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8"));
 			attachmentTitle.put("color", "danger");
