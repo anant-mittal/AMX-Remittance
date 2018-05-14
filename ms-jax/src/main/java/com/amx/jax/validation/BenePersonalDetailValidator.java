@@ -47,22 +47,15 @@ public class BenePersonalDetailValidator implements Validator {
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
 		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
-		serviceAppList.forEach(i -> {
-			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMinLenght())) {
-				int minLength = i.getMinLenght().intValue();
-				if (minLength > 0 && benePhoneLength < minLength) {
-					throw new GlobalException(JaxError.VALIDATION_MINIMUM_LENGTH_MOBILE, minLength);
-				}
+		int minLength = serviceAppList.stream().mapToInt(i -> i.getMinLenght().intValue()).min().orElse(-1);
+		int maxLength = serviceAppList.stream().mapToInt(i -> i.getMaxLenght().intValue()).max().orElse(-1);
 
-			}
-			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMaxLenght())) {
-				int maxLength = i.getMaxLenght().intValue();
-				if (maxLength > 0 && benePhoneLength > maxLength) {
-					throw new GlobalException(JaxError.VALIDATION_MAXIMUM_LENGTH_MOBILE, maxLength);
-				}
-			}
-		});
-		
+		if (maxLength > 0 && benePhoneLength > maxLength) {
+			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength);
+		}
+		if (minLength > 0 && benePhoneLength < minLength) {
+			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength);
+		}
 	}
 
 }
