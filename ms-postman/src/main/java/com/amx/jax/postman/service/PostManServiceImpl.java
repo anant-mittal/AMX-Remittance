@@ -137,7 +137,12 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	@Async
 	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(title, e);
+		return slackService.sendException(null, title, e);
+	}
+
+	@Async
+	public Exception notifyException(String appname, String title, Exception e) {
+		return slackService.sendException(appname, title, e);
 	}
 
 	@Override
