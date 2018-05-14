@@ -1,7 +1,6 @@
 package com.amx.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 //TODO: Auto-generated Javadoc
 /**

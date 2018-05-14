@@ -3,13 +3,10 @@ package com.amx.jax.ui.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDeviceBean;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 @Component
 public class SessionAuditFilter implements AuditFilter<SessionEvent> {
