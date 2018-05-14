@@ -765,6 +765,15 @@ public class BeneficiaryService extends AbstractService {
 		return beneRelationShips;
 	}
 	
+	public List<BeneficaryRelationship> getBeneRelationShipByRelationsId(BigDecimal beneMasterId,
+			BigDecimal beneAccountId, BigDecimal relationsId) {
+		List<BeneficaryRelationship> beneRelationShips = beneRelationShipDao
+				.findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerIdAndRelationsId(beneMasterId, beneAccountId,
+						metaData.getCustomerId(), relationsId);
+
+		return beneRelationShips;
+	}
+	
 	// Added by chetan 03-05-2018 for country with channeling
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 

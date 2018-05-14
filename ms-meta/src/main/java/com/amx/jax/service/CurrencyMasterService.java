@@ -22,6 +22,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dbmodel.bene.ViewBeneServiceCurrency;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
@@ -51,7 +52,10 @@ public class CurrencyMasterService extends AbstractService {
 	ApplicationSetupService applicationSetupService;
 	
 	@Autowired
-	private ExchangeRateProcedureDao exchangeRateProcedureDao;
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;	
+	
+	@Autowired
+	private MetaData metaData;
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -206,6 +210,43 @@ public class CurrencyMasterService extends AbstractService {
 	public String getApplicationCountryCurrencyQuote() {
 		BigDecimal countryId = applicationSetupService.getApplicationSetUp().getApplicationCountryId();
 		return getCurrencyMasterByCountryId(countryId).get(0).getQuoteName();
+	}
+	
+	
+	/**
+	 * @author Chetan Pawar
+	 * @param beneCountryId
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return List<CurrencyMasterDTO>
+	 */
+	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId, BigDecimal serviceGroupId,
+			BigDecimal routingBankId) {
+		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
+				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
+		List<BigDecimal> currencyIdList = new ArrayList<BigDecimal>();
+		if (serviceGroupId != null && routingBankId != null)
+			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId, serviceGroupId,
+					routingBankId);
+		if (currencyIdList != null && !currencyIdList.isEmpty()) {
+			Iterator itr = currencyList.iterator();
+			while (itr.hasNext()) {
+				ViewBeneServiceCurrency list = (ViewBeneServiceCurrency) itr.next();
+				if (!currencyIdList.contains(list.getCurrencyId())) {
+					itr.remove();
+				}
+			}
+		}
+		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
+		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
+		currencyList.forEach(currency -> {
+			currencyListDto.add(convertModel(allCurrencies.get(currency.getCurrencyId())));
+		});
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().addAll(currencyListDto);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType("currencyMaster");
+		return response;
 	}
 
 }

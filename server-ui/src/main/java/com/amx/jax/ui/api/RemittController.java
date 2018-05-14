@@ -104,7 +104,7 @@ public class RemittController {
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
 		// file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
-		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
+		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
 		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
 		email.getModel().put(UIConstants.RESP_DATA_KEY,

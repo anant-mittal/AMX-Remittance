@@ -90,18 +90,18 @@ public class BeneClient extends AbstractJaxServiceClient {
 	// returning beneficiary country list with channeling
 	/**
 	 * 
-	 * 
-	 * @param beneCountryId
+	 * @author Chetan Pawar
+	 * @param beneCountryId remove 11-05-2018
 	 *            - beneficiaryCountryId
 	 * @return beneficiaryCountry List
 	 */
-	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
+	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList() {
 		try {
 			ResponseEntity<ApiResponse<CountryMasterDTO>> response;
-			StringBuffer sb = new StringBuffer();
-			sb.append("?beneCountryId=").append(beneCountryId);
-			LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/bene/country/" + sb.toString();
+			//StringBuffer sb = new StringBuffer();
+		//	sb.append("?beneCountryId=").append(beneCountryId);
+			//LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/bene/country/" ;//+ sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {

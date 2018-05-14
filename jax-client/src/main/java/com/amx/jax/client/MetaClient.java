@@ -52,6 +52,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
+	
+	@Autowired
+	private BeneClient beneClient;
 
 	@Autowired
 	RestService restService;
@@ -100,26 +103,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	// CountryMasterDTO
-
+	/**
+	 * @author Chetan Pawar
+	 * @return duplicate method call through beneClient 11-05-2018	 
+	 * countryList
+	 */
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
-		try {
-			LOGGER.info("Get all the applciation country ");
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
-					});
-
-		} catch (AbstractException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getAllCountry : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-		return response.getBody();
-	}
+		return beneClient.getBeneficiaryCountryList();
+		}
 
 	@Deprecated
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
@@ -395,18 +386,28 @@ public class MetaClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 
+	
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+		return this.getBeneficiaryCurrency(beneficiaryCountryId,null,null);
+	}
+	
 	/**
 	 * @param beneficiaryCountryId
-	 *            - Beneficiary Country Id
-	 * @return List of currency master for passed beneficiary currency
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return CurrencyMasterDTO
 	 */
-	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {
+
 		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId",
-					beneficiaryCountryId);
+
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
+					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
