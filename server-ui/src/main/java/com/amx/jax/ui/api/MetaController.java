@@ -93,9 +93,11 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId) {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(
-				jaxService.setDefaults().getMetaClient().getBeneficiaryCurrency(countryId).getResults());
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId,
+			@RequestParam(required = false) BigDecimal serviceGroupId,
+			@RequestParam(required = false) BigDecimal routingBankId) {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(jaxService.setDefaults().getMetaClient()
+				.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId).getResults());
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
