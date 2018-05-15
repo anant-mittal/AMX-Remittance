@@ -49,6 +49,10 @@ public class RestService {
 	public Ajax ajax(String url) {
 		return new Ajax(getRestTemplate(), url);
 	}
+	
+	public Ajax ajax(URI uri) {
+		return new Ajax(getRestTemplate(), uri);
+	}
 
 	public class Ajax {
 
@@ -64,6 +68,11 @@ public class RestService {
 		public Ajax(RestTemplate restTemplate, String url) {
 			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(url);
+		}
+
+		public Ajax(RestTemplate restTemplate, URI uri) {
+			this.restTemplate = restTemplate;
+			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
 		public Ajax path(String path) {

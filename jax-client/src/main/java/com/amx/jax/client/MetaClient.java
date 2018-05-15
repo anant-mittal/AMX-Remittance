@@ -9,8 +9,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -57,27 +55,25 @@ public class MetaClient extends AbstractJaxServiceClient {
 	RestService restService;
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
-		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response;
+		
 		try {
 			LOGGER.info("Get all the applciation country ");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getApplicationCountry : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany() {
-		ResponseEntity<ApiResponse<ApplicationSetupDTO>> response;
+		
 		try {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
@@ -86,8 +82,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/applcountry/" + countryId + "/" + companyId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
+
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
 
 		} catch (AbstractException ae) {
@@ -96,96 +93,89 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	// CountryMasterDTO
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
+		
 		try {
 			LOGGER.info("Get all the applciation country ");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllCountry : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	@Deprecated
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
+		
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId, String countryId) {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
+		
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/" + languageId + "/" + countryId;
 
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<CountryMasterDTO> getBusinessCountry() {
-		ResponseEntity<ApiResponse<CountryMasterDTO>> response;
+		
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			LOGGER.info("Get all the applciation country " + languageId);
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/bc/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBusinessCountry : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<QuestModelDTO> getSequrityQuestion() {
-		ResponseEntity<ApiResponse<QuestModelDTO>> response;
+		
 		try {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
@@ -198,21 +188,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getSequrityQuestion : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String questionId) {
-		ResponseEntity<ApiResponse<QuestModelDTO>> response;
+		
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -224,8 +213,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/quest/" + languageId + "/" + countryId + "/"
 					+ questionId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
 					});
 
 		} catch (AbstractException ae) {
@@ -234,14 +223,14 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getSequrityQuestionById : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	/**
 	 * Gives terms and conditions based on metadata like lang id etc
 	 */
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition() {
-		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response;
+		
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
@@ -251,21 +240,17 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
-					});
-
+			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
+			});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getTermsAndCondition : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<TermsAndConditionDTO> getTermsAndConditionAsPerCountry() {
-		ResponseEntity<ApiResponse<TermsAndConditionDTO>> response;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -276,21 +261,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getTermsAndConditionAsPerCountry : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<WhyDoAskInformationDTO> getWhyAskInfo() {
-		ResponseEntity<ApiResponse<WhyDoAskInformationDTO>> response;
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -302,97 +284,84 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/why/" + languageId + "/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getWhyAskInfo : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<UserFinancialYearDTO> getFinancialYear() {
-		ResponseEntity<ApiResponse<UserFinancialYearDTO>> response;
 		try {
 			LOGGER.info("Financial Year");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/fyear/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getFinancialYear : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<AuthenticationLimitCheckDTO> getContactUsTime() {
-		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdtime/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getContactUsTime : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<AuthenticationLimitCheckDTO> getHelpDeskNo() {
-		ResponseEntity<ApiResponse<AuthenticationLimitCheckDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/helpdno/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getHelpDeskNo : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 
 	public ApiResponse<MultiCountryDTO> getMultiCountryList() {
-		ResponseEntity<ApiResponse<MultiCountryDTO>> response;
 		try {
 			LOGGER.info("Contact Us time");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/multicountry/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getMultiCountryList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	/**
@@ -401,73 +370,65 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @return List of currency master for passed beneficiary currency
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId",
 					beneficiaryCountryId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCurrency : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getAllOnlineCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/online/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllOnlineCurrency : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	// added by chetan 30/04/2018 list the country for currency.
 	public ApiResponse<CurrencyMasterDTO> getAllExchangeRateCurrencyList() {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getAllExchangeRateCurrencyList");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/exchange-rate-currency/list/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
-					});
-
+			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+			});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllExchangeRateCurrencyList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<CurrencyMasterDTO> getCurrencyByCountryId(BigDecimal countryId) {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getAllOnlineCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/bycountry/" + countryId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -475,11 +436,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewDistrictDto> getDistricDesc(BigDecimal stateId, BigDecimal districtId) {
-		ResponseEntity<ApiResponse<ViewDistrictDto>> response;
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
@@ -492,8 +452,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtdesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -501,7 +461,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getDistricDesc : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	/**
@@ -513,7 +473,6 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 *            - Id value of country
 	 */
 	public ApiResponse<BankMasterDTO> getBankListForCountry(BigDecimal countryId) {
-		ResponseEntity<ApiResponse<BankMasterDTO>> response;
 		try {
 			LOGGER.info("in getBankListForCountry");
 
@@ -521,21 +480,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 			endpoint = endpoint.replaceAll("\\{country\\-id\\}", countryId.toPlainString());
 			String url = this.getBaseUrl() + endpoint;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BankMasterDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BankMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBankListForCountry : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewDistrictDto> getDistrictList(BigDecimal stateId) {
-		ResponseEntity<ApiResponse<ViewDistrictDto>> response;
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
@@ -543,8 +500,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 			}
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + languageId + "/" + stateId + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -552,11 +509,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getDistrictList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewStateDto> getStateList(BigDecimal countryId) {
-		ResponseEntity<ApiResponse<ViewStateDto>> response;
 		try {
 
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -564,9 +520,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + languageId + "/" + countryId + "/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());			
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -574,11 +530,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getStateList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewStateDto> getStateDesc(BigDecimal countryId, BigDecimal stateId) {
-		ResponseEntity<ApiResponse<ViewStateDto>> response;
 		try {
 
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -592,8 +547,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statedesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -601,11 +556,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getStateDesc : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewCityDto> getCitytList(BigDecimal districtId) {
-		ResponseEntity<ApiResponse<ViewCityDto>> response;
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
@@ -617,8 +571,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citylist/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -626,11 +580,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getCitytList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<ViewCityDto> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
-		ResponseEntity<ApiResponse<ViewCityDto>> response;
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 
@@ -644,8 +597,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citydesc/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -653,18 +606,17 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getCitytDesc : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	public ApiResponse<OnlineConfigurationDto> getOnlineConfig(String ind) {
-		ResponseEntity<ApiResponse<OnlineConfigurationDto>> response;
 		try {
 
 			LOGGER.info("In getOnlineConfig :");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/onlineconfig/" + ind + "/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -672,7 +624,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getOnlineConfig : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
+
 	}
 
 	/**
@@ -685,14 +637,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 *            of type {@code GetBankBranchRequest}
 	 */
 	public ApiResponse<BankBranchDto> getBankBranchList(GetBankBranchRequest request) {
-		ResponseEntity<ApiResponse<BankBranchDto>> response;
 		try {
 
 			LOGGER.info("In getBankBranchList :");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/bankbranch/get/";
 			HttpEntity<GetBankBranchRequest> requestEntity = new HttpEntity<GetBankBranchRequest>(request, getHeader());
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BankBranchDto>>() {
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BankBranchDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -700,7 +651,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getBankBranchList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catc
-		return response.getBody();
+
 	}
 
 	/**
@@ -710,14 +661,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * 
 	 */
 	public ApiResponse<ServiceGroupMasterDescDto> getServiceGroupList() {
-		ResponseEntity<ApiResponse<ServiceGroupMasterDescDto>> response;
 		try {
 
 			LOGGER.info("In getServiceGroupList :");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/service-group/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<ServiceGroupMasterDescDto>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<ServiceGroupMasterDescDto>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
@@ -725,7 +675,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.error("exception in getServiceGroupList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catc
-		return response.getBody();
+
 	}
 
 	/**
@@ -735,21 +685,19 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * 
 	 */
 	public ApiResponse<JaxMetaParameter> getJaxMetaParameter() {
-		ResponseEntity<ApiResponse<JaxMetaParameter>> response;
 		try {
 			LOGGER.info("In getJaxMetaParameter :");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/meta-parameter/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<JaxMetaParameter>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<JaxMetaParameter>>() {
 					});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getJaxMetaParameter : ", e);
 			throw new JaxSystemError();
-		} // end of try-catc
-		return response.getBody();
+		} // end of try-catch
 	}
 
 	/**
@@ -768,30 +716,27 @@ public class MetaClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError(e);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @return To fetch list of Branch Details
 	 * 
 	 */
-	
+
 	public ApiResponse<BranchDetailDTO> getAllBranchDetail() {
-		ResponseEntity<ApiResponse<BranchDetailDTO>> response;
 		try {
 			LOGGER.info("Get all the Branch Details ");
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/branchdetail/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BranchDetailDTO>>() {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BranchDetailDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllBranchDetail : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-		return response.getBody();
 	}
 }
