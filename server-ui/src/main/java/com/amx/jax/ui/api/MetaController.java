@@ -61,7 +61,11 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList(@RequestParam(required = false) Boolean xrate) {
+		if (xrate) {
+			new ResponseWrapper<List<CurrencyMasterDTO>>(
+					jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList().getResults());
+		}
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
@@ -69,7 +73,7 @@ public class MetaController {
 	public ResponseWrapper<List<CurrencyMasterDTO>> getNamePrefixList() {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
-	
+
 	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(
