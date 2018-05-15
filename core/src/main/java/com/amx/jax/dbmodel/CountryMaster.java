@@ -90,7 +90,7 @@ public class CountryMaster implements Serializable {
 	private String isActive;
 	private Date approvedDate;
 	private String approvedBy;
-	private BigDecimal countryMobileLength;
+	private String countryMobileLength;
 	
 	
 	public CountryMaster(BigDecimal countryId) {
@@ -236,11 +236,11 @@ public class CountryMaster implements Serializable {
 	}
 
 	@Column(name = "COUNTRY_MOB_LENGTH")
-	public BigDecimal getCountryMobileLength() {
+	public String getCountryMobileLength() {
 		return countryMobileLength;
 	}
 
-	public void setCountryMobileLength(BigDecimal countryMobileLength) {
+	public void setCountryMobileLength(String countryMobileLength) {
 		this.countryMobileLength = countryMobileLength;
 	}
 	

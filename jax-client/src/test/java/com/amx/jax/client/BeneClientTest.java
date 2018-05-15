@@ -166,7 +166,7 @@ public class BeneClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 	}
 	
-	//@Test
+	@Test
 	@SuppressWarnings("rawtypes")
 	public void testGetBeneficiaryAccountType() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -191,6 +191,17 @@ public class BeneClientTest extends AbstractTestClient {
 		ApiResponse response = null;
 		BigDecimal beneCountryId = new BigDecimal(91);
 		response = client.getBeneficiaryCountryList();
+		assertNotNull("Response is null", response);
+		assertNotNull("result is null", response.getResult());
+	}
+	
+	//@Test
+	@SuppressWarnings("rawtypes")
+	public void testGetBeneficiary() {
+		setDefaults();
+		ApiResponse response = null;
+		BigDecimal beneCountryId = new BigDecimal(94);
+		response = client.getBeneficiaryList(beneCountryId);
 		assertNotNull("Response is null", response);
 		assertNotNull("result is null", response.getResult());
 	}

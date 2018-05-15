@@ -1,7 +1,12 @@
 package com.amx.jax.validation;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.IntPredicate;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -28,11 +33,15 @@ public class CountryMetaValidation {
 	 * 
 	 */
 	public void validateMobileNumberLength(BigDecimal countryId, String mobile) {
-		BigDecimal mobileLength = countryService.getCountryMaster(countryId).getCountryMobileLength();
-		int userMobLength = mobile.length();
-
-		if (mobileLength != null && userMobLength != mobileLength.intValue()) {
-			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH, mobileLength);
+		final String mobileLength = countryService.getCountryMaster(countryId).getCountryMobileLength();
+		boolean isValid = true;
+		if (StringUtils.isNotBlank(mobileLength)) {
+			IntPredicate predicate = (i) -> i == mobile.length();
+			isValid = Stream.of(StringUtils.split(mobileLength, ",")).mapToInt(Integer::parseInt).anyMatch(predicate);
+		}
+		if (!isValid) {
+			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH,
+					mobileLength.replaceAll(",", ":"));
 		}
 	}
 }

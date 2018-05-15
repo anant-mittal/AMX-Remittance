@@ -5,10 +5,9 @@ import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_REG_ENDPOINT;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -21,6 +20,7 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.rest.RestService;
 
 /**
  * @author Prashant
@@ -31,6 +31,9 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 
 	private static final Logger LOGGER = Logger.getLogger(CustomerRegistrationClient.class);
 
+	@Autowired
+	private RestService restService;
+
 	/**
 	 * @param personalDetail
 	 *            - Person detail object
@@ -38,16 +41,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<SendOtpModel> sendOtp(CustomerPersonalDetail personalDetail) {
 		try {
-
-			ResponseEntity<ApiResponse<SendOtpModel>> response;
 			LOGGER.info("calling sendOtp api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(personalDetail, getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/send-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<SendOtpModel>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<SendOtpModel>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -65,17 +65,14 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> validateOtp(String mOtp, String eOtp) {
 		try {
-
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
 			LOGGER.info("calling validateOtp api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/validate-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -91,15 +88,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveHomeAddress(CustomerHomeAddress customerHomeAddress) {
 		try {
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
 			LOGGER.info("calling saveHomeAddress api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerHomeAddress, getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-home-addr/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -115,15 +110,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
 		try {
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
 			LOGGER.info("calling saveSecurityQuestions api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(securityquestions, getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-security-questions/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -141,16 +134,14 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
 		try {
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
 			LOGGER.info("calling savePhishiingImage api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-phishing-image/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("caption", caption)
 					.queryParam("imageUrl", imageUrl);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -168,15 +159,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
 		try {
-			ResponseEntity<ApiResponse<BooleanResponse>> response;
 			LOGGER.info("calling saveLoginDetail api: ");
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerCredential, getHeader());
 			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-login-detail/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {

@@ -57,6 +57,28 @@ public class AuthLibKWT implements AuthLib {
 			case DATA_VERIFY:
 				return AuthState.AuthStep.SECQ_SET;
 			case SECQ_SET:
+				return AuthState.AuthStep.CAPTION_SET;
+			case CAPTION_SET:
+				return AuthState.AuthStep.CREDS_SET;
+			case CREDS_SET:
+				return AuthState.AuthStep.COMPLETED;
+			default:
+				return authState.cStep;
+			}
+		} else if (authState.flow == AuthState.AuthFlow.REGISTRATION) {
+			if (authState.cStep == null) {
+				return AuthState.AuthStep.IDVALID;
+			}
+			switch (authState.cStep) {
+			case IDVALID:
+				return AuthState.AuthStep.DOTPVFY;
+			case DOTPVFY:
+				return AuthState.AuthStep.SAVE_HOME;
+			case SAVE_HOME:
+				return AuthState.AuthStep.SECQ_SET;
+			case SECQ_SET:
+				return AuthState.AuthStep.CAPTION_SET;
+			case CAPTION_SET:
 				return AuthState.AuthStep.CREDS_SET;
 			case CREDS_SET:
 				return AuthState.AuthStep.COMPLETED;
