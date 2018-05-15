@@ -102,6 +102,20 @@ public class RestService {
 			return this;
 		}
 
+		public <T> Ajax put(T body) {
+			return this.put(new HttpEntity<T>(body, headers));
+		}
+
+		public Ajax put() {
+			return this.put(new HttpEntity<Object>(null, headers));
+		}
+		
+		public Ajax put(HttpEntity<?> requestEntity) {
+			this.method = HttpMethod.PUT;
+			this.requestEntity = requestEntity;
+			return this;
+		}
+
 		public <T> Ajax post(T body) {
 			return this.post(new HttpEntity<T>(body, headers));
 		}
