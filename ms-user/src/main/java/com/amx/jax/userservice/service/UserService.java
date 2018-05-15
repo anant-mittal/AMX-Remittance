@@ -331,11 +331,16 @@ public class UserService extends AbstractUserService {
 			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
 				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
 			}
-			customerId = customer.getCustomerId();
+			if (customer != null) {
+				customerId = customer.getCustomerId();
+			}
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
+		if (initRegistration != null && initRegistration) {
+			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
+		}
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
@@ -346,11 +351,8 @@ public class UserService extends AbstractUserService {
 		} else {
 			logger.info("onlineCustReg is null");
 		}
-
+		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
-		if (initRegistration != null && initRegistration) {
-			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
-		}
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
 
 		try {
