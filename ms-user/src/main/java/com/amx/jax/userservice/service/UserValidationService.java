@@ -531,11 +531,13 @@ public class UserValidationService {
 
 	public void validateCustomerVerification(BigDecimal customerId) {
 
-		CustomerVerification cv = customerVerificationService.getVerification(customerId,
-				CustomerVerificationType.EMAIL);
-		if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
-			throw new GlobalException("Your email verificaiton is pending",
-					JaxError.USER_DATA_VERIFICATION_PENDING_REG);
+		if (customerId != null) {
+			CustomerVerification cv = customerVerificationService.getVerification(customerId,
+					CustomerVerificationType.EMAIL);
+			if (cv != null && ConstantDocument.No.equals(cv.getVerificationStatus()) && cv.getFieldValue() != null) {
+				throw new GlobalException("Your email verificaiton is pending",
+						JaxError.USER_DATA_VERIFICATION_PENDING_REG);
+			}
 		}
 	}
 

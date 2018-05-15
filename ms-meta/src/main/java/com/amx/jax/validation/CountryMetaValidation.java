@@ -32,7 +32,7 @@ public class CountryMetaValidation {
 		int userMobLength = mobile.length();
 
 		if (mobileLength != null && userMobLength != mobileLength.intValue()) {
-			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH);
+			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH, mobileLength);
 		}
 	}
 }

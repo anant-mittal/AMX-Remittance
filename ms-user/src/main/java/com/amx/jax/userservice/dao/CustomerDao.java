@@ -81,9 +81,11 @@ public class CustomerDao {
 	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByCustomerId(BigDecimal customerId) {
 		CustomerOnlineRegistration onlineCust = null;
-		List<CustomerOnlineRegistration> list = onlineCustRepo.getOnlineCustomersById(customerId);
-		if (!CollectionUtils.isEmpty(list) && list.size() >= 1) {
-			onlineCust = list.get(0);
+		if (customerId != null) {
+			List<CustomerOnlineRegistration> list = onlineCustRepo.getOnlineCustomersById(customerId);
+			if (!CollectionUtils.isEmpty(list) && list.size() >= 1) {
+				onlineCust = list.get(0);
+			}
 		}
 		return onlineCust;
 	}
