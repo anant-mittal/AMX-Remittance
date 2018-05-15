@@ -41,6 +41,8 @@ public class RegistrationService {
 		 * Clearing old session before proceeding
 		 */
 		sessionService.clear();
+		sessionService.invalidate();
+
 		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.ACTIVATION);
 

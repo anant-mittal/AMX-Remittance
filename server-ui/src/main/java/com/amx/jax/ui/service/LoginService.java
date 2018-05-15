@@ -165,6 +165,8 @@ public class LoginService {
 
 	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
 		sessionService.clear();
+		sessionService.invalidate();
+
 		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.RESET_PASS);
 		sessionService.getGuestSession().setIdentity(identity);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
