@@ -451,12 +451,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in getAllExchangeRateCurrencyList : ", e);
-			throw new JaxSystemError();
+			throw new JaxSystemError(e);
 		} // end of try-catch
 		return response.getBody();
 	}
