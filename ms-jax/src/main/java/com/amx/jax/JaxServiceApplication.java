@@ -19,5 +19,11 @@ public class JaxServiceApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(JaxServiceApplication.class, args);
 	}
-	
+
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
+		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
+		return metaInfo;
+	}
 }
