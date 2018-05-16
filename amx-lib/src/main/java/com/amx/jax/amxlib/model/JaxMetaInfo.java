@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.dict.Tenant;
 
-@Component
 public class JaxMetaInfo {
 
 	private BigDecimal countryId;
