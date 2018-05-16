@@ -71,6 +71,7 @@ public class CustomerRegistrationOtpManager {
 		jaxUtil.convert(customerPersonalDetail, pinfo);
 		jaxUtil.convert(otpData, civilIdOtpModel);
 		jaxNotificationService.sendOtpEmail(pinfo, civilIdOtpModel);
+		jaxNotificationService.sendOtpSms(pinfo, civilIdOtpModel);
 
 	}
 
