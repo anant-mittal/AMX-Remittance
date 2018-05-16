@@ -12,7 +12,7 @@ import com.amx.jax.scope.TenantValue;
 @TenantScoped
 @Component
 public class PostManConfig {
-
+	
 	@TenantValue("${tenant}")
 	private String tenant;
 
