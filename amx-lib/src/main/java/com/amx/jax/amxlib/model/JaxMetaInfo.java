@@ -2,16 +2,12 @@ package com.amx.jax.amxlib.model;
 
 import java.math.BigDecimal;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.dict.Tenant;
 
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class JaxMetaInfo {
 
 	private BigDecimal countryId;
