@@ -86,7 +86,7 @@ public class SlackService {
 
 		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
-			// return e;
+			return e;
 		}
 
 		AppContext context = AppContextUtil.getContext();

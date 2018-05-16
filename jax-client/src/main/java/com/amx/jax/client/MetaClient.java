@@ -418,13 +418,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.info("in getAllExchangeRateCurrencyList");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/exchange-rate-currency/list/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
-			});
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
-			LOGGER.error("exception in getAllExchangeRateCurrencyList : ", e);
-			throw new JaxSystemError();
+			throw new JaxSystemError(e);
 		} // end of try-catch
 
 	}
