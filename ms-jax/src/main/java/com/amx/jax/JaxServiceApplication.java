@@ -2,9 +2,13 @@ package com.amx.jax;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -16,4 +20,10 @@ public class JaxServiceApplication {
 		SpringApplication.run(JaxServiceApplication.class, args);
 	}
 
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
+		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
+		return metaInfo;
+	}
 }
