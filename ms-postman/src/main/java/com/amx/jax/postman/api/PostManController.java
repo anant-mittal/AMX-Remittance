@@ -210,7 +210,7 @@ public class PostManController {
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
-		fBPushService.send(msg);
+		fBPushService.sendDirect(msg);
 		return msg;
 	}
 }
