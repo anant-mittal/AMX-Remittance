@@ -86,7 +86,8 @@ public class FBPushService {
 	public PushMessage sendDirect(PushMessage msg) throws InterruptedException, ExecutionException {
 		if (msg.getTo() != null) {
 			String topic = msg.getTo().get(0);
-
+			
+			this.send(msg);
 			if (!ArgUtil.isEmptyString(topic)) {
 				this.sendAndroid(topic, msg);
 				this.sendIOS(topic, msg);
