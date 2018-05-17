@@ -3,7 +3,7 @@ async function init() {
   const registration = await navigator.serviceWorker.register('/sw.js');
 	
   firebase.initializeApp({
-    'messagingSenderId': '910078940498'
+    'messagingSenderId': '770916390748'
   });
   const messaging = firebase.messaging();
   
@@ -17,6 +17,7 @@ async function init() {
   }
 
   navigator.serviceWorker.addEventListener('message', event => {
+	  console.log("message=====",event);
     if (event.data === 'newData') {
       showData();
     }
