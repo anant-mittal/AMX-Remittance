@@ -12,16 +12,16 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.def.CacheForTenant;
 import com.amx.utils.FileUtil;
-import com.sun.codemodel.JClassAlreadyExistsException;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JType;
-
-import spoon.Launcher;
-import spoon.reflect.CtModel;
-import spoon.reflect.declaration.CtType;
+//import com.sun.codemodel.JClassAlreadyExistsException;
+//import com.sun.codemodel.JCodeModel;
+//import com.sun.codemodel.JDefinedClass;
+//import com.sun.codemodel.JMethod;
+//import com.sun.codemodel.JMod;
+//import com.sun.codemodel.JType;
+//
+//import spoon.Launcher;
+//import spoon.reflect.CtModel;
+//import spoon.reflect.declaration.CtType;
 
 public class GenerateCacheClasses { // Noncompliant
 
@@ -42,43 +42,45 @@ public class GenerateCacheClasses { // Noncompliant
 		// e.printStackTrace();
 		// }
 
-		Launcher launcher = new Launcher();
-		launcher.addInputResource(System.getProperty("user.dir") + "/src/main/java");
+//		Launcher launcher = new Launcher();
+//		launcher.addInputResource(System.getProperty("user.dir") + "/src/main/java");
 		// launcher.getEnvironment().setAutoImports(true);
 		// launcher.getEnvironment().setNoClasspath(true);
-		launcher.buildModel();
-		CtModel model = launcher.getModel();
-		for (CtType<?> string : model.getAllTypes()) {
-			CacheForTenant isThere = string.getActualClass().getAnnotation(CacheForTenant.class);
-			if (isThere != null) {
-				System.out.println("===" + string.getActualClass().getSimpleName());
-				createClass(string.getActualClass());
-			}
-		}
+
+		// launcher.buildModel();
+		// CtModel model = launcher.getModel();
+		// for (CtType<?> string : model.getAllTypes()) {
+		// CacheBoxEnabled isThere =
+		// string.getActualClass().getAnnotation(CacheBoxEnabled.class);
+		// if (isThere != null) {
+		// System.out.println("===" + string.getActualClass().getSimpleName());
+		// createClass(string.getActualClass());
+		// }
+		// }
 	}
 
 	public static void createClass(Class<?> class1) {
-		JCodeModel codeModel = new JCodeModel();
-		try {
-			JDefinedClass definedClass = codeModel._class("com.amx.jax.cache." + class1.getSimpleName());
-			definedClass.annotate(Component.class);
-			definedClass._extends(class1);
-			Method[] methods = class1.getDeclaredMethods();
-			for (Method method : methods) {
-				// definedClass.method(JMod.PUBLIC, method.getGenericReturnType(),
-				// method.getName());
-				JType jtype = codeModel.ref(method.getReturnType());
-				JMethod jmethod = definedClass.method(JMod.PUBLIC, jtype, method.getName());
-				System.out.println("====" + method.getGenericReturnType().getTypeName());
-				// method.get
-				// method.getName();
-			}
-			codeModel.build(new File("./src/main/java/"));
-		} catch (JClassAlreadyExistsException e) {
-			// ...
-		} catch (IOException e) {
-			// ...
-		}
+//		JCodeModel codeModel = new JCodeModel();
+//		try {
+//			JDefinedClass definedClass = codeModel._class("com.amx.jax.cache." + class1.getSimpleName());
+//			definedClass.annotate(Component.class);
+//			definedClass._extends(class1);
+//			Method[] methods = class1.getDeclaredMethods();
+//			for (Method method : methods) {
+//				// definedClass.method(JMod.PUBLIC, method.getGenericReturnType(),
+//				// method.getName());
+//				JType jtype = codeModel.ref(method.getReturnType());
+//				JMethod jmethod = definedClass.method(JMod.PUBLIC, jtype, method.getName());
+//				System.out.println("====" + method.getGenericReturnType().getTypeName());
+//				// method.get
+//				// method.getName();
+//			}
+//			codeModel.build(new File("./src/main/java/"));
+//		} catch (JClassAlreadyExistsException e) {
+//			// ...
+//		} catch (IOException e) {
+//			// ...
+//		}
 	}
 
 	@SuppressWarnings("rawtypes")
