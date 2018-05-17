@@ -3,9 +3,11 @@ async function init() {
   const registration = await navigator.serviceWorker.register('/sw.js');
 	
   firebase.initializeApp({
-    'messagingSenderId': '770916390748'
+    messagingSenderId: '770916390748'
   });
   const messaging = firebase.messaging();
+  
+  messaging.usePublicVapidKey("BNlB9TOch3VaJDzTId1LMZUFvQ7xmaCCu6tbu9aaYP5zqTM9pak3Jao_fBn6iJSiglljuj2jnQ_wNB1tABxqR2A");
   
   messaging.useServiceWorker(registration);	
   
@@ -24,13 +26,17 @@ async function init() {
   });
 
   const currentToken = await messaging.getToken();
-  //fetch('/register', { method: 'post', body: currentToken });
+  // fetch('/register', { method: 'post', body: currentToken });
   showData();
 
   messaging.onTokenRefresh(async () => {
     console.log('token refreshed');
     const newToken = await messaging.getToken();
-    //fetch('/register', { method: 'post', body: currentToken });
+    // fetch('/register', { method: 'post', body: currentToken });
+  });
+  
+  messaging.onMessage(function(payload) {
+	console.log('Message received. ', payload);
   });
 }
 
