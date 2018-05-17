@@ -81,6 +81,7 @@ public class UserController {
 			sessionService.getAppDevice().setAppVersion(appVersion);
 		}
 
+		
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
