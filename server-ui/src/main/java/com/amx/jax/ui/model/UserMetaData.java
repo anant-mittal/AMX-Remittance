@@ -1,5 +1,8 @@
 package com.amx.jax.ui.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
@@ -24,7 +27,9 @@ public class UserMetaData extends AbstractModel {
 	String cdnUrl = null;
 	// List<String> features = new ArrayList<String>();
 	String[] features = null;
-	
+	List<String> subscriptions = new ArrayList<String>();
+	String notifyRange = null;
+
 	public JaxMetaParameter getConfig() {
 		return config;
 	}
@@ -112,4 +117,21 @@ public class UserMetaData extends AbstractModel {
 	public void setFeatures(String[] features) {
 		this.features = features;
 	}
+
+	public List<String> getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(List<String> subscriptions) {
+		this.subscriptions = subscriptions;
+	}
+
+	public String getNotifyRange() {
+		return notifyRange;
+	}
+
+	public void setNotifyRange(String notifyRange) {
+		this.notifyRange = notifyRange;
+	}
+
 }
