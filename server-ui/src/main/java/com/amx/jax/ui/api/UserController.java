@@ -101,12 +101,12 @@ public class UserController {
 			CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
 
 			wrapper.getData().getSubscriptions()
-					.add(String.format("/topics/%s/all", AppContextUtil.getTenant().toString().toLowerCase(),
+					.add(String.format("/topics/%s-all", AppContextUtil.getTenant().toString().toLowerCase(),
 							customerModel.getPersoninfo().getNationalityId()));
 			wrapper.getData().getSubscriptions()
-					.add(String.format("/topics/%s/nationality/%s", AppContextUtil.getTenant().toString().toLowerCase(),
+					.add(String.format("/topics/%s-nationality-%s", AppContextUtil.getTenant().toString().toLowerCase(),
 							customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s/mobile/%s",
+			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-mobile-%s",
 					AppContextUtil.getTenant().toString().toLowerCase(), customerModel.getPersoninfo().getMobile()));
 			wrapper.getData().setNotifyRange(notifyRange);
 		}
