@@ -17,6 +17,7 @@ async function init() {
   }
 
   navigator.serviceWorker.addEventListener('message', event => {
+	  console.log("message=====",event);
     if (event.data === 'newData') {
       showData();
     }

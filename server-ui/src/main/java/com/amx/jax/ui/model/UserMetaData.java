@@ -24,6 +24,7 @@ public class UserMetaData extends AbstractModel {
 	String cdnUrl = null;
 	// List<String> features = new ArrayList<String>();
 	String[] features = null;
+	String[] subscription = null;
 
 	public JaxMetaParameter getConfig() {
 		return config;
