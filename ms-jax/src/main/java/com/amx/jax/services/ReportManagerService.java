@@ -208,7 +208,7 @@ public class ReportManagerService extends AbstractService{
 
 				Date docDate = view.getDocumentDate();
 				if(docDate != null){
-					obj.setDate(new SimpleDateFormat("dd/MM/yyy").format(docDate));
+					obj.setDate(new SimpleDateFormat("dd/MM/yyy hh:mm:ss").format(docDate));
 				}
 				
 				obj.setBeneficiaryName(view.getBeneficiaryName());
