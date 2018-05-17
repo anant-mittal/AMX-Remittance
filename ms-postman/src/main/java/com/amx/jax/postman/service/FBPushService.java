@@ -50,25 +50,6 @@ public class FBPushService {
 		}
 	}
 
-	public PushMessage send(PushMessage msg) throws InterruptedException, ExecutionException {
-		if (msg.getTo() != null) {
-			String to = msg.getTo().get(0);
-			Map<String, String> data = new HashMap<String, String>();
-
-			data.put("message", msg.getMessage());
-
-			Message message = Message.builder().putAllData(data).setTopic(to)
-					.setWebpushConfig(WebpushConfig.builder().putHeader("ttl", "300")
-							.setNotification(new WebpushNotification("Background Title (server)",
-									"Background Body (server)", "mail2.png"))
-							.build())
-					.build();
-			String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-			LOGGER.info("Sent message: " + response);
-		}
-		return msg;
-	}
-
 	@Autowired
 	RestService restService;
 
@@ -86,8 +67,7 @@ public class FBPushService {
 	public PushMessage sendDirect(PushMessage msg) throws InterruptedException, ExecutionException {
 		if (msg.getTo() != null) {
 			String topic = msg.getTo().get(0);
-			
-			this.send(msg);
+
 			if (!ArgUtil.isEmptyString(topic)) {
 				this.sendAndroid(topic, msg);
 				this.sendIOS(topic, msg);
@@ -127,6 +107,12 @@ public class FBPushService {
 		LOGGER.info("Sneinfnnnnnn {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
+	}
+
+	public void subscribe(String token, String topic) {
+		restService.ajax("https://iid.googleapis.com/iid/v1/" + token + "/rel/topics/" + topic)
+				.header("Authorization", "key=" + serverKey).header("Content-Type", "application/json").post()
+				.asString();
 	}
 
 }

@@ -2,7 +2,7 @@ importScripts('https://www.gstatic.com/firebasejs/4.12.0/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/4.12.0/firebase-messaging.js');
 
 firebase.initializeApp({
-	'messagingSenderId': '910078940498'
+	'messagingSenderId': '770916390748'
 });
 
 const messaging = firebase.messaging();
@@ -46,6 +46,7 @@ async function getDb() {
 
 
 messaging.setBackgroundMessageHandler(function(payload) {
+	console.log("sw: ", payload);
   const notificationTitle = 'Background Title (client)';
   const notificationOptions = {
     body: 'Background Body (client)',
