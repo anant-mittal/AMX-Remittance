@@ -337,8 +337,8 @@ public class MetaController {
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
 	public ApiResponse getBeneficiaryCurrencyList(
 			@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId,
-			@RequestParam(value = "serviceGroupId") BigDecimal serviceGroupId,
-			@RequestParam(value = "routingBankId") BigDecimal routingBankId) {
+			@RequestParam(value = "serviceGroupId", required = false) BigDecimal serviceGroupId,
+			@RequestParam(value = "routingBankId", required = false) BigDecimal routingBankId) {
 		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId, serviceGroupId, routingBankId);
 	}
 	

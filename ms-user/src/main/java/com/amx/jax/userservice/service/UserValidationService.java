@@ -441,9 +441,12 @@ public class UserValidationService {
 
 		// mobile otp validation
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
+		this.validateCustomerLockCount(onlineCustomer);
+		this.validateTokenDate(onlineCustomer);
 		String hashedotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getMotp());
 		String dbmOtp = onlineCustomer.getSmsToken();
 		if (!hashedotp.equals(dbmOtp)) {
+			this.incrementLockCount(onlineCustomer);
 			throw new InvalidOtpException("Mobile Otp is incorrect for identity int: " + customer.getIdentityInt());
 		}
 		// email otp validation
@@ -451,9 +454,11 @@ public class UserValidationService {
 			String hashedEotp = cryptoUtil.getHash(customer.getIdentityInt(), model.getEotp());
 			String dbeOtp = onlineCustomer.getEmailToken();
 			if (!hashedEotp.equals(dbeOtp)) {
+				this.incrementLockCount(onlineCustomer);
 				throw new InvalidOtpException("Email Otp is incorrect for identity int:  " + customer.getIdentityInt());
 			}
 		}
+		this.unlockCustomer(onlineCustomer);
 	}
 
 	private boolean isMOtpFlowRequired(CustomerModel model) {
@@ -551,6 +556,15 @@ public class UserValidationService {
 		if (initRegistration == null && !"Y".equals(onlineCustReg.getStatus())) {
 			throw new GlobalException("Customer is not active", JaxError.CUSTOMER_INACTIVE);
 		}
+	}
+	
+	protected void unlockCustomer(CustomerOnlineRegistration onlineCustomer) {
+		if (onlineCustomer.getLockCnt() != null || onlineCustomer.getLockDt() != null) {
+			onlineCustomer.setLockCnt(null);
+			onlineCustomer.setLockDt(null);
+			custDao.saveOnlineCustomer(onlineCustomer);
+		}
+		onlineCustomer.setTokenSentCount(BigDecimal.ZERO);
 	}
 
 	/**
