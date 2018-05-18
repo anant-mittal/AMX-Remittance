@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppConfig;
-import com.amx.jax.AppContextUtil;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -66,6 +66,9 @@ public class UserController {
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	@Autowired
+	FBPushClient fbPushClient;
+
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
@@ -96,18 +99,25 @@ public class UserController {
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
-			CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
 
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-all",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-nationality-%s",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-mobile-%s",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getMobile()));
 			wrapper.getData().setNotifyRange(notifyRange);
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
+		for (String topic : userService.getNotifyTopics()) {
+			fbPushClient.subscribe(token, topic + "_web");
+		}
+		return new ResponseWrapper<Object>();
+	}
+
+	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> unregisterNotify(@RequestParam String token) {
+		return new ResponseWrapper<Object>();
 	}
 
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })

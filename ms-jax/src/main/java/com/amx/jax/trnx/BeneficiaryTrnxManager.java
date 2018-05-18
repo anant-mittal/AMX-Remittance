@@ -117,13 +117,17 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	private BeneficaryAccount commitBeneAccount(BeneficiaryTrnxModel beneficiaryTrnxModel,
 			BigDecimal beneficaryMasterId) {
 		if (beneficiaryTrnxModel.getBeneficaryAccountSeqId() != null) {
+			logger.info("existing bene account id: " + beneficiaryTrnxModel.getBeneficaryAccountSeqId());
 			return beneficiaryAccountDao.findOne(beneficiaryTrnxModel.getBeneficaryAccountSeqId());
 		}
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
-		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		BeneficaryAccount beneficaryAccount = null;
+		if (!BigDecimal.ONE.equals(accountDetails.getServiceGroupId())) {
+			beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		}
 
 		if (beneficaryAccount == null) {
-
+			logger.info("creating new bene account");
 			beneficaryAccount = new BeneficaryAccount();
 			beneficaryAccount.setBankAccountNumber(accountDetails.getBankAccountNumber());
 			beneficaryAccount.setBankId(accountDetails.getBankId());
@@ -152,6 +156,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficaryAccount.setBankAccountTypeId(accountDetails.getBankAccountTypeId());
 
 			beneficiaryAccountDao.save(beneficaryAccount);
+			logger.info("created new bene account id: " + beneficaryAccount.getBeneficaryAccountSeqId());
+		} else {
+			logger.info("existing bene account id: " + beneficaryAccount.getBeneficaryAccountSeqId());
 		}
 
 		return beneficaryAccount;
@@ -238,6 +245,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 */
 	private BeneficaryMaster commitBeneMaster(BeneficiaryTrnxModel beneficiaryTrnxModel) {
 		if (beneficiaryTrnxModel.getBeneficaryMasterSeqId() != null) {
+			logger.info("existing new bene master id: " + beneficiaryTrnxModel.getBeneficaryMasterSeqId());
 			return beneficaryMasterRepository.findOne(beneficiaryTrnxModel.getBeneficaryMasterSeqId());
 		}
 		BenePersonalDetailModel benePersonalDetails = beneficiaryTrnxModel.getBenePersonalDetailModel();
@@ -250,7 +258,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}
 
 		if (beneMaster == null) {
-
+			logger.info("creating new bene maseter");
 			beneMaster = new BeneficaryMaster();
 			beneMaster.setApplicationCountryId(metaData.getCountryId());
 			BeneficaryStatus beneStatus = getbeneStatus();
@@ -273,6 +281,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneMaster.setNationality(benePersonalDetails.getNationality());
 
 			beneficaryMasterRepository.save(beneMaster);
+			logger.info("created new bene master id: " + beneMaster.getBeneficaryMasterSeqId());
+		} else {
+			logger.info("existing bene master: " + beneMaster.getBeneficaryMasterSeqId());
 		}
 
 		return beneMaster;
