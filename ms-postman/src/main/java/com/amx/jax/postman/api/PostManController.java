@@ -2,7 +2,6 @@ package com.amx.jax.postman.api;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,11 +23,9 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.postman.service.FBPushService;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -203,14 +200,5 @@ public class PostManController {
 		postManService.notifyException(title, eMsg);
 		return eMsg;
 	}
-
-	@Autowired
-	FBPushService fBPushService;
-
-	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
-	public PushMessage fbPush(@RequestBody PushMessage msg)
-			throws PostManException, InterruptedException, ExecutionException {
-		fBPushService.sendDirect(msg);
-		return msg;
-	}
+	
 }

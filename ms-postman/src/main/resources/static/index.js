@@ -3,7 +3,7 @@ async function init() {
   const registration = await navigator.serviceWorker.register('/sw.js');
 	
   firebase.initializeApp({
-    'messagingSenderId': '770916390748'
+    messagingSenderId: '770916390748'
   });
   const messaging = firebase.messaging();
   
@@ -11,6 +11,11 @@ async function init() {
   
   try {
     await messaging.requestPermission();
+    $(function() {
+    		$(".subscribe-notifications-btn")
+    		.attr("disabled", "disabled")
+    		.html("Notifications enabled for browser");
+    })
   } catch (e) {
     console.log('Unable to get permission', e);
     return;
@@ -19,57 +24,111 @@ async function init() {
   navigator.serviceWorker.addEventListener('message', event => {
 	  console.log("message=====",event);
     if (event.data === 'newData') {
-      showData();
+      console.log("new Data");
     }
   });
 
   const currentToken = await messaging.getToken();
-  //fetch('/register', { method: 'post', body: currentToken });
-  showData();
+   fetch('/postman/subscribe/kwt-all_web?token='+currentToken, { method: 'post'});
+  
 
   messaging.onTokenRefresh(async () => {
     console.log('token refreshed');
     const newToken = await messaging.getToken();
-    //fetch('/register', { method: 'post', body: currentToken });
+    fetch('/postman/subscribe/kwt-all_web?token='+newToken, { method: 'post'});
+  });
+  
+  messaging.onMessage(function(payload) {
+	console.log('Message received. ', payload);
   });
 }
 
-async function showData() {
-  const db = await getDb();
-  const tx = db.transaction('jokes', 'readonly');
-  const store = tx.objectStore('jokes');
-  store.getAll().onsuccess = e => showJokes(e.target.result);
+
+function sendNotification(title, message){
+	title = title || "Notification";
+	message = message || "Default message"
+	fetch('/postman/push/notify', {
+		method: 'post',
+		headers: {
+	        'Accept': 'application/json, text/plain, */*',
+	        'Content-Type': 'application/json'
+	    },
+		body: JSON.stringify({
+		  "image": "string",
+		  "lang": "AB",
+		  "lines": [
+		    message
+		  ],
+		  "message": message,
+		  "model": {},
+		  "result": {},
+		  "subject": title,
+		  "template": "CONTACT_US",
+		  "to": [
+		    "/topics/kwt-all"
+		  ]
+		})
+	})
 }
 
-function showJokes(jokes) {
-  const table = document.getElementById('outTable');
 
-  jokes.sort((a, b) => parseInt(b.ts) - parseInt(a.ts));
-  const html = [];
-  jokes.forEach(j => {
-    const date = new Date(parseInt(j.ts));
-    html.push(`<div><div class="header">${date.toISOString()} ${j.id} (${j.seq})</div><div class="joke">${j.joke}</div></div>`);
-  });
-  table.innerHTML = html.join('');
-}
-
-async function getDb() {
-  if (this.db) {
-    return Promise.resolve(this.db);
-  }
-  return new Promise(resolve => {
-    const openRequest = indexedDB.open("Chuck", 1);
-
-    openRequest.onupgradeneeded = event => {
-      const db = event.target.result;
-      db.createObjectStore('jokes', { keyPath: 'id' });
-    };
-
-    openRequest.onsuccess = event => {
-      this.db = event.target.result;
-      resolve(this.db);
-    }
-  });
-}
-
-init();
+$( function() {
+	fetch("/postman/list/nations",{
+		method: 'post'
+	}).then(function(resp){
+		resp.json().then(function(countries){
+			console.log(countries);
+			var countryOpts = countries.map(function(country){
+				return {
+					id: country,
+					text: country
+				}
+			});
+			
+			$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
+		})
+	})
+	
+	
+	fetch("/postman/list/tenant",{
+		method: 'post'
+	}).then(function(resp){
+		resp.json().then(function(tenants){
+			var tenantOpts = tenants.map(function(tenant){
+				return {
+					id: tenant,
+					text: tenant
+				}
+			});
+			$('.env-select').select2({
+				data: [{
+					id: "KWT",
+					text: "KWT"
+				}, {
+					id:"BHR",
+					text: "BHR"
+				}]
+			});
+		})
+	})
+	
+	$('.send-notification-btn').on('click', function() {
+		var nationality = $(".country-select").val();
+		var tenant = $(".env-select").val();
+		var title = $(".notif-title").val() || "Default Title";
+		var message = $(".notif-msg").val() || "Default Message";
+		fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
+			method: 'post',
+			headers: {
+		        'Accept': 'application/json, text/plain, */*',
+		        'Content-Type': 'application/json'
+		    }
+		})
+	})
+	
+	$(".send-notifications-kwt-all").on('click', function(){
+		var title = $(".notif-title").val() || "Default Title";
+		var message = $(".notif-msg").val() || "Default Message";
+		sendNotification(title, message);
+	})
+});
