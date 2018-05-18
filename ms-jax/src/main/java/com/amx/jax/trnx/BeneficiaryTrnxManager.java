@@ -244,7 +244,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
 		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
 		BeneficaryMaster beneMaster = null;
-		if (beneficaryAccount != null) {
+		if (beneficaryAccount != null && !BigDecimal.ONE.equals(accountDetails.getServiceGroupId())) {
 			beneMaster = beneficaryMasterRepository
 					.findByBeneficaryMasterSeqId(beneficaryAccount.getBeneficaryMasterId());
 		}
