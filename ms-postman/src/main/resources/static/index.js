@@ -86,7 +86,7 @@ $( function() {
 			});
 			
 			console.log(countryOpts);
-			$('.country-select').select2({data: countryOpts}).val("ALL_COUNTRIES").trigger("change");
+			$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
 		})
 	})
 	
