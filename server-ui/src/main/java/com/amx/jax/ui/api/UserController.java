@@ -98,20 +98,22 @@ public class UserController {
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
-			CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
 
-			wrapper.getData().getSubscriptions()
-					.add(String.format("/topics/%s-all", AppContextUtil.getTenant().toString().toLowerCase(),
-							customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions()
-					.add(String.format("/topics/%s-nationality-%s", AppContextUtil.getTenant().toString().toLowerCase(),
-							customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-mobile-%s",
-					AppContextUtil.getTenant().toString().toLowerCase(), customerModel.getPersoninfo().getMobile()));
 			wrapper.getData().setNotifyRange(notifyRange);
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
+	public ResponseWrapper<UserMetaData> unregisterNotify(@RequestParam String token) {
+		return null;
+	}
+
+	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
+	public ResponseWrapper<UserMetaData> registerNotify(@RequestParam String token) {
+		return null;
 	}
 
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
