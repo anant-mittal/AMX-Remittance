@@ -57,6 +57,7 @@ public class FBPushServiceImpl implements FBPushService {
 	private static final JsonPath DATA_TIMESTAMP = new JsonPath("/data/data/timestamp");
 
 	private static final JsonPath NOTFY_TITLE = new JsonPath("/notification/title");
+	private static final JsonPath NOTFY_SOUND = new JsonPath("/notification/sound");
 	private static final JsonPath NOTFY_MESSAGE = new JsonPath("/notification/body");
 
 	public PushMessage sendDirect(PushMessage msg) {
@@ -95,7 +96,7 @@ public class FBPushServiceImpl implements FBPushService {
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage())
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage()).put(NOTFY_SOUND, "default")
 
 				.toMap();
 
@@ -113,7 +114,7 @@ public class FBPushServiceImpl implements FBPushService {
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage())
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage()).put(NOTFY_SOUND, "default")
 
 				.toMap();
 
