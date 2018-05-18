@@ -127,6 +127,12 @@ $( function() {
 		    }
 		})
 	})
+	
+	$(".send-notifications-kwt-all").on('click', function(){
+		var title = $(".notif-title").val() || "Default Title";
+		var message = $(".notif-msg").val() || "Default Message";
+		sendNotification(title, message);
+	})
 });
 
 

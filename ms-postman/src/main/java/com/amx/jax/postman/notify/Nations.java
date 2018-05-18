@@ -3,10 +3,11 @@ package com.amx.jax.postman.notify;
 public enum Nations {
 
 	
+	ALL(null, null),
 	AFGHANISTAN("108","AFGHAN"),
 	ALBANIA("160","ALBANIAN"),
 	ALGERIA("158","ALGERIAN"),
-	ALL_COUNTRIES("239","null"),
+	ALL_OTHERS("239","null"),
 	AMERICAN__SAMOA("199","null"),
 	ANDHRA("241","ANILREDDY"),
 	ANGOLA("192","ANGOLAN"),
