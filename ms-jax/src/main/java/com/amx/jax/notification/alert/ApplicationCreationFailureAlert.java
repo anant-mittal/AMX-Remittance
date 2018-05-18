@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.NotificationType;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.exception.AbstractException;
 import com.amx.jax.util.JaxContextUtil;
@@ -17,13 +17,13 @@ import com.amx.jax.util.JaxContextUtil;
 public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Override
-	public List<String> getAlertContacts(NotificationType notificationType) {
+	public List<String> getAlertContacts(CommunicationChannel notificationType) {
 		// TODO fetch alert contacts
 		return null;
 	}
 
 	@Override
-	public void sendAlert(AbstractException ex, NotificationType... notificationType) {
+	public void sendAlert(AbstractException ex, CommunicationChannel... notificationType) {
 
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
 		// TODO fetch bene and customer details

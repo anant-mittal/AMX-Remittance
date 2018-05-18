@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.amx.amxlib.constant.NotificationType;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.model.response.ApiError;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxFieldError;
@@ -55,7 +55,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		JaxEvent event = JaxContextUtil.getJaxEvent();
 		if (event != null) {
 			IAlert alert = appContext.getBean(event.getAlertBean());
-			alert.sendAlert(ex, NotificationType.EMAIL);
+			alert.sendAlert(ex, CommunicationChannel.EMAIL);
 		}
 	}
 

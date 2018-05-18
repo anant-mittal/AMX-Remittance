@@ -2,7 +2,7 @@ package com.amx.jax.notification.alert;
 
 import java.util.List;
 
-import com.amx.amxlib.constant.NotificationType;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.jax.exception.AbstractException;
 
 /**
@@ -18,13 +18,13 @@ public interface IAlert {
 	 * @param notificationTypes
 	 * 
 	 */
-	void sendAlert(AbstractException ex, NotificationType... notificationType);
+	void sendAlert(AbstractException ex, CommunicationChannel... notificationType);
 
 	/**
 	 * @param notificationType
 	 * @return list of contacts to whom email/sms need to send
 	 * 
 	 */
-	List<String> getAlertContacts(NotificationType notificationType);
+	List<String> getAlertContacts(CommunicationChannel notificationType);
 
 }
