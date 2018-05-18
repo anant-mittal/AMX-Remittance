@@ -535,6 +535,12 @@ public class BeneficiaryService extends AbstractService {
 		return apiResponse;
 	}
 	
+	/**
+	 * sends otp to channel provided
+	 * @param channels
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
 		
 		Customer customer = null;
