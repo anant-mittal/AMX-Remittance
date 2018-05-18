@@ -182,11 +182,7 @@ public class BeneficiaryValidationService {
 			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
 			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
 		}
-		if (beneAccountMaster != null) {
-			logger.info("validateDuplicateCashBeneficiary beneaccount found: {}",
-					beneAccountMaster.getBeneficaryAccountSeqId());
-			trnxModel.setBeneficaryAccountSeqId(beneAccountMaster.getBeneficaryAccountSeqId());
-		}
+
 		if (beneAccountMaster != null && beneMaster != null) {
 			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
 					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());

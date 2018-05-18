@@ -121,7 +121,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			return beneficiaryAccountDao.findOne(beneficiaryTrnxModel.getBeneficaryAccountSeqId());
 		}
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
-		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		BeneficaryAccount beneficaryAccount = null;
+		if (!BigDecimal.ONE.equals(accountDetails.getServiceGroupId())) {
+			beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		}
 
 		if (beneficaryAccount == null) {
 			logger.info("creating new bene account");
