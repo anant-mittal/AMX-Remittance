@@ -19,7 +19,7 @@ import com.amx.jax.postman.service.FBPushServiceImpl;
 
 @RestController
 public class FBPushController {
-	
+
 	private static final Logger LOGGER = LoggerFactory.getLogger(FBPushController.class);
 
 	@Autowired
@@ -38,5 +38,5 @@ public class FBPushController {
 		fBPushService.subscribe(token, topic);
 		return topic;
 	}
-	
+
 }

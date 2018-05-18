@@ -2,6 +2,10 @@ package com.amx.jax.postman.model;
 
 public class PushMessage extends Message {
 
+	public static final String FORMAT_TO_ALL = "/topics/%s-all";
+	public static final String FORMAT_TO_NATIONALITY = "/topics/%s-nationality-%s";
+	public static final String FORMAT_TO_MOBILE = "/topics/%s-mobile-%s";
+
 	private static final long serialVersionUID = -1354844357577261297L;
 
 	Object result = null;

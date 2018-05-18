@@ -14,4 +14,8 @@ public final class PostManUrls {
 	public static final String PROCESS_TEMPLATE_FILE = "/postman/template/file";
 	public static final String GEO_LOC = "/geo/location";
 
+	public static final String LIST_TENANT = "/postman/list/tenant";
+	public static final String LIST_NATIONS = "/postman/list/nations";
+	public static final String LIST_BRANCHES = "/postman/list/branches";
+
 }

@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
-import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppConfig;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -96,18 +94,22 @@ public class UserController {
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
-			CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
 
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-all",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-nationality-%s",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getNationalityId()));
-			wrapper.getData().getSubscriptions().add(String.format("/topics/%s-mobile-%s",
-					AppContextUtil.getTenant().toLowerCase(), customerModel.getPersoninfo().getMobile()));
 			wrapper.getData().setNotifyRange(notifyRange);
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
+	public ResponseWrapper<UserMetaData> unregisterNotify(@RequestParam String token) {
+		return null;
+	}
+
+	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
+	public ResponseWrapper<UserMetaData> registerNotify(@RequestParam String token) {
+		return null;
 	}
 
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
