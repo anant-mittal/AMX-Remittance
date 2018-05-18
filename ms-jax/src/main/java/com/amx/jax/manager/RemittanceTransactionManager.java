@@ -509,7 +509,7 @@ public class RemittanceTransactionManager {
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		breakup.setNetAmountWithoutLoyality(netAmount);
-		if (model.isAvailLoyalityPoints()) {
+		if (model.isAvailLoyalityPoints() && comission != null && comission.intValue() > 0) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
