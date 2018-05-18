@@ -66,6 +66,7 @@ public class FBPushServiceImpl implements FBPushService {
 			if (!ArgUtil.isEmptyString(topic)) {
 				this.sendAndroid(topic, msg);
 				this.sendIOS(topic, msg);
+				this.sendWeb(topic, msg);
 			}
 
 		}
