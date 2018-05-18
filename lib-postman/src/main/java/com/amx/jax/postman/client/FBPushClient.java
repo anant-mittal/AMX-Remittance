@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.postman.FBPushService;
@@ -12,6 +13,7 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 
+@Component
 public class FBPushClient implements FBPushService {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(FBPushClient.class);
