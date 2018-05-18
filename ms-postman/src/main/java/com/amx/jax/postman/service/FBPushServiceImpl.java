@@ -88,7 +88,25 @@ public class FBPushServiceImpl implements FBPushService {
 
 	@Async
 	public void sendIOS(String topic, PushMessage msg) {
-		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic)
+		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_ios")
+
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, msg.getMessage())
+				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
+				.put(DATA_TIMESTAMP, System.currentTimeMillis())
+
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage())
+
+				.toMap();
+
+		LOGGER.info("Notification JSON {}", JsonUtil.toJson(fields));
+		LOGGER.info("Sneinfnnnnnn {}",
+				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
+						.header("Content-Type", "application/json").post(fields).asString());
+	}
+
+	@Async
+	public void sendWeb(String topic, PushMessage msg) {
+		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_web")
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, msg.getMessage())
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
