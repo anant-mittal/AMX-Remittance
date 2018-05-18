@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,8 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -34,6 +37,18 @@ public class UserService {
 
 	@Autowired
 	private JaxService jaxService;
+
+	public List<String> getNotifyTopics() {
+		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+		List<String> topics = new ArrayList<String>();
+		topics.add(String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getNationalityId()));
+		topics.add(String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getNationalityId()));
+		topics.add(String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getMobile()));
+		return topics;
+	}
 
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
 		return new ResponseWrapper<CustomerDto>(
