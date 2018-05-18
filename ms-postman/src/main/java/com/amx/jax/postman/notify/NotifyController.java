@@ -62,7 +62,7 @@ public class NotifyController {
 		return fbPushClient.sendDirect(msg);
 	}
 
-	@RequestMapping(value = "/postman/notify/naotionality", method = RequestMethod.POST)
+	@RequestMapping(value = "/postman/notify/nationality", method = RequestMethod.POST)
 	public PushMessage notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
