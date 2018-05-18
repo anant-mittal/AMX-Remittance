@@ -158,11 +158,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/disable/" + sb.toString();
-			response = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
-					new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
-					});
-
-			return response.getBody();
+			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+			});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -430,7 +427,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 					.queryParam("serviceGroupId", param.getServiceGroupId())
 					.queryParam("routingBankId", param.getRoutingBankId())
 					.queryParam("currencyId", param.getCurrencyId());
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 					});
 		} catch (AbstractException ae) {
