@@ -19,6 +19,7 @@ import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
+import com.amx.utils.ArgUtil;
 
 @Service
 public class UserService {
@@ -41,11 +42,14 @@ public class UserService {
 	public List<String> getNotifyTopics() {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
 		List<String> topics = new ArrayList<String>();
-		topics.add(String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant().toLowerCase(),
+		topics.add(String.format(PushMessage.FORMAT_TO_ALL,
+				ArgUtil.parseAsString(AppContextUtil.getTenant()).toLowerCase(),
 				customerModel.getPersoninfo().getNationalityId()));
-		topics.add(String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant().toLowerCase(),
+		topics.add(String.format(PushMessage.FORMAT_TO_NATIONALITY,
+				ArgUtil.parseAsString(AppContextUtil.getTenant()).toLowerCase(),
 				customerModel.getPersoninfo().getNationalityId()));
-		topics.add(String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant().toLowerCase(),
+		topics.add(String.format(PushMessage.FORMAT_TO_MOBILE,
+				ArgUtil.parseAsString(AppContextUtil.getTenant()).toLowerCase(),
 				customerModel.getPersoninfo().getMobile()));
 		return topics;
 	}
