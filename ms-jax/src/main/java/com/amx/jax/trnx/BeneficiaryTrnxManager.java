@@ -36,6 +36,10 @@ import com.amx.jax.services.BeneficiaryValidationService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.validation.BenePersonalDetailValidator;
 
+/**
+ * @author Prashant
+ *
+ */
 @Component
 @SuppressWarnings("rawtypes")
 public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrnxModel> {
@@ -82,6 +86,11 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return model;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.cache.TransactionModel#commit()
+	 */
 	@Override
 	@Transactional
 	public BeneficiaryTrnxModel commit() {
@@ -97,6 +106,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return beneficiaryTrnxModel;
 	}
 
+	/**
+	 * commits bene account in db
+	 * 
+	 * @param beneficiaryTrnxModel
+	 * @param beneficaryMasterId
+	 * @return bene account
+	 * 
+	 */
 	private BeneficaryAccount commitBeneAccount(BeneficiaryTrnxModel beneficiaryTrnxModel,
 			BigDecimal beneficaryMasterId) {
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
@@ -141,10 +158,24 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return beneficaryAccount;
 	}
 
+	/**
+	 * @param bankId
+	 * @param bankBranchId
+	 * @return bankbranch code
+	 * 
+	 */
 	private BigDecimal getBankBranchCode(BigDecimal bankId, BigDecimal bankBranchId) {
 		return bankService.getBankBranchView(bankId, bankBranchId).getBranchCode();
 	}
 
+	/**
+	 * commits bene relationship in db
+	 * 
+	 * @param beneficiaryTrnxModel
+	 * @param beneficaryMasterId
+	 * @param beneficaryAccountId
+	 * 
+	 */
 	private void commitBeneRelationship(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId,
 			BigDecimal beneficaryAccountId) {
 		// TODO: set all 10 bene names in bene relationship
@@ -175,6 +206,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	}
 
+	/**
+	 * commits bene contact in trnx
+	 * 
+	 * @param beneficiaryTrnxModel
+	 * @param beneficaryMasterId
+	 * 
+	 */
 	private void commitBeneContact(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneficaryMasterId) {
 		BenePersonalDetailModel beneDetails = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneficaryContact beneficaryContact = new BeneficaryContact();
@@ -192,6 +230,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 	}
 
+	/**
+	 * commits bene master in db
+	 * 
+	 * @param beneficiaryTrnxModel
+	 * @return bene master data
+	 * 
+	 */
 	private BeneficaryMaster commitBeneMaster(BeneficiaryTrnxModel beneficiaryTrnxModel) {
 		BenePersonalDetailModel benePersonalDetails = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
@@ -233,6 +278,11 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return beneMaster;
 	}
 
+	/**
+	 * @param beneMaster
+	 * @param benePersonalDetails
+	 * 
+	 */
 	private void setNames(BeneficaryMaster beneMaster, BenePersonalDetailModel benePersonalDetails) {
 		beneMaster.setFirstName(benePersonalDetails.getFirstName());
 		beneMaster.setSecondName(benePersonalDetails.getSecondName());
@@ -246,6 +296,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneMaster.setLocalThirdName(benePersonalDetails.getLocalThirdName());
 	}
 
+	/**
+	 * @return status of bene
+	 * 
+	 */
 	private BeneficaryStatus getbeneStatus() {
 		if (JaxChannel.ONLINE.equals(metaData.getChannel())) {
 			return beneficaryStatusRepository.findByBeneficaryStatusName(ConstantDocument.INDIVIDUAL_STRING);
@@ -254,6 +308,14 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}
 	}
 
+	/**
+	 * commits trnx validating otps
+	 * 
+	 * @param mOtp
+	 * @param eOtp
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse commitTransaction(String mOtp, String eOtp) {
 		userService.validateOtp(null, mOtp, eOtp);
 		commit();
@@ -270,6 +332,13 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return apiResponse;
 	}
 
+	/**
+	 * save account in trnx
+	 * 
+	 * @param beneAccountModel
+	 * @return
+	 * 
+	 */
 	public ApiResponse saveBeneAccountTrnx(BeneAccountModel beneAccountModel) {
 		beneficiaryValidationService.validateBeneAccount(beneAccountModel);
 		BeneficiaryTrnxModel trnxModel = getWithInit();
@@ -280,15 +349,20 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		return apiResponse;
 	}
 
+	/**
+	 * @param benePersonalDetailModel
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse savePersonalDetailTrnx(BenePersonalDetailModel benePersonalDetailModel) {
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(benePersonalDetailModel,
 				"benePersonalDetailModel");
 		BeneficiaryTrnxModel trnxModel = getWithInit();
 		trnxModel.setBenePersonalDetailModel(benePersonalDetailModel);
-		
+
 		// check for CASH channel only
-		if (trnxModel.getBeneAccountModel()!= null && 
-			BigDecimal.ONE.equals(trnxModel.getBeneAccountModel().getServiceGroupId())) {
+		if (trnxModel.getBeneAccountModel() != null
+				&& BigDecimal.ONE.equals(trnxModel.getBeneAccountModel().getServiceGroupId())) {
 			beneficiaryValidationService.validateDuplicateCashBeneficiary(trnxModel);
 		}
 		benePersonalDetailValidator.validate(trnxModel, errors);
