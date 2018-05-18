@@ -48,8 +48,7 @@ public class FBPushClient implements FBPushService {
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
-		
-		
+
 	}
 
 }
