@@ -29,13 +29,13 @@ async function init() {
   });
 
   const currentToken = await messaging.getToken();
-   fetch('/postman/subscribe/kwt-all?token='+currentToken, { method: 'post'});
+   fetch('/postman/subscribe/kwt-all_web?token='+currentToken, { method: 'post'});
   
 
   messaging.onTokenRefresh(async () => {
     console.log('token refreshed');
     const newToken = await messaging.getToken();
-    fetch('/postman/subscribe/kwt-all?token='+newToken, { method: 'post'});
+    fetch('/postman/subscribe/kwt-all_web?token='+newToken, { method: 'post'});
   });
   
   messaging.onMessage(function(payload) {
