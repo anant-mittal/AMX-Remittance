@@ -116,11 +116,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 */
 	private BeneficaryAccount commitBeneAccount(BeneficiaryTrnxModel beneficiaryTrnxModel,
 			BigDecimal beneficaryMasterId) {
+		if (beneficiaryTrnxModel.getBeneficaryAccountSeqId() != null) {
+			return beneficiaryAccountDao.findOne(beneficiaryTrnxModel.getBeneficaryAccountSeqId());
+		}
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
-
-		// TODO : check for existing account, logic in BeneficiaryValidationService
-		// checkduplicate bene
-		// if not exist then create new
 		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
 
 		if (beneficaryAccount == null) {
@@ -238,6 +237,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	 * 
 	 */
 	private BeneficaryMaster commitBeneMaster(BeneficiaryTrnxModel beneficiaryTrnxModel) {
+		if (beneficiaryTrnxModel.getBeneficaryMasterSeqId() != null) {
+			return beneficaryMasterRepository.findOne(beneficiaryTrnxModel.getBeneficaryMasterSeqId());
+		}
 		BenePersonalDetailModel benePersonalDetails = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
 		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
@@ -249,8 +251,6 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 
 		if (beneMaster == null) {
 
-			// TODO: check if alreay exisitng benemaster linked to beneaccount table if null
-			// then create new one
 			beneMaster = new BeneficaryMaster();
 			beneMaster.setApplicationCountryId(metaData.getCountryId());
 			BeneficaryStatus beneStatus = getbeneStatus();

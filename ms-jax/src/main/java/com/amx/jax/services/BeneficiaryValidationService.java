@@ -173,6 +173,12 @@ public class BeneficiaryValidationService {
 		BeneficaryAccount beneAccountMaster = getBeneficaryAccount(beneAccountModel);
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
+		if (beneMaster != null) {
+			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
+		}
+		if (beneAccountMaster != null) {
+			trnxModel.setBeneficaryAccountSeqId(beneAccountMaster.getBeneficaryAccountSeqId());
+		}
 		if (beneAccountMaster != null && beneMaster != null) {
 			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShipByRelationsId(
 					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId(),
