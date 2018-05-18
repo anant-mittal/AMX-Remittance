@@ -85,8 +85,7 @@ $( function() {
 				}
 			});
 			
-			console.log(countryOpts);
-			$('.country-select').select2({data: countryOpts}).val("ALL_COUNTRIES").trigger("change");
+			$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
 		})
 	})
 	
@@ -114,7 +113,6 @@ $( function() {
 	})
 	
 	$('.send-notification-btn').on('click', function() {
-//		sendNotification(null, $(".notif-msg").val());
 		var nationality = $(".country-select").val();
 		var tenant = $(".env-select").val();
 		var title = $(".notif-title").val() || "Default Title";
