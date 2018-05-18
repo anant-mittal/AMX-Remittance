@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -41,6 +43,8 @@ import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCrea
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeneficiaryValidationService {
+
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	BeneficiaryService beneficiaryService;
@@ -175,15 +179,17 @@ public class BeneficiaryValidationService {
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
 		if (beneMaster != null) {
+			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
 			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
 		}
 		if (beneAccountMaster != null) {
+			logger.info("validateDuplicateCashBeneficiary beneaccount found: {}",
+					beneAccountMaster.getBeneficaryAccountSeqId());
 			trnxModel.setBeneficaryAccountSeqId(beneAccountMaster.getBeneficaryAccountSeqId());
 		}
 		if (beneAccountMaster != null && beneMaster != null) {
-			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShipByRelationsId(
-					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId(),
-					benePersonalDetailModel.getRelationsId());
+			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
+					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
 			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
 				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
 			}
