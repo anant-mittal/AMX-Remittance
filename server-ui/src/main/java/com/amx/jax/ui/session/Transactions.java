@@ -29,7 +29,7 @@ public class Transactions implements Serializable {
 	}
 
 	public void track() {
-		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, this.transactionId);
+		AppContextUtil.setTranxId(this.transactionId);
 	}
 
 	public void clear() {
@@ -43,7 +43,7 @@ public class Transactions implements Serializable {
 	}
 
 	public <T> ResponseWrapper<T> start(ResponseWrapper<T> wrapper) {
-		this.transactionId = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
+		this.transactionId = AppContextUtil.getTranxId();
 		return wrapper;
 	}
 
