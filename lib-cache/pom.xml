@@ -45,17 +45,17 @@
 			<version>2.54</version>
 		</dependency>
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>com.sun.codemodel</groupId>
 			<artifactId>codemodel</artifactId>
 			<version>2.6</version>
-		</dependency>
+		</dependency> -->
 
-		<dependency>
+<!-- 		<dependency>
 			<groupId>fr.inria.gforge.spoon</groupId>
 			<artifactId>spoon-core</artifactId>
 			<version>6.2.0</version>
-		</dependency>
+		</dependency> -->
 
 	</dependencies>
 

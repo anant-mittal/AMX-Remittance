@@ -2,6 +2,7 @@ package com.amx.jax.postman.api;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,12 +26,14 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
+import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
@@ -50,6 +53,9 @@ public class PostManControllerTest {
 
 	@Autowired
 	PostManClient postManClient;
+	
+	@Autowired
+	FBPushClient fbPushClient;
 
 	@Autowired
 	PostManServiceImpl postManServiceImpl;
@@ -103,6 +109,20 @@ public class PostManControllerTest {
 		String devnagiri = toDevnagiri.transliterate("lalit");
 
 		return msg;
+	}
+	
+	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
+	public PushMessage fbPush(@RequestBody PushMessage msg)
+			throws PostManException, InterruptedException, ExecutionException {
+		fbPushClient.sendDirect(msg);
+		return msg;
+	}
+	
+	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
+	public String fbPush(@RequestParam String token, @PathVariable String topic)
+			throws PostManException, InterruptedException, ExecutionException {
+		fbPushClient.subscribe(token, topic);
+		return topic;
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)

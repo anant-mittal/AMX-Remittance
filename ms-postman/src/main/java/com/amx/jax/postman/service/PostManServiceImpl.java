@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -173,6 +174,7 @@ public class PostManServiceImpl implements PostManService {
 		Email email = this.sendEmail(supportService.createContactUsEmail(supportEmail));
 		Notipy msg = new Notipy();
 		msg.setMessage(supportEmail.getSubject());
+		msg.addLine("Tenant : " + AppContextUtil.getTenant());
 		msg.addLine("VisitorName : " + supportEmail.getVisitorName());
 		msg.addLine("VisitorEmail : " + supportEmail.getVisitorEmail());
 		msg.addLine("VisitorPhone : " + supportEmail.getVisitorPhone());

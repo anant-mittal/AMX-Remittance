@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -31,9 +33,17 @@ import com.querydsl.core.types.Predicate;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 
+/**
+ * validations service for add bene
+ * 
+ * @author Prashant
+ *
+ */
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeneficiaryValidationService {
+
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	BeneficiaryService beneficiaryService;
@@ -59,15 +69,23 @@ public class BeneficiaryValidationService {
 	@Autowired
 	BeneficiaryPersonalDetailPredicateCreator beneficiaryPersonalDetailPredicateCreator;
 
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	public void validateBeneAccount(BeneAccountModel beneAccountModel) {
 
 		// validate only for BANK channel and not for CASH channel
-		if (! BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
 			validateBankAccountNumber(beneAccountModel);
 			validateDuplicateBankAccount(beneAccountModel);
 		}
 	}
 
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {
 		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
 		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
@@ -84,6 +102,10 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
 		if (StringUtils.isBlank(beneAccountModel.getBankAccountNumber())) {
 			return;
@@ -111,6 +133,11 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param beneAccountModel
+	 * @return bene account
+	 * 
+	 */
 	public BeneficaryAccount getBeneficaryAccount(BeneAccountModel beneAccountModel) {
 		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
 		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
@@ -124,6 +151,11 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param benePersonalDetailModel
+	 * @return bene master
+	 * 
+	 */
 	public BeneficaryMaster getBeneficaryMaster(BenePersonalDetailModel benePersonalDetailModel) {
 		Predicate beneMasterPredicate = beneficiaryPersonalDetailPredicateCreator
 				.createBeneSearchPredicate(benePersonalDetailModel);
@@ -136,15 +168,23 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param trnxModel
+	 * 
+	 */
 	public void validateDuplicateCashBeneficiary(BeneficiaryTrnxModel trnxModel) {
 		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
 		BeneficaryAccount beneAccountMaster = getBeneficaryAccount(beneAccountModel);
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
+		if (beneMaster != null) {
+			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
+			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
+		}
+		
 		if (beneAccountMaster != null && beneMaster != null) {
-			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShipByRelationsId(
-					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId(),
-					benePersonalDetailModel.getRelationsId());
+			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
+					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
 			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
 				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
 			}
