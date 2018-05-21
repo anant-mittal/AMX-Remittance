@@ -338,7 +338,7 @@ public class UserService extends AbstractUserService {
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
-		if (initRegistration != null && initRegistration) {
+		if (civilId != null) {
 			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
 		}
 		CivilIdOtpModel model = new CivilIdOtpModel();
