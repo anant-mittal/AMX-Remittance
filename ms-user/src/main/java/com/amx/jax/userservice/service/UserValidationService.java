@@ -558,7 +558,10 @@ public class UserValidationService {
 	 */
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
-		if (customer == null) {
+		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
+			return;
+		}
+		if (customer == null && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
 			throw new GlobalException("Customer not registered in branch", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
@@ -573,6 +576,9 @@ public class UserValidationService {
 		}
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
+		}
+		if (ConstantDocument.Yes.equals(customer.getIsActive()) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
+			throw new GlobalException("Customer active in branch", JaxError.CUSTOMER_ACTIVE_BRANCH);
 		}
 	}
 
