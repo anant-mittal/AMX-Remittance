@@ -117,8 +117,7 @@ public class RegisterController {
 
 	@RequestMapping(value = "/pub/register/new/init", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> partialReg(@RequestBody CustomerPersonalDetail personalDetail) {
-		transactions.track();
-		return partialRegService.newUserRegisterInit(personalDetail);
+		return transactions.start(partialRegService.newUserRegisterInit(personalDetail));
 	}
 
 	@RequestMapping(value = "/pub/register/new/verify", method = { RequestMethod.POST })
