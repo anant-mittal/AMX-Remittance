@@ -1,17 +1,22 @@
 package com.amx.jax.userservice.validation;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.userservice.service.UserValidationService;
 import com.amx.jax.validation.CountryMetaValidation;
 
 @Component
@@ -25,6 +30,10 @@ public class CustomerPersonalDetailValidator implements Validator {
 	TenantContext<CustomerValidation> tenantContext;
 	@Autowired
 	CountryMetaValidation countryMetaValidation;
+	@Autowired
+	CustomerDao custDao;
+	@Autowired
+	UserValidationService userValidationService;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -38,6 +47,8 @@ public class CustomerPersonalDetailValidator implements Validator {
 		tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),
+				JaxApiFlow.SIGNUP_DEFAULT);
 	}
 
 }
