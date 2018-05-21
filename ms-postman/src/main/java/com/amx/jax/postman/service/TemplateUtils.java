@@ -27,14 +27,24 @@ public class TemplateUtils {
 		return tenantProperties.getProperties().getProperty(key);
 	}
 
+	public String image(String key, boolean clean) {
+		if (clean) {
+			return tenantProperties.getProperties().getProperty(key).replace("data:image/png;base64,", "");
+		}
+		return tenantProperties.getProperties().getProperty(key);
+	}
+
+	public Image imageJasper(String key, boolean clean) throws JRException {
+		return net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext())
+				.loadAwtImageFromBytes(javax.xml.bind.DatatypeConverter.parseBase64Binary(image(key, clean)));
+	}
+
 	public String image(String key) {
-		return tenantProperties.getProperties().getProperty(key).replace("data:image/png;base64,", "");
+		return this.image(key, false);
 	}
 
 	public Image imageJasper(String key) throws JRException {
-		return net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext())
-				.loadAwtImageFromBytes(javax.xml.bind.DatatypeConverter.parseBase64Binary(
-						tenantProperties.getProperties().getProperty(key).replace("data:image/png;base64,", "")));
+		return this.imageJasper(key, false);
 	}
 
 	public static void reverseFlag(boolean set) {
