@@ -64,7 +64,7 @@ public class JaxNotificationService {
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		File file = new File();
-		file.setTemplate(Templates.REMIT_RECEIPT);
+		file.setTemplate(Templates.REMIT_RECEIPT_JASPER);
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 

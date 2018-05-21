@@ -26,7 +26,7 @@ public class FlatMap {
 
 	public String get(String key) {
 		JsonPath jsonPath = getJsonPath(key);
-		return jsonPath.load(this.map, null);
+		return jsonPath.load(this.map, Constants.BLANK);
 	}
 
 	public Integer getInteger(String key) {
