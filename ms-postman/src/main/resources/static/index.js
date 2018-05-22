@@ -85,18 +85,30 @@ if(window.sessionStorage.getItem("SES_ID") === VALID_MD_PWD){
 	})
 }
 
+function onLoginClick(){
+	var username = $(".username").val();
+	var pwd = $(".password").val();
+	var mdPwd = md5(username + "#" + pwd);
+	if(mdPwd === VALID_MD_PWD){
+		window.sessionStorage.setItem("SES_ID", mdPwd);
+		$('.login').hide();
+		init();
+		$('.app').show();		
+	} else {
+		alert("invalid username or password");
+	}
+}
+
 $(function(){
-	$('.login-btn').on('click', function(){
-		var username = $(".username").val();
-		var pwd = $(".password").val();
-		var mdPwd = md5(username + "#" + pwd);
-		if(mdPwd === VALID_MD_PWD){
-			window.sessionStorage.setItem("SES_ID", mdPwd);
-			$('.login').hide();
-			init();
-			$('.app').show();		
-		} else {
-			alert("invalid username or password");
+	$('.login-btn').on('click', onLoginClick);
+	$('.password').on('keyup', function(e){
+		if(e.which === 13){
+			onLoginClick();
+		}
+	})
+	$('.username').on('keyup', function(e){
+		if(e.which === 13){
+			onLoginClick();
 		}
 	})
 })
