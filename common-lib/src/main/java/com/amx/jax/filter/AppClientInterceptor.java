@@ -28,7 +28,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
 		AppContextUtil.importHeadersTo(request.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));
-
+		
 		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {
 			LOGGER.info("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
 		}

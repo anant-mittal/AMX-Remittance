@@ -62,7 +62,7 @@
                                         stretchType="NoStretch"/>
                                 <graphicElement/>
                                 <imageExpression class="java.lang.String">
-                                    <![CDATA[$P{TU}.imageJasper("company.logo.image", true)]]>
+                                		<![CDATA[$P{TU}.prop("company.logo.path")]]>
                                 </imageExpression>
                             </image>
                             <textField isStretchWithOverflow="true">
@@ -1837,6 +1837,26 @@
                     <!--##################FOOTER END####################-->
 
                     <!--##################FOOTER START####################-->
+                    <frame>
+                        <reportElement positionType="Float" x="0" y="150" width="595" height="650"
+                                       forecolor="blue"/>
+                        <rectangle>
+                            <reportElement x="0" y="0" width="595" mode="Transparent" height="650" />
+                        </rectangle>
+                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
+                            <reportElement
+                                    x="0"
+                                    y="0"
+                                    width="595"
+                                    height="100"
+                                    key="image-1"
+                                    stretchType="NoStretch"/>
+                            <graphicElement/>
+                            <imageExpression class="java.lang.String">
+                                <![CDATA[$P{TU}.imageJasper("copy.image")]]>
+                            </imageExpression>
+                        </image>
+                    </frame>
                     <!--##################FOOTER END####################-->
                     </c:listContents>
                 </c:list>
