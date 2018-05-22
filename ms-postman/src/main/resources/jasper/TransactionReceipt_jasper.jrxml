@@ -1815,7 +1815,7 @@
 
                     <!--##################FOOTER START####################-->
                     <frame>
-                        <reportElement positionType="Float" x="0" y="680" width="595" height="100"
+                        <reportElement positionType="Float" x="0" y="680" width="595" height="118"
                                        forecolor="blue"/>
 
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
@@ -1823,7 +1823,7 @@
                                     x="0"
                                     y="0"
                                     width="595"
-                                    height="100"
+                                    height="118"
                                     key="image-1"
                                     stretchType="NoStretch"/>
                             <graphicElement/>
