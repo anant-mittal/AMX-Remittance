@@ -62,7 +62,7 @@
                                         stretchType="NoStretch"/>
                                 <graphicElement/>
                                 <imageExpression class="java.lang.String">
-                                    <![CDATA[$P{TU}.imageJasper("company.logo.image", true)]]>
+                                    <![CDATA[$P{TU}.prop("company.logo.path")]]>
                                 </imageExpression>
                             </image>
                             <textField isStretchWithOverflow="true">
@@ -932,7 +932,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Currency & Amount]]></text>
+                                <text><![CDATA[Exchange Rate]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
@@ -1817,9 +1817,7 @@
                     <frame>
                         <reportElement positionType="Float" x="0" y="680" width="595" height="100"
                                        forecolor="blue"/>
-                        <rectangle>
-                            <reportElement x="0" y="0" width="595" height="100" backcolor="#000000"/>
-                        </rectangle>
+
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
                             <reportElement
                                     x="0"
@@ -1830,7 +1828,7 @@
                                     stretchType="NoStretch"/>
                             <graphicElement/>
                             <imageExpression class="java.lang.String">
-                                <![CDATA[$P{TU}.imageJasper("company.promotion.img", true)]]>
+                                <![CDATA[$P{TU}.prop("company.promotion.img")]]>
                             </imageExpression>
                         </image>
                     </frame>
