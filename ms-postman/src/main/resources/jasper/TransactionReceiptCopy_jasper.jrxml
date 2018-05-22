@@ -932,7 +932,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Currency & Amount]]></text>
+                                <text><![CDATA[Exchange Rate]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">
@@ -1817,9 +1817,6 @@
                     <frame>
                         <reportElement positionType="Float" x="0" y="680" width="595" height="100"
                                        forecolor="blue"/>
-                        <rectangle>
-                            <reportElement x="0" y="0" width="595" height="100" backcolor="#000000"/>
-                        </rectangle>
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
                             <reportElement
                                     x="0"
@@ -1830,33 +1827,31 @@
                                     stretchType="NoStretch"/>
                             <graphicElement/>
                             <imageExpression class="java.lang.String">
-                                <![CDATA[$P{TU}.imageJasper("company.promotion.img", true)]]>
+                                <![CDATA[$P{TU}.prop("company.promotion.img")]]>
                             </imageExpression>
                         </image>
                     </frame>
                     <!--##################FOOTER END####################-->
 
                     <!--##################FOOTER START####################-->
-                    <frame>
-                        <reportElement positionType="Float" x="0" y="150" width="595" height="650"
-                                       forecolor="blue"/>
-                        <rectangle>
-                            <reportElement x="0" y="0" width="595" mode="Transparent" height="650" />
-                        </rectangle>
-                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
-                            <reportElement
-                                    x="0"
-                                    y="0"
-                                    width="595"
-                                    height="100"
-                                    key="image-1"
-                                    stretchType="NoStretch"/>
-                            <graphicElement/>
-                            <imageExpression class="java.lang.String">
-                                <![CDATA[$P{TU}.imageJasper("copy.image")]]>
-                            </imageExpression>
-                        </image>
-                    </frame>
+                        <frame>
+                            <reportElement positionType="Float" x="0" y="680" width="595" height="118"
+                                           forecolor="blue"/>
+
+                            <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
+                                <reportElement
+                                        x="0"
+                                        y="0"
+                                        width="595"
+                                        height="118"
+                                        key="image-1"
+                                        stretchType="NoStretch"/>
+                                <graphicElement/>
+                                <imageExpression class="java.lang.String">
+                                    <![CDATA[$P{TU}.prop("company.promotion.img")]]>
+                                </imageExpression>
+                            </image>
+                        </frame>
                     <!--##################FOOTER END####################-->
                     </c:listContents>
                 </c:list>
