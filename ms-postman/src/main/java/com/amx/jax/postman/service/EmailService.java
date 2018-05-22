@@ -37,6 +37,9 @@ public class EmailService {
 	private TemplateService templateService;
 
 	@Autowired
+	private TemplateUtils templateUtils;
+
+	@Autowired
 	private FileService fileService;
 
 	@TenantValue("${spring.mail.from}")
@@ -142,7 +145,7 @@ public class EmailService {
 
 		while (m.find()) {
 			String contentId = m.group(1);
-			helper.addInline(contentId, templateService.readAsResource(contentId));
+			helper.addInline(contentId, templateUtils.readAsResource(contentId));
 		}
 
 		if (eParams.getFiles() != null && eParams.getFiles().size() > 0) {
