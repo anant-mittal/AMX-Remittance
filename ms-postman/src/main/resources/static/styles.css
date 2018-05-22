@@ -30,9 +30,20 @@ header h3{
 }
 
 .button-container button {
-	margin-right: 10px;
+	//margin-right: 10px;
 }
 
 textarea.notif-msg{
 	width: 50%;
+}
+
+.toast{
+	margin: 0 auto;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    display: none;
+    padding-top: 10px;
 }
