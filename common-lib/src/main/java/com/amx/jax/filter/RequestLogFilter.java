@@ -47,6 +47,7 @@ public class RequestLogFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		try {
+			long startTime = System.currentTimeMillis();
 			HttpServletRequest req = ((HttpServletRequest) request);
 			HttpServletResponse resp = ((HttpServletResponse) response);
 
@@ -111,7 +112,7 @@ public class RequestLogFilter implements Filter {
 			// Actual Request Handling
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req));
+			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req,System.currentTimeMillis()-startTime));
 
 		} finally {
 			// Tear down MDC data:
