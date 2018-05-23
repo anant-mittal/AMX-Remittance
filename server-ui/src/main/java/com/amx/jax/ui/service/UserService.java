@@ -46,7 +46,7 @@ public class UserService {
 		topics.add(prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant().toLowerCase(),
 				customerModel.getPersoninfo().getNationalityId()));
 		topics.add(prefix + String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant().toLowerCase(),
-				customerModel.getPersoninfo().getMobile()));
+				customerModel.getPersoninfo().getMobile().replaceAll("\\s+","")));
 		return topics;
 	}
 
