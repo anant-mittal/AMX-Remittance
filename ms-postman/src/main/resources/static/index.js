@@ -1,4 +1,5 @@
 let VALID_MD_PWD = "79ef08083ae1c8dcb33386831674350a";
+let SUCCES_NOTIF_DELAY = 12500;
 
 async function initSub() {
 
@@ -169,7 +170,11 @@ function init(){
 			    }
 			}).then(function(resp){
 				if(resp.status === 200){
-					$(".toast").fadeIn().delay(2500).fadeOut('slow')
+					$(".toast")
+					.html("Notification with the title: '" + title + "' was successfully sent")
+					.fadeIn()
+					.delay(SUCCES_NOTIF_DELAY)
+					.fadeOut('slow');
 				}
 			})
 		})

@@ -113,6 +113,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
 		for (String topic : userService.getNotifyTopics()) {
+			topic = topic.substring(1);
 			fbPushClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();
