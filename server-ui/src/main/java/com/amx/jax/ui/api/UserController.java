@@ -102,7 +102,7 @@ public class UserController {
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
-			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
 			wrapper.getData().setNotifyRange(notifyRange);
 		}
@@ -112,7 +112,7 @@ public class UserController {
 
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
-		for (String topic : userService.getNotifyTopics()) {
+		for (String topic : userService.getNotifyTopics("")) {
 			fbPushClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();
