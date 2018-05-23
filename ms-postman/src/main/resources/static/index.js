@@ -1,6 +1,6 @@
 let VALID_MD_PWD = "79ef08083ae1c8dcb33386831674350a";
 
-async function init() {
+async function initSub() {
 
   const registration = await navigator.serviceWorker.register('/sw.js');
 	
