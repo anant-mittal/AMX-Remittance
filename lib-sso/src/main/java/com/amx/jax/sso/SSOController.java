@@ -4,6 +4,9 @@ package com.amx.jax.sso;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
@@ -35,23 +39,27 @@ public class SSOController {
 	@Autowired
 	SSOTranx sSOTranx;
 
-	@RequestMapping(value = "/sso/login/**", method = { RequestMethod.GET })
-	public String loginJPage(Model model) throws MalformedURLException, URISyntaxException {
+	@RequestMapping(value = SSOUtils.LOGIN_URL, method = { RequestMethod.GET })
+	public String loginJPage(Model model, HttpServletRequest request, HttpServletResponse response)
+			throws MalformedURLException, URISyntaxException {
 		if (!ssoUser.isAuthDone()) {
-			sSOTranx.init();
+			sSOTranx.setLandingUrl(request.getRequestURL().toString());
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath("sso/auth/login").addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
-			return "redirect:" + builder.getURL();
+			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY,
+					AppContextUtil.getTranxId());
+			//return "redirect:" + builder.getURL();
 		}
 		return "home";
 	}
 
-	@RequestMapping(value = "/sso/loggedin/**", method = { RequestMethod.GET })
-	public String loggedinJPage(Model model) throws MalformedURLException, URISyntaxException {
+	@RequestMapping(value = SSOUtils.LOGGEDIN_URL, method = { RequestMethod.GET })
+	public String loggedinJPage(Model model, @RequestParam boolean done)
+			throws MalformedURLException, URISyntaxException {
 		if (!ssoUser.isAuthDone()) {
 			sSOTranx.init();
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath("sso/auth/login").addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
+			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY,
+					AppContextUtil.getTranxId());
 			return "redirect:" + builder.getURL();
 		}
 		return "home";

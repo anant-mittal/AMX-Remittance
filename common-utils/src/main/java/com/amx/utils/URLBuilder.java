@@ -52,7 +52,7 @@ public class URLBuilder {
 	}
 
 	public String getRelativeURL() throws URISyntaxException, MalformedURLException {
-		URI uri = new URI(null, null, folders.toString(), params.toString(), null);
+		URI uri = new URI(null, null, folders.toString().replaceAll("/+", "/"), params.toString(), null);
 		return uri.toString();
 	}
 }

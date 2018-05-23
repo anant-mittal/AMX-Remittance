@@ -128,11 +128,11 @@ body {
 <body>
 	<div class="login-page">
 		<div class="form">
-			<form class="login-form">
-				<input type="text" placeholder="Username" /> <input type="hidden"
-					value="${x-tranx-id}" /><input type="password"
-					placeholder="password" />
-				<button>Login</button>
+			<form class="login-form" action="/sso/auth/login" method="post">
+				<input type="text" placeholder="Username" name="username"/>
+				<input type="hidden" th:value="${x_tranx_id}" name="x-tranx-id" /><input type="password"
+					placeholder="password" name="password" />
+				<button type="submit">Login</button>
 				<p class="message" hidden="hidden">
 					Already registered? <a href="#">Sign In</a>
 				</p>

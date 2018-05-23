@@ -8,14 +8,14 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
-public class SampleApplication extends SpringBootServletInitializer {
+public class SSOApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleApplication.class, args);
+		SpringApplication.run(SSOApplication.class, args);
 	}
 
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SampleApplication.class);
+		return application.sources(SSOApplication.class);
 	}
 }

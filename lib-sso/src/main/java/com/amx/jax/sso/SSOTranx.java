@@ -17,21 +17,41 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
 
-	}
+		private String landingUrl = null;
+		private String returnUrl = null;
 
-	public static enum Action {
-		INIT, SET, COMMIT
+		public String getReturnUrl() {
+			return returnUrl;
+		}
+
+		public void setReturnUrl(String returnUrl) {
+			this.returnUrl = returnUrl;
+		}
+
+		public String getLandingUrl() {
+			return landingUrl;
+		}
+
+		public void setLandingUrl(String landingUrl) {
+			this.landingUrl = landingUrl;
+		}
+
 	}
 
 	@Override
 	public SSOModel init() {
-		SSOModel msg = new SSOModel();
-		this.save(msg);
+		return this.save(new SSOModel());
+	}
+
+	public SSOModel setReturnUrl(String returnUrl) {
+		SSOModel msg = this.save(new SSOModel());
+		msg.setReturnUrl(returnUrl);
 		return msg;
 	}
 
-	public SSOModel setMessage(String text) {
+	public SSOModel setLandingUrl(String landingUrl) {
 		SSOModel msg = this.get();
+		msg.setLandingUrl(landingUrl);
 		this.save(msg);
 		return msg;
 	}
@@ -39,10 +59,6 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	@Override
 	public SSOModel commit() {
 		return this.get();
-	}
-
-	public void sendOTP() {
-		LOGGER.info("Trax ID={}", this.getTranxId());
 	}
 
 }

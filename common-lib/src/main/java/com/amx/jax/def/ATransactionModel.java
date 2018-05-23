@@ -37,14 +37,15 @@ public abstract class ATransactionModel<T> {
 			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
 			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
-		}else {
+		} else {
 			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);
 		}
 		return key;
 	}
 
-	public void save(T model) {
+	public T save(T model) {
 		getCacheBox().put(getTranxId(), model);
+		return model;
 	}
 
 	public T get() {

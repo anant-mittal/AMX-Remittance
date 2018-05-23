@@ -19,6 +19,9 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	SSOAuthProvider customAuthProvider;
 
+	@Autowired
+	SSOLoginUrlEntry loginUrlEntry;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
@@ -33,12 +36,13 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
 				// Login Forms
-				.and().formLogin().loginPage("/sso/login").successHandler(successHandler()).permitAll()
-				.failureUrl("/sso/login?error").permitAll()
+				.and().formLogin().loginPage(SSOUtils.LOGIN_URL)
+				.successHandler(successHandler()).permitAll().failureUrl("/sso/login?error").permitAll()
 				// Logout Pages
 				.and().logout().permitAll().logoutSuccessUrl("/sso/login?logout").deleteCookies("JSESSIONID")
 				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()
 				.disable().headers().disable();
+		http.exceptionHandling().authenticationEntryPoint(loginUrlEntry);
 	}
 
 	@Bean

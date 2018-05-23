@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOUtils;
 
 @Controller
 public class SSOLoginController {
@@ -27,21 +29,24 @@ public class SSOLoginController {
 	@Autowired
 	private HttpServletRequest request;
 
-	@RequestMapping(value = "/sso/auth/login", method = RequestMethod.GET)
+	@Autowired
+	SSOTranx sSOTranx;
+
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = RequestMethod.GET)
 	public String authLogin(Model model) {
-
-		model.addAttribute(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
-
+		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		return "index";
 	}
 
-	@RequestMapping(value = "/sso/auth/login", method = RequestMethod.POST)
-	public String sendOTP(@RequestParam String username, @RequestParam String password, @RequestParam String otp) {
-
-		if ("admin".equals(username) && "admin".equals(password) && "1234".equals(otp)) {
-			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-			token.setDetails(new WebAuthenticationDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(token);
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = RequestMethod.POST)
+	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model) {
+		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
+		if ("admin".equals(username) && "admin".equals(password)) {
+			// UsernamePasswordAuthenticationToken token = new
+			// UsernamePasswordAuthenticationToken(username, password);
+			// token.setDetails(new WebAuthenticationDetails(request));
+			// SecurityContextHolder.getContext().setAuthentication(token);
+			return "redirect:" + sSOTranx.get().getLandingUrl();
 		}
 
 		return "index";
