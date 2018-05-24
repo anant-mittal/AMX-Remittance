@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -352,29 +354,43 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-
+	
 	/**
 	 * @param beneficiaryCountryId
-	 *            - Beneficiary Country Id
-	 * @return List of currency master for passed beneficiary currency
+	 * @return
+	 * ApiResponse<CurrencyMasterDTO>
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId) {
+		return this.getBeneficiaryCurrency(beneficiaryCountryId, null, null);
+	}
+	
+	/**
+	 * @param beneficiaryCountryId
+	 * @param serviceGroupId - bank or cash
+	 * @param routingBankId - service provider id in case of cash or bank id in case of bank
+	 * @return CurrencyMasterDTO
+	 */
+	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {
+		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("beneficiaryCountryId",
-					beneficiaryCountryId);
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
+					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+			response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
+
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCurrency : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
-
+		return response.getBody();
 	}
 
 	public ApiResponse<CurrencyMasterDTO> getAllOnlineCurrency() {
