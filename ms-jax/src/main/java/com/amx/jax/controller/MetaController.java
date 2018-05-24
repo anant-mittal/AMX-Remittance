@@ -22,6 +22,7 @@ import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
 import com.amx.jax.service.BankMetaService;
+import com.amx.jax.service.BranchDetailService;
 import com.amx.jax.service.CollectionDetailViewService;
 import com.amx.jax.service.CollectionPaymentDetailsViewService;
 import com.amx.jax.service.CompanyService;
@@ -32,6 +33,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.service.PrefixService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
 import com.amx.jax.service.TermsAndConditionService;
@@ -44,6 +46,10 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  * 
  * @author Rabil
  * @param <T>
+ *
+ */
+/**
+ * @author Chetan Pawar
  *
  */
 @RestController
@@ -117,6 +123,12 @@ public class MetaController {
 	
 	@Autowired
 	BankBranchSearchRequestlValidator bankBranchSearchRequestlValidator;
+	
+	@Autowired
+	PrefixService prefixService;
+	
+	@Autowired
+	BranchDetailService branchDetailService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -218,6 +230,12 @@ public class MetaController {
 		return currencyMasterService.getAllOnlineCurrencyDetails();
 	}
 	
+	// added by chetan 30/04/2018 list the country for currency.
+	@RequestMapping(value = "/exchange-rate-currency/list/", method = RequestMethod.GET)
+	public ApiResponse getAllExchangeRateCurrencyDetails() {
+		return currencyMasterService.getAllExchangeRateCurrencyList();
+	}
+	
 	
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
 	public ApiResponse getCurrencyDetailsByCountryId(@PathVariable("countryId") BigDecimal countryId){
@@ -298,7 +316,7 @@ public class MetaController {
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
 	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request,BindingResult bindingResult){
 		LOGGER.info("in getbankBranches" + request.toString());
-		bankBranchSearchRequestlValidator.validate(request, bindingResult);
+		//bankBranchSearchRequestlValidator.validate(request, bindingResult);
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
 		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse, request);
 		return apiResponse;
@@ -309,13 +327,33 @@ public class MetaController {
 		return metaService.getServiceGroups();
 	}
 	
+	
+	/**
+	 * @param beneficiaryCountryId
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return CurrencyMasterDTO
+	 */
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCurrencyList(@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId){
-		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId);
+	public ApiResponse getBeneficiaryCurrencyList(
+			@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId,
+			@RequestParam(value = "serviceGroupId", required = false) BigDecimal serviceGroupId,
+			@RequestParam(value = "routingBankId", required = false) BigDecimal routingBankId) {
+		return currencyMasterService.getBeneficiaryCurrencyList(beneficiaryCountryId, serviceGroupId, routingBankId);
 	}
 	
 	@RequestMapping(value = "/meta-parameter/", method = RequestMethod.GET)
 	public ApiResponse getAuthParameter(){
 		return parameterService.getJaxMetaParameter();
+	}
+	
+	@RequestMapping(value = "/prefix/", method = RequestMethod.GET)
+	public ApiResponse getPrefixList() {
+		return prefixService.getPrefixListResponse();
+	}
+	
+	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
+	public ApiResponse getBranchDetail() {
+		return branchDetailService.getBracnchDetailResponse();
 	}
 }

@@ -2,12 +2,16 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class SecurityQuestionModel extends AbstractModel {
 
 	private static final long serialVersionUID = -1144780796090568414L;
 
+	@NotNull
 	private BigDecimal questionSrNo;
 
 	private String answerKey = null;
@@ -23,6 +27,8 @@ public class SecurityQuestionModel extends AbstractModel {
 		this.answer = answer;
 	}
 
+	@NotNull
+	@Size(min=1)
 	private String answer;
 
 	@ApiModelProperty(example = "6")

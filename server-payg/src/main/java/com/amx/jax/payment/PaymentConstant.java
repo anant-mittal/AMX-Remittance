@@ -14,4 +14,6 @@ public class PaymentConstant {
 
     public static final String ROOT = "/";
     public static final String PAYMENT_API_ENDPOINT = "/app";
+    public static final String KWT = "KWT";
+    public static final String BHR = "BHR";
 }

@@ -224,6 +224,14 @@ public class SessionService {
 		auditService.log(sessionEvent);
 
 		this.clear();
+		this.invalidate();
+	}
+
+	/**
+	 * Invalidates session from spring's context.
+	 * 
+	 */
+	public void invalidate() {
 		SecurityContextHolder.getContext().setAuthentication(null);
 		HttpSession session = request.getSession(false);
 		SecurityContextHolder.clearContext();
@@ -242,7 +250,6 @@ public class SessionService {
 		LOGGER.info("Session is being cleared userId={}", userSession.getUserid());
 		userSession.setValid(Boolean.FALSE);
 		userSession.setCustomerModel(null);
-		userSession.setUserid(null);
 		guestSession.setState(new AuthState());
 		guestSession.setCustomerModel(null);
 	}

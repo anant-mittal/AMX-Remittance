@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
@@ -54,6 +55,9 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
+
+	@Autowired
+	CustomerRegistrationClient customerRegistrationClient;
 
 	public JaxFieldClient getJaxFieldClient() {
 		return jaxFieldClient;
@@ -116,6 +120,10 @@ public class JaxService extends AbstractJaxServiceClient {
 		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
 
 		return this;
+	}
+
+	public CustomerRegistrationClient getCustRegClient() {
+		return customerRegistrationClient;
 	}
 
 }

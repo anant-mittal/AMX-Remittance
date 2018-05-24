@@ -3,9 +3,8 @@ package com.amx.jax.def;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 public abstract class ATransactionModel<T> {
 
@@ -32,10 +31,10 @@ public abstract class ATransactionModel<T> {
 	public abstract ICacheBox<T> getCacheBox();
 
 	protected String getTranxId() {
-		String key = ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
+		String key = AppContextUtil.getTranxId();
 		if (ArgUtil.isEmptyString(key)) {
-			key = ArgUtil.parseAsString(ContextUtil.map().get(ContextUtil.TRACE_ID));
-			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, key);
+			key = AppContextUtil.getTraceId();
+			AppContextUtil.setTranxId(key);
 			LOGGER.info("************ Creating New Tranx Id {} *******************", key);
 		} else {
 			LOGGER.info("************ Exisitng Tranx Id {} *******************", key);

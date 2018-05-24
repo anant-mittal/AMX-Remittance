@@ -104,7 +104,7 @@ public class RemittController {
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
 		// file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
-		email.setSubject(String.format("Transaction Statment %s - %s", fromDate, toDate));
+		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
 		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
 		email.getModel().put(UIConstants.RESP_DATA_KEY,
@@ -136,12 +136,14 @@ public class RemittController {
 		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		// System.out.println(JsonUtil.toJson(wrapper));
+		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
-			File file = postManService.processTemplate(
-					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+			file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
+					File.Type.PDF);
 			file.create(response, true);
 		}
-		return JsonUtil.toJson(wrapper);
+		return JsonUtil.toJson(file);
 	}
 
 	@ApiOperation(value = "Returns transaction reciept:")
@@ -164,12 +166,13 @@ public class RemittController {
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
-					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
+					File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManService
-					.processTemplate(duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, null);
+			File file = postManService.processTemplate(
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null);
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
@@ -182,20 +185,9 @@ public class RemittController {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
-		CurrencyMasterDTO forCurcy = null;
+		CurrencyMasterDTO forCurcy = userBean.getDefaultForCurrency(forCur);
 
 		wrapper.getData().setDomCur(domCur);
-
-		if (forCur == null) {
-			forCurcy = userBean.getDefaultForCurrency();
-		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
-				if (currency.getCurrencyId().equals(forCur)) {
-					forCurcy = currency;
-					break;
-				}
-			}
-		}
 
 		if (forCurcy != null) {
 			wrapper.getData().setForCur(forCurcy);

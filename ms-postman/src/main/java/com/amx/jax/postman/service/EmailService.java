@@ -23,6 +23,7 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
 
@@ -34,6 +35,9 @@ public class EmailService {
 
 	@Autowired
 	private TemplateService templateService;
+
+	@Autowired
+	private TemplateUtils templateUtils;
 
 	@Autowired
 	private FileService fileService;
@@ -128,7 +132,8 @@ public class EmailService {
 		helper.setFrom(eParams.getFrom());
 		helper.setReplyTo(eParams.getReplyTo());
 
-		helper.setSubject(eParams.getSubject());
+		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();
+		helper.setSubject(subject);
 		helper.setText(eParams.getMessage(), isHtml);
 
 		if (eParams.getCc().size() > 0) {
@@ -141,7 +146,7 @@ public class EmailService {
 
 		while (m.find()) {
 			String contentId = m.group(1);
-			helper.addInline(contentId, templateService.readAsResource(contentId));
+			helper.addInline(contentId, templateUtils.readAsResource(contentId));
 		}
 
 		if (eParams.getFiles() != null && eParams.getFiles().size() > 0) {

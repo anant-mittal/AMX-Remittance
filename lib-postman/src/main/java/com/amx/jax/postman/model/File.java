@@ -45,6 +45,7 @@ public class File {
 
 	private String content;
 	private String name;
+	private String title;
 	private Type type;
 	private PDFConverter converter;
 
@@ -141,5 +142,13 @@ public class File {
 					/* ignore */ }
 			}
 		}
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

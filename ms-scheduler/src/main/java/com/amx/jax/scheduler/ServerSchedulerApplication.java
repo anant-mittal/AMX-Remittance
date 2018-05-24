@@ -14,7 +14,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -22,28 +27,31 @@ import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.client.ExchangeRateClient;
-import com.amx.jax.client.MetaClient;
-import com.amx.jax.client.RateAlertClient;
-import com.amx.jax.client.config.JaxConfig;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.scheduler.config.SchedulerConfig;
 import com.amx.jax.scheduler.task.RateAlertTask;
 import com.amx.jax.scheduler.task.trigger.RateAlertTrigger;
+import com.amx.jax.AppConfig;
+import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.client.config.JaxConfig;
 
 @SpringBootApplication
 @EnableAsync
 @EnableScheduling
-public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncConfigurer {
+@ComponentScan(basePackages = { "com.amx.jax" })
+@PropertySource("classpath:application-lib.properties")
+public class ServerSchedulerApplication implements SchedulingConfigurer {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	JaxConfig jaxConfig;
-	
+
 	@Autowired
 	SchedulerConfig schedulerConfig;
 
@@ -51,16 +59,7 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 		SpringApplication.run(ServerSchedulerApplication.class, args);
 	}
 
-	@Override
-	public Executor getAsyncExecutor() {
-		return asyncExecutor();
-	}
-
-	@Override
-	public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-		return new SimpleAsyncUncaughtExceptionHandler();
-	}
-
+	
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 		logger.info("In configureTasks");
@@ -83,31 +82,6 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 		return threadPoolTaskScheduler;
 	}
 
-	@Bean(destroyMethod = "shutdown")
-	public Executor asyncExecutor() {
-		ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-		taskExecutor.setMaxPoolSize(1000);
-		taskExecutor.setCorePoolSize(5);
-		taskExecutor.setThreadNamePrefix("Scheduled-Async-Executor");
-		taskExecutor.initialize();
-		return taskExecutor;
-	}
-
-	@Bean
-	public ExchangeRateClient exchangeRateClient() {
-		return new ExchangeRateClient();
-	}
-
-	@Bean
-	public MetaClient metaClient() {
-		return new MetaClient();
-	}
-
-	@Bean
-	public RateAlertClient rateAlertClient() {
-		return new RateAlertClient();
-	}
-
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		RestTemplate restTemplate = builder.build();
@@ -125,6 +99,7 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 	}
 
 	@Bean
+	@Scope(value = "prototype", proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
 		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
 		return metaInfo;
@@ -141,8 +116,4 @@ public class ServerSchedulerApplication implements SchedulingConfigurer, AsyncCo
 		return new RateAlertTrigger();
 	}
 
-	@Bean
-	public PostManService PostManClient() {
-		return new com.amx.jax.postman.client.PostManClient();
-	}
 }

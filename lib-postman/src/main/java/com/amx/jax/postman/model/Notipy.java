@@ -22,15 +22,26 @@ public class Notipy extends Message {
 		}
 	}
 
+	public static enum Workspace {
+		ALMEX, MODEX
+	}
+
 	public static enum Channel {
-		NOTIPY("C9AK11W2K"), DEPLOYER("C8L3GL92A"), GENERAL("C7F823MLJ");
+		NOTIPY("C9AK11W2K"), DEPLOYER("C8L3GL92A"), GENERAL("C7F823MLJ"), INQUIRY("CAQ4WUNAZ", Workspace.MODEX);
 
 		String code;
+		Workspace workspace;
 
 		public static final Channel DEFAULT = GENERAL;
 
 		Channel(String code) {
 			this.code = code;
+			this.workspace = Workspace.ALMEX;
+		}
+
+		Channel(String code, Workspace workspace) {
+			this.code = code;
+			this.workspace = workspace;
 		}
 
 		public String getCode() {
@@ -39,6 +50,14 @@ public class Notipy extends Message {
 
 		public void setCode(String code) {
 			this.code = code;
+		}
+
+		public Workspace getWorkspace() {
+			return workspace;
+		}
+
+		public void setWorkspace(Workspace workspace) {
+			this.workspace = workspace;
 		}
 	}
 

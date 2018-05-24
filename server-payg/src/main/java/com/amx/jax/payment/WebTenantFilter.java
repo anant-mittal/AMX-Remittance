@@ -1,6 +1,10 @@
 package com.amx.jax.payment;
 
+import static com.amx.jax.payment.PaymentConstant.KWT; 
+import static com.amx.jax.payment.PaymentConstant.BHR;
+
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -34,16 +38,23 @@ public class WebTenantFilter implements Filter {
         String url = request.getRequestURI();
         String siteId = request.getParameter(TenantContextHolder.TENANT);
 
-//        if (siteId != null && !Constants.BLANK.equals(siteId)) {
-//            TenantContextHolder.setCurrent(siteId);
-//        } else {
-//            TenantContextHolder.setDefault();
-//        }
         LOGGER.info("URL is :"+ url);
         LOGGER.info("site id  is :"+ siteId);
         
-        TenantContextHolder.setCurrent(Tenant.BHR);
-        
+        if (url != null) {
+            StringTokenizer stok = new StringTokenizer(url, "//");
+            while (stok.hasMoreTokens()) {
+                if (stok.nextToken().equalsIgnoreCase(BHR)) {
+                    TenantContextHolder.setCurrent(Tenant.BHR);
+                    LOGGER.info("Tenant is :"+ Tenant.BHR);
+                    break;
+                }else if (stok.nextToken().equalsIgnoreCase(KWT)) {
+                    TenantContextHolder.setCurrent(Tenant.KWT);
+                    LOGGER.info("Tenant is :"+ Tenant.KWT);
+                    break;
+                }
+            }
+        }
         chain.doFilter(req, resp);
     }
 

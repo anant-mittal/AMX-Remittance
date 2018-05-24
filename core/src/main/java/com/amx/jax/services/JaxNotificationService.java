@@ -64,7 +64,7 @@ public class JaxNotificationService {
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		File file = new File();
-		file.setTemplate(Templates.REMIT_RECEIPT);
+		file.setTemplate(Templates.REMIT_RECEIPT_JASPER);
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
@@ -141,7 +141,7 @@ public class JaxNotificationService {
 		sms.setTemplate(Templates.RESET_OTP_SMS);
 
 		try {
-			postManService.sendSMS(sms);
+			postManService.sendSMSAsync(sms);
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
 			}

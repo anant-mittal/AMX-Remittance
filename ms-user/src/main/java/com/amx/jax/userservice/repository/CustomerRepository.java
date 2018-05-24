@@ -18,4 +18,6 @@ public interface CustomerRepository extends CrudRepository<Customer, BigDecimal>
 	
 	@Query("select c from Customer c where mobile=?1 and isActive='Y'")
 	public List<Customer> getCustomerByMobile(String mobile);
+	
+	public Customer findByIdentityInt(String identityInt);
 }

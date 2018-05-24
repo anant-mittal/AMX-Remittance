@@ -15,7 +15,10 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.ui.config.WebTenantFilter;
 
@@ -69,5 +72,12 @@ public class WebApplication extends SpringBootServletInitializer {
 	// srb.setListener(new WebRequestListener());
 	// return srb;
 	// }
+	
+	@Bean
+	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
+		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
+		return metaInfo;
+	}
 
 }

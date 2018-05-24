@@ -71,6 +71,7 @@
 		<module>lib-session</module>
 		<module>lib-monitor</module>
 		<module>lib-sso</module>
+		<module>lib-benefit</module>
 
 		<!-- <module>ms-logger</module> -->
 

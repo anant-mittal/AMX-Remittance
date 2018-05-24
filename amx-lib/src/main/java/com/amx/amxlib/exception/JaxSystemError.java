@@ -13,9 +13,14 @@ public class JaxSystemError extends AbstractException {
 	public JaxSystemError(ApiError error) {
 		super(error);
 	}
-	
+
 	public JaxSystemError() {
 		super("System error occured");
+		this.setError(JaxError.JAX_SYSTEM_ERROR);
+	}
+
+	public JaxSystemError(Exception e) {
+		super(e);
 		this.setError(JaxError.JAX_SYSTEM_ERROR);
 	}
 

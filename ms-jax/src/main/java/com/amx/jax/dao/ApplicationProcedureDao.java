@@ -81,7 +81,9 @@ public class ApplicationProcedureDao {
 		BigDecimal currencyId = (BigDecimal) inputValues.get("P_CURRENCY_ID");
 		BigDecimal remitMode = (BigDecimal) inputValues.get("P_REMITTANCE_MODE_ID");
 		BigDecimal deliveryMode = (BigDecimal) inputValues.get("P_DELIVERY_MODE_ID");
-
+		/** Added by Rabil on 03 May 2018 **/
+		BigDecimal beneficaryRelationSeqId = (BigDecimal) inputValues.get("P_BENE_RELATION_SEQ_ID");
+		/** Code end Here */
 		LOGGER.info("=====EX_GET_ADDL_BENE_DETAILS =Start toFetchDetilaFromAddtionalBenficiaryDetails ");
 		LOGGER.info("Procedure Name= EX_GET_ADDL_BENE_DETAILS :" + inputValues.toString());
 
@@ -93,6 +95,7 @@ public class ApplicationProcedureDao {
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
+					new SqlParameter(Types.BIGINT), 
 					new SqlOutParameter("P_BENEFICIARY_BANK_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_BRANCH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_STATE_ID", Types.NUMERIC),
@@ -110,7 +113,7 @@ public class ApplicationProcedureDao {
 				@Override
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
 
-					String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )} ";
+					String proc = " { call EX_GET_ADDL_BENE_DETAILS (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,? )} ";
 					CallableStatement cs = con.prepareCall(proc);
 					cs.setBigDecimal(1, beneficaryMasterId);
 					cs.setBigDecimal(2, beneficaryBankId);
@@ -124,18 +127,19 @@ public class ApplicationProcedureDao {
 					cs.setBigDecimal(10, currencyId);
 					cs.setBigDecimal(11, remitMode);
 					cs.setBigDecimal(12, deliveryMode);
-					cs.registerOutParameter(13, java.sql.Types.VARCHAR);
+					cs.setBigDecimal(13, beneficaryRelationSeqId);
 					cs.registerOutParameter(14, java.sql.Types.VARCHAR);
-					cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+					cs.registerOutParameter(15, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(16, java.sql.Types.NUMERIC);
 					cs.registerOutParameter(17, java.sql.Types.NUMERIC);
-					cs.registerOutParameter(18, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(18, java.sql.Types.NUMERIC);
 					cs.registerOutParameter(19, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(20, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(21, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(22, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(23, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(24, java.sql.Types.VARCHAR);
+					cs.registerOutParameter(25, java.sql.Types.VARCHAR);
 					return cs;
 				}
 
@@ -951,4 +955,42 @@ public class ApplicationProcedureDao {
 		return output;
 	}
 
+	public Map<String, Object> callProcedureCustReferenceNumber(BigDecimal companyCode, BigDecimal documentCode,
+			BigDecimal docFinYear, String branchId) {
+
+		LOGGER.info("!!!!!!callProcedureCustReferenceNumber UPDNXT" + companyCode);
+		Map<String, Object> output = null;
+
+		try {
+			List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC), // 1
+					new SqlParameter(Types.NUMERIC), // 2
+					new SqlParameter(Types.NUMERIC), // 3
+					new SqlOutParameter("P_DOCNO", Types.NUMERIC), // 4
+					new SqlParameter(Types.NUMERIC) // 5
+			);
+			output = jdbcTemplate.call(new CallableStatementCreator() {
+				@Override
+				public CallableStatement createCallableStatement(Connection con) throws SQLException {
+					String proc = " { call UPDNXT (?, ?, ?, ?, ?) } ";
+					CallableStatement cs = con.prepareCall(proc);
+					cs.setBigDecimal(1, companyCode);
+					cs.setBigDecimal(2, documentCode);
+					cs.setBigDecimal(3, new BigDecimal(2001));
+					cs.registerOutParameter(4, java.sql.Types.NUMERIC);
+					if (companyCode != null && companyCode.equals((new BigDecimal(20)))) {
+						cs.setBigDecimal(5, new BigDecimal(1));
+					} else if (companyCode != null && companyCode.equals((new BigDecimal(21)))) {
+						cs.setBigDecimal(5, new BigDecimal(99));
+					}
+					cs.execute();
+					return cs;
+				}
+
+			}, declareInAndOutputParameters);
+			LOGGER.info("UPDNXT Out put Parameters :" + output.toString());
+		} catch (DataAccessException e) {
+			LOGGER.info(OUT_PARAMETERS, e);
+		}
+		return output;
+	}
 }

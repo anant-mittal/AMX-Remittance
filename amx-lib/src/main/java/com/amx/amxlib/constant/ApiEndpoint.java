@@ -9,6 +9,8 @@ public class ApiEndpoint {
     public static final String USER_API_ENDPOINT = "/user";
 
     public static final String CUSTOMER_ENDPOINT = "/customer";
+    
+    public static final String CUSTOMER_REG_ENDPOINT = "/customer-reg";
 
     public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
 
