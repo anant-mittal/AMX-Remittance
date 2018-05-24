@@ -7,8 +7,32 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class MapBuilder {
 
+	public static class MapItem {
+		String key;
+		Object value;
+
+		MapItem(String key, Object value) {
+			this.key = key;
+			this.value = value;
+		}
+
+		public String getKey() {
+			return key;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+	}
+
 	public static class BuilderMap {
 		private Map<String, Object> map = new HashMap<String, Object>();
+
+		public BuilderMap(MapItem... items) {
+			for (MapItem item : items) {
+				this.put(item.getKey(), item.getValue());
+			}
+		}
 
 		public BuilderMap put(String key, Object value) {
 			map.put(key, value);

@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
@@ -60,8 +62,14 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
+	@Value("${notification.range}")
+	private String notifyRange;
+
 	@Autowired
 	private WebAppConfig webAppConfig;
+
+	@Autowired
+	FBPushClient fbPushClient;
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
@@ -92,9 +100,26 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
+
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
+
+			wrapper.getData().setNotifyRange(notifyRange);
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
+		for (String topic : userService.getNotifyTopics()) {
+			fbPushClient.subscribe(token, topic + "_web");
+		}
+		return new ResponseWrapper<Object>();
+	}
+
+	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> unregisterNotify(@RequestParam String token) {
+		return new ResponseWrapper<Object>();
 	}
 
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })

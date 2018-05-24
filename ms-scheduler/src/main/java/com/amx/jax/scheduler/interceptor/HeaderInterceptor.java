@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HeaderInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
-	private JaxMetaInfo metaData;
+	JaxMetaInfo jaxMetaInfo;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -26,8 +26,8 @@ public class HeaderInterceptor extends HandlerInterceptorAdapter {
 		String metaInfo = request.getHeader("meta-info");
 		if (!StringUtils.isEmpty(metaInfo)) {
 			JaxMetaInfo metaInfoMap = new ObjectMapper().readValue(metaInfo, JaxMetaInfo.class);
-			BeanUtils.copyProperties(metaData, metaInfoMap);
-			MDC.put("customer-id", metaData.getCustomerId());
+			BeanUtils.copyProperties(jaxMetaInfo, metaInfoMap);
+			MDC.put("customer-id", jaxMetaInfo.getCustomerId());
 		}
 
 		return super.preHandle(request, response, handler);

@@ -52,10 +52,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	private JaxMetaInfo jaxMetaInfo;
 
 	@Autowired
+	private BeneClient beneClient;
+
+	@Autowired
 	RestService restService;
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountry() {
-		
+
 		try {
 			LOGGER.info("Get all the applciation country ");
 
@@ -73,7 +76,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<ApplicationSetupDTO> getApplicationCountryByCountryAndCompany() {
-		
+
 		try {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
@@ -98,27 +101,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 	// CountryMasterDTO
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		
-		try {
-			LOGGER.info("Get all the applciation country ");
-
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
-					});
-		} catch (AbstractException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getAllCountry : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
+		return beneClient.getBeneficiaryCountryList();
 	}
 
 	@Deprecated
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId) {
-		
+
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
 
@@ -137,7 +125,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<CountryMasterDTO> getAllCountryByLanguageId(String languageId, String countryId) {
-		
+
 		try {
 			LOGGER.info("Get all the applciation country " + languageId);
 
@@ -156,7 +144,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<CountryMasterDTO> getBusinessCountry() {
-		
+
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			LOGGER.info("Get all the applciation country " + languageId);
@@ -175,7 +163,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<QuestModelDTO> getSequrityQuestion() {
-		
+
 		try {
 
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
@@ -201,7 +189,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<QuestModelDTO> getSequrityQuestionById(String questionId) {
-		
+
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
@@ -230,7 +218,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * Gives terms and conditions based on metadata like lang id etc
 	 */
 	public ApiResponse<TermsAndConditionDTO> getTermsAndCondition() {
-		
+
 		try {
 			BigDecimal languageId = jaxMetaInfo.getLanguageId();
 			if (BigDecimal.ZERO.equals(languageId)) {
@@ -240,8 +228,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/terms/" + languageId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
-			});
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
+					});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -411,8 +400,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 			LOGGER.info("in getAllExchangeRateCurrencyList");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/exchange-rate-currency/list/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
-			});
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
+					});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -520,7 +510,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 				languageId = new BigDecimal(1);
 			}
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + languageId + "/" + countryId + "/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());			
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});

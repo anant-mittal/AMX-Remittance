@@ -432,6 +432,14 @@ public class UserService extends AbstractUserService {
 		return validateOtp(civilId, mOtp, null);
 	}
 
+	/**
+	 * validate otp
+	 * @param civilId
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 *  apiresponse
+	 */
 	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
 		logger.info("in validateopt of civilid: " + civilId);
 		Customer customer = null;

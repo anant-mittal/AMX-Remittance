@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -31,6 +32,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.UnknownJaxError;
 import com.amx.amxlib.meta.model.AccountTypeDto;
+import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -69,6 +71,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BeneficiaryListDTO> getBeneficiaryList(BigDecimal beneCountryId) {
 		try {
+			ResponseEntity<ApiResponse<BeneficiaryListDTO>> response;
 			MultiValueMap<String, String> headers = getHeader();
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
@@ -86,22 +89,46 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	// returning beneficiary country list with channeling
-	/**
-	 * @param beneCountryId
-	 *            - beneficiaryCountryId
-	 * @return beneficiaryCountry List
-	 */
 	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList(BigDecimal beneCountryId) {
 		try {
+			ResponseEntity<ApiResponse<CountryMasterDTO>> response;
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneCountryId=").append(beneCountryId);
-			LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
+			// LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/bene/country/" + sb.toString();
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
+			return response.getBody();
+		} catch (AbstractException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getBeneficiaryCountryList : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
+	// returning beneficiary country list with channeling
+	/**
+	 * 
+	 * @author Chetan Pawar
+	 * @param beneCountryId
+	 *            remove 11-05-2018 - beneficiaryCountryId
+	 * @return beneficiaryCountry List
+	 */
+	public ApiResponse<CountryMasterDTO> getBeneficiaryCountryList() {
+		try {
+			ResponseEntity<ApiResponse<CountryMasterDTO>> response;
+			// StringBuffer sb = new StringBuffer();
+			// sb.append("?beneCountryId=").append(beneCountryId);
+			// LOGGER.info("Bene Clinet to get bene list Input String :" + sb.toString());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/bene/country/";// + sb.toString();
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			response = restTemplate.exchange(url, HttpMethod.GET, requestEntity,
+					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+			return response.getBody();
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -112,6 +139,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal beneRealtionId, BigDecimal transactionId) {
 		try {
+			ResponseEntity<ApiResponse<RemittancePageDto>> response;
 
 			LOGGER.info("Default Beneficiary");
 
@@ -152,8 +180,9 @@ public class BeneClient extends AbstractJaxServiceClient {
 			sb.append("?beneMasSeqId=").append(beneMasSeqId).append("&remarks=").append(remarks);
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/disable/" + sb.toString();
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
-			});
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
+					});
 		} catch (AbstractException ae) {
 			throw ae;
 		} catch (Exception e) {

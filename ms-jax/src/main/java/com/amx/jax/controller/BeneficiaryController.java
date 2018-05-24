@@ -135,16 +135,14 @@ public class BeneficiaryController {
 		LOGGER.info("getFavouriteBeneficiaryList controller :");
 		ApiResponse response=null;
 		
-		try {
+		
 			BigDecimal customerId = metaData.getCustomerId();
 			BigDecimal applicationCountryId = metaData.getCountryId();
 			LOGGER.info("favouritebene customerId Id :" + customerId);
 			LOGGER.info("favouritebene applicationCountryId  :" + applicationCountryId);
 			
 			response = beneService.getFavouriteBeneficiaryList(customerId, applicationCountryId);
-		}catch(Exception e) {
-			LOGGER.error("Error while fetching favourite BeneficiaryList : ",e);
-		}
+		
 		return response;
 	}
 	
@@ -194,18 +192,34 @@ public class BeneficiaryController {
 
 	}
 	
+	/**
+	 * @param beneAccountModel
+	 * @return apirepsone
+	 * 
+	 */
 	@RequestMapping(value = "/trnx/bene/bene-account/", method = RequestMethod.POST)
 	public ApiResponse saveBeneAccountInTrnx( @RequestBody @Valid  BeneAccountModel beneAccountModel) {
 		LOGGER.info("saveBeneAccountInTrnx request: " + beneAccountModel.toString());
 		return beneficiaryTrnxManager.saveBeneAccountTrnx(beneAccountModel);
 	}
 	
+	/**
+	 * @param benePersonalDetailModel
+	 * @return apiresponse
+	 * 
+	 */
 	@RequestMapping(value = "/trnx/bene/bene-details/", method = RequestMethod.POST)
 	public ApiResponse saveBenePersonalDetailInTrnx(@RequestBody @Valid  BenePersonalDetailModel benePersonalDetailModel) {
 		LOGGER.info("saveBenePersonalDetailInTrnx request: " + benePersonalDetailModel.toString());
 		return beneficiaryTrnxManager.savePersonalDetailTrnx(benePersonalDetailModel);
 	}
 	
+	/**
+	 * @param mOtp
+	 * @param eOtp 
+	 * @return apiresponse
+	 * 
+	 */
 	@RequestMapping(value = "/trnx/addbene/commit/", method = RequestMethod.POST)
 	public ApiResponse commitAddBeneTrnx(@RequestParam("mOtp") String mOtp, 
 								@RequestParam(name = "eOtp") String eOtp) {
@@ -220,6 +234,11 @@ public class BeneficiaryController {
 		return beneService.getBeneRelations();
 	}
 	
+	/**
+	 * send otp for add bene
+	 * @return apiresponse
+	 * 
+	 */
 	@RequestMapping(value = SEND_OTP_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse sendOtp() {
 		List<CommunicationChannel> channel = new ArrayList<>();
@@ -229,6 +248,13 @@ public class BeneficiaryController {
 		return response;
 	}
 	
+	/**
+	 * validates otp for add bene
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 * 
+	 */
 	@RequestMapping(value = VALIDATE_OTP_ENDPOINT, method = RequestMethod.GET)
 	public ApiResponse validateOtp(@RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {

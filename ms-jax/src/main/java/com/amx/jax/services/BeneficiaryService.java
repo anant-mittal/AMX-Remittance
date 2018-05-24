@@ -535,6 +535,12 @@ public class BeneficiaryService extends AbstractService {
 		return apiResponse;
 	}
 	
+	/**
+	 * sends otp to channel provided
+	 * @param channels
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
 		
 		Customer customer = null;
@@ -761,6 +767,15 @@ public class BeneficiaryService extends AbstractService {
 		List<BeneficaryRelationship> beneRelationShips = beneRelationShipDao
 				.findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerId(beneMasterId, beneAccountId,
 						metaData.getCustomerId());
+
+		return beneRelationShips;
+	}
+	
+	public List<BeneficaryRelationship> getBeneRelationShipByRelationsId(BigDecimal beneMasterId,
+			BigDecimal beneAccountId, BigDecimal relationsId) {
+		List<BeneficaryRelationship> beneRelationShips = beneRelationShipDao
+				.findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerIdAndRelationsId(beneMasterId, beneAccountId,
+						metaData.getCustomerId(), relationsId);
 
 		return beneRelationShips;
 	}

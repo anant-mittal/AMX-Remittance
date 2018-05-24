@@ -220,7 +220,7 @@ public class RateAlertTask implements Runnable {
 		if (data == null) {
 			logger.info("Initializing rate alert data");
 			data = new RateAlertData();
-			data.setForeignCurrencyList(metaClient.getAllOnlineCurrency().getResults());
+			data.setForeignCurrencyList(metaClient.getAllExchangeRateCurrencyList().getResults());
 			CurrencyMasterDTO domCurrency = metaClient.getCurrencyByCountryId(tenant.getBDCode()).getResult();
 			data.setDomesticCurrency(domCurrency);
 			loadExchangeRates(data);

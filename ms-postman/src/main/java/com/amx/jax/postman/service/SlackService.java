@@ -18,6 +18,8 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.postman.model.Notipy.Workspace;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
@@ -26,17 +28,6 @@ import com.amx.utils.Constants;
 public class SlackService {
 
 	private Logger LOGGER = LoggerFactory.getLogger(getClass());
-
-	@Value("${msg91.remote.url}")
-	private String remoteUrl;
-	@Value("${msg91.sender.id}")
-	private String senderId;
-
-	@Value("${slack.send.notify}")
-	private String sendNotificationApi;
-
-	@Value("${slack.send.exception}")
-	private String sendException;
 
 	@Value("${slack.exception.channel}")
 	private String exceptionChannelCode;
@@ -50,10 +41,12 @@ public class SlackService {
 	@Autowired
 	RestService restService;
 
-	private String send(Map<String, Object> message) {
+	private String send(Map<String, Object> message, Channel channel) {
 		return restService.ajax("https://slack.com/api/chat.postMessage")
 				.header("Authorization",
-						"Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171")
+						(channel.getWorkspace() == Workspace.ALMEX)
+								? "Bearer xoxp-253198866083-252757085313-290617557616-ba4ac4b1a235baae2fe2ac930213d171"
+								: "Bearer xoxp-359453932565-359453932869-364186637029-e1548faa24b4292ae44026ea32985586")
 				.postJson(message).asString();
 	}
 
@@ -77,7 +70,7 @@ public class SlackService {
 			message.put("attachments", Collections.singletonList(attachment));
 		}
 
-		String response = send(message);
+		String response = send(message, msg.getChannel());
 		LOGGER.info("Slack Sent", response);
 		return msg;
 	}
@@ -86,7 +79,7 @@ public class SlackService {
 
 		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
-			// return e;
+			return e;
 		}
 
 		AppContext context = AppContextUtil.getContext();
@@ -138,7 +131,7 @@ public class SlackService {
 
 			message.put("attachments", attachments);
 
-			send(message);
+			send(message, Channel.DEFAULT);
 
 		} catch (Exception e1) {
 			LOGGER.error("NestedException ", e1);

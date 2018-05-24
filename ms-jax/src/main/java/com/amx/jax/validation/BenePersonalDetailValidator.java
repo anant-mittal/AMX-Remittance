@@ -47,22 +47,29 @@ public class BenePersonalDetailValidator implements Validator {
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
 		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
-		serviceAppList.forEach(i -> {
-			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMinLenght())) {
-				int minLength = i.getMinLenght().intValue();
-				if (minLength > 0 && benePhoneLength < minLength) {
-					throw new GlobalException(JaxError.VALIDATION_MINIMUM_LENGTH_MOBILE, minLength);
-				}
-
-			}
-			if (JaxUtil.isNullZeroBigDecimalCheck(i.getMaxLenght())) {
-				int maxLength = i.getMaxLenght().intValue();
-				if (maxLength > 0 && benePhoneLength > maxLength) {
-					throw new GlobalException(JaxError.VALIDATION_MAXIMUM_LENGTH_MOBILE, maxLength);
-				}
-			}
-		});
 		
+		int minLength = serviceAppList.stream().mapToInt(i -> {
+			if (i.getMinLenght()!=null) {
+			   return i.getMinLenght().intValue();
+			}else { 
+			  return -1;
+			}  
+		}).min().orElse(-1);
+		
+		int maxLength = serviceAppList.stream().mapToInt(i -> {
+			if (i.getMaxLenght()!=null) {
+				return i.getMaxLenght().intValue();
+			}else {
+				return -1;
+			}
+		}).max().orElse(-1);
+
+		if (maxLength > 0 && benePhoneLength > maxLength) {
+			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength);
+		}
+		if (minLength > 0 && benePhoneLength < minLength) {
+			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength);
+		}
 	}
 
 }
