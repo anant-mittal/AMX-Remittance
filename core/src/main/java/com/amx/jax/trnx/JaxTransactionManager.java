@@ -54,4 +54,6 @@ public abstract class JaxTransactionManager<T> extends TransactionModel<T> {
 		}
 		return user;
 	}
+	
+	public abstract String getJaxTransactionId();
 }

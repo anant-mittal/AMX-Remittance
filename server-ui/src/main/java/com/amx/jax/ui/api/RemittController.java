@@ -185,20 +185,9 @@ public class RemittController {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
-		CurrencyMasterDTO forCurcy = null;
+		CurrencyMasterDTO forCurcy = userBean.getDefaultForCurrency(forCur);
 
 		wrapper.getData().setDomCur(domCur);
-
-		if (forCur == null) {
-			forCurcy = userBean.getDefaultForCurrency();
-		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
-				if (currency.getCurrencyId().equals(forCur)) {
-					forCurcy = currency;
-					break;
-				}
-			}
-		}
 
 		if (forCurcy != null) {
 			wrapper.getData().setForCur(forCurcy);

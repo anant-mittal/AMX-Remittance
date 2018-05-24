@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.util.WebUtils;
-import com.amx.jax.util.validation.CustomerValidation;
+import com.amx.jax.util.validation.CustomerValidationService;
 
 /**
  * Unit test for customer validation 
@@ -28,7 +28,7 @@ public class CustomerValidationTest
 	}
 
 	@Autowired
-	CustomerValidation custVal;
+	CustomerValidationService custVal;
 	
 	@Autowired
 	WebUtils webutil;

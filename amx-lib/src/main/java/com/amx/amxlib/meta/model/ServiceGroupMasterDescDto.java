@@ -1,9 +1,11 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ServiceGroupMasterDescDto {
+public class ServiceGroupMasterDescDto implements Serializable {
 
+	private static final long serialVersionUID = -3152719750030882624L;
 	private BigDecimal serviceGroupMasterId;
 	private String serviceGroupDesc;
 	private String serviceGroupShortDesc;

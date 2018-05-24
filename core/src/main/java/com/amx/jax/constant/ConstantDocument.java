@@ -9,9 +9,12 @@ public class ConstantDocument {
 	public static final String No = "N";
 	public static final String Yes = "Y";
 	public static final String Update = "U";
+	// document id
 	public static final BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
 	public static final BigDecimal COLLECTION_DOCUMENT_ID = new BigDecimal(2);
 	public static final BigDecimal REMITTANCE_DOCUMENT_ID = new BigDecimal(3);
+	//document codes
+	public static final BigDecimal DOCUMENT_CODE_CUSTOMER_SERIAL_NUMBER = new BigDecimal(8);
 	// peronsl remittancew
 	public static final String Individual = "I";
 	public static final String Online = "O";

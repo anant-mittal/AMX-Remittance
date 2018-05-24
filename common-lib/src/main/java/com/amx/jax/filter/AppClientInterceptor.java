@@ -3,7 +3,6 @@ package com.amx.jax.filter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,6 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.utils.IoUtils;
 
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
