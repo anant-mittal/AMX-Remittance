@@ -12,4 +12,5 @@ public final class UIConstants extends Constants {
 	public static final String CDN_VERSION = "CDN_VERSION";
 	public static final String SEQ_KEY = Random.randomAlpha(1, "LMNOPQR") + Random.randomAlpha(3);
 	public static final int CACHE_TIME = 31556926;
+
 }

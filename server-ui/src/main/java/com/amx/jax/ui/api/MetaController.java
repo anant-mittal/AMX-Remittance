@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
@@ -25,6 +27,7 @@ import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentBranchParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterAgentParam;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam.RoutingBankMasterServiceProviderParam;
+import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantService;
@@ -61,25 +64,25 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList(@RequestParam(required = false) Boolean xrate) {
-		if (xrate != null && xrate.booleanValue() == true) {
-			new ResponseWrapper<List<CurrencyMasterDTO>>(
-					jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList().getResults());
-		}
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList() {
 		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
 	}
 
-	@RequestMapping(value = { "/pub/meta/name_prefix/list" }, method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> getNamePrefixList() {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(tenantContext.getOnlineCurrencies());
+	@CacheForTenant
+	@RequestMapping(value = { "/pub/meta/name_prefix/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<PrefixDTO>> getNamePrefixList() {
+		return new ResponseWrapper<List<PrefixDTO>>(
+				jaxService.setDefaults().getMetaClient().getAllPrefix().getResults());
 	}
 
+	@CacheForTenant
 	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
 		return new ResponseWrapper<List<CountryMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllCountry().getResults());
 	}
 
+	@CacheForTenant
 	@RequestMapping(value = { "/api/meta/state/list", "/pub/meta/state/list" }, method = { RequestMethod.GET })
 	public ResponseWrapper<List<ViewStateDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<ViewStateDto>>(
@@ -93,11 +96,9 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/ccy", method = { RequestMethod.GET })
-	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId,
-			@RequestParam(required = false) BigDecimal serviceGroupId,
-			@RequestParam(required = false) BigDecimal routingBankId) {
-		return new ResponseWrapper<List<CurrencyMasterDTO>>(jaxService.setDefaults().getMetaClient()
-				.getBeneficiaryCurrency(countryId, serviceGroupId, routingBankId).getResults());
+	public ResponseWrapper<List<CurrencyMasterDTO>> ccyBeneList(@RequestParam BigDecimal countryId) {
+		return new ResponseWrapper<List<CurrencyMasterDTO>>(
+				jaxService.setDefaults().getMetaClient().getBeneficiaryCurrency(countryId).getResults());
 	}
 
 	@RequestMapping(value = "/api/meta/bnfcry/accounts", method = { RequestMethod.GET })
@@ -143,6 +144,13 @@ public class MetaController {
 			@RequestBody RoutingBankMasterAgentBranchParam param) {
 		return new ResponseWrapper<List<RoutingBankMasterDTO>>(
 				jaxService.setDefaults().getBeneClient().getAgentBranch(param).getResults());
+	}
+
+	@CacheForTenant
+	@RequestMapping(value = { "/pub/meta/branch/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<BranchDetailDTO>> getExchangeBranches() {
+		return new ResponseWrapper<List<BranchDetailDTO>>(
+				jaxService.setDefaults().getMetaClient().getAllBranchDetail().getResults());
 	}
 
 }

@@ -7,18 +7,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.scope.TenantContext;
-import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
+import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 
 @Service
-public class UserValidationContext extends TenantContext<UserValidation> {
+public class CustomerValidationContext extends TenantContext<CustomerValidation> {
 
 	@Autowired
-	public UserValidationContext(List<UserValidation> libs) {
+	public CustomerValidationContext(List<CustomerValidation> libs) {
 		super(libs);
 	}
 
-	public interface UserValidation {
+	public interface CustomerValidation {
 		public void validateCustIdProofs(BigDecimal custId);
+		
+		public void validateCivilId(String civilId);
+		
 	}
 
 }
