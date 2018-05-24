@@ -38,15 +38,15 @@ public class UserService {
 	@Autowired
 	private JaxService jaxService;
 
-	public List<String> getNotifyTopics() {
+	public List<String> getNotifyTopics(String prefix) {
 		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
 		List<String> topics = new ArrayList<String>();
-		topics.add((String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getMobile())).toLowerCase());
+		topics.add(prefix + String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getNationalityId()));
+		topics.add(prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getNationalityId()));
+		topics.add(prefix + String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant().toLowerCase(),
+				customerModel.getPersoninfo().getMobile().replaceAll("\\s+","")));
 		return topics;
 	}
 

@@ -1,4 +1,7 @@
-async function init() {
+let VALID_MD_PWD = "79ef08083ae1c8dcb33386831674350a";
+let SUCCES_NOTIF_DELAY = 12500;
+
+async function initSub() {
 
   const registration = await navigator.serviceWorker.register('/sw.js');
 	
@@ -71,64 +74,116 @@ function sendNotification(title, message){
 	})
 }
 
+if(window.sessionStorage.getItem("SES_ID") === VALID_MD_PWD){
+	$(function(){
+		$(".login").hide();
+		init();
+		$(".app").show();
+	})
+} else {
+	$(function(){
+		$(".login").show();
+	})
+}
 
-$( function() {
-	fetch("/postman/list/nations",{
-		method: 'post'
-	}).then(function(resp){
-		resp.json().then(function(countries){
-			console.log(countries);
-			var countryOpts = countries.map(function(country){
-				return {
-					id: country,
-					text: country
+function onLoginClick(){
+	var username = $(".username").val();
+	var pwd = $(".password").val();
+	var mdPwd = md5(username + "#" + pwd);
+	if(mdPwd === VALID_MD_PWD){
+		window.sessionStorage.setItem("SES_ID", mdPwd);
+		$('.login').hide();
+		init();
+		$('.app').show();		
+	} else {
+		alert("invalid username or password");
+	}
+}
+
+$(function(){
+	$('.login-btn').on('click', onLoginClick);
+	$('.password').on('keyup', function(e){
+		if(e.which === 13){
+			onLoginClick();
+		}
+	})
+	$('.username').on('keyup', function(e){
+		if(e.which === 13){
+			onLoginClick();
+		}
+	})
+})
+
+function init(){
+	
+	$( function() {
+		fetch("/postman/list/nations",{
+			method: 'post'
+		}).then(function(resp){
+			resp.json().then(function(countries){
+				var countryOpts = countries.map(function(country){
+					return {
+						id: country,
+						text: country
+					}
+				});
+				
+				$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
+			})
+		})
+		
+		
+		fetch("/postman/list/tenant",{
+			method: 'post'
+		}).then(function(resp){
+			resp.json().then(function(tenants){
+				var tenantOpts = tenants.map(function(tenant){
+					return {
+						id: tenant,
+						text: tenant
+					}
+				});
+				$('.env-select').select2({
+					data: [{
+						id: "KWT",
+						text: "KWT"
+					}, {
+						id:"BHR",
+						text: "BHR"
+					}]
+				});
+			})
+		})
+		
+		$('.send-notification-btn').on('click', function() {
+			var nationality = $(".country-select").val();
+			var tenant = $(".env-select").val();
+			var title = $(".notif-title").val() || "Default Title";
+			$(".notif-title").val("");
+			var message = $(".notif-msg").val() || "Default Message";
+			$(".notif-msg").val("");
+			fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
+				method: 'post',
+				headers: {
+			        'Accept': 'application/json, text/plain, */*',
+			        'Content-Type': 'application/json'
+			    }
+			}).then(function(resp){
+				if(resp.status === 200){
+					$(".toast")
+					.html("Notification with the title: '" + title + "' was successfully sent")
+					.fadeIn()
+					.delay(SUCCES_NOTIF_DELAY)
+					.fadeOut('slow');
 				}
-			});
-			
-			$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
+			})
 		})
-	})
-	
-	
-	fetch("/postman/list/tenant",{
-		method: 'post'
-	}).then(function(resp){
-		resp.json().then(function(tenants){
-			var tenantOpts = tenants.map(function(tenant){
-				return {
-					id: tenant,
-					text: tenant
-				}
-			});
-			$('.env-select').select2({
-				data: [{
-					id: "KWT",
-					text: "KWT"
-				}, {
-					id:"BHR",
-					text: "BHR"
-				}]
-			});
+		
+		$(".send-notifications-kwt-all").on('click', function(){
+			var title = $(".notif-title").val() || "Default Title";
+			var message = $(".notif-msg").val() || "Default Message";
+			sendNotification(title, message);
 		})
-	})
+	});
 	
-	$('.send-notification-btn').on('click', function() {
-		var nationality = $(".country-select").val();
-		var tenant = $(".env-select").val();
-		var title = $(".notif-title").val() || "Default Title";
-		var message = $(".notif-msg").val() || "Default Message";
-		fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
-			method: 'post',
-			headers: {
-		        'Accept': 'application/json, text/plain, */*',
-		        'Content-Type': 'application/json'
-		    }
-		})
-	})
-	
-	$(".send-notifications-kwt-all").on('click', function(){
-		var title = $(".notif-title").val() || "Default Title";
-		var message = $(".notif-msg").val() || "Default Message";
-		sendNotification(title, message);
-	})
-});
+}
