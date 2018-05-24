@@ -13,6 +13,8 @@ public class BranchDetailModel implements java.io.Serializable
 	private String branchName;
 	private BigDecimal contactNumber;
 	private String branchAddress;
+	private BigDecimal latitude;
+	private BigDecimal longitude;
 	
 	public BranchDetailModel() {
 		super();
@@ -55,5 +57,21 @@ public class BranchDetailModel implements java.io.Serializable
 	
 	public void setBranchAddress(String branchAddress) {
 		this.branchAddress = branchAddress;
+	}
+
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
 	}	
 }
