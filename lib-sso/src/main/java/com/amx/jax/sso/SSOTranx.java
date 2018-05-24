@@ -19,6 +19,7 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 
 		private String landingUrl = null;
 		private String returnUrl = null;
+		private String sotp = null;
 
 		public String getReturnUrl() {
 			return returnUrl;
@@ -36,6 +37,14 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.landingUrl = landingUrl;
 		}
 
+		public String getSotp() {
+			return sotp;
+		}
+
+		public void setSotp(String sotp) {
+			this.sotp = sotp;
+		}
+
 	}
 
 	@Override
@@ -49,9 +58,10 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		return msg;
 	}
 
-	public SSOModel setLandingUrl(String landingUrl) {
+	public SSOModel setLandingUrl(String landingUrl, String sotp) {
 		SSOModel msg = this.get();
 		msg.setLandingUrl(landingUrl);
+		msg.setSotp(sotp);
 		this.save(msg);
 		return msg;
 	}

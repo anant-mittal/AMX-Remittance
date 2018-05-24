@@ -30,4 +30,12 @@ public class Urly {
 		return new URLBuilder();
 	}
 
+	public static URLBuilder parse(String urlString) throws MalformedURLException {
+		URL url = new URL(urlString);
+		URLBuilder builder = new URLBuilder(url.getAuthority());
+		builder.setPath(url.getPath());
+		builder.setConnectionType(url.getProtocol());
+		builder.addParameter(url.getQuery());
+		return builder;
+	}
 }

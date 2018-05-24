@@ -3,13 +3,13 @@
   */
 package com.amx.jax.sample;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +20,8 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUtils;
+import com.amx.jax.sso.SSOController.SSOAuth;
+import com.amx.utils.Urly;
 
 @Controller
 public class SSOLoginController {
@@ -39,14 +41,17 @@ public class SSOLoginController {
 	}
 
 	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = RequestMethod.POST)
-	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model) {
+	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model)
+			throws MalformedURLException, URISyntaxException {
 		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		if ("admin".equals(username) && "admin".equals(password)) {
 			// UsernamePasswordAuthenticationToken token = new
 			// UsernamePasswordAuthenticationToken(username, password);
 			// token.setDetails(new WebAuthenticationDetails(request));
 			// SecurityContextHolder.getContext().setAuthentication(token);
-			return "redirect:" + sSOTranx.get().getLandingUrl();
+			return "redirect:" + Urly.parse(sSOTranx.get().getLandingUrl())
+					.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
+					.addParameter("auth", SSOAuth.DONE).addParameter("sotp", sSOTranx.get().getSotp()).getURL();
 		}
 
 		return "index";

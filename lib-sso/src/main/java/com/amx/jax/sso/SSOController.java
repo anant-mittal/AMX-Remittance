@@ -23,6 +23,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
+import com.amx.utils.Random;
 import com.amx.utils.URLBuilder;
 
 @Controller
@@ -63,10 +64,10 @@ public class SSOController {
 		}
 
 		if (!ssoUser.isAuthDone()) {
-			sSOTranx.setLandingUrl(request.getRequestURL().toString());
+			sSOTranx.setLandingUrl(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
-			// return "redirect:" + builder.getURL();
+			return "redirect:" + builder.getURL();
 		}
 		return "home";
 	}
