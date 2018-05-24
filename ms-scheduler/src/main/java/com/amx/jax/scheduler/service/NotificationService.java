@@ -24,7 +24,7 @@ public class NotificationService {
 	@Autowired
 	private PostManService postManService;
 
-	@Async
+	
 	public void sendBatchNotification(List<RateAlertNotificationDTO> subList) {
 		for (RateAlertNotificationDTO alert : subList) {
 			logger.info("Sending rate alert to " + alert.getEmail());
@@ -35,7 +35,7 @@ public class NotificationService {
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, alert);
 			try {
-				postManService.sendEmail(email);
+				postManService.sendEmailAsync(email);
 			} catch (PostManException e) {
 				logger.error("error in sendBatchNotification", e);
 			}
