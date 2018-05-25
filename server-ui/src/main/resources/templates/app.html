@@ -18,7 +18,8 @@ window.CONST = {
 	    dummyApi: false,
 	    fpath : '<div th:text="${cdnUrl}" th:remove="tag"></div>/dist/fingerprint.js',
 	    did : '<div th:text="${did}" th:remove="tag"></div>',
-	    lang : '<div th:text="${lang}" th:remove="tag"></div>'
+	    lang : '<div th:text="${lang}" th:remove="tag"></div>',
+	    fcmSenderId: '<div th:text="${fcmSenderId}" th:remove="tag"></div>'
 	  };
 </script>
 	<script th:if="${did==null}">
