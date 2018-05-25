@@ -42,8 +42,9 @@ public abstract class ATransactionModel<T> {
 		return key;
 	}
 
-	public void save(T model) {
+	public T save(T model) {
 		getCacheBox().put(getTranxId(), model);
+		return model;
 	}
 
 	public T get() {

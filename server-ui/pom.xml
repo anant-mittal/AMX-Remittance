@@ -29,7 +29,6 @@
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
-
 		<!-- thymeleaf dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
