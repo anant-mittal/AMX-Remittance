@@ -1,7 +1,9 @@
 package com.bootloaderjs;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.amx.jax.AppParam;
+import com.amx.utils.JsonUtil;
 
 public class App { // Noncompliant
 
@@ -13,11 +15,6 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("====");
-
-		Matcher matcher = pattern.matcher("HKK-1cmqzbzurupkw-1cmqzc4npbnd7");
-		if (matcher.find()) {
-			System.out.println(matcher.group(2));
-		}
+		System.out.println("====" + JsonUtil.toJson(AppParam.values()));
 	}
 }
