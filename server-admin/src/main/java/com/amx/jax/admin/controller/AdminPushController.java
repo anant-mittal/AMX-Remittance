@@ -1,4 +1,4 @@
-package com.amx.jax.postman.notify;
+package com.amx.jax.admin.controller;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,9 +25,9 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @Api(value = "Push Notifiation APIs")
-public class NotifyController {
+public class AdminPushController {
 
-	private Logger logger = Logger.getLogger(NotifyController.class);
+	private Logger logger = Logger.getLogger(AdminPushController.class);
 
 	@Autowired
 	FBPushClient fbPushClient;

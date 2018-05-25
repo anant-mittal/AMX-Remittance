@@ -1,7 +1,7 @@
 /**  AlMulla Exchange
   *  
   */
-package com.amx.jax.sample;
+package com.amx.jax.sso;
 
 /**
  * @author Viki Sangani

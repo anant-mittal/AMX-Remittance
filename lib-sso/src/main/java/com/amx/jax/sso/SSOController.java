@@ -69,7 +69,7 @@ public class SSOController {
 			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return "redirect:" + builder.getURL();
 		}
-		return "home";
+		return "redirect:" + sSOTranx.get().getReturnUrl();
 	}
 
 	@RequestMapping(value = SSOUtils.LOGGEDIN_URL, method = { RequestMethod.GET })

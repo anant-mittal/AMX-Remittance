@@ -12,19 +12,32 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-/**
- * @author Viki Sangani 13-Dec-2017 Appcontroller.java
- */
 @Controller
-@Api(value = "App APIs")
+@Api(value = "App Pages")
 public class AppController {
 
 	private Logger log = Logger.getLogger(AppController.class);
 
 	@ApiOperation(value = "Index page")
-	@RequestMapping(value = "/amxadmin", method = RequestMethod.GET)
+	@RequestMapping(value = "/", method = RequestMethod.GET)
 	public String index(Model model) {
 		return "index";
+	}
+
+	@ApiOperation(value = "Admin page")
+	@RequestMapping(value = "/app/admin", method = RequestMethod.GET)
+	public String indexAdmin(Model model) {
+		return "admin-index";
+	}
+
+	@RequestMapping(value = "/app/push", method = RequestMethod.GET)
+	public String pushIndex(Model model) {
+		return "push-index";
+	}
+
+	@RequestMapping(value = "/app/service2", method = RequestMethod.GET)
+	public String pushService(Model model) {
+		return "service2-index";
 	}
 
 }

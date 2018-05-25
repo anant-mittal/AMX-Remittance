@@ -1,4 +1,4 @@
-package com.amx.jax.postman.notify;
+package com.amx.jax.dict;
 
 public enum BranchesBHR {
 
