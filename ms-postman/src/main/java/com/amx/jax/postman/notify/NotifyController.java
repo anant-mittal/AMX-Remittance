@@ -61,7 +61,7 @@ public class NotifyController {
 		PushMessage msg = new PushMessage();
 		msg.setMessage(message);
 		msg.setSubject(title);
-		msg.addTo(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
 		return fbPushClient.sendDirect(msg);
 	}
 
@@ -75,9 +75,9 @@ public class NotifyController {
 		msg.setSubject(title);
 
 		if (nationality == Nations.ALL) {
-			msg.addTo(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
 		} else {
-			msg.addTo(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
 		}
 		return fbPushClient.sendDirect(msg);
