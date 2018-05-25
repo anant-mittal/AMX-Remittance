@@ -1,4 +1,4 @@
-package com.amx.jax.sample;
+package com.amx.jax.sso;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

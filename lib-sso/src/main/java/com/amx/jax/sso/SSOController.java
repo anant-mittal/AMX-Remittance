@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,9 @@ public class SSOController {
 	HttpService httpService;
 
 	@Autowired
+	SSOAuthProvider authProvider;
+
+	@Autowired
 	SSOUser ssoUser;
 
 	@Autowired
@@ -56,10 +60,14 @@ public class SSOController {
 			auth = SSOAuth.NONE;
 		}
 
-		if (auth == SSOAuth.DONE) {
+		if (auth == SSOAuth.DONE && sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
+
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(tranxId, sotp);
 			token.setDetails(new WebAuthenticationDetails(request));
-			SecurityContextHolder.getContext().setAuthentication(token);
+
+			Authentication authentication = authProvider.authenticate(token);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
+
 			ssoUser.setAuthDone(true);
 		}
 
@@ -69,7 +77,7 @@ public class SSOController {
 			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return "redirect:" + builder.getURL();
 		}
-		return "home";
+		return "redirect:" + sSOTranx.get().getReturnUrl();
 	}
 
 	@RequestMapping(value = SSOUtils.LOGGEDIN_URL, method = { RequestMethod.GET })
