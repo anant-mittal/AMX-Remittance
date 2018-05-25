@@ -32,13 +32,13 @@ async function initSub() {
   });
 
   const currentToken = await messaging.getToken();
-   fetch('/postman/subscribe/kwt-all_web?token='+currentToken, { method: 'post'});
+   fetch('/api/subscribe/kwt-all_web?token='+currentToken, { method: 'post',credentials: "same-origin"});
   
 
   messaging.onTokenRefresh(async () => {
     console.log('token refreshed');
     const newToken = await messaging.getToken();
-    fetch('/postman/subscribe/kwt-all_web?token='+newToken, { method: 'post'});
+    fetch('/api/subscribe/kwt-all_web?token='+newToken, { method: 'post',credentials: "same-origin"});
   });
   
   messaging.onMessage(function(payload) {
@@ -50,8 +50,9 @@ async function initSub() {
 function sendNotification(title, message){
 	title = title || "Notification";
 	message = message || "Default message"
-	fetch('/postman/push/notify', {
+	fetch('/api/push/notify', {
 		method: 'post',
+		credentials: "same-origin",
 		headers: {
 	        'Accept': 'application/json, text/plain, */*',
 	        'Content-Type': 'application/json'
@@ -119,8 +120,8 @@ $(function(){
 function init(){
 	
 	$( function() {
-		fetch("/postman/list/nations",{
-			method: 'post'
+		fetch("/pub/list/nations",{
+			method: 'post',credentials: "same-origin"
 		}).then(function(resp){
 			resp.json().then(function(countries){
 				var countryOpts = countries.map(function(country){
@@ -135,8 +136,8 @@ function init(){
 		})
 		
 		
-		fetch("/postman/list/tenant",{
-			method: 'post'
+		fetch("/pub/list/tenant",{
+			method: 'post',credentials: "same-origin"
 		}).then(function(resp){
 			resp.json().then(function(tenants){
 				var tenantOpts = tenants.map(function(tenant){
@@ -164,8 +165,9 @@ function init(){
 			$(".notif-title").val("");
 			var message = $(".notif-msg").val() || "Default Message";
 			$(".notif-msg").val("");
-			fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
+			fetch(`/api/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
 				method: 'post',
+				credentials: "same-origin",
 				headers: {
 			        'Accept': 'application/json, text/plain, */*',
 			        'Content-Type': 'application/json'
@@ -189,3 +191,5 @@ function init(){
 	});
 	
 }
+
+init();

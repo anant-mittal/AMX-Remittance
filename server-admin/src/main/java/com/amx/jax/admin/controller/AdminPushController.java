@@ -32,17 +32,17 @@ public class AdminPushController {
 	@Autowired
 	FBPushClient fbPushClient;
 
-	@RequestMapping(value = PostManUrls.LIST_TENANT, method = RequestMethod.POST)
+	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Tenant.values());
 	}
 
-	@RequestMapping(value = PostManUrls.LIST_NATIONS, method = RequestMethod.POST)
+	@RequestMapping(value = "/pub/list/nations", method = RequestMethod.POST)
 	public List<Nations> listOfNations() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Nations.values());
 	}
 
-	@RequestMapping(value = PostManUrls.LIST_BRANCHES, method = RequestMethod.POST)
+	@RequestMapping(value = "/pub/list/branches", method = RequestMethod.POST)
 	public List<?> listOfNations(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant)
 			throws PostManException, InterruptedException, ExecutionException {
@@ -54,7 +54,7 @@ public class AdminPushController {
 
 	}
 
-	@RequestMapping(value = "/postman/notify/all", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
 	public PushMessage notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
@@ -65,7 +65,7 @@ public class AdminPushController {
 		return fbPushClient.sendDirect(msg);
 	}
 
-	@RequestMapping(value = "/postman/notify/nationality", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
 	public PushMessage notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
