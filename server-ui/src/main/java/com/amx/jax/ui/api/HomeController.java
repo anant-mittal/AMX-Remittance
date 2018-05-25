@@ -127,6 +127,7 @@ public class HomeController {
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute("fcmSenderId", fcmSenderId);
 		return "app";
 	}
 
