@@ -46,7 +46,6 @@ public class GenerateCacheClasses { // Noncompliant
 //		launcher.addInputResource(System.getProperty("user.dir") + "/src/main/java");
 		// launcher.getEnvironment().setAutoImports(true);
 		// launcher.getEnvironment().setNoClasspath(true);
-
 		// launcher.buildModel();
 		// CtModel model = launcher.getModel();
 		// for (CtType<?> string : model.getAllTypes()) {

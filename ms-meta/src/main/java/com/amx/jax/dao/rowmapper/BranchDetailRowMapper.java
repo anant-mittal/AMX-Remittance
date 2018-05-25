@@ -24,6 +24,8 @@ public class BranchDetailRowMapper implements RowMapper<BranchDetailModel>
 		bdModel.setContactNumber(rs.getBigDecimal("TELEPHONE_NUMBER"));
 		bdModel.setBranchName(rs.getString("BRANCH_NAME"));
 		bdModel.setBranchAddress(rs.getString("ADDRESS"));
+		bdModel.setBranchAddress(rs.getString("LATITUDE"));
+		bdModel.setBranchAddress(rs.getString("LONGITUDE"));
 		
 		return bdModel;
 	}

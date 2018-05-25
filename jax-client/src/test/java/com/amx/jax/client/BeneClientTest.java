@@ -190,7 +190,7 @@ public class BeneClientTest extends AbstractTestClient {
 		setDefaults();
 		ApiResponse response = null;
 		BigDecimal beneCountryId = new BigDecimal(91);
-		response = client.getBeneficiaryCountryList();
+		response = client.getBeneficiaryCountryList(beneCountryId);
 		assertNotNull("Response is null", response);
 		assertNotNull("result is null", response.getResult());
 	}

@@ -23,7 +23,6 @@ import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;

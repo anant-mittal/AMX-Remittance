@@ -138,5 +138,13 @@ public class BeneAccountModel extends AbstractModel {
 	public void setServiceGroupId(BigDecimal serviceGroupId) {
 		this.serviceGroupId = serviceGroupId;
 	}
+	
+	public BigDecimal fetchBankBranchId() {
+		if (this.bankBranchId != null) {
+			return bankBranchId;
+		} else {
+			return serviceProviderBranchId;
+		}
+	}
 
 }
