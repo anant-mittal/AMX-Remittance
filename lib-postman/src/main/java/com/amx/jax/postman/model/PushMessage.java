@@ -1,7 +1,8 @@
 package com.amx.jax.postman.model;
 
 public class PushMessage extends Message {
-	
+
+	public static final String TOPICS_PREFIX = "/topics/";
 	public static final String FORMAT_TO_ALL = "%s-all";
 	public static final String FORMAT_TO_NATIONALITY = "%s-nationality-%s";
 	public static final String FORMAT_TO_MOBILE = "%s-mobile-%s";
@@ -26,6 +27,10 @@ public class PushMessage extends Message {
 
 	public void setImage(String image) {
 		this.image = image;
+	}
+
+	public void addTopic(String topic) {
+		this.addTo(TOPICS_PREFIX + topic);
 	}
 
 }

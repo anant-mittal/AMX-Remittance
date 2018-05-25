@@ -62,7 +62,7 @@ public class AdminPushController {
 		PushMessage msg = new PushMessage();
 		msg.setMessage(message);
 		msg.setSubject(title);
-		msg.addTo(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
 		return fbPushClient.sendDirect(msg);
 	}
 
@@ -76,15 +76,15 @@ public class AdminPushController {
 		msg.setSubject(title);
 
 		if (nationality == Nations.ALL) {
-			msg.addTo(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
 		} else {
-			msg.addTo(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
+			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
 		}
 		return fbPushClient.sendDirect(msg);
 	}
-	
-	@RequestMapping(value =  "/api/subscribe/{topic}", method = RequestMethod.POST)
+
+	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
 		fbPushClient.subscribe(token, topic);
