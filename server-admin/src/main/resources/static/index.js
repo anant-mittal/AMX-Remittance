@@ -74,17 +74,19 @@ function sendNotification(title, message){
 	})
 }
 
-if(window.sessionStorage.getItem("SES_ID") === VALID_MD_PWD){
-	$(function(){
-		$(".login").hide();
-		init();
-		$(".app").show();
-	})
-} else {
-	$(function(){
-		$(".login").show();
-	})
-}
+//if(window.sessionStorage.getItem("SES_ID") === VALID_MD_PWD){
+//	$(function(){
+//		$(".login").hide();
+//		init();
+//		$(".app").show();
+//	})
+//} else {
+//	$(function(){
+//		$(".login").show();
+//	})
+//}
+
+
 
 function onLoginClick(){
 	var username = $(".username").val();
