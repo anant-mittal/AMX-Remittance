@@ -28,6 +28,7 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	private MultiValueMap<String, String> header;
+	private long responseTime;
 
 	public MultiValueMap<String, String> getHeader() {
 		return header;
@@ -59,6 +60,11 @@ public class RequestTrackEvent extends AuditEvent {
 	public RequestTrackEvent(HttpServletResponse response, HttpServletRequest request) {
 		super(Type.RESP_OUT);
 		this.track(response, request);
+	}
+
+	public RequestTrackEvent(HttpServletResponse resp, HttpServletRequest req, long responseTime) {
+		this(resp, req);
+		this.responseTime = responseTime;
 	}
 
 	public RequestTrackEvent track(HttpServletResponse response, HttpServletRequest request) {
@@ -103,6 +109,14 @@ public class RequestTrackEvent extends AuditEvent {
 		}
 		this.header = response.getHeaders();
 		return this;
+	}
+
+	public long getResponseTime() {
+		return responseTime;
+	}
+
+	public void setResponseTime(long responseTime) {
+		this.responseTime = responseTime;
 	}
 
 }

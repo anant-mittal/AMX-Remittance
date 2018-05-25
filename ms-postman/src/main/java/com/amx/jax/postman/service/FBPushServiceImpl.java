@@ -1,6 +1,5 @@
 package com.amx.jax.postman.service;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -40,7 +39,7 @@ public class FBPushServiceImpl implements FBPushService {
 					.setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
 			FirebaseApp.initializeApp(options);
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			LOGGER.error("While Loading firebase key ", e);
 		}
 	}

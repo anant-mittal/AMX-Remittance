@@ -9,10 +9,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerCredential;
+import com.amx.amxlib.model.CustomerHomeAddress;
+import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.PartialRegService;
 import com.amx.jax.ui.service.RegistrationService;
+import com.amx.jax.ui.session.Transactions;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -29,6 +34,9 @@ public class RegisterController {
 
 	@Autowired
 	private RegistrationService registrationService;
+
+	@Autowired
+	Transactions transactions;
 
 	/**
 	 * @param civilid
@@ -100,7 +108,46 @@ public class RegisterController {
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
 			@RequestParam(required = false) String email) {
+		transactions.start();
 		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, true);
+	}
+
+	@Autowired
+	private PartialRegService partialRegService;
+
+	@RequestMapping(value = "/pub/register/new/init", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> partialReg(@RequestBody CustomerPersonalDetail personalDetail) {
+		return transactions.start(partialRegService.newUserRegisterInit(personalDetail));
+	}
+
+	@RequestMapping(value = "/pub/register/new/verify", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> partialReg(@RequestParam String mOtp, @RequestParam String eOtp) {
+		transactions.track();
+		return partialRegService.newUserRegisterValidate(mOtp, eOtp);
+	}
+
+	@RequestMapping(value = "/pub/register/new/address", method = { RequestMethod.POST })
+	public ResponseWrapper<AuthData> saveHomeAddress(@RequestBody CustomerHomeAddress customerHomeAddress) {
+		transactions.track();
+		return partialRegService.saveHomeAddress(customerHomeAddress);
+	}
+
+	@RequestMapping(value = "/pub/register/new/secques", method = { RequestMethod.POST })
+	public ResponseWrapper<UserUpdateData> regNewSecQues(@RequestBody UserUpdateData userUpdateData) {
+		transactions.track();
+		return partialRegService.updateSecQues(userUpdateData.getSecQuesAns());
+	}
+
+	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regNewPhising(@RequestParam String imageUrl, @RequestParam String caption) {
+		transactions.track();
+		return partialRegService.updatePhising(imageUrl, caption);
+	}
+
+	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestBody CustomerCredential customerCredential) {
+		transactions.track();
+		return partialRegService.setCredentials(customerCredential);
 	}
 
 }

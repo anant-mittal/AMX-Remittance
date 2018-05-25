@@ -8,7 +8,8 @@ import java.util.Map;
 
 import javax.transaction.Transactional;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -20,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class ExchangeRateProcedureDao {
 
-	private static final Logger LOGGER = Logger.getLogger(ExchangeRateProcedureDao.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExchangeRateProcedureDao.class);
 
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -78,7 +79,7 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
 				+ "        AND    ? BETWEEN B.FROM_AMOUNT AND B.TO_AMOUNT"
 				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
-				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    "  /** Added by Rabil for IMPS **/
+				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
@@ -92,7 +93,7 @@ public class ExchangeRateProcedureDao {
 		try {
 			comission = jdbcTemplate.queryForObject(sql, inputList.toArray(), BigDecimal.class);
 		} catch (Exception e) {
-			LOGGER.info("error in getCommission : ", e);
+			LOGGER.info("error in getCommission : {}", e.getMessage());
 		}
 
 		return comission;

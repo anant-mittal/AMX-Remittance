@@ -3,6 +3,7 @@ package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +14,7 @@ import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -83,7 +85,7 @@ public class UserController {
 			sessionService.getAppDevice().setAppVersion(appVersion);
 		}
 
-		wrapper.getData().setTenant(tenantContext.getTenant());
+		wrapper.getData().setTenant(AppContextUtil.getTenant());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(elementToSearch);
@@ -128,7 +130,7 @@ public class UserController {
 	@Deprecated
 	@ApiOperation(value = "Old API to update password with Form")
 	@RequestMapping(value = "/api/user/password", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatepwd(password, mOtp, eOtp);
@@ -143,7 +145,7 @@ public class UserController {
 
 	@Deprecated
 	@RequestMapping(value = "/api/user/email", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updateEmail(@RequestParam String email,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updateEmail(email, mOtp, eOtp);
@@ -157,7 +159,7 @@ public class UserController {
 
 	@Deprecated
 	@RequestMapping(value = "/api/user/phone", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updatePhone(@RequestParam String phone,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatePhone(phone, mOtp, eOtp);

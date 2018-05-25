@@ -30,9 +30,9 @@ public class CustomerModel extends AbstractModel {
 	private String motp;
 
 	private String eotp;
-	
+
 	private List<SecurityQuestionModel> verificationAnswers;
-	
+
 	private boolean isRegistrationFlow;
 
 	public boolean isRegistrationFlow() {

@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import com.amx.jax.util.CountryUtil;
 
 @Component
-public class CustomerValidation {
+public class CustomerValidationService {
 
 	@Autowired
 	private CountryUtil util;

@@ -11,9 +11,11 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.services.AbstractService;
 /**
@@ -26,6 +28,9 @@ import com.amx.jax.services.AbstractService;
 public class CountryService extends AbstractService {
 	@Autowired
 	CountryRepository countryRepository;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
 	
 	@Autowired
 	MetaData meta;
@@ -131,6 +136,15 @@ public class CountryService extends AbstractService {
 			return true;
 		}
 		return false;
+	}
+	
+	/**
+	 * @param countryId
+	 * @return CountryMaster
+	 * 
+	 */
+	public CountryMaster getCountryMaster(BigDecimal countryId) {
+		return countryMasterRepository.findOne(countryId);
 	}
 	
 }

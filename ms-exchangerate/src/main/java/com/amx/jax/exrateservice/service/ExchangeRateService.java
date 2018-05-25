@@ -193,8 +193,8 @@ public class ExchangeRateService extends AbstractService {
 				BigDecimal serviceId = rate.getServiceId();
 				BigDecimal fromFCLimitAmount = pip.getFromAmount();
 				BigDecimal toFCLimitAmount = pip.getToAmount();
-				BigDecimal exrateTemp = rate.getSellRateMax().subtract(pip.getPipsNo());
-				BigDecimal inverseExRateTemp = new BigDecimal(1).divide(exrateTemp, 10, RoundingMode.HALF_UP);
+				BigDecimal exRateApplicable = rate.getSellRateMax();
+				BigDecimal inverseExRateTemp = new BigDecimal(1).divide(exRateApplicable, 10, RoundingMode.HALF_UP);
 				BigDecimal convertedFCAmount = inverseExRateTemp.multiply(lcAmount);
 				if (convertedFCAmount.compareTo(fromFCLimitAmount) >= 0
 						&& convertedFCAmount.compareTo(toFCLimitAmount) <= 0) {

@@ -1,6 +1,7 @@
 package com.amx.jax.ui.session;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.jax.AppContextUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -34,8 +36,6 @@ public class UserSession implements Serializable {
 		this.uuidToken = uuidToken;
 	}
 
-	private String userid = null;
-
 	private CustomerModel customerModel = null;
 
 	public CustomerModel getCustomerModel() {
@@ -44,25 +44,20 @@ public class UserSession implements Serializable {
 
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
+		if (customerModel != null) {
+			AppContextUtil.setUserId(customerModel.getCustomerId());
+		}
 	}
 
-	public String getUserid() {
-		return userid;
-	}
-
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public BigDecimal getUserid() {
+		if (this.customerModel != null) {
+			return this.customerModel.getCustomerId();
+		}
+		return null;
 	}
 
 	public boolean isValid() {
 		return valid;
-	}
-
-	public boolean isValid(String userid, String otp) {
-		if (this.userid != null && this.userid.equals(userid)) {
-			this.valid = true;
-		}
-		return this.valid;
 	}
 
 	public void setValid(boolean valid) {
