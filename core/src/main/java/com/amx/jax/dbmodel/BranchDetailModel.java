@@ -26,6 +26,17 @@ public class BranchDetailModel implements java.io.Serializable
 		this.contactNumber = contactNumber;
 		this.branchAddress = branchAddress;
 	}
+	
+	public BranchDetailModel(String area, String branchName, BigDecimal contactNumber, String branchAddress,
+			BigDecimal latitude, BigDecimal longitude) {
+		super();
+		this.area = area;
+		this.branchName = branchName;
+		this.contactNumber = contactNumber;
+		this.branchAddress = branchAddress;
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
 
 	public String getArea() {
 		return area;
