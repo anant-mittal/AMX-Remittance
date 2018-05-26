@@ -3,6 +3,7 @@ package com.amx.jax.ui.api;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
+import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -97,19 +99,25 @@ public class RegisterController {
 	}
 
 	/**
-	 * 
 	 * @param loginId
 	 * @param password
 	 * @param mOtp
 	 * @param eOtp
 	 * @return
 	 */
-	@RequestMapping(value = "/pub/register/creds", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/creds", method = {
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	@Deprecated
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
 			@RequestParam(required = false) String email) {
-		transactions.start();
 		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, true);
+	}
+
+	@RequestMapping(value = "/pub/register/creds/**", method = { RequestMethod.POST, })
+	public ResponseWrapper<UserUpdateData> regLoginIdAndPasswordJSON(@RequestBody ICustomerModel customerCredential) {
+		return registrationService.setCredentials(customerCredential.getLoginId(), customerCredential.getPassword(),
+				customerCredential.getMotp(), customerCredential.getEotp(), customerCredential.getEmail(), true);
 	}
 
 	@Autowired
@@ -145,7 +153,8 @@ public class RegisterController {
 	}
 
 	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST, })
-	public ResponseWrapper<UserUpdateData> regLoginIdAndPassword(@RequestBody CustomerCredential customerCredential) {
+	public ResponseWrapper<UserUpdateData> regNewLoginIdAndPassword(
+			@RequestBody CustomerCredential customerCredential) {
 		transactions.track();
 		return partialRegService.setCredentials(customerCredential);
 	}
