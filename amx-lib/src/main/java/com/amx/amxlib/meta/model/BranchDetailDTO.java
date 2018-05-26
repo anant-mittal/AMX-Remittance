@@ -16,6 +16,8 @@ public class BranchDetailDTO implements Serializable {
 	private String branchName;
 	private BigDecimal contactNumber;
 	private String branchAddress;
+	private BigDecimal latitude;
+	private BigDecimal longitude;
 
 	public BranchDetailDTO() {
 		super();
@@ -52,4 +54,21 @@ public class BranchDetailDTO implements Serializable {
 	public void setBranchAddress(String branchAddress) {
 		this.branchAddress = branchAddress;
 	}
+
+	public BigDecimal getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude;
+	}
+
+	public BigDecimal getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude;
+	}
+	
 }
