@@ -8,7 +8,7 @@ import com.amx.jax.postman.converter.ConverterAmxFlyingSaucer;
 //import com.amx.jax.postman.converter.ConverterAmxFlyingSaucer;
 import com.amx.jax.postman.converter.ConverterFOP;
 import com.amx.jax.postman.converter.ConverterFlyingSaucer;
-import com.amx.jax.postman.converter.ConverterIText7;
+//import com.amx.jax.postman.converter.ConverterIText7;
 //import com.amx.jax.postman.converter.ConverterFlyingSaucer;
 //import com.amx.jax.postman.converter.ConverterIText5;
 //import com.amx.jax.postman.converter.ConverterIText7;
@@ -28,8 +28,8 @@ public class PdfService {
 	@Autowired
 	private ConverterJasper converterJasper;
 
-	@Autowired
-	private ConverterIText7 converterIText7;
+//	@Autowired
+//	private ConverterIText7 converterIText7;
 
 	@Value("${default.pDFConverter}")
 	private PDFConverter pDFConverter;
@@ -37,8 +37,8 @@ public class PdfService {
 	// @Autowired
 	// private ConverterIText5 converterIText5;
 
-	@Autowired
-	private ConverterFOP converterFOP;
+//	@Autowired
+//	private ConverterFOP converterFOP;
 
 	public File convert(File file) {
 
@@ -50,22 +50,22 @@ public class PdfService {
 			}
 		}
 
-		if (conv == PDFConverter.FOP) {
-			return converterFOP.toPDF(file);
-		} else if (conv == PDFConverter.FS) {
+		if (conv == PDFConverter.FS) {
 			return converterFlyingSaucer.toPDF(file);
 		} else if (conv == PDFConverter.AMXFS) {
 			return converterAmxFlyingSaucer.toPDF(file);
-		} else if (conv == PDFConverter.ITEXT5) {
+		//} else if (conv == PDFConverter.ITEXT5) {
 			// return converterIText5.toPDF(file);
 		} else if (conv == PDFConverter.JASPER) {
 			return converterJasper.toPDF(file);
-		} else if (conv == PDFConverter.ITEXT7) {
-			return converterIText7.toPDF(file);
+		//} else if (conv == PDFConverter.ITEXT7) {
+		//	return converterIText7.toPDF(file);
+//		} else if (conv == PDFConverter.FOP) {
+//			return converterFOP.toPDF(file);
 		} else {
-			return converterIText7.toPDF(file);
+			return converterFlyingSaucer.toPDF(file);
 		}
-		return file;
+		//return file;
 	}
 
 }
