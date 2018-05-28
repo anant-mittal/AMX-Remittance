@@ -37,6 +37,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.UserModel;
@@ -231,6 +232,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
 			});
 			break;
+			
+		case "place-order-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>(){});
+			break;	
 			
 	}
 		responseData.setValues(models);
