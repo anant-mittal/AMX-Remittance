@@ -1,5 +1,6 @@
 package com.amx.jax.ui.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class UserMetaData extends AbstractModel {
 	UserDevice device = null;
 	AuthState state = null;
 	Tenant tenant = null;
+	String tenantCode = null;
 	Language lang = null;
 	JaxMetaParameter config = null;
 	String cdnUrl = null;
@@ -132,6 +134,14 @@ public class UserMetaData extends AbstractModel {
 
 	public void setNotifyRange(String notifyRange) {
 		this.notifyRange = notifyRange;
+	}
+
+	public String getTenantCode() {
+		return tenantCode;
+	}
+
+	public void setTenantCode(String tenantCode) {
+		this.tenantCode = tenantCode;
 	}
 
 }
