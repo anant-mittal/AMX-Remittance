@@ -179,9 +179,7 @@ function init(){
 			};
 			$.ajax({
 			    url         : '/postman/notify/nationality',
-			    data        : objectToFormParams(reqObj),
-			    processData : false,
-			    contentType : false,
+			    data        : reqObj,
 			    type: 'POST'
 			}).done(function(data){
 				$(".toast")
