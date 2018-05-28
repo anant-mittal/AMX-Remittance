@@ -184,10 +184,8 @@ function init(){
 					message: message
 				};
 				$.ajax({
-				    url         : '/api/notify/nationality',
-				    data        : objectToFormParams(reqObj),
-				    processData : false,
-				    contentType : false,
+					url: '/api/notify/nationality',
+				    data: reqObj,
 				    type: 'POST'
 				}).done(function(data){
 					$(".toast")
