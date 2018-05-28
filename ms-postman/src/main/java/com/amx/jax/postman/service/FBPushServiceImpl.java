@@ -1,6 +1,5 @@
 package com.amx.jax.postman.service;
 
-import java.io.InputStream;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,13 +13,9 @@ import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.FileUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.FirebaseOptions;
 
 @Component
 public class FBPushServiceImpl implements FBPushService {
@@ -30,19 +25,19 @@ public class FBPushServiceImpl implements FBPushService {
 	@Value("${fcm.server.key}")
 	String serverKey;
 
-	@Autowired
-	public FBPushServiceImpl(@Value("${fcm.service.file}") String fcmServiceFile) {
-		try {
-			InputStream serviceAccount = FileUtil.getExternalResourceAsStream(fcmServiceFile, FBPushService.class);
-
-			FirebaseOptions options = new FirebaseOptions.Builder()
-					.setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
-			FirebaseApp.initializeApp(options);
-
-		} catch (Exception e) {
-			LOGGER.error("While Loading firebase key ", e);
-		}
-	}
+//	@Autowired
+//	public FBPushServiceImpl(@Value("${fcm.service.file}") String fcmServiceFile) {
+//		try {
+//			InputStream serviceAccount = FileUtil.getExternalResourceAsStream(fcmServiceFile, FBPushService.class);
+//
+//			FirebaseOptions options = new FirebaseOptions.Builder()
+//					.setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
+//			FirebaseApp.initializeApp(options);
+//
+//		} catch (Exception e) {
+//			LOGGER.error("While Loading firebase key ", e);
+//		}
+//	}
 
 	@Autowired
 	RestService restService;
@@ -82,7 +77,7 @@ public class FBPushServiceImpl implements FBPushService {
 				.put(DATA_TIMESTAMP, System.currentTimeMillis()).toMap();
 
 		LOGGER.info("Data JSON {}", JsonUtil.toJson(fields));
-		LOGGER.info("Sneinfnnnnnn {}",
+		LOGGER.info("Notification OUTPUT  {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
 	}
@@ -100,7 +95,7 @@ public class FBPushServiceImpl implements FBPushService {
 				.toMap();
 
 		LOGGER.info("Notification JSON {}", JsonUtil.toJson(fields));
-		LOGGER.info("Sneinfnnnnnn {}",
+		LOGGER.info("Notification OUTPUT  {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
 	}
@@ -118,7 +113,7 @@ public class FBPushServiceImpl implements FBPushService {
 				.toMap();
 
 		LOGGER.info("Notification JSON {}", JsonUtil.toJson(fields));
-		LOGGER.info("Sneinfnnnnnn {}",
+		LOGGER.info("Notification OUTPUT {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
 	}

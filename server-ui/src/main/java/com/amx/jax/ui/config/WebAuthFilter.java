@@ -8,7 +8,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,15 +31,14 @@ public class WebAuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-//		HttpServletRequest httpRequest = (HttpServletRequest) req;
-//		System.out.println(
-//				"===[" + httpRequest.getRequestedSessionId() + "]=====[" + httpRequest.isRequestedSessionIdValid()
-//
-//						+ "]===========[" + sessionService.getUserSession().isValid());
+		// HttpServletRequest httpRequest = (HttpServletRequest) req;
+		// System.out.println(
+		// "===[" + httpRequest.getRequestedSessionId() + "]=====[" +
+		// httpRequest.isRequestedSessionIdValid()
+		//
+		// + "]===========[" + sessionService.getUserSession().isValid());
 
-		if (!sessionService.validateSessionUnique()
-
-		) {
+		if (!sessionService.validateSessionUnique()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
