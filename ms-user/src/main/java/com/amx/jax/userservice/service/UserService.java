@@ -327,6 +327,7 @@ public class UserService extends AbstractUserService {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
+		    userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
 			Customer customer = custDao.getCustomerByCivilId(civilId);
 			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
 				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
@@ -338,9 +339,7 @@ public class UserService extends AbstractUserService {
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
-		if (civilId != null) {
-			userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
-		}
+		
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
