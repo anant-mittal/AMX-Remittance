@@ -29,4 +29,9 @@ multitenancy:
         url: jdbc:oracle:thin:@10.1.20.15:1521:TMEX
         username: tmex
         password: tmex
+        driverClassName: oracle.jdbc.OracleDriver      -
+        tenantId: OMN
+        url: jdbc:oracle:thin:@10.1.20.15:1521:TMEX
+        username: tmex
+        password: tmex
         driverClassName: oracle.jdbc.OracleDriver
