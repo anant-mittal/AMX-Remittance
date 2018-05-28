@@ -73,8 +73,12 @@ public class PostManServiceImpl implements PostManService {
 					fileService.create(file);
 				}
 			}
-			emailService.send(email);
-			LOGGER.info("Sent {} Email to {} = {} ", email.getTemplate(), to);
+			if (!ArgUtil.isEmpty(to)) {
+				emailService.send(email);
+				LOGGER.info("Sent {} Email to {} = {} ", email.getTemplate(), to);
+			} else {
+				LOGGER.info("NotSent {} Email to {} = {} ", email.getTemplate(), to);
+			}
 		} catch (Exception e) {
 			this.notifyException(to, e);
 		}
@@ -117,8 +121,12 @@ public class PostManServiceImpl implements PostManService {
 				context.setVariables(sms.getModel());
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}
-			this.smsService.sendSMS(sms);
-			LOGGER.info("Sent {} SMS to {} = {} ", sms.getTemplate(), to);
+			if (!ArgUtil.isEmpty(to)) {
+				this.smsService.sendSMS(sms);
+				LOGGER.info("Sent {} SMS to {} = {} ", sms.getTemplate(), to);
+			} else {
+				LOGGER.info("NotSent {} SMS to {} = {} ", sms.getTemplate(), to);
+			}
 		} catch (Exception e) {
 			this.notifyException(to, e);
 		}

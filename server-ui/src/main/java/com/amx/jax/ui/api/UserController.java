@@ -86,6 +86,7 @@ public class UserController {
 		}
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
+		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(elementToSearch);
