@@ -172,19 +172,6 @@ public class AppConfig {
 			}
 		}
 
-		// AppParam.APP_PROD.setEnabled(this.prodMode, APP_PROD);
-		// AppParam.APP_SWAGGER.setEnabled(this.swaggerEnabled, APP_SWAGGER);
-		// AppParam.APP_DEBUG.setEnabled(this.debug, APP_DEBUG);
-		// AppParam.APP_CACHE.setEnabled(this.cache, APP_CACHE);
-		//
-		// AppParam.JAX_CDN_URL.setValue(this.cdnURL, JAX_CDN_URL);
-		// AppParam.JAX_APP_URL.setValue(this.appURL, JAX_APP_URL);
-		// AppParam.JAX_SERVICE_URL.setValue(this.jaxURL, JAX_SERVICE_URL);
-		// AppParam.JAX_POSTMAN_URL.setValue(this.postmapURL, JAX_POSTMAN_URL);
-		// AppParam.JAX_PAYMENT_URL.setValue(this.paygURL, JAX_PAYMENT_URL);
-		// AppParam.JAX_LOGGER_URL.setValue(this.loggerURL, JAX_LOGGER_URL);
-		// AppParam.JAX_SSO_URL.setValue(this.ssoURL, JAX_SSO_URL);
-
 		return null;
 	}
 
