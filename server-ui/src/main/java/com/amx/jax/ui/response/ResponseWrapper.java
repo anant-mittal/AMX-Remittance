@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.ui.UIConstants;
 import com.amx.utils.ContextUtil;
 
@@ -151,7 +151,7 @@ public class ResponseWrapper<T> implements Serializable {
 		this.message = message;
 	}
 
-	public void setMessage(WebResponseStatus status, AbstractException jaxExcep) {
+	public void setMessage(WebResponseStatus status, AbstractJaxException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 

@@ -34,11 +34,19 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
 
-		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorId());
+		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
+
+		if (defExcp == null) {
+			defExcp = ExceptionFactory.get(apiError.getErrorId());
+		}
 
 		if (defExcp != null) {
 			throw defExcp.getInstance(apiError);
 		}
 
+	}
+
+	static {
+		ExceptionFactory.readExceptions();
 	}
 }

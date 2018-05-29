@@ -3,13 +3,14 @@ package com.amx.amxlib.model.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amx.jax.exception.AmxApiError;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ApiResponse<T> {
 
 	private ResponseData data;
 
-	private List<ApiError> error;
+	private List<AmxApiError> error;
 
 	private ResponseStatus responseStatus;
 
@@ -29,11 +30,11 @@ public class ApiResponse<T> {
 		this.data = data;
 	}
 
-	public List<ApiError> getError() {
+	public List<AmxApiError> getError() {
 		return error;
 	}
 
-	public void setError(List<ApiError> error) {
+	public void setError(List<AmxApiError> error) {
 		this.error = error;
 	}
 

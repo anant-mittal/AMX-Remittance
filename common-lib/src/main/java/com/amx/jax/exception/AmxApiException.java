@@ -13,6 +13,10 @@ public abstract class AmxApiException extends RuntimeException {
 
 	protected IExceptionEnum error;
 
+	public AmxApiException() {
+		super();
+	}
+
 	public AmxApiException(AmxApiError error) {
 		try {
 			this.error = getErrorIdEnum(error.getErrorId());
@@ -31,6 +35,10 @@ public abstract class AmxApiException extends RuntimeException {
 		super();
 		this.errorMessage = errorMessage;
 		this.errorKey = errorCode;
+	}
+
+	public AmxApiException(Exception e) {
+		super(e);
 	}
 
 	public String getErrorMessage() {
@@ -63,7 +71,8 @@ public abstract class AmxApiException extends RuntimeException {
 
 	/**
 	 * Should return fresh new instance of exception
-	 * @param apiError 
+	 * 
+	 * @param apiError
 	 * 
 	 * @return
 	 */

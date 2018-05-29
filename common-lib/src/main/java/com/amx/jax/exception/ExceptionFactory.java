@@ -1,7 +1,14 @@
 package com.amx.jax.exception;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 public class ExceptionFactory {
 	private static Map<String, AmxApiException> map = new HashMap<String, AmxApiException>();
@@ -19,4 +26,29 @@ public class ExceptionFactory {
 	public static AmxApiException get(String key) {
 		return map.get(key);
 	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static void readExceptions() {
+
+		ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+		provider.addIncludeFilter(new AssignableTypeFilter(AmxApiException.class));
+
+		Set<BeanDefinition> components = provider.findCandidateComponents("com/amx");
+		AmxApiError amxApiError = new AmxApiError();
+		for (BeanDefinition component : components) {
+			try {
+				Class cls = Class.forName(component.getBeanClassName());
+				Constructor<?> ctor = cls.getConstructor(AmxApiError.class);
+				Object object = ctor.newInstance(new Object[] { amxApiError });
+				if (object != null) {
+					register((AmxApiException) object);
+				}
+			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
 }

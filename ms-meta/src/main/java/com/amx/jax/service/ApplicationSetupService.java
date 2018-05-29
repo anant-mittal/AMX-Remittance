@@ -1,13 +1,9 @@
 package com.amx.jax.service;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.JaxApplicationSetup;
 import com.amx.jax.dbmodel.ApplicationSetup;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.meta.ApplicationSetupRepository;
 

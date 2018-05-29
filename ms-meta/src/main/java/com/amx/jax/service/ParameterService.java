@@ -1,5 +1,8 @@
 package com.amx.jax.service;
 
+import static com.amx.amxlib.constant.AuthType.MAX_DOM_AMOUNT_LIMIT;
+import static com.amx.amxlib.constant.AuthType.NEW_BENE_TRANSACT_TIME_LIMIT;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +11,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import static com.amx.amxlib.constant.AuthType.*;
-import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
 
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;

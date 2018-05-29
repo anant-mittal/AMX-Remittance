@@ -36,7 +36,7 @@ public class JaxConfig {
 
 	@Bean
 	public RestService jaxRestService(RestService restService, JaxClientErrorHanlder errorHandler) {
-		restService.setErrorHandler(errorHandler);
+		//restService.setErrorHandler(errorHandler);
 		return restService;
 	}
 	

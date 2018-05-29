@@ -2,6 +2,8 @@ package com.amx.jax.exception;
 
 public class AmxApiError {
 
+	private String errorClass;
+
 	private String errorId;
 
 	private String errorMessage;
@@ -51,4 +53,11 @@ public class AmxApiError {
 		this.errorType = errorType;
 	}
 
+	public String getErrorClass() {
+		return errorClass;
+	}
+
+	public void setErrorClass(String errorClass) {
+		this.errorClass = errorClass;
+	}
 }
