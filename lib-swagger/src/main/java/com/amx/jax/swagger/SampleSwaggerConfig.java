@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.amx.jax.AppConstants;
+import com.amx.jax.def.MockParamBuilder;
 import com.amx.jax.def.MockParamBuilder.MockParam;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
@@ -64,11 +65,6 @@ public class SampleSwaggerConfig {
 			operationParameters.add(parameter);
 		}
 
-		AllowableValues allowableTenants = new AllowableListValues(Tenant.tenantStrings(), TenantContextHolder.TENANT);
-		operationParameters.add(new ParameterBuilder().name(TenantContextHolder.TENANT).description("Tenant Country")
-				.defaultValue("KWT").modelRef(new ModelRef("string")).parameterType("header")
-				.allowableValues(allowableTenants).required(true).build());
-
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRANX_ID_XKEY).description("Transaction Id")
 				.modelRef(new ModelRef("string")).parameterType("header").required(false).build());
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
@@ -76,6 +72,14 @@ public class SampleSwaggerConfig {
 
 		docket.globalOperationParameters(operationParameters);
 		return docket;
+	}
+
+	@Bean
+	public MockParam tenantParam() {
+		return new MockParamBuilder().name(TenantContextHolder.TENANT).description("Tenant Country").defaultValue("KWT")
+				.parameterType(MockParamBuilder.MockParamType.HEADER)
+				.allowableValues(Tenant.tenantStrings(), TenantContextHolder.TENANT).required(true).build();
+
 	}
 
 	@SuppressWarnings("unused")
