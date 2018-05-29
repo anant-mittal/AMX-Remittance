@@ -3,23 +3,22 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author Subodh Bhoir
+ *
+ */
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
 	private BigDecimal placeOrderId;
 	private BigDecimal customerId;
-	private BigDecimal beneficiaryMasterSeqId;
-	private BigDecimal civilId;
-	private BigDecimal baseCurrencyId;
-	private String baseCurrencyCode;
-	private BigDecimal foreignCurrencyId;
-	private String foreignCurrencyCode;
-	private BigDecimal exchangeRateId;
-	private BigDecimal exchangeRate;
-	private BigDecimal targetRate;
-	private BigDecimal purposeId;
+	private BigDecimal beneficiaryRelationshipSeqId;
+	private BigDecimal targetExchangeRate;
+	private BigDecimal bankRuleFieldId;
+	private BigDecimal srlId;
 	private BigDecimal sourceOfIncomeId;
 	private String isActive;
+	private Date createdDate;
 	private Date validToDate;
 	private Date validFromDate;
 	private BigDecimal payAmount;
@@ -39,86 +38,6 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
-	}
-
-	public BigDecimal getBeneficiaryMasterSeqId() {
-		return beneficiaryMasterSeqId;
-	}
-
-	public void setBeneficiaryMasterSeqId(BigDecimal beneficiaryMasterSeqId) {
-		this.beneficiaryMasterSeqId = beneficiaryMasterSeqId;
-	}
-
-	public BigDecimal getCivilId() {
-		return civilId;
-	}
-
-	public void setCivilId(BigDecimal civilId) {
-		this.civilId = civilId;
-	}
-
-	public BigDecimal getBaseCurrencyId() {
-		return baseCurrencyId;
-	}
-
-	public void setBaseCurrencyId(BigDecimal baseCurrencyId) {
-		this.baseCurrencyId = baseCurrencyId;
-	}
-
-	public String getBaseCurrencyCode() {
-		return baseCurrencyCode;
-	}
-
-	public void setBaseCurrencyCode(String baseCurrencyCode) {
-		this.baseCurrencyCode = baseCurrencyCode;
-	}
-
-	public BigDecimal getForeignCurrencyId() {
-		return foreignCurrencyId;
-	}
-
-	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
-		this.foreignCurrencyId = foreignCurrencyId;
-	}
-
-	public String getForeignCurrencyCode() {
-		return foreignCurrencyCode;
-	}
-
-	public void setForeignCurrencyCode(String foreignCurrencyCode) {
-		this.foreignCurrencyCode = foreignCurrencyCode;
-	}
-
-	public BigDecimal getExchangeRateId() {
-		return exchangeRateId;
-	}
-
-	public void setExchangeRateId(BigDecimal exchangeRateId) {
-		this.exchangeRateId = exchangeRateId;
-	}
-
-	public BigDecimal getExchangeRate() {
-		return exchangeRate;
-	}
-
-	public void setExchangeRate(BigDecimal exchangeRate) {
-		this.exchangeRate = exchangeRate;
-	}
-
-	public BigDecimal getTargetRate() {
-		return targetRate;
-	}
-
-	public void setTargetRate(BigDecimal targetRate) {
-		this.targetRate = targetRate;
-	}
-
-	public BigDecimal getPurposeId() {
-		return purposeId;
-	}
-
-	public void setPurposeId(BigDecimal purposeId) {
-		this.purposeId = purposeId;
 	}
 
 	public BigDecimal getSourceOfIncomeId() {
@@ -168,22 +87,61 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	public void setReceiveAmount(BigDecimal receiveAmount) {
 		this.receiveAmount = receiveAmount;
 	}
-	
+
+	public BigDecimal getBeneficiaryRelationshipSeqId() {
+		return beneficiaryRelationshipSeqId;
+	}
+
+	public void setBeneficiaryRelationshipSeqId(BigDecimal beneficiaryRelationshipSeqId) {
+		this.beneficiaryRelationshipSeqId = beneficiaryRelationshipSeqId;
+	}
+
+	public BigDecimal getTargetExchangeRate() {
+		return targetExchangeRate;
+	}
+
+	public void setTargetExchangeRate(BigDecimal targetExchangeRate) {
+		this.targetExchangeRate = targetExchangeRate;
+	}
+
+	public BigDecimal getBankRuleFieldId() {
+		return bankRuleFieldId;
+	}
+
+	public void setBankRuleFieldId(BigDecimal bankRuleFieldId) {
+		this.bankRuleFieldId = bankRuleFieldId;
+	}
+
+	public BigDecimal getSrlId() {
+		return srlId;
+	}
+
+	public void setSrlId(BigDecimal srlId) {
+		this.srlId = srlId;
+	}
+
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
+	}
+
 	@Override
 	public String getModelType() {
 		return "place-order-dto";
 	}
 
+	
 	@Override
 	public String toString() {
 		return "PlaceOrderDTO [placeOrderId=" + placeOrderId + ", customerId=" + customerId
-				+ ", beneficiaryMasterSeqId=" + beneficiaryMasterSeqId + ", civilId=" + civilId + ", baseCurrencyId="
-				+ baseCurrencyId + ", baseCurrencyCode=" + baseCurrencyCode + ", foreignCurrencyId=" + foreignCurrencyId
-				+ ", foreignCurrencyCode=" + foreignCurrencyCode + ", exchangeRateId=" + exchangeRateId
-				+ ", exchangeRate=" + exchangeRate + ", targetRate=" + targetRate + ", purposeId=" + purposeId
-				+ ", sourceOfIncomeId=" + sourceOfIncomeId + ", isActive=" + isActive + ", validToDate=" + validToDate
-				+ ", validFromDate=" + validFromDate + ", payAmount=" + payAmount + ", receiveAmount=" + receiveAmount
-				+ "]";
+				+ ", beneficiaryRelationshipSeqId=" + beneficiaryRelationshipSeqId + ", targetExchangeRate="
+				+ targetExchangeRate + ", bankRuleFieldId=" + bankRuleFieldId + ", srlId=" + srlId
+				+ ", sourceOfIncomeId=" + sourceOfIncomeId + ", isActive=" + isActive + ", createdDate=" + createdDate
+				+ ", validToDate=" + validToDate + ", validFromDate=" + validFromDate + ", payAmount=" + payAmount
+				+ ", receiveAmount=" + receiveAmount + "]";
 	}
 
 	@Override
@@ -193,7 +151,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		result = prime * result + ((placeOrderId == null) ? 0 : placeOrderId.hashCode());
 		return result;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

@@ -9,12 +9,10 @@ public class PlaceOrderUtil {
 		PlaceOrder placeOrdermodel = new PlaceOrder();
 		
 		placeOrdermodel.setCustomerId(dto.getCustomerId());
-		placeOrdermodel.setBaseCurrencyId(dto.getBaseCurrencyId());
-		placeOrdermodel.setBaseCurrencyCode(dto.getBaseCurrencyId().toString());
-		placeOrdermodel.setForeignCurrencyId(dto.getForeignCurrencyId());
-		placeOrdermodel.setForeignCurrencyCode(dto.getForeignCurrencyId().toString());
-		placeOrdermodel.setTargetRate(dto.getTargetRate());
-		placeOrdermodel.setPurposeId(dto.getPurposeId());
+		placeOrdermodel.setBeneficiaryRelationshipSeqId(dto.getBeneficiaryRelationshipSeqId());
+		placeOrdermodel.setBankRuleFieldId(dto.getBankRuleFieldId());
+		placeOrdermodel.setSrlId(dto.getSrlId());
+		placeOrdermodel.setTargetExchangeRate(dto.getTargetExchangeRate());
 		placeOrdermodel.setSourceOfIncomeId(dto.getSourceOfIncomeId());
 		placeOrdermodel.setValidFromDate(dto.getValidFromDate());
 		placeOrdermodel.setValidToDate(dto.getValidToDate());

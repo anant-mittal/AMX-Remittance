@@ -16,6 +16,10 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PlaceOrderService;
 
+/**
+ * @author Subodh Bhoir
+ *
+ */
 @RestController
 @RequestMapping(PLACE_ORDER_ENDPOINT)
 @SuppressWarnings("rawtypes")
@@ -29,16 +33,37 @@ public class PlaceOrderController {
 	@Autowired
 	MetaData metaData;
 	
+	/**
+	 *  saves place order
+	 * @param dto
+	 * @return
+	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public ApiResponse handleUrlSave(@RequestBody PlaceOrderDTO dto) 
 	{
 		logger.info("In save with parameters" + dto.toString());
-		BigDecimal customerId =metaData.getCustomerId();
+		BigDecimal customerId = metaData.getCustomerId();
 		
 		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = placeOrderService.savePlaceOrder(dto);
 		return response;
+	}
+
+	/**
+	 * get place order list
+	 * @return
+	 */
+	@RequestMapping(value = "/get/placeOrder", method = RequestMethod.POST)
+	public ApiResponse handleUrlgetPlaceOrder() {
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		logger.info("In /getPlaceOrder with customerId :" + customerId );
+		
+		ApiResponse response = null;
+		response = placeOrderService.getPlaceOrder(customerId);
+		return response;
+		
 	}
 
 }
