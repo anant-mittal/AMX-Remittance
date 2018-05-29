@@ -53,8 +53,11 @@ public class PayGController {
 	@Autowired
 	private AuditService auditService;
 
-	@Value("${app.url}")
-	String redirectURL;
+	@Value("${app.url.kwt}")
+	String kwtRedirectURL;
+	
+	@Value("${app.url.bhr}")
+	String bhrRedirectURL;
 
 	@Autowired
 	PayGConfig payGConfig;
@@ -65,9 +68,13 @@ public class PayGController {
 			@RequestParam(required = false) String callbackd, Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
-
+        String appRedirectUrl=null;
+        
 		if (tnt.equals(Tenant.BHR)) {
 			pg = "BENEFIT";
+			appRedirectUrl = bhrRedirectURL;
+		}else if (tnt.equals(Tenant.KWT)) {
+			appRedirectUrl = kwtRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -93,7 +100,7 @@ public class PayGController {
 		try {
 			payGClient.initialize(payGParams);
 		} catch (RuntimeException e) {
-			model.addAttribute("REDIRECTURL", redirectURL);
+			model.addAttribute("REDIRECTURL", appRedirectUrl);
 			return "thymeleaf/pg_error";
 		}
 
@@ -124,21 +131,7 @@ public class PayGController {
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_CAPTURED, payGResponse));
 
 		String redirectUrl;
-
-		String urlParams = String.format(URL_PARAMS, payGResponse.getPaymentId(), payGResponse.getResult(),
-				payGResponse.getAuth(), payGResponse.getRef(), payGResponse.getPostDate(), payGResponse.getTrackId(),
-				payGResponse.getTranxId(), payGResponse.getUdf1(), payGResponse.getUdf2(), payGResponse.getUdf3(),
-				payGResponse.getUdf4(), payGResponse.getUdf5(), payGResponse.getCollectionDocCode(),
-				payGResponse.getCollectionDocNumber(), payGResponse.getCollectionFinYear());
-
-//		if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success?" + urlParams;
-//		} else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/cancelled?" + urlParams;
-//		} else {
-//			redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/error?" + urlParams;
-//		}
-		
+	
 	      if (payGResponse.getPayGStatus() == PayGStatus.CAPTURED) {
 	            redirectUrl = payGConfig.getServiceCallbackUrl() + "/callback/success" ;
 	        } else if (payGResponse.getPayGStatus() == PayGStatus.CANCELLED) {

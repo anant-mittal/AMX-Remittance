@@ -73,6 +73,21 @@ public class PostManController {
 		return file;
 	}
 
+	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE_FILE, method = RequestMethod.POST)
+	public File processTemplateFile(@RequestBody File file) {
+		Language lang = getLang();
+		file.setLang(lang);
+		try {
+			file = postManService.processTemplate(file);
+		} catch (Exception e) {
+			LOGGER.error(" Template Error {}", file.getModel(), e);
+		}
+
+		LOGGER.info(" FILE {} : {} . {}", file.getTemplate(), file.getName(), file.getType());
+
+		return file;
+	}
+
 	@RequestMapping(value = PostManUrls.SEND_SMS, method = RequestMethod.POST)
 	public SMS sendSMS(@RequestBody SMS sms, @RequestParam(required = false, defaultValue = "false") Boolean async)
 			throws PostManException {
@@ -108,7 +123,6 @@ public class PostManController {
 			@RequestParam(required = false) String languageid, @RequestParam Templates template)
 			throws PostManException {
 
-
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", to);
@@ -118,7 +132,7 @@ public class PostManController {
 		modeldata.put("refno", refno);
 		modeldata.put("date", date);
 		wrapper.put("data", modeldata);
-		
+
 		Email email = new Email();
 
 		if ("2".equals(languageid)) {
@@ -131,9 +145,8 @@ public class PostManController {
 		email.setModel(wrapper);
 		email.addTo(to);
 		email.setHtml(true);
-		email.setSubject("Feedback Email"); //Given by Umesh
-		
-		
+		email.setSubject("Feedback Email"); // Given by Umesh
+
 		email.setTemplate(template);
 		postManService.sendEmailAsync(email);
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -182,9 +195,10 @@ public class PostManController {
 	}
 
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
-	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title)
-			throws PostManException {
-		postManService.notifyException(title, eMsg);
+	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
+			@RequestParam(required = false) String appname) throws PostManException {
+		postManService.notifyException(appname,title, eMsg);
 		return eMsg;
 	}
+	
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -90,6 +91,10 @@ public class ReportManagerService extends AbstractService{
 	
 	/**
 	 *  For HTML Template 
+	 */
+	/**
+	 * @param transactionHistroyDTO
+	 * @return
 	 */
 	public ApiResponse generatePersonalRemittanceReceiptReportDetails(TransactionHistroyDTO transactionHistroyDTO){
 		
@@ -177,7 +182,7 @@ public class ReportManagerService extends AbstractService{
 				} else if (view.getCustomerReference() != null && view.getFirstName() != null && view.getMiddleName() == null && view.getLastName()!=null) {
 					obj.setFirstName(view.getCustomerReference().toString() + " " + view.getFirstName()+" "+view.getLastName());
 				}
-				if(view.getContactNumber()!=null){
+				if (StringUtils.isNotBlank(view.getContactNumber())) {
 					obj.setMobileNo(new BigDecimal(view.getContactNumber()));
 				}
 				obj.setCivilId(view.getIdentityInt());
@@ -203,7 +208,7 @@ public class ReportManagerService extends AbstractService{
 
 				Date docDate = view.getDocumentDate();
 				if(docDate != null){
-					obj.setDate(new SimpleDateFormat("dd/MM/yyy").format(docDate));
+					obj.setDate(new SimpleDateFormat("dd/MM/yyy HH:MM").format(docDate));
 				}
 				
 				obj.setBeneficiaryName(view.getBeneficiaryName());
@@ -235,10 +240,14 @@ public class ReportManagerService extends AbstractService{
 					obj.setLoyalityPointExpiring(prLtyStr2);
 				}
 
-
-				if(!prInsStr1.trim().equals("") && !prInsStrAr1.trim().equals("")){
+				/**
+				 * @author Chetan Pawar
+				 * comment if condition because of code duplication. 
+				 * 11-05-2018
+				 */
+				/*if(!prInsStr1.trim().equals("") && !prInsStrAr1.trim().equals("")){
 					obj.setInsurence1(prInsStr1+"  \n"+prInsStrAr1);
-				}else if(!prInsStr1.trim().equals("")){
+				}else*/ if(!prInsStr1.trim().equals("")){
 					obj.setInsurence1(prInsStr1);
 				}else if(!prInsStrAr1.trim().equals("")){
 					obj.setInsurence1(prInsStrAr1);

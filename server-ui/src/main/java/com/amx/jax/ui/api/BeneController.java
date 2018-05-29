@@ -24,7 +24,7 @@ import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
-import com.amx.jax.ui.session.TransactionService;
+import com.amx.jax.ui.session.Transactions;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ public class BeneController {
 	private JaxService jaxService;
 
 	@Autowired
-	TransactionService transactionService;
+	Transactions transactions;
 
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
@@ -101,7 +101,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/account", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBeneAccountInTrnx(
 			@RequestBody BeneAccountModel beneAccountModel) {
-		return transactionService.start(new ResponseWrapper<JaxTransactionResponse>(
+		return transactions.start(new ResponseWrapper<JaxTransactionResponse>(
 				jaxService.setDefaults().getBeneClient().saveBeneAccountInTrnx(beneAccountModel).getResult()));
 	}
 
@@ -109,7 +109,7 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
 			@RequestBody BenePersonalDetailModel benePersonalDetailModel) {
-		transactionService.track();
+		transactions.track();
 		return new ResponseWrapper<JaxTransactionResponse>(jaxService.setDefaults().getBeneClient()
 				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());
 	}
@@ -117,7 +117,7 @@ public class BeneController {
 	@ApiOperation(value = "Sends OTP for Beneficiary Add")
 	@RequestMapping(value = "/api/user/bnfcry/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponseOTPprefix> sendOTP() {
-		transactionService.track();
+		transactions.track();
 		ResponseWrapper<AuthResponseOTPprefix> wrapper = new ResponseWrapper<AuthResponseOTPprefix>(new AuthData());
 		CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
@@ -128,7 +128,7 @@ public class BeneController {
 	@ApiOperation(value = "Save the current beneficary in progress")
 	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneficiaryTrnxModel> commitAddBeneTrnx(@RequestBody AuthRequestOTP req) {
-		transactionService.track();
+		transactions.track();
 		return new ResponseWrapper<BeneficiaryTrnxModel>(
 				jaxService.setDefaults().getBeneClient().commitAddBeneTrnx(req.getmOtp(), req.geteOtp()).getResult());
 	}

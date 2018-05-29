@@ -30,9 +30,11 @@ import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -47,9 +49,11 @@ import com.amx.jax.dbmodel.AgentBranchModel;
 import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.dbmodel.RoutingBankMasterView;
 import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -57,6 +61,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
@@ -64,6 +69,7 @@ import com.amx.jax.repository.IBeneficiaryRelationshipDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
+import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
 import com.amx.jax.userservice.service.UserService;
@@ -124,6 +130,12 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	RoutingAgentLocationRepository routingAgentLocationRepository;
+	
+	@Autowired
+	MetaService metaService;
+	
+	@Autowired
+	CountryRepository countryRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -200,11 +212,14 @@ public class BeneficiaryService extends AbstractService {
 
 	public ApiResponse getBeneficiaryCountryListForOnline(BigDecimal customerId) {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForOnline(customerId);
+		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
+																							// 04-05-2018
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
-			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
+			throw new GlobalException("Beneficiary country list is not found",
+					JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
-			response.getData().getValues().addAll(convert(beneocountryList));
+			response.getData().getValues().addAll(convert(beneocountryList, supportedServiceGroupList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("benecountry");
@@ -213,11 +228,12 @@ public class BeneficiaryService extends AbstractService {
 
 	public ApiResponse getBeneficiaryCountryListForBranch(BigDecimal customerId) {
 		List<BeneficiaryCountryView> beneocountryList = beneficiaryCountryDao.getBeneCountryForBranch(customerId);
+		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); //add for channeling 04-05-2018
 		ApiResponse response = getBlackApiResponse();
 		if (beneocountryList.isEmpty()) {
 			throw new GlobalException("Beneficiary country list is not found",JaxError.BENEFICIARY_COUNTRY_LIST_NOT_FOUND);
 		} else {
-			response.getData().getValues().addAll(convert(beneocountryList));
+			response.getData().getValues().addAll(convert(beneocountryList,supportedServiceGroupList));
 			response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("benecountry");
@@ -371,9 +387,12 @@ public class BeneficiaryService extends AbstractService {
 	
 	
 
-	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList) {
+	private List<BeneCountryDTO> convert(List<BeneficiaryCountryView> beneocountryList, List<BigDecimal> supportedServiceGroupList) {
 		List<BeneCountryDTO> list = new ArrayList<BeneCountryDTO>();
+		Map<BigDecimal, ServiceGroupMasterDescDto> map = metaService.getServiceGroupDtoMap();	
 		for (BeneficiaryCountryView beneCountry : beneocountryList) {
+			List<ServiceGroupMasterDescDto> listData = new ArrayList<ServiceGroupMasterDescDto>();					
+			listData.add(map.get(BigDecimal.valueOf(2)));
 			BeneCountryDTO model = new BeneCountryDTO();
 			model.setApplicationCountry(beneCountry.getApplicationCountry());
 			model.setBeneCountry(beneCountry.getBeneCountry());
@@ -382,6 +401,12 @@ public class BeneficiaryService extends AbstractService {
 			model.setCustomerId(beneCountry.getCustomerId());
 			model.setIdNo(beneCountry.getIdNo());
 			model.setOrsStatus(beneCountry.getOrsStatus());
+			model.setSupportedServiceGroup(listData);
+			if(supportedServiceGroupList.contains(beneCountry.getCustomerId()))
+			{
+				listData.add(map.get(BigDecimal.valueOf(1)));
+				model.setSupportedServiceGroup(listData);
+			}
 			list.add(model);
 		}
 		return list;
@@ -510,6 +535,12 @@ public class BeneficiaryService extends AbstractService {
 		return apiResponse;
 	}
 	
+	/**
+	 * sends otp to channel provided
+	 * @param channels
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
 		
 		Customer customer = null;
@@ -738,5 +769,50 @@ public class BeneficiaryService extends AbstractService {
 						metaData.getCustomerId());
 
 		return beneRelationShips;
+	}
+	
+	public List<BeneficaryRelationship> getBeneRelationShipByRelationsId(BigDecimal beneMasterId,
+			BigDecimal beneAccountId, BigDecimal relationsId) {
+		List<BeneficaryRelationship> beneRelationShips = beneRelationShipDao
+				.findByBeneficaryMasterIdAndBeneficaryAccountIdAndCustomerIdAndRelationsId(beneMasterId, beneAccountId,
+						metaData.getCustomerId(), relationsId);
+
+		return beneRelationShips;
+	}
+	
+	// Added by chetan 03-05-2018 for country with channeling
+	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
+
+		List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
+																							// 03-05-2018
+		ApiResponse response = getBlackApiResponse();
+		if (countryList.isEmpty()) {
+			throw new GlobalException("Country list is not abaliable");
+		} else {
+			response.getData().getValues().addAll(convertData(countryList, supportedServiceGroupList));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		response.getData().setType("country");
+		return response;
+	}
+	
+	// Added by chetan 03-05-2018 for country with channeling
+	private List<CountryMasterDTO> convertData(List<CountryMasterView> countryList,
+			List<BigDecimal> supportedServiceGroupList) {
+		List<CountryMasterDTO> list = new ArrayList<CountryMasterDTO>();
+		Map<BigDecimal, ServiceGroupMasterDescDto> map = metaService.getServiceGroupDtoMap();
+		for (CountryMasterView beneCountry : countryList) {
+			List<ServiceGroupMasterDescDto> listData = new ArrayList<ServiceGroupMasterDescDto>();
+			listData.add(map.get(BigDecimal.valueOf(2)));
+			CountryMasterDTO model = new CountryMasterDTO();
+			jaxUtil.convert(beneCountry, model);
+			if (supportedServiceGroupList.contains(model.getCountryId())) {
+				listData.add(map.get(BigDecimal.valueOf(1)));
+			}
+			model.setSupportedServiceGroup(listData);
+			list.add(model);
+		}
+		return list;
 	}
 }

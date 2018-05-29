@@ -3,6 +3,7 @@ package com.amx.jax.service;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +16,13 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ViewOnlineCurrency;
 import com.amx.jax.dbmodel.bene.ViewBeneServiceCurrency;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ViewBeneficiaryCurrencyRepository;
 import com.amx.jax.repository.ViewOnlineCurrencyRepository;
@@ -47,6 +50,12 @@ public class CurrencyMasterService extends AbstractService {
 	
 	@Autowired
 	ApplicationSetupService applicationSetupService;
+	
+	@Autowired
+	private ExchangeRateProcedureDao exchangeRateProcedureDao;	
+	
+	@Autowired
+	private MetaData metaData;
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -106,6 +115,31 @@ public class CurrencyMasterService extends AbstractService {
 
 		return response;
 	}
+	
+	// added by chetan 30/04/2018 list the country for currency.
+	public ApiResponse getAllExchangeRateCurrencyList() {
+		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
+				.findAll(new Sort("quoteName"));
+		List<BigDecimal> uniqueCurrency = (List<BigDecimal>) exchangeRateProcedureDao.getDistinctCurrencyList();
+		Iterator<ViewOnlineCurrency> itr = currencyList.iterator();
+		if (!currencyList.isEmpty() && !uniqueCurrency.isEmpty()) {
+			while (itr.hasNext()) {
+				if (!uniqueCurrency.contains(itr.next().getCurrencyId())) {
+					itr.remove();
+				}
+			}
+		}
+		ApiResponse response = getBlackApiResponse();
+		if (currencyList.isEmpty()) {
+			throw new GlobalException("Currency details not avaliable");
+		} else {
+			List<CurrencyMasterDTO> list = convert(currencyList);
+			response.getData().getValues().addAll(list);
+			response.getData().setType(list.get(0).getModelType());
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+		return response;
+	}
 
 	public ApiResponse getCurrencyByCountryId(BigDecimal countryId) {
 		List<CurrencyMasterModel> currencyList = getCurrencyMasterByCountryId(countryId);
@@ -160,7 +194,7 @@ public class CurrencyMasterService extends AbstractService {
 
 	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId) {
 		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
-				.findByBeneCountryId(beneCountryId);
+				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
 		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
@@ -176,6 +210,43 @@ public class CurrencyMasterService extends AbstractService {
 	public String getApplicationCountryCurrencyQuote() {
 		BigDecimal countryId = applicationSetupService.getApplicationSetUp().getApplicationCountryId();
 		return getCurrencyMasterByCountryId(countryId).get(0).getQuoteName();
+	}
+	
+	
+	/**
+	 * @author Chetan Pawar
+	 * @param beneCountryId
+	 * @param serviceGroupId
+	 * @param routingBankId
+	 * @return List<CurrencyMasterDTO>
+	 */
+	public ApiResponse getBeneficiaryCurrencyList(BigDecimal beneCountryId, BigDecimal serviceGroupId,
+			BigDecimal routingBankId) {
+		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
+				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
+		List<BigDecimal> currencyIdList = new ArrayList<BigDecimal>();
+		if (serviceGroupId != null && routingBankId != null)
+			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId, serviceGroupId,
+					routingBankId);
+		if (currencyIdList != null && !currencyIdList.isEmpty()) {
+			Iterator itr = currencyList.iterator();
+			while (itr.hasNext()) {
+				ViewBeneServiceCurrency list = (ViewBeneServiceCurrency) itr.next();
+				if (!currencyIdList.contains(list.getCurrencyId())) {
+					itr.remove();
+				}
+			}
+		}
+		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
+		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
+		currencyList.forEach(currency -> {
+			currencyListDto.add(convertModel(allCurrencies.get(currency.getCurrencyId())));
+		});
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().addAll(currencyListDto);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType("currencyMaster");
+		return response;
 	}
 
 }

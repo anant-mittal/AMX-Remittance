@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.response.ApiError;
+import com.amx.amxlib.model.response.JaxFieldError;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
@@ -20,6 +21,12 @@ public abstract class AbstractException extends RuntimeException {
 
 	protected JaxError error;
 
+	protected JaxFieldError jaxFieldError;
+
+	public AbstractException(Exception e) {
+		super(e);
+	}
+
 	public AbstractException(ApiError error) {
 		try {
 			this.error = JaxError.valueOf(error.getErrorId());
@@ -27,6 +34,7 @@ public abstract class AbstractException extends RuntimeException {
 		}
 		this.errorKey = error.getErrorId();
 		this.errorMessage = error.getErrorMessage();
+		this.jaxFieldError = error.getValidationErrorField();
 	}
 
 	public AbstractException(String errorMessage) {
@@ -66,5 +74,13 @@ public abstract class AbstractException extends RuntimeException {
 
 	public void setErrorKey(String errorKey) {
 		this.errorKey = errorKey;
+	}
+
+	public JaxFieldError getJaxFieldError() {
+		return jaxFieldError;
+	}
+
+	public void setJaxFieldError(JaxFieldError jaxFieldError) {
+		this.jaxFieldError = jaxFieldError;
 	}
 }

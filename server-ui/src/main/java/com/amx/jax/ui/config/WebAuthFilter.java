@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 
@@ -30,6 +31,13 @@ public class WebAuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
+		// HttpServletRequest httpRequest = (HttpServletRequest) req;
+		// System.out.println(
+		// "===[" + httpRequest.getRequestedSessionId() + "]=====[" +
+		// httpRequest.isRequestedSessionIdValid()
+		//
+		// + "]===========[" + sessionService.getUserSession().isValid());
+
 		if (!sessionService.validateSessionUnique()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
@@ -39,6 +47,7 @@ public class WebAuthFilter implements Filter {
 			if (referrer != null) {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
+			AppContextUtil.setUserId(sessionService.getUserSession().getUserid());
 			chain.doFilter(req, resp);
 		}
 

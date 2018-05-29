@@ -1,6 +1,7 @@
 package com.amx.jax.sso;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -16,29 +19,37 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	SSOAuthProvider customAuthProvider;
 
+	@Autowired
+	SSOLoginUrlEntry loginUrlEntry;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-				// Register Calls
-				.and().authorizeRequests().antMatchers("/register/**").permitAll()
-				// Home Pages Calls
-				.and().authorizeRequests().antMatchers("/home/**").permitAll()
 				// Publics Calls
 				.and().authorizeRequests().antMatchers("/pub/**").permitAll()
 				// Login Calls
-				.and().authorizeRequests().antMatchers("/login/**").permitAll()
+				.and().authorizeRequests().antMatchers("/sso/**").permitAll()
 				// API Calls
 				.and().authorizeRequests().antMatchers("/api/**").authenticated()
 				// App Pages
 				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
-				// Login Formas
-				.and().formLogin().loginPage("/login").permitAll().failureUrl("/login?error").permitAll()
-				// Logiut Pages
-				.and().logout().permitAll().logoutSuccessUrl("/login?logout").deleteCookies("JSESSIONID")
+				// Login Forms
+				.and().formLogin().loginPage(SSOUtils.LOGIN_URL)
+				.successHandler(successHandler()).permitAll().failureUrl("/sso/login?error").permitAll()
+				// Logout Pages
+				.and().logout().permitAll().logoutSuccessUrl("/sso/login?logout").deleteCookies("JSESSIONID")
 				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()
 				.disable().headers().disable();
+		http.exceptionHandling().authenticationEntryPoint(loginUrlEntry);
+	}
+
+	@Bean
+	public AuthenticationSuccessHandler successHandler() {
+		SimpleUrlAuthenticationSuccessHandler handler = new SimpleUrlAuthenticationSuccessHandler();
+		handler.setUseReferer(true);
+		return handler;
 	}
 
 	@Autowired

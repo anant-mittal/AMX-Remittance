@@ -34,6 +34,16 @@ public class BeneficaryRelationship implements Serializable {
 	private BigDecimal orsSatus;
 	private String myFavouriteBene;
 	private BigDecimal relationsId;
+	private String firstName;
+	private String secondName;
+	private String thirdName;
+	private String fourthName;
+	private String fifthName;
+	private String localFirstName;
+	private String localSecondName;
+	private String localThirdName;
+	private String localFourthName;
+	private String localFifthName;
 	
 	
 	@Id
@@ -200,5 +210,111 @@ public class BeneficaryRelationship implements Serializable {
 	public void setRelationsId(BigDecimal relationsId) {
 		this.relationsId = relationsId;
 	}
+	
+	 
+		/**
+		 * @return the firstName
+		 */
+		@Column(name = "FIRST_NAME")
+		public String getFirstName() {
+			return firstName;
+		}
+
+		public void setFirstName(String firstName) {
+			this.firstName = firstName;
+		}
+
+		/**
+		 * @return the secondName
+		 */
+		@Column(name = "SECOND_NAME")
+		public String getSecondName() {
+			return secondName;
+		}
+
+		public void setSecondName(String secondName) {
+			this.secondName = secondName;
+		}
+
+		/**
+		 * @return the thirdName
+		 */
+		@Column(name = "THIRD_NAME")
+		public String getThirdName() {
+			return thirdName;
+		}
+
+		public void setThirdName(String thirdName) {
+			this.thirdName = thirdName;
+		}
+
+		/**
+		 * @return the fourthName
+		 */
+		@Column(name = "FOURTH_NAME")
+		public String getFourthName() {
+			return fourthName;
+		}
+
+		public void setFourthName(String fourthName) {
+			this.fourthName = fourthName;
+		}
+
+		/**
+		 * @return the fifthName
+		 */
+		@Column(name = "FIFTH_NAME")
+		public String getFifthName() {
+			return fifthName;
+		}
+
+		public void setFifthName(String fifthName) {
+			this.fifthName = fifthName;
+		}
+		
+		@Column(name = "FIRST_NAME_LOCAL")
+		public String getLocalFirstName() {
+			return localFirstName;
+		}
+
+		public void setLocalFirstName(String localFirstName) {
+			this.localFirstName = localFirstName;
+		}
+
+		@Column(name = "SECOND_NAME_LOCAL")
+		public String getLocalSecondName() {
+			return localSecondName;
+		}
+
+		public void setLocalSecondName(String localSecondName) {
+			this.localSecondName = localSecondName;
+		}
+
+		@Column(name = "THIRD_NAME_LOCAL")
+		public String getLocalThirdName() {
+			return localThirdName;
+		}
+
+		public void setLocalThirdName(String localThirdName) {
+			this.localThirdName = localThirdName;
+		}
+
+		@Column(name = "FOURTH_NAME_LOCAL")
+		public String getLocalFourthName() {
+			return localFourthName;
+		}
+
+		public void setLocalFourthName(String localFourthName) {
+			this.localFourthName = localFourthName;
+		}
+		@Column(name="FIFTH_NAME_LOCAL")
+		public String getLocalFifthName() {
+			return localFifthName;
+		}
+
+		public void setLocalFifthName(String localFifthName) {
+			this.localFifthName = localFifthName;
+		
+		}
 	 
 }

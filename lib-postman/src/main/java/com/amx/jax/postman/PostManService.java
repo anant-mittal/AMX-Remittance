@@ -1,6 +1,6 @@
 package com.amx.jax.postman;
 
-import org.json.JSONObject;
+import java.util.Map;
 
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
@@ -30,8 +30,10 @@ public interface PostManService {
 
 	public File processTemplate(Templates template, Object data, File.Type fileType) throws PostManException;
 
+	public File processTemplate(File file) throws PostManException;
+
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException;
 
-	public JSONObject getMap(String url) throws PostManException;
+	public Map<String, Object> getMap(String url) throws PostManException;
 
 }

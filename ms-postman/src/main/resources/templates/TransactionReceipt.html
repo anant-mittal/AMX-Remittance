@@ -124,23 +124,18 @@ html, body {
 	margin-top: 0;
 	margin-bottom: 18px;
   
-  @top-center {
-  	content: element(header);
-  }
-  
   @bottom-center {
     	content: "Page " counter(page) " of " counter(pages);
   }
 }
-#header {
-	position: running(header);
+.hello {
 	height: 100px;
 	width: 100%;
 	background: #000;
 	padding: 0 5px 5px;
 }
 
-#header td {
+.hello td {
 	padding: 0;
 	margin: 0;
 	color: #ffffff;
@@ -185,20 +180,26 @@ html, body {
 	<div class="page-break" th:each="remittance : ${data.remittanceApplList}">
 	
 	<!--header table-->
-	<table class="nowrap" id="header" border="0" cellspacing="0"
-		cellpadding="0" >
-		<tr>
-			<td align="center" colspan="2">
-				<div class="logo">
-					<img th:attr="src=${_tu.prop('company.logo.image')}" />
-				</div>
-			</td>
-		</tr>
-		<tr>
-			<td style="padding-left:5px" th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
-			<td style="padding-right:5px" th:text="${data.remittanceApplList[0].arabicCompanyInfo}" align="right">--</td>
-		</tr>
-	</table>
+	<div style="border:0px solid #000000; position:relative;">
+		<html2img width="800" style="width:800px; height:11px; background:none; padding:0px;margin:0px;left:0px;top:0px; border:0px solid #00FF00; position:absolute;  font-size:11px; color:#FFFFFF; font-family:Arial" >
+			<table class="nowrap hello" border="0" cellspacing="0" width="100%" bgcolor="#000000"
+				cellpadding="0" >
+				<tr>
+					<td align="center" colspan="2">
+						<div class="logo">
+							<img th:attr="src=${_tu.prop('company.logo.image')}" />
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-left:5px" th:text="${data.remittanceApplList[0].engCompanyInfo}">--</td>
+					<td style="padding-right:5px;text-align:right" align="right" th:text="${data.remittanceApplList[0].arabicCompanyInfo}" >
+					</td>
+				</tr>
+			</table>
+		</html2img>
+	</div>
+
 	<!--header table end-->
 	<table class="mainTable">
 		<tr>
@@ -401,7 +402,7 @@ html, body {
 				</table> <!--Payment Details table end--> 
 				</td></tr>
 				<tr><td class="mainTable-border"><!--Cashier table-->
-				<table class="table col-3 height100">
+				<table class="table col-3">
 					<tr>
 						<td>Cashier Name</td>
 						<td th:text="${remittance.userName}">KANMANI1</td>
@@ -420,6 +421,15 @@ html, body {
 		<!--Cashier table end-->
 </td></tr>
 	</table>
+	
+	<div style="border:0px solid #000000; position:fixed; bottom:0; width: 100%;" th:if="${_tu.prop('company.promotion.img')} != 'null'">
+		<html2img width="800" style="width:800px; height:11px; background:none; padding:0px;margin:0px;left:0px;top:0px; border:0px solid #00FF00; position:absolute;  font-size:11px; color:#FFFFFF; font-family:Arial" >
+			<table class="nowrap hello" border="0" cellspacing="0" width="100%" bgcolor="#000000"
+				cellpadding="0" >
+					<tr ><td align="center"><img width="100%" th:attr="src=${_tu.prop('company.promotion.img')}" /></td></tr>
+			</table>
+		</html2img>
+	</div>
 	</div>
 </body>
 </html>

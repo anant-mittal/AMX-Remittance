@@ -3,17 +3,23 @@ package com.amx.jax.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.constant.AuthType;
+import static com.amx.amxlib.constant.AuthType.*;
+import static org.assertj.core.api.Assertions.setMaxElementsForPrinting;
+
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.services.AbstractService;
@@ -27,6 +33,12 @@ public class ParameterService extends AbstractService {
 	
 	@Autowired
 	AuthenticationViewRepository authenticationViewRepository;
+	
+	@Autowired
+	CompanyService companyService;
+	
+	@Autowired
+	private MetaData metaData;
 	
 	public ApiResponse  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
@@ -98,27 +110,30 @@ public class ParameterService extends AbstractService {
 		return authLimits;
 	}
 	
-	public AuthenticationLimitCheckView getAuthenticationViewRepository(BigDecimal authType) {
-		return authentication.findByAuthorizationType(authType.toString());
+	public AuthenticationLimitCheckView getAuthenticationViewRepository(String authType) {
+		return authentication.findByAuthorizationType(authType);
 	}
 	
 	public AuthenticationLimitCheckView getPerCustomerPerBeneTrnxLimit() {
 		AuthenticationLimitCheckView authLimits = authentication.getPerBeneTxnLimit();
 		return authLimits;
 	}
-	
+
 	public ApiResponse getJaxMetaParameter() {
-		AuthenticationLimitCheckView newBeneTransactionTimeLimitPObje = getAuthenticationViewRepository(
-				AuthType.NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType());
+		List<AuthenticationLimitCheckView> allAuthLimits = authentication.findAll();
+		Map<String, BigDecimal> authMap = allAuthLimits.stream()
+				.filter(x -> (x.getAuthorizationType() != null && x.getAuthLimit() != null))
+				.collect(Collectors.toMap(x -> x.getAuthorizationType(), x -> x.getAuthLimit()));
 		JaxMetaParameter metaParams = new JaxMetaParameter();
-		if (newBeneTransactionTimeLimitPObje != null) {
-			metaParams.setNewBeneTransactionTimeLimit(newBeneTransactionTimeLimitPObje.getAuthLimit());
-		}
+		metaParams.setNewBeneTransactionTimeLimit(authMap.get(NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType()));
+		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));
+		ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+		metaParams.setApplicationCountryId(company.getApplicationCountryId());
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(metaParams);
 		response.getData().setType("jaxmetaparameter");
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
 	}
-	
+
 }

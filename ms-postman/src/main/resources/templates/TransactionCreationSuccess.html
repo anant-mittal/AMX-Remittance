@@ -243,7 +243,7 @@
                         <div class="content" style="padding:15px;  max-width:600px; margin:0 auto; display:block;">
                             <table bgcolor="#000000" width="100%">
                                 <tr>
-                                    <td align="center"><img th:attr="src=${_tu.prop('company.logo.path')}" /></td>
+                                    <td align="center"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" /></td>
                                 </tr>
                             </table>
                         </div><!-- /content -->
@@ -266,9 +266,9 @@
                                     <td>
                                         <h5>Dear <span  th:text="${data.firstName}"></span>   <span  th:text="${data.middleName}"></span>   <span  th:text="${data.lastName}"></span>,</h5>
 
-                                        <p class="lead">Greetings from Al Mulla Exchange !</p> 
-                                        <p class="lead">You have just completed your transaction on <a href="https://www.almullaexchange.com">www.almullaexchange.com</a> Please find attached the remittance receipt.</p>
-									   <p class="lead">If you are on social media, you can follow us on facebook @ Almullaexchange. This will give you the latest updates, events and marketing promotions we have. Please continue using <a href="https://www.almullaexchange.com">www.almullaexchange.com</a> and get bonus 250 loyalty points for every transaction.</p>
+                                        <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> 
+                                        <p class="lead">You have just completed your transaction on <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> Please find attached the remittance receipt.</p>
+									   <p class="lead">If you are on social media, you can follow us on facebook. This will give you the latest updates, events and marketing promotions we have. Please continue using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> and get bonus 250 loyalty points for every transaction.</p>
 
                                         <!-- A Real Hero (and a real human being) -->
                                         <p><img src="cid:images/product-1.png"/></p><!-- /hero -->

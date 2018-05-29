@@ -5,13 +5,15 @@ import com.amx.utils.EnumType;
 public class AuthState {
 
 	public static enum AuthFlow implements EnumType {
-		DEFAULT, LOGIN, ACTIVATION, RESET_PASS, LOGOUT
+		DEFAULT, LOGIN, ACTIVATION, REGISTRATION, RESET_PASS, LOGOUT
 	}
 
 	public static enum AuthStep {
 		USERPASS, SECQUES, IDVALID, DOTPVFY,
-		// Reg
+		// Activation
 		MOTPVFY, DATA_VERIFY, SECQ_SET, CAPTION_SET, CREDS_SET,
+		//Registration
+		SAVE_HOME,
 		// Logout
 		MISSING, UNAUTH, LOCKED,
 		// DONE

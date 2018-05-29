@@ -1,9 +1,10 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,13 +64,16 @@ public class HomeController {
 
 	@Value("${jax.cdn.url}")
 	private String cleanCDNUrl;
+	
+	@Value("${fcm.senderid}")
+	private String fcmSenderId;
 
 	public String getVersion() {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
 			try {
-				JSONObject map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
-				if (map.has("version")) {
+				Map<String, Object> map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
+				if (map.containsKey("version")) {
 					versionNew = ArgUtil.parseAsString(map.get("version"));
 				}
 				checkTime = checkTimeNew;
@@ -103,6 +107,7 @@ public class HomeController {
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute("fcmSenderId", fcmSenderId);
 		return "app";
 	}
 
@@ -122,6 +127,7 @@ public class HomeController {
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute("fcmSenderId", fcmSenderId);
 		return "app";
 	}
 

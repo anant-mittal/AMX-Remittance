@@ -15,9 +15,11 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
@@ -61,15 +63,15 @@ public class MetaClientTest extends AbstractTestClient {
 	public void testgetBankBranchListByBankId() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BankBranchDto> response = null;
-		GetBankBranchRequest request = new GetBankBranchRequest(new BigDecimal(2258),null, null, null,
-				"asfds");
+		GetBankBranchRequest request = new GetBankBranchRequest(new BigDecimal(2258),null, "123", null,
+				null);
 		response = metaclient.getBankBranchList(request);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	// @Test
+	//@Test
 	public void testGetAllOnlineCurrency() {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;
@@ -78,8 +80,18 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 		// assertNotNull(response.getResult().getCurrencyName());
 	}
+	
+	//@Test
+	public void testAllExchangeRateCurrencyList() {
+		setDefaults();
+		ApiResponse<CurrencyMasterDTO> response = null;
+		response = metaclient.getAllExchangeRateCurrencyList();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		// assertNotNull(response.getResult().getCurrencyName());
+	}
 
-	// @Test
+	//@Test
 	public void testGetAllCountry() {
 		setDefaults();
 		ApiResponse<CountryMasterDTO> response = null;
@@ -130,12 +142,27 @@ public class MetaClientTest extends AbstractTestClient {
 		ApiResponse<CurrencyMasterDTO> response = null;
 
 		BigDecimal beneficiaryCountryId = new BigDecimal(94);
-		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
+		BigDecimal serviceGroupId = new BigDecimal(1);
+		BigDecimal routingBankId = new BigDecimal(2520);
+		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId, serviceGroupId, routingBankId);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
 	
 	@Test
+	public void testOldGetBeneficiaryCurrency() throws IOException, ResourceNotFoundException, InvalidInputException {
+		setDefaults();
+		ApiResponse<CurrencyMasterDTO> response = null;
+
+		BigDecimal beneficiaryCountryId = new BigDecimal(94);
+		BigDecimal serviceGroupId = new BigDecimal(1);
+		BigDecimal routingBankId = new BigDecimal(2520);
+		response = metaclient.getBeneficiaryCurrency(beneficiaryCountryId);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+	}
+	
+	//@Test
 	public void getJaxMetaParameter() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<JaxMetaParameter> response = null;
@@ -143,7 +170,7 @@ public class MetaClientTest extends AbstractTestClient {
 		response = metaclient.getJaxMetaParameter();
 	}
 	
-	@Test
+	//@Test
 	public void testgetTermsAndCondition() {
 		setDefaults();
 		jaxMetaInfo.setLanguageId(new BigDecimal(2));
@@ -151,5 +178,23 @@ public class MetaClientTest extends AbstractTestClient {
 		response = metaclient.getTermsAndCondition();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
+	}
+	
+	//@Test
+	public void testGetAllPrefix() {
+		setDefaults();
+		ApiResponse<PrefixDTO> response = null;
+		response = metaclient.getAllPrefix();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
+	}
+	
+	@Test
+	public void testGetAllBranchDetail() {
+		setDefaults();
+		ApiResponse<BranchDetailDTO> response = null;
+		response = metaclient.getAllBranchDetail();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResults());
 	}
 }

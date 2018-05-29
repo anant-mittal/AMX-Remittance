@@ -8,14 +8,18 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.jax.filter.AppClientInterceptor;
+import com.amx.utils.ArgUtil;
 
 @Component
 public class RestService {
@@ -45,6 +49,10 @@ public class RestService {
 	public Ajax ajax(String url) {
 		return new Ajax(getRestTemplate(), url);
 	}
+	
+	public Ajax ajax(URI uri) {
+		return new Ajax(getRestTemplate(), uri);
+	}
 
 	public class Ajax {
 
@@ -52,11 +60,19 @@ public class RestService {
 		HttpEntity<?> requestEntity;
 		HttpMethod method;
 		Map<String, String> uriParams = new HashMap<String, String>();
+		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		RestTemplate restTemplate;
+		HttpHeaders headers = new HttpHeaders();
+		boolean isForm = false;
 
 		public Ajax(RestTemplate restTemplate, String url) {
 			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(url);
+		}
+
+		public Ajax(RestTemplate restTemplate, URI uri) {
+			this.restTemplate = restTemplate;
+			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
 		public Ajax path(String path) {
@@ -64,13 +80,28 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax pathParam(String paramKey, String paramValue) {
-			uriParams.put(paramKey, paramValue);
+		public Ajax pathParam(String paramKey, Object paramValue) {
+			uriParams.put(paramKey, ArgUtil.parseAsString(paramValue));
 			return this;
 		}
 
-		public Ajax queryParam(String paramKey, String paramValue) {
+		public Ajax queryParam(String paramKey, Object paramValue) {
 			builder.queryParam(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax field(String paramKey, String paramValue) {
+			parameters.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax header(String paramKey, String paramValue) {
+			headers.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax header(HttpHeaders header) {
+			this.headers = header;
 			return this;
 		}
 
@@ -80,9 +111,45 @@ public class RestService {
 			return this;
 		}
 
-		public Ajax get() {
-			this.method = HttpMethod.GET;
+		public <T> Ajax put(T body) {
+			return this.put(new HttpEntity<T>(body, headers));
+		}
+
+		public Ajax put() {
+			return this.put(new HttpEntity<Object>(null, headers));
+		}
+		
+		public Ajax put(HttpEntity<?> requestEntity) {
+			this.method = HttpMethod.PUT;
+			this.requestEntity = requestEntity;
 			return this;
+		}
+
+		public <T> Ajax post(T body) {
+			return this.post(new HttpEntity<T>(body, headers));
+		}
+
+		public Ajax post() {
+			return this.post(new HttpEntity<Object>(null, headers));
+		}
+
+		public Ajax postForm() {
+			this.isForm = true;
+			return this.post(new HttpEntity<MultiValueMap<String, String>>(parameters, headers));
+		}
+
+		public <T> Ajax postJson(T body) {
+			return this.header("content-type", "application/json").post(body);
+		}
+
+		public Ajax get(HttpEntity<?> requestEntity) {
+			this.method = HttpMethod.GET;
+			this.requestEntity = requestEntity;
+			return this;
+		}
+
+		public Ajax get() {
+			return this.get(new HttpEntity<Object>(null, headers));
 		}
 
 		public <T> T as(Class<T> responseType) {
@@ -93,6 +160,10 @@ public class RestService {
 		public <T> T as(ParameterizedTypeReference<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
+		}
+
+		public String asString() {
+			return this.as(String.class);
 		}
 
 	}

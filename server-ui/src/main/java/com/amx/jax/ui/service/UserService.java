@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -11,11 +12,15 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 @Service
 public class UserService {
@@ -25,12 +30,28 @@ public class UserService {
 	@Autowired
 	private UserBean userBean;
 
+	@Autowired
+	private SessionService sessionService;
+
 	public UserBean getUserBean() {
 		return userBean;
 	}
 
 	@Autowired
 	private JaxService jaxService;
+
+	public List<String> getNotifyTopics(String prefix) {
+		CustomerModel customerModel = sessionService.getUserSession().getCustomerModel();
+		List<String> topics = new ArrayList<String>();
+		topics.add((prefix + String.format(PushMessage.FORMAT_TO_ALL, AppContextUtil.getTenant(),
+				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
+		topics.add((prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant(),
+				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
+		topics.add((prefix + String.format(PushMessage.FORMAT_TO_USER, AppContextUtil.getTenant(),
+				ArgUtil.parseAsString(customerModel.getCustomerId(), Constants.BLANK).replaceAll("\\s+", "")))
+						.toLowerCase());
+		return topics;
+	}
 
 	public ResponseWrapper<CustomerDto> getProfileDetails() {
 		return new ResponseWrapper<CustomerDto>(
@@ -45,7 +66,9 @@ public class UserService {
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for mobile update");
 		} else {
-			jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveEmail(email, mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setEmail(model.getEmail());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setEmail(model.getEmail());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Email Updated");
 		}
 		return wrapper;
@@ -59,7 +82,9 @@ public class UserService {
 			wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_INIT, "OTP Sent for email update");
 		} else {
-			jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+			CustomerModel model = jaxService.setDefaults().getUserclient().saveMobile(phone, mOtp, eOtp).getResult();
+			sessionService.getUserSession().getCustomerModel().setMobile(model.getMobile());
+			sessionService.getUserSession().getCustomerModel().getPersoninfo().setMobile(model.getMobile());
 			wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Mobile Updated");
 		}
 		return wrapper;

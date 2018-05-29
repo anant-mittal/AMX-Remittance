@@ -11,6 +11,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
@@ -134,6 +136,30 @@ public class MetaService extends AbstractService {
 	
 	public ApiResponse getServiceGroups() {
 		ApiResponse response = getBlackApiResponse();
+		response.getData().setType("service-group-model");
+		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
+		response.getData().getValues().addAll(outputDto);
+		return response;
+	}
+
+	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {
+		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
+				.findActiveByLanguageId(metaData.getLanguageId());
+		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
+		output.forEach(i -> {
+			// disable cash
+			if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
+				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
+				dto.setServiceGroupDesc(i.getServiceGroupDesc());
+				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+				outputDto.add(dto);
+			}
+		});
+		return outputDto;
+	}
+	
+	public Map<BigDecimal, ServiceGroupMasterDescDto> getServiceGroupDtoMap() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
@@ -144,11 +170,12 @@ public class MetaService extends AbstractService {
 			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
 			outputDto.add(dto);
 		});
-		response.getData().setType("service-group-model");
-		response.getData().getValues().addAll(outputDto);
-		return response;
+
+		Map<BigDecimal, ServiceGroupMasterDescDto> outputDtoMap = outputDto.stream()
+				.collect(Collectors.toMap(ServiceGroupMasterDescDto::getServiceGroupMasterId, x -> x));
+		return outputDtoMap;
 	}
-	
+
 	public ViewDistrict getDistrictMasterById(BigDecimal id) {
 		return districtDao.findOne(id);
 	}

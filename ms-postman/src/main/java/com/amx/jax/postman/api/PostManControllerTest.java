@@ -2,6 +2,7 @@ package com.amx.jax.postman.api;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,22 +26,20 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
+import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.text.Transliterator;
-import com.itextpdf.text.DocumentException;
-import com.mashape.unirest.http.HttpResponse;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 @RestController
 @RequestMapping("test/")
@@ -54,6 +53,9 @@ public class PostManControllerTest {
 
 	@Autowired
 	PostManClient postManClient;
+	
+	@Autowired
+	FBPushClient fbPushClient;
 
 	@Autowired
 	PostManServiceImpl postManServiceImpl;
@@ -76,7 +78,7 @@ public class PostManControllerTest {
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
 	@RequestMapping(value = "exception")
-	public Message notifySlack() throws UnirestException {
+	public Message notifySlack() {
 
 		try {
 			throw new Exception("Some Error");
@@ -106,8 +108,21 @@ public class PostManControllerTest {
 		Transliterator toDevnagiri = Transliterator.getInstance(ENG_TO_DEV);
 		String devnagiri = toDevnagiri.transliterate("lalit");
 
-		postManServiceImpl.print();
 		return msg;
+	}
+	
+	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
+	public PushMessage fbPush(@RequestBody PushMessage msg)
+			throws PostManException, InterruptedException, ExecutionException {
+		fbPushClient.sendDirect(msg);
+		return msg;
+	}
+	
+	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
+	public String fbPush(@RequestParam String token, @PathVariable String topic)
+			throws PostManException, InterruptedException, ExecutionException {
+		fbPushClient.subscribe(token, topic);
+		return topic;
 	}
 
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
@@ -115,23 +130,28 @@ public class PostManControllerTest {
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
 			@RequestParam(required = false) File.PDFConverter lib)
-			throws IOException, DocumentException, PostManException {
+			throws IOException, /* DocumentException, */ PostManException {
 
-		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getFileName() + ".json");
+		Map<String, Object> map = readJsonWithObjectMapper("json/" + template.getSampleJSON());
 
 		// LOGGER.info("====={}", messageSource.getMessage("sender.details", null,
 		// localeResolver.resolveLocale(request)));
 
 		postManClient.setLang(localeResolver.resolveLocale(request).toString());
 
+		File file = new File();
+		file.setModel(map);
+		file.setTemplate(template);
+		file.setConverter(lib);
+
 		if ("pdf".equals(ext)) {
-			File file = postManClient.processTemplate(template, map, File.Type.PDF);
-			file.setConverter(lib);
+			file.setType(File.Type.PDF);
+			file = postManClient.processTemplate(file);
+			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManClient.processTemplate(template, map, null);
-			file.setConverter(lib);
+			file = postManClient.processTemplate(file);
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);
@@ -140,7 +160,7 @@ public class PostManControllerTest {
 				eml.setTemplate(template);
 				eml.setHtml(true);
 				eml.setModel(map);
-				this.readImageWithObjectMapper(null);
+				// this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
 				file2.setTemplate(template);
@@ -157,15 +177,6 @@ public class PostManControllerTest {
 			return JsonUtil.toJson(map);
 		}
 
-	}
-
-	public File processTemplate(Templates template, Map<String, Object> map, File.Type fileType)
-			throws UnirestException {
-		HttpResponse<File> response = Unirest.post(postmanUrl + PostManUrls.PROCESS_TEMPLATE)
-				// .header("content-type", "application/json")
-				.header("accept", "application/json").field("template", template).field("data", JsonUtil.toJson(map))
-				.field("fileType", fileType).asObject(File.class);
-		return response.getBody();
 	}
 
 	@SuppressWarnings("unchecked")

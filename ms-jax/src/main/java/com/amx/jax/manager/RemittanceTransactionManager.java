@@ -38,7 +38,6 @@ import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.JaxApplicationSetup;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
@@ -46,7 +45,6 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
-import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BankCharges;
 import com.amx.jax.dbmodel.BankServiceRule;
@@ -70,7 +68,6 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.VTransferRepository;
-import com.amx.jax.service.ApplicationSetupService;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
@@ -179,6 +176,9 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		/** Added by Rabil on 03 May 2018 **/
+		remitApplParametersMap.put("P_BENE_RELATION_SEQ_ID", beneficiary.getBeneficiaryRelationShipSeqId());
+		/** End here **/
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
@@ -295,13 +295,11 @@ public class RemittanceTransactionManager {
 				outputMap = exchangeRateProcedureDao.findRemittanceAndDevlieryModeId(remitApplParametersMap);
 			}
 			if (outputMap.size() > 2) {
-				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
-						TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+				throw new GlobalException("TOO MANY COMMISSION DEFINED for rounting bankid: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
-				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
-						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
+				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
 			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
@@ -507,7 +505,7 @@ public class RemittanceTransactionManager {
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		breakup.setNetAmountWithoutLoyality(netAmount);
-		if (model.isAvailLoyalityPoints()) {
+		if (model.isAvailLoyalityPoints() && comission != null && comission.intValue() > 0) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
@@ -658,10 +656,19 @@ public class RemittanceTransactionManager {
 					remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
 		}
+		model.setTransactionReference(getTransactionReference(application));
 		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
 		return model;
+	}
+
+	private String getTransactionReference(RemittanceApplication application) {
+		try {
+			return application.getDocumentNo().toString() + application.getDocumentFinancialyear().toString();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	private JaxTransactionStatus getJaxTransactionStatus(RemittanceApplication remittanceApplication) {

@@ -11,6 +11,7 @@ public class AppContext implements Serializable {
 	Tenant tenant = null;
 	String traceId = null;
 	String tranxId = null;
+	String userId = null;
 
 	public Tenant getTenant() {
 		return tenant;
@@ -34,5 +35,13 @@ public class AppContext implements Serializable {
 
 	public void setTranxId(String tranxId) {
 		this.tranxId = tranxId;
+	}
+
+	public String getUserId() {
+		return userId;
+	}
+
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 }

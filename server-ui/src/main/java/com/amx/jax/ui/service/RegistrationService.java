@@ -41,6 +41,8 @@ public class RegistrationService {
 		 * Clearing old session before proceeding
 		 */
 		sessionService.clear();
+		sessionService.invalidate();
+
 		sessionService.getGuestSession().setIdentity(identity);
 		sessionService.getGuestSession().initFlow(AuthState.AuthFlow.ACTIVATION);
 
@@ -60,8 +62,6 @@ public class RegistrationService {
 			sessionService.getGuestSession().endStep(AuthStep.IDVALID);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 		}
-		userSessionInfo.setUserid(identity);
-
 		return wrapper;
 	}
 
@@ -129,7 +129,11 @@ public class RegistrationService {
 	private void initActivation(ResponseWrapper<UserUpdateData> wrapper) {
 		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
 		wrapper.getData().setSecQuesMeta(questModel);
-		wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
+		if (sessionService.getGuestSession().getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(sessionService.getGuestSession().getCustomerModel().getSecurityquestions());
+		} else if (userSessionInfo.getCustomerModel() != null) {
+			wrapper.getData().setSecQuesAns(userSessionInfo.getCustomerModel().getSecurityquestions());
+		}
 	}
 
 	public ResponseWrapper<UserUpdateData> getSecQues(boolean validate) {
