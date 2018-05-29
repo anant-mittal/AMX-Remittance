@@ -3,7 +3,7 @@ package com.amx.jax.exception;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
-public abstract class AbstractAppException extends RuntimeException {
+public abstract class AmxApiException extends RuntimeException {
 
 	private static final long serialVersionUID = 1L;
 
@@ -13,7 +13,7 @@ public abstract class AbstractAppException extends RuntimeException {
 
 	protected IExceptionEnum error;
 
-	public AbstractAppException(ApiError error) {
+	public AmxApiException(AmxApiError error) {
 		try {
 			this.error = getErrorIdEnum(error.getErrorId());
 		} catch (Exception e) {
@@ -22,12 +22,12 @@ public abstract class AbstractAppException extends RuntimeException {
 		this.errorMessage = error.getErrorMessage();
 	}
 
-	public AbstractAppException(String errorMessage) {
+	public AmxApiException(String errorMessage) {
 		super();
 		this.errorMessage = errorMessage;
 	}
 
-	public AbstractAppException(String errorMessage, String errorCode) {
+	public AmxApiException(String errorMessage, String errorCode) {
 		super();
 		this.errorMessage = errorMessage;
 		this.errorKey = errorCode;
@@ -67,7 +67,7 @@ public abstract class AbstractAppException extends RuntimeException {
 	 * 
 	 * @return
 	 */
-	public abstract AbstractAppException getInstance(ApiError apiError);
+	public abstract AmxApiException getInstance(AmxApiError apiError);
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 }

@@ -1,6 +1,6 @@
 package com.amx.jax.exception;
 
-public class ApiError {
+public class AmxApiError {
 
 	private String errorId;
 
@@ -9,21 +9,21 @@ public class ApiError {
 	// warning error
 	private String errorType;
 
-	public ApiError(String errorId, String errorMessage, String errorType) {
+	public AmxApiError(String errorId, String errorMessage, String errorType) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
 		this.errorType = errorType;
 	}
 
-	public ApiError(String errorId, String errorMessage) {
+	public AmxApiError(String errorId, String errorMessage) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
 		this.errorType = "Error";
 	}
 
-	public ApiError() {
+	public AmxApiError() {
 		super();
 	}
 

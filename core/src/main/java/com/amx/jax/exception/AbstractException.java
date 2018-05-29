@@ -12,13 +12,13 @@ public abstract class AbstractException extends RuntimeException {
 	protected String errorMessage;
 
 	protected String errorCode;
-	
+
 	private JaxFieldError validationErrorField;
 
 	public AbstractException() {
 		super();
 	}
-	
+
 	public AbstractException(String errorMessage) {
 		super();
 		this.errorMessage = errorMessage;

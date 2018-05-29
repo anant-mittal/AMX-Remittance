@@ -4,19 +4,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExceptionFactory {
-	private static Map<String, AbstractAppException> map = new HashMap<String, AbstractAppException>();
+	private static Map<String, AmxApiException> map = new HashMap<String, AmxApiException>();
 
-	private static Map<String, AbstractAppException> clasmap = new HashMap<String, AbstractAppException>();
+	private static Map<String, AmxApiException> clasmap = new HashMap<String, AmxApiException>();
 
-	public static void register(AbstractAppException exc) {
+	public static void register(AmxApiException exc) {
 		clasmap.put(exc.getClass().getName(), exc);
 	}
 
-	public static void register(String key, AbstractAppException exc) {
+	public static void register(String key, AmxApiException exc) {
 		map.put(key, exc);
 	}
 
-	public static AbstractAppException get(String key) {
+	public static AmxApiException get(String key) {
 		return map.get(key);
 	}
 }
