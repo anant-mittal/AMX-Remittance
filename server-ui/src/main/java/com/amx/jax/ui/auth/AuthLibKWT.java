@@ -7,7 +7,7 @@ import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 
 @Component
-@TenantSpecific({ Tenant.KWT, Tenant.BHR, Tenant.KWT2 })
+@TenantSpecific({ Tenant.KWT, Tenant.BHR, Tenant.OMN })
 public class AuthLibKWT implements AuthLib {
 
 	@Override
