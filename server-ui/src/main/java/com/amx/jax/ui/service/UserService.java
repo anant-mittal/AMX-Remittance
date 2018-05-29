@@ -21,6 +21,8 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.utils.ArgUtil;
 
+import com.amx.utils.Constants;
+
 @Service
 public class UserService {
 
@@ -46,8 +48,9 @@ public class UserService {
 				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
 		topics.add((prefix + String.format(PushMessage.FORMAT_TO_NATIONALITY, AppContextUtil.getTenant(),
 				customerModel.getPersoninfo().getNationalityId())).toLowerCase());
-		topics.add((prefix + String.format(PushMessage.FORMAT_TO_MOBILE, AppContextUtil.getTenant(),
-				customerModel.getPersoninfo().getMobile().replaceAll("\\s+", ""))).toLowerCase());
+		topics.add((prefix + String.format(PushMessage.FORMAT_TO_USER, AppContextUtil.getTenant(),
+				ArgUtil.parseAsString(customerModel.getCustomerId(), Constants.BLANK).replaceAll("\\s+", "")))
+						.toLowerCase());
 		return topics;
 	}
 

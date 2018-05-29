@@ -398,7 +398,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			 * }
 			 */
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				beneDto.getApplicationCountryId(), beneDto.getBenificaryCountry(), beneDto.getCurrencyId());
 
 		if (serviceAppList.isEmpty()) {
