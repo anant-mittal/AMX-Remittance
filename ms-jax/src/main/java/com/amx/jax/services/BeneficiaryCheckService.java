@@ -282,9 +282,9 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
-		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getCountryId())) {
 			List<CountryMasterView> countryList = countryDao.findByLanguageIdAndCountryId(beneDto.getLanguageId(),
-					beneDto.getBenificaryCountry());
+					beneDto.getCountryId());
 			if (countryList.isEmpty()) {
 				isUpdateNeeded = true;
 				beneDto.setUpdateNeeded(true);
@@ -343,7 +343,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		}
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
-			List<ViewState> stateList = viewStateDao.getState(beneDto.getBenificaryCountry(), beneDto.getStateId(),
+			List<ViewState> stateList = viewStateDao.getState(beneDto.getCountryId(), beneDto.getStateId(),
 					beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
 				beneDto.setUpdateNeeded(true);
