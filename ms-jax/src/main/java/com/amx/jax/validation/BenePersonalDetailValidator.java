@@ -42,7 +42,7 @@ public class BenePersonalDetailValidator implements Validator {
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
