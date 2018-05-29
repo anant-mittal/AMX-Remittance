@@ -399,7 +399,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			 */
 
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
-				beneDto.getApplicationCountryId(), beneDto.getBenificaryCountry(), beneDto.getCurrencyId());
+				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());
 
 		if (serviceAppList.isEmpty()) {
 			errorDesc = "Data not found";
