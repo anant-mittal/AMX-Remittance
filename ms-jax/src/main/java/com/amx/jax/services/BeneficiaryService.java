@@ -807,9 +807,10 @@ public class BeneficiaryService extends AbstractService {
 			listData.add(map.get(BigDecimal.valueOf(2)));
 			CountryMasterDTO model = new CountryMasterDTO();
 			jaxUtil.convert(beneCountry, model);
-			if (supportedServiceGroupList.contains(model.getCountryId())) {
+			//disable cash
+			/*if (supportedServiceGroupList.contains(model.getCountryId())) {
 				listData.add(map.get(BigDecimal.valueOf(1)));
-			}
+			}*/
 			model.setSupportedServiceGroup(listData);
 			list.add(model);
 		}

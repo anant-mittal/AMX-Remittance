@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -99,8 +100,11 @@ public class BeneficiaryValidationService {
 				metaData.getCountryId(), beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
 				ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
-			if (ConstantDocument.Yes.equals(i.getMandatory()) && StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
-				throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+					throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+				}
+				validateSwiftCode(beneAccountModel.getSwiftCode());
 			}
 		});
 	}
@@ -212,6 +216,14 @@ public class BeneficiaryValidationService {
 				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
 			}
 		}
+	}
+
+	private void validateSwiftCode(String swift) {
+		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
+		if (!pattern.matcher(swift).matches()) {
+			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+		}
+
 	}
 
 }
