@@ -10,6 +10,13 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.def.MockParamBuilder;
+import com.amx.jax.def.MockParamBuilder.MockParam;
+
+import springfox.documentation.builders.ParameterBuilder;
+import springfox.documentation.schema.ModelRef;
+import springfox.documentation.service.Parameter;
+
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.amx.jax" })
@@ -26,4 +33,13 @@ public class JaxServiceApplication {
 		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
 		return metaInfo;
 	}
+
+	@Bean
+	public MockParam metaInfo() {
+		return new MockParamBuilder().name("meta-info").description("meta-info")
+				.defaultValue("{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , "
+						+ "\"countryBranchId\":\"78\", \"tenant\":\"KWT\",\"languageId\":1 }")
+				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
+	}
+
 }
