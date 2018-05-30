@@ -32,24 +32,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ConditionalOnProperty("app.swagger")
 public class SampleSwaggerConfig {
 
-	@Autowired(required = false)
-	public Parameter swaggerHeaderParam;
-
-	@Autowired(required = false)
-	public Parameter swaggerTenantParam;
-
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();
-		if (swaggerHeaderParam != null) {
-			docket.globalOperationParameters(Arrays.asList(swaggerHeaderParam));
-		}
-		if (swaggerTenantParam != null) {
-			docket.globalOperationParameters(Arrays.asList(swaggerTenantParam));
-		}
 
 		List<Parameter> operationParameters = new ArrayList<Parameter>();
 		for (MockParam mockParam : mockParams) {
