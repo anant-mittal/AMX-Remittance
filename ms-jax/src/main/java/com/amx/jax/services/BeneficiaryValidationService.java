@@ -107,6 +107,9 @@ public class BeneficiaryValidationService {
 				validateSwiftCode(beneAccountModel.getSwiftCode());
 			}
 		});
+		if (!StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+			validateSwiftCode(beneAccountModel.getSwiftCode());
+		}
 	}
 
 	/**

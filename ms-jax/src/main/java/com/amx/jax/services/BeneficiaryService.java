@@ -614,7 +614,10 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status,String mOtp,String eOtp) {
 		
-		userService.validateOtp(null, mOtp, eOtp);
+
+		if (mOtp!=null || eOtp!=null) {
+			userService.validateOtp(null, mOtp, eOtp);
+		}
 		
 		ApiResponse response = getBlackApiResponse();
 		try {
