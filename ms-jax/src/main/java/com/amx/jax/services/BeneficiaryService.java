@@ -614,7 +614,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status,String mOtp,String eOtp) {
 		
-		userService.validateOtp(null, mOtp, eOtp);
+		if (mOtp!=null || eOtp!=null) {
+			userService.validateOtp(null, mOtp, eOtp);
+		}
 		
 		ApiResponse response = getBlackApiResponse();
 		try {
@@ -786,7 +788,9 @@ public class BeneficiaryService extends AbstractService {
 	// Added by chetan 03-05-2018 for country with channeling
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
-		List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+		//List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+		List<CountryMasterView> countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
+		
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018
 		ApiResponse response = getBlackApiResponse();
