@@ -2,12 +2,14 @@ package com.amx.jax.postman.service;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppParam;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
@@ -21,7 +23,7 @@ import com.amx.utils.MapBuilder;
 @TenantScoped
 public class SMService {
 
-	private Logger logger = Logger.getLogger(SMService.class);
+	private static Logger LOGGER = LoggerService.getLogger(SMService.class);
 
 	@Value("${msg91.auth.key}")
 	private String authKey;
@@ -49,6 +51,10 @@ public class SMService {
 
 	public SMS sendSMS(SMS sms) {
 
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START", "sendSMS");
+		}
+
 		String phone = sms.getTo().get(0);
 
 		if (phone != null && phone.length() == 10) {
@@ -63,7 +69,7 @@ public class SMService {
 
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
 					.put(messagePath, sms.toText()).put(toPath, sms.getTo().get(0)).toMap();
-			logger.info("SMS Preparing   " + map);
+			LOGGER.info("SMS Preparing   " + map);
 			String response = restService.ajax(remoteUrl).header("authkey", authKey)
 					.header("content-type", "application/json").post(
 
@@ -71,7 +77,7 @@ public class SMService {
 
 					).asString();
 
-			logger.info("SMS Sent   " + response);
+			LOGGER.info("SMS Sent   " + response);
 		} else if (phone != null && phone.length() == 8) {
 			Tenant tnt = TenantContextHolder.currentSite();
 			if (tnt == Tenant.BHR) {
@@ -79,14 +85,18 @@ public class SMService {
 						.queryParam("User", username).queryParam("passwd", password)
 						.queryParam("mobilenumber", "973" + phone).queryParam("message", sms.toText())
 						.queryParam("sid", secret).queryParam("mtype", "N").queryParam("DR", "Y").get().asString();
-				logger.info("SMS Sent   " + response);
+				LOGGER.info("SMS Sent   " + response);
 			} else if (tnt == Tenant.KWT) {
 				String response = restService
 						.ajax("https://applications2.almullagroup.com/Login_Enhanced/LoginEnhancedServlet")
 						.field("destination_mobile", "965" + phone).field("message_to_send", sms.toText()).postForm()
 						.asString();
-				logger.info("SMS Sent   " + response);
+				LOGGER.info("SMS Sent   " + response);
 			}
+		}
+
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:END", "sendSMS");
 		}
 
 		return sms;
