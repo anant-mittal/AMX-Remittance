@@ -57,6 +57,9 @@ public class CurrencyMasterService extends AbstractService {
 	@Autowired
 	private MetaData metaData;
 	
+	@Autowired
+	MetaService metaSerivce;
+	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
 	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
@@ -225,9 +228,10 @@ public class CurrencyMasterService extends AbstractService {
 		List<ViewBeneServiceCurrency> currencyList = viewBeneficiaryCurrencyRepository
 				.findByBeneCountryId(beneCountryId, new Sort("currencyName"));
 		List<BigDecimal> currencyIdList = new ArrayList<BigDecimal>();
-		if (serviceGroupId != null && routingBankId != null)
-			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId, serviceGroupId,
-					routingBankId);
+		if (serviceGroupId != null && routingBankId != null && metaSerivce.isCashSeriveGroup(serviceGroupId)) {
+			currencyIdList = currencyMasterDao.getCashCurrencyList(metaData.getCountryId(), beneCountryId,
+					serviceGroupId, routingBankId);
+		}
 		if (currencyIdList != null && !currencyIdList.isEmpty()) {
 			Iterator itr = currencyList.iterator();
 			while (itr.hasNext()) {
