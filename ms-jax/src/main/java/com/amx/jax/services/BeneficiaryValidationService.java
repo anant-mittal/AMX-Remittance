@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -19,13 +20,18 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.ServiceApplicabilityField;
+import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
+import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
 import com.google.common.collect.Iterables;
@@ -69,6 +75,12 @@ public class BeneficiaryValidationService {
 	@Autowired
 	BeneficiaryPersonalDetailPredicateCreator beneficiaryPersonalDetailPredicateCreator;
 
+	@Autowired
+	IServiceApplicabilityRuleDao serviceApplicablilityRuleDao;
+
+	@Autowired
+	MetaData metaData;
+
 	/**
 	 * @param beneAccountModel
 	 * 
@@ -79,6 +91,24 @@ public class BeneficiaryValidationService {
 		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
 			validateBankAccountNumber(beneAccountModel);
 			validateDuplicateBankAccount(beneAccountModel);
+			validateSwiftCode(beneAccountModel);
+		}
+	}
+
+	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRules(
+				metaData.getCountryId(), beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
+				ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		swiftRules.forEach(i -> {
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+					throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+				}
+				validateSwiftCode(beneAccountModel.getSwiftCode());
+			}
+		});
+		if (!StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+			validateSwiftCode(beneAccountModel.getSwiftCode());
 		}
 	}
 
@@ -181,7 +211,7 @@ public class BeneficiaryValidationService {
 			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
 			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
 		}
-		
+
 		if (beneAccountMaster != null && beneMaster != null) {
 			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
 					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
@@ -189,6 +219,14 @@ public class BeneficiaryValidationService {
 				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
 			}
 		}
+	}
+
+	private void validateSwiftCode(String swift) {
+		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
+		if (!pattern.matcher(swift).matches()) {
+			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+		}
+
 	}
 
 }

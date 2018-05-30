@@ -147,11 +147,14 @@ public class MetaService extends AbstractService {
 				.findActiveByLanguageId(metaData.getLanguageId());
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
-			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
-			dto.setServiceGroupDesc(i.getServiceGroupDesc());
-			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-			outputDto.add(dto);
+			// disable cash
+			if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
+				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
+				dto.setServiceGroupDesc(i.getServiceGroupDesc());
+				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+				outputDto.add(dto);
+			}
 		});
 		return outputDto;
 	}

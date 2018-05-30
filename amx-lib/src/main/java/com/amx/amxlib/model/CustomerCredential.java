@@ -5,11 +5,10 @@ import java.io.Serializable;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-public class CustomerCredential implements Serializable{
+import com.amx.amxlib.model.CustomerModelInterface.ICustomerCredential;
 
-	/**
-	 * 
-	 */
+public class CustomerCredential implements Serializable, ICustomerCredential {
+
 	private static final long serialVersionUID = 1L;
 
 	@NotNull
@@ -29,18 +28,22 @@ public class CustomerCredential implements Serializable{
 		this.password = password;
 	}
 
+	@Override
 	public String getLoginId() {
 		return loginId;
 	}
 
+	@Override
 	public void setLoginId(String loginId) {
 		this.loginId = loginId;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
 
+	@Override
 	public void setPassword(String password) {
 		this.password = password;
 	}

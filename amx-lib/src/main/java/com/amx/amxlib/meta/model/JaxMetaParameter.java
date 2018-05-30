@@ -6,6 +6,7 @@ public class JaxMetaParameter {
 
 	BigDecimal newBeneTransactionTimeLimit;
 	BigDecimal maxDomAmountLimit;
+	BigDecimal applicationCountryId;
 
 	public BigDecimal getNewBeneTransactionTimeLimit() {
 		return newBeneTransactionTimeLimit;
@@ -22,4 +23,14 @@ public class JaxMetaParameter {
 	public void setMaxDomAmountLimit(BigDecimal maxDomAmountLimit) {
 		this.maxDomAmountLimit = maxDomAmountLimit;
 	}
+
+	public BigDecimal getApplicationCountryId() {
+		return applicationCountryId;
+	}
+
+	public void setApplicationCountryId(BigDecimal applicationCountryId) {
+		this.applicationCountryId = applicationCountryId;
+	}
+	
+	
 }

@@ -169,6 +169,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
 			beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 			beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
+			beneficaryAccount.setSwiftCode(accountDetails.getSwiftCode());
 
 			// cash
 			if (BigDecimal.ONE.equals(beneficaryAccount.getServiceGroupId())) {

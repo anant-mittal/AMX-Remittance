@@ -47,21 +47,6 @@ public class BeneTrnxClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response.getResult());
 	}
 
-	// @Test
-	@SuppressWarnings("rawtypes")
-	public void testsaveBenePersonalDetailInTrnx() throws IOException, URISyntaxException {
-		setDefaults();
-
-		ApiResponse response = null;
-		String json = new String(
-				Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("bene/bene-details.json").toURI())));
-		BenePersonalDetailModel benePersonalDetailModel = JsonUtil.fromJson(json, BenePersonalDetailModel.class);
-		response = client.saveBenePersonalDetailInTrnx(benePersonalDetailModel);
-		assertNotNull("Response is null", response);
-		assertNotNull("Response is null", response.getResult());
-	}
-
-
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void testsaveAndcommitAddBeneTrnx() throws IOException, URISyntaxException {

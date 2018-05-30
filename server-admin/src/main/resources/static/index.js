@@ -1,6 +1,16 @@
 let VALID_MD_PWD = "79ef08083ae1c8dcb33386831674350a";
 let SUCCES_NOTIF_DELAY = 12500;
 
+function objectToFormParams(obj){
+	var form_data = new FormData();
+
+	for ( var key in obj ) {
+	    form_data.append(key, obj[key]);
+	}
+	
+	return form_data;
+}
+
 async function initSub() {
 
   const registration = await navigator.serviceWorker.register('/sw.js');
@@ -165,22 +175,43 @@ function init(){
 			$(".notif-title").val("");
 			var message = $(".notif-msg").val() || "Default Message";
 			$(".notif-msg").val("");
-			fetch(`/api/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
-				method: 'post',
-				credentials: "same-origin",
-				headers: {
-			        'Accept': 'application/json, text/plain, */*',
-			        'Content-Type': 'application/json'
-			    }
-			}).then(function(resp){
-				if(resp.status === 200){
+			
+			
+			var reqObj = {
+					tenant: tenant, 
+					nationality: nationality, 
+					title: title,
+					message: message
+				};
+				$.ajax({
+					url: '/api/notify/nationality',
+				    data: reqObj,
+				    type: 'POST'
+				}).done(function(data){
 					$(".toast")
 					.html("Notification with the title: '" + title + "' was successfully sent")
 					.fadeIn()
 					.delay(SUCCES_NOTIF_DELAY)
 					.fadeOut('slow');
-				}
-			})
+				});
+			
+//			
+//			fetch(`/api/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
+//				method: 'post',
+//				credentials: "same-origin",
+//				headers: {
+//			        'Accept': 'application/json, text/plain, */*',
+//			        'Content-Type': 'application/json'
+//			    }
+//			}).then(function(resp){
+//				if(resp.status === 200){
+//					$(".toast")
+//					.html("Notification with the title: '" + title + "' was successfully sent")
+//					.fadeIn()
+//					.delay(SUCCES_NOTIF_DELAY)
+//					.fadeOut('slow');
+//				}
+//			})
 		})
 		
 		$(".send-notifications-kwt-all").on('click', function(){
