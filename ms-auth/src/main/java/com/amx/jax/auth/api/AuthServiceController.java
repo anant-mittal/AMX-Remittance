@@ -25,10 +25,22 @@ public class AuthServiceController {
 	@Autowired
 	AuthServiceImpl authServiceImpl;
 
-	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
+	@RequestMapping(value = "/api/sync_perms", method = RequestMethod.GET)
 	public GeoLocation geoLocation(@RequestParam @ApiParam(defaultValue = "171.50.210.63") String ip)
 			throws PostManException, IOException {
 		return null;
 	}
+
+	// Sync DB perms
+
+	// send_otp:ec_no, civilid
+	// verify_otp:ec_no, civilid, motp -> user_id
+
+	// create role : role_name
+	// assign_perms : role_id, permis_id, scope_id
+
+	// assign_role : user_id, role_id
+
+	// get_perms : user_id -> role, list of permsissions +scope, employe_detail,
 
 }
