@@ -19,11 +19,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<!-- Session infos -->
-		<dependency>
-			<groupId>org.springframework.session</groupId>
-			<artifactId>spring-session</artifactId>
-		</dependency>
+		<!-- Cache infos -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-cache</artifactId>
