@@ -612,7 +612,10 @@ public class BeneficiaryService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status) {
+	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status,String mOtp,String eOtp) {
+		
+		userService.validateOtp(null, mOtp, eOtp);
+		
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
