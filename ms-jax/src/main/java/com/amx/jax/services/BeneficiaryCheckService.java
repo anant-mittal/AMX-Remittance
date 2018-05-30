@@ -251,7 +251,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (StringUtils.isBlank(beneDto.getBenificaryName())) {
+		if (!StringUtils.isBlank(beneDto.getBenificaryName())) {
 			String[] beneNameArray = beneDto.getBenificaryName().split(" ");
 			for (String stringName : beneNameArray) {
 				List<BankBlWorld> bannedList = beneBankWorldDao.getCheckBankBanned(stringName.trim());
