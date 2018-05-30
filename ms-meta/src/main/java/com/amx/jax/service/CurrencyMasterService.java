@@ -240,7 +240,11 @@ public class CurrencyMasterService extends AbstractService {
 		Map<BigDecimal, CurrencyMasterModel> allCurrencies = currencyMasterDao.getAllCurrencyMap();
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
-			currencyListDto.add(convertModel(allCurrencies.get(currency.getCurrencyId())));
+			CurrencyMasterModel currencyMaster = allCurrencies.get(currency.getCurrencyId());
+			// enable only bene country related currencies
+			if (beneCountryId.equals(currencyMaster.getCountryId())) {
+				currencyListDto.add(convertModel(currencyMaster));
+			}
 		});
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(currencyListDto);
