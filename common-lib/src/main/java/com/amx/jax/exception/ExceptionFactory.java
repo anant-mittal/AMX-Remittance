@@ -6,11 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
+import com.amx.jax.filter.AppClientInterceptor;
+
 public class ExceptionFactory {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionFactory.class);
+
 	private static Map<String, AmxApiException> map = new HashMap<String, AmxApiException>();
 
 	private static Map<String, AmxApiException> clasmap = new HashMap<String, AmxApiException>();
@@ -20,11 +27,11 @@ public class ExceptionFactory {
 	}
 
 	public static void register(String key, AmxApiException exc) {
-		map.put(key, exc);
+		clasmap.put(key, exc);
 	}
 
 	public static AmxApiException get(String key) {
-		return map.get(key);
+		return clasmap.get(key);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -45,7 +52,7 @@ public class ExceptionFactory {
 				}
 			} catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
 					| IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				e.printStackTrace();
+				LOGGER.error("No Default Constructor {}(AmxApiError apiError)", component.getBeanClassName(),e);
 			}
 		}
 

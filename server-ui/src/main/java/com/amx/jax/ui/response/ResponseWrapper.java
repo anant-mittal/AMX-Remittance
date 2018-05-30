@@ -3,9 +3,12 @@ package com.amx.jax.ui.response;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.ui.UIConstants;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 public class ResponseWrapper<T> implements Serializable {
@@ -41,6 +44,7 @@ public class ResponseWrapper<T> implements Serializable {
 	private String message = UIConstants.EMPTY;
 	private String messageKey = UIConstants.EMPTY;
 	private String redirectUrl = null;
+	private String exception = null;
 
 	private List<ResponseError> errors = null;
 
@@ -116,6 +120,18 @@ public class ResponseWrapper<T> implements Serializable {
 		this.status = status.getCode();
 	}
 
+	public void setStatus(HttpStatus status) {
+		if (status.is5xxServerError()) {
+			this.statusKey = WebResponseStatus.SERVER_ERROR;
+		} else if (status.is4xxClientError()) {
+			this.statusKey = WebResponseStatus.CLIENT_ERROR;
+		} else if (status.is3xxRedirection()) {
+			this.statusKey = WebResponseStatus.REDIRECTION;
+		}
+		this.status = ArgUtil.parseAsString(status.value());
+		this.message = status.getReasonPhrase();
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -153,6 +169,14 @@ public class ResponseWrapper<T> implements Serializable {
 
 	public void setMessage(WebResponseStatus status, AbstractJaxException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
+	}
+
+	public String getException() {
+		return exception;
+	}
+
+	public void setException(String exception) {
+		this.exception = exception;
 	}
 
 }

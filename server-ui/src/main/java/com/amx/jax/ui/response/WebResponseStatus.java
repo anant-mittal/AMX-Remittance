@@ -17,7 +17,9 @@ public enum WebResponseStatus {
 
 	UNKNOWN_JAX_ERROR("500"),
 	// Registration - END ERROR
-	BAD_INPUT("400"), SUCCESS("200"), ERROR("500");
+	BAD_INPUT("400"), SUCCESS("200"), ERROR("500"),
+	
+	REDIRECTION("3xx"), SERVER_ERROR("4xx"), CLIENT_ERROR("5xx");
 
 	private final String code;
 

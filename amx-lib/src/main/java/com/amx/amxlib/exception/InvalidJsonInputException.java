@@ -6,10 +6,5 @@ public class InvalidJsonInputException extends AbstractJaxException {
 		super(errorMessage);
 	}
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-
-
 }
