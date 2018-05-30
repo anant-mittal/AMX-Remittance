@@ -24,6 +24,7 @@ import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
@@ -75,13 +76,16 @@ public class BeneController {
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> beneDisable(@RequestHeader(required = false) String mOtp,
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(@RequestHeader(required = false) String mOtp,
 			@RequestHeader(required = false) String eOtp, @RequestParam BigDecimal beneficaryMasterSeqId,
 			@RequestParam(required = false) String remarks, @RequestParam BeneStatus status) {
-		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<Object, AuthResponseOTPprefix>();
 		// Disable Beneficiary
 		if (mOtp == null && eOtp == null) {
-			jaxService.setDefaults().getBeneClient().sendOtp();
+			wrapper.setMeta(new AuthData());
+			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
+			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
 			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
