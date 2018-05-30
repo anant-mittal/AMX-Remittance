@@ -12,4 +12,5 @@ public interface ServiceGroupMasterDescRepository extends CrudRepository<Service
 
 	@Query("select sgmd from ServiceGroupMasterDesc sgmd where sgmd.serviceGroupMasterId.isActive = 'Y' and sgmd.languageId=?")
 	List<ServiceGroupMasterDesc> findActiveByLanguageId(BigDecimal langId);
+
 }
