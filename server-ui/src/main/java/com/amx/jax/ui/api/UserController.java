@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.HotPoints;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -109,6 +110,12 @@ public class UserController {
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/user/notify/hotpoint", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint)
+			throws PostManException {
+		return new ResponseWrapper<Object>();
 	}
 
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })

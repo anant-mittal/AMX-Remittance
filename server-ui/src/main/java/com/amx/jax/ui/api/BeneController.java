@@ -76,11 +76,16 @@ public class BeneController {
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(@RequestHeader(required = false) String mOtp,
-			@RequestHeader(required = false) String eOtp, @RequestParam BigDecimal beneficaryMasterSeqId,
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader, @RequestParam String mOtp,
+			@RequestParam String eOtp, @RequestParam BigDecimal beneficaryMasterSeqId,
 			@RequestParam(required = false) String remarks, @RequestParam BeneStatus status) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<Object, AuthResponseOTPprefix>();
 		// Disable Beneficiary
+		mOtp = (mOtp == null) ? mOtpHeader : mOtp;
+		eOtp = (eOtp == null) ? eOtpHeader : eOtp;
+
 		if (mOtp == null && eOtp == null) {
 			wrapper.setMeta(new AuthData());
 			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
