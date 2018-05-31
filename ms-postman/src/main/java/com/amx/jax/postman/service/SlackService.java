@@ -11,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
@@ -77,7 +79,7 @@ public class SlackService {
 
 	public Exception sendException(String appname, String title, Exception e) {
 
-		if (appConfig.isDebug()) {
+		if (appConfig.isDebug() && e == null) {
 			LOGGER.error("Slack-Notify-Exception ", e);
 			return e;
 		}

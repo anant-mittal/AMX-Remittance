@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -51,7 +53,7 @@ public class PostManServiceImpl implements PostManService {
 		String to = null;
 		try {
 			to = email.getTo() != null ? email.getTo().get(0) : null;
-			LOGGER.info("Sending {} Email to {} = {} ", email.getTemplate(), to);
+			LOGGER.info("Sending {} Email to {}", email.getTemplate(), to);
 			if (email.getTemplate() != null) {
 				File file = new File();
 				file.setTemplate(email.getTemplate());
@@ -75,9 +77,9 @@ public class PostManServiceImpl implements PostManService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				emailService.send(email);
-				LOGGER.info("Sent {} Email to {} = {} ", email.getTemplate(), to);
+				LOGGER.info("Sent {} Email to {}", email.getTemplate(), to);
 			} else {
-				LOGGER.info("NotSent {} Email to {} = {} ", email.getTemplate(), to);
+				LOGGER.info("NotSent {} Email to {}", email.getTemplate(), to);
 			}
 		} catch (Exception e) {
 			this.notifyException(to, e);
@@ -112,10 +114,14 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	public SMS sendSMS(SMS sms) throws PostManException {
+
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START", "sendSMS");
+		}
 		String to = null;
 		try {
 			to = sms.getTo() != null ? sms.getTo().get(0) : null;
-			LOGGER.info("Sending {} SMS to {} = {} ", sms.getTemplate(), to);
+			LOGGER.info("Sending {} SMS to {} ", sms.getTemplate(), to);
 			if (sms.getTemplate() != null) {
 				Context context = new Context(new Locale(sms.getLang().toString()));
 				context.setVariables(sms.getModel());
@@ -123,18 +129,21 @@ public class PostManServiceImpl implements PostManService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.smsService.sendSMS(sms);
-				LOGGER.info("Sent {} SMS to {} = {} ", sms.getTemplate(), to);
+				LOGGER.info("Sent {} SMS to {}", sms.getTemplate(), to);
 			} else {
-				LOGGER.info("NotSent {} SMS to {} = {} ", sms.getTemplate(), to);
+				LOGGER.info("NotSent {} SMS to {} ", sms.getTemplate(), to);
 			}
 		} catch (Exception e) {
 			this.notifyException(to, e);
+		}
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:END", "sendSMS");
 		}
 		return sms;
 	}
 
 	@Override
-	@Async
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Notipy notifySlack(Notipy msg) throws PostManException {
 		try {
 			return slackService.sendNotification(msg);
@@ -144,25 +153,28 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	@Async
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String title, Exception e) {
 		return slackService.sendException(null, title, e);
 	}
 
-	@Async
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String appname, String title, Exception e) {
 		return slackService.sendException(appname, title, e);
 	}
 
 	@Override
-	@Async
+	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Email sendEmailAsync(Email email) throws PostManException {
 		return this.sendEmail(email);
 	}
 
 	@Override
-	@Async
+	@Async(ExecutorConfig.EXECUTER_PLATINUM)
 	public SMS sendSMSAsync(SMS sms) throws PostManException {
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START","sendSMSAsync");
+		}
 		return this.sendSMS(sms);
 	}
 
@@ -177,7 +189,7 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	@Async
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Email sendEmailToSupprt(SupportEmail supportEmail) throws PostManException {
 		Email email = this.sendEmail(supportService.createContactUsEmail(supportEmail));
 		Notipy msg = new Notipy();

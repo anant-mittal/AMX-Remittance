@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "param", "enabled", "property", "value" })
 public enum AppParam {
 
-	PRINT_TRACK_BODY(false),
+	PRINT_TRACK_BODY(false), DEBUG_INFO,
 
 	APP_NAME, APP_PROD, APP_SWAGGER, APP_DEBUG, APP_CACHE,
 

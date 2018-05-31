@@ -317,12 +317,15 @@ public class BeneClient extends AbstractJaxServiceClient {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status) {
+	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status,String mOtp, String eOtp) {
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId);
 			sb.append("&remarks=").append(remarks);
 			sb.append("&status=").append(status);
+			sb.append("&mOtp=").append(mOtp);
+			sb.append("&eOtp=").append(eOtp);
+			
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse>() {

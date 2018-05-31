@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
@@ -92,6 +93,10 @@ public class PostManController {
 	public SMS sendSMS(@RequestBody SMS sms, @RequestParam(required = false, defaultValue = "false") Boolean async)
 			throws PostManException {
 
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START", "sendSMS");
+		}
+
 		Language lang = getLang();
 
 		if (sms.getLang() == null) {
@@ -102,6 +107,9 @@ public class PostManController {
 			postManService.sendSMSAsync(sms);
 		} else {
 			postManService.sendSMS(sms);
+		}
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:END", "sendSMS");
 		}
 		return sms;
 	}
@@ -197,8 +205,8 @@ public class PostManController {
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
 	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
 			@RequestParam(required = false) String appname) throws PostManException {
-		postManService.notifyException(appname,title, eMsg);
+		postManService.notifyException(appname, title, eMsg);
 		return eMsg;
 	}
-	
+
 }

@@ -102,7 +102,7 @@ public class BeneClientTest extends AbstractTestClient {
 		BigDecimal beneMasSeqId = new BigDecimal(1424);
 
 		ApiResponse response = null;
-		response = client.updateStatus(beneMasSeqId, null, BeneStatus.DISABLE);
+		response = client.updateStatus(beneMasSeqId, null, BeneStatus.DISABLE,null,null);
 		// response = client.updateStatus(beneMasSeqId,null,BeneStatus.ENABLE);
 		assertNotNull("Response is null", response);
 	}
