@@ -111,8 +111,8 @@ public class SlackService {
 			attachments.add(attachmentTrace);
 
 			Map<String, String> attachmentTitle = new HashMap<String, String>();
-			attachmentTitle.put("text",
-					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8"));
+			attachmentTrace.put("text", String.format("TraceId = %s \n Message = %s", e.getClass().getName(),
+					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8")));
 			attachmentTitle.put("color", "danger");
 			attachments.add(attachmentTitle);
 
