@@ -63,8 +63,11 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
-	@Value("${notification.range}")
-	private String notifyRange;
+	@Value("${notification.range.long}")
+	private String notifyRangeLong;
+
+	@Value("${notification.range.short}")
+	private String notifyRangeShort;
 
 	@Autowired
 	private WebAppConfig webAppConfig;
@@ -106,7 +109,8 @@ public class UserController {
 
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
-			wrapper.getData().setNotifyRange(notifyRange);
+			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 		}
 
 		return wrapper;

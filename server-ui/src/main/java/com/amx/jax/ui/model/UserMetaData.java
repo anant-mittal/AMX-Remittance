@@ -30,7 +30,8 @@ public class UserMetaData extends AbstractModel {
 	// List<String> features = new ArrayList<String>();
 	String[] features = null;
 	List<String> subscriptions = new ArrayList<String>();
-	String notifyRange = null;
+	String notifyRangeLong = null;
+	String notifyRangeShort = null;
 
 	HotPoints[] hotPoints = HotPoints.values();
 
@@ -130,20 +131,36 @@ public class UserMetaData extends AbstractModel {
 		this.subscriptions = subscriptions;
 	}
 
-	public String getNotifyRange() {
-		return notifyRange;
-	}
-
-	public void setNotifyRange(String notifyRange) {
-		this.notifyRange = notifyRange;
-	}
-
 	public String getTenantCode() {
 		return tenantCode;
 	}
 
 	public void setTenantCode(String tenantCode) {
 		this.tenantCode = tenantCode;
+	}
+
+	public HotPoints[] getHotPoints() {
+		return hotPoints;
+	}
+
+	public void setHotPoints(HotPoints[] hotPoints) {
+		this.hotPoints = hotPoints;
+	}
+
+	public String getNotifyRangeLong() {
+		return notifyRangeLong;
+	}
+
+	public void setNotifyRangeLong(String notifyRangeLong) {
+		this.notifyRangeLong = notifyRangeLong;
+	}
+
+	public String getNotifyRangeShort() {
+		return notifyRangeShort;
+	}
+
+	public void setNotifyRangeShort(String notifyRangeShort) {
+		this.notifyRangeShort = notifyRangeShort;
 	}
 
 }
