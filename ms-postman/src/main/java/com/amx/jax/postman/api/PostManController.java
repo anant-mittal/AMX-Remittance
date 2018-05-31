@@ -206,7 +206,7 @@ public class PostManController {
 	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
 			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
 			throws PostManException {
-		postManService.notifyException(appname, title, eMsg);
+		postManService.notifyException(appname, title, exception, eMsg);
 		return eMsg;
 	}
 
