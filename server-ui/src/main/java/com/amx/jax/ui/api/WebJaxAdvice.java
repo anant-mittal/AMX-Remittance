@@ -145,7 +145,7 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
-		postManService.notifyException(wrapper.getStatusKey().name(), ex);
+		postManService.notifyException(wrapper.getException(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
