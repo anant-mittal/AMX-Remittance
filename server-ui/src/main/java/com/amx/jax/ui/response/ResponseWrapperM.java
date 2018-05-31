@@ -3,9 +3,12 @@ package com.amx.jax.ui.response;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.ui.UIConstants;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 public class ResponseWrapperM<T, M> implements Serializable {
@@ -18,6 +21,7 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	private String message = UIConstants.EMPTY;
 	private String messageKey = UIConstants.EMPTY;
 	private String redirectUrl = null;
+	private String exception = null;
 
 	private T data = null;
 	private M meta = null;
@@ -116,6 +120,18 @@ public class ResponseWrapperM<T, M> implements Serializable {
 		this.status = status;
 	}
 
+	public void setStatus(HttpStatus status) {
+		if (status.is5xxServerError()) {
+			this.statusKey = WebResponseStatus.SERVER_ERROR;
+		} else if (status.is4xxClientError()) {
+			this.statusKey = WebResponseStatus.CLIENT_ERROR;
+		} else if (status.is3xxRedirection()) {
+			this.statusKey = WebResponseStatus.REDIRECTION;
+		}
+		this.status = ArgUtil.parseAsString(status.value());
+		this.message = status.getReasonPhrase();
+	}
+
 	public void setStatus(WebResponseStatus status) {
 		this.statusKey = status;
 		this.status = status.getCode();
@@ -156,7 +172,7 @@ public class ResponseWrapperM<T, M> implements Serializable {
 		this.message = message;
 	}
 
-	public void setMessage(WebResponseStatus status, AbstractException jaxExcep) {
+	public void setMessage(WebResponseStatus status, AbstractJaxException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 
@@ -166,6 +182,14 @@ public class ResponseWrapperM<T, M> implements Serializable {
 
 	public void setMeta(M meta) {
 		this.meta = meta;
+	}
+
+	public String getException() {
+		return exception;
+	}
+
+	public void setException(String exception) {
+		this.exception = exception;
 	}
 
 }
