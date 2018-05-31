@@ -1,6 +1,5 @@
 package com.amx.jax.ui.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.jax.dict.HotPoints;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
@@ -31,6 +31,8 @@ public class UserMetaData extends AbstractModel {
 	String[] features = null;
 	List<String> subscriptions = new ArrayList<String>();
 	String notifyRange = null;
+
+	HotPoints[] hotPoints = HotPoints.values();
 
 	public JaxMetaParameter getConfig() {
 		return config;
