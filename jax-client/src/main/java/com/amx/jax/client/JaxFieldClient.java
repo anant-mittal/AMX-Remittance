@@ -11,7 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
@@ -44,7 +44,7 @@ public class JaxFieldClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxConditionalFieldDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getJaxFieldsForEntity : ", e);
@@ -75,7 +75,7 @@ public class JaxFieldClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<JaxConditionalFieldDto>>() {
 					});
 
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getJaxFieldsForEntity : ", e);

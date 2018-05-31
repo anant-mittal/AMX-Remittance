@@ -1,5 +1,8 @@
 package com.amx.jax.service;
 
+import static com.amx.amxlib.constant.AuthType.MAX_DOM_AMOUNT_LIMIT;
+import static com.amx.amxlib.constant.AuthType.NEW_BENE_TRANSACT_TIME_LIMIT;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

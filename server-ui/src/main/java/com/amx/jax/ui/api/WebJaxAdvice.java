@@ -21,9 +21,10 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
@@ -53,8 +54,8 @@ public class WebJaxAdvice {
 
 	private Logger LOG = LoggerFactory.getLogger(WebJaxAdvice.class);
 
-	@ExceptionHandler(AbstractException.class)
-	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractException exc, HttpServletRequest request,
+	@ExceptionHandler(AbstractJaxException.class)
+	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractJaxException exc, HttpServletRequest request,
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
@@ -73,6 +74,7 @@ public class WebJaxAdvice {
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
 			sessionService.unIndexUser();
 		}
+		wrapper.setException(exc.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
@@ -90,6 +92,7 @@ public class WebJaxAdvice {
 		}
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
 
@@ -105,6 +108,7 @@ public class WebJaxAdvice {
 		errors.add(newError);
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
 
@@ -132,7 +136,17 @@ public class WebJaxAdvice {
 		}
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
 		wrapper.setErrors(errors);
+		wrapper.setException(ex.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
+	}
+
+	@ExceptionHandler({ Exception.class })
+	public ResponseEntity<ResponseWrapper<Object>> handleAll(Exception ex, WebRequest request) {
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+		wrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		wrapper.setException(ex.getClass().getName());
+		postManService.notifyException(wrapper.getStatusKey().name(), ex);
+		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
