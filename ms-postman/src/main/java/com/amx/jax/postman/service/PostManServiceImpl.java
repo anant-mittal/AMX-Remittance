@@ -155,12 +155,17 @@ public class PostManServiceImpl implements PostManService {
 	@Override
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(null, title, e);
+		return slackService.sendException(null, title, null, e);
 	}
 
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String appname, String title, Exception e) {
-		return slackService.sendException(appname, title, e);
+		return slackService.sendException(appname, title, null, e);
+	}
+
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
+	public Exception notifyException(String appname, String title, String exception, Exception e) {
+		return slackService.sendException(appname, title, exception, e);
 	}
 
 	@Override
@@ -173,7 +178,7 @@ public class PostManServiceImpl implements PostManService {
 	@Async(ExecutorConfig.EXECUTER_PLATINUM)
 	public SMS sendSMSAsync(SMS sms) throws PostManException {
 		if (AppParam.DEBUG_INFO.isEnabled()) {
-			LOGGER.info("{}:START","sendSMSAsync");
+			LOGGER.info("{}:START", "sendSMSAsync");
 		}
 		return this.sendSMS(sms);
 	}

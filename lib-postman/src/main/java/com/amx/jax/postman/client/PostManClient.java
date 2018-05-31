@@ -177,12 +177,15 @@ public class PostManClient implements PostManService {
 	public Exception notifyException(String title, Exception e) {
 		LOGGER.info("Sending exception = {} ", title);
 
-		Exception simpleE = new Exception(e);
+		Exception simpleE = new Exception(e.getMessage());
+		simpleE.setStackTrace(e.getStackTrace());
 
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
 					.header("content-type", "application/json").queryParam("appname", appConfig.getAppName())
-					.queryParam("title", title).post(simpleE).as(Exception.class);
+					.queryParam("title", title).queryParam("exception", e.getClass().getName()).post(simpleE)
+					.as(Exception.class);
+
 		} catch (Exception e1) {
 			LOGGER.error("Exception while sending title={}", title, e1);
 		}
