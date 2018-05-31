@@ -77,7 +77,7 @@ public class SlackService {
 		return msg;
 	}
 
-	public Exception sendException(String appname, String title, Exception e) {
+	public Exception sendException(String appname, String title, String exception, Exception e) {
 
 		if (appConfig.isDebug() && e == null) {
 			LOGGER.error("Slack-Notify-Exception ", e);
@@ -111,8 +111,8 @@ public class SlackService {
 			attachments.add(attachmentTrace);
 
 			Map<String, String> attachmentTitle = new HashMap<String, String>();
-			attachmentTrace.put("text", String.format("TraceId = %s \n Message = %s", e.getClass().getName(),
-					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8")));
+			attachmentTrace.put("text", String.format("Exception %s : %s \n Message = %s", e.getClass().getName(),
+					exception, URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8")));
 			attachmentTitle.put("color", "danger");
 			attachments.add(attachmentTitle);
 
@@ -140,4 +140,5 @@ public class SlackService {
 		}
 		return e;
 	}
+
 }
