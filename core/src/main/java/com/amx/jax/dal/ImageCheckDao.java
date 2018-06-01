@@ -44,7 +44,12 @@ public class ImageCheckDao {
 		logger.info("In put Parameters : identityIntId :" + identityIntId + "\t identityInt :" + identityInt
 				+ "\t identityExpDate :" + identityExpDate);
 
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.INTEGER),new SqlParameter(Types.VARCHAR),new SqlParameter(Types.VARCHAR),new SqlParameter(Types.INTEGER),new SqlOutParameter("docBlobId", Types.INTEGER),
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.INTEGER),
+				new SqlParameter(Types.VARCHAR),
+				new SqlParameter(Types.VARCHAR),
+				new SqlParameter(Types.VARCHAR),
+				new SqlParameter(Types.DATE),
+				new SqlOutParameter("docBlobId", Types.INTEGER),
 				new SqlOutParameter("docFinYr", Types.INTEGER));
 		/**
 		 * DMS_P_GET_LST_BLOB@AGDMSLNK(1, 'CMAP', W_IMG_ID, C0.IDENTITY_INT,
