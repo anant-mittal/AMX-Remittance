@@ -31,6 +31,7 @@ import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
+import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
@@ -42,6 +43,7 @@ import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.OnlineConfigurationRepository;
 import com.amx.jax.repository.ServiceGroupMasterDescRepository;
 import com.amx.jax.repository.ServiceGroupMasterRepository;
+import com.amx.jax.repository.ServiceMasterRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.JaxUtil;
 
@@ -77,6 +79,8 @@ public class MetaService extends AbstractService {
 	
 	@Autowired
 	ServiceGroupMasterRepository serviceGroupMasterRepository;
+	@Autowired
+	ServiceMasterRepository serviceMasterRepository;
 	
 	@Autowired
 	MetaData metaData;
@@ -174,6 +178,16 @@ public class MetaService extends AbstractService {
 			}
 		}
 		return false;
+	}
+
+	public ServiceGroupMaster getServiceGroupMasterByCode(String serviceGroupCode) {
+		return serviceGroupMasterRepository.findByServiceGroupCodeAndIsActive(serviceGroupCode, ConstantDocument.Yes)
+				.get(0);
+	}
+	
+	public List<ServiceMaster> getServiceMaster(String serviceGroupCode) {
+		ServiceGroupMaster serviceGroupMaster = getServiceGroupMasterByCode(serviceGroupCode);
+		return serviceMasterRepository.findByServiceGroupIdAndIsActive(serviceGroupMaster, ConstantDocument.Yes);
 	}
 
 	public Map<BigDecimal, ServiceGroupMasterDescDto> getServiceGroupDtoMap() {
