@@ -64,10 +64,10 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	private CustomerDao customerDao;
 	@Autowired
 	private CryptoUtil cryptoUtil;
-	
+
 	@Autowired
 	private MetaData jaxMetaInfo;
-	
+
 	@Autowired
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
@@ -109,9 +109,9 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		Customer customer = commitCustomer(model.getCustomerPersonalDetail());
 		commitCustomerContact(model.getCustomerHomeAddress(), customer);
 		commitOnlineCustomer(model, customer);
-		commitOnlineCustomerIdProof(model,customer);
+		commitOnlineCustomerIdProof(model, customer);
 		return model;
-	}	
+	}
 
 	/**
 	 * revalidate the otp data
@@ -137,19 +137,26 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	}
 
 	/**
+	 * save customer home country contact
+	 * 
 	 * @param customerHomeAddress
 	 *            customer home address saves customer contact in db
 	 */
 	private void commitCustomerContact(CustomerHomeAddress customerHomeAddress, Customer customer) {
-
-		ContactDetail contactDetail = new ContactDetail();
-		contactDetail.setFsCountryMaster(new CountryMaster(customerHomeAddress.getCountryId()));
-		contactDetail.setFsDistrictMaster(new DistrictMaster(customerHomeAddress.getDistrictId()));
-		contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
-		contactDetail.setMobile(customerHomeAddress.getMobile());
-		contactDetail.setFsCustomer(customer);
-		contactDetail.setActiveStatus(ConstantDocument.No);
-		contactDetailsRepository.save(contactDetail);
+		if (customerHomeAddress != null) {
+			ContactDetail contactDetail = new ContactDetail();
+			contactDetail.setFsCountryMaster(new CountryMaster(customerHomeAddress.getCountryId()));
+			contactDetail.setFsDistrictMaster(new DistrictMaster(customerHomeAddress.getDistrictId()));
+			contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
+			contactDetail.setMobile(customerHomeAddress.getMobile());
+			contactDetail.setFsCustomer(customer);
+			contactDetail.setActiveStatus(ConstantDocument.No);
+			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
+			// home type contact
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
+			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
+			contactDetailsRepository.save(contactDetail);
+		}
 	}
 
 	private Customer commitCustomer(CustomerPersonalDetail customerPersonalDetail) {
@@ -158,6 +165,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		BigDecimal customerReference = customerDao.generateCustomerReference();
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
+		customer.setCountryId(jaxMetaInfo.getCountryId());
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
@@ -232,30 +240,32 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		model.setCustomerCredential(customerCredential);
 		return model;
 	}
-	
+
 	private void commitOnlineCustomerIdProof(CustomerRegistrationTrnxModel model, Customer customer) {
-		CustomerIdProof custProof = new CustomerIdProof();		
-			 
+		CustomerIdProof custProof = new CustomerIdProof();
+
 		Customer customerData = new Customer();
 		customerData.setCustomerId(customer.getCustomerId());
 		custProof.setFsCustomer(customerData);
-		 
+
 		custProof.setLanguageId(jaxMetaInfo.getLanguageId());
-		 
+
 		BizComponentData customerType = new BizComponentData();
-		customerType.setComponentDataId(bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, jaxMetaInfo.getLanguageId()).getFsBizComponentData().getComponentDataId());
-		custProof.setFsBizComponentDataByCustomerTypeId(customerType);		
-		 
+		customerType.setComponentDataId(
+				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, jaxMetaInfo.getLanguageId())
+						.getFsBizComponentData().getComponentDataId());
+		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
+
 		BizComponentData idType = new BizComponentData();
 		idType.setComponentDataId(null);
-		//custProof.setFsBizComponentDataByIdentityTypeId(idType);
-		 
+		// custProof.setFsBizComponentDataByIdentityTypeId(idType);
+
 		custProof.setIdentityInt(customer.getIdentityInt());
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
-		custProof.setCreationDate(new Date());	
+		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_ID));
 		customerIdProofRepository.save(custProof);
-		
+
 	}
 }
