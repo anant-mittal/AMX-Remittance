@@ -253,7 +253,8 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		custProof.setIdentityInt(customer.getIdentityInt());
 		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
 		custProof.setCreatedBy(customer.getIdentityInt());
-		custProof.setCreationDate(new Date());		 
+		custProof.setCreationDate(new Date());	
+		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_ID));
 		customerIdProofRepository.save(custProof);
 		
 	}

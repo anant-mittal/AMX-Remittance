@@ -2,15 +2,16 @@ package com.amx.uiserver;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.def.CacheForTenant;
+
 import com.amx.utils.FileUtil;
 //import com.sun.codemodel.JClassAlreadyExistsException;
 //import com.sun.codemodel.JCodeModel;
