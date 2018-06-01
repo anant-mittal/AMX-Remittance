@@ -51,19 +51,32 @@ public class PlaceOrderController {
 	}
 
 	/**
-	 * get place order list
+	 * get place order list for customer
 	 * @return
 	 */
-	@RequestMapping(value = "/get/placeOrder", method = RequestMethod.POST)
+	@RequestMapping(value = "/get/placeOrder/forCustomer", method = RequestMethod.POST)
 	public ApiResponse handleUrlgetPlaceOrder() {
 		
 		BigDecimal customerId = metaData.getCustomerId();
 		logger.info("In /getPlaceOrder with customerId :" + customerId );
 		
 		ApiResponse response = null;
-		response = placeOrderService.getPlaceOrder(customerId);
+		response = placeOrderService.getPlaceOrderForCustomer(customerId);
 		return response;
 		
 	}
+	
+	/**
+	 * Get All Place Order list
+	 * @return
+	 */
+	@RequestMapping(value = "/getAll/placeOrder", method = RequestMethod.POST)
+	public ApiResponse handleUrlgetAllPlaceOrder() {
+		logger.info("In /getAll place orders ");
+		
+		ApiResponse response = null;
+		response = placeOrderService.getAllPlaceOrder();
+		return response;
+	}	
 
 }

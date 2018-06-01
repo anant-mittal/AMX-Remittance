@@ -17,7 +17,9 @@ import com.amx.jax.dbmodel.PlaceOrder;
 public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 
 	@Query("select p from PlaceOrder p where p.customerId=:customerId and isActive='Y' and trunc(sysdate) <= trunc(validToDate)")
-	public List<PlaceOrder> getPlaceOrder(@Param("customerId") BigDecimal customerId);
+	public List<PlaceOrder> getPlaceOrderForCustomer(@Param("customerId") BigDecimal customerId);
 	
+	@Query("select p from PlaceOrder p where isActive='Y' and trunc(sysdate) >= trunc(validFromDate) and trunc(sysdate) <= trunc(validToDate) ")
+	public List<PlaceOrder> getAllPlaceOrder();
 
 }

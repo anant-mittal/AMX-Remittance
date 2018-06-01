@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,19 +38,41 @@ public class PlaceOrderClientTest {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5246));
 		
 		PlaceOrderDTO placeOrderDTO = new PlaceOrderDTO();
-		placeOrderDTO.setCustomerId(new BigDecimal(596142));
-		placeOrderDTO.setBeneficiaryRelationshipSeqId(new BigDecimal(9));
-		placeOrderDTO.setPayAmount(new BigDecimal(100));
-		placeOrderDTO.setReceiveAmount(new BigDecimal(20000));
-		placeOrderDTO.setTargetExchangeRate(new BigDecimal(218));
-		placeOrderDTO.setBankRuleFieldId(new BigDecimal(4));
-		placeOrderDTO.setSrlId(new BigDecimal(4));
-		placeOrderDTO.setSourceOfIncomeId(new BigDecimal(3));
-		placeOrderDTO.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-05-29"));
-		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-05-30"));
-		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-05-31"));
+		placeOrderDTO.setCustomerId(new BigDecimal(2406));
+		placeOrderDTO.setBeneficiaryRelationshipSeqId(new BigDecimal(4));
+		placeOrderDTO.setPayAmount(new BigDecimal(400));
+		placeOrderDTO.setReceiveAmount(new BigDecimal(80000));
+		placeOrderDTO.setTargetExchangeRate(new BigDecimal(222));
+		placeOrderDTO.setBankRuleFieldId(new BigDecimal(6));
+		placeOrderDTO.setSrlId(new BigDecimal(6));
+		placeOrderDTO.setSourceOfIncomeId(new BigDecimal(2));
+		placeOrderDTO.setCreatedDate(new Date());
+		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
+		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-09"));
 		
 		ApiResponse<PlaceOrderDTO> response = client.savePlaceOrder(placeOrderDTO);
+		assertNotNull("Response is null", response);
+	}
+	
+	//@Test
+	public void getPlaceOrderForCustomer() throws ParseException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+		ApiResponse<PlaceOrderDTO> response = client.getPlaceOrderForCustomer();
+		assertNotNull("Response is null", response);
+	}
+	
+	//@Test
+	public void getAllPlaceOrder() throws ParseException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+		ApiResponse<PlaceOrderDTO> response = client.getAllPlaceOrder();
 		assertNotNull("Response is null", response);
 	}
 }

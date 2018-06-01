@@ -38,4 +38,35 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		}
 	}
 
+	public ApiResponse<PlaceOrderDTO> getPlaceOrderForCustomer() {
+		// TODO Auto-generated method stub
+		try {
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/get/placeOrder/forCustomer";
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
+					});
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		}
+	}
+
+	public ApiResponse<PlaceOrderDTO> getAllPlaceOrder() {
+		try {
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/getAll/placeOrder";
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
+					});
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return null;
+	}
+
+
 }

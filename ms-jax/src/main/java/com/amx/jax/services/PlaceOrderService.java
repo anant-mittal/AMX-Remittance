@@ -13,6 +13,7 @@ import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -43,7 +44,6 @@ public class PlaceOrderService extends AbstractService {
 	 * @return
 	 */
 	public ApiResponse savePlaceOrder(PlaceOrderDTO dto) {
-		// TODO Auto-generated method stub
 		ApiResponse response = getBlackApiResponse();
 		PlaceOrder placeOrderModel = PlaceOrderUtil.getPlaceOrderModel(dto);
 		
@@ -63,25 +63,34 @@ public class PlaceOrderService extends AbstractService {
 	}
 
 	/**
-	 * Get place order list
+	 * Get Place Order list for Customer
 	 * @param customerId
 	 * @return
 	 */
-	public ApiResponse<PlaceOrderDTO> getPlaceOrder(BigDecimal customerId) {
+	@SuppressWarnings("unchecked")
+	public ApiResponse<PlaceOrderDTO> getPlaceOrderForCustomer(BigDecimal customerId) {
 		
+
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		
 		List<PlaceOrder> placeOrderList = null;
 		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
 		
 		try {
-			placeOrderList = placeOrderdao.getPlaceOrder(customerId);
+			placeOrderList = placeOrderdao.getPlaceOrderForCustomer(customerId);
 			
 			if(!placeOrderList.isEmpty()) {
 				for(PlaceOrder rec : placeOrderList) {
 					PlaceOrderDTO placeDTO = new PlaceOrderDTO();
 					
 					placeDTO.setCustomerId(rec.getCustomerId());
+					placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
+					placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
+					placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
+					placeDTO.setSrlId(rec.getSrlId());
+					placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
+					placeDTO.setIsActive(rec.getIsActive());
+					placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
 					placeDTO.setCreatedDate(rec.getCreatedDate());
 					placeDTO.setValidFromDate(rec.getValidFromDate());
 					placeDTO.setValidToDate(rec.getValidToDate());
@@ -97,7 +106,7 @@ public class PlaceOrderService extends AbstractService {
 			
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List");
+			logger.error("Error while fetching Place Order List by Customer");
 			e.printStackTrace();
 		}
 		
@@ -105,7 +114,54 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 
+	/**
+	 * Get All Place Order list
+	 * @return
+	 */
+	public ApiResponse getAllPlaceOrder() {
+		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
+		
+		List<PlaceOrder> placeOrderList = null;
+		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
+		try {
+			placeOrderList = placeOrderdao.getAllPlaceOrder();
+			
+			if(!placeOrderList.isEmpty()) {
+				for(PlaceOrder rec : placeOrderList) {
+					PlaceOrderDTO placeDTO = new PlaceOrderDTO();
+					
+					placeDTO.setCustomerId(rec.getCustomerId());
+					placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
+					placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
+					placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
+					placeDTO.setSrlId(rec.getSrlId());
+					placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
+					placeDTO.setIsActive(rec.getIsActive());
+					placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
+					placeDTO.setCreatedDate(rec.getCreatedDate());
+					placeDTO.setValidFromDate(rec.getValidFromDate());
+					placeDTO.setValidToDate(rec.getValidToDate());
+					placeDTO.setPayAmount(rec.getPayAmount());
+					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+					
+					dtoList.add(placeDTO);
+				}
+				
+				response.setResponseStatus(ResponseStatus.OK);
+				response.getData().setType("place-order-dto");
+			}
+			
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("Error while fetching All Place Order List");
+			e.printStackTrace();	
+		}
+		
+		response.getData().getValues().addAll(dtoList);
+		return response;
+	}
 	
+
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
@@ -113,4 +169,5 @@ public class PlaceOrderService extends AbstractService {
 	}
 
 	
+		
 }
