@@ -1,7 +1,7 @@
 package com.amx.jax.payment;
 
-import static com.amx.jax.payment.PaymentConstant.KWT; 
 import static com.amx.jax.payment.PaymentConstant.BHR;
+import static com.amx.jax.payment.PaymentConstant.KWT;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

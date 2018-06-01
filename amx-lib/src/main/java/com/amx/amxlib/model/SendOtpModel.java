@@ -1,7 +1,5 @@
 package com.amx.amxlib.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class SendOtpModel {
 
 	private String mOtpPrefix;
