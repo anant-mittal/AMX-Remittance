@@ -12,6 +12,7 @@ import com.amx.utils.ArgUtil.EnumById;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -257,6 +258,21 @@ public final class JsonUtil {
 	public static Map<String, Object> getMapFromJsonString(String jsonString) throws IOException {
 		return ((Map<String, Object>) instance.getMapper().readValue(jsonString, Map.class));
 	}
+	
+
+	/**
+	 * Gets the generic object list from json string.
+	 *
+	 * @param jsonStr
+	 *            the json str
+	 * @return the generic object list from json string
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public static <T> List<T>  getListFromJsonString(String jsonStr) throws IOException {
+		return instance.getMapper().readValue(jsonStr, new TypeReference<List<T>>(){});
+	}
+
 }
 
 class EnumByIdSerializer extends JsonSerializer<EnumById> {
@@ -267,3 +283,5 @@ class EnumByIdSerializer extends JsonSerializer<EnumById> {
 		gen.writeString(value.getId());
 	}
 }
+
+

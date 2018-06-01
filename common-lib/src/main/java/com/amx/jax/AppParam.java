@@ -1,13 +1,41 @@
 package com.amx.jax;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+@JsonPropertyOrder({ "param", "enabled", "property", "value" })
 public enum AppParam {
 
-	PRINT_TRACK_BODY(false);
+	PRINT_TRACK_BODY(false), DEBUG_INFO,
+
+	APP_NAME, APP_PROD, APP_SWAGGER, APP_DEBUG, APP_CACHE,
+
+	JAX_CDN_URL, JAX_APP_URL, JAX_SERVICE_URL, JAX_POSTMAN_URL, JAX_PAYMENT_URL, JAX_LOGGER_URL, JAX_SSO_URL;
+
+	@JsonProperty("_id")
+	String param;
 
 	boolean enabled;
+	String value;
+	String property;
+
+	AppParam() {
+		this(false);
+	}
 
 	AppParam(boolean enabled) {
+		this.param = this.name();
 		this.enabled = enabled;
+	}
+
+	public String getParam() {
+		return param;
+	}
+
+	public void setParam(String param) {
+		this.param = param;
 	}
 
 	public boolean isEnabled() {
@@ -17,4 +45,21 @@ public enum AppParam {
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
+
+	public String getValue() {
+		return value;
+	}
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+
+	public String getProperty() {
+		return property;
+	}
+
+	public void setProperty(String property) {
+		this.property = property;
+	}
+
 }

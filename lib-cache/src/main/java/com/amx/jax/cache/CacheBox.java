@@ -19,7 +19,7 @@ public class CacheBox<T> implements ICacheBox<T> {
 			.evictionPolicy(EvictionPolicy.NONE).cacheSize(1000).reconnectionStrategy(ReconnectionStrategy.NONE)
 			.syncStrategy(SyncStrategy.INVALIDATE).timeToLive(10000).maxIdle(10000);
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	String cahceName = getClass().getName();
@@ -27,10 +27,16 @@ public class CacheBox<T> implements ICacheBox<T> {
 	private RLocalCachedMap<String, T> cache = null;
 
 	public RLocalCachedMap<String, T> map() {
+		if (redisson != null) {
+
 		if (cache == null) {
 			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
 		}
 		return cache;
+
+
+		}
+		return null;
 	}
 
 	public String getCahceName() {

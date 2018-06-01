@@ -1,7 +1,6 @@
 package com.amx.jax.client;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;

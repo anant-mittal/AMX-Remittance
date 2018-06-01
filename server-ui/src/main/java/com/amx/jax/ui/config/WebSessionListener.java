@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 
 @Component
 public class WebSessionListener implements HttpSessionListener {
@@ -29,7 +29,7 @@ public class WebSessionListener implements HttpSessionListener {
 		SessionEvent evt = new SessionEvent();
 		evt.setComponent(appConfig.getAppName());
 		evt.setType(SessionEvent.Type.SESSION_CREATED);
-		evt.setSessionId(ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY)));
+		evt.setSessionId(AppContextUtil.getSessionId());
 		AuditServiceClient.logStatic(evt);
 	}
 

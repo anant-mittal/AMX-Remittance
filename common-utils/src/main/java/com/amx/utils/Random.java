@@ -10,15 +10,6 @@ public class Random {
 		return (int) (Math.random() * (max - min + 1) + min);
 	}
 
-	public static String randomAlphaNumeric(int count) {
-		StringBuilder builder = new StringBuilder();
-		while (count-- != 0) {
-			int character = (int) (Math.random() * ALPHA_NUMERIC_STRING.length());
-			builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-		}
-		return builder.toString();
-	}
-
 	public static String randomAlpha(int count, String alphaString) {
 		StringBuilder builder = new StringBuilder();
 		while (count-- != 0) {
@@ -33,11 +24,10 @@ public class Random {
 	}
 
 	public static String randomNumeric(int count) {
-		StringBuilder builder = new StringBuilder();
-		while (count-- != 0) {
-			int character = (int) (Math.random() * NUMERIC_STRING.length());
-			builder.append(NUMERIC_STRING.charAt(character));
-		}
-		return builder.toString();
+		return randomAlpha(count, NUMERIC_STRING);
+	}
+
+	public static String randomAlphaNumeric(int count) {
+		return randomAlpha(count, ALPHA_NUMERIC_STRING);
 	}
 }

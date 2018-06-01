@@ -49,6 +49,10 @@ public class RestService {
 	public Ajax ajax(String url) {
 		return new Ajax(getRestTemplate(), url);
 	}
+	
+	public Ajax ajax(URI uri) {
+		return new Ajax(getRestTemplate(), uri);
+	}
 
 	public class Ajax {
 
@@ -64,6 +68,11 @@ public class RestService {
 		public Ajax(RestTemplate restTemplate, String url) {
 			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(url);
+		}
+
+		public Ajax(RestTemplate restTemplate, URI uri) {
+			this.restTemplate = restTemplate;
+			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
 		public Ajax path(String path) {
@@ -91,8 +100,27 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax header(HttpHeaders header) {
+			this.headers = header;
+			return this;
+		}
+
 		public Ajax post(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.POST;
+			this.requestEntity = requestEntity;
+			return this;
+		}
+
+		public <T> Ajax put(T body) {
+			return this.put(new HttpEntity<T>(body, headers));
+		}
+
+		public Ajax put() {
+			return this.put(new HttpEntity<Object>(null, headers));
+		}
+		
+		public Ajax put(HttpEntity<?> requestEntity) {
+			this.method = HttpMethod.PUT;
 			this.requestEntity = requestEntity;
 			return this;
 		}
@@ -114,9 +142,14 @@ public class RestService {
 			return this.header("content-type", "application/json").post(body);
 		}
 
-		public Ajax get() {
+		public Ajax get(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.GET;
+			this.requestEntity = requestEntity;
 			return this;
+		}
+
+		public Ajax get() {
+			return this.get(new HttpEntity<Object>(null, headers));
 		}
 
 		public <T> T as(Class<T> responseType) {

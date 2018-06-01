@@ -97,4 +97,13 @@ public class DateUtil {
 		return DateUtils.isSameDay(today, date);
 	}
 
+	public Date getMidnightToday() {
+		Calendar date = new GregorianCalendar();
+		date.set(Calendar.HOUR_OF_DAY, 0);
+		date.set(Calendar.MINUTE, 0);
+		date.set(Calendar.SECOND, 0);
+		date.set(Calendar.MILLISECOND, 0);
+
+		return date.getTime();
+	}
 }

@@ -2,6 +2,8 @@ package com.amx.jax.trnx;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
@@ -18,6 +20,7 @@ import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -79,6 +82,9 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 	@Autowired
 	BenePersonalDetailValidator benePersonalDetailValidator;
 
+	@Autowired
+	BeneficiaryDao beneficiaryDao;
+
 	@Override
 	public BeneficiaryTrnxModel init() {
 		BeneficiaryTrnxModel model = new BeneficiaryTrnxModel();
@@ -102,8 +108,29 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		commitBeneRelationship(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
 				beneAccount.getBeneficaryAccountSeqId());
 		logger.info("commit done");
+		populateOldEmosData(beneficiaryTrnxModel, beneMaster.getBeneficaryMasterSeqId(),
+				beneAccount.getBeneficaryAccountSeqId());
 
 		return beneficiaryTrnxModel;
+	}
+
+	/**
+	 * after bene is created steps
+	 * 
+	 * @param beneficiaryTrnxModel
+	 * 
+	 */
+	private void populateOldEmosData(BeneficiaryTrnxModel beneficiaryTrnxModel, BigDecimal beneMasterSeqId,
+			BigDecimal beneAccountSeqId) {
+		BeneAccountModel accModel = beneficiaryTrnxModel.getBeneAccountModel();
+		Map<String, Object> inputValues = new HashMap<>();
+		inputValues.put("P_BENE_MASTER_ID", beneMasterSeqId);
+		inputValues.put("P_BANK_ID", accModel.getBankId());
+		inputValues.put("P_BANK_BRANCH_ID", accModel.fetchBankBranchId());
+		inputValues.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneAccountSeqId);
+		inputValues.put("P_CURRENCY_ID", accModel.getCurrencyId());
+		inputValues.put("P_CUSTOMER_ID", metaData.getCustomerId());
+		beneficiaryDao.populateBeneDt(inputValues);
 	}
 
 	/**
@@ -142,6 +169,7 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 			beneficaryAccount.setServiceGroupId(accountDetails.getServiceGroupId());
 			beneficaryAccount.setServiceProviderBranchId(accountDetails.getServiceProviderBranchId());
 			beneficaryAccount.setServiceProviderId(accountDetails.getServiceProviderId());
+			beneficaryAccount.setSwiftCode(accountDetails.getSwiftCode());
 
 			// cash
 			if (BigDecimal.ONE.equals(beneficaryAccount.getServiceGroupId())) {
@@ -381,6 +409,12 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		ApiResponse apiResponse = getJaxTransactionApiResponse();
 
 		return apiResponse;
+	}
+
+	@Override
+	public String getJaxTransactionId() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

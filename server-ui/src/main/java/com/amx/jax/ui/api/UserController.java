@@ -3,6 +3,7 @@ package com.amx.jax.ui.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.HotPoints;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.service.HttpService;
@@ -60,8 +63,11 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
-	@Value("${notification.range}")
-	private String notifyRange;
+	@Value("${notification.range.long}")
+	private String notifyRangeLong;
+
+	@Value("${notification.range.short}")
+	private String notifyRangeShort;
 
 	@Autowired
 	private WebAppConfig webAppConfig;
@@ -83,7 +89,8 @@ public class UserController {
 			sessionService.getAppDevice().setAppVersion(appVersion);
 		}
 
-		wrapper.getData().setTenant(tenantContext.getTenant());
+		wrapper.getData().setTenant(AppContextUtil.getTenant());
+		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(elementToSearch);
@@ -99,17 +106,24 @@ public class UserController {
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
-			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics());
+			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
-			wrapper.getData().setNotifyRange(notifyRange);
+			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 		}
 
 		return wrapper;
 	}
 
+	@RequestMapping(value = "/api/user/notify/hotpoint", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint)
+			throws PostManException {
+		return new ResponseWrapper<Object>();
+	}
+
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
-		for (String topic : userService.getNotifyTopics()) {
+		for (String topic : userService.getNotifyTopics("")) {
 			fbPushClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();
@@ -128,7 +142,7 @@ public class UserController {
 	@Deprecated
 	@ApiOperation(value = "Old API to update password with Form")
 	@RequestMapping(value = "/api/user/password", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> changePassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatepwd(password, mOtp, eOtp);
@@ -143,7 +157,7 @@ public class UserController {
 
 	@Deprecated
 	@RequestMapping(value = "/api/user/email", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updateEmail(@RequestParam String email,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updateEmail(email, mOtp, eOtp);
@@ -157,7 +171,7 @@ public class UserController {
 
 	@Deprecated
 	@RequestMapping(value = "/api/user/phone", method = {
-			RequestMethod.POST }, consumes = "application/x-www-form-urlencoded")
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public ResponseWrapper<UserUpdateResponse> updatePhone(@RequestParam String phone,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
 		return userService.updatePhone(phone, mOtp, eOtp);

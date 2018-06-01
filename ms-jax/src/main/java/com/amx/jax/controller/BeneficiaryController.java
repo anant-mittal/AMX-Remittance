@@ -38,7 +38,6 @@ import com.amx.jax.services.BeneficiaryService;
 import com.amx.jax.trnx.BeneficiaryTrnxManager;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.ConverterUtil;
-import com.amx.jax.validation.BenePersonalDetailValidator;
 
 /**
  * 
@@ -266,13 +265,15 @@ public class BeneficiaryController {
 	@RequestMapping(value = UPDAE_STATUS_ENDPOINT, method = RequestMethod.POST)
 	public ApiResponse updateStatus(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,
 			                        @RequestParam("remarks") String remarks,
-			                        @RequestParam("status") BeneStatus status) {
+			                        @RequestParam("status") BeneStatus status,
+			                        @RequestParam("mOtp") String mOtp, 
+									@RequestParam("eOtp") String eOtp) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		ApiResponse resp = beneService.updateStatus(beneDetails,status);
+		ApiResponse resp = beneService.updateStatus(beneDetails,status,mOtp,eOtp);
 		LOGGER.info("######## Values #######################   -- "+resp.getResult());
 		return resp;
 	}

@@ -28,6 +28,16 @@ public class URLBuilder {
 		return this;
 	}
 
+	public URLBuilder addParameter(String query) {
+		if (!ArgUtil.isEmptyString(query)) {
+			if (params.toString().length() > 0) {
+				params.append("&");
+			}
+			params.append(query);
+		}
+		return this;
+	}
+
 	public URLBuilder addParameter(String parameter, Object value) {
 		String valueStr = ArgUtil.parseAsString(value, "");
 		if (params.toString().length() > 0) {
@@ -43,16 +53,16 @@ public class URLBuilder {
 		URI uri;
 		if (connType == null) {
 			// uri = new URI(null, null, folders.toString(), params.toString(), null);
-			return host + folders.toString() + "?" + params.toString();
+			return host + folders.toString().replaceAll("/+", "/") + "?" + params.toString();
 		} else {
-			uri = new URI(connType, host, folders.toString(), params.toString(), null);
+			uri = new URI(connType, host, folders.toString().replaceAll("/+", "/"), params.toString(), null);
 			return uri.toURL().toString();
 		}
-
 	}
 
 	public String getRelativeURL() throws URISyntaxException, MalformedURLException {
-		URI uri = new URI(null, null, folders.toString(), params.toString(), null);
+		URI uri = new URI(null, null, folders.toString().replaceAll("/+", "/"), params.toString(), null);
 		return uri.toString();
 	}
+
 }

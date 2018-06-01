@@ -59,7 +59,7 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
-		if (exc.getError() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
+		if (exc.getErrorKey() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
 		} else {
@@ -91,9 +91,6 @@ public class WebJaxAdvice {
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return
-		// error(exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-		// .collect(Collectors.toList()));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -109,9 +106,6 @@ public class WebJaxAdvice {
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return
-		// error(exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-		// .collect(Collectors.toList()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -139,9 +133,6 @@ public class WebJaxAdvice {
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
 		wrapper.setErrors(errors);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return handleExceptionInternal(ex, wrapper, headers, HttpStatus.BAD_REQUEST,
-		// request);
-		// return new ResponseEntity<Object>(wrapper, HttpStatus.OK);
 	}
 
 }

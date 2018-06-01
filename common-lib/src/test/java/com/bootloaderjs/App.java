@@ -1,17 +1,11 @@
 package com.bootloaderjs;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.web.util.UriTemplate;
-
 public class App { // Noncompliant
 
-	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
+	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 
 	/**
 	 * This is just a test method
@@ -19,30 +13,11 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println();
+		Matcher match = pattern.matcher("${app.prod}");
 
-		String[] locales = Locale.getISOLanguages();
-
-		for (String countryCode : locales) {
-
-			Locale obj = new Locale(countryCode);
-			System.out.println(String.format("%s(\"%s\",1, \"%s\"),", obj.getLanguage().toUpperCase(),
-					obj.getISO3Language(), obj.getDisplayLanguage()));
-
+		if (match.find()) {
+			System.out.println("====" + match.group(1));
 		}
 
-		String template = "/name/{name}/age/{age}";
-		UriTemplate uriTemplate = new UriTemplate(template);
-		Map<String, String> parameters = new HashMap<>();
-		parameters.put("name", "Arnold");
-		parameters.put("age", "23");
-
-		UriComponentsBuilder builder = UriComponentsBuilder.fromPath(template);
-		System.out.println(builder.buildAndExpand(parameters));
-
-		Matcher matcher = pattern.matcher("com.amx.jax.logger.client.AuditFilter<com.amx.jax.logger.events.UserEvent>");
-		if (matcher.find()) {
-			System.out.println(matcher.group(1));
-		}
 	}
 }

@@ -64,6 +64,9 @@ public class HomeController {
 
 	@Value("${jax.cdn.url}")
 	private String cleanCDNUrl;
+	
+	@Value("${fcm.senderid}")
+	private String fcmSenderId;
 
 	public String getVersion() {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
@@ -104,6 +107,7 @@ public class HomeController {
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute("fcmSenderId", fcmSenderId);
 		return "app";
 	}
 
@@ -123,6 +127,7 @@ public class HomeController {
 		model.addAttribute("cdnUrl", cleanCDNUrl);
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
+		model.addAttribute("fcmSenderId", fcmSenderId);
 		return "app";
 	}
 
