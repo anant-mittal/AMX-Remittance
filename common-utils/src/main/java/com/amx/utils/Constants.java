@@ -50,4 +50,6 @@ public class Constants {
 	public static final String CUSTOMERTYPE_INDU = "Individual";
 
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
+	
+	public static final String IDENTITY_TYPE_ID = "198";
 }
