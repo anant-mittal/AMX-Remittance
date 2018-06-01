@@ -61,7 +61,9 @@ public class LanguageType implements java.io.Serializable {
 		this.direction = direction;
 	}
 
-	
+	public LanguageType(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
 
 	@Id
 	/*@TableGenerator(name = "languageid", table = "fs_languageidpk", pkColumnName = "languageidkey", pkColumnValue = "languageidvalue", allocationSize = 1)
