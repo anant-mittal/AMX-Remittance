@@ -2,8 +2,6 @@ package com.amx.jax.amxlib.model;
 
 import java.math.BigDecimal;
 
-import org.springframework.stereotype.Component;
-
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.dict.Tenant;
 

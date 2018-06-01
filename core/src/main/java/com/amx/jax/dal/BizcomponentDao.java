@@ -1,20 +1,14 @@
 package com.amx.jax.dal;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.hibernate.FetchMode;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
@@ -22,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
-import com.mysema.query.JoinType;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

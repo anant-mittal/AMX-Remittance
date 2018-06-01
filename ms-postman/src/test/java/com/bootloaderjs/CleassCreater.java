@@ -2,13 +2,10 @@ package com.bootloaderjs;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import org.apache.lucene.util.IOUtils;
 
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;

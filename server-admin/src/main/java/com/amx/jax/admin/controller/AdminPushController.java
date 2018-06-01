@@ -17,7 +17,6 @@ import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.model.PushMessage;
 
