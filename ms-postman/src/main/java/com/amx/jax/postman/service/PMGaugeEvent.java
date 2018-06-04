@@ -41,7 +41,8 @@ public class PMGaugeEvent extends AuditEvent {
 		this.to = sms.getTo();
 	}
 
-	public PMGaugeEvent(Type emailSentNot, Email email) {
+	public PMGaugeEvent(Type type, Email email) {
+		super(type);
 		this.template = email.getTemplate();
 		this.to = email.getTo();
 	}
