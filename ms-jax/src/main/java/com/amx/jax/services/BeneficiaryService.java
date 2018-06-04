@@ -793,7 +793,7 @@ public class BeneficiaryService extends AbstractService {
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
 		//List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
-		List<CountryMasterView> countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
+		List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
 		
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018
