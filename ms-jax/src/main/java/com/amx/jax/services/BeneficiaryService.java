@@ -39,6 +39,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -136,6 +137,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	CountryRepository countryRepository;
+	
+   @Autowired
+   PlaceOrderService placeOrderService;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -815,4 +819,53 @@ public class BeneficiaryService extends AbstractService {
 		}
 		return list;
 	}
+	
+	   /**
+     * to get place order beneficiary.
+     * 
+     * @param placeOrderId
+     * @return apiresponse
+     */
+
+    public ApiResponse getPlaceOrderBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal placeOrderId) {
+        ApiResponse response = getBlackApiResponse();
+        try {
+            BenificiaryListView poBene = null;
+            BeneficiaryListDTO beneDto = null;
+            CustomerRemittanceTransactionView trnxView = null;
+            RemittancePageDto remitPageDto = new RemittancePageDto();
+
+            ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
+            PlaceOrderDTO dto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+            
+            BigDecimal beneRealtionId = dto.getBeneficiaryRelationshipSeqId();
+            
+            if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+                poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
+            } 
+
+            if (poBene == null) {
+                throw new GlobalException("Not found");
+            } else {
+                beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
+                
+                logger.info("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
+                
+                trnxView = new CustomerRemittanceTransactionView();
+
+            }
+
+            remitPageDto.setBeneficiaryDto(beneDto);
+            if (trnxView != null) {
+                remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+            }
+            response.getData().getValues().add(remitPageDto);
+            response.getData().setType(remitPageDto.getModelType());
+            response.setResponseStatus(ResponseStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occured in getDefaultBeneficiary method", e);
+            throw new GlobalException("Default bene not found" + e.getMessage());
+        }
+        return response;
+    }
 }

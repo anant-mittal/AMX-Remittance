@@ -312,4 +312,24 @@ public class BeneficiaryController {
 		return beneService.getBeneficiaryCountryListWithChannelingForOnline(customerId);
 
 	}
+	
+   @RequestMapping(value = "/pobene/", method = RequestMethod.POST)
+    public ApiResponse poBeneficiary(@RequestParam(required=false,value="placeOrderId") BigDecimal placeOrderId) {
+        ApiResponse response=null;
+        try {
+            
+        BigDecimal customerId = metaData.getCustomerId();
+        BigDecimal applicationCountryId = metaData.getCountryId();
+        
+        LOGGER.info( "Place Order Id : " + placeOrderId);
+        LOGGER.info(CUSTOMER_ID + customerId);
+        LOGGER.info("applicationCountryId  :" + applicationCountryId);
+        
+        response= beneService.getPlaceOrderBeneficiary(customerId, applicationCountryId, placeOrderId);
+        }catch(Exception e) {
+            LOGGER.error("exception in defaultBeneficiary : ",e);
+        }
+        return response;
+    }
+	    
 }

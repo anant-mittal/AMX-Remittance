@@ -489,4 +489,30 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
+	
+	   public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal placeOrderId) {
+	        try {
+	            ResponseEntity<ApiResponse<RemittancePageDto>> response;
+
+	            LOGGER.info("Place Order Beneficiary");
+
+	            StringBuffer sb = new StringBuffer();
+
+	            if (placeOrderId != null) {
+	                sb.append("?");
+	                sb.append("placeOrderId=").append(placeOrderId);
+	            }
+
+	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/" + sb.toString();
+	            return restService.ajax(url).post(requestEntity)
+	                    .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+	                    });
+	        } catch (AbstractException ae) {
+	            throw ae;
+	        } catch (Exception e) {
+	            LOGGER.error("exception in defaultBeneficiary : ", e);
+	            throw new JaxSystemError();
+	        } // end of try-catch
+	    }
 }
