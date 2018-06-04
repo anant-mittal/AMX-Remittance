@@ -7,7 +7,7 @@ package com.amx.amxlib.constant;
 
 public enum PrefixEnum {
 
-	MR_CODE("MR", "Mr."), MRS_CODE("MRS", "Mrs.");
+	MR_CODE("MR", "Mr."), MRS_CODE("MRS", "Mrs."), MS("MS","Ms.");
 
 	private String code;
 
