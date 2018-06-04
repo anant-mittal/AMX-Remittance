@@ -547,6 +547,8 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_CUSTOMER_ID", meta.getCustomerId());
 		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode());
 		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId());
+		beneBankDetails.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		
 		return beneBankDetails;
 	}
 

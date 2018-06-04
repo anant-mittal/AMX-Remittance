@@ -45,5 +45,7 @@ public class ConstantDocument {
 	public static final String BANGLADESH_ALPHA3_CODE = "BGD";
 	public static final String SERVICE_GROUP_CODE_CASH = "C";
 	public static final String SERVICE_GROUP_CODE_BANK = "B";
+	
+	public static final String CONSTANT_ALL = "ALL";
 
 }
