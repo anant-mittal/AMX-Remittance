@@ -59,7 +59,8 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
-		if (exc.getErrorKey() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
+		if (exc.getErrorKey() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR
+				|| exc.getError() == JaxError.JAX_SYSTEM_ERROR) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
 		} else {
