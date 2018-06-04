@@ -2,6 +2,7 @@ package com.amx.jax.filter;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
@@ -22,7 +23,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			return true;
 		}
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
-		if (!ArgUtil.isEmpty(apiErrorJson)) {
+		if (StringUtils.isNotBlank(apiErrorJson)) {
 			return true;
 		}
 		return false;
@@ -33,6 +34,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
+
 
 		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
 
