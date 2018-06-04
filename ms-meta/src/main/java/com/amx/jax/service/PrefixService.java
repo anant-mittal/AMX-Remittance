@@ -33,6 +33,7 @@ public class PrefixService extends AbstractService {
 
 		prefixList.add(new PrefixModel(PrefixEnum.MR_CODE));
 		prefixList.add(new PrefixModel(PrefixEnum.MRS_CODE));
+		prefixList.add(new PrefixModel(PrefixEnum.MS));
 		ApiResponse response = getBlackApiResponse();
 
 		if (prefixList.isEmpty()) {
