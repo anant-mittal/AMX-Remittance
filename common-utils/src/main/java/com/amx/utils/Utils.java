@@ -4,7 +4,13 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Utils {
+
+	public static String COMMA = ",";
+
 	public static String concatenate(List<String> listOfItems, String separator) {
+		if (ArgUtil.isEmpty(listOfItems)) {
+			return Constants.BLANK;
+		}
 		StringBuilder sb = new StringBuilder();
 		Iterator<String> stit = listOfItems.iterator();
 
@@ -14,8 +20,11 @@ public class Utils {
 				sb.append(separator);
 			}
 		}
-
 		return sb.toString();
+	}
+
+	public static String commaConcat(List<String> listOfItems) {
+		return concatenate(listOfItems, COMMA);
 	}
 
 }
