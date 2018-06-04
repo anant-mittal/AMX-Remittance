@@ -132,8 +132,9 @@ public class SMService {
 						.asString();
 
 				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
+			} else {
+				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
 			}
-			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
 		} else {
 			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
 		}
