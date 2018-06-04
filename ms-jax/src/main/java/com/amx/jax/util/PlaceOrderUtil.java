@@ -18,6 +18,7 @@ public class PlaceOrderUtil {
 		placeOrdermodel.setValidToDate(dto.getValidToDate());
 		placeOrdermodel.setPayAmount(dto.getPayAmount());
 		placeOrdermodel.setReceiveAmount(dto.getReceiveAmount());
+		placeOrdermodel.setCreatedDate(dto.getCreatedDate());
 		
 		return placeOrdermodel;
 	}

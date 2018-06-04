@@ -77,6 +77,39 @@ public class PlaceOrderController {
 		ApiResponse response = null;
 		response = placeOrderService.getAllPlaceOrder();
 		return response;
-	}	
+	}
+	
+	/**
+	 * delete place order
+	 * @return
+	 */
+	@RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public ApiResponse handleUrlDeletePlaceOrder(@RequestBody PlaceOrderDTO dto) {
+		logger.info("In delete with parameter" + dto.toString());
+		BigDecimal customerId = metaData.getCustomerId();
+		
+		dto.setCustomerId(customerId);
+		ApiResponse response = null;
+		response = placeOrderService.deletePlaceOrder(dto);
+		return response;
+		
+	}
+
+	/**
+	 * place order by placeOrderId
+	 * @return
+	 */
+	@RequestMapping(value = "/get/placeOrder/forId", method = RequestMethod.POST)
+	public ApiResponse handleUrlgetPlaceOrderId(@RequestBody PlaceOrderDTO dto) {
+		
+		logger.info("In /getPlaceOrder with customerId :" + dto.toString());
+		BigDecimal placeOrderId = dto.getPlaceOrderId();
+		
+		ApiResponse response = null;
+		response = placeOrderService.getPlaceOrderForId(placeOrderId);
+		return response;
+		
+	}
+	
 
 }

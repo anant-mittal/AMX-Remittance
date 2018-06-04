@@ -2,10 +2,13 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
 
+import javax.validation.ValidationException;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.AbstractException;
@@ -39,7 +42,6 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<PlaceOrderDTO> getPlaceOrderForCustomer() {
-		// TODO Auto-generated method stub
 		try {
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/get/placeOrder/forCustomer";
@@ -63,10 +65,36 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (Exception e) {
-			// TODO: handle exception
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
 		}
-		return null;
 	}
 
-
+	public ApiResponse<PlaceOrderDTO> deletePlaceOrder(PlaceOrderDTO placeOrderDTO) {
+		ResponseEntity<ApiResponse<PlaceOrderDTO>> response = null;
+		try {
+			if(placeOrderDTO.getPlaceOrderId() != null) {
+				HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(placeOrderDTO, getHeader());
+				String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/delete";
+				return restService.ajax(url).post(requestEntity)
+						.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
+						});
+			}else {
+				throw new ValidationException("PlaceOrder ID not provided.");
+			}
+		} catch (ValidationException ve) {
+			log.error("RateAlert ID is null.", ve);
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		}
+		return response.getBody();
+	}
+	
 }

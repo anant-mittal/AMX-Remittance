@@ -70,7 +70,6 @@ public class PlaceOrderService extends AbstractService {
 	@SuppressWarnings("unchecked")
 	public ApiResponse<PlaceOrderDTO> getPlaceOrderForCustomer(BigDecimal customerId) {
 		
-
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		
 		List<PlaceOrder> placeOrderList = null;
@@ -161,13 +160,75 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 	
+	public ApiResponse deletePlaceOrder(PlaceOrderDTO dto) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderDelete(dto.getPlaceOrderId());
+			if(!placeOrderList.isEmpty()) {
+				PlaceOrder rec = placeOrderList.get(0);
+				rec.setIsActive("N");
+				rec.setUpdatedDate(new Date());
+				
+				placeOrderdao.save(rec);
+			}else {
+				throw new GlobalException("No record found");
+			}
+			response.setResponseStatus(ResponseStatus.OK);
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("Error while deleting Place Order record.");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
+	public ApiResponse<PlaceOrderDTO> getPlaceOrderForId(BigDecimal placeOrderId) {
+		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
+		
+		List<PlaceOrder> placeOrderList = null;
+		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();	
+		
+		try {
+			placeOrderList = placeOrderdao.getPlaceOrderForId(placeOrderId);
+			
+			if(!placeOrderList.isEmpty()) {
+				for(PlaceOrder rec : placeOrderList) {
+					PlaceOrderDTO placeDTO = new PlaceOrderDTO();
+					
+					placeDTO.setCustomerId(rec.getCustomerId());
+					placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
+					placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
+					placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
+					placeDTO.setSrlId(rec.getSrlId());
+					placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
+					placeDTO.setIsActive(rec.getIsActive());
+					placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
+					placeDTO.setCreatedDate(rec.getCreatedDate());
+					placeDTO.setValidFromDate(rec.getValidFromDate());
+					placeDTO.setValidToDate(rec.getValidToDate());
+					placeDTO.setPayAmount(rec.getPayAmount());
+					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+					
+					dtoList.add(placeDTO);
+				}
+				
+				response.setResponseStatus(ResponseStatus.OK);
+				response.getData().setType("place-order-dto");
+			}
+			
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("Error while fetching Place Order List By Id");
+			e.printStackTrace();	
+		}
+		
+		response.getData().getValues().addAll(dtoList);
+		return response;
+	}
 
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	
-		
 }

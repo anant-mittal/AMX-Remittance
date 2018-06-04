@@ -30,7 +30,7 @@ public class PlaceOrderClientTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 	
-	@Test
+	//@Test
 	public void savePlaceOrder() throws ParseException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -75,4 +75,21 @@ public class PlaceOrderClientTest {
 		ApiResponse<PlaceOrderDTO> response = client.getAllPlaceOrder();
 		assertNotNull("Response is null", response);
 	}
+	
+	@Test
+	public void deletePlaceOrder() throws ParseException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+
+		PlaceOrderDTO placeOrderDTO = new PlaceOrderDTO();
+		placeOrderDTO.setPlaceOrderId(new BigDecimal(12));
+		
+		ApiResponse<PlaceOrderDTO> response = client.deletePlaceOrder(placeOrderDTO);
+		assertNotNull("Response is null", response);
+	}
+	
+	
 }
