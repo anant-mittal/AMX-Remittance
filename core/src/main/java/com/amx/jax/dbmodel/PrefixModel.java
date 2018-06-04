@@ -1,5 +1,7 @@
 package com.amx.jax.dbmodel;
 
+import java.math.BigDecimal;
+
 import com.amx.amxlib.constant.PrefixEnum;
 
 /**
@@ -10,6 +12,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 public class PrefixModel implements java.io.Serializable {
 	private String code;
 	private String value;
+	private BigDecimal componentDataId;
 
 	public PrefixModel() {
 		super();
@@ -18,6 +21,7 @@ public class PrefixModel implements java.io.Serializable {
 	public PrefixModel(PrefixEnum prefix) {
 		this.code = prefix.getCode();
 		this.value = prefix.getValue();
+		this.componentDataId=prefix.getComponentDataId();
 	}
 
 	public String getCode() {
@@ -34,5 +38,13 @@ public class PrefixModel implements java.io.Serializable {
 
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	public BigDecimal getComponentDataId() {
+		return componentDataId;
+	}
+
+	public void setComponentDataId(BigDecimal componentDataId) {
+		this.componentDataId = componentDataId;
 	}
 }

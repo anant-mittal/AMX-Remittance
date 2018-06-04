@@ -1,5 +1,7 @@
 package com.amx.amxlib.constant;
 
+import java.math.BigDecimal;
+
 /**
  * @author Subodh Bhoir
  *
@@ -7,15 +9,18 @@ package com.amx.amxlib.constant;
 
 public enum PrefixEnum {
 
-	MR_CODE("MR", "Mr."), MRS_CODE("MRS", "Mrs.");
+	MR_CODE("MR", "Mr.",new BigDecimal(181)), MRS_CODE("M/S", "M/s.",new BigDecimal(180)), MS("MS","Ms.",new BigDecimal(182));
 
 	private String code;
 
 	private String value;
-
-	private PrefixEnum(String code, String value) {
+	
+	private BigDecimal componentDataId;
+	
+	private PrefixEnum(String code, String value,BigDecimal componentDataId) {
 		this.code = code;
 		this.value = value;
+		this.componentDataId=componentDataId;
 	}
 
 	public String getCode() {
@@ -34,4 +39,11 @@ public enum PrefixEnum {
 		this.value = value;
 	}
 
+	public BigDecimal getComponentDataId() {
+		return componentDataId;
+	}
+
+	public void setComponentDataId(BigDecimal componentDataId) {
+		this.componentDataId = componentDataId;
+	}
 }

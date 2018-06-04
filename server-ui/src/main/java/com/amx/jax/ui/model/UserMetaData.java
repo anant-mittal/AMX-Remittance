@@ -7,10 +7,10 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.dict.HotPoints;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.user.UserDevice;
 
 public class UserMetaData extends AbstractModel {

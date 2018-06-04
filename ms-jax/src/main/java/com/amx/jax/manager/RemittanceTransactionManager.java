@@ -218,7 +218,7 @@ public class RemittanceTransactionManager {
 		if (newCommission != null) {
 			commission = newCommission;
 		}
-
+		applyRoudingLogic(breakup);
 		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId) && newCommission == null) {
 			logger.info("recalculating del mode for TT and routing countyr india");
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
@@ -237,13 +237,12 @@ public class RemittanceTransactionManager {
 		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
 		setLoyalityPointIndicaters(responseModel);
-		applyRoudingLogic(responseModel);
+		applyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
 
 	}
 
-	private void applyRoudingLogic(RemittanceTransactionResponsetModel responseModel) {
-		ExchangeRateBreakup exRatebreakUp = responseModel.getExRateBreakup();
+	private void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
 		BigDecimal fcurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 		BigDecimal localCurrencyId = meta.getDefaultCurrencyId();
 		exRatebreakUp.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecinalNumber());
