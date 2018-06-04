@@ -110,9 +110,10 @@ public class RequestLogFilter implements Filter {
 			}
 
 			// Actual Request Handling
+			AppContextUtil.setTraceTime(startTime);
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req,System.currentTimeMillis()-startTime));
+			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
 
 		} finally {
 			// Tear down MDC data:

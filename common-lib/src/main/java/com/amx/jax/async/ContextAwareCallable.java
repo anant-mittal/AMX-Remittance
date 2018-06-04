@@ -19,7 +19,7 @@ public class ContextAwareCallable<T> implements Callable<T> {
 	private AppContext context = null;
 
 	public ContextAwareCallable(Callable<T> task, AppContext context) {
-		this.task  = task;
+		this.task = task;
 		this.context = context;
 	}
 

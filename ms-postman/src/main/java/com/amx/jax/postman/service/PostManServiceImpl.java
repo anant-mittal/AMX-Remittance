@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.async.ExecutorConfig;
@@ -47,6 +48,9 @@ public class PostManServiceImpl implements PostManService {
 
 	@Autowired
 	private TemplateService templateService;
+
+	@Autowired
+	private AppConfig appConfig;
 
 	@Override
 	public Email sendEmail(Email email) throws PostManException {
@@ -153,17 +157,10 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(null, title, null, e);
+		return slackService.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
 	}
 
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
-	public Exception notifyException(String appname, String title, Exception e) {
-		return slackService.sendException(appname, title, null, e);
-	}
-
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String appname, String title, String exception, Exception e) {
 		return slackService.sendException(appname, title, exception, e);
 	}

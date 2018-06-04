@@ -23,6 +23,10 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 	}
 
+	public static Long getTraceTime() {
+		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY));
+	}
+
 	public static String getUserId() {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.USER_ID_XKEY));
 	}
@@ -52,6 +56,10 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
 	}
 
+	public static void setTraceTime(long timestamp) {
+		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
+	}
+
 	public static void setUserId(Object userId) {
 		ContextUtil.map().put(AppConstants.USER_ID_XKEY, userId);
 	}
@@ -66,6 +74,7 @@ public class AppContextUtil {
 		appContext.setTraceId(getTraceId());
 		appContext.setTranxId(getTranxId());
 		appContext.setUserId(getUserId());
+		appContext.setTraceTime(getTraceTime());
 		return appContext;
 	}
 
@@ -82,6 +91,8 @@ public class AppContextUtil {
 		if (context.getUserId() != null) {
 			setUserId(context.getUserId());
 		}
+		setTraceTime(context.getTraceTime());
+
 		return context;
 	}
 
