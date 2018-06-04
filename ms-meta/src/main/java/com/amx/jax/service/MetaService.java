@@ -158,13 +158,13 @@ public class MetaService extends AbstractService {
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
 			// disable cash
-			if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
+			//if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
 				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
 				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 				dto.setServiceGroupDesc(i.getServiceGroupDesc());
 				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
 				outputDto.add(dto);
-			}
+			//}
 		});
 		return outputDto;
 	}
