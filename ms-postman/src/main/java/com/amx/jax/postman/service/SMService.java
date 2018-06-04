@@ -14,7 +14,6 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.service.PMGaugeEvent.Type;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
@@ -23,6 +22,7 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
+import com.amx.utils.Utils;
 
 @Component
 @TenantScoped
@@ -67,12 +67,11 @@ public class SMService {
 	public static final String EXCEPTION = "EXECPTION";
 
 	public SMS sendSMS(SMS sms) {
-
 		String to = null;
 		try {
-			to = sms.getTo() != null ? sms.getTo().get(0) : null;
+			LOGGER.info("Sending {} SMS to {}", sms.getTemplate(), Utils.commaConcat(sms.getTo()));
 
-			LOGGER.info("Sending {} SMS to {} ", sms.getTemplate(), to);
+			to = sms.getTo() != null ? sms.getTo().get(0) : null;
 
 			if (sms.getTemplate() != null) {
 				Context context = new Context(new Locale(sms.getLang().toString()));

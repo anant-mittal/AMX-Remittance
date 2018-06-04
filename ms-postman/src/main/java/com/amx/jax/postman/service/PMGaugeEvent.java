@@ -3,6 +3,7 @@ package com.amx.jax.postman.service;
 import java.util.List;
 
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.utils.EnumType;
@@ -14,7 +15,7 @@ public class PMGaugeEvent extends AuditEvent {
 		// Sms Events
 		SMS_SENT_NOT, SMS_SENT_SUCCESS, SMS_SENT_ERROR,
 		// Email Events
-		EMAIL_SENT,
+		EMAIL_SENT_NOT, EMAIL_SENT_SUCCESS, EMAIL_SENT_ERROR,
 		// PDF Events
 		PDF_CREATED
 	}
@@ -38,6 +39,11 @@ public class PMGaugeEvent extends AuditEvent {
 		super(type);
 		this.template = sms.getTemplate();
 		this.to = sms.getTo();
+	}
+
+	public PMGaugeEvent(Type emailSentNot, Email email) {
+		this.template = email.getTemplate();
+		this.to = email.getTo();
 	}
 
 	public Templates getTemplate() {
