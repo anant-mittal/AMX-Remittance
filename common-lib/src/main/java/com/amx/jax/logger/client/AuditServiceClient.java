@@ -29,6 +29,8 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
 	private static final Marker trackmarker = MarkerFactory.getMarker("TRACK");
 	private static final Marker gaugemarker = MarkerFactory.getMarker("GAUGE");
+	private static final Marker excepmarker = MarkerFactory.getMarker("EXCEP");
+	private static final Marker errormarker = MarkerFactory.getMarker("ERROR");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static String appName = null;
 
@@ -52,7 +54,8 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	private static AuditEvent captureException(AuditEvent event, Exception e) {
-		event.setException(String.format("%s : %s", e.getClass().getName(), e.getMessage()));
+		event.setExceptionType(e.getClass().getName());
+		event.setException(e.getMessage());
 		return event;
 	}
 
@@ -130,6 +133,36 @@ public class AuditServiceClient implements AuditService {
 	public AuditLoggerResponse gauge(AuditEvent event, Exception e) {
 		AuditServiceClient.captureException(event, e);
 		return this.gauge(event);
+	}
+
+	// Excep LOGS
+
+	/**
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse excepStatic(AuditEvent event) {
+		captureDetails(event);
+		LOGGER.info(excepmarker, JsonUtil.toJson(event));
+		return null;
+	}
+
+	public AuditLoggerResponse excep(AuditEvent event) {
+		this.excuteFilters(event);
+		return excepStatic(event);
+	}
+
+	@Override
+	public AuditLoggerResponse excep(AuditEvent event, Exception e) {
+		AuditServiceClient.captureException(event, e);
+		return this.excep(event);
+	}
+
+	@Override
+	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e) {
+		logger.error(event.getType().toString(), e);
+		return this.excep(event, e);
 	}
 
 }
