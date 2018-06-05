@@ -150,7 +150,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
 			contactDetail.setMobile(customerHomeAddress.getMobile());
 			contactDetail.setFsCustomer(customer);
-			contactDetail.setActiveStatus(ConstantDocument.No);
+			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));

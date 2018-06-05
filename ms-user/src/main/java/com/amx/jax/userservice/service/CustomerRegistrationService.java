@@ -26,6 +26,7 @@ import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
 import com.amx.jax.userservice.validation.CustomerPhishigImageValidator;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.jax.validation.CountryMetaValidation;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -53,6 +54,8 @@ public class CustomerRegistrationService extends AbstractService {
 	CustomerPhishigImageValidator customerPhishigImageValidator;
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
+	@Autowired
+	CountryMetaValidation countryMetaValidation;
 
 	/**
 	 * Sends otp initiating trnx
@@ -84,6 +87,8 @@ public class CustomerRegistrationService extends AbstractService {
 	 * Save the customer home address
 	 */
 	public ApiResponse saveCustomerHomeAddress(CustomerHomeAddress customerHomeAddress) {
+		countryMetaValidation.validateMobileNumberLength(customerHomeAddress.getCountryId(),
+				customerHomeAddress.getMobile());
 		customerRegistrationManager.saveHomeAddress(customerHomeAddress);
 		return getBooleanResponse();
 	}
