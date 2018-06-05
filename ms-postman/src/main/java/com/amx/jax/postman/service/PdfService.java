@@ -37,9 +37,6 @@ public class PdfService {
 	// @Autowired
 	// private ConverterIText5 converterIText5;
 
-	// @Autowired
-	// private ConverterFOP converterFOP;
-
 	public File convert(File file) throws JRException {
 
 		PDFConverter conv = file.getConverter();
@@ -60,8 +57,6 @@ public class PdfService {
 			return converterJasper.toPDF(file);
 			// } else if (conv == PDFConverter.ITEXT7) {
 			// return converterIText7.toPDF(file);
-			// } else if (conv == PDFConverter.FOP) {
-			// return converterFOP.toPDF(file);
 		} else {
 			return converterFlyingSaucer.toPDF(file);
 		}

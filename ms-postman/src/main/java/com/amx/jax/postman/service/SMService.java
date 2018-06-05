@@ -86,8 +86,7 @@ public class SMService {
 			}
 
 		} catch (Exception e) {
-			LOGGER.error(PMGaugeEvent.Type.SMS_SENT_ERROR.toString(), e);
-			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_ERROR, sms), e);
+			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_ERROR, sms), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return sms;
