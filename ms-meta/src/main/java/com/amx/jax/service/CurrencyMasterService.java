@@ -246,9 +246,9 @@ public class CurrencyMasterService extends AbstractService {
 		currencyList.forEach(currency -> {
 			CurrencyMasterModel currencyMaster = allCurrencies.get(currency.getCurrencyId());
 			// enable only bene country related currencies
-			if (beneCountryId.equals(currencyMaster.getCountryId())) {
+		//	if (beneCountryId.equals(currencyMaster.getCountryId())) {
 				currencyListDto.add(convertModel(currencyMaster));
-			}
+		//	}
 		});
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(currencyListDto);
