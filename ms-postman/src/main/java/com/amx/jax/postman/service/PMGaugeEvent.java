@@ -73,4 +73,12 @@ public class PMGaugeEvent extends AuditEvent {
 		this.to = to;
 	}
 
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
 }
