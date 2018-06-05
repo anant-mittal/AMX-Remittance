@@ -13,11 +13,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.converter.jasper.SimpleReportExporter;
 import com.amx.jax.postman.converter.jasper.SimpleReportFiller;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
+import com.amx.jax.postman.service.PMGaugeEvent;
 import com.amx.jax.postman.service.TemplateUtils;
 import com.amx.utils.FlatMap;
 
@@ -53,7 +55,7 @@ public class ConverterJasper implements FileConverter {
 	private TemplateUtils templateUtils;
 
 	@Override
-	public File toPDF(File file) {
+	public File toPDF(File file) throws JRException {
 
 		simpleReportFiller.setReportFileName("jasper/" + file.getTemplate().getFileName() + ".jrxml");
 		simpleReportFiller.compileReport();
@@ -68,7 +70,6 @@ public class ConverterJasper implements FileConverter {
 		parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE,
 				new MessageSourceResourceBundle(messageSource, postManConfig.getLocal(file)));
 
-		LOGGER.info("===== {} {}", postManConfig.getLocal(file), file.getLang());
 		simpleReportFiller.setParameters(parameters);
 		simpleReportFiller.fillReport();
 		// simpleReportFiller.getJasperPrint().getDefaultStyle().setFontSize(50f);
@@ -84,13 +85,11 @@ public class ConverterJasper implements FileConverter {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 
-			JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), outputStream);
+			JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), null);
 
 			file.setBody(outputStream.toByteArray());
 			file.setType(Type.PDF);
 
-		} catch (JRException e) {
-			LOGGER.error("Some Error", e);
 		} finally {
 			if (outputStream != null) {
 				try {
