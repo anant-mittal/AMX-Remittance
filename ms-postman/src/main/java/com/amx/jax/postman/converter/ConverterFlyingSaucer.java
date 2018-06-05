@@ -14,13 +14,15 @@ import com.amx.utils.Constants;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
 
+import net.sf.jasperreports.engine.JRException;
+
 @Component
 public class ConverterFlyingSaucer implements FileConverter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterFlyingSaucer.class);
 
 	@Override
-	public File toPDF(File file) {
+	public File toPDF(File file) throws JRException  {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 

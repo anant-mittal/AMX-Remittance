@@ -133,11 +133,10 @@ public class EmailService {
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.fail(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
 			}
 		} catch (Exception e) {
-			LOGGER.error(PMGaugeEvent.Type.EMAIL_SENT_ERROR.toString(), e);
-			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), e);
+			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return email;

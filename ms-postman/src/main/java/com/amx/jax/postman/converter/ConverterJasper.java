@@ -13,13 +13,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceResourceBundle;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.converter.jasper.SimpleReportExporter;
 import com.amx.jax.postman.converter.jasper.SimpleReportFiller;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
-import com.amx.jax.postman.service.PMGaugeEvent;
 import com.amx.jax.postman.service.TemplateUtils;
 import com.amx.utils.FlatMap;
 
