@@ -73,6 +73,7 @@ import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BeneficiaryCheckService;
 import com.amx.jax.services.RemittanceApplicationService;
+import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
@@ -155,6 +156,8 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private JaxUtil jaxUtil;
+	@Autowired
+	RoutingService routingService;
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
@@ -171,7 +174,7 @@ public class RemittanceTransactionManager {
 		validateBlackListedBene(beneficiary);
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = applicationProcedureDao.getRoutingDetails(beneBankDetails);
+		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
 		remitApplParametersMap.putAll(beneBankDetails);
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
@@ -543,6 +546,8 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_CUSTOMER_ID", meta.getCustomerId());
 		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode());
 		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId());
+		beneBankDetails.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
+		
 		return beneBankDetails;
 	}
 
