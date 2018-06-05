@@ -490,14 +490,11 @@ public class BeneClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 	
-	   public ApiResponse<RemittancePageDto> defaultBeneficiary(BigDecimal placeOrderId) {
+	   public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
 	        try {
 	            ResponseEntity<ApiResponse<RemittancePageDto>> response;
-
 	            LOGGER.info("Place Order Beneficiary");
-
 	            StringBuffer sb = new StringBuffer();
-
 	            if (placeOrderId != null) {
 	                sb.append("?");
 	                sb.append("placeOrderId=").append(placeOrderId);

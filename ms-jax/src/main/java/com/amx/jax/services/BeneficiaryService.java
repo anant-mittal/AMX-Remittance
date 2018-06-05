@@ -820,7 +820,7 @@ public class BeneficiaryService extends AbstractService {
 		return list;
 	}
 	
-	   /**
+    /**
      * to get place order beneficiary.
      * 
      * @param placeOrderId
@@ -834,11 +834,18 @@ public class BeneficiaryService extends AbstractService {
             BeneficiaryListDTO beneDto = null;
             CustomerRemittanceTransactionView trnxView = null;
             RemittancePageDto remitPageDto = new RemittancePageDto();
+            PlaceOrderDTO poDto = null;
 
             ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
-            PlaceOrderDTO dto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
             
-            BigDecimal beneRealtionId = dto.getBeneficiaryRelationshipSeqId();
+            if (poResponse.getData() != null) {
+                poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+            }else {
+                throw new GlobalException("PO not found for id : "+placeOrderId);
+            }
+            
+            
+            BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
             
             if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
                 poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
@@ -852,12 +859,23 @@ public class BeneficiaryService extends AbstractService {
                 logger.info("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
                 
                 trnxView = new CustomerRemittanceTransactionView();
-
+                
+                trnxView.setCustomerId(customerId);
+                trnxView.setLocalTrnxAmount(poDto.getPayAmount());
+                //trnxView.setForeignCurrencyCode();
+                trnxView.setBeneficaryAccountNumber(poBene.getBankAccountNumber());
+                trnxView.setBeneficaryBankName(poBene.getBankName());
+                trnxView.setBeneficaryBranchName(poBene.getBankBranchName());
+                trnxView.setBeneficiaryRelationSeqId(poBene.getBeneficiaryRelationShipSeqId());
+                trnxView.setBeneficaryName(poBene.getBenificaryName());
             }
 
             remitPageDto.setBeneficiaryDto(beneDto);
             if (trnxView != null) {
-                remitPageDto.setTrnxHistDto(convertTranHistDto(trnxView));
+                TransactionHistroyDTO trxDto = convertTranHistDto(trnxView);
+                trxDto.setBankRuleFieldId(poDto.getBankRuleFieldId());
+                trxDto.setSrlId(poDto.getSrlId());
+                remitPageDto.setTrnxHistDto(trxDto);
             }
             response.getData().getValues().add(remitPageDto);
             response.getData().setType(remitPageDto.getModelType());
