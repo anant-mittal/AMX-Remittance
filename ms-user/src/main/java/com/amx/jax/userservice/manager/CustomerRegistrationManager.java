@@ -133,6 +133,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customerOnlineRegistration.setLoginId(model.getCustomerCredential().getLoginId());
 		customerOnlineRegistration
 				.setPassword(cryptoUtil.getHash(userName, model.getCustomerCredential().getPassword()));
+		customerOnlineRegistration.setStatus(ConstantDocument.Yes);
 		customerDao.saveOnlineCustomer(customerOnlineRegistration);
 	}
 
