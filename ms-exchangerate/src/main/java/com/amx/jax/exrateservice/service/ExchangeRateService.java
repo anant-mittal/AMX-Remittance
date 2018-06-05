@@ -180,6 +180,13 @@ public class ExchangeRateService extends AbstractService {
 		}
 
 		List<BankMasterDTO> output = new ArrayList<>(bankWiseRates);
+		Iterator<BankMasterDTO> itr = output.iterator();
+		while (itr.hasNext()) {
+			BankMasterDTO current = itr.next();
+			if (current.getExRateBreakup() == null || current.getExRateBreakup().getRate() == null) {
+				itr.remove();
+			}
+		}
 		Collections.sort(output, new BankMasterDTO.BankMasterDTOComparator());
 		return output;
 	}
