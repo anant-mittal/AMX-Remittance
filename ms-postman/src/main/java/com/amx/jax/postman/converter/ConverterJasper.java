@@ -85,7 +85,7 @@ public class ConverterJasper implements FileConverter {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 
-			JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), null);
+			JasperExportManager.exportReportToPdfStream(simpleReportFiller.getJasperPrint(), outputStream);
 
 			file.setBody(outputStream.toByteArray());
 			file.setType(Type.PDF);
