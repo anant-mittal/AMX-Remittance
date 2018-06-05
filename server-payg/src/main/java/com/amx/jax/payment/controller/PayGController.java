@@ -59,6 +59,9 @@ public class PayGController {
 	@Value("${app.url.bhr}")
 	String bhrRedirectURL;
 
+	@Value("${app.url.omn}")
+	String omnRedirectURL;
+	
 	@Autowired
 	PayGConfig payGConfig;
 
@@ -75,6 +78,8 @@ public class PayGController {
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
+		}else if (tnt.equals(Tenant.OMN)) {
+			appRedirectUrl = omnRedirectURL;
 		}
 
 		if (callbackd != null) {
