@@ -58,7 +58,9 @@ public class PurposeOfTransactionService extends AbstractService {
 
 	@Autowired
 	private IBeneficiaryOnlineDao beneficiaryOnlineDao;
-
+	@Autowired
+	RoutingService routingService ;
+	
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
@@ -265,7 +267,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		ApiResponse response = getBlackApiResponse();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = applicationProcedureDao.getRoutingDetails(beneBankDetails);
+		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal rountingCountry = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");
@@ -296,6 +298,7 @@ public class PurposeOfTransactionService extends AbstractService {
 		beneBankDetails.put("P_CUSTOMER_ID", meta.getCustomerId());
 		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode());
 		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId());
+		beneBankDetails.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
 		return beneBankDetails;
 	}
 
