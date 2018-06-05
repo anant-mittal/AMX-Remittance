@@ -23,7 +23,6 @@ public class PMGaugeEvent extends AuditEvent {
 
 	Templates template = null;
 	private List<String> to = null;
-	private Object data = null;
 
 	public PMGaugeEvent(EnumType type) {
 		super(type);
@@ -52,9 +51,6 @@ public class PMGaugeEvent extends AuditEvent {
 	public PMGaugeEvent(Type type, File file) {
 		super(type);
 		this.template = file.getTemplate();
-		if (type == Type.PDF_ERROR) {
-			this.data = file.getModel();
-		}
 	}
 
 	public Templates getTemplate() {
@@ -71,14 +67,6 @@ public class PMGaugeEvent extends AuditEvent {
 
 	public void setTo(List<String> to) {
 		this.to = to;
-	}
-
-	public Object getData() {
-		return data;
-	}
-
-	public void setData(Object data) {
-		this.data = data;
 	}
 
 }
