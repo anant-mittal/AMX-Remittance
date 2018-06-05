@@ -4,20 +4,56 @@ import org.slf4j.Logger;
 
 public interface AuditService {
 
+	/**
+	 * Log Audit Events
+	 * 
+	 * @param event
+	 * @return
+	 */
 	public AuditLoggerResponse log(AuditEvent event);
 
+	/**
+	 * Audit from request tracking purpose
+	 * 
+	 * @param event
+	 * @return
+	 */
 	public AuditLoggerResponse track(AuditEvent event);
 
+	/**
+	 * Audit from performance perspective
+	 * 
+	 * @param event
+	 * @return
+	 */
 	public AuditLoggerResponse gauge(AuditEvent event);
 
-	public AuditLoggerResponse log(AuditEvent event, Exception e);
+	/**
+	 * Missed / failed /No Action events
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public AuditLoggerResponse fail(AuditEvent event);
 
-	public AuditLoggerResponse track(AuditEvent event, Exception e);
-
-	public AuditLoggerResponse gauge(AuditEvent event, Exception e);
-
+	/**
+	 * 
+	 * Log exception
+	 * 
+	 * @param event
+	 * @param e
+	 * @return
+	 */
 	public AuditLoggerResponse excep(AuditEvent event, Exception e);
 
+	/**
+	 * Log exception plus print stack trace
+	 * 
+	 * @param event
+	 * @param logger
+	 * @param e
+	 * @return
+	 */
 	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e);
 
 }
