@@ -87,7 +87,8 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL((String) configMap.get("responseUrl"));
+			pipe.setErrorURL("http://google.com/");
+			//pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
@@ -100,24 +101,12 @@ public class OmannetClient implements PayGClient {
 
 			if (pipeValue != 0) {
 				responseMap.put("errorMsg", pipe.getError());
-				/*responseMap.put("debugMsg", pipe.getDebugMsg());*/
 				LOGGER.error(pipe.getError());
 				LOGGER.debug(pipe.getDebugMsg());
 				throw new RuntimeException("Problem while sending transaction to Oman.");
 			}
 			LOGGER.info("Generated web address is ---> "+pipe.getWebAddress());
-			
-			String payID = pipe.getPaymentId();
-			String payURL = pipe.getWebAddress();
-
-			responseMap.put("payid", new String(payID));
-			responseMap.put("payurl", new String(payURL));
-			
-
-			String url = payURL + "?paymentId=" + payID;
-			LOGGER.info("Generated url is ---> " + url);
-			payGParams.setRedirectUrl(payURL);
-			
+			payGParams.setRedirectUrl( pipe.getWebAddress());
 		
 	    } catch (Exception e) {
 		e.printStackTrace();
