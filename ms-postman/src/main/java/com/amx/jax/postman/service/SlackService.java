@@ -77,7 +77,7 @@ public class SlackService {
 
 	public Exception sendException(String appname, String title, Exception e) {
 
-		if (appConfig.isDebug()) {
+		if (appConfig.isDebug() && e == null) {
 			LOGGER.error("Slack-Notify-Exception ", e);
 			return e;
 		}

@@ -128,6 +128,11 @@ public class BankMetaService extends AbstractService {
 		if (!isparametersSet) {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
 		}
+		
+		if (branchesList.isEmpty()) {
+		    throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
+		}
+		
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(convertBranchView(branchesList));
 		response.getData().setType("bank-branch-dto");

@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -23,6 +23,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -62,8 +63,11 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
-	@Value("${notification.range}")
-	private String notifyRange;
+	@Value("${notification.range.long}")
+	private String notifyRangeLong;
+
+	@Value("${notification.range.short}")
+	private String notifyRangeShort;
 
 	@Autowired
 	private WebAppConfig webAppConfig;
@@ -86,6 +90,7 @@ public class UserController {
 		}
 
 		wrapper.getData().setTenant(AppContextUtil.getTenant());
+		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
 		wrapper.getData().setFeatures(elementToSearch);
@@ -103,10 +108,18 @@ public class UserController {
 
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
-			wrapper.getData().setNotifyRange(notifyRange);
+			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint)
+			throws PostManException {
+
+		return new ResponseWrapper<Object>();
 	}
 
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })

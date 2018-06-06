@@ -24,10 +24,12 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
@@ -39,6 +41,7 @@ import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.repository.IViewStateDao;
 import com.amx.jax.repository.OnlineConfigurationRepository;
 import com.amx.jax.repository.ServiceGroupMasterDescRepository;
+import com.amx.jax.repository.ServiceGroupMasterRepository;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.JaxUtil;
 
@@ -71,6 +74,9 @@ public class MetaService extends AbstractService {
 	
 	@Autowired
 	ServiceGroupMasterDescRepository serviceGroupMasterDescRepository;
+	
+	@Autowired
+	ServiceGroupMasterRepository serviceGroupMasterRepository;
 	
 	@Autowired
 	MetaData metaData;
@@ -147,15 +153,29 @@ public class MetaService extends AbstractService {
 				.findActiveByLanguageId(metaData.getLanguageId());
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
-			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
-			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
-			dto.setServiceGroupDesc(i.getServiceGroupDesc());
-			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-			outputDto.add(dto);
+			// disable cash
+			if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
+				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
+				dto.setServiceGroupDesc(i.getServiceGroupDesc());
+				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+				outputDto.add(dto);
+			}
 		});
 		return outputDto;
 	}
-	
+
+	public boolean isCashSeriveGroup(BigDecimal serviceGroupMaseterId) {
+		List<ServiceGroupMaster> output = serviceGroupMasterRepository
+				.findByServiceGroupIdAndIsActive(serviceGroupMaseterId, ConstantDocument.Yes);
+		if (output != null && !output.isEmpty()) {
+			if (ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(output.get(0).getServiceGroupCode())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public Map<BigDecimal, ServiceGroupMasterDescDto> getServiceGroupDtoMap() {
 		List<ServiceGroupMasterDesc> output = serviceGroupMasterDescRepository
 				.findActiveByLanguageId(metaData.getLanguageId());

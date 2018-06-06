@@ -3,7 +3,11 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-public class CustomerModel extends AbstractModel {
+import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
+
+public class CustomerModel extends AbstractModel implements ICustomerModel {
+
+	private static final long serialVersionUID = -8190742045911263443L;
 
 	private String identityId;
 
@@ -43,10 +47,12 @@ public class CustomerModel extends AbstractModel {
 		this.isRegistrationFlow = isRegistrationFlow;
 	}
 
+	@Override
 	public String getEmail() {
 		return email;
 	}
 
+	@Override
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -83,10 +89,12 @@ public class CustomerModel extends AbstractModel {
 		this.imageUrl = imageUrl;
 	}
 
+	@Override
 	public String getPassword() {
 		return password;
 	}
 
+	@Override
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -104,10 +112,12 @@ public class CustomerModel extends AbstractModel {
 		return "customer";
 	}
 
+	@Override
 	public String getLoginId() {
 		return loginId;
 	}
 
+	@Override
 	public void setLoginId(String loginId) {
 		this.loginId = loginId;
 	}
@@ -136,18 +146,22 @@ public class CustomerModel extends AbstractModel {
 		this.personinfo = personinfo;
 	}
 
+	@Override
 	public String getMotp() {
 		return motp;
 	}
 
+	@Override
 	public void setMotp(String motp) {
 		this.motp = motp;
 	}
 
+	@Override
 	public String getEotp() {
 		return eotp;
 	}
 
+	@Override
 	public void setEotp(String eotp) {
 		this.eotp = eotp;
 	}

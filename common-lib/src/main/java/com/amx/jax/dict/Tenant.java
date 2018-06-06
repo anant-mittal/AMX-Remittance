@@ -1,7 +1,9 @@
 package com.amx.jax.dict;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -259,6 +261,17 @@ public enum Tenant {
 			return defaultValue;
 		}
 		return tnt;
+	}
+
+	public static List<String> tenantStrings() {
+		List<String> values = new ArrayList<>();
+		for (Tenant site : Tenant.values()) {
+			if (site.isTenant()) {
+				values.add(site.toString());
+			}
+		}
+		return values;
+
 	}
 
 }

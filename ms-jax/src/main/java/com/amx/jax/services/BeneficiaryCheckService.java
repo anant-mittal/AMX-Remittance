@@ -251,7 +251,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (StringUtils.isBlank(beneDto.getBenificaryName())) {
+		/*if (!StringUtils.isBlank(beneDto.getBenificaryName())) {
 			String[] beneNameArray = beneDto.getBenificaryName().split(" ");
 			for (String stringName : beneNameArray) {
 				List<BankBlWorld> bannedList = beneBankWorldDao.getCheckBankBanned(stringName.trim());
@@ -261,7 +261,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					errorListDto.add(errorStatusDto);
 				}
 			}
-		}
+		}*/
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
@@ -282,9 +282,9 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		}
 
-		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getCountryId())) {
 			List<CountryMasterView> countryList = countryDao.findByLanguageIdAndCountryId(beneDto.getLanguageId(),
-					beneDto.getBenificaryCountry());
+					beneDto.getCountryId());
 			if (countryList.isEmpty()) {
 				isUpdateNeeded = true;
 				beneDto.setUpdateNeeded(true);
@@ -342,8 +342,8 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
-			List<ViewState> stateList = viewStateDao.getState(beneDto.getBenificaryCountry(), beneDto.getStateId(),
+		/*if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
+			List<ViewState> stateList = viewStateDao.getState(beneDto.getCountryId(), beneDto.getStateId(),
 					beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
 				beneDto.setUpdateNeeded(true);
@@ -358,7 +358,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
-		}
+		}*/
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(),
@@ -398,8 +398,8 @@ public class BeneficiaryCheckService extends AbstractService {
 			 * }
 			 */
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(
-				beneDto.getApplicationCountryId(), beneDto.getBenificaryCountry(), beneDto.getCurrencyId());
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
+				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());
 
 		if (serviceAppList.isEmpty()) {
 			errorDesc = "Data not found";

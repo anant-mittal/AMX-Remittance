@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.manager;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -19,24 +20,31 @@ import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
+import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.trnx.model.OtpData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
+import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.ContextUtil;
 
 @Component
@@ -56,6 +64,14 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	private CustomerDao customerDao;
 	@Autowired
 	private CryptoUtil cryptoUtil;
+
+	@Autowired
+	private MetaData jaxMetaInfo;
+
+	@Autowired
+	CustomerIdProofRepository customerIdProofRepository;
+	@Autowired
+	BizcomponentDao bizcomponentDao;
 
 	/**
 	 * Initialization of trnx
@@ -93,6 +109,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		Customer customer = commitCustomer(model.getCustomerPersonalDetail());
 		commitCustomerContact(model.getCustomerHomeAddress(), customer);
 		commitOnlineCustomer(model, customer);
+		commitOnlineCustomerIdProof(model, customer);
 		return model;
 	}
 
@@ -120,19 +137,26 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	}
 
 	/**
+	 * save customer home country contact
+	 * 
 	 * @param customerHomeAddress
 	 *            customer home address saves customer contact in db
 	 */
 	private void commitCustomerContact(CustomerHomeAddress customerHomeAddress, Customer customer) {
-
-		ContactDetail contactDetail = new ContactDetail();
-		contactDetail.setFsCountryMaster(new CountryMaster(customerHomeAddress.getCountryId()));
-		contactDetail.setFsDistrictMaster(new DistrictMaster(customerHomeAddress.getDistrictId()));
-		contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
-		contactDetail.setMobile(customerHomeAddress.getMobile());
-		contactDetail.setFsCustomer(customer);
-		contactDetail.setActiveStatus(ConstantDocument.No);
-		contactDetailsRepository.save(contactDetail);
+		if (customerHomeAddress != null) {
+			ContactDetail contactDetail = new ContactDetail();
+			contactDetail.setFsCountryMaster(new CountryMaster(customerHomeAddress.getCountryId()));
+			contactDetail.setFsDistrictMaster(new DistrictMaster(customerHomeAddress.getDistrictId()));
+			contactDetail.setFsStateMaster(new StateMaster(customerHomeAddress.getStateId()));
+			contactDetail.setMobile(customerHomeAddress.getMobile());
+			contactDetail.setFsCustomer(customer);
+			contactDetail.setActiveStatus(ConstantDocument.No);
+			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
+			// home type contact
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
+			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
+			contactDetailsRepository.save(contactDetail);
+		}
 	}
 
 	private Customer commitCustomer(CustomerPersonalDetail customerPersonalDetail) {
@@ -141,6 +165,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		BigDecimal customerReference = customerDao.generateCustomerReference();
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
+		customer.setCountryId(jaxMetaInfo.getCountryId());
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
@@ -214,5 +239,33 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		CustomerRegistrationTrnxModel model = get();
 		model.setCustomerCredential(customerCredential);
 		return model;
+	}
+
+	private void commitOnlineCustomerIdProof(CustomerRegistrationTrnxModel model, Customer customer) {
+		CustomerIdProof custProof = new CustomerIdProof();
+
+		Customer customerData = new Customer();
+		customerData.setCustomerId(customer.getCustomerId());
+		custProof.setFsCustomer(customerData);
+
+		custProof.setLanguageId(jaxMetaInfo.getLanguageId());
+
+		BizComponentData customerType = new BizComponentData();
+		customerType.setComponentDataId(
+				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, jaxMetaInfo.getLanguageId())
+						.getFsBizComponentData().getComponentDataId());
+		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
+
+		BizComponentData idType = new BizComponentData();
+		idType.setComponentDataId(null);
+		// custProof.setFsBizComponentDataByIdentityTypeId(idType);
+
+		custProof.setIdentityInt(customer.getIdentityInt());
+		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		custProof.setCreatedBy(customer.getIdentityInt());
+		custProof.setCreationDate(new Date());
+		custProof.setIdentityTypeId(new BigDecimal(Constants.IDENTITY_TYPE_ID));
+		customerIdProofRepository.save(custProof);
+
 	}
 }

@@ -46,4 +46,10 @@ public class Constants {
 
 	/** The Constant CANCELLED_REQUEST. */
 	public static final String CANCELLED_REQUEST = "04.03";
+
+	public static final String CUSTOMERTYPE_INDU = "Individual";
+
+	public static final String CUST_ACTIVE_INDICATOR = "Y";
+	
+	public static final String IDENTITY_TYPE_ID = "198";
 }
