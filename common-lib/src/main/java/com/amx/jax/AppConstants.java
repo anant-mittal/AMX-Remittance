@@ -14,7 +14,7 @@ public class AppConstants extends Constants {
 	public static final String TRACE_TIME_XKEY = "x-time-id";
 	public static final String TRANX_ID_XKEY = "x-tranx-id";
 	public static final String TRANX_ID_XKEY_CLEAN = TRANX_ID_XKEY.replaceAll("[-]", "_");
-	public static final String USER_ID_XKEY = "x-user-id";
+	public static final String ACTOR_ID_XKEY = "x-actor-id";
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
 	public static final String APP_DETAILS = "app";
