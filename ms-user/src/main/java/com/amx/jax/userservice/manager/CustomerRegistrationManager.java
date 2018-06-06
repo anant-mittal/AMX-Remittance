@@ -167,6 +167,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
+		customer.setCreatedBy(customerPersonalDetail.getIdentityInt());
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
