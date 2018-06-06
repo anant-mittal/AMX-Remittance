@@ -23,6 +23,10 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	private Date validFromDate;
 	private BigDecimal payAmount;
 	private BigDecimal receiveAmount;
+	private BigDecimal baseCurrencyId;
+	private String baseCurrencyQuote;
+	private BigDecimal foreignCurrencyId;
+	private String foreignCurrencyQuote;
 
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -126,6 +130,38 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
+	}
+
+	public BigDecimal getBaseCurrencyId() {
+		return baseCurrencyId;
+	}
+
+	public void setBaseCurrencyId(BigDecimal baseCurrencyId) {
+		this.baseCurrencyId = baseCurrencyId;
+	}
+
+	public String getBaseCurrencyQuote() {
+		return baseCurrencyQuote;
+	}
+
+	public void setBaseCurrencyQuote(String baseCurrencyQuote) {
+		this.baseCurrencyQuote = baseCurrencyQuote;
+	}
+
+	public BigDecimal getForeignCurrencyId() {
+		return foreignCurrencyId;
+	}
+
+	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
+		this.foreignCurrencyId = foreignCurrencyId;
+	}
+
+	public String getForeignCurrencyQuote() {
+		return foreignCurrencyQuote;
+	}
+
+	public void setForeignCurrencyQuote(String foreignCurrencyQuote) {
+		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
 	@Override
