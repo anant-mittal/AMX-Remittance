@@ -75,13 +75,13 @@ public class RequestLogFilter implements Filter {
 			}
 
 			// User Id Tracking
-			String userId = req.getHeader(AppConstants.USER_ID_XKEY);
-			if (StringUtils.isEmpty(userId)) {
-				userId = ArgUtil.parseAsString(req.getParameter(AppConstants.USER_ID_XKEY));
+			String actorId = req.getHeader(AppConstants.ACTOR_ID_XKEY);
+			if (StringUtils.isEmpty(actorId)) {
+				actorId = ArgUtil.parseAsString(req.getParameter(AppConstants.ACTOR_ID_XKEY));
 			}
 
-			if (!StringUtils.isEmpty(userId)) {
-				AppContextUtil.setUserId(userId);
+			if (!StringUtils.isEmpty(actorId)) {
+				AppContextUtil.setActorId(actorId);
 			}
 
 			// Trace Id Tracking
