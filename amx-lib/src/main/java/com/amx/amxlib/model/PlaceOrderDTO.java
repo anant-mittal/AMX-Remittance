@@ -169,7 +169,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		return "place-order-dto";
 	}
 
-	
+
 	@Override
 	public String toString() {
 		return "PlaceOrderDTO [placeOrderId=" + placeOrderId + ", customerId=" + customerId
@@ -177,7 +177,9 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 				+ targetExchangeRate + ", bankRuleFieldId=" + bankRuleFieldId + ", srlId=" + srlId
 				+ ", sourceOfIncomeId=" + sourceOfIncomeId + ", isActive=" + isActive + ", createdDate=" + createdDate
 				+ ", validToDate=" + validToDate + ", validFromDate=" + validFromDate + ", payAmount=" + payAmount
-				+ ", receiveAmount=" + receiveAmount + "]";
+				+ ", receiveAmount=" + receiveAmount + ", baseCurrencyId=" + baseCurrencyId + ", baseCurrencyQuote="
+				+ baseCurrencyQuote + ", foreignCurrencyId=" + foreignCurrencyId + ", foreignCurrencyQuote="
+				+ foreignCurrencyQuote + "]";
 	}
 
 	@Override
@@ -187,6 +189,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		result = prime * result + ((placeOrderId == null) ? 0 : placeOrderId.hashCode());
 		return result;
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
