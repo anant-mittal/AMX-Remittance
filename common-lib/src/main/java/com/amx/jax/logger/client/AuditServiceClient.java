@@ -30,7 +30,7 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker trackmarker = MarkerFactory.getMarker("TRACK");
 	private static final Marker gaugemarker = MarkerFactory.getMarker("GAUGE");
 	private static final Marker excepmarker = MarkerFactory.getMarker("EXCEP");
-	private static final Marker errormarker = MarkerFactory.getMarker("ERROR");
+	private static final Marker failmarker = MarkerFactory.getMarker("FAIL");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static String appName = null;
 
@@ -84,12 +84,6 @@ public class AuditServiceClient implements AuditService {
 		return logStatic(event);
 	}
 
-	@Override
-	public AuditLoggerResponse log(AuditEvent event, Exception e) {
-		AuditServiceClient.captureException(event, e);
-		return this.log(event);
-	}
-
 	// TRACK LOGS
 
 	public static AuditLoggerResponse trackStatic(AuditEvent event) {
@@ -102,12 +96,6 @@ public class AuditServiceClient implements AuditService {
 	public AuditLoggerResponse track(AuditEvent event) {
 		this.excuteFilters(event);
 		return trackStatic(event);
-	}
-
-	@Override
-	public AuditLoggerResponse track(AuditEvent event, Exception e) {
-		AuditServiceClient.captureException(event, e);
-		return this.track(event);
 	}
 
 	// GAUGE LOGS
@@ -129,10 +117,21 @@ public class AuditServiceClient implements AuditService {
 		return gaugeStatic(event);
 	}
 
+	/**
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse failStatic(AuditEvent event) {
+		captureDetails(event);
+		LOGGER.info(failmarker, JsonUtil.toJson(event));
+		return null;
+	}
+
 	@Override
-	public AuditLoggerResponse gauge(AuditEvent event, Exception e) {
-		AuditServiceClient.captureException(event, e);
-		return this.gauge(event);
+	public AuditLoggerResponse fail(AuditEvent event) {
+		this.excuteFilters(event);
+		return failStatic(event);
 	}
 
 	// Excep LOGS

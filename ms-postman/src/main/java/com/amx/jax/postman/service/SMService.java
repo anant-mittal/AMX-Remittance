@@ -82,7 +82,7 @@ public class SMService {
 			if (!ArgUtil.isEmpty(to)) {
 				this.doSendSMS(sms);
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
+				auditService.fail(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
 			}
 
 		} catch (Exception e) {
