@@ -226,6 +226,42 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 
+	public ApiResponse updatePlaceOrder(PlaceOrderDTO dto) {
+		ApiResponse response = getBlackApiResponse();
+		try {
+			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderUpdate(dto.getPlaceOrderId());
+			if(!placeOrderList.isEmpty()) {
+				PlaceOrder rec = placeOrderList.get(0);
+				
+				rec.setIsActive("Y");
+				rec.setUpdatedDate(new Date());
+				rec.setCustomerId(dto.getCustomerId());
+				rec.setBeneficiaryRelationshipSeqId(dto.getBeneficiaryRelationshipSeqId());
+				rec.setBankRuleFieldId(dto.getBankRuleFieldId());
+				rec.setSrlId(dto.getSrlId());
+				rec.setTargetExchangeRate(dto.getTargetExchangeRate());
+				rec.setSourceOfIncomeId(dto.getSourceOfIncomeId());
+				rec.setValidFromDate(dto.getValidFromDate());
+				rec.setValidToDate(dto.getValidToDate());
+				rec.setPayAmount(dto.getPayAmount());
+				rec.setReceiveAmount(dto.getReceiveAmount());
+				rec.setCreatedDate(dto.getCreatedDate());
+				
+				placeOrderdao.save(rec);
+				
+			}else {
+				throw new GlobalException("No record found");
+			}
+			response.setResponseStatus(ResponseStatus.OK);
+		
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			logger.error("Error while deleting Place Order record.");
+			e.printStackTrace();
+		}
+		return response;
+	}
+	
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub

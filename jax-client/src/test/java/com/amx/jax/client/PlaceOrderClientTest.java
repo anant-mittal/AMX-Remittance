@@ -76,7 +76,7 @@ public class PlaceOrderClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	public void deletePlaceOrder() throws ParseException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -91,5 +91,28 @@ public class PlaceOrderClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	
+	@Test
+	public void updatePlaceOrder() throws ParseException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		
+		PlaceOrderDTO placeOrderDTO = new PlaceOrderDTO();
+		placeOrderDTO.setPlaceOrderId(new BigDecimal(22));
+		placeOrderDTO.setCustomerId(new BigDecimal(5218));
+		placeOrderDTO.setBeneficiaryRelationshipSeqId(new BigDecimal(2));
+		placeOrderDTO.setPayAmount(new BigDecimal(200));
+		placeOrderDTO.setReceiveAmount(new BigDecimal(20000));
+		placeOrderDTO.setTargetExchangeRate(new BigDecimal(222));
+		placeOrderDTO.setBankRuleFieldId(new BigDecimal(2));
+		placeOrderDTO.setSrlId(new BigDecimal(2));
+		placeOrderDTO.setSourceOfIncomeId(new BigDecimal(2));
+		placeOrderDTO.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
+		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-02"));
+		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-11"));
+		
+		ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
+		assertNotNull("Response is null", response);
+	}
 }

@@ -96,7 +96,7 @@ public class PlaceOrderController {
 	}
 
 	/**
-	 * place order by placeOrderId
+	 * get place order by placeOrderId
 	 * @return
 	 */
 	@RequestMapping(value = "/get/placeOrder/forId", method = RequestMethod.POST)
@@ -111,5 +111,19 @@ public class PlaceOrderController {
 		
 	}
 	
-
+	/**
+	 * update place order 
+	 * @return
+	 */
+	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	public ApiResponse handleUrlUpdatePlaceOrder(@RequestBody PlaceOrderDTO dto) {
+		logger.info("In Update Place Order" + dto.toString());
+		BigDecimal customerId = metaData.getCustomerId();
+		
+		dto.setCustomerId(customerId);
+		ApiResponse response = null;
+		response = placeOrderService.updatePlaceOrder(dto);
+		
+		return response;
+	}
 }

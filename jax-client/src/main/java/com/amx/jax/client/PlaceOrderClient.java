@@ -97,4 +97,27 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
+	public ApiResponse<PlaceOrderDTO> updatePlaceOrder(PlaceOrderDTO placeOrderDTO) {
+		ResponseEntity<ApiResponse<PlaceOrderDTO>> response = null;
+		try {
+			if(placeOrderDTO.getPlaceOrderId() != null) {
+				HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(placeOrderDTO, getHeader());
+				String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/update";
+				return restService.ajax(url).post(requestEntity)
+						.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
+						});
+			}else {
+				throw new ValidationException("PlaceOrder ID not provided.");
+			}
+		} catch (ValidationException ve) {
+			log.error("RateAlert ID is null.", ve);
+		} catch (Exception e) {
+			if (e instanceof AbstractException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		}
+		return response.getBody();
+	}
 }
