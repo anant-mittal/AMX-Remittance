@@ -10,6 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AuditActor;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -45,7 +46,7 @@ public class UserSession implements Serializable {
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
 		if (customerModel != null) {
-			AppContextUtil.setUserId(customerModel.getCustomerId());
+			AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CUSTOMER, customerModel.getCustomerId()));
 		}
 	}
 
