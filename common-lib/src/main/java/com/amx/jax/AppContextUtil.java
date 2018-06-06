@@ -27,8 +27,8 @@ public class AppContextUtil {
 		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY));
 	}
 
-	public static String getUserId() {
-		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.USER_ID_XKEY));
+	public static String getActorId() {
+		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.ACTOR_ID_XKEY));
 	}
 
 	public static String getSessionId() {
@@ -60,8 +60,8 @@ public class AppContextUtil {
 		ContextUtil.map().put(AppConstants.TRACE_TIME_XKEY, timestamp);
 	}
 
-	public static void setUserId(Object userId) {
-		ContextUtil.map().put(AppConstants.USER_ID_XKEY, userId);
+	public static void setActorId(Object actorId) {
+		ContextUtil.map().put(AppConstants.ACTOR_ID_XKEY, actorId);
 	}
 
 	public static void setSessionId(Object sessionId) {
@@ -73,7 +73,7 @@ public class AppContextUtil {
 		appContext.setTenant(getTenant());
 		appContext.setTraceId(getTraceId());
 		appContext.setTranxId(getTranxId());
-		appContext.setUserId(getUserId());
+		appContext.setActorId(getActorId());
 		appContext.setTraceTime(getTraceTime());
 		return appContext;
 	}
@@ -88,8 +88,8 @@ public class AppContextUtil {
 		if (context.getTranxId() != null) {
 			setTranxId(context.getTranxId());
 		}
-		if (context.getUserId() != null) {
-			setUserId(context.getUserId());
+		if (context.getActorId() != null) {
+			setActorId(context.getActorId());
 		}
 		setTraceTime(context.getTraceTime());
 
@@ -105,7 +105,7 @@ public class AppContextUtil {
 		map.put(TenantContextHolder.TENANT, context.getTenant().toString());
 		map.put(AppConstants.TRACE_ID_XKEY, context.getTraceId());
 		map.put(AppConstants.TRANX_ID_XKEY, context.getTranxId());
-		map.put(AppConstants.USER_ID_XKEY, context.getUserId());
+		map.put(AppConstants.ACTOR_ID_XKEY, context.getActorId());
 		return map;
 	}
 
@@ -118,7 +118,7 @@ public class AppContextUtil {
 
 		String traceId = getTraceId();
 		String tranxId = getTranxId();
-		String userId = getUserId();
+		String userId = getActorId();
 		httpHeaders.add(TenantContextHolder.TENANT, getTenant().toString());
 		if (!ArgUtil.isEmpty(traceId)) {
 			httpHeaders.add(AppConstants.TRACE_ID_XKEY, traceId);
@@ -127,7 +127,7 @@ public class AppContextUtil {
 			httpHeaders.add(AppConstants.TRANX_ID_XKEY, tranxId);
 		}
 		if (!ArgUtil.isEmpty(userId)) {
-			httpHeaders.add(AppConstants.USER_ID_XKEY, userId);
+			httpHeaders.add(AppConstants.ACTOR_ID_XKEY, userId);
 		}
 	}
 
