@@ -39,6 +39,7 @@ import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -138,6 +139,9 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	CountryRepository countryRepository;
+	
+   @Autowired
+   PlaceOrderService placeOrderService;
 	@Autowired
 	BeneficaryAccountRepository beneficaryAccountRepository;
 
@@ -618,7 +622,6 @@ public class BeneficiaryService extends AbstractService {
 	
 	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status,String mOtp,String eOtp) {
 		
-
 		if (mOtp!=null || eOtp!=null) {
 			userService.validateOtp(null, mOtp, eOtp);
 		}
@@ -820,15 +823,81 @@ public class BeneficiaryService extends AbstractService {
 			CountryMasterDTO model = new CountryMasterDTO();
 			jaxUtil.convert(beneCountry, model);
 			//disable cash
-			if (supportedServiceGroupList.contains(model.getCountryId())) {
+			/*if (supportedServiceGroupList.contains(model.getCountryId())) {
 				listData.add(map.get(BigDecimal.valueOf(1)));
-			}
+			}*/
 			model.setSupportedServiceGroup(listData);
 			list.add(model);
 		}
 		return list;
 	}
 	
+    /**
+     * to get place order beneficiary.
+     * 
+     * @param placeOrderId
+     * @return apiresponse
+     */
+
+    public ApiResponse getPlaceOrderBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal placeOrderId) {
+        ApiResponse response = getBlackApiResponse();
+        try {
+            BenificiaryListView poBene = null;
+            BeneficiaryListDTO beneDto = null;
+            CustomerRemittanceTransactionView trnxView = null;
+            RemittancePageDto remitPageDto = new RemittancePageDto();
+            PlaceOrderDTO poDto = null;
+
+            ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
+            
+            if (poResponse.getData() != null) {
+                poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+            }else {
+                throw new GlobalException("PO not found for id : "+placeOrderId);
+            }
+            
+            
+            BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
+            
+            if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+                poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
+            } 
+
+            if (poBene == null) {
+                throw new GlobalException("Not found");
+            } else {
+                beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
+                
+                logger.info("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
+                
+                trnxView = new CustomerRemittanceTransactionView();
+                
+                trnxView.setCustomerId(customerId);
+                trnxView.setLocalTrnxAmount(poDto.getPayAmount());
+                //trnxView.setForeignCurrencyCode();
+                trnxView.setBeneficaryAccountNumber(poBene.getBankAccountNumber());
+                trnxView.setBeneficaryBankName(poBene.getBankName());
+                trnxView.setBeneficaryBranchName(poBene.getBankBranchName());
+                trnxView.setBeneficiaryRelationSeqId(poBene.getBeneficiaryRelationShipSeqId());
+                trnxView.setBeneficaryName(poBene.getBenificaryName());
+            }
+
+            remitPageDto.setBeneficiaryDto(beneDto);
+            if (trnxView != null) {
+                TransactionHistroyDTO trxDto = convertTranHistDto(trnxView);
+                trxDto.setBankRuleFieldId(poDto.getBankRuleFieldId());
+                trxDto.setSrlId(poDto.getSrlId());
+                remitPageDto.setTrnxHistDto(trxDto);
+            }
+            response.getData().getValues().add(remitPageDto);
+            response.getData().setType(remitPageDto.getModelType());
+            response.setResponseStatus(ResponseStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occured in getDefaultBeneficiary method", e);
+            throw new GlobalException("Default bene not found" + e.getMessage());
+        }
+        return response;
+    }
 	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
 		return beneficaryAccountRepository.findOne(beneAccountSeqId);
 	}
