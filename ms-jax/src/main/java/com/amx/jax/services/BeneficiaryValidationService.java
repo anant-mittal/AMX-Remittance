@@ -180,6 +180,24 @@ public class BeneficiaryValidationService {
 			return null;
 		}
 	}
+	
+	/**
+	 * @param beneAccountModel
+	 * @return bene account
+	 * 
+	 */
+	public BeneficaryAccount getBeneficaryAccountForCash(BeneAccountModel beneAccountModel, BigDecimal beneMasterSeqId) {
+		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
+		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
+				BeneficiaryAccountPredicateCreator.createBeneSearchPredicateCash(beneAccountModel, isBangladeshBene, beneMasterSeqId));
+
+		int size = Iterables.size(existingAccountItr);
+		if (size > 0) {
+			return existingAccountItr.iterator().next();
+		} else {
+			return null;
+		}
+	}
 
 	/**
 	 * @param benePersonalDetailModel
@@ -203,10 +221,12 @@ public class BeneficiaryValidationService {
 	 * 
 	 */
 	public void validateDuplicateCashBeneficiary(BeneficiaryTrnxModel trnxModel) {
-		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
-		BeneficaryAccount beneAccountMaster = getBeneficaryAccount(beneAccountModel);
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
+		BigDecimal beneMasterSeqId = (beneMaster != null ? beneMaster.getBeneficaryMasterSeqId() : null);
+		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
+		BeneficaryAccount beneAccountMaster = getBeneficaryAccountForCash(beneAccountModel, beneMasterSeqId);
+
 		if (beneMaster != null) {
 			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
 			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
