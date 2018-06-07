@@ -41,6 +41,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.ArgUtil;
@@ -72,6 +73,8 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	CustomerIdProofRepository customerIdProofRepository;
 	@Autowired
 	BizcomponentDao bizcomponentDao;
+	@Autowired
+	UserService userService ;
 
 	/**
 	 * Initialization of trnx
@@ -127,6 +130,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		CustomerOnlineRegistration customerOnlineRegistration = new CustomerOnlineRegistration(customer);
 		String userName = customerOnlineRegistration.getUserName();
 		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
+		userService.simplifyAnswers(secQuestions);
 		customerDao.setSecurityQuestions(secQuestions, customerOnlineRegistration);
 		customerOnlineRegistration.setCaption(cryptoUtil.encrypt(userName, model.getCaption()));
 		customerOnlineRegistration.setImageUrl(model.getImageUrl());
