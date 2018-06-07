@@ -11,7 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -33,7 +33,7 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				throw new JaxSystemError();
@@ -49,7 +49,7 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				throw new JaxSystemError();
@@ -65,7 +65,7 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				throw new JaxSystemError();
@@ -88,7 +88,7 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		} catch (ValidationException ve) {
 			log.error("RateAlert ID is null.", ve);
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				throw new JaxSystemError();
@@ -112,7 +112,7 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		} catch (ValidationException ve) {
 			log.error("RateAlert ID is null.", ve);
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				throw new JaxSystemError();

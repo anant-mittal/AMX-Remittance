@@ -316,7 +316,8 @@ public class BeneClient extends AbstractJaxServiceClient {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status,String mOtp, String eOtp) {
+	public ApiResponse updateStatus(BigDecimal beneMasSeqId, String remarks, BeneStatus status, String mOtp,
+			String eOtp) {
 		try {
 			StringBuffer sb = new StringBuffer();
 			sb.append("?beneMasSeqId=").append(beneMasSeqId);
@@ -324,7 +325,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			sb.append("&status=").append(status);
 			sb.append("&mOtp=").append(mOtp);
 			sb.append("&eOtp=").append(eOtp);
-			
+
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse>() {
@@ -489,27 +490,27 @@ public class BeneClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
-	
-	   public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
-	        try {
-	            ResponseEntity<ApiResponse<RemittancePageDto>> response;
-	            LOGGER.info("Place Order Beneficiary");
-	            StringBuffer sb = new StringBuffer();
-	            if (placeOrderId != null) {
-	                sb.append("?");
-	                sb.append("placeOrderId=").append(placeOrderId);
-	            }
 
-	            HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/" + sb.toString();
-	            return restService.ajax(url).post(requestEntity)
-	                    .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
-	                    });
-	        } catch (AbstractException ae) {
-	            throw ae;
-	        } catch (Exception e) {
-	            LOGGER.error("exception in defaultBeneficiary : ", e);
-	            throw new JaxSystemError();
-	        } // end of try-catch
-	    }
+	public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
+		try {
+			ResponseEntity<ApiResponse<RemittancePageDto>> response;
+			LOGGER.info("Place Order Beneficiary");
+			StringBuffer sb = new StringBuffer();
+			if (placeOrderId != null) {
+				sb.append("?");
+				sb.append("placeOrderId=").append(placeOrderId);
+			}
+
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/" + sb.toString();
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in defaultBeneficiary : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
 }
