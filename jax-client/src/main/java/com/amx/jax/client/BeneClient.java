@@ -493,19 +493,13 @@ public class BeneClient extends AbstractJaxServiceClient {
 
 	public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
 		try {
-			ResponseEntity<ApiResponse<RemittancePageDto>> response;
-			LOGGER.info("Place Order Beneficiary");
-			StringBuffer sb = new StringBuffer();
-			if (placeOrderId != null) {
-				sb.append("?");
-				sb.append("placeOrderId=").append(placeOrderId);
-			}
-
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/" + sb.toString();
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
-					});
+	          HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+	            String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/";
+	            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+	                    .queryParam("placeOrderId", placeOrderId);
+	            return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+	                    .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+	                    });
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
