@@ -40,7 +40,7 @@ public class BeneController {
 	private JaxService jaxService;
 
 	@Autowired
-	Transactions transactions;
+	private Transactions transactions;
 
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
@@ -78,9 +78,10 @@ public class BeneController {
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(
 			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
-			@RequestHeader(value = "eOtp", required = false) String eOtpHeader, @RequestParam String mOtp,
-			@RequestParam String eOtp, @RequestParam BigDecimal beneficaryMasterSeqId,
-			@RequestParam(required = false) String remarks, @RequestParam BeneStatus status) {
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestParam BigDecimal beneficaryMasterSeqId, @RequestParam(required = false) String remarks,
+			@RequestParam BeneStatus status) {
 		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<Object, AuthResponseOTPprefix>();
 		// Disable Beneficiary
 		mOtp = (mOtp == null) ? mOtpHeader : mOtp;
