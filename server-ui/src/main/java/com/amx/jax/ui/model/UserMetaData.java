@@ -33,6 +33,8 @@ public class UserMetaData extends AbstractModel {
 	String notifyRangeLong = null;
 	String notifyRangeShort = null;
 
+	String returnUrl = null;
+
 	HotPoints[] hotPoints = HotPoints.values();
 
 	public JaxMetaParameter getConfig() {
@@ -161,6 +163,14 @@ public class UserMetaData extends AbstractModel {
 
 	public void setNotifyRangeShort(String notifyRangeShort) {
 		this.notifyRangeShort = notifyRangeShort;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 
 }

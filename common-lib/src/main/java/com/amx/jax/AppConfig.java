@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
 
@@ -176,11 +177,12 @@ public class AppConfig {
 	}
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
 		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
 		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}
 

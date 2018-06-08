@@ -14,6 +14,7 @@ import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
@@ -55,6 +56,9 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
+
+	@Autowired
+	private PlaceOrderClient placeOrderClient;
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
@@ -108,22 +112,25 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
 		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
-		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
-			log.info("Customer Model Found in User Session : {}", jaxMetaInfo.getCustomerId());
 		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
 			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
-			log.info("Customer Model Found in Guest Session : {}", jaxMetaInfo.getCustomerId());
 		}
-		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
-
 		return this;
 	}
 
 	public CustomerRegistrationClient getCustRegClient() {
 		return customerRegistrationClient;
+	}
+
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
+	}
+
+	public void setPlaceOrderClient(PlaceOrderClient placeOrderClient) {
+		this.placeOrderClient = placeOrderClient;
 	}
 
 }
