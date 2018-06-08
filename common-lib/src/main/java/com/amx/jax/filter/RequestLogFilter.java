@@ -102,7 +102,10 @@ public class RequestLogFilter implements Filter {
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 				AppContextUtil.setSessionId(sessionID);
-				req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+				if (session != null) {
+					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
+				}
 			} else {
 				ContextUtil.setTraceId(traceId);
 				MDC.put(ContextUtil.TRACE_ID, traceId);
