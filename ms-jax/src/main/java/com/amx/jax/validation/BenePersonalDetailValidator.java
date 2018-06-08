@@ -15,7 +15,6 @@ import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
-import com.amx.jax.util.JaxUtil;
 
 @Component
 public class BenePersonalDetailValidator implements Validator {
