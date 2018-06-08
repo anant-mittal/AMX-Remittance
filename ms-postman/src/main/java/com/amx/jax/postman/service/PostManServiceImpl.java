@@ -46,45 +46,11 @@ public class PostManServiceImpl implements PostManService {
 	private FileService fileService;
 
 	@Autowired
-	private TemplateService templateService;
+	private AppConfig appConfig;
 
 	@Override
 	public Email sendEmail(Email email) throws PostManException {
-		String to = null;
-		try {
-			to = email.getTo() != null ? email.getTo().get(0) : null;
-			LOGGER.info("Sending {} Email to {}", email.getTemplate(), to);
-			if (email.getTemplate() != null) {
-				File file = new File();
-				file.setTemplate(email.getTemplate());
-				file.setModel(email.getModel());
-				file.setLang(email.getLang());
-
-				email.setMessage(this.processTemplate(file).getContent());
-
-				if (ArgUtil.isEmptyString(email.getSubject())) {
-					email.setSubject(file.getTitle());
-				}
-			}
-
-			if (email.getFiles() != null && email.getFiles().size() > 0) {
-				for (File file : email.getFiles()) {
-					if (file.getLang() == null) {
-						file.setLang(email.getLang());
-					}
-					fileService.create(file);
-				}
-			}
-			if (!ArgUtil.isEmpty(to)) {
-				emailService.send(email);
-				LOGGER.info("Sent {} Email to {}", email.getTemplate(), to);
-			} else {
-				LOGGER.info("NotSent {} Email to {}", email.getTemplate(), to);
-			}
-		} catch (Exception e) {
-			this.notifyException(to, e);
-		}
-		return email;
+		return emailService.sendEmail(email);
 	}
 
 	@Override
@@ -95,13 +61,7 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	public File processTemplate(File file) {
-		try {
-			fileService.create(file);
-		} catch (Exception e) {
-			this.notifyException(file.getTemplate().toString(), e);
-		}
-		LOGGER.info("Template Generated = {}", file.getTemplate());
-		return file;
+		return fileService.create(file);
 	}
 
 	public File processTemplate(Templates template, Map<String, Object> map, Type fileType) {
@@ -118,24 +78,8 @@ public class PostManServiceImpl implements PostManService {
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:START", "sendSMS");
 		}
-		String to = null;
-		try {
-			to = sms.getTo() != null ? sms.getTo().get(0) : null;
-			LOGGER.info("Sending {} SMS to {} ", sms.getTemplate(), to);
-			if (sms.getTemplate() != null) {
-				Context context = new Context(new Locale(sms.getLang().toString()));
-				context.setVariables(sms.getModel());
-				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
-			}
-			if (!ArgUtil.isEmpty(to)) {
-				this.smsService.sendSMS(sms);
-				LOGGER.info("Sent {} SMS to {}", sms.getTemplate(), to);
-			} else {
-				LOGGER.info("NotSent {} SMS to {} ", sms.getTemplate(), to);
-			}
-		} catch (Exception e) {
-			this.notifyException(to, e);
-		}
+		this.smsService.sendSMS(sms);
+
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:END", "sendSMS");
 		}
@@ -153,17 +97,10 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(null, title, null, e);
+		return slackService.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
 	}
 
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
-	public Exception notifyException(String appname, String title, Exception e) {
-		return slackService.sendException(appname, title, null, e);
-	}
-
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception notifyException(String appname, String title, String exception, Exception e) {
 		return slackService.sendException(appname, title, exception, e);
 	}

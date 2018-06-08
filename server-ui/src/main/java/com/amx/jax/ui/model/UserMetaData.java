@@ -7,10 +7,10 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.jax.dict.HotPoints;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.user.UserDevice;
 
 public class UserMetaData extends AbstractModel {
@@ -32,6 +32,8 @@ public class UserMetaData extends AbstractModel {
 	List<String> subscriptions = new ArrayList<String>();
 	String notifyRangeLong = null;
 	String notifyRangeShort = null;
+
+	String returnUrl = null;
 
 	HotPoints[] hotPoints = HotPoints.values();
 
@@ -161,6 +163,14 @@ public class UserMetaData extends AbstractModel {
 
 	public void setNotifyRangeShort(String notifyRangeShort) {
 		this.notifyRangeShort = notifyRangeShort;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
 	}
 
 }

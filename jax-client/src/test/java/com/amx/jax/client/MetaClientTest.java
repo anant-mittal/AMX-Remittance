@@ -149,7 +149,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void testOldGetBeneficiaryCurrency() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<CurrencyMasterDTO> response = null;

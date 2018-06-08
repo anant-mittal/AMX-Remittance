@@ -69,8 +69,8 @@ public class CustomerIdProof implements java.io.Serializable {
 	private Date creationDate;
 	private Date lastUpdatedDate;
 	private String identityStatus;
-	//private BizComponentData fsBizComponentDataByIdentityTypeId;
-	//private BizComponentData fsBizComponentDataByCustomerTypeId;
+	private BizComponentData fsBizComponentDataByIdentityTypeId;
+	private BizComponentData fsBizComponentDataByCustomerTypeId;
 	//private BizComponentData fsBizComponentDataByIdentityFor;
 	private String scanReq;
 	//private Clob scanImage;
@@ -104,10 +104,6 @@ public class CustomerIdProof implements java.io.Serializable {
 
 	@Column(name="IDENTITY_TYPE_ID")
 	private BigDecimal identityTypeId;
-	
-	
-	
-	
 	
 
 	public BigDecimal getIdentityFor() {
@@ -153,8 +149,8 @@ public class CustomerIdProof implements java.io.Serializable {
 		this.creationDate = creationDate;
 		this.lastUpdatedDate = lastUpdatedDate;
 		this.identityStatus = identityStatus;
-	//	this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
-	//	this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
+		this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
+		this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
 	//	this.fsBizComponentDataByIdentityFor = fsBizComponentDataByIdentityFor;
 	//	this.fsCustomerByRefCustomerId = fsCustomerByRefCustomerId;
 		//this.imgUploadDate = imgUploadDate;
@@ -316,16 +312,7 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setIdentityStatus(String identityStatus) {
 		this.identityStatus = identityStatus;
 	}
-	/*@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "IDENTITY_TYPE_ID")
-	public BizComponentData getFsBizComponentDataByIdentityTypeId() {
-		return fsBizComponentDataByIdentityTypeId;
-	}
-
-	public void setFsBizComponentDataByIdentityTypeId(BizComponentData fsBizComponentDataByIdentityTypeId) {
-		this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
-	}
-
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CUSTOMER_TYPE_ID")
 	public BizComponentData getFsBizComponentDataByCustomerTypeId() {
@@ -335,7 +322,17 @@ public class CustomerIdProof implements java.io.Serializable {
 	public void setFsBizComponentDataByCustomerTypeId(BizComponentData fsBizComponentDataByCustomerTypeId) {
 		this.fsBizComponentDataByCustomerTypeId = fsBizComponentDataByCustomerTypeId;
 	}
-*/
+	
+	/*@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "IDENTITY_TYPE_ID")
+	public BizComponentData getFsBizComponentDataByIdentityTypeId() {
+		return fsBizComponentDataByIdentityTypeId;
+	}
+
+	public void setFsBizComponentDataByIdentityTypeId(BizComponentData fsBizComponentDataByIdentityTypeId) {
+		this.fsBizComponentDataByIdentityTypeId = fsBizComponentDataByIdentityTypeId;
+	}*/
+
 	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "IDENTITY_FOR")
 	public BizComponentData getFsBizComponentDataByIdentityFor() {

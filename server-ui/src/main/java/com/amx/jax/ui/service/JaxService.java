@@ -14,6 +14,7 @@ import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
@@ -55,6 +56,9 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
+
+	@Autowired
+	private PlaceOrderClient placeOrderClient;
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
@@ -124,6 +128,14 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public CustomerRegistrationClient getCustRegClient() {
 		return customerRegistrationClient;
+	}
+
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
+	}
+
+	public void setPlaceOrderClient(PlaceOrderClient placeOrderClient) {
+		this.placeOrderClient = placeOrderClient;
 	}
 
 }

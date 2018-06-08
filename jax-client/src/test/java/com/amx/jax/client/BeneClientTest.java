@@ -202,4 +202,17 @@ public class BeneClientTest extends AbstractTestClient {
 		assertNotNull("result is null", response.getResult());
 	}
 
+	// @Test
+    public void testPOBeneficiary() throws IOException, ResourceNotFoundException, InvalidInputException {
+        jaxMetaInfo.setCountryId(new BigDecimal(91));
+        jaxMetaInfo.setCompanyId(new BigDecimal(1));
+        jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+        jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+        BigDecimal placeOrderId = new BigDecimal(88041);
+        ApiResponse<RemittancePageDto> response = null;
+        response = client.poBeneficiary(placeOrderId);
+        assertNotNull("Response is null", response);
+        assertNotNull(response.getResult());
+        assertNotNull(response.getResult().getModelType());
+    }
 }

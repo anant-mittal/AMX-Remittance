@@ -254,6 +254,8 @@ public class RemittController {
 	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
 			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
 		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
+
+		// Noncompliant - exception is lost
 		try {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();

@@ -30,13 +30,14 @@ import com.amx.utils.JsonUtil;
 public class CustomerRegistrationClientTest extends AbstractTestClient {
 
 	@Autowired
-	CustomerRegistrationClient client;
-
+	CustomerRegistrationClient client;	
+	
 	String trnxId;
 
 	@Test
 	public void testSendOtp() throws URISyntaxException, IOException {
-		setDefaults();
+		setDefaults();	
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		ApiResponse<BooleanResponse> response = null;
 		String json = new String(
 				Files.readAllBytes(Paths.get(ClassLoader.getSystemResource("cust/person-detail.json").toURI())));
@@ -50,6 +51,7 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 		List<SecurityQuestionModel> securityquestions = JsonUtil.<SecurityQuestionModel>getListFromJsonString(json);
 		client.saveSecurityQuestions(securityquestions);
 		client.savePhishiingImage("test", "5");
+		
 		CustomerCredential customerCredential = new CustomerCredential(personalDetail.getIdentityInt(), "Amx@1234");
 		response = client.saveLoginDetail(customerCredential);
 

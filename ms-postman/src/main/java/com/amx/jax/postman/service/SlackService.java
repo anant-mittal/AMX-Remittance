@@ -77,9 +77,14 @@ public class SlackService {
 		return msg;
 	}
 
+	public Exception sendException(String title, Exception e) {
+		return this.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
+	}
+
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public Exception sendException(String appname, String title, String exception, Exception e) {
 
-		if (appConfig.isDebug() && e == null) {
+		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
 			return e;
 		}
@@ -111,7 +116,7 @@ public class SlackService {
 			attachments.add(attachmentTrace);
 
 			Map<String, String> attachmentTitle = new HashMap<String, String>();
-			attachmentTrace.put("text", String.format("Exception %s : %s \n Message = %s", e.getClass().getName(),
+			attachmentTitle.put("text", String.format("Exception %s : %s \n Message = %s", e.getClass().getName(),
 					exception, URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8")));
 			attachmentTitle.put("color", "danger");
 			attachments.add(attachmentTitle);

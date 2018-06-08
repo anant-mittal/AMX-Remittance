@@ -9,7 +9,7 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
+		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -49,6 +49,11 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.5</version>
+		</dependency>
 	</dependencies>
 	<description>Common utils library for boot projects</description>
 </project>

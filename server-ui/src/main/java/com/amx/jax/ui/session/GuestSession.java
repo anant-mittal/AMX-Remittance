@@ -29,6 +29,7 @@ import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.utils.Random;
+import com.amx.utils.TimeUtils;
 
 /**
  * To Save Values to Session Use this class, only if these values are not
@@ -80,16 +81,24 @@ public class GuestSession implements Serializable {
 		this.identity = identiy;
 	}
 
+	String returnUrl = null;
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
 	public void initFlow(AuthFlow flow) {
 		state.flow = flow;
 		state.cStep = null;
+		state.timestamp = System.currentTimeMillis();
 		state.nStep = tenantContext.get().getNextAuthStep(state);
 	}
 
 	public void initStep(AuthStep step) {
 		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.nStep) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE,
+					TimeUtils.timeSince(state.timestamp)));
 			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
 	}
@@ -99,7 +108,7 @@ public class GuestSession implements Serializable {
 		state.cStep = step;
 		state.nStep = tenantContext.get().getNextAuthStep(state);
 		if (state.nStep == AuthStep.COMPLETED) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.PASS));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.PASS, TimeUtils.timeSince(state.timestamp)));
 			state.flow = null;
 		}
 		return state;
@@ -174,6 +183,10 @@ public class GuestSession implements Serializable {
 		SessionEvent evt = new SessionEvent();
 		evt.setType(SessionEvent.Type.SESSION_ENDED);
 		auditService.log(evt);
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
 	}
 
 }
