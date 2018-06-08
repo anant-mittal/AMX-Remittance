@@ -901,7 +901,5 @@ public class BeneficiaryService extends AbstractService {
         }
         return response;
     }
-	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
-		return beneficaryAccountRepository.findOne(beneAccountSeqId);
-	}
+	
 }
