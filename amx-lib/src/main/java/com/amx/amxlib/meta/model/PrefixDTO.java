@@ -12,7 +12,6 @@ public class PrefixDTO implements Serializable {
 	private String code;
 	private String value;
 	private BigDecimal componentDataId;
-	private String gender;
 
 	public PrefixDTO() {
 		super();
@@ -42,13 +41,6 @@ public class PrefixDTO implements Serializable {
 		this.componentDataId = componentDataId;
 	}
 	
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
 	
 
 }
