@@ -44,6 +44,11 @@
 			<version>3.0.0.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<!-- Swagger infos -->
 		<dependency>
