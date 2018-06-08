@@ -9,6 +9,10 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	private static final long serialVersionUID = 1L;
 
+	public AbstractJaxException() {
+		super();
+	}
+	
 	public AbstractJaxException(Exception e) {
 		super(e);
 	}

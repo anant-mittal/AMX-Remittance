@@ -5,6 +5,10 @@ public class UserNotFoundException extends AbstractJaxException {
 	public UserNotFoundException(String errorMessage) {
 		super(errorMessage);
 	}
+	
+	public UserNotFoundException() {
+		super();
+	}
 
 	/**
 	 * 
