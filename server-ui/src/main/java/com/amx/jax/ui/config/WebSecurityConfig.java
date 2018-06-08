@@ -16,6 +16,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	CustomerAuthProvider customAuthProvider;
 
+	@Autowired
+	WebLoginUrlEntry loginUrlEntry;
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		// http.headers().frameOptions().disable();
@@ -39,6 +42,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().logout().permitAll().logoutSuccessUrl("/login?logout").deleteCookies("JSESSIONID")
 				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()
 				.disable().headers().disable();
+
+		http.exceptionHandling().authenticationEntryPoint(loginUrlEntry);
 	}
 
 	@Autowired

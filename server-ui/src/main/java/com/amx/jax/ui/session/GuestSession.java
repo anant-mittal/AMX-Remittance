@@ -81,6 +81,12 @@ public class GuestSession implements Serializable {
 		this.identity = identiy;
 	}
 
+	String returnUrl = null;
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
 	public void initFlow(AuthFlow flow) {
 		state.flow = flow;
 		state.cStep = null;
@@ -177,6 +183,10 @@ public class GuestSession implements Serializable {
 		SessionEvent evt = new SessionEvent();
 		evt.setType(SessionEvent.Type.SESSION_ENDED);
 		auditService.log(evt);
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
 	}
 
 }
