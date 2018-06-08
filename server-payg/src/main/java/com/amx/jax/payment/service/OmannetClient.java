@@ -41,9 +41,9 @@ public class OmannetClient implements PayGClient {
 
 	@Value("${omannet.language.code}")
 	String OmemnetLanguageCode;
-	
-	@Value("${omannet.keystore.path}")
-	String OmemnetKeyStorepath;
+		
+	@Value("${omannet.callback.url}")
+	String OmemnetCallbackUrl;
 	
 	@Autowired
 	HttpServletResponse response;
@@ -71,9 +71,9 @@ public class OmannetClient implements PayGClient {
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
 		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/OMANNET/" + payGParams.getTenant() + "/");
+				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
-		configMap.put("keystorePath", OmemnetKeyStorepath);
+		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
 
 		LOGGER.info("Oman omannet payment configuration : " + JsonUtil.toJson(configMap));
@@ -87,8 +87,8 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL("http://google.com/");
-			//pipe.setErrorURL((String) configMap.get("responseUrl"));
+			pipe.setErrorURL("https://paygd-omn.modernexchange.com");
+		    //pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
@@ -127,13 +127,16 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setPostDate(request.getParameter("postdate"));
 		gatewayResponse.setTrackId(request.getParameter("trackid"));
 		gatewayResponse.setTranxId(request.getParameter("tranid"));
-		gatewayResponse.setResponseCode(request.getParameter("responsecode"));
+		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.OMN.getCode());
+		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+		gatewayResponse.setError(request.getParameter("Error"));
+
 		
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
