@@ -90,7 +90,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<MinMaxExRateDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in minMaxExRate : ", e);
