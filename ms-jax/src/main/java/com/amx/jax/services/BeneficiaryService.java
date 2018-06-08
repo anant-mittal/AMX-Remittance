@@ -832,6 +832,9 @@ public class BeneficiaryService extends AbstractService {
 		return list;
 	}
 	
+	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
+		return beneficaryAccountRepository.findOne(beneAccountSeqId);
+	}
     /**
      * to get place order beneficiary.
      * 
