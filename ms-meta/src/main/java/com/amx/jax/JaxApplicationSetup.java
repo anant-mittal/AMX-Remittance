@@ -2,8 +2,6 @@ package com.amx.jax;
 
 import java.math.BigDecimal;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
