@@ -21,7 +21,6 @@ import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
