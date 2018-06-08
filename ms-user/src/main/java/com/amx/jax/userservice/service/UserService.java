@@ -285,7 +285,7 @@ public class UserService extends AbstractUserService {
 		return false;
 	}
 
-	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+	public void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
 		if (securityquestions != null && !securityquestions.isEmpty()) {
 			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
 		}

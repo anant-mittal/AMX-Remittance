@@ -77,4 +77,8 @@ public class CryptoUtil {
 		return new String(buf.toString());
 	}
 
+	public static void main(String[] args) {
+		CryptoUtil util = new CryptoUtil();
+		System.out.println(util.getHash("293111302791", "test"));
+	}
 }
