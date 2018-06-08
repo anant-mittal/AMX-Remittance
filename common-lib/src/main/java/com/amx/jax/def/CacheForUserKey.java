@@ -16,7 +16,7 @@ public class CacheForUserKey implements KeyGenerator {
 	@Override
 	public Object generate(Object target, Method method, Object... params) {
 		StringBuilder b = new StringBuilder(AppContextUtil.getTenant() + "#" + target.getClass().getName() + "#"
-				+ AppContextUtil.getUserId() + "#" + method.getName());
+				+ AppContextUtil.getActorId() + "#" + method.getName());
 		if (params.length > 0) {
 			for (int i = 0; i < params.length; i++) {
 				b.append("#" + params[i]);
