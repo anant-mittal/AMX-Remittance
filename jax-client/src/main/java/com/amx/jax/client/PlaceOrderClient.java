@@ -19,13 +19,13 @@ import com.amx.jax.rest.RestService;
 
 @Component
 public class PlaceOrderClient extends AbstractJaxServiceClient {
-	
+
 	private Logger log = Logger.getLogger(getClass());
-	
+
 	@Autowired
 	RestService restService;
-	
-	public ApiResponse<PlaceOrderDTO> savePlaceOrder(PlaceOrderDTO placeOrderDTO){
+
+	public ApiResponse<PlaceOrderDTO> savePlaceOrder(PlaceOrderDTO placeOrderDTO) {
 		try {
 			HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(placeOrderDTO, getHeader());
 			String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/save";
@@ -76,13 +76,13 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 	public ApiResponse<PlaceOrderDTO> deletePlaceOrder(PlaceOrderDTO placeOrderDTO) {
 		ResponseEntity<ApiResponse<PlaceOrderDTO>> response = null;
 		try {
-			if(placeOrderDTO.getPlaceOrderId() != null) {
+			if (placeOrderDTO.getPlaceOrderId() != null) {
 				HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(placeOrderDTO, getHeader());
 				String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/delete";
 				return restService.ajax(url).post(requestEntity)
 						.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 						});
-			}else {
+			} else {
 				throw new ValidationException("PlaceOrder ID not provided.");
 			}
 		} catch (ValidationException ve) {
@@ -96,17 +96,17 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		}
 		return response.getBody();
 	}
-	
+
 	public ApiResponse<PlaceOrderDTO> updatePlaceOrder(PlaceOrderDTO placeOrderDTO) {
 		ResponseEntity<ApiResponse<PlaceOrderDTO>> response = null;
 		try {
-			if(placeOrderDTO.getPlaceOrderId() != null) {
+			if (placeOrderDTO.getPlaceOrderId() != null) {
 				HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(placeOrderDTO, getHeader());
 				String url = this.getBaseUrl() + PLACE_ORDER_ENDPOINT + "/update";
 				return restService.ajax(url).post(requestEntity)
 						.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 						});
-			}else {
+			} else {
 				throw new ValidationException("PlaceOrder ID not provided.");
 			}
 		} catch (ValidationException ve) {

@@ -99,7 +99,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 			return response.getBody();
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCountryList : ", e);
@@ -220,7 +220,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneFavoriteList : ", e);
@@ -237,7 +237,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneUpdate : ", e);
@@ -375,7 +375,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveBenePersonalDetailInTrnx : ", e);
@@ -500,7 +500,7 @@ public class BeneClient extends AbstractJaxServiceClient {
                 return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
                         .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
                         });
-        } catch (AbstractException ae) {
+        } catch (AbstractJaxException ae) {
             throw ae;
         } catch (Exception e) {
             LOGGER.error("exception in defaultBeneficiary : ", e);

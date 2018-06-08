@@ -1,6 +1,7 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 			return true;
 		}
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
-		if (StringUtils.isNotBlank(apiErrorJson)) {
+		if (!ArgUtil.isEmpty(apiErrorJson)) {
 			return true;
 		}
 		return false;
@@ -34,7 +35,6 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
-
 
 		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
 

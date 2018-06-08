@@ -81,7 +81,8 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 	 * Min Max Exchange rate client call
 	 * 
 	 */
-	public ApiResponse<MinMaxExRateDTO> getMinMaxExchangeRate()  throws ResourceNotFoundException, InvalidInputException {
+	public ApiResponse<MinMaxExRateDTO> getMinMaxExchangeRate()
+			throws ResourceNotFoundException, InvalidInputException {
 		try {
 			LOGGER.info("Get in Min Max Exchange Rate Client ");
 
