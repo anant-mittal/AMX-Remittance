@@ -1,9 +1,11 @@
 package com.amx.jax.client;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -66,8 +68,11 @@ public class ExchangeRateTest {
 		ApiResponse<MinMaxExRateDTO> response = null;
 		response = client.getMinMaxExchangeRate();
 		assertNotNull("Response is null", response);
-		assertNotNull(response.getResult());
+		List<MinMaxExRateDTO> results = response.getResults();
+		for (MinMaxExRateDTO dto : results) {
+			assertTrue(dto.getMinExrate().intValue() <= dto.getMaxExrate().intValue());
+		}
 		assertNotNull(response.getResult().getModelType());
-		
+
 	}
 }
