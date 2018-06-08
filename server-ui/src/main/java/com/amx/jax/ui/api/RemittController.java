@@ -82,19 +82,15 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
-		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>(
+		return new ResponseWrapper<List<TransactionHistroyDTO>>(
 				jaxService.setDefaults().getRemitClient().getTransactionHistroy("2017", null, null, null).getResults());
-		return wrapper;
 	}
 
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
-			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
-			throws IOException, PostManException {
+			@RequestParam String toDate, @RequestParam(required = false) String docfyr) throws PostManException {
 
 		ResponseWrapper<List<TransactionHistroyDTO>> wrapper = new ResponseWrapper<List<TransactionHistroyDTO>>();
-		// postManService.processTemplate(Templates.REMIT_STATMENT_EMAIL_FILE, wrapper,
-		// File.Type.PDF);
 		List<TransactionHistroyDTO> data = jaxService.setDefaults().getRemitClient()
 				.getTransactionHistroy(docfyr, null, fromDate, toDate).getResults();
 		File file = new File();
@@ -102,7 +98,6 @@ public class RemittController {
 		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
-		// file.setName("RemittanceStatment.pdf");
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
@@ -112,7 +107,6 @@ public class RemittController {
 		email.addFile(file);
 		email.setHtml(true);
 		postManService.sendEmailAsync(email);
-		// wrapper.setData(data);
 		return wrapper;
 	}
 
@@ -121,7 +115,6 @@ public class RemittController {
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
 		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
-		// file.setName("RemittanceStatment.pdf");
 		file.create(response, true);
 		return wrapper;
 	}
@@ -133,11 +126,12 @@ public class RemittController {
 			throws IOException, PostManException {
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+		duplicate = (duplicate == null || duplicate.booleanValue() == Boolean.FALSE.booleanValue())
+				? Boolean.FALSE.booleanValue()
+				: Boolean.TRUE.booleanValue();
 
-		// System.out.println(JsonUtil.toJson(wrapper));
 		File file = null;
-		if (skipd == null || skipd.booleanValue() == false) {
+		if (skipd == null || skipd.booleanValue() == Boolean.FALSE.booleanValue()) {
 			file = postManService.processTemplate(
 					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
 					File.Type.PDF);
@@ -154,7 +148,9 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
 			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
 
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+		duplicate = (duplicate == null || duplicate.booleanValue() == Boolean.FALSE.booleanValue())
+				? Boolean.FALSE.booleanValue()
+				: Boolean.TRUE.booleanValue();
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
@@ -264,10 +260,9 @@ public class RemittController {
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
 					"https://" + request.getServerName() + "/app/landing/remittance"));
 
-		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
+				| URISyntaxException e) {
 			wrapper.setMessage(WebResponseStatus.ERROR, e);
-		} catch (MalformedURLException | URISyntaxException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e.getMessage());
 		}
 		return wrapper;
 	}
