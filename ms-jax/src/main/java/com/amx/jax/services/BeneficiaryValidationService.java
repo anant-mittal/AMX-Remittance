@@ -27,6 +27,8 @@ import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
@@ -36,8 +38,6 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 
 /**
  * validations service for add bene
