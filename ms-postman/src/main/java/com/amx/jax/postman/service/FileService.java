@@ -19,6 +19,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.ArgUtil;
+import com.codahale.metrics.annotation.Timed;
 
 import net.sf.jasperreports.engine.JRException;
 
@@ -42,6 +43,7 @@ public class FileService {
 	@Autowired
 	AuditService auditService;
 
+	@Timed
 	public File create(File file) {
 		if (file.getTemplate() != null) {
 			/**
