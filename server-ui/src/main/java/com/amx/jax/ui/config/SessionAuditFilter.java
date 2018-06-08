@@ -11,16 +11,19 @@ import com.amx.jax.ui.session.UserDeviceBean;
 @Component
 public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 
-	@Autowired
+	@Autowired(required = false)
 	UserDeviceBean userDevice;
 
 	@Override
 	public void doFilter(SessionEvent event) {
-		if (userDevice.getFingerprint() == null) {
-			userDevice.resolve();
+		if(userDevice!=null) {
+			if (userDevice.getFingerprint() == null) {
+				userDevice.resolve();
+			}
+			event.setDevice(userDevice.toMap());
 		}
 		event.setSessionId(AppContextUtil.getSessionId());
-		event.setDevice(userDevice.toMap());
+		
 	}
 
 }
