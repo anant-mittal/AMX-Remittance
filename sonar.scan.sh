@@ -1,5 +1,3 @@
-bash setup.sh
-
 mvn clean verify sonar:sonar
 
 # In some situation you may want to run sonar:sonar goal as a dedicated step. Be sure to use install as first step for multi-module projects
