@@ -46,4 +46,14 @@ public enum PrefixEnum {
 	public void setComponentDataId(BigDecimal componentDataId) {
 		this.componentDataId = componentDataId;
 	}
+	
+	public static PrefixEnum  getPrefixEnum(String componentDataId) {
+		PrefixEnum[] allPrefix = PrefixEnum.values();
+		for (PrefixEnum p : allPrefix) {
+			if (p.getComponentDataId().toString().equals(componentDataId)) {
+				return p;
+			}
+		}
+		return null;
+	}
 }
