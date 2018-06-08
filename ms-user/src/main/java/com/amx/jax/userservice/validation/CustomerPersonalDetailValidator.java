@@ -5,11 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.constant.JaxApiFlow;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.scope.TenantContext;

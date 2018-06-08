@@ -97,6 +97,7 @@ public enum JaxError implements IExceptionEnum {
     AGENT_BRANCH_LIST_NOT_FOUND,
     BANK_ID_NOT_PRESENT,
     JAX_FIELD_VALIDATION_FAILURE,
+    REMITTANCE_SERVICE_NOT_AVAILABLE,
     
     /*validation errors*/
     VALIDATION_MINIMUM_LENGTH_MOBILE,

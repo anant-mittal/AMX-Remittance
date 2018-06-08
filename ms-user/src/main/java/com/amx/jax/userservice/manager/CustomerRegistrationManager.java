@@ -14,13 +14,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;
@@ -168,12 +168,15 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		Customer customer = new Customer();
 		jaxUtil.convert(customerPersonalDetail, customer);
 		BigDecimal customerReference = customerDao.generateCustomerReference();
+		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerPersonalDetail.getTitle());
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(customerPersonalDetail.getIdentityInt());
+		customer.setCreatedBy(jaxMetaInfo.getDeviceType() != null ? jaxMetaInfo.getDeviceType()
+				: customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
+		customer.setGender(prefixEnum.getGender());
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);

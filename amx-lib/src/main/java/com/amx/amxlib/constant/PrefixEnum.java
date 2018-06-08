@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 
 public enum PrefixEnum {
 
-	MR_CODE("MR", "Mr.",new BigDecimal(181)), MRS_CODE("M/S", "M/s.",new BigDecimal(180)), MS("MS","Ms.",new BigDecimal(182));
+	MR_CODE("MR", "Mr.",new BigDecimal(181),"Male"), MRS_CODE("M/S", "M/s.",new BigDecimal(180),"Female"), MS("MS","Ms.",new BigDecimal(182),"Female");
 
 	private String code;
 
@@ -17,10 +17,13 @@ public enum PrefixEnum {
 	
 	private BigDecimal componentDataId;
 	
-	private PrefixEnum(String code, String value,BigDecimal componentDataId) {
+	private String gender;
+	
+	private PrefixEnum(String code, String value,BigDecimal componentDataId,String gender) {
 		this.code = code;
 		this.value = value;
 		this.componentDataId=componentDataId;
+		this.gender = gender;
 	}
 
 	public String getCode() {
@@ -45,5 +48,23 @@ public enum PrefixEnum {
 
 	public void setComponentDataId(BigDecimal componentDataId) {
 		this.componentDataId = componentDataId;
+	}
+	
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public static PrefixEnum  getPrefixEnum(String componentDataId) {
+		PrefixEnum[] allPrefix = PrefixEnum.values();
+		for (PrefixEnum p : allPrefix) {
+			if (p.getComponentDataId().toString().equals(componentDataId)) {
+				return p;
+			}
+		}
+		return null;
 	}
 }

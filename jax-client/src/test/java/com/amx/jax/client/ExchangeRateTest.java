@@ -14,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
@@ -31,7 +32,7 @@ public class ExchangeRateTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	@Test
+	//@Test
 	public void testGetExchangeRate() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -44,7 +45,7 @@ public class ExchangeRateTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testgetOnlineCurrency() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -55,4 +56,18 @@ public class ExchangeRateTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+	@Test
+	public void testMinMaxExchangeRate() throws IOException, ResourceNotFoundException, InvalidInputException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setLanguageId(new BigDecimal(1));
+		ApiResponse<MinMaxExRateDTO> response = null;
+		response = client.getMinMaxExchangeRate();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+		
+	}
 }
