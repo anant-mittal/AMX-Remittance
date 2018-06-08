@@ -16,6 +16,7 @@ public abstract class AuditEvent {
 	protected String message;
 	protected String exception;
 	protected String exceptionType;
+	protected String actorId;
 
 	public AuditEvent() {
 		this.timestamp = System.currentTimeMillis();
@@ -115,6 +116,14 @@ public abstract class AuditEvent {
 
 	public void setExceptionType(String exceptionType) {
 		this.exceptionType = exceptionType;
+	}
+
+	public String getActorId() {
+		return actorId;
+	}
+
+	public void setActorId(String actorId) {
+		this.actorId = actorId;
 	}
 
 }

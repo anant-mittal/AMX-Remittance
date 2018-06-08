@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 
@@ -47,7 +48,8 @@ public class WebAuthFilter implements Filter {
 			if (referrer != null) {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
-			AppContextUtil.setUserId(sessionService.getUserSession().getUserid());
+			AppContextUtil.setActorId(
+					new AuditActor(AuditActor.ActorType.CUSTOMER, sessionService.getUserSession().getUserid()));
 			chain.doFilter(req, resp);
 		}
 
