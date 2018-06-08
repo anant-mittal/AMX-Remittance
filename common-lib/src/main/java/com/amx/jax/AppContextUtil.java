@@ -24,7 +24,7 @@ public class AppContextUtil {
 	}
 
 	public static Long getTraceTime() {
-		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY));
+		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
 	}
 
 	public static String getActorId() {

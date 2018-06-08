@@ -111,6 +111,7 @@ public class UserController {
 
 			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
 			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
+			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 		}
 
 		return wrapper;
