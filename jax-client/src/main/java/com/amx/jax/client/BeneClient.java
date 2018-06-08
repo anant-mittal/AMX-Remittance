@@ -500,7 +500,7 @@ public class BeneClient extends AbstractJaxServiceClient {
                 return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
                         .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
                         });
-        } catch (AbstractException ae) {
+        } catch (AbstractJaxException ae) {
             throw ae;
         } catch (Exception e) {
             LOGGER.error("exception in defaultBeneficiary : ", e);

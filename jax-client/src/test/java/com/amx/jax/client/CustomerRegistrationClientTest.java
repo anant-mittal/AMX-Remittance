@@ -3,6 +3,7 @@ package com.amx.jax.client;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
