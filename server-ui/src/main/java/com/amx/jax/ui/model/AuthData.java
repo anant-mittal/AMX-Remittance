@@ -25,6 +25,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		return password;
 	}
 
+	@Override
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -85,26 +86,32 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		this.mOtp = mOtp;
 	}
 
+	@Override
 	public String geteOtp() {
 		return eOtp;
 	}
 
+	@Override
 	public void seteOtp(String eOtp) {
 		this.eOtp = eOtp;
 	}
 
+	@Override
 	public String getmOtpPrefix() {
 		return mOtpPrefix;
 	}
 
+	@Override
 	public void setmOtpPrefix(String mOtpPrefix) {
 		this.mOtpPrefix = mOtpPrefix;
 	}
 
+	@Override
 	public String geteOtpPrefix() {
 		return eOtpPrefix;
 	}
 
+	@Override
 	public void seteOtpPrefix(String eOtpPrefix) {
 		this.eOtpPrefix = eOtpPrefix;
 	}
@@ -141,10 +148,12 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		this.imageCaption = imageCaption;
 	}
 
+	@Override
 	public QuestModelDTO getQues() {
 		return ques;
 	}
 
+	@Override
 	public void setQues(QuestModelDTO ques) {
 		this.ques = ques;
 	}
@@ -154,6 +163,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		return question;
 	}
 
+	@Override
 	public void setQuestion(String question) {
 		this.question = question;
 	}
@@ -163,6 +173,7 @@ public class AuthData extends AbstractModel implements AuthResponse, AuthRequest
 		return answer;
 	}
 
+	@Override
 	public void setAnswer(SecurityQuestionModel answer) {
 		this.answer = answer;
 	}

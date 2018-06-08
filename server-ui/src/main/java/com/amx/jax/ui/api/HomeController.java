@@ -91,11 +91,11 @@ public class HomeController {
 		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
 		Integer hits = sessionService.getGuestSession().hitCounter();
 		userDevice.getType();
-		wrapper.getData().hits = hits;
-		wrapper.getData().domain = request.getRequestURL().toString();
-		wrapper.getData().requestUri = request.getRequestURI();
-		wrapper.getData().remoteAddr = httpService.getIPAddress();
-		wrapper.getData().device = userDevice.toMap();
+		wrapper.getData().setHits(hits);
+		wrapper.getData().setDomain(request.getRequestURL().toString());
+		wrapper.getData().setRequestUri(request.getRequestURI());
+		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
+		wrapper.getData().setDevice(userDevice.toMap());
 		return JsonUtil.toJson(wrapper);
 	}
 
