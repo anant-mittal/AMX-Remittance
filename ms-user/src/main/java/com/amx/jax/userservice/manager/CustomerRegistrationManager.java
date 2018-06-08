@@ -14,6 +14,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
@@ -168,6 +169,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		Customer customer = new Customer();
 		jaxUtil.convert(customerPersonalDetail, customer);
 		BigDecimal customerReference = customerDao.generateCustomerReference();
+		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerPersonalDetail.getTitle());
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
