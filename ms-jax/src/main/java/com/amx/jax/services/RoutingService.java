@@ -52,12 +52,11 @@ public class RoutingService {
 			output.put("P_REMITTANCE_MODE_ID", routingProcedureDao.getRemittanceModeIdForCash(inputValue));
 			inputValue.putAll(output);
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
-			inputValue.putAll(output);
 		} else {
 			// banking
 			output = applicationProcedureDao.getRoutingDetails(inputValue);
 		}
-
+		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
 		return output;
 	}
