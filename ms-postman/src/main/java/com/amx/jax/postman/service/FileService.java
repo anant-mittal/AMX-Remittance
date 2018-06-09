@@ -42,7 +42,6 @@ public class FileService {
 	@Autowired
 	AuditService auditService;
 
-	@Timed
 	public File create(File file) {
 		if (file.getTemplate() != null) {
 			/**
