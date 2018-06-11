@@ -58,6 +58,6 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 	public BenificiaryListView findBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId);
 	
 	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and orsStatus <> 0 and bl.beneficiaryRelationShipSeqId in (:beneficiaryRelationShipSeqIds)")
-	public List<BenificiaryListView> getBeneficiaryRelationShipSeqIds(@Param("customerId") BigDecimal customerId, @Param("beneficaryMasterSeqIds") List<BigDecimal> beneficiaryRelationShipSeqIds);
+	public List<BenificiaryListView> getBeneficiaryRelationShipSeqIds(@Param("customerId") BigDecimal customerId, @Param("beneficiaryRelationShipSeqIds") List<BigDecimal> beneficiaryRelationShipSeqIds);
 
 }

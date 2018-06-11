@@ -158,7 +158,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
-			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
 			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
 			contactDetailsRepository.save(contactDetail);
 		}
@@ -177,10 +177,15 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
+		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
 		return customer;
+	}
+
+	private String getTitleLocal(String titleLocal) {
+		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
 	}
 
 	public String getJaxTransactionId() {
@@ -249,6 +254,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	public CustomerRegistrationTrnxModel saveLoginDetail(CustomerCredential customerCredential) {
 		CustomerRegistrationTrnxModel model = get();
 		model.setCustomerCredential(customerCredential);
+		save(model);
 		return model;
 	}
 
