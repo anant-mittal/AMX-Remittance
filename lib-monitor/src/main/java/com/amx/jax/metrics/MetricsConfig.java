@@ -3,6 +3,7 @@ package com.amx.jax.metrics;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 
 import com.codahale.metrics.MetricRegistry;
@@ -10,7 +11,7 @@ import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
 
 @Configuration
-@EnableMetrics
+@EnableMetrics(proxyTargetClass = true)
 @PropertySource("classpath:monitor.properties")
 public class MetricsConfig extends MetricsConfigurerAdapter {
 
