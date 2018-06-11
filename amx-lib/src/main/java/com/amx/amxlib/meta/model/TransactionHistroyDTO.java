@@ -80,6 +80,7 @@ public class TransactionHistroyDTO implements Serializable {
 
 	private Boolean beneIsActive;
 	
+	
 	public String getTransactionReference() {
 		return transactionReference;
 	}
