@@ -36,6 +36,7 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.SendOtpModel;
@@ -231,7 +232,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
 			});
 			break;
-			
+		case "min-max-exrate":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
+			});
+			break;	
 	}
 		responseData.setValues(models);
 		return responseData;

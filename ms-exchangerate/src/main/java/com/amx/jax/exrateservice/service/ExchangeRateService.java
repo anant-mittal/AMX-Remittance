@@ -23,6 +23,9 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -39,8 +42,11 @@ import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.BankMetaService;
+import com.amx.jax.service.CompanyService;
+import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.JaxUtil;
+
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -71,6 +77,12 @@ public class ExchangeRateService extends AbstractService {
 	
 	@Autowired
 	private ExchangeRateProcedureDao exchangeRateProcedureDao;
+	
+	@Autowired
+	CompanyService companyService;
+	
+	@Autowired
+	CurrencyMasterService currencyMasterService;
 
 	@Override
 	public String getModelType() {
@@ -327,6 +339,61 @@ public class ExchangeRateService extends AbstractService {
 		exchangeRateDao.saveOrUpdate(exRateModel);
 		apiResponse.getData().getValues().add(new BooleanResponse(true));
 		return apiResponse;
+	}
+
+	/**
+	 * Get Min Max Exchange Rate API
+	 * @return min max exchage rate data
+	 */
+	public ApiResponse getMinMaxExrate() {
+		ApiResponse<MinMaxExRateDTO> apiResponse = getBlackApiResponse();
+	
+		BigDecimal languageId = meta.getLanguageId();
+		ApiResponse responseFromCur = companyService.getCompanyDetails(languageId);
+		List listFromCur = responseFromCur.getData().getValues();
+		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
+		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
+		
+		ApiResponse responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
+		List listToCur = responseToCur.getData().getValues();
+		List dtoList = getMinMaxData(listToCur, fromCurrency);
+		
+		apiResponse.setResponseStatus(ResponseStatus.OK);
+		apiResponse.getData().getValues().addAll(dtoList);
+		apiResponse.getData().setType("min-max-exrate");
+		
+		return apiResponse;
+	}
+	
+	/**
+	 * call get min max exchange rate method
+	 * @return dtoList gives fromCurrency, toCurrency, minRate, maxRate
+	 */
+	private List<MinMaxExRateDTO> getMinMaxData(List<CurrencyMasterDTO> listToCur, BigDecimal fromCurrency){
+		List<MinMaxExRateDTO> dtoList = new ArrayList<MinMaxExRateDTO>();
+		
+		for(CurrencyMasterDTO rec : listToCur) {
+			try {
+				BigDecimal toCurrency = rec.getCurrencyId();
+				ApiResponse exrateresp = this.getExchangeRatesForOnline(fromCurrency, toCurrency, BigDecimal.ONE, null);
+				ExchangeRateResponseModel exrate = (ExchangeRateResponseModel)exrateresp.getResult();
+				List<BankMasterDTO> bankWiseRates = exrate.getBankWiseRates();
+				BigDecimal minRate = bankWiseRates.stream().max(new BankMasterDTO.BankMasterDTOComparator()).get().getExRateBreakup().getRate();
+				BigDecimal maxRate = bankWiseRates.stream().min(new BankMasterDTO.BankMasterDTOComparator()).get().getExRateBreakup().getRate();
+								
+				MinMaxExRateDTO minMaxDTO = new MinMaxExRateDTO();
+				minMaxDTO.setFromCurrencyId(fromCurrency);
+				minMaxDTO.setToCurrencyId(toCurrency);
+				minMaxDTO.setMinExrate(minRate);
+				minMaxDTO.setMaxExrate(maxRate);
+				
+				dtoList.add(minMaxDTO);
+			
+			}catch (Exception e) {
+				
+			}
+		}
+		return dtoList;
 	}
 
 }

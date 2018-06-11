@@ -13,10 +13,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.def.MockParamBuilder;
 import com.amx.jax.def.MockParamBuilder.MockParam;
 
-import springfox.documentation.builders.ParameterBuilder;
-import springfox.documentation.schema.ModelRef;
-import springfox.documentation.service.Parameter;
-
 @SpringBootApplication
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.amx.jax" })

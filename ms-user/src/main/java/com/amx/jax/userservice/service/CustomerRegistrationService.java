@@ -122,7 +122,7 @@ public class CustomerRegistrationService extends AbstractService {
 	 *            </p>
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
-		customerCredentialValidator.validate(customerCredential, null);
+		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerRegistrationManager.save(model);
 		customerRegistrationManager.commit();
