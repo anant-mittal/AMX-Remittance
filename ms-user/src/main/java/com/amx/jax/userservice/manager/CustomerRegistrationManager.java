@@ -158,7 +158,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
-			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
 			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
 			contactDetailsRepository.save(contactDetail);
 		}
