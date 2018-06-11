@@ -74,7 +74,7 @@ public class TransactionHistroyDTO implements Serializable {
 	
 	private String transactionReference;
 	
-	private String beneIsActive;
+	private Boolean beneIsActive;
 	
 	
 	public String getTransactionReference() {
@@ -337,14 +337,14 @@ public class TransactionHistroyDTO implements Serializable {
     /**
      * @return the beneIsActive
      */
-    public String getBeneIsActive() {
+    public Boolean getBeneIsActive() {
         return beneIsActive;
     }
 
     /**
      * @param beneIsActive the beneIsActive to set
      */
-    public void setBeneIsActive(String beneIsActive) {
+    public void setBeneIsActive(Boolean beneIsActive) {
         this.beneIsActive = beneIsActive;
     }
 

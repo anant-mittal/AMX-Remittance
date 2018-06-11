@@ -96,9 +96,10 @@ public class BeneficiaryValidationService {
 	}
 
 	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
-		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRules(
-				metaData.getCountryId(), beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
-				ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
+				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
+						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
@@ -155,7 +156,7 @@ public class BeneficiaryValidationService {
 				}
 			}
 			if (!isValid) {
-				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(":"));
 				String errorExpression = jaxUtil
 						.buildErrorExpression(JaxError.INVALID_BANK_ACCOUNT_NUM_LENGTH.toString(), validLengths);
 				throw new GlobalException("Invalid Bank Account number length", errorExpression);
