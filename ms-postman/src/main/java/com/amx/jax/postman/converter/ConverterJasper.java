@@ -54,7 +54,7 @@ public class ConverterJasper implements FileConverter {
 	private TemplateUtils templateUtils;
 
 	@Override
-	@Timed(name = "PDF_CREATION_JASPER")
+	@Timed(name = "PDF_CREATION_JASPER", absolute = true)
 	public File toPDF(File file) throws JRException {
 
 		simpleReportFiller.setReportFileName("jasper/" + file.getTemplate().getFileName() + ".jrxml");
