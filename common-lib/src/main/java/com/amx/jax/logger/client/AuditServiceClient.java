@@ -62,7 +62,11 @@ public class AuditServiceClient implements AuditService {
 
 	private static AuditEvent captureDetails(AuditEvent event) {
 		event.setComponent(appName);
-		event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
+		Long traceTime = AppContextUtil.getTraceTime();
+		if (traceTime != null) {
+			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
+		}
+		event.setEventTime(TimeUtils.timeSince(event.getTimestamp()));
 		event.setActorId(AppContextUtil.getActorId());
 		return event;
 	}
