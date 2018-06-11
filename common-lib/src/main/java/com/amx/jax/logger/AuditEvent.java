@@ -8,6 +8,7 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 
 	protected long tranxTime;
 	protected long traceTime;
+	protected long eventTime;
 	protected String description = null;
 	protected String message;
 	protected String exception;
@@ -87,6 +88,14 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
+	}
+
+	public long getEventTime() {
+		return eventTime;
+	}
+
+	public void setEventTime(long eventTime) {
+		this.eventTime = eventTime;
 	}
 
 }

@@ -19,7 +19,6 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.ArgUtil;
-import com.codahale.metrics.annotation.Timed;
 
 import net.sf.jasperreports.engine.JRException;
 
@@ -71,11 +70,12 @@ public class FileService {
 			/**
 			 * From string to File type
 			 */
+			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent();
 			try {
 				pdfService.convert(file);
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.PDF_CREATED, file));
+				auditService.gauge(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_CREATED, file));
 			} catch (JRException e) {
-				auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
+				auditService.excep(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
 			}
 
 		}

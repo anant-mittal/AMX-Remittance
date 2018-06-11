@@ -66,6 +66,7 @@ public class AuditServiceClient implements AuditService {
 		if (traceTime != null) {
 			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
 		}
+		event.setEventTime(TimeUtils.timeSince(event.getTimestamp()));
 		event.setActorId(AppContextUtil.getActorId());
 		return event;
 	}
