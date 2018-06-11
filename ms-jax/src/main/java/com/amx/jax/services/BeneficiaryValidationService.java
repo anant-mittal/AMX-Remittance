@@ -96,9 +96,10 @@ public class BeneficiaryValidationService {
 	}
 
 	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
-		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRules(
-				metaData.getCountryId(), beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
-				ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
+				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
+						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
