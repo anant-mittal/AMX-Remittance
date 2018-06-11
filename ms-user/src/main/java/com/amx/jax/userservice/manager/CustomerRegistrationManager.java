@@ -249,6 +249,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	public CustomerRegistrationTrnxModel saveLoginDetail(CustomerCredential customerCredential) {
 		CustomerRegistrationTrnxModel model = get();
 		model.setCustomerCredential(customerCredential);
+		save(model);
 		return model;
 	}
 
