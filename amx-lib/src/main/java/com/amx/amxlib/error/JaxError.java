@@ -108,7 +108,8 @@ public enum JaxError implements IExceptionEnum {
     INVALID_BANK_IFSC, INVALID_BANK_SWIFT,
     BANK_SWIFT_EMPTY,
     
-    BANK_BRANCH_SEARCH_EMPTY;
+    BANK_BRANCH_SEARCH_EMPTY,
+    INVALID_INPUT;
 
     public String getCode() {
         return this.toString();

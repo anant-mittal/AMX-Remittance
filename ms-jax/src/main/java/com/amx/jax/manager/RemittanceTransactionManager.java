@@ -204,7 +204,7 @@ public class RemittanceTransactionManager {
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, commission);
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -223,15 +223,15 @@ public class RemittanceTransactionManager {
 			logger.info("recalculating del mode for TT and routing countyr india");
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
-		breakup = getExchangeRateBreakup(exchangeRates, model, commission);
+		breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
 		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
-		if(customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO)>0){
-		responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
-		}else{
+		if (customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO) > 0) {
+			responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
+		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
 		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
@@ -464,7 +464,7 @@ public class RemittanceTransactionManager {
 	}
 
 	private ExchangeRateBreakup getExchangeRateBreakup(List<ExchangeRateApprovalDetModel> exchangeRates, RemittanceTransactionRequestModel model,
-			BigDecimal comission) {
+			RemittanceTransactionResponsetModel responseModel, BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
@@ -507,7 +507,10 @@ public class RemittanceTransactionManager {
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		breakup.setNetAmountWithoutLoyality(netAmount);
-		if (model.isAvailLoyalityPoints() && comission != null && comission.intValue() > 0) {
+		if (comission == null || comission.intValue() == 0) {
+			responseModel.setCanRedeemLoyalityPoints(false);
+		}
+		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
