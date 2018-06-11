@@ -23,7 +23,7 @@ public class ConverterFlyingSaucer implements FileConverter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterFlyingSaucer.class);
 
 	@Override
-	@Timed(name = "PDF_CREATION_FS")
+	@Timed(name = "PDF_CREATION_FS", absolute = true)
 	public File toPDF(File file) throws JRException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
