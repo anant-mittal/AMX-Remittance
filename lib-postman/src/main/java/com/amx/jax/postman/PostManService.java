@@ -28,8 +28,6 @@ public interface PostManService {
 
 	public SMS sendSMSAsync(SMS sms) throws PostManException;
 
-	public File processTemplate(Templates template, Object data, File.Type fileType) throws PostManException;
-
 	public File processTemplate(File file) throws PostManException;
 
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException;

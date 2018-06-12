@@ -16,15 +16,12 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class PostManClient implements PostManService {
@@ -125,17 +122,6 @@ public class PostManClient implements PostManService {
 			throw new PostManException(e);
 		}
 
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-		File file = new File();
-		file.setTemplate(template);
-		file.setType(fileType);
-		// file.setObject(data);
-		file.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
-		return this.processTemplate(file);
 	}
 
 	@Override

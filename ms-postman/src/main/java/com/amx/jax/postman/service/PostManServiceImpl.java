@@ -52,12 +52,6 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-		Map<String, Object> map = JsonUtil.toMap(data);
-		return this.processTemplate(template, map, fileType);
-	}
-
-	@Override
 	public File processTemplate(File file) {
 		return fileService.create(file);
 	}
