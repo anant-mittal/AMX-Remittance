@@ -1,6 +1,8 @@
 package com.amx.jax.metrics;
 
+import java.util.Map;
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import com.amx.jax.logger.AbstractAuditEvent;
 import com.codahale.metrics.Counter;
@@ -15,7 +17,7 @@ public class ActuatorEvent extends AbstractAuditEvent {
 	private SortedMap<String, Counter> counters;
 	private SortedMap<String, Histogram> histograms;
 	private SortedMap<String, Meter> meters;
-	private SortedMap<String, Timer> timers;
+	private SortedMap<String, AuditTimer> timers;
 
 	public ActuatorEvent(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters,
 			SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
@@ -23,8 +25,7 @@ public class ActuatorEvent extends AbstractAuditEvent {
 		this.counters = counters;
 		this.histograms = histograms;
 		this.meters = meters;
-		this.timers = timers;
-
+		this.timers = cleanTimers(timers);
 	}
 
 	public SortedMap<String, Gauge> getGauges() {
@@ -59,11 +60,19 @@ public class ActuatorEvent extends AbstractAuditEvent {
 		this.meters = meters;
 	}
 
-	public SortedMap<String, Timer> getTimers() {
+	public SortedMap<String, AuditTimer> getTimers() {
 		return timers;
 	}
 
-	public void setTimers(SortedMap<String, Timer> timers) {
+	public void setTimers(SortedMap<String, AuditTimer> timers) {
 		this.timers = timers;
+	}
+
+	public static SortedMap<String, AuditTimer> cleanTimers(SortedMap<String, Timer> timers) {
+		SortedMap<String, AuditTimer> newtimers = new TreeMap<String, AuditTimer>();
+		for (Map.Entry<String, Timer> timerEntry : timers.entrySet()) {
+			newtimers.put(timerEntry.getKey(), new AuditTimer(timerEntry.getValue()));
+		}
+		return newtimers;
 	}
 }

@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 
@@ -76,15 +78,11 @@ public class TemplateUtils {
 	}
 
 	public String reverse(String str) {
-		if (reverseFlag()) {
-			return fixBiDi(str);
-			// return new StringBuilder(str).reverse().toString();
-		}
-		return str;
+		return staticReverse(str);
 	}
 
 	public String reverse() {
-		return "-X-X-";
+		return this.reverse("-x-x-");
 	}
 
 	public static String fixBiDi(String wordTemp) {
@@ -149,11 +147,17 @@ public class TemplateUtils {
 		return sb.toString();
 	}
 
+	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {
+		InputStreamSource imageSource = new ByteArrayResource(
+				IoUtils.toByteArray(applicationContext.getResource("classpath:" + contentId).getInputStream()));
+		return imageSource;
+	}
+
 	public Resource readAsResource(String contentId) throws IOException {
 		return applicationContext.getResource("classpath:" + contentId);
 	}
 
-	public static String fixBiDiCheck(String parseAsString) {
+	public static String staticReverse(String parseAsString) {
 		if (reverseFlag()) {
 			return fixBiDi(parseAsString);
 		}

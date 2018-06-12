@@ -45,7 +45,7 @@ public class SayToAttributeTagProcessor extends AbstractStandardExpressionAttrib
 		 * entire results are never really needed in memory.
 		 */
 		
-		Object expressionResult = TemplateUtils.fixBiDiCheck(ArgUtil.parseAsString(expressionResult2));
+		Object expressionResult = TemplateUtils.staticReverse(ArgUtil.parseAsString(expressionResult2));
 
 		final CharSequence text;
 

@@ -7,10 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -19,15 +16,11 @@ import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
-import com.amx.utils.IoUtils;
 
 @Component
 public class TemplateService {
 
 	private Logger log = Logger.getLogger(getClass());
-
-	@Autowired
-	private ApplicationContext applicationContext;
 
 	@Autowired
 	private TemplateEngine templateEngine;
@@ -88,7 +81,8 @@ public class TemplateService {
 			TemplateUtils.reverseFlag(true);
 		}
 
-		log.info("====" + locale.toString() + "======" + reverse + "   " + TemplateUtils.reverseFlag());
+		// log.info("====" + locale.toString() + "======" + reverse + " " +
+		// TemplateUtils.reverseFlag());
 
 		Context context = new Context(locale);
 
@@ -105,11 +99,4 @@ public class TemplateService {
 	public String processText(Templates template, Context context) {
 		return textTemplateEngine.process(template.getFileName(), context);
 	}
-
-	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {
-		InputStreamSource imageSource = new ByteArrayResource(
-				IoUtils.toByteArray(applicationContext.getResource("classpath:" + contentId).getInputStream()));
-		return imageSource;
-	}
-
 }
