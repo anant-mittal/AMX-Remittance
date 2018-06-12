@@ -4,14 +4,11 @@ import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
-public abstract class AuditEvent {
+public abstract class AuditEvent extends AbstractAuditEvent {
 
-	protected String component;
-	protected String category = getClass().getSimpleName();
-	protected EnumType type;
-	protected long timestamp;
 	protected long tranxTime;
 	protected long traceTime;
+	protected long eventTime;
 	protected String description = null;
 	protected String message;
 	protected String exception;
@@ -19,12 +16,11 @@ public abstract class AuditEvent {
 	protected String actorId;
 
 	public AuditEvent() {
-		this.timestamp = System.currentTimeMillis();
+		super();
 	}
 
 	public AuditEvent(EnumType type) {
-		this();
-		this.type = type;
+		super(type);
 	}
 
 	public AuditEvent(EnumType type, String description) {
@@ -36,38 +32,6 @@ public abstract class AuditEvent {
 		this(type);
 		this.description = description;
 		this.message = message;
-	}
-
-	public String getComponent() {
-		return component;
-	}
-
-	public void setComponent(String component) {
-		this.component = component;
-	}
-
-	public String getCategory() {
-		return category;
-	}
-
-	public void setCategory(String category) {
-		this.category = category;
-	}
-
-	public EnumType getType() {
-		return type;
-	}
-
-	public void setType(EnumType type) {
-		this.type = type;
-	}
-
-	public long getTimestamp() {
-		return timestamp;
-	}
-
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
 	}
 
 	public String getMessage() {
@@ -124,6 +88,14 @@ public abstract class AuditEvent {
 
 	public void setActorId(String actorId) {
 		this.actorId = actorId;
+	}
+
+	public long getEventTime() {
+		return eventTime;
+	}
+
+	public void setEventTime(long eventTime) {
+		this.eventTime = eventTime;
 	}
 
 }
