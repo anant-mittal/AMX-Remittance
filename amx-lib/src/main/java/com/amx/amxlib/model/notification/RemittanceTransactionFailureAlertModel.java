@@ -6,13 +6,13 @@ public class RemittanceTransactionFailureAlertModel {
 
 	String customerReference;
 	String customerName;
-	BigDecimal customerContact;
+	String customerContact;
 	String beneName;
 	BigDecimal transactionAmount;
 	String currencyQuoteName;
 	String beneBankName;
 	String beneBankBranchName;
-	BigDecimal beneAccountNumber;
+	String beneAccountNumber;
 	String selectedProduct;
 
 	String exceptionMessage;
@@ -33,12 +33,12 @@ public class RemittanceTransactionFailureAlertModel {
 		this.customerName = customerName;
 	}
 
-	public BigDecimal getCustomerContact() {
+	public String getCustomerContact() {
 		return customerContact;
 	}
 
-	public void setCustomerContact(BigDecimal customerContact) {
-		this.customerContact = customerContact;
+	public void setCustomerContact(String contact) {
+		this.customerContact = contact;
 	}
 
 	public String getBeneName() {
@@ -81,11 +81,11 @@ public class RemittanceTransactionFailureAlertModel {
 		this.beneBankBranchName = beneBankBranchName;
 	}
 
-	public BigDecimal getBeneAccountNumber() {
+	public String getBeneAccountNumber() {
 		return beneAccountNumber;
 	}
 
-	public void setBeneAccountNumber(BigDecimal beneAccountNumber) {
+	public void setBeneAccountNumber(String beneAccountNumber) {
 		this.beneAccountNumber = beneAccountNumber;
 	}
 
