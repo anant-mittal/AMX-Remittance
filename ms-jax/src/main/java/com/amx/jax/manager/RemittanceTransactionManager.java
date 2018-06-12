@@ -510,7 +510,8 @@ public class RemittanceTransactionManager {
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
-		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
+		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints() != null
+				&& responseModel.getCanRedeemLoyalityPoints()) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
