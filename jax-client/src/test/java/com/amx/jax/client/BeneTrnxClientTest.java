@@ -19,6 +19,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.AppConstants;
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
@@ -32,6 +33,9 @@ public class BeneTrnxClientTest extends AbstractTestClient {
 
 	@Autowired
 	MetaClient metaclient;
+	
+	@Autowired
+	private JaxMetaInfo jaxMetaInfo;
 
 	// @Test
 	@SuppressWarnings("rawtypes")
@@ -51,6 +55,8 @@ public class BeneTrnxClientTest extends AbstractTestClient {
 	@SuppressWarnings("rawtypes")
 	public void testsaveAndcommitAddBeneTrnx() throws IOException, URISyntaxException {
 		setDefaults();
+		jaxMetaInfo.setDeviceIp("182.75.54.250");
+		jaxMetaInfo.setDeviceType("ONLINE");
 
 		ApiResponse response = null;
 		String json = new String(
