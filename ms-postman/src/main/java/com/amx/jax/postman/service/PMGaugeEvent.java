@@ -24,6 +24,10 @@ public class PMGaugeEvent extends AuditEvent {
 	Templates template = null;
 	private List<String> to = null;
 
+	public PMGaugeEvent() {
+		super();
+	}
+
 	public PMGaugeEvent(EnumType type) {
 		super(type);
 	}
@@ -38,19 +42,17 @@ public class PMGaugeEvent extends AuditEvent {
 
 	public PMGaugeEvent(Type type, SMS sms) {
 		super(type);
-		this.template = sms.getTemplate();
-		this.to = sms.getTo();
+		this.fillDetail(type, sms);
 	}
 
 	public PMGaugeEvent(Type type, Email email) {
 		super(type);
-		this.template = email.getTemplate();
-		this.to = email.getTo();
+		this.fillDetail(type, email);
 	}
 
 	public PMGaugeEvent(Type type, File file) {
 		super(type);
-		this.template = file.getTemplate();
+		this.fillDetail(type, file);
 	}
 
 	public Templates getTemplate() {
@@ -67,6 +69,26 @@ public class PMGaugeEvent extends AuditEvent {
 
 	public void setTo(List<String> to) {
 		this.to = to;
+	}
+
+	public PMGaugeEvent fillDetail(Type type, File file) {
+		this.type = type;
+		this.template = file.getTemplate();
+		return this;
+	}
+
+	public PMGaugeEvent fillDetail(Type type, SMS sms) {
+		this.type = type;
+		this.template = sms.getTemplate();
+		this.to = sms.getTo();
+		return this;
+	}
+
+	public PMGaugeEvent fillDetail(Type type, Email email) {
+		this.type = type;
+		this.template = email.getTemplate();
+		this.to = email.getTo();
+		return this;
 	}
 
 }

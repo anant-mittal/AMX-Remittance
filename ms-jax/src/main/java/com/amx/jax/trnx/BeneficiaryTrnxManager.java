@@ -235,7 +235,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setLocalThirdName(beneDetaisl.getLocalThirdName());
 		beneficaryRelationship.setLocalFourthName(beneDetaisl.getLocalFourthName());
 		beneficaryRelationship.setLocalFifthName(beneDetaisl.getLocalFifthName());
-
+		
+		beneficaryRelationship.setDeviceIp(metaData.getDeviceIp());
+		beneficaryRelationship.setDeviceType(metaData.getDeviceType());
+		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 
 	}
