@@ -3,23 +3,25 @@ package com.amx.jax.postman.model;
 public class ExceptionReport extends Exception {
 
 	private static final long serialVersionUID = -2576530798373715398L;
-	private String title;
-	private String exception;
 
-	public ExceptionReport(String title, Exception e) {
-		super(e.getMessage());
-		this.exception = e.getClass().getName();
-		this.title = title;
-		this.setStackTrace(e.getStackTrace());
-	}
+	private String title = null;
+	private String exception = null;
+	private Email email = null;
 
 	public ExceptionReport(Exception e) {
 		super(e.getMessage());
+		this.exception = e.getClass().getName();
 		this.setStackTrace(e.getStackTrace());
 	}
 
+	public ExceptionReport(String title, Exception e) {
+		this(e);
+		this.title = title;
+	}
+
 	public ExceptionReport(Exception e, Email email) {
-		super(e.getMessage());
+		this(email.getSubject(), e);
+		this.email = email;
 	}
 
 	public String getTitle() {
@@ -36,6 +38,14 @@ public class ExceptionReport extends Exception {
 
 	public void setException(String exception) {
 		this.exception = exception;
+	}
+
+	public Email getEmail() {
+		return email;
+	}
+
+	public void setEmail(Email email) {
+		this.email = email;
 	}
 
 }

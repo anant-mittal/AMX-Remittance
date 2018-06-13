@@ -208,6 +208,9 @@ public class PostManController {
 			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
 			throws PostManException {
 		postManService.notifyException(appname, title, exception, eMsg);
+		if (eMsg.getEmail() != null) {
+			postManService.sendEmail(eMsg.getEmail());
+		}
 		return eMsg;
 	}
 

@@ -48,7 +48,7 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	public Email sendEmail(Email email) throws PostManException {
-		return emailService.sendEmail(email);
+		return emailService.sendEmail(supportService.filterMessageType(email));
 	}
 
 	@Override
@@ -90,10 +90,10 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	public ExceptionReport notifyException(ExceptionReport e) {
-		return slackService.sendException(appConfig.getAppName(), e.getTitle(), e.getException(), e);
+		return this.notifyException(appConfig.getAppName(), e.getTitle(), e.getException(), e);
 	}
 
-	public Exception notifyException(String appname, String title, String exception, ExceptionReport e) {
+	public ExceptionReport notifyException(String appname, String title, String exception, ExceptionReport e) {
 		return slackService.sendException(appname, title, exception, e);
 	}
 

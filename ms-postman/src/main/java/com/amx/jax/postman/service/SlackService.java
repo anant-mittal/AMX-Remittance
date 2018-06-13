@@ -78,10 +78,12 @@ public class SlackService {
 		return msg;
 	}
 
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public ExceptionReport sendException(String title, Exception e) {
 		return this.sendException(title, new ExceptionReport(e));
 	}
 
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public ExceptionReport sendException(String title, ExceptionReport e) {
 		return this.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
 	}
