@@ -45,7 +45,7 @@ public class JaxNotificationManager {
 			model.setIdentityId(pinfo.getIdentityInt());
 			model.setCustomerQuery(request);
 			model.setBankFullName(bankFullName);
-			jaxNotificationService.sendBranchSearchEmailNotification(model, "SOA@almullagroup.com");
+			jaxNotificationService.sendBranchSearchEmailNotification(model, "SOA@almullaexchange.com");
 		}
 	}
 }
