@@ -1,0 +1,1 @@
+update JAX_VALIDATION_REGEX set VALUE = '^[\u0621-\u064A\u0660-\u0669 ]+$' where KEY = 'ARABIC_NAME';
