@@ -25,4 +25,9 @@ public class IfscRoutingLogic implements IRoutingLogic {
 		LOGGER.info("in ifsc routing logic with output, {}", output);
 	}
 
+	@Override
+	public boolean isApplicable() {
+		return false;
+	}
+
 }
