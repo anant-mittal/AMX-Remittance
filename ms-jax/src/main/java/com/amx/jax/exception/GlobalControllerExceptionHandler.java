@@ -19,6 +19,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.exception.CommonJaxException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxFieldError;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -42,7 +43,9 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	public ApiResponse handleInvalidInputException(AbstractJaxException ex) {
 
 		ApiResponse response = getApiResponse(ex);
-		setErrorHeaders((AmxApiError) response.getError().get(0));
+		AmxApiError error = (AmxApiError) response.getError().get(0);
+		error.setErrorClass(CommonJaxException.class.getName());
+		setErrorHeaders(error);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorCode(), ex);
@@ -80,9 +83,12 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		JaxFieldValidationException exception = new JaxFieldValidationException(ex.getBindingResult().toString());
 		ApiResponse apiResponse = getApiResponse(exception);
 		List<AmxApiError> errors = apiResponse.getError();
-		//JaxFieldError validationErrorField = new JaxFieldError(ex.getBindingResult().getFieldError().getField());
-		//errors.get(0).setValidationErrorField(validationErrorField);
-		setErrorHeaders((errors.get(0)));
+		AmxApiError error = errors.get(0);
+		error.setErrorClass(ex.getClass().getName());
+		// JaxFieldError validationErrorField = new
+		// JaxFieldError(ex.getBindingResult().getFieldError().getField());
+		// errors.get(0).setValidationErrorField(validationErrorField);
+		setErrorHeaders(error);
 		return new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
 	}
 }
