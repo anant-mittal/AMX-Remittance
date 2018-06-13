@@ -60,7 +60,11 @@ public class RoutingService {
 			// banking
 			output = applicationProcedureDao.getRoutingDetails(inputValue);
 			inputValue.putAll(output);
-			//routingLogics.forEach(i -> i.apply(inputValue, output));
+			routingLogics.forEach(i -> {
+				if (i.isApplicable()) {
+					i.apply(inputValue, output);
+				}
+			});
 		}
 		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
