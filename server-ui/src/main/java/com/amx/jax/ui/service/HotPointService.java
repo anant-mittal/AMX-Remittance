@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -59,19 +61,9 @@ public class HotPointService {
 	@Autowired
 	private JaxService jaxService;
 
-	@Async
-	public void notify(BigDecimal customerId) {
-
-		List<BeneficiaryListDTO> benes = jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0))
-				.getResults();
-
-		List<CurrencyMasterDTO> curs = jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList()
-				.getResults();
-
-		for (BeneficiaryListDTO beneficiaryListDTO : benes) {
-			beneficiaryListDTO.getCurrencyId();
-		}
-
+	// @Async
+	public List<MinMaxExRateDTO> notify(BigDecimal customerId) {
+		return jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate().getResults();
 	}
 
 }
