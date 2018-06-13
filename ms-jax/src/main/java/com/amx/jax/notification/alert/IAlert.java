@@ -3,7 +3,7 @@ package com.amx.jax.notification.alert;
 import java.util.List;
 
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.jax.exception.AbstractException;
+import com.amx.jax.exception.AbstractJaxException;
 
 /**
  * @author Prashant
@@ -19,7 +19,7 @@ public interface IAlert {
 	 * @param notificationTypes
 	 * 
 	 */
-	void sendAlert(AbstractException ex);
+	void sendAlert(AbstractJaxException ex);
 
 	/**
 	 * @param notificationType
