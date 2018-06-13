@@ -339,7 +339,6 @@ public class TransactionHistroyDTO implements Serializable {
 	}
 
     /**
-<<<<<<< HEAD
      * @return the bankRuleFieldId
      */
     public BigDecimal getBankRuleFieldId() {
@@ -366,7 +365,9 @@ public class TransactionHistroyDTO implements Serializable {
     public void setSrlId(BigDecimal srlId) {
         this.srlId = srlId;
     }
-/**
+
+
+    /**
      * @return the beneIsActive
      */
     public Boolean getBeneIsActive() {

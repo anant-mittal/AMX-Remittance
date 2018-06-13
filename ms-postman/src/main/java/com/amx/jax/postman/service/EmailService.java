@@ -109,6 +109,7 @@ public class EmailService {
 			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
 
 			to = email.getTo() != null ? email.getTo().get(0) : null;
+
 			if (email.getTemplate() != null) {
 				File file = new File();
 				file.setTemplate(email.getTemplate());
@@ -143,13 +144,13 @@ public class EmailService {
 	}
 
 	public Email send(Email eParams) throws MessagingException, IOException {
-
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
 		if (eParams.isHtml()) {
 			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
-
+		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 
@@ -197,11 +198,9 @@ public class EmailService {
 		}
 
 		getMailSender().send(message);
-		auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams));
 	}
 
 	private void sendPlainTextMail(Email eParams) {
-
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 
 		eParams.getTo().toArray(new String[eParams.getTo().size()]);
@@ -216,7 +215,6 @@ public class EmailService {
 		}
 
 		getMailSender().send(mailMessage);
-		auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams));
 
 	}
 

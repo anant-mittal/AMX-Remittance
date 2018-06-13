@@ -22,6 +22,7 @@ public class Message implements Serializable {
 	protected List<String> to = null;
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
+	private MessageType messageType = null;
 
 	private List<String> lines = new ArrayList<String>();
 
@@ -37,9 +38,10 @@ public class Message implements Serializable {
 		this.model = model;
 	}
 
+	@SuppressWarnings("unchecked")
 	@JsonIgnore
 	public void setObject(Object object) {
-		this.model = JsonUtil.toMap(object);
+		this.model = JsonUtil.fromJson(JsonUtil.toJson(object), Map.class);
 	}
 
 	/**
@@ -122,5 +124,13 @@ public class Message implements Serializable {
 
 	public void setLines(List<String> lines) {
 		this.lines = lines;
+	}
+
+	public MessageType getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(MessageType messageType) {
+		this.messageType = messageType;
 	}
 }
