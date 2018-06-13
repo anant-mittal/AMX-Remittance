@@ -1,5 +1,6 @@
 package com.amx.jax.notification.alert;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.context.annotation.Scope;
@@ -23,11 +24,17 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public void sendAlert(AbstractException ex, CommunicationChannel... notificationType) {
+	public void sendAlert(AbstractException ex) {
 
 		PaymentResponseDto model = (PaymentResponseDto) JaxContextUtil.getRequestModel();
 		// TODO fetch bene and customer details
 		// TODO fill data in RemittanceTransactionFailureAlertModel
 	}
 
+	@Override
+	public List<CommunicationChannel> getCommucationChannels() {
+		List<CommunicationChannel> channels = new ArrayList<>();
+		channels.add(CommunicationChannel.EMAIL);
+		return channels;
+	}
 }

@@ -1,6 +1,7 @@
 package com.amx.jax.notification.alert;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +27,17 @@ import com.amx.jax.util.JaxContextUtil;
 @Component
 public class ApplicationCreationFailureAlert implements IAlert {
 
-	
 	@Autowired
 	IBeneficiaryOnlineDao beneficiaryOnlineDao;
-	
+
 	@Autowired
 	private CustomerDao custDao;
-	
 
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-	
+
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
-	
 
 	@Override
 	public List<String> getAlertContacts(CommunicationChannel notificationType) {
@@ -48,21 +46,20 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public void sendAlert(AbstractException ex, CommunicationChannel... notificationType) {
+	public void sendAlert(AbstractException ex) {
 
 		// TODO fetch bene and customer details
 		// TODO fill data in RemittanceTransactionFailureAlertModel
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
-		BenificiaryListView benificiaryListView =beneficiaryOnlineDao.findOne(model.getBeneId());
-		
-	
-		BigDecimal customerId  =benificiaryListView.getCustomerId();
-		Customer customer =custDao.getCustById(customerId);
-		
+		BenificiaryListView benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+
+		BigDecimal customerId = benificiaryListView.getCustomerId();
+		Customer customer = custDao.getCustById(customerId);
+
 		List<ExEmailNotification> emailid = emailNotificationDao.getEmailNotification();
-		
+
 		RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
-		
+
 		remittanceTransactionFailure.setBeneName(benificiaryListView.getBenificaryName());
 		remittanceTransactionFailure.setBeneAccountNumber(benificiaryListView.getBankAccountNumber());
 		remittanceTransactionFailure.setBeneBankName(benificiaryListView.getBankName());
@@ -71,10 +68,23 @@ public class ApplicationCreationFailureAlert implements IAlert {
 		remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
 		remittanceTransactionFailure.setSelectedProduct(ex.getErrorMessage());
 		remittanceTransactionFailure.setCustomerContact(customer.getMobile());
-		remittanceTransactionFailure.setCustomerName(customer.getFirstName()+" "+customer.getMiddleName()+" "+customer.getLastName());
+		remittanceTransactionFailure.setCustomerName(
+				customer.getFirstName() + " " + customer.getMiddleName() + " " + customer.getLastName());
 
-		jaxNotificationService.sendErrorEmail(remittanceTransactionFailure,emailid);
-		
+		jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return false;
+	}
+
+	@Override
+	public List<CommunicationChannel> getCommucationChannels() {
+		List<CommunicationChannel> channels = new ArrayList<>();
+		channels.add(CommunicationChannel.EMAIL);
+		return channels;
 	}
 
 }

@@ -3,13 +3,15 @@ package com.amx.jax.constant;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.notification.alert.ApplicationCreationFailureAlert;
 import com.amx.jax.notification.alert.RemittanceCreationFailureAlert;
+import com.amx.jax.notification.alert.BankBranchSearchFailureAlert;
 
 /**
  * @author Prashant - Represents api flow defination
  */
 public enum JaxEvent {
 
-	CREATE_APPLICATION(ApplicationCreationFailureAlert.class), CREATE_REMITTANCE(RemittanceCreationFailureAlert.class);
+	CREATE_APPLICATION(ApplicationCreationFailureAlert.class), CREATE_REMITTANCE(
+			RemittanceCreationFailureAlert.class), BANK_BRANCH_SEARCH(BankBranchSearchFailureAlert.class);
 
 	Class<? extends IAlert> alertBean;
 

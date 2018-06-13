@@ -55,7 +55,9 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		JaxEvent event = JaxContextUtil.getJaxEvent();
 		if (event != null) {
 			IAlert alert = appContext.getBean(event.getAlertBean());
-			alert.sendAlert(ex, CommunicationChannel.EMAIL);
+			if (alert.isEnabled()) {
+				alert.sendAlert(ex);
+			}
 		}
 	}
 
