@@ -21,6 +21,7 @@ import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
@@ -203,7 +204,7 @@ public class PostManController {
 	}
 
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
-	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
+	public Exception notifySlack(@RequestBody ExceptionReport eMsg, @RequestParam(required = false) String title,
 			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
 			throws PostManException {
 		postManService.notifyException(appname, title, exception, eMsg);

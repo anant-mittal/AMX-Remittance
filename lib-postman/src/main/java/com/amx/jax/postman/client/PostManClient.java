@@ -15,6 +15,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
@@ -126,7 +127,6 @@ public class PostManClient implements PostManService {
 
 	@Override
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException {
-		// TODO Auto-generated method stub
 		try {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> resp = restService.ajax("https://www.google.com/recaptcha/api/siteverify")
@@ -160,22 +160,24 @@ public class PostManClient implements PostManService {
 
 	@Override
 	@Async
-	public Exception notifyException(String title, Exception e) {
-		LOGGER.info("Sending exception = {} ", title);
-
-		Exception simpleE = new Exception(e.getMessage());
-		simpleE.setStackTrace(e.getStackTrace());
-
+	public ExceptionReport notifyException(ExceptionReport e) {
+		LOGGER.info("Sending exception = {} : {}", e.getTitle(), e.getClass().getName());
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
 					.header("content-type", "application/json").queryParam("appname", appConfig.getAppName())
-					.queryParam("title", title).queryParam("exception", e.getClass().getName()).post(simpleE)
-					.as(Exception.class);
+					.queryParam("title", e.getTitle()).queryParam("exception", e.getException()).post(e)
+					.as(ExceptionReport.class);
 
 		} catch (Exception e1) {
-			LOGGER.error("Exception while sending title={}", title, e1);
+			LOGGER.error("Exception while sending title={}", e.getTitle(), e1);
 		}
 		return e;
+	}
+
+	@Override
+	@Async
+	public ExceptionReport notifyException(String title, Exception exc) {
+		return this.notifyException(new ExceptionReport(title, exc));
 	}
 
 }

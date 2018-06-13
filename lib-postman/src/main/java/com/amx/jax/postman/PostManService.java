@@ -3,11 +3,11 @@ package com.amx.jax.postman;
 import java.util.Map;
 
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
 
 public interface PostManService {
 
@@ -22,7 +22,9 @@ public interface PostManService {
 
 	public Notipy notifySlack(Notipy msg) throws PostManException;
 
-	public Exception notifyException(String title, Exception e);
+	public ExceptionReport notifyException(ExceptionReport e);
+
+	public ExceptionReport notifyException(String title, Exception exc);
 
 	public Email sendEmailAsync(Email email) throws PostManException;
 
