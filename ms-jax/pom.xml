@@ -10,7 +10,7 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
+		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -64,17 +64,12 @@
 		</dependency>
 		<!-- Swagger infos -->
 		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-swagger</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
-		</dependency>
+
+		<!-- AMX libs -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>ms-exchangerate</artifactId>
@@ -92,11 +87,6 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-cache</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 

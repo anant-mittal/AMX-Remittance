@@ -74,6 +74,8 @@ public class TransactionHistroyDTO implements Serializable {
 	
 	private String transactionReference;
 	
+	private Boolean beneIsActive;
+	
 	
 	public String getTransactionReference() {
 		return transactionReference;
@@ -331,5 +333,19 @@ public class TransactionHistroyDTO implements Serializable {
 			List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus) {
 		this.beneficiaryErrorStatus = beneficiaryErrorStatus;
 	}
+
+    /**
+     * @return the beneIsActive
+     */
+    public Boolean getBeneIsActive() {
+        return beneIsActive;
+    }
+
+    /**
+     * @param beneIsActive the beneIsActive to set
+     */
+    public void setBeneIsActive(Boolean beneIsActive) {
+        this.beneIsActive = beneIsActive;
+    }
 
 }

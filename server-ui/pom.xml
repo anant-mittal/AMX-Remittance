@@ -11,7 +11,7 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
+		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -28,7 +28,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
-
 
 		<!-- thymeleaf dependencies -->
 		<dependency>

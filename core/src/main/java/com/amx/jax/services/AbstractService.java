@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseData;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractService {
 
 	protected ApiResponse getBlackApiResponse() {
@@ -20,8 +22,16 @@ public abstract class AbstractService {
 
 	public abstract String getModelType();
 
-	public Class<?> getModelClass(){
+	public Class<?> getModelClass() {
 		return this.getClass();
+	}
+
+	public ApiResponse getBooleanResponse() {
+		ApiResponse apiResponse = getBlackApiResponse();
+		BooleanResponse output = new BooleanResponse(true);
+		apiResponse.getData().getValues().add(output);
+		apiResponse.getData().setType("boolean_response");
+		return apiResponse;
 	}
 
 }

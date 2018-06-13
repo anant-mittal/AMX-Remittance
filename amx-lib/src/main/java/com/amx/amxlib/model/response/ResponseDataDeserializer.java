@@ -11,11 +11,13 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -34,8 +36,10 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.RateAlertDTO;
+import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
@@ -217,7 +221,21 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "jaxmetaparameter":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxMetaParameter>>(){});
 			break;	
-			
+		case "send-otp-model":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<SendOtpModel>>(){});
+			break;	
+		case "prefix":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PrefixDTO>>() {
+			});
+			break;	
+		case "branch-detail":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
+			});
+			break;
+		case "min-max-exrate":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
+			});
+			break;	
 	}
 		responseData.setValues(models);
 		return responseData;

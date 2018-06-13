@@ -5,15 +5,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.InputStreamSource;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -30,13 +27,22 @@ public class TemplateService {
 	private Logger log = Logger.getLogger(getClass());
 
 	@Autowired
-	private ApplicationContext context;
+	private ApplicationContext applicationContext;
 
 	@Autowired
 	private TemplateEngine templateEngine;
 
 	@Autowired
 	private TemplateEngine textTemplateEngine;
+
+	@Autowired
+	private MessageSource messageSource;
+
+	@Autowired
+	private TemplateUtils templateUtils;
+
+	@Autowired
+	private PostManConfig postManConfig;
 
 	@Autowired
 	TemplateService(TemplateEngine templateEngine) {
@@ -52,7 +58,7 @@ public class TemplateService {
 			String contentId = m.group(1);
 			try {
 				rawStr = rawStr.replace("src=\"inline:" + contentId + "\"",
-						"src=\"" + this.readAsBase64String(contentId) + "\"");
+						"src=\"" + templateUtils.readAsBase64String(contentId) + "\"");
 			} catch (IOException e) {
 				log.error("Template parsing Error : " + template.getFileName(), e);
 			}
@@ -60,15 +66,6 @@ public class TemplateService {
 
 		return rawStr;
 	}
-
-	@Autowired
-	private MessageSource messageSource;
-
-	@Autowired
-	private TemplateUtils templateUtils;
-
-	@Autowired
-	private PostManConfig postManConfig;
 
 	private Locale getLocal(File file) {
 		if (file == null || file.getLang() == null) {
@@ -111,22 +108,8 @@ public class TemplateService {
 
 	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {
 		InputStreamSource imageSource = new ByteArrayResource(
-				IoUtils.toByteArray(context.getResource("classpath:" + contentId).getInputStream()));
+				IoUtils.toByteArray(applicationContext.getResource("classpath:" + contentId).getInputStream()));
 		return imageSource;
-	}
-
-	public Resource readAsResource(String contentId) throws IOException {
-		return context.getResource("classpath:" + contentId);
-	}
-
-	public String readAsBase64String(String contentId) throws IOException {
-
-		StringBuilder sb = new StringBuilder();
-		sb.append("data:image/png;base64,");
-		byte[] imageByteArray = IoUtils.toByteArray(context.getResource("classpath:" + contentId).getInputStream());
-		sb.append(StringUtils.newStringUtf8(Base64.encodeBase64(imageByteArray, false)));
-		return sb.toString();
-
 	}
 
 }

@@ -30,7 +30,6 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
-import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantContextHolder;
@@ -68,7 +67,7 @@ public class JaxNotificationService {
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		File file = new File();
-		file.setTemplate(Templates.REMIT_RECEIPT);
+		file.setTemplate(Templates.REMIT_RECEIPT_JASPER);
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 

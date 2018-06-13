@@ -153,7 +153,6 @@ public class LoginService {
 			model = jaxService.setDefaults().getUserclient().sendOtpForCivilId().getResult();
 		} else {
 			model = jaxService.setDefaults().getUserclient().sendOtpForCivilId(identity).getResult();
-			userSession.setUserid(identity);
 		}
 		// Check if response was successful
 		// append info in response data
@@ -171,7 +170,6 @@ public class LoginService {
 		sessionService.getGuestSession().setIdentity(identity);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		CivilIdOtpModel model = jaxService.setDefaults().getUserclient().sendResetOtpForCivilId(identity).getResult();
-		userSession.setUserid(identity);
 		wrapper.getData().setmOtpPrefix(model.getmOtpPrefix());
 		wrapper.getData().seteOtpPrefix(model.geteOtpPrefix());
 		wrapper.setMessage(WebResponseStatus.OTP_SENT, "OTP generated and sent");

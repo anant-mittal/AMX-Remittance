@@ -4,9 +4,12 @@ import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -17,23 +20,36 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.ServiceApplicabilityField;
+import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
+import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 
+/**
+ * validations service for add bene
+ * 
+ * @author Prashant
+ *
+ */
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class BeneficiaryValidationService {
+
+	final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
 	BeneficiaryService beneficiaryService;
@@ -59,15 +75,48 @@ public class BeneficiaryValidationService {
 	@Autowired
 	BeneficiaryPersonalDetailPredicateCreator beneficiaryPersonalDetailPredicateCreator;
 
+	@Autowired
+	IServiceApplicabilityRuleDao serviceApplicablilityRuleDao;
+
+	@Autowired
+	MetaData metaData;
+
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	public void validateBeneAccount(BeneAccountModel beneAccountModel) {
 
 		// validate only for BANK channel and not for CASH channel
-		if (! BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
+		if (!BigDecimal.ONE.equals(beneAccountModel.getServiceGroupId())) {
 			validateBankAccountNumber(beneAccountModel);
 			validateDuplicateBankAccount(beneAccountModel);
+			validateSwiftCode(beneAccountModel);
 		}
 	}
 
+	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
+				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
+						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		swiftRules.forEach(i -> {
+			if (ConstantDocument.Yes.equals(i.getMandatory())) {
+				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+					throw new GlobalException("Swift code is required", JaxError.BANK_SWIFT_EMPTY);
+				}
+				validateSwiftCode(beneAccountModel.getSwiftCode());
+			}
+		});
+		if (!StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
+			validateSwiftCode(beneAccountModel.getSwiftCode());
+		}
+	}
+
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	private void validateDuplicateBankAccount(BeneAccountModel beneAccountModel) {
 		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
 		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
@@ -84,6 +133,10 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param beneAccountModel
+	 * 
+	 */
 	private void validateBankAccountNumber(BeneAccountModel beneAccountModel) {
 		if (StringUtils.isBlank(beneAccountModel.getBankAccountNumber())) {
 			return;
@@ -103,7 +156,7 @@ public class BeneficiaryValidationService {
 				}
 			}
 			if (!isValid) {
-				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(":"));
 				String errorExpression = jaxUtil
 						.buildErrorExpression(JaxError.INVALID_BANK_ACCOUNT_NUM_LENGTH.toString(), validLengths);
 				throw new GlobalException("Invalid Bank Account number length", errorExpression);
@@ -111,6 +164,11 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param beneAccountModel
+	 * @return bene account
+	 * 
+	 */
 	public BeneficaryAccount getBeneficaryAccount(BeneAccountModel beneAccountModel) {
 		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
 		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
@@ -123,7 +181,30 @@ public class BeneficiaryValidationService {
 			return null;
 		}
 	}
+	
+	/**
+	 * @param beneAccountModel
+	 * @return bene account
+	 * 
+	 */
+	public BeneficaryAccount getBeneficaryAccountForCash(BeneAccountModel beneAccountModel, BigDecimal beneMasterSeqId) {
+		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
+		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
+				BeneficiaryAccountPredicateCreator.createBeneSearchPredicateCash(beneAccountModel, isBangladeshBene, beneMasterSeqId));
 
+		int size = Iterables.size(existingAccountItr);
+		if (size > 0) {
+			return existingAccountItr.iterator().next();
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * @param benePersonalDetailModel
+	 * @return bene master
+	 * 
+	 */
 	public BeneficaryMaster getBeneficaryMaster(BenePersonalDetailModel benePersonalDetailModel) {
 		Predicate beneMasterPredicate = beneficiaryPersonalDetailPredicateCreator
 				.createBeneSearchPredicate(benePersonalDetailModel);
@@ -136,19 +217,37 @@ public class BeneficiaryValidationService {
 		}
 	}
 
+	/**
+	 * @param trnxModel
+	 * 
+	 */
 	public void validateDuplicateCashBeneficiary(BeneficiaryTrnxModel trnxModel) {
-		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
-		BeneficaryAccount beneAccountMaster = getBeneficaryAccount(beneAccountModel);
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
+		BigDecimal beneMasterSeqId = (beneMaster != null ? beneMaster.getBeneficaryMasterSeqId() : null);
+		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
+		BeneficaryAccount beneAccountMaster = getBeneficaryAccountForCash(beneAccountModel, beneMasterSeqId);
+
+		if (beneMaster != null) {
+			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
+			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());
+		}
+
 		if (beneAccountMaster != null && beneMaster != null) {
-			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShipByRelationsId(
-					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId(),
-					benePersonalDetailModel.getRelationsId());
+			List<BeneficaryRelationship> beneRelationShip = beneficiaryService.getBeneRelationShip(
+					beneMaster.getBeneficaryMasterSeqId(), beneAccountMaster.getBeneficaryAccountSeqId());
 			if (beneRelationShip != null && !beneRelationShip.isEmpty()) {
 				throw new GlobalException("Duplicate Beneficiary  Cash Account", JaxError.DUPLICATE_BENE_CASH_ACCOUNT);
 			}
 		}
+	}
+
+	private void validateSwiftCode(String swift) {
+		final Pattern pattern = Pattern.compile("^[A-Z]{6}[A-Z0-9]{2}([A-Z0-9]{3})?$");
+		if (!pattern.matcher(swift).matches()) {
+			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
+		}
+
 	}
 
 }

@@ -22,6 +22,7 @@ import com.amx.jax.admin.service.JaxService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.ExchangeRateClient;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.dict.Tenant;
 
 import io.swagger.annotations.Api;
@@ -48,14 +49,17 @@ public class AdminController {
 	private ExchangeRateClient exchangeRateClient;
 
 	@Autowired
+	private MetaClient metaClient;
+
+	@Autowired
 	JaxMetaInfo metaData;
 
 	@RequestMapping(value = "/customer/unlock/{civilid}", method = RequestMethod.GET)
 	public ApiResponse unlockCustomer(@PathVariable("civilid") String civilid) {
 		Tenant tenant = metaData.getTenant();
 
-		logger.info(String.format("Tenant is : %s",tenant.getCode()));
-		
+		logger.info(String.format("Tenant is : %s", tenant.getCode()));
+
 		logger.info("in unlockCustomer Request ");
 		jaxService.setDefaults();
 		ApiResponse response = adminService.unlockCustomer(civilid);

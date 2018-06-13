@@ -311,7 +311,7 @@ public class RemittanceApplicationManager {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-		if (requestModel.isAvailLoyalityPoints()) {
+		if (requestModel.isAvailLoyalityPoints() && validationResults.getCanRedeemLoyalityPoints()) {
 			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());

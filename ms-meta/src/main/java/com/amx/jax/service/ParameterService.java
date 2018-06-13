@@ -1,5 +1,8 @@
 package com.amx.jax.service;
 
+import static com.amx.amxlib.constant.AuthType.MAX_DOM_AMOUNT_LIMIT;
+import static com.amx.amxlib.constant.AuthType.NEW_BENE_TRANSACT_TIME_LIMIT;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,13 +12,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static com.amx.amxlib.constant.AuthType.*;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.AuthenticationViewRepository;
 import com.amx.jax.services.AbstractService;
@@ -29,6 +33,12 @@ public class ParameterService extends AbstractService {
 	
 	@Autowired
 	AuthenticationViewRepository authenticationViewRepository;
+	
+	@Autowired
+	CompanyService companyService;
+	
+	@Autowired
+	private MetaData metaData;
 	
 	public ApiResponse  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
@@ -117,6 +127,8 @@ public class ParameterService extends AbstractService {
 		JaxMetaParameter metaParams = new JaxMetaParameter();
 		metaParams.setNewBeneTransactionTimeLimit(authMap.get(NEW_BENE_TRANSACT_TIME_LIMIT.getAuthType()));
 		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));
+		ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
+		metaParams.setApplicationCountryId(company.getApplicationCountryId());
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().add(metaParams);
 		response.getData().setType("jaxmetaparameter");

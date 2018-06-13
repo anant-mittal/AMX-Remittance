@@ -4,13 +4,55 @@ import java.util.concurrent.Executor;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 
 @Configuration
 public class ExecutorConfig extends AsyncConfigurerSupport {
+
+	public static final String DEFAULT = "silverExecutor";
+	public static final String EXECUTER_GOLD = "goldExecutor";
+	public static final String EXECUTER_BRONZE = "bronzeExecutor";
+	public static final String EXECUTER_PLATINUM = "platinumExecutor";
+
 	@Override
 	@Bean
 	public Executor getAsyncExecutor() {
-		return new ContextAwarePoolExecutor();
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(20);
+		executor.setThreadNamePrefix(DEFAULT + "-");
+		executor.initialize();
+		return executor;
+	}
+
+	@Bean(name = EXECUTER_GOLD)
+	public TaskExecutor taskExecutorGold() {
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(50);
+		executor.setThreadNamePrefix(EXECUTER_GOLD + "-");
+		executor.initialize();
+		return executor;
+	}
+
+	@Bean(name = EXECUTER_PLATINUM)
+	public TaskExecutor taskExecutorPlatinum() {
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(50);
+		executor.setThreadNamePrefix(EXECUTER_PLATINUM + "-");
+		executor.initialize();
+		return executor;
+	}
+
+	@Bean(name = EXECUTER_BRONZE)
+	public TaskExecutor taskExecutorBronze() {
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(10);
+		executor.setMaxPoolSize(50);
+		executor.setQueueCapacity(200);
+		executor.setAllowCoreThreadTimeOut(true);
+		executor.setKeepAliveSeconds(120);
+		executor.setThreadNamePrefix(EXECUTER_BRONZE + "-");
+		executor.initialize();
+		return executor;
 	}
 }

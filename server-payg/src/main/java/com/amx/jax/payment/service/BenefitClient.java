@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
@@ -25,6 +24,8 @@ import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
+
+import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 
 /**
  * 

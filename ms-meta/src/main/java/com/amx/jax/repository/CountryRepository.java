@@ -25,6 +25,9 @@ public interface CountryRepository extends JpaRepository<CountryMasterView, BigD
 	@Query("Select c from CountryMasterView c where  languageId=?1 and businessCountry='Y' ORDER BY countryName asc")
 	List<CountryMasterView> getBusinessCountry(BigDecimal languageId);
 	
+	@Query("Select c from CountryMasterView c where  languageId=?1 and countryAlpha2Code  in ('IN', 'PH', 'EG') ORDER BY countryName asc")
+	List<CountryMasterView> getBeneCountryList(BigDecimal languageId);
+	
 	
 
 }

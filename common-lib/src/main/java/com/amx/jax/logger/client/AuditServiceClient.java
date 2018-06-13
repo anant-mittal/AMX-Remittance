@@ -14,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AbstractAuditEvent;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.utils.JsonUtil;
+import com.amx.utils.TimeUtils;
 
 @Component
 public class AuditServiceClient implements AuditService {
@@ -27,6 +29,9 @@ public class AuditServiceClient implements AuditService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
 	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
 	private static final Marker trackmarker = MarkerFactory.getMarker("TRACK");
+	private static final Marker gaugemarker = MarkerFactory.getMarker("GAUGE");
+	private static final Marker excepmarker = MarkerFactory.getMarker("EXCEP");
+	private static final Marker failmarker = MarkerFactory.getMarker("FAIL");
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static String appName = null;
 
@@ -42,13 +47,33 @@ public class AuditServiceClient implements AuditService {
 		}
 	}
 
-	public AuditLoggerResponse log(AuditEvent event) {
-		event.setComponent(appName);
+	private void excuteFilters(AuditEvent event) {
 		if (filtersMap.containsKey(event.getClass().getName())) {
 			AuditFilter<AuditEvent> filter = filtersMap.get(event.getClass().getName());
 			filter.doFilter(event);
 		}
-		LOGGER.info(auditmarker, JsonUtil.toJson(event));
+	}
+
+	private static AuditEvent captureException(AuditEvent event, Exception e) {
+		event.setExceptionType(e.getClass().getName());
+		event.setException(e.getMessage());
+		return event;
+	}
+
+	private static AuditEvent captureDetails(AuditEvent event) {
+		event.setComponent(appName);
+		Long traceTime = AppContextUtil.getTraceTime();
+		if (traceTime != null) {
+			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
+		}
+		event.setEventTime(TimeUtils.timeSince(event.getTimestamp()));
+		event.setActorId(AppContextUtil.getActorId());
+		return event;
+	}
+
+	public static AuditLoggerResponse logStatic(Marker marker, AbstractAuditEvent event) {
+		event.setComponent(appName);
+		LOGGER.info(marker, JsonUtil.toJson(event));
 		return null;
 	}
 
@@ -60,19 +85,95 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		event.setComponent(appName);
-		LOGGER.info(auditmarker, JsonUtil.toJson(event));
+		captureDetails(event);
+		logStatic(auditmarker, event);
 		return null;
 	}
 
-	public static AuditLoggerResponse trackStatic(RequestTrackEvent event) {
-		event.setComponent(appName);
+	@Override
+	public AuditLoggerResponse log(AuditEvent event) {
+		this.excuteFilters(event);
+		return logStatic(event);
+	}
+
+	// TRACK LOGS
+
+	public static AuditLoggerResponse trackStatic(AuditEvent event) {
+		captureDetails(event);
 		LOGGER.info(trackmarker, JsonUtil.toJson(event));
 		return null;
 	}
 
-	public AuditLoggerResponse log(RequestTrackEvent event) {
-		return AuditServiceClient.trackStatic(event);
+	@Override
+	public AuditLoggerResponse track(AuditEvent event) {
+		this.excuteFilters(event);
+		return trackStatic(event);
+	}
+
+	// GAUGE LOGS
+
+	/**
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse gaugeStatic(AuditEvent event) {
+		captureDetails(event);
+		LOGGER.info(gaugemarker, JsonUtil.toJson(event));
+		return null;
+	}
+
+	@Override
+	public AuditLoggerResponse gauge(AuditEvent event) {
+		this.excuteFilters(event);
+		return gaugeStatic(event);
+	}
+
+	/**
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse failStatic(AuditEvent event) {
+		captureDetails(event);
+		LOGGER.info(failmarker, JsonUtil.toJson(event));
+		return null;
+	}
+
+	@Override
+	public AuditLoggerResponse fail(AuditEvent event) {
+		this.excuteFilters(event);
+		return failStatic(event);
+	}
+
+	// Excep LOGS
+
+	/**
+	 * 
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse excepStatic(AuditEvent event) {
+		captureDetails(event);
+		LOGGER.info(excepmarker, JsonUtil.toJson(event));
+		return null;
+	}
+
+	public AuditLoggerResponse excep(AuditEvent event) {
+		this.excuteFilters(event);
+		return excepStatic(event);
+	}
+
+	@Override
+	public AuditLoggerResponse excep(AuditEvent event, Exception e) {
+		AuditServiceClient.captureException(event, e);
+		return this.excep(event);
+	}
+
+	@Override
+	public AuditLoggerResponse excep(AuditEvent event, Logger logger, Exception e) {
+		logger.error(event.getType().toString(), e);
+		return this.excep(event, e);
 	}
 
 }

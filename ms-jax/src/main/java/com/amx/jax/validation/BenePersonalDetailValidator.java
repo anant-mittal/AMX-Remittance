@@ -15,7 +15,6 @@ import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
-import com.amx.jax.util.JaxUtil;
 
 @Component
 public class BenePersonalDetailValidator implements Validator {
@@ -42,13 +41,27 @@ public class BenePersonalDetailValidator implements Validator {
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 
 		int benePhoneLength = benePersonalDetailModel.getMobileNumber().toString().length();
-		int minLength = serviceAppList.stream().mapToInt(i -> i.getMinLenght().intValue()).min().orElse(-1);
-		int maxLength = serviceAppList.stream().mapToInt(i -> i.getMaxLenght().intValue()).max().orElse(-1);
+		
+		int minLength = serviceAppList.stream().mapToInt(i -> {
+			if (i.getMinLenght()!=null) {
+			   return i.getMinLenght().intValue();
+			}else { 
+			  return -1;
+			}  
+		}).min().orElse(-1);
+		
+		int maxLength = serviceAppList.stream().mapToInt(i -> {
+			if (i.getMaxLenght()!=null) {
+				return i.getMaxLenght().intValue();
+			}else {
+				return -1;
+			}
+		}).max().orElse(-1);
 
 		if (maxLength > 0 && benePhoneLength > maxLength) {
 			throw new GlobalException(JaxError.VALIDATION_LENGTH_MOBILE, minLength, maxLength);

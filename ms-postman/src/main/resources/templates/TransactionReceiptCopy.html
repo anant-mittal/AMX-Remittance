@@ -228,7 +228,7 @@ html, body {
 					</tr>
 					<tr>
 						<td>ID Expiry Date</td>
-						<td th:text="${remittance.idExpiryDate}">--</td>
+						<td th:text="${remittance.idExpiryDate}"></td>
 						<td th:text="${#messages.msg('label.idExpiryDate')}"></td>
 					</tr>
 				</table> <!--customer table end-->
@@ -396,7 +396,7 @@ html, body {
 					<tr class="mode" th:each="mode : ${remittance.collectionDetailList}">
 						<td>Payment Mode</td>
 						<td th:text="${mode.collectionMode} + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +  ${mode.collectAmount}">--</td>
-						<td><span th:if="${mode.approvalNo}">Approved No : <span th:text="${mode.approvalNo}"></</span></span></td>
+						<td><span th:if="${mode.approvalNo}">Approved No : <span th:text="${mode.approvalNo}"></span></span></td>
 						<td th:text="${#messages.msg('label.approvalNo')}"></td>
 					</tr>
 				</table> <!--Payment Details table end--> 

@@ -2,7 +2,6 @@ package com.amx.jax.postman.api;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
@@ -24,11 +24,9 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.postman.service.FBPushService;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -95,6 +93,10 @@ public class PostManController {
 	public SMS sendSMS(@RequestBody SMS sms, @RequestParam(required = false, defaultValue = "false") Boolean async)
 			throws PostManException {
 
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START", "sendSMS");
+		}
+
 		Language lang = getLang();
 
 		if (sms.getLang() == null) {
@@ -105,6 +107,9 @@ public class PostManController {
 			postManService.sendSMSAsync(sms);
 		} else {
 			postManService.sendSMS(sms);
+		}
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:END", "sendSMS");
 		}
 		return sms;
 	}
@@ -199,18 +204,10 @@ public class PostManController {
 
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
 	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
-			@RequestParam(required = false) String appname) throws PostManException {
-		postManService.notifyException(title, eMsg);
+			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
+			throws PostManException {
+		postManService.notifyException(appname, title, exception, eMsg);
 		return eMsg;
 	}
 
-	@Autowired
-	FBPushService fBPushService;
-
-	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
-	public PushMessage fbPush(@RequestBody PushMessage msg)
-			throws PostManException, InterruptedException, ExecutionException {
-		fBPushService.sendDirect(msg);
-		return msg;
-	}
 }

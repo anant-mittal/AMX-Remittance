@@ -53,14 +53,15 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
-import com.amx.jax.dbmodel.RoutingBankMasterView;
 import com.amx.jax.dbmodel.ServiceProviderModel;
 import com.amx.jax.dbmodel.SwiftMasterView;
+import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
@@ -136,6 +137,8 @@ public class BeneficiaryService extends AbstractService {
 	
 	@Autowired
 	CountryRepository countryRepository;
+	@Autowired
+	BeneficaryAccountRepository beneficaryAccountRepository;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -535,6 +538,12 @@ public class BeneficiaryService extends AbstractService {
 		return apiResponse;
 	}
 	
+	/**
+	 * sends otp to channel provided
+	 * @param channels
+	 * @return apiresponse
+	 * 
+	 */
 	public ApiResponse sendOtp(List<CommunicationChannel> channels) {
 		
 		Customer customer = null;
@@ -606,7 +615,12 @@ public class BeneficiaryService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status) {
+	public ApiResponse updateStatus(BeneficiaryListDTO beneDetails,BeneStatus status,String mOtp,String eOtp) {
+		
+		if (mOtp!=null || eOtp!=null) {
+			userService.validateOtp(null, mOtp, eOtp);
+		}
+		
 		ApiResponse response = getBlackApiResponse();
 		try {
 			List<BeneficaryRelationship> beneRelationList = null;
@@ -777,7 +791,9 @@ public class BeneficiaryService extends AbstractService {
 	// Added by chetan 03-05-2018 for country with channeling
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
+		//List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
 		List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+		
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018
 		ApiResponse response = getBlackApiResponse();
@@ -801,6 +817,7 @@ public class BeneficiaryService extends AbstractService {
 			listData.add(map.get(BigDecimal.valueOf(2)));
 			CountryMasterDTO model = new CountryMasterDTO();
 			jaxUtil.convert(beneCountry, model);
+			//disable cash
 			if (supportedServiceGroupList.contains(model.getCountryId())) {
 				listData.add(map.get(BigDecimal.valueOf(1)));
 			}
@@ -808,5 +825,9 @@ public class BeneficiaryService extends AbstractService {
 			list.add(model);
 		}
 		return list;
+	}
+	
+	public BeneficaryAccount getBeneAccountByAccountSeqId(BigDecimal beneAccountSeqId) {
+		return beneficaryAccountRepository.findOne(beneAccountSeqId);
 	}
 }

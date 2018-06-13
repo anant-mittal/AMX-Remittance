@@ -15,10 +15,12 @@ public class AppParamController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppParamController.class);
 
 	@RequestMapping(value = "/pub/amx/params", method = RequestMethod.GET)
-	public AppParam geoLocation(@RequestParam AppParam param) {
-		param.setEnabled(!param.isEnabled());
-		LOGGER.info("App Param {} changed to {}", param, param.isEnabled());
-		return param;
+	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
+		if (id != null) {
+			id.setEnabled(!id.isEnabled());
+			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
+		}
+		return AppParam.values();
 	}
 
 }
