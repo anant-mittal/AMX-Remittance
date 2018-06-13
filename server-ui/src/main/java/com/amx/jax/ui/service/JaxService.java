@@ -58,6 +58,9 @@ public class JaxService extends AbstractJaxServiceClient {
 	private JaxFieldClient jaxFieldClient;
 
 	@Autowired
+	PlaceOrderClient placeOrderClient;
+
+	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
 
 	public JaxFieldClient getJaxFieldClient() {
@@ -90,6 +93,10 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public CustomerRegistrationClient getCustRegClient() {
 		return customerRegistrationClient;
+	}
+
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
 	}
 
 	@Autowired
@@ -126,18 +133,6 @@ public class JaxService extends AbstractJaxServiceClient {
 			this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
 		}
 		return this.setDefaults(null);
-	}
-
-	public CustomerRegistrationClient getCustRegClient() {
-		return customerRegistrationClient;
-	}
-
-	public PlaceOrderClient getPlaceOrderClient() {
-		return placeOrderClient;
-	}
-
-	public void setPlaceOrderClient(PlaceOrderClient placeOrderClient) {
-		this.placeOrderClient = placeOrderClient;
 	}
 
 }
