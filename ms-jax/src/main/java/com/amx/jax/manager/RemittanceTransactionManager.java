@@ -608,9 +608,9 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
        // this manually thrown  GlobalException
-		if (true) {
-			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
-		}
+//		if (true) {
+//			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+//		}
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
