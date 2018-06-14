@@ -1,5 +1,6 @@
 package com.amx.jax.ui.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,9 @@ public class UserMetaData extends AbstractModel {
 	List<String> subscriptions = new ArrayList<String>();
 	String notifyRangeLong = null;
 	String notifyRangeShort = null;
+	BigDecimal customerId = null;
+
+	String returnUrl = null;
 
 	HotPoints[] hotPoints = HotPoints.values();
 
@@ -161,6 +165,22 @@ public class UserMetaData extends AbstractModel {
 
 	public void setNotifyRangeShort(String notifyRangeShort) {
 		this.notifyRangeShort = notifyRangeShort;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

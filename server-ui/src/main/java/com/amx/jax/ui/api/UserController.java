@@ -108,6 +108,7 @@ public class UserController {
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
+			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());

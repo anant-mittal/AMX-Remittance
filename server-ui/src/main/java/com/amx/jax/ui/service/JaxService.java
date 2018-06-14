@@ -115,9 +115,9 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	public JaxService setDefaults() {
 		if (sessionService.getUserSession().getCustomerModel() != null) {
-			this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
+			return this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
 		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
-			this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
+			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
 		}
 		return this.setDefaults(null);
 	}
