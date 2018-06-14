@@ -1,5 +1,7 @@
 package com.amx.jax.postman.model;
 
+import java.math.BigDecimal;
+
 public class PushMessage extends Message {
 
 	public static final String TOPICS_PREFIX = "/topics/";
@@ -31,6 +33,10 @@ public class PushMessage extends Message {
 
 	public void addTopic(String topic) {
 		this.addTo(TOPICS_PREFIX + topic);
+	}
+
+	public void addToUser(BigDecimal userid) {
+		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_USER, userid));
 	}
 
 }

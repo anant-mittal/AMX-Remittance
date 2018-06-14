@@ -85,6 +85,7 @@ public class HotPointService {
 		}
 
 		pushMessage.setLines(messages);
+		pushMessage.addToUser(customerId);
 		fBPushService.sendDirect(pushMessage);
 		return messages;
 	}
