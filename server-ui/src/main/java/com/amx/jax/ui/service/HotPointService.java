@@ -1,16 +1,14 @@
 package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
-import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.ui.WebAppConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -61,9 +59,24 @@ public class HotPointService {
 	@Autowired
 	private JaxService jaxService;
 
+	@Autowired
+	private WebAppConfig webAppConfig;
+
 	// @Async
-	public List<MinMaxExRateDTO> notify(BigDecimal customerId) {
-		return jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate().getResults();
+	public List<String> notify(BigDecimal customerId) {
+		List<String> messages = new ArrayList<String>();
+		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
+				.getResults();
+		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
+			messages.add(String.format(
+					"Get more %s for your %s at %s. %s-%s Special rate in the "
+							+ "range of %.4f – %.4f for %s online  and App users.",
+					minMaxExRateDTO.getToCurrencyId(), minMaxExRateDTO.getFromCurrencyId(), webAppConfig.getAppTitle(),
+					minMaxExRateDTO.getFromCurrencyId(), minMaxExRateDTO.getToCurrencyId(),
+					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
+		}
+
+		return messages;
 	}
 
 }
