@@ -81,9 +81,6 @@ public class UserController {
 	@Autowired
 	private HotPointService hotPointService;
 
-	@Autowired
-	HotPointService hotPointService;
-
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
