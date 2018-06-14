@@ -37,4 +37,9 @@ public class RemittanceCreationFailureAlert implements IAlert {
 		channels.add(CommunicationChannel.EMAIL);
 		return channels;
 	}
+	
+	@Override
+	public boolean isEnabled() {
+		return false;
+	}
 }

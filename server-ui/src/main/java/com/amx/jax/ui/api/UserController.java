@@ -76,7 +76,10 @@ public class UserController {
 	private WebAppConfig webAppConfig;
 
 	@Autowired
-	FBPushClient fbPushClient;
+	private FBPushClient fbPushClient;
+
+	@Autowired
+	private HotPointService hotPointService;
 
 	@Autowired
 	HotPointService hotPointService;
