@@ -134,69 +134,55 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.OMN.getCode());
-		gatewayResponse.setError(request.getParameter("Error"));
 
-
-		 iPayPipe pipe = new iPayPipe(); 
+		iPayPipe pipe = new iPayPipe(); 
 		//Initialization 
-		 pipe.setResourcePath(OmemnetCertpath); 
-		 pipe.setKeystorePath(OmemnetCertpath);
-		 pipe.setAlias(OmemnetAliasName); 
+		pipe.setResourcePath(OmemnetCertpath); 
+		pipe.setKeystorePath(OmemnetCertpath);
+		pipe.setAlias(OmemnetAliasName); 
 		 
-		 String errorText = request.getParameter("ErrorText");
-		 String tranresult = request.getParameter("result"); 
-		 String tranData = request.getParameter("trandata");
-	     LOGGER.info("tranData : " +tranData);
-		 int result = 0; 
+		String errorText = request.getParameter("ErrorText");
+	    String tranresult = request.getParameter("result"); 
+		String tranData = request.getParameter("trandata");
+	    LOGGER.info("tranData : " +tranData);
+		int result = 0; 
 		
-		 if(tranData != null)
-		 {
-			 result = pipe.parseEncryptedRequest(request.getParameter("trandata")); 
-			 LOGGER.info("result : " +result);
-		 } 
-		 if(result!=0)
-		 {
-		  // Merchant to Handle the error scenario 
-		 }
-		 else
-			{ 
-			  if(errorText != null)
-			  { 
-					gatewayResponse.setErrorText(request.getParameter("ErrorText"));
-			    
-			  } 
-			  if(tranresult != null)
-			  { 
-				  gatewayResponse.setResult(request.getParameter("result"));
-			  }
-			  //Consider this as the error text and proceed with displaying the response 
-			} 
-		 
-		 if(tranData == null)
-	      {
-		  
-		  // Null response from PG. Merchant to handle the error scenario 
-	      } 
-		 else
-		  {
-			 gatewayResponse.setResult(pipe.getResult()); 
-			 gatewayResponse.setPostDate(pipe.getDate());
-			 gatewayResponse.setRef(pipe.getRef());
-			 gatewayResponse.setTrackId(pipe.getTrackId()); 
-			 gatewayResponse.setTranxId(pipe.getTransId()); 
-			 gatewayResponse.setUdf3(pipe.getUdf3());
-			 gatewayResponse.setPaymentId(pipe.getPaymentId());
-		  } 
-	
+		if (tranData != null) {
+			result = pipe.parseEncryptedRequest(request.getParameter("trandata"));
+		}
+		if (result != 0) {
+			// Merchant to Handle the error scenario
+		} else {
+			if (errorText != null) {
+				gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+			}
+			if (tranresult != null) {
+				gatewayResponse.setResult(request.getParameter("result"));
+			}
+		}
+
+		if (tranData == null) {
+
+			// Null response from PG. Merchant to handle the error scenario
+		} else {
+			gatewayResponse.setResult(pipe.getResult());
+			gatewayResponse.setPostDate(pipe.getDate());
+			gatewayResponse.setRef(pipe.getRef());
+			gatewayResponse.setTrackId(pipe.getTrackId());
+			gatewayResponse.setTranxId(pipe.getTransId());
+			gatewayResponse.setUdf3(pipe.getUdf3());
+			gatewayResponse.setPaymentId(pipe.getPaymentId());
+			gatewayResponse.setError(pipe.getError_text());
+		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+/*		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
 		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
 		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
-
+*/
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
