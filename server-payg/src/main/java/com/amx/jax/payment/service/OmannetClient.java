@@ -122,7 +122,6 @@ public class OmannetClient implements PayGClient {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
 		/*gatewayResponse.setRef(request.getParameter("ref"));
 		gatewayResponse.setPostDate(request.getParameter("postdate"));
@@ -135,7 +134,6 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.OMN.getCode());
-		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 		gatewayResponse.setError(request.getParameter("Error"));
 
 
@@ -148,11 +146,13 @@ public class OmannetClient implements PayGClient {
 		 String errorText = request.getParameter("ErrorText");
 		 String tranresult = request.getParameter("result"); 
 		 String tranData = request.getParameter("trandata");
+	     LOGGER.info("tranData : " +tranData);
 		 int result = 0; 
 		
 		 if(tranData != null)
 		 {
 			 result = pipe.parseEncryptedRequest(request.getParameter("trandata")); 
+			 LOGGER.info("result : " +result);
 		 } 
 		 if(result!=0)
 		 {
@@ -162,13 +162,12 @@ public class OmannetClient implements PayGClient {
 			{ 
 			  if(errorText != null)
 			  { 
-			    request.getParameter("ErrorText");
-			  //Consider this as the error text and proceed with displaying the response 
+					gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 			    
 			  } 
 			  if(tranresult != null)
 			  { 
-				request.getParameter("result"); 
+				  gatewayResponse.setResult(request.getParameter("result"));
 			  }
 			  //Consider this as the error text and proceed with displaying the response 
 			} 
@@ -185,11 +184,12 @@ public class OmannetClient implements PayGClient {
 			 gatewayResponse.setRef(pipe.getRef());
 			 gatewayResponse.setTrackId(pipe.getTrackId()); 
 			 gatewayResponse.setTranxId(pipe.getTransId()); 
-			 gatewayResponse.setUdf5(pipe.getUdf5());
+			 gatewayResponse.setUdf3(pipe.getUdf3());
 			 gatewayResponse.setPaymentId(pipe.getPaymentId());
 		  } 
 	
-		 LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
+		 
+		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
