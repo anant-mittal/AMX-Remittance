@@ -85,6 +85,8 @@ public class HotPointService {
 					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
 		}
 
+		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
+
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
 		fBPushService.sendDirect(pushMessage);
