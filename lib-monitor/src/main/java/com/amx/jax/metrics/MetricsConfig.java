@@ -3,7 +3,6 @@ package com.amx.jax.metrics;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 
 import com.codahale.metrics.MetricRegistry;

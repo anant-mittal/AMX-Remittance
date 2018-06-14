@@ -507,6 +507,7 @@ public class RemittanceTransactionManager {
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		breakup.setNetAmountWithoutLoyality(netAmount);
+
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
@@ -606,6 +607,10 @@ public class RemittanceTransactionManager {
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
+       // this manually thrown  GlobalException
+		if (true) {
+			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+		}
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();

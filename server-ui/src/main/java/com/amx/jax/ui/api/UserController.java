@@ -1,6 +1,8 @@
 
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -23,6 +25,7 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HotPointService;
 import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
@@ -73,7 +76,10 @@ public class UserController {
 	private WebAppConfig webAppConfig;
 
 	@Autowired
-	FBPushClient fbPushClient;
+	private FBPushClient fbPushClient;
+
+	@Autowired
+	private HotPointService hotPointService;
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
@@ -102,6 +108,7 @@ public class UserController {
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
+			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
@@ -116,10 +123,9 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint)
-			throws PostManException {
-
-		return new ResponseWrapper<Object>();
+	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint,
+			@RequestParam BigDecimal customerId) throws PostManException {
+		return new ResponseWrapper<Object>(hotPointService.notify(customerId));
 	}
 
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
