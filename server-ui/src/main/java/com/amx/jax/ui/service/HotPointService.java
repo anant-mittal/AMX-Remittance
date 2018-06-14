@@ -1,14 +1,17 @@
 package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.postman.FBPushService;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.ui.WebAppConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -59,19 +62,31 @@ public class HotPointService {
 	@Autowired
 	private JaxService jaxService;
 
-	@Async
-	public void notify(BigDecimal customerId) {
+	@Autowired
+	FBPushService fBPushService;
 
-		List<BeneficiaryListDTO> benes = jaxService.setDefaults().getBeneClient().getBeneficiaryList(new BigDecimal(0))
+	@Autowired
+	private WebAppConfig webAppConfig;
+
+	// @Async
+	public List<String> notify(BigDecimal customerId) throws PostManException {
+		List<String> messages = new ArrayList<String>();
+		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
 				.getResults();
 
-		List<CurrencyMasterDTO> curs = jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList()
-				.getResults();
-
-		for (BeneficiaryListDTO beneficiaryListDTO : benes) {
-			beneficiaryListDTO.getCurrencyId();
+		PushMessage pushMessage = new PushMessage();
+		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
+			messages.add(String.format(
+					"Get more %s for your %s at %s. %s-%s Special rate in the "
+							+ "range of %.4f – %.4f for %s online  and App users.",
+					minMaxExRateDTO.getToCurrencyId(), minMaxExRateDTO.getFromCurrencyId(), webAppConfig.getAppTitle(),
+					minMaxExRateDTO.getFromCurrencyId(), minMaxExRateDTO.getToCurrencyId(),
+					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
 		}
 
+		pushMessage.setLines(messages);
+		fBPushService.sendDirect(pushMessage);
+		return messages;
 	}
 
 }
