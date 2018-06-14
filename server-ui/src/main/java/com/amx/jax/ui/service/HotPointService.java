@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.postman.FBPushService;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.WebAppConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -60,13 +63,18 @@ public class HotPointService {
 	private JaxService jaxService;
 
 	@Autowired
+	FBPushService fBPushService;
+
+	@Autowired
 	private WebAppConfig webAppConfig;
 
 	// @Async
-	public List<String> notify(BigDecimal customerId) {
+	public List<String> notify(BigDecimal customerId) throws PostManException {
 		List<String> messages = new ArrayList<String>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
 				.getResults();
+
+		PushMessage pushMessage = new PushMessage();
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 			messages.add(String.format(
 					"Get more %s for your %s at %s. %s-%s Special rate in the "
@@ -76,6 +84,8 @@ public class HotPointService {
 					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
 		}
 
+		pushMessage.setLines(messages);
+		fBPushService.sendDirect(pushMessage);
 		return messages;
 	}
 

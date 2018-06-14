@@ -76,10 +76,10 @@ public class UserController {
 	private WebAppConfig webAppConfig;
 
 	@Autowired
-	FBPushClient fbPushClient;
+	private FBPushClient fbPushClient;
 
 	@Autowired
-	HotPointService hotPointService;
+	private HotPointService hotPointService;
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })

@@ -2,22 +2,25 @@ package com.amx.jax.postman.service;
 
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.FBPushService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonPath;
-import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
 
-@Component
+@Service
 public class FBPushServiceImpl implements FBPushService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(FBPushService.class);
@@ -25,22 +28,27 @@ public class FBPushServiceImpl implements FBPushService {
 	@Value("${fcm.server.key}")
 	String serverKey;
 
-//	@Autowired
-//	public FBPushServiceImpl(@Value("${fcm.service.file}") String fcmServiceFile) {
-//		try {
-//			InputStream serviceAccount = FileUtil.getExternalResourceAsStream(fcmServiceFile, FBPushService.class);
-//
-//			FirebaseOptions options = new FirebaseOptions.Builder()
-//					.setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
-//			FirebaseApp.initializeApp(options);
-//
-//		} catch (Exception e) {
-//			LOGGER.error("While Loading firebase key ", e);
-//		}
-//	}
+	// @Autowired
+	// public FBPushServiceImpl(@Value("${fcm.service.file}") String fcmServiceFile)
+	// {
+	// try {
+	// InputStream serviceAccount =
+	// FileUtil.getExternalResourceAsStream(fcmServiceFile, FBPushService.class);
+	//
+	// FirebaseOptions options = new FirebaseOptions.Builder()
+	// .setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
+	// FirebaseApp.initializeApp(options);
+	//
+	// } catch (Exception e) {
+	// LOGGER.error("While Loading firebase key ", e);
+	// }
+	// }
 
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	AuditServiceClient auditServiceClient;
 
 	private static final JsonPath MAIN_TOPIC = new JsonPath("/to");
 	private static final JsonPath DATA_TITLE = new JsonPath("/data/data/title");
@@ -54,65 +62,92 @@ public class FBPushServiceImpl implements FBPushService {
 	private static final JsonPath NOTFY_SOUND = new JsonPath("/notification/sound");
 	private static final JsonPath NOTFY_MESSAGE = new JsonPath("/notification/body");
 
+	@Async
 	public PushMessage sendDirect(PushMessage msg) {
+		LOGGER.info("Inside message");
 		if (msg.getTo() != null) {
 			String topic = msg.getTo().get(0);
 
 			if (!ArgUtil.isEmptyString(topic)) {
-				this.sendAndroid(topic, msg);
-				this.sendIOS(topic, msg);
-				this.sendWeb(topic, msg);
-			}
 
+				if (msg.getMessage() != null) {
+					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topic, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topic, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topic, msg, msg.getMessage());
+				}
+
+				for (String message : msg.getLines()) {
+					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topic, msg, message);
+					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topic, msg, message);
+					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topic, msg, message);
+				}
+			}
 		}
+
 		return msg;
 	}
 
 	@Async
-	public void sendAndroid(String topic, PushMessage msg) {
+	private void send(PMGaugeEvent.Type type, String topic, PushMessage msg, String message) {
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
+		try {
+
+			if (type == PMGaugeEvent.Type.NOTIFCATION_ANDROID) {
+				this.sendAndroid(topic, msg, message);
+			} else if (type == PMGaugeEvent.Type.NOTIFCATION_IOS) {
+				this.sendIOS(topic, msg, message);
+			} else if (type == PMGaugeEvent.Type.NOTIFCATION_WEB) {
+				this.sendWeb(topic, msg, message);
+			} else {
+				throw new PostManException("No Channel Specified");
+			}
+			auditServiceClient.log(pMGaugeEvent.fillDetail(type, msg, message));
+		} catch (Exception e) {
+			auditServiceClient.log(pMGaugeEvent.fillDetail(type, msg, message));
+		}
+
+	}
+
+	private void sendAndroid(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_and")
 
-				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, msg.getMessage())
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis()).toMap();
 
-		LOGGER.info("Data JSON {}", JsonUtil.toJson(fields));
 		LOGGER.info("Notification OUTPUT  {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
 	}
 
-	@Async
-	public void sendIOS(String topic, PushMessage msg) {
+	private void sendIOS(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_ios")
 
-				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, msg.getMessage())
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage()).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
 
 				.toMap();
 
-		LOGGER.info("Notification JSON {}", JsonUtil.toJson(fields));
 		LOGGER.info("Notification OUTPUT  {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
+
 	}
 
-	@Async
-	public void sendWeb(String topic, PushMessage msg) {
+	private void sendWeb(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_web")
 
-				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, msg.getMessage())
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, msg.getMessage()).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
 
 				.toMap();
 
-		LOGGER.info("Notification JSON {}", JsonUtil.toJson(fields));
 		LOGGER.info("Notification OUTPUT {}",
 				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
 						.header("Content-Type", "application/json").post(fields).asString());
