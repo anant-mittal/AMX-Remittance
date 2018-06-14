@@ -190,7 +190,7 @@ public class OmannetClient implements PayGClient {
 //			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
 //		} 
 		else {
-			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
 		return gatewayResponse;
 	}
