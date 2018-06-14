@@ -189,8 +189,7 @@ public class OmannetClient implements PayGClient {
 			 gatewayResponse.setPaymentId(pipe.getPaymentId());
 		  } 
 	
-		 
-		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
+		 LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
