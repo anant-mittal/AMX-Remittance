@@ -58,17 +58,6 @@ public class CompanyService extends AbstractService {
 		return companyDetails.get(0);
 	}
 
-	public  static ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
-		ViewCompanyDetails companyDetails=null;
-		for (ViewCompanyDetails vcd : DEFAULT_COMPANY_DETALIS) {
-			
-			if (vcd.getLanguageId().compareTo(languageId)==0) {
-				companyDetails = vcd;
-			}
-		}
-		return companyDetails;
-	}
-
 	public List<ViewCompanyDetailDTO> convert(List<ViewCompanyDetails> companyDetails) {
 
 		List<ViewCompanyDetailDTO> list = new ArrayList<ViewCompanyDetailDTO>();
