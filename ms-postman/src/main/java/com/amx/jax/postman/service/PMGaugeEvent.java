@@ -27,6 +27,7 @@ public class PMGaugeEvent extends AuditEvent {
 
 	Templates template = null;
 	private List<String> to = null;
+	private Object response;
 
 	public PMGaugeEvent() {
 		super();
@@ -95,11 +96,20 @@ public class PMGaugeEvent extends AuditEvent {
 		return this;
 	}
 
-	public AuditEvent fillDetail(Type type, PushMessage msg, String message) {
+	public AuditEvent fillDetail(Type type, PushMessage msg, String message, Object response) {
 		this.type = type;
 		this.to = msg.getTo();
 		this.message = message;
+		this.response = response;
 		return this;
+	}
+
+	public Object getResponse() {
+		return response;
+	}
+
+	public void setResponse(Object response) {
+		this.response = response;
 	}
 
 }

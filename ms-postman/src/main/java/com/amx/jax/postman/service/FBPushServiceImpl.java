@@ -91,36 +91,37 @@ public class FBPushServiceImpl implements FBPushService {
 	private void send(PMGaugeEvent.Type type, String topic, PushMessage msg, String message) {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
 		try {
-
+			String response = null;
 			if (type == PMGaugeEvent.Type.NOTIFCATION_ANDROID) {
-				this.sendAndroid(topic, msg, message);
+				response = this.sendAndroid(topic, msg, message);
 			} else if (type == PMGaugeEvent.Type.NOTIFCATION_IOS) {
-				this.sendIOS(topic, msg, message);
+				response = this.sendIOS(topic, msg, message);
 			} else if (type == PMGaugeEvent.Type.NOTIFCATION_WEB) {
-				this.sendWeb(topic, msg, message);
+				response = this.sendWeb(topic, msg, message);
 			} else {
 				throw new PostManException("No Channel Specified");
 			}
-			auditServiceClient.log(pMGaugeEvent.fillDetail(type, msg, message));
+			auditServiceClient.gauge(pMGaugeEvent.fillDetail(type, msg, message, response));
+		} catch (PostManException e) {
+			auditServiceClient.fail(pMGaugeEvent.fillDetail(type, msg, message, null));
 		} catch (Exception e) {
-			auditServiceClient.log(pMGaugeEvent.fillDetail(type, msg, message));
+			auditServiceClient.excep(pMGaugeEvent.fillDetail(type, msg, message, null));
 		}
 
 	}
 
-	private void sendAndroid(String topic, PushMessage msg, String message) {
+	private String sendAndroid(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_and")
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis()).toMap();
 
-		LOGGER.info("Notification OUTPUT  {}",
-				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-						.header("Content-Type", "application/json").post(fields).asString());
+		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
+				.header("Content-Type", "application/json").post(fields).asString();
 	}
 
-	private void sendIOS(String topic, PushMessage msg, String message) {
+	private String sendIOS(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_ios")
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
@@ -131,13 +132,12 @@ public class FBPushServiceImpl implements FBPushService {
 
 				.toMap();
 
-		LOGGER.info("Notification OUTPUT  {}",
-				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-						.header("Content-Type", "application/json").post(fields).asString());
+		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
+				.header("Content-Type", "application/json").post(fields).asString();
 
 	}
 
-	private void sendWeb(String topic, PushMessage msg, String message) {
+	private String sendWeb(String topic, PushMessage msg, String message) {
 		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_web")
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
@@ -148,9 +148,8 @@ public class FBPushServiceImpl implements FBPushService {
 
 				.toMap();
 
-		LOGGER.info("Notification OUTPUT {}",
-				restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-						.header("Content-Type", "application/json").post(fields).asString());
+		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
+				.header("Content-Type", "application/json").post(fields).asString();
 	}
 
 	public void subscribe(String token, String topic) {
