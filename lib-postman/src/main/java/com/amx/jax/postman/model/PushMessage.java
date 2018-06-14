@@ -38,16 +38,17 @@ public class PushMessage extends Message {
 	}
 
 	public void addToUser(BigDecimal userid) {
-		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_USER, TenantContextHolder.currentSite(), userid));
+		this.addTo(
+				TOPICS_PREFIX + String.format(FORMAT_TO_USER, TenantContextHolder.currentSite(), userid).toLowerCase());
 	}
 
 	public void addToCountry(BigDecimal nationalityId) {
-		this.addTo(
-				TOPICS_PREFIX + String.format(FORMAT_TO_NATIONALITY, TenantContextHolder.currentSite(), nationalityId));
+		this.addTo(TOPICS_PREFIX
+				+ String.format(FORMAT_TO_NATIONALITY, TenantContextHolder.currentSite(), nationalityId).toLowerCase());
 	}
 
 	public void addToEveryone() {
-		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_ALL, TenantContextHolder.currentSite()));
+		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_ALL, TenantContextHolder.currentSite()).toLowerCase());
 	}
 
 }

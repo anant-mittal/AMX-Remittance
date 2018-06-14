@@ -73,11 +73,12 @@ public class FBPushServiceImpl implements FBPushService {
 					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, msg.getMessage());
 					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, msg.getMessage());
 				}
-
-				for (String message : msg.getLines()) {
-					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, message);
-					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, message);
-					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, message);
+				if (msg.getLines() != null) {
+					for (String message : msg.getLines()) {
+						this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, message);
+					}
 				}
 			}
 		}
