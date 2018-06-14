@@ -18,10 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.CommonJaxException;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.JaxFieldError;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.notification.alert.IAlert;
