@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -354,8 +355,11 @@ public class ExchangeRateService extends AbstractService {
 		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
 		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
 		
+		CurrencyMasterModel getFromCurrencyData = currencyMasterService.getCurrencyMasterById(fromCurrency);
+		
 		ApiResponse responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
-		List listToCur = responseToCur.getData().getValues();
+		List<CurrencyMasterDTO> listToCur = responseToCur.getResults();
+		listToCur.add(currencyMasterService.convertModel(getFromCurrencyData));
 		List dtoList = getMinMaxData(listToCur, fromCurrency);
 		
 		apiResponse.setResponseStatus(ResponseStatus.OK);
@@ -371,26 +375,29 @@ public class ExchangeRateService extends AbstractService {
 	 */
 	private List<MinMaxExRateDTO> getMinMaxData(List<CurrencyMasterDTO> listToCur, BigDecimal fromCurrency){
 		List<MinMaxExRateDTO> dtoList = new ArrayList<MinMaxExRateDTO>();
+		Map<BigDecimal, CurrencyMasterDTO> mapToCur = listToCur.stream().collect(Collectors.toMap(CurrencyMasterDTO::getCurrencyId, x -> x));
 		
-		for(CurrencyMasterDTO rec : listToCur) {
+		for (CurrencyMasterDTO rec : listToCur) {
 			try {
 				BigDecimal toCurrency = rec.getCurrencyId();
 				ApiResponse exrateresp = this.getExchangeRatesForOnline(fromCurrency, toCurrency, BigDecimal.ONE, null);
-				ExchangeRateResponseModel exrate = (ExchangeRateResponseModel)exrateresp.getResult();
+				ExchangeRateResponseModel exrate = (ExchangeRateResponseModel) exrateresp.getResult();
 				List<BankMasterDTO> bankWiseRates = exrate.getBankWiseRates();
-				BigDecimal minRate = bankWiseRates.stream().max(new BankMasterDTO.BankMasterDTOComparator()).get().getExRateBreakup().getRate();
-				BigDecimal maxRate = bankWiseRates.stream().min(new BankMasterDTO.BankMasterDTOComparator()).get().getExRateBreakup().getRate();
-								
+				BigDecimal minRate = bankWiseRates.stream().max(new BankMasterDTO.BankMasterDTOComparator()).get()
+						.getExRateBreakup().getRate();
+				BigDecimal maxRate = bankWiseRates.stream().min(new BankMasterDTO.BankMasterDTOComparator()).get()
+						.getExRateBreakup().getRate();
+
 				MinMaxExRateDTO minMaxDTO = new MinMaxExRateDTO();
-				minMaxDTO.setFromCurrencyId(fromCurrency);
-				minMaxDTO.setToCurrencyId(toCurrency);
+				minMaxDTO.setFromCurrency(mapToCur.get(fromCurrency));
+				minMaxDTO.setToCurrency(mapToCur.get(toCurrency));
 				minMaxDTO.setMinExrate(minRate);
 				minMaxDTO.setMaxExrate(maxRate);
-				
+
 				dtoList.add(minMaxDTO);
-			
-			}catch (Exception e) {
-				
+
+			} catch (Exception e) {
+
 			}
 		}
 		return dtoList;
