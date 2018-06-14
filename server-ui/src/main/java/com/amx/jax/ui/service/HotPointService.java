@@ -78,9 +78,10 @@ public class HotPointService {
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 			messages.add(String.format(
 					"Get more %s for your %s at %s. %s-%s Special rate in the "
-							+ "range of %.4f – %.4f for %s online  and App users.",
-					minMaxExRateDTO.getToCurrencyId(), minMaxExRateDTO.getFromCurrencyId(), webAppConfig.getAppTitle(),
-					minMaxExRateDTO.getFromCurrencyId(), minMaxExRateDTO.getToCurrencyId(),
+							+ "range of %.4f – %.4f for %s online and App users.",
+					minMaxExRateDTO.getToCurrency().getCurrencyName(),
+					minMaxExRateDTO.getFromCurrency().getCurrencyName(), webAppConfig.getAppTitle(),
+					minMaxExRateDTO.getFromCurrency().getQuoteName(), minMaxExRateDTO.getToCurrency().getQuoteName(),
 					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
 		}
 
