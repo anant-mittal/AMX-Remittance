@@ -265,13 +265,15 @@ public class BeneficiaryController {
 	@RequestMapping(value = UPDAE_STATUS_ENDPOINT, method = RequestMethod.POST)
 	public ApiResponse updateStatus(@RequestParam("beneMasSeqId") BigDecimal beneMasterSeqId,
 			                        @RequestParam("remarks") String remarks,
-			                        @RequestParam("status") BeneStatus status) {
+			                        @RequestParam("status") BeneStatus status,
+			                        @RequestParam("mOtp") String mOtp, 
+									@RequestParam("eOtp") String eOtp) {
 		BigDecimal customerId = metaData.getCustomerId();
 		BeneficiaryListDTO beneDetails = new BeneficiaryListDTO();
 		beneDetails.setCustomerId(customerId);
 		beneDetails.setBeneficaryMasterSeqId(beneMasterSeqId);
 		beneDetails.setRemarks(remarks);
-		ApiResponse resp = beneService.updateStatus(beneDetails,status);
+		ApiResponse resp = beneService.updateStatus(beneDetails,status,mOtp,eOtp);
 		LOGGER.info("######## Values #######################   -- "+resp.getResult());
 		return resp;
 	}
@@ -312,4 +314,24 @@ public class BeneficiaryController {
 		return beneService.getBeneficiaryCountryListWithChannelingForOnline(customerId);
 
 	}
+	
+   @RequestMapping(value = "/pobene/", method = RequestMethod.POST)
+    public ApiResponse poBeneficiary(@RequestParam(required=false,value="placeOrderId") BigDecimal placeOrderId) {
+        ApiResponse response=null;
+        try {
+            
+        BigDecimal customerId = metaData.getCustomerId();
+        BigDecimal applicationCountryId = metaData.getCountryId();
+        
+        LOGGER.info( "Place Order Id : " + placeOrderId);
+        LOGGER.info(CUSTOMER_ID + customerId);
+        LOGGER.info("applicationCountryId  :" + applicationCountryId);
+        
+        response= beneService.getPlaceOrderBeneficiary(customerId, applicationCountryId, placeOrderId);
+        }catch(Exception e) {
+            LOGGER.error("exception in defaultBeneficiary : ",e);
+        }
+        return response;
+    }
+	    
 }

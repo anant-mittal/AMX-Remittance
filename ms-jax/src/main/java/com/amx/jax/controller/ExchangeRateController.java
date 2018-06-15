@@ -40,4 +40,11 @@ public class ExchangeRateController {
 		ApiResponse response = service.setOnlineExchangeRates(quoteName, value);
 		return response;
 	}
+	
+	@RequestMapping(value = "/min-max/exchangerate/", method = RequestMethod.GET)
+	public ApiResponse getMinMaxExrate() {
+		logger.info("In min Max Exchange rate...");
+		ApiResponse response = service.getMinMaxExrate();
+		return response;
+	}
 }

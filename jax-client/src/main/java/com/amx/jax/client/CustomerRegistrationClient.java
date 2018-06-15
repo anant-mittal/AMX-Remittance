@@ -11,7 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
@@ -48,7 +48,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<SendOtpModel>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtp : ", e);
@@ -73,7 +73,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtp : ", e);
@@ -95,7 +95,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveHomeAddress : ", e);
@@ -117,7 +117,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
@@ -142,7 +142,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in savePhishiingImage : ", e);
@@ -166,7 +166,7 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetail : ", e);

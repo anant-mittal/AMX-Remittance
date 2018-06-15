@@ -15,9 +15,14 @@ public enum WebResponseStatus {
 	AUTH_FAILED("302"), AUTH_OK("200"), AUTH_DONE("200"), AUTH_BLOCKED_TEMP("200"), AUTH_BLOCKED("200"), UNAUTHORIZED(
 			"401"),
 
+	// Info Required
+	DOTP_REQUIRED("300"),
+
 	UNKNOWN_JAX_ERROR("500"),
 	// Registration - END ERROR
-	BAD_INPUT("400"), SUCCESS("200"), ERROR("500");
+	BAD_INPUT("400"), SUCCESS("200"), ERROR("500"),
+	
+	REDIRECTION("3xx"), SERVER_ERROR("4xx"), CLIENT_ERROR("5xx");
 
 	private final String code;
 

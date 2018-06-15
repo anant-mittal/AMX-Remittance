@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,8 @@ import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthRequestOTP;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.ResponseWrapperM;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.session.Transactions;
 
@@ -37,7 +40,7 @@ public class BeneController {
 	private JaxService jaxService;
 
 	@Autowired
-	Transactions transactions;
+	private Transactions transactions;
 
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
@@ -73,12 +76,28 @@ public class BeneController {
 
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> beneDisable(@RequestParam BigDecimal beneficaryMasterSeqId,
-			@RequestParam(required = false) String remarks, @RequestParam BeneStatus status) {
-		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
+			@RequestParam BigDecimal beneficaryMasterSeqId, @RequestParam(required = false) String remarks,
+			@RequestParam BeneStatus status) {
+		ResponseWrapperM<Object, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<Object, AuthResponseOTPprefix>();
 		// Disable Beneficiary
-		wrapper.setData(jaxService.setDefaults().getBeneClient().updateStatus(beneficaryMasterSeqId, remarks, status)
-				.getResult());
+		mOtp = (mOtp == null) ? mOtpHeader : mOtp;
+		eOtp = (eOtp == null) ? eOtpHeader : eOtp;
+
+		if (mOtp == null && eOtp == null) {
+			wrapper.setMeta(new AuthData());
+			CivilIdOtpModel model = jaxService.setDefaults().getBeneClient().sendOtp().getResult();
+			wrapper.getMeta().setmOtpPrefix(model.getmOtpPrefix());
+			wrapper.getMeta().seteOtpPrefix(model.geteOtpPrefix());
+			wrapper.setStatus(WebResponseStatus.DOTP_REQUIRED);
+		} else {
+			wrapper.setData(jaxService.setDefaults().getBeneClient()
+					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
+		}
+
 		return wrapper;
 	}
 

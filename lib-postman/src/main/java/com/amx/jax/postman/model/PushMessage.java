@@ -1,11 +1,15 @@
 package com.amx.jax.postman.model;
 
+import java.math.BigDecimal;
+
+import com.amx.jax.scope.TenantContextHolder;
+
 public class PushMessage extends Message {
 
 	public static final String TOPICS_PREFIX = "/topics/";
 	public static final String FORMAT_TO_ALL = "%s-all";
 	public static final String FORMAT_TO_NATIONALITY = "%s-nationality-%s";
-	public static final String FORMAT_TO_MOBILE = "%s-mobile-%s";
+	public static final String FORMAT_TO_USER = "%s-user-%s";
 
 	private static final long serialVersionUID = -1354844357577261297L;
 
@@ -31,6 +35,20 @@ public class PushMessage extends Message {
 
 	public void addTopic(String topic) {
 		this.addTo(TOPICS_PREFIX + topic);
+	}
+
+	public void addToUser(BigDecimal userid) {
+		this.addTo(
+				TOPICS_PREFIX + String.format(FORMAT_TO_USER, TenantContextHolder.currentSite(), userid).toLowerCase());
+	}
+
+	public void addToCountry(BigDecimal nationalityId) {
+		this.addTo(TOPICS_PREFIX
+				+ String.format(FORMAT_TO_NATIONALITY, TenantContextHolder.currentSite(), nationalityId).toLowerCase());
+	}
+
+	public void addToEveryone() {
+		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_ALL, TenantContextHolder.currentSite()).toLowerCase());
 	}
 
 }

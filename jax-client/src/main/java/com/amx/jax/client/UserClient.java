@@ -15,7 +15,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
@@ -57,9 +57,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/validate-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
-			return restService.ajax(builder.build().encode().toUri()).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtp : ", e);
@@ -75,9 +76,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String validateOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/validate-otp/";
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(validateOtpUrl).queryParam("mOtp", mOtp)
 					.queryParam("eOtp", eOtp);
-			return restService.ajax(builder.build().encode().toUri()).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtp : ", e);
@@ -91,9 +93,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForCivilId : ", e);
@@ -107,9 +110,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/send-reset-otp/";
 			LOGGER.info("calling sendResetOtpForCivilId api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendResetOtpForCivilId : ", e);
@@ -123,9 +127,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<AbstractUserModel> requestEntity = new HttpEntity<AbstractUserModel>(getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForCivilId : ", e);
@@ -140,9 +145,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<String> requestEntity = new HttpEntity<String>(json, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			LOGGER.info("calling saveCustomer api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveCustomer : ", e);
@@ -162,9 +168,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			LOGGER.info("calling saveSecurityQuestions api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
@@ -184,9 +191,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			LOGGER.info("calling savePhishiingImage api: " + saveCustUrl);
-			return restService.ajax(saveCustUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(saveCustUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in savePhishiingImage : ", e);
@@ -219,9 +227,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String saveCustUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT;
 			LOGGER.info("calling saveLoginIdAndPassword api: " + saveCustUrl);
-			return restService.ajax(saveCustUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(saveCustUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginIdAndPassword : ", e);
@@ -241,9 +250,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String randQuestionstUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + customerId
 					+ "/random-questions/?size=" + size;
 			LOGGER.info("calling fetchRandomQuestoins api: " + randQuestionstUrl);
-			return restService.ajax(randQuestionstUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(randQuestionstUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in fetchRandomQuestoins : ", e);
@@ -264,7 +274,7 @@ public class UserClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
 
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in login : ", e);
@@ -283,9 +293,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String loginCustUrl = this.getBaseUrl() + USER_API_ENDPOINT + "/login/";
 
 			LOGGER.info("calling login api: " + loginCustUrl);
-			return restService.ajax(loginCustUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(loginCustUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in login : ", e);
@@ -306,9 +317,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String validatSecurityQuestionstUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/validate-random-questions/";
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			LOGGER.info("calling validateSecurityQuestions api: " + validatSecurityQuestionstUrl);
-			return restService.ajax(validatSecurityQuestionstUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(validatSecurityQuestionstUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateSecurityQuestions : ", e);
@@ -328,9 +340,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String updatePasswordUrl = this.getBaseUrl() + endpoint + "?password=" + password;
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			LOGGER.info("calling updatePassword api: " + updatePasswordUrl);
-			return restService.ajax(updatePasswordUrl).put(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(updatePasswordUrl).put(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updatePassword : ", e);
@@ -344,9 +357,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			LOGGER.info("Bene Clinet to get bene list Input String :");
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getMyProfileInfo : ", e);
@@ -359,9 +373,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/unlock/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in unLockCustomer : ", e);
@@ -374,9 +389,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/deactivate/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in deActivateCustomer : ", e);
@@ -395,9 +411,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
 			LOGGER.info("calling sendOtp for email update api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForEmailUpdate : ", e);
@@ -416,9 +433,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/send-otp/";
 			LOGGER.info("calling sendOtp for mobile update api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtpForMobileUpdate : ", e);
@@ -431,9 +449,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/unlock/" + civilId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in unLockCustomer : ", e);
@@ -446,9 +465,10 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/deactivate/" + civilId;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in deActivateCustomer : ", e);
@@ -467,9 +487,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/save";
 			LOGGER.info("calling saveEmail api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveEmail : ", e);
@@ -488,9 +509,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/save";
 			LOGGER.info("calling saveMobile api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveMobile : ", e);
@@ -507,9 +529,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/" + identityId + "/" + initRegistration
 					+ "/send-otp/";
 			LOGGER.info("calling sendOtpForCivilId api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in initRegistration : ", e);
@@ -522,10 +545,11 @@ public class UserClient extends AbstractJaxServiceClient {
 			LOGGER.info("Get all the getDataVerificationQuestions");
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/?size=1";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity).as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
-			});
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
+					});
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				LOGGER.error("exception in getDataVerificationQuestions ", e);
@@ -541,10 +565,11 @@ public class UserClient extends AbstractJaxServiceClient {
 			cmodel.setVerificationAnswers(answers);
 			String url = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/random-data-verification-questions/";
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(cmodel, getHeader());
-			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
 		} catch (Exception e) {
-			if (e instanceof AbstractException) {
+			if (e instanceof AbstractJaxException) {
 				throw e;
 			} else {
 				LOGGER.error("exception in saveDataVerificationQuestions ", e);
@@ -561,9 +586,10 @@ public class UserClient extends AbstractJaxServiceClient {
 			HttpEntity<CustomerModel> requestEntity = new HttpEntity<CustomerModel>(custModel, getHeader());
 			String sendOtpUrl = this.getBaseUrl() + CUSTOMER_ENDPOINT + "/logged/in/";
 			LOGGER.info("calling customer logged in api: " + sendOtpUrl);
-			return restService.ajax(sendOtpUrl).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
-			});
-		} catch (AbstractException ae) {
+			return restService.ajax(sendOtpUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in customer logged in : ", e);

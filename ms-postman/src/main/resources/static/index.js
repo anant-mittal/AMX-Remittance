@@ -46,6 +46,15 @@ async function initSub() {
   });
 }
 
+function objectToFormParams(obj){
+	var form_data = new FormData();
+
+	for ( var key in obj ) {
+	    form_data.append(key, obj[key]);
+	}
+	
+	return form_data;
+}
 
 function sendNotification(title, message){
 	title = title || "Notification";
@@ -162,21 +171,39 @@ function init(){
 			$(".notif-title").val("");
 			var message = $(".notif-msg").val() || "Default Message";
 			$(".notif-msg").val("");
-			fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
-				method: 'post',
-				headers: {
-			        'Accept': 'application/json, text/plain, */*',
-			        'Content-Type': 'application/json'
-			    }
-			}).then(function(resp){
-				if(resp.status === 200){
-					$(".toast")
-					.html("Notification with the title: '" + title + "' was successfully sent")
-					.fadeIn()
-					.delay(SUCCES_NOTIF_DELAY)
-					.fadeOut('slow');
-				}
-			})
+			var reqObj = {
+				tenant: tenant, 
+				nationality: nationality, 
+				title: title,
+				message: message
+			};
+			$.ajax({
+			    url         : '/postman/notify/nationality',
+			    data        : reqObj,
+			    type: 'POST'
+			}).done(function(data){
+				$(".toast")
+				.html("Notification with the title: '" + title + "' was successfully sent")
+				.fadeIn()
+				.delay(SUCCES_NOTIF_DELAY)
+				.fadeOut('slow');
+			});
+//			
+//			fetch(`/postman/notify/nationality?tenant=${tenant}&nationality=${nationality}&title=${title}&message=${message}`, {
+//				method: 'post',
+//				headers: {
+//			        'Accept': 'application/json, text/plain, */*',
+//			        'Content-Type': 'application/json'
+//			    }
+//			}).then(function(resp){
+//				if(resp.status === 200){
+//					$(".toast")
+//					.html("Notification with the title: '" + title + "' was successfully sent")
+//					.fadeIn()
+//					.delay(SUCCES_NOTIF_DELAY)
+//					.fadeOut('slow');
+//				}
+//			})
 		})
 		
 		$(".send-notifications-kwt-all").on('click', function(){

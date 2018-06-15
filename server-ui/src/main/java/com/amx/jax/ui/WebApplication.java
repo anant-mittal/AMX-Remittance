@@ -72,7 +72,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	// srb.setListener(new WebRequestListener());
 	// return srb;
 	// }
-	
+
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {

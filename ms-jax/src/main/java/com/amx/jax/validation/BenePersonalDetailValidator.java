@@ -15,7 +15,6 @@ import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
-import com.amx.jax.util.JaxUtil;
 
 @Component
 public class BenePersonalDetailValidator implements Validator {
@@ -42,7 +41,7 @@ public class BenePersonalDetailValidator implements Validator {
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
-		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getServiceApplicabilityRule(
+		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				metaData.getCountryId(), benePersonalDetailModel.getCountryId(),
 				beneficiaryTrnxModel.getBeneAccountModel().getCurrencyId());
 

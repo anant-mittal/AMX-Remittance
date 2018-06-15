@@ -49,11 +49,15 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 			@Param("beneRelationId") BigDecimal beneRelationId);
 	
 	
-	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and myFavouriteBene='Y' and orsStatus <> 0  ORDER BY bl.totalTrnx desc")
+	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and myFavouriteBene='Y' and isActive='Y' and orsStatus <> 0  ORDER BY bl.totalTrnx desc")
 	public List<BenificiaryListView> getFavouriteBeneListFromViewForCountry(@Param("customerId") BigDecimal customerId,@Param("applicationCountryId") BigDecimal applicationCountryId);
 
 	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and bl.applicationCountryId=:applicationCountryId and orsStatus <> 0 and bl.lastJavaRemittance is not null ORDER BY bl.lastJavaRemittance desc")
 	public List<BenificiaryListView> getLastTransactionBene(@Param("customerId") BigDecimal customerId,@Param("applicationCountryId") BigDecimal applicationCountryId, Pageable pageble);
 	
 	public BenificiaryListView findBybeneficiaryRelationShipSeqId(BigDecimal beneficiaryRelationShipSeqId);
+	
+	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and orsStatus <> 0 and bl.beneficiaryRelationShipSeqId in (:beneficiaryRelationShipSeqIds)")
+	public List<BenificiaryListView> getBeneficiaryRelationShipSeqIds(@Param("customerId") BigDecimal customerId, @Param("beneficiaryRelationShipSeqIds") List<BigDecimal> beneficiaryRelationShipSeqIds);
+
 }

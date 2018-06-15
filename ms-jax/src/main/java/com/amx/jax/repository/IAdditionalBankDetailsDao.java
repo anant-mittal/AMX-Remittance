@@ -12,13 +12,11 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
 
 public interface IAdditionalBankDetailsDao extends JpaRepository<AdditionalBankDetailsView, Serializable> {
 
-	@Query("select a from AdditionalBankDetailsView a where a.currencyId=:currencyId and a.bankId=:bankId "
-			+ " and a.remittanceId=:remittanceModeId and a.deliveryId=:deleveryModeId and a.countryId=:countryId "
-			+ " and a.flexField=:flexiField")
-	public List<AdditionalBankDetailsView> getAdditionalBankDetails(@Param("currencyId") BigDecimal currencyId,
-			@Param("bankId") BigDecimal bankId, @Param("remittanceModeId") BigDecimal remittanceModeId,
-			@Param("deleveryModeId") BigDecimal deleveryModeId, @Param("countryId") BigDecimal countryId,
-			@Param("flexiField") String flexiField);
+	@Query("select a from AdditionalBankDetailsView a where a.currencyId=?1 and a.bankId=?2 "
+			+ " and a.remittanceId=?3 and a.deliveryId=?4 and a.countryId=?5 "
+			+ " and a.flexField=?6")
+	public List<AdditionalBankDetailsView> getAdditionalBankDetails(BigDecimal currencyId, BigDecimal bankId,
+			BigDecimal remittanceModeId, BigDecimal deleveryModeId, BigDecimal countryId, String flexiField);
 
 	@Query("select a from AdditionalBankDetailsView a where a.srlId=:srlId and a.currencyId=:currencyId and a.bankId=:bankId "
 			+ " and a.remittanceId=:remittanceModeId and a.deliveryId=:deleveryModeId ")

@@ -10,7 +10,7 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
+		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -44,16 +44,11 @@
 			<version>3.0.0.RELEASE</version>
 		</dependency>
 
-
-		<!-- UNIREST DEPENDCY -->
-		<!-- <dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpclient</artifactId> 
-			<version>4.3.6</version> </dependency> <dependency> <groupId>org.apache.httpcomponents</groupId> 
-			<artifactId>httpasyncclient</artifactId> <version>4.0.2</version> </dependency> 
-			<dependency> <groupId>org.apache.httpcomponents</groupId> <artifactId>httpmime</artifactId> 
-			<version>4.3.6</version> </dependency> <dependency> <groupId>org.json</groupId> 
-			<artifactId>json</artifactId> <version>20140107</version> </dependency> <dependency> 
-			<groupId>com.mashape.unirest</groupId> <artifactId>unirest-java</artifactId> 
-			<version>1.4.9</version> </dependency> -->
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 
 		<!-- Swagger infos -->
 		<dependency>
@@ -85,40 +80,6 @@
 			<groupId>gui.ava</groupId>
 			<artifactId>html2image</artifactId>
 			<version>2.0.1</version>
-		</dependency>
-
-
-		<!-- iText7 -->
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>itext7-core</artifactId>
-			<version>${itext.version}</version>
-			<type>pom</type>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>html2pdf</artifactId>
-			<version>${itext.pdfhtml.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>itext-licensekey</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>font-asian</artifactId>
-			<version>${itext.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>hyph</artifactId>
-			<version>${itext.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.itextpdf</groupId>
-			<artifactId>typography</artifactId>
-			<version>${itext.pdfcalligraph.version}</version>
 		</dependency>
 
 
@@ -222,13 +183,6 @@
 			<groupId>com.maxmind.geoip2</groupId>
 			<artifactId>geoip2</artifactId>
 			<version>2.8.0</version>
-		</dependency>
-
-
-		<dependency>
-			<groupId>com.google.firebase</groupId>
-			<artifactId>firebase-admin</artifactId>
-			<version>5.9.0</version>
 		</dependency>
 
 	</dependencies>

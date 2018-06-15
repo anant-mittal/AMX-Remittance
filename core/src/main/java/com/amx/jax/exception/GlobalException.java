@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.amx.amxlib.error.JaxError;
 import com.amx.jax.util.JaxUtil;
 
-public class GlobalException extends AbstractException {
+public class GlobalException extends AbstractJaxException {
 
 	/**
 	 * 

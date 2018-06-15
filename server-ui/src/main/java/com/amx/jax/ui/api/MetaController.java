@@ -65,7 +65,7 @@ public class MetaController {
 
 	@RequestMapping(value = { "/api/meta/ccy/list" }, method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<List<CurrencyMasterDTO>> ccyList(@RequestParam(required = false) Boolean xrate) {
-		if (xrate) {
+		if (xrate != null && xrate == true) {
 			return new ResponseWrapper<List<CurrencyMasterDTO>>(
 					jaxService.setDefaults().getMetaClient().getAllExchangeRateCurrencyList().getResults());
 		}
