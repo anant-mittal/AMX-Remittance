@@ -35,5 +35,5 @@ public interface PostManService {
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException;
 
 	public Map<String, Object> getMap(String url) throws PostManException;
-	
+
 }
