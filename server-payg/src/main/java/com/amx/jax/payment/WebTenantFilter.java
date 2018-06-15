@@ -44,6 +44,7 @@ public class WebTenantFilter implements Filter {
         
         if (url != null) {
             StringTokenizer stok = new StringTokenizer(url, "//");
+            if (stok.countTokens() > 2) {
             while (stok.hasMoreTokens()) {
                 if (stok.nextToken().equalsIgnoreCase(BHR)) {
                     TenantContextHolder.setCurrent(Tenant.BHR);
@@ -59,6 +60,7 @@ public class WebTenantFilter implements Filter {
                     break;
                 }
             }
+        }
         }
         chain.doFilter(req, resp);
     }
