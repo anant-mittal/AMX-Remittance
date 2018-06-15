@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.routing.IRoutingLogic;
 import com.amx.jax.service.MetaService;
 
 @Component
@@ -31,6 +33,8 @@ public class RoutingService {
 	BeneficiaryService beneficiaryService;
 	@Autowired
 	RoutingProcedureDao routingProcedureDao;
+	@Autowired
+	List<IRoutingLogic> routingLogics;
 
 	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
 		Map<String, Object> output;
@@ -52,12 +56,17 @@ public class RoutingService {
 			output.put("P_REMITTANCE_MODE_ID", routingProcedureDao.getRemittanceModeIdForCash(inputValue));
 			inputValue.putAll(output);
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
-
 		} else {
 			// banking
 			output = applicationProcedureDao.getRoutingDetails(inputValue);
+			inputValue.putAll(output);
+			routingLogics.forEach(i -> {
+				if (i.isApplicable()) {
+					i.apply(inputValue, output);
+				}
+			});
 		}
-
+		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
 		return output;
 	}

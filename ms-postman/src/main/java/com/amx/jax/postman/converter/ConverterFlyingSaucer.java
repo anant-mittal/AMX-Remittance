@@ -11,6 +11,7 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.Constants;
+import com.codahale.metrics.annotation.Timed;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
 
@@ -22,7 +23,8 @@ public class ConverterFlyingSaucer implements FileConverter {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterFlyingSaucer.class);
 
 	@Override
-	public File toPDF(File file) throws JRException  {
+	@Timed(name = "PDF_CREATION_FS", absolute = true)
+	public File toPDF(File file) throws JRException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 

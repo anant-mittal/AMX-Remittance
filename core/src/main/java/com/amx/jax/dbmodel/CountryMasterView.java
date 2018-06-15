@@ -44,6 +44,7 @@ import javax.persistence.Table;
 		private String direction;
 		private String languageCode;
 		private String languageName;
+		private String countryMobileLength;
 
 		public CountryMasterView() {
 			super();
@@ -216,6 +217,15 @@ import javax.persistence.Table;
 		}
 		public void setLanguageName(String languageName) {
 			this.languageName = languageName;
+		}
+		
+		@Column(name = "COUNTRY_MOB_LENGTH")
+		public String getCountryMobileLength() {
+			return countryMobileLength;
+		}
+
+		public void setCountryMobileLength(String countryMobileLength) {
+			this.countryMobileLength = countryMobileLength;
 		}
 
 	}

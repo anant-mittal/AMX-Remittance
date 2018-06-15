@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AbstractAuditEvent;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
@@ -65,8 +66,15 @@ public class AuditServiceClient implements AuditService {
 		if (traceTime != null) {
 			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
 		}
+		event.setEventTime(TimeUtils.timeSince(event.getTimestamp()));
 		event.setActorId(AppContextUtil.getActorId());
 		return event;
+	}
+
+	public static AuditLoggerResponse logStatic(Marker marker, AbstractAuditEvent event) {
+		event.setComponent(appName);
+		LOGGER.info(marker, JsonUtil.toJson(event));
+		return null;
 	}
 
 	/**
@@ -78,7 +86,7 @@ public class AuditServiceClient implements AuditService {
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
 		captureDetails(event);
-		LOGGER.info(auditmarker, JsonUtil.toJson(event));
+		logStatic(auditmarker, event);
 		return null;
 	}
 

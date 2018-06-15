@@ -9,7 +9,8 @@ public class DefaultAuditFilter implements AuditFilter<DefaultEvent> {
 
 	@Override
 	public void doFilter(DefaultEvent event) {
-		// Do Something
+		
 	}
+
 
 }
