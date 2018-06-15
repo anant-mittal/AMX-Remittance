@@ -42,7 +42,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
 		ApiResponse response = getApiResponse(ex);
 		AmxApiError error = (AmxApiError) response.getError().get(0);
-		error.setErrorClass(CommonJaxException.class.getName());
+		error.setErrorClass(ex.getClass().getName());
 		setErrorHeaders(error);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
