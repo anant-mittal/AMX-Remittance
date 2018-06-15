@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
@@ -95,6 +97,10 @@ public class PostManController {
 	public SMS sendSMS(@RequestBody SMS sms, @RequestParam(required = false, defaultValue = "false") Boolean async)
 			throws PostManException {
 
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:START", "sendSMS");
+		}
+
 		Language lang = getLang();
 
 		if (sms.getLang() == null) {
@@ -105,6 +111,9 @@ public class PostManController {
 			postManService.sendSMSAsync(sms);
 		} else {
 			postManService.sendSMS(sms);
+		}
+		if (AppParam.DEBUG_INFO.isEnabled()) {
+			LOGGER.info("{}:END", "sendSMS");
 		}
 		return sms;
 	}
@@ -198,9 +207,13 @@ public class PostManController {
 	}
 
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
-	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
-			@RequestParam(required = false) String appname) throws PostManException {
-		postManService.notifyException(appname, title, eMsg);
+	public Exception notifySlack(@RequestBody ExceptionReport eMsg, @RequestParam(required = false) String title,
+			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
+			throws PostManException {
+		postManService.notifyException(appname, title, exception, eMsg);
+		if (eMsg.getEmail() != null) {
+			postManService.sendEmail(eMsg.getEmail());
+		}
 		return eMsg;
 	}
 

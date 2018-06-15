@@ -18,7 +18,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
@@ -34,7 +36,7 @@ public class EmailService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
 	@Autowired
-	private TemplateService templateService;
+	private TemplateUtils templateUtils;
 
 	@Autowired
 	private FileService fileService;
@@ -69,6 +71,12 @@ public class EmailService {
 	@Autowired
 	private PostManConfig postManConfig;
 
+	@Autowired
+	SlackService slackService;
+
+	@Autowired
+	AuditService auditService;
+
 	public JavaMailSender getMailSender() {
 		if (mailSender == null) {
 			if (postManConfig.getTenant() != null) {
@@ -94,17 +102,55 @@ public class EmailService {
 		return this.mailSender;
 	}
 
-	public Email send(Email eParams) {
+	public Email sendEmail(Email email) throws PostManException {
 
-		if (eParams.isHtml()) {
-			try {
-				sendHtmlMail(eParams);
-			} catch (MessagingException | IOException e) {
-				LOGGER.error("Could not send email to : " + Utils.concatenate(eParams.getTo(), ",") + " Error = {}", e);
+		String to = null;
+		try {
+			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+
+			to = email.getTo() != null ? email.getTo().get(0) : null;
+
+			if (email.getTemplate() != null) {
+				File file = new File();
+				file.setTemplate(email.getTemplate());
+				file.setModel(email.getModel());
+				file.setLang(email.getLang());
+
+				email.setMessage(fileService.create(file).getContent());
+
+				if (ArgUtil.isEmptyString(email.getSubject())) {
+					email.setSubject(file.getTitle());
+				}
 			}
+
+			if (email.getFiles() != null && email.getFiles().size() > 0) {
+				for (File file : email.getFiles()) {
+					if (file.getLang() == null) {
+						file.setLang(email.getLang());
+					}
+					fileService.create(file);
+				}
+			}
+			if (!ArgUtil.isEmpty(to)) {
+				this.send(email);
+			} else {
+				auditService.fail(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+			}
+		} catch (Exception e) {
+			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
+			slackService.sendException(to, e);
+		}
+		return email;
+	}
+
+	public Email send(Email eParams) throws MessagingException, IOException {
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
+		if (eParams.isHtml()) {
+			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
+		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 
@@ -142,7 +188,7 @@ public class EmailService {
 
 		while (m.find()) {
 			String contentId = m.group(1);
-			helper.addInline(contentId, templateService.readAsResource(contentId));
+			helper.addInline(contentId, templateUtils.readAsResource(contentId));
 		}
 
 		if (eParams.getFiles() != null && eParams.getFiles().size() > 0) {
@@ -155,7 +201,6 @@ public class EmailService {
 	}
 
 	private void sendPlainTextMail(Email eParams) {
-
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 
 		eParams.getTo().toArray(new String[eParams.getTo().size()]);

@@ -36,6 +36,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -68,7 +69,7 @@ import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
-import com.amx.jax.userservice.service.UserValidationContext.UserValidation;
+import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.StringUtil;
@@ -139,7 +140,7 @@ public class UserService extends AbstractUserService {
 	CustomerVerificationService customerVerificationService;
 	
 	@Autowired
-	TenantContext<UserValidation> tenantContext;
+	TenantContext<CustomerValidation> tenantContext;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -284,7 +285,7 @@ public class UserService extends AbstractUserService {
 		return false;
 	}
 
-	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+	public void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
 		if (securityquestions != null && !securityquestions.isEmpty()) {
 			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
 		}
@@ -326,15 +327,19 @@ public class UserService extends AbstractUserService {
 			civilId = custDao.getCustById(customerId).getIdentityInt();
 		}
 		if (customerId == null && civilId != null) {
+		    userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(civilId, JaxApiFlow.SIGNUP_ONLINE);
 			Customer customer = custDao.getCustomerByCivilId(civilId);
-			if (customer == null) {
+			if (customer == null && !Boolean.TRUE.equals(initRegistration)) {
 				throw new GlobalException("Invalid civil Id passed", JaxError.INVALID_CIVIL_ID);
 			}
-			customerId = customer.getCustomerId();
+			if (customer != null) {
+				customerId = customer.getCustomerId();
+			}
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
 		userValidationService.validateCivilId(civilId);
+		
 		CivilIdOtpModel model = new CivilIdOtpModel();
 
 		CustomerOnlineRegistration onlineCustReg = custDao.getOnlineCustByCustomerId(customerId);
@@ -345,7 +350,7 @@ public class UserService extends AbstractUserService {
 		} else {
 			logger.info("onlineCustReg is null");
 		}
-
+		
 		CustomerOnlineRegistration onlineCust = verifyCivilId(civilId, model);
 		userValidationService.validateActiveCustomer(onlineCustReg, initRegistration);
 
@@ -426,6 +431,14 @@ public class UserService extends AbstractUserService {
 		return validateOtp(civilId, mOtp, null);
 	}
 
+	/**
+	 * validate otp
+	 * @param civilId
+	 * @param mOtp
+	 * @param eOtp
+	 * @return
+	 *  apiresponse
+	 */
 	public ApiResponse validateOtp(String civilId, String mOtp, String eOtp) {
 		logger.info("in validateopt of civilid: " + civilId);
 		Customer customer = null;
@@ -476,18 +489,19 @@ public class UserService extends AbstractUserService {
 	}
 
 	public ApiResponse loginUser(String userId, String password) {
-		List<CustomerOnlineRegistration> onlineCustomerList = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(userId);
-		if (onlineCustomerList == null || onlineCustomerList.isEmpty()) {
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		if (onlineCustomer == null) {
 			throw new GlobalException("User with userId: " + userId + " is not registered",
 					JaxError.USER_NOT_REGISTERED);
 		}
-		CustomerOnlineRegistration onlineCustomer = onlineCustomerList.get(0);
+		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
-		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
+
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());

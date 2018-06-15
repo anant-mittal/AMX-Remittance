@@ -3,6 +3,7 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 public class BenePersonalDetailModel extends AbstractModel {
 
@@ -19,17 +20,27 @@ public class BenePersonalDetailModel extends AbstractModel {
 	@NotNull
 	private BigDecimal districtId;
 	@NotNull
+	@Size(min=1, max=50)
 	private String firstName;
 	@NotNull
+	@Size(min=1, max=50)
 	private String secondName;
+	@Size(min=1, max=50)
 	private String thirdName;
+	@Size(min=1, max=50)
 	private String fourthName;
+	@Size(min=1, max=50)
 	private String fifthName;
 	private String nationality;
+	@Size(min=1, max=50)
 	private String localFirstName;
+	@Size(min=1, max=50)
 	private String localSecondName;
+	@Size(min=1, max=50)
 	private String localThirdName;
+	@Size(min=1, max=50)
 	private String localFourthName;
+	@Size(min=1, max=50)
 	private String localFifthName;
 	// bene contact
 	private String telephoneNumber;

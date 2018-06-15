@@ -120,7 +120,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(Templates.REMIT_STATMENT, wrapper, File.Type.PDF);
+		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF));
 		// file.setName("RemittanceStatment.pdf");
 		file.create(response, true);
 		return wrapper;
@@ -139,7 +139,8 @@ public class RemittController {
 		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
-					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
+							File.Type.PDF));
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(file);
@@ -165,12 +166,13 @@ public class RemittController {
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
-					duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, File.Type.PDF);
+					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
+							File.Type.PDF));
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManService
-					.processTemplate(duplicate ? Templates.REMIT_RECEIPT_COPY : Templates.REMIT_RECEIPT, wrapper, null);
+			File file = postManService.processTemplate(new File(
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null));
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
@@ -183,20 +185,9 @@ public class RemittController {
 		ResponseWrapper<XRateData> wrapper = new ResponseWrapper<XRateData>(new XRateData());
 
 		CurrencyMasterDTO domCur = tenantContext.getDomCurrency();
-		CurrencyMasterDTO forCurcy = null;
+		CurrencyMasterDTO forCurcy = userBean.getDefaultForCurrency(forCur);
 
 		wrapper.getData().setDomCur(domCur);
-
-		if (forCur == null) {
-			forCurcy = userBean.getDefaultForCurrency();
-		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
-				if (currency.getCurrencyId().equals(forCur)) {
-					forCurcy = currency;
-					break;
-				}
-			}
-		}
 
 		if (forCurcy != null) {
 			wrapper.getData().setForCur(forCurcy);
@@ -263,6 +254,8 @@ public class RemittController {
 	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
 			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
 		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
+
+		// Noncompliant - exception is lost
 		try {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();

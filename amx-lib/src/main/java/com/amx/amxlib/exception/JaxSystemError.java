@@ -1,16 +1,13 @@
 package com.amx.amxlib.exception;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.model.response.ApiError;
+import com.amx.jax.exception.AmxApiError;
 
-public class JaxSystemError extends AbstractException {
+public class JaxSystemError extends AbstractJaxException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public JaxSystemError(ApiError error) {
+	public JaxSystemError(AmxApiError error) {
 		super(error);
 	}
 

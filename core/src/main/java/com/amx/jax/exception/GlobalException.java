@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.amx.amxlib.error.JaxError;
 import com.amx.jax.util.JaxUtil;
 
-public class GlobalException extends AbstractException {
+public class GlobalException extends AbstractJaxException {
 
 	/**
 	 * 
@@ -30,6 +30,14 @@ public class GlobalException extends AbstractException {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
 		this.errorCode = util.buildErrorExpressions(error.getCode(), list);
+
+	}
+	
+	public GlobalException(String errorMessage, JaxError error, Object... expressions) {
+		JaxUtil util = new JaxUtil();
+		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
+		this.errorCode = util.buildErrorExpressions(error.getCode(), list);
+		this.errorMessage = errorMessage;
 
 	}
 }

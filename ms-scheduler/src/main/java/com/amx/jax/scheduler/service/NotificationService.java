@@ -7,7 +7,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.postman.PostManException;
@@ -24,7 +23,7 @@ public class NotificationService {
 	@Autowired
 	private PostManService postManService;
 
-	@Async
+	
 	public void sendBatchNotification(List<RateAlertNotificationDTO> subList) {
 		for (RateAlertNotificationDTO alert : subList) {
 			logger.info("Sending rate alert to " + alert.getEmail());
@@ -35,7 +34,7 @@ public class NotificationService {
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, alert);
 			try {
-				postManService.sendEmail(email);
+				postManService.sendEmailAsync(email);
 			} catch (PostManException e) {
 				logger.error("error in sendBatchNotification", e);
 			}

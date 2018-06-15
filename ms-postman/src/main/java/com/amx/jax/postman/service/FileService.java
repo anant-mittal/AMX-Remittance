@@ -10,19 +10,22 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.exceptions.TemplateInputException;
 
+import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.ArgUtil;
 
+import net.sf.jasperreports.engine.JRException;
+
 @Component
 public class FileService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(FileService.class);
+	private static final Logger LOGGER = LoggerService.getLogger(FileService.class);
 
 	@Autowired
 	private PdfService pdfService;
@@ -32,6 +35,12 @@ public class FileService {
 
 	@Autowired
 	TemplateUtils templateUtils;
+
+	@Autowired
+	SlackService slackService;
+
+	@Autowired
+	AuditService auditService;
 
 	public File create(File file) {
 		if (file.getTemplate() != null) {
@@ -61,8 +70,14 @@ public class FileService {
 			/**
 			 * From string to File type
 			 */
-			pdfService.convert(file);
-			LOGGER.info("File converted to PDF = {}", file.getTemplate());
+			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent();
+			try {
+				pdfService.convert(file);
+				auditService.gauge(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_CREATED, file));
+			} catch (JRException e) {
+				auditService.excep(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
+			}
+
 		}
 		return file;
 	}

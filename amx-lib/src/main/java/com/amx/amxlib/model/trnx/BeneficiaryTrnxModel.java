@@ -16,6 +16,8 @@ public class BeneficiaryTrnxModel implements Serializable {
 	BeneAccountModel beneAccountModel;
 	BenePersonalDetailModel benePersonalDetailModel;
 	BigDecimal beneTransactionAmountLimit;
+	BigDecimal beneficaryAccountSeqId;
+	BigDecimal beneficaryMasterSeqId;
 
 	public BeneAccountModel getBeneAccountModel() {
 		return beneAccountModel;
@@ -39,6 +41,22 @@ public class BeneficiaryTrnxModel implements Serializable {
 
 	public void setBeneTransactionAmountLimit(BigDecimal beneTransactionAmountLimit) {
 		this.beneTransactionAmountLimit = beneTransactionAmountLimit;
+	}
+
+	public BigDecimal getBeneficaryAccountSeqId() {
+		return beneficaryAccountSeqId;
+	}
+
+	public void setBeneficaryAccountSeqId(BigDecimal beneficaryAccountSeqId) {
+		this.beneficaryAccountSeqId = beneficaryAccountSeqId;
+	}
+
+	public BigDecimal getBeneficaryMasterSeqId() {
+		return beneficaryMasterSeqId;
+	}
+
+	public void setBeneficaryMasterSeqId(BigDecimal beneficaryMasterSeqId) {
+		this.beneficaryMasterSeqId = beneficaryMasterSeqId;
 	}
 
 }

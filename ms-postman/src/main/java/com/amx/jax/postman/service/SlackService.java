@@ -11,12 +11,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManConfig;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.Notipy.Workspace;
@@ -75,7 +78,18 @@ public class SlackService {
 		return msg;
 	}
 
-	public Exception sendException(String appname, String title, Exception e) {
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
+	public ExceptionReport sendException(String title, Exception e) {
+		return this.sendException(title, new ExceptionReport(e));
+	}
+
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
+	public ExceptionReport sendException(String title, ExceptionReport e) {
+		return this.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
+	}
+
+	@Async(ExecutorConfig.EXECUTER_BRONZE)
+	public ExceptionReport sendException(String appname, String title, String exception, ExceptionReport e) {
 
 		if (appConfig.isDebug()) {
 			LOGGER.error("Slack-Notify-Exception ", e);
@@ -109,8 +123,8 @@ public class SlackService {
 			attachments.add(attachmentTrace);
 
 			Map<String, String> attachmentTitle = new HashMap<String, String>();
-			attachmentTitle.put("text",
-					URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8"));
+			attachmentTitle.put("text", String.format("Exception %s : %s \n Message = %s", e.getClass().getName(),
+					exception, URLEncoder.encode(ArgUtil.parseAsString(e.getMessage(), Constants.BLANK), "UTF-8")));
 			attachmentTitle.put("color", "danger");
 			attachments.add(attachmentTitle);
 
@@ -138,4 +152,5 @@ public class SlackService {
 		}
 		return e;
 	}
+
 }

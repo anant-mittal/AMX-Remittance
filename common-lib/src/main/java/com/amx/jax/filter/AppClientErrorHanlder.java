@@ -8,9 +8,11 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.amx.jax.exception.AbstractAppException;
-import com.amx.jax.exception.ApiError;
+import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.ExceptionFactory;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class AppClientErrorHanlder implements ResponseErrorHandler {
@@ -20,8 +22,8 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		if (response.getStatusCode() != HttpStatus.OK) {
 			return true;
 		}
-		List<String> errorCode = response.getHeaders().get("ERROR_CODE");
-		if (errorCode != null && !errorCode.isEmpty()) {
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		if (!ArgUtil.isEmpty(apiErrorJson)) {
 			return true;
 		}
 		return false;
@@ -30,21 +32,22 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
 
-		List<String> errorCodes = response.getHeaders().get("ERROR_CODE");
-		List<String> errorMessages = response.getHeaders().get("ERROR_MESSAGE");
-		ApiError apiError = new ApiError();
-		if (errorCodes != null && !errorCodes.isEmpty()) {
-			apiError.setErrorId(errorCodes.get(0));
-		}
-		if (errorMessages != null && !errorMessages.isEmpty()) {
-			apiError.setErrorMessage(errorMessages.get(0));
-		}
+		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
 
-		AbstractAppException defExcp = ExceptionFactory.get(apiError.getErrorId());
+		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
+
+		if (defExcp == null) {
+			defExcp = ExceptionFactory.get(apiError.getErrorId());
+		}
 
 		if (defExcp != null) {
 			throw defExcp.getInstance(apiError);
 		}
 
+	}
+
+	static {
+		ExceptionFactory.readExceptions();
 	}
 }

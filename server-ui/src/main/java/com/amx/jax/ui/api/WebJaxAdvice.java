@@ -21,9 +21,11 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
@@ -53,13 +55,14 @@ public class WebJaxAdvice {
 
 	private Logger LOG = LoggerFactory.getLogger(WebJaxAdvice.class);
 
-	@ExceptionHandler(AbstractException.class)
-	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractException exc, HttpServletRequest request,
+	@ExceptionHandler(AbstractJaxException.class)
+	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractJaxException exc, HttpServletRequest request,
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
-		if (exc.getError() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR) {
+		if (exc.getErrorKey() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR
+				|| exc.getError() == JaxError.JAX_SYSTEM_ERROR) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
 		} else {
@@ -73,6 +76,7 @@ public class WebJaxAdvice {
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
 			sessionService.unIndexUser();
 		}
+		wrapper.setException(exc.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
@@ -90,10 +94,8 @@ public class WebJaxAdvice {
 		}
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return
-		// error(exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-		// .collect(Collectors.toList()));
 	}
 
 	@ExceptionHandler(HttpMessageNotReadableException.class)
@@ -108,10 +110,8 @@ public class WebJaxAdvice {
 		errors.add(newError);
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
+		wrapper.setException(exception.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return
-		// error(exception.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-		// .collect(Collectors.toList()));
 	}
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -119,29 +119,51 @@ public class WebJaxAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	protected ResponseEntity<ResponseWrapper<Object>> handle(MethodArgumentNotValidException ex,
 			HttpServletRequest request, HttpServletResponse response) {
-		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-
 		List<ResponseError> errors = new ArrayList<ResponseError>();
-
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			ResponseError newError = new ResponseError();
 			newError.setField(error.getField());
 			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
-
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			ResponseError newError = new ResponseError();
 			newError.setObzect(error.getObjectName());
 			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
+		return notValidArgument(ex, errors, request, response);
+	}
+
+	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	protected ResponseEntity<ResponseWrapper<Object>> handle(MethodArgumentTypeMismatchException ex,
+			HttpServletRequest request, HttpServletResponse response) {
+		List<ResponseError> errors = new ArrayList<ResponseError>();
+		ResponseError newError = new ResponseError();
+		newError.setField(ex.getName());
+		newError.setDescription(HttpService.sanitze(ex.getMessage()));
+		errors.add(newError);
+		return notValidArgument(ex, errors, request, response);
+	}
+
+	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<ResponseError> errors,
+			HttpServletRequest request, HttpServletResponse response) {
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
 		wrapper.setErrors(errors);
+		wrapper.setException(ex.getClass().getName());
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
-		// return handleExceptionInternal(ex, wrapper, headers, HttpStatus.BAD_REQUEST,
-		// request);
-		// return new ResponseEntity<Object>(wrapper, HttpStatus.OK);
+	}
+
+	@ExceptionHandler({ Exception.class })
+	public ResponseEntity<ResponseWrapper<Object>> handleAll(Exception ex, WebRequest request) {
+		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+		wrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		wrapper.setException(ex.getClass().getName());
+		postManService.notifyException(wrapper.getStatus(), ex);
+		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }

@@ -5,21 +5,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.services.AbstractService;
 
 @Service
+@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CompanyService extends AbstractService {
 
 	@Autowired
 	ICompanyDAO companyDao;
+	
+	@Autowired
+	MetaData metaData;
 
 	public static List<ViewCompanyDetails> DEFAULT_COMPANY_DETALIS;
 
@@ -40,16 +48,14 @@ public class CompanyService extends AbstractService {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
 		return companyDetails.get(0);
 	}
-
-	public  static ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
-		ViewCompanyDetails companyDetails=null;
-		for (ViewCompanyDetails vcd : DEFAULT_COMPANY_DETALIS) {
-			
-			if (vcd.getLanguageId().compareTo(languageId)==0) {
-				companyDetails = vcd;
-			}
-		}
-		return companyDetails;
+	
+	/**
+	 * returns the company details based on meta info
+	 */
+	public ViewCompanyDetails getCompanyDetail() {
+		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(metaData.getLanguageId(),
+				metaData.getCompanyId());
+		return companyDetails.get(0);
 	}
 
 	public List<ViewCompanyDetailDTO> convert(List<ViewCompanyDetails> companyDetails) {

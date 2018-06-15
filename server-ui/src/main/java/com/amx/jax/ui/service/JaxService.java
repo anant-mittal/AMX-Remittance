@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.BeneClient;
+import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
@@ -55,6 +57,12 @@ public class JaxService extends AbstractJaxServiceClient {
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
 
+	@Autowired
+	private PlaceOrderClient placeOrderClient;
+
+	@Autowired
+	CustomerRegistrationClient customerRegistrationClient;
+
 	public JaxFieldClient getJaxFieldClient() {
 		return jaxFieldClient;
 	}
@@ -83,6 +91,14 @@ public class JaxService extends AbstractJaxServiceClient {
 		return metaClient;
 	}
 
+	public CustomerRegistrationClient getCustRegClient() {
+		return customerRegistrationClient;
+	}
+
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
+	}
+
 	@Autowired
 	private MetaClient metaClient;
 
@@ -90,8 +106,7 @@ public class JaxService extends AbstractJaxServiceClient {
 		return jaxMetaInfo;
 	}
 
-	public JaxService setDefaults() {
-
+	public JaxService setDefaults(BigDecimal customerId) {
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setLanguageId(sessionService.getGuestSession().getLang().getBDCode());
@@ -106,16 +121,18 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
 		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
-		if (sessionService.getUserSession().getCustomerModel() != null) {
-			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
-			log.info("Customer Model Found in User Session : {}", jaxMetaInfo.getCustomerId());
-		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
-			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
-			log.info("Customer Model Found in Guest Session : {}", jaxMetaInfo.getCustomerId());
-		}
-		log.info("Customer id fetched : {}", jaxMetaInfo.getCustomerId());
+		jaxMetaInfo.setCustomerId(customerId);
 
 		return this;
+	}
+
+	public JaxService setDefaults() {
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			return this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
+		}
+		return this.setDefaults(null);
 	}
 
 }
