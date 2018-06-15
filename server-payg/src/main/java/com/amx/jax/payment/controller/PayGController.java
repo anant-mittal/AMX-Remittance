@@ -150,7 +150,8 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		return "thymeleaf/repback";
+		//return "thymeleaf/repback";
+		return redirectUrl;
 	}
 
 }
