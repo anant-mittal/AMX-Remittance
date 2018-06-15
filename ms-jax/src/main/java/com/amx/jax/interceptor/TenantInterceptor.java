@@ -14,6 +14,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.util.JaxContextUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,5 +49,6 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 			ModelAndView modelAndView) throws Exception {
 		TenantContext.clear();
+		JaxContextUtil.clear();
 	}
 }

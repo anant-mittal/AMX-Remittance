@@ -15,13 +15,13 @@ import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class PostManServiceImpl implements PostManService {
@@ -48,13 +48,7 @@ public class PostManServiceImpl implements PostManService {
 
 	@Override
 	public Email sendEmail(Email email) throws PostManException {
-		return emailService.sendEmail(email);
-	}
-
-	@Override
-	public File processTemplate(Templates template, Object data, Type fileType) throws PostManException {
-		Map<String, Object> map = JsonUtil.toMap(data);
-		return this.processTemplate(template, map, fileType);
+		return emailService.sendEmail(supportService.filterMessageType(email));
 	}
 
 	@Override
@@ -95,12 +89,17 @@ public class PostManServiceImpl implements PostManService {
 	}
 
 	@Override
-	public Exception notifyException(String title, Exception e) {
-		return slackService.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
+	public ExceptionReport notifyException(ExceptionReport e) {
+		return this.notifyException(appConfig.getAppName(), e.getTitle(), e.getException(), e);
 	}
 
-	public Exception notifyException(String appname, String title, String exception, Exception e) {
+	public ExceptionReport notifyException(String appname, String title, String exception, ExceptionReport e) {
 		return slackService.sendException(appname, title, exception, e);
+	}
+
+	@Override
+	public ExceptionReport notifyException(String title, Exception exc) {
+		return this.notifyException(title, new ExceptionReport(exc));
 	}
 
 	@Override
@@ -144,5 +143,6 @@ public class PostManServiceImpl implements PostManService {
 		this.notifySlack(msg);
 		return email;
 	}
+
 
 }

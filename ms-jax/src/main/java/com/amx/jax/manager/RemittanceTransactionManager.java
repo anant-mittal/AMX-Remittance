@@ -417,15 +417,15 @@ public class RemittanceTransactionManager {
 			if (commissionRangeMap.get("FROM_AMOUNT") != null || commissionRangeMap.get("TO_AMOUNT") != null) {
 				fromAmount = (BigDecimal) commissionRangeMap.get("FROM_AMOUNT");
 				toAmount = (BigDecimal) commissionRangeMap.get("TO_AMOUNT");
+				if (fcAmount.compareTo(fromAmount) < 0) {
+					msg = "Amount to be remitted, cannot be lesser than " + currencyQuoteName + " " + fromAmount
+							+ ".Please increase the amount to be remitted.";
+				} else if (fcAmount.compareTo(toAmount) > 0) {
+					msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "
+							+ currencyQuoteName + " " + toAmount + ".";
+				}
 			}
-
-			if (fcAmount.compareTo(fromAmount) < 0) {
-				msg = "Amount to be remitted, cannot be lesser than " + currencyQuoteName + " " + fromAmount
-						+ ".Please increase the amount to be remitted.";
-			} else if (fcAmount.compareTo(toAmount) > 0) {
-				msg = "Amount to be remitted, exceeds the permissible limit .Please decrease the amount to be remitted to less than "
-						+ currencyQuoteName + " " + toAmount + ".";
-			}
+			
 			if (!StringUtils.isBlank(msg)) {
 				throw new GlobalException(msg, REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 			}
@@ -507,6 +507,7 @@ public class RemittanceTransactionManager {
 		}
 		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
 		breakup.setNetAmountWithoutLoyality(netAmount);
+
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
@@ -605,7 +606,7 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-		this.isSaveRemittanceFlow = true;
+		this.isSaveRemittanceFlow = true;      
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();

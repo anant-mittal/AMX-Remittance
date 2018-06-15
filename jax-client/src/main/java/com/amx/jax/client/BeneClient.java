@@ -23,7 +23,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.InvalidInputException;
@@ -79,7 +79,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryList : ", e);
@@ -99,7 +99,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 			return response.getBody();
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCountryList : ", e);
@@ -127,7 +127,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
 			return response.getBody();
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCountryList : ", e);
@@ -159,7 +159,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in defaultBeneficiary : ", e);
@@ -181,7 +181,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneDisable : ", e);
@@ -201,7 +201,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneFavoriteUpdate : ", e);
@@ -220,7 +220,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneFavoriteList : ", e);
@@ -237,7 +237,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryListDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in beneUpdate : ", e);
@@ -253,7 +253,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<AccountTypeDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			ae.printStackTrace();
 			throw ae;
 		} catch (Exception e) {
@@ -273,7 +273,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneRelationsDescriptionDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryRelations : ", e);
@@ -289,7 +289,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CivilIdOtpModel>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in sendOtp : ", e);
@@ -308,7 +308,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in validateOtp : ", e);
@@ -330,7 +330,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + BENE_API_ENDPOINT + UPDAE_STATUS_ENDPOINT + sb.toString();
 			return restService.ajax(url).post(requestEntity).as(new ParameterizedTypeReference<ApiResponse>() {
 			});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in updateStatus : ", e);
@@ -352,7 +352,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveBeneAccountInTrnx : ", e);
@@ -375,7 +375,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxTransactionResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveBenePersonalDetailInTrnx : ", e);
@@ -400,7 +400,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BeneficiaryTrnxModel>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in commitAddBeneTrnx : ", e);
@@ -425,7 +425,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getServiceProvider : ", e);
@@ -454,7 +454,7 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAgentMaster : ", e);
@@ -483,11 +483,28 @@ public class BeneClient extends AbstractJaxServiceClient {
 			return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RoutingBankMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAgentMaster : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 	}
+	
+    public ApiResponse<RemittancePageDto> poBeneficiary(BigDecimal placeOrderId) {
+        try {
+              HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+                String url = this.getBaseUrl() + BENE_API_ENDPOINT + "/pobene/";
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
+                        .queryParam("placeOrderId", placeOrderId);
+                return restService.ajax(builder.build().encode().toUri()).get(requestEntity)
+                        .as(new ParameterizedTypeReference<ApiResponse<RemittancePageDto>>() {
+                        });
+        } catch (AbstractJaxException ae) {
+            throw ae;
+        } catch (Exception e) {
+            LOGGER.error("exception in defaultBeneficiary : ", e);
+            throw new JaxSystemError();
+        } // end of try-catch
+    }
 }

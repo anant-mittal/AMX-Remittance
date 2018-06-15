@@ -21,6 +21,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PurposeOfTransactionService;
@@ -28,6 +29,7 @@ import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.util.ConverterUtil;
+import com.amx.jax.util.JaxContextUtil;
 
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
@@ -127,6 +129,8 @@ public class RemittanceController {
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
 	public ApiResponse saveApplication(@RequestBody RemittanceTransactionRequestModel model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
+		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());
 		ApiResponse response = remittanceTransactionService.saveApplication(model);
 		return response;
@@ -141,6 +145,8 @@ public class RemittanceController {
 
 	@RequestMapping(value = "/save-remittance/", method = RequestMethod.POST)
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
+		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
+		JaxContextUtil.setRequestModel(paymentResponse);
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
 		
 		BigDecimal customerId = metaData.getCustomerId();
