@@ -43,24 +43,25 @@ public class WebTenantFilter implements Filter {
         LOGGER.info("site id  is :"+ siteId);
         
         if (url != null) {
-            StringTokenizer stok = new StringTokenizer(url, "//");
-            if (stok.countTokens() > 2) {
+            StringTokenizer stok = new StringTokenizer(url, "/");
+
             while (stok.hasMoreTokens()) {
-                if (stok.nextToken().equalsIgnoreCase(BHR)) {
+            	String tnt = stok.nextToken();
+            	
+                if (tnt.equalsIgnoreCase(BHR)) {
                     TenantContextHolder.setCurrent(Tenant.BHR);
                     LOGGER.info("Tenant is :"+ Tenant.BHR);
                     break;
-                }else if (stok.nextToken().equalsIgnoreCase(KWT)) {
+                }else if (tnt.equalsIgnoreCase(KWT)) {
                     TenantContextHolder.setCurrent(Tenant.KWT);
                     LOGGER.info("Tenant is :"+ Tenant.KWT);
                     break;
-                }else if (stok.nextToken().equalsIgnoreCase(OMN)) {
+                }else if (tnt.equalsIgnoreCase(OMN)) {
                     TenantContextHolder.setCurrent(Tenant.OMN);
                     LOGGER.info("Tenant is :"+ Tenant.OMN);
                     break;
                 }
             }
-        }
         }
         chain.doFilter(req, resp);
     }
