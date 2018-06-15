@@ -75,13 +75,13 @@ public class RequestLogFilter implements Filter {
 			}
 
 			// User Id Tracking
-			String userId = req.getHeader(AppConstants.USER_ID_XKEY);
-			if (StringUtils.isEmpty(userId)) {
-				userId = ArgUtil.parseAsString(req.getParameter(AppConstants.USER_ID_XKEY));
+			String actorId = req.getHeader(AppConstants.ACTOR_ID_XKEY);
+			if (StringUtils.isEmpty(actorId)) {
+				actorId = ArgUtil.parseAsString(req.getParameter(AppConstants.ACTOR_ID_XKEY));
 			}
 
-			if (!StringUtils.isEmpty(userId)) {
-				AppContextUtil.setUserId(userId);
+			if (!StringUtils.isEmpty(actorId)) {
+				AppContextUtil.setActorId(actorId);
 			}
 
 			// Trace Id Tracking
@@ -102,7 +102,10 @@ public class RequestLogFilter implements Filter {
 				MDC.put(ContextUtil.TRACE_ID, traceId);
 				MDC.put(TenantContextHolder.TENANT, tnt);
 				AppContextUtil.setSessionId(sessionID);
-				req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+				if (session != null) {
+					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
+					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
+				}
 			} else {
 				ContextUtil.setTraceId(traceId);
 				MDC.put(ContextUtil.TRACE_ID, traceId);
@@ -110,9 +113,10 @@ public class RequestLogFilter implements Filter {
 			}
 
 			// Actual Request Handling
+			AppContextUtil.setTraceTime(startTime);
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			chain.doFilter(request, new AppResponseWrapper(resp));
-			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req,System.currentTimeMillis()-startTime));
+			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
 
 		} finally {
 			// Tear down MDC data:

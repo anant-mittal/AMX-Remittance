@@ -29,6 +29,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.pdf.BaseFont;
 
 import gui.ava.html.Html2Image;
+import net.sf.jasperreports.engine.JRException;
 
 @Component
 public class ConverterAmxFlyingSaucer implements FileConverter {
@@ -40,7 +41,7 @@ public class ConverterAmxFlyingSaucer implements FileConverter {
 	}
 
 	@Override
-	public File toPDF(File file) {
+	public File toPDF(File file) throws JRException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {
 

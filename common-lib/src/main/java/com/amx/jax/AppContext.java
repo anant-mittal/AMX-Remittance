@@ -11,7 +11,10 @@ public class AppContext implements Serializable {
 	Tenant tenant = null;
 	String traceId = null;
 	String tranxId = null;
-	String userId = null;
+	String actorId = null;
+
+	long traceTime = 0L;
+	long tranxTime = 0L;
 
 	public Tenant getTenant() {
 		return tenant;
@@ -37,11 +40,28 @@ public class AppContext implements Serializable {
 		this.tranxId = tranxId;
 	}
 
-	public String getUserId() {
-		return userId;
+	public String getActorId() {
+		return actorId;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setActorId(String actorId) {
+		this.actorId = actorId;
 	}
+
+	public long getTraceTime() {
+		return traceTime;
+	}
+
+	public void setTraceTime(long traceTime) {
+		this.traceTime = traceTime;
+	}
+
+	public long getTranxTime() {
+		return tranxTime;
+	}
+
+	public void setTranxTime(long tranxTime) {
+		this.tranxTime = tranxTime;
+	}
+
 }

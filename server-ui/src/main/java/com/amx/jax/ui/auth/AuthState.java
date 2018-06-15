@@ -12,7 +12,7 @@ public class AuthState {
 		USERPASS, SECQUES, IDVALID, DOTPVFY,
 		// Activation
 		MOTPVFY, DATA_VERIFY, SECQ_SET, CAPTION_SET, CREDS_SET,
-		//Registration
+		// Registration
 		SAVE_HOME,
 		// Logout
 		MISSING, UNAUTH, LOCKED,
@@ -31,6 +31,7 @@ public class AuthState {
 	public boolean validEotp = false;
 	public boolean validDataVer = false;
 	public boolean presentEmail = false;
+	public long timestamp = 0L;
 
 	public boolean isPresentEmail() {
 		return presentEmail;

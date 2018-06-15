@@ -235,7 +235,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		beneficaryRelationship.setLocalThirdName(beneDetaisl.getLocalThirdName());
 		beneficaryRelationship.setLocalFourthName(beneDetaisl.getLocalFourthName());
 		beneficaryRelationship.setLocalFifthName(beneDetaisl.getLocalFifthName());
-
+		
+		beneficaryRelationship.setDeviceIp(metaData.getDeviceIp());
+		beneficaryRelationship.setDeviceType(metaData.getDeviceType());
+		
 		beneficiaryRelationshipDao.save(beneficaryRelationship);
 
 	}
@@ -278,7 +281,10 @@ public class BeneficiaryTrnxManager extends JaxTransactionManager<BeneficiaryTrn
 		}
 		BenePersonalDetailModel benePersonalDetails = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		BeneAccountModel accountDetails = beneficiaryTrnxModel.getBeneAccountModel();
-		BeneficaryAccount beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		BeneficaryAccount beneficaryAccount = null;
+		if(!BigDecimal.ONE.equals(accountDetails.getServiceGroupId())) {
+			beneficaryAccount = beneficiaryValidationService.getBeneficaryAccount(accountDetails);
+		}
 		BeneficaryMaster beneMaster = null;
 		if (beneficaryAccount != null && !BigDecimal.ONE.equals(accountDetails.getServiceGroupId())) {
 			beneMaster = beneficaryMasterRepository

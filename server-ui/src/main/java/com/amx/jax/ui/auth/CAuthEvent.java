@@ -19,20 +19,25 @@ public class CAuthEvent extends AuditEvent {
 		this.step = step;
 	}
 
-	public CAuthEvent(AuthState state, Result result) {
+	public CAuthEvent(AuthState state, Result result, long tranxTime) {
 		this(state.flow, state.getnStep());
 		this.step = state.getnStep();
 		this.result = result;
 		this.description = this.getDescription();
+		this.tranxTime = tranxTime;
 	}
 
-	public CAuthEvent(AuthState state, Result result, Object message) {
-		this(state, result);
+	public CAuthEvent(AuthState state, Result result, Object message, long tranxTime) {
+		this(state, result, tranxTime);
 		this.message = ArgUtil.parseAsString(message);
 	}
 
+	public CAuthEvent(AuthState state, Result result, Object message) {
+		this(state, result, message, 0L);
+	}
+
 	public CAuthEvent(AuthState state) {
-		this(state, Result.PASS);
+		this(state, Result.PASS, 0L);
 	}
 
 	AuthStep step = null;

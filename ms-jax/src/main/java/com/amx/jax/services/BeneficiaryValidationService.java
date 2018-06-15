@@ -27,6 +27,8 @@ import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
+import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
@@ -36,8 +38,6 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
 import com.google.common.collect.Iterables;
 import com.querydsl.core.types.Predicate;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
-import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
 
 /**
  * validations service for add bene
@@ -96,9 +96,10 @@ public class BeneficiaryValidationService {
 	}
 
 	private void validateSwiftCode(BeneAccountModel beneAccountModel) {
-		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao.getServiceApplicabilityRules(
-				metaData.getCountryId(), beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
-				ServiceApplicabilityField.BNFBANK_SWIFT.toString());
+		List<ServiceApplicabilityRule> swiftRules = serviceApplicablilityRuleDao
+				.getServiceApplicabilityRulesForBeneficiary(metaData.getCountryId(),
+						beneAccountModel.getBeneficaryCountryId(), beneAccountModel.getCurrencyId(),
+						ServiceApplicabilityField.BNFBANK_SWIFT.toString());
 		swiftRules.forEach(i -> {
 			if (ConstantDocument.Yes.equals(i.getMandatory())) {
 				if (StringUtils.isEmpty(beneAccountModel.getSwiftCode())) {
@@ -155,7 +156,7 @@ public class BeneficiaryValidationService {
 				}
 			}
 			if (!isValid) {
-				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+				String validLengths = accNumLength.stream().map(i -> i.toString()).collect(Collectors.joining(":"));
 				String errorExpression = jaxUtil
 						.buildErrorExpression(JaxError.INVALID_BANK_ACCOUNT_NUM_LENGTH.toString(), validLengths);
 				throw new GlobalException("Invalid Bank Account number length", errorExpression);
@@ -172,6 +173,24 @@ public class BeneficiaryValidationService {
 		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
 		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
 				BeneficiaryAccountPredicateCreator.createBeneSearchPredicate(beneAccountModel, isBangladeshBene));
+
+		int size = Iterables.size(existingAccountItr);
+		if (size > 0) {
+			return existingAccountItr.iterator().next();
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * @param beneAccountModel
+	 * @return bene account
+	 * 
+	 */
+	public BeneficaryAccount getBeneficaryAccountForCash(BeneAccountModel beneAccountModel, BigDecimal beneMasterSeqId) {
+		boolean isBangladeshBene = countryService.isBangladeshCountry(beneAccountModel.getBeneficaryCountryId());
+		Iterable<BeneficaryAccount> existingAccountItr = beneficiaryAccountDao.findAll(
+				BeneficiaryAccountPredicateCreator.createBeneSearchPredicateCash(beneAccountModel, isBangladeshBene, beneMasterSeqId));
 
 		int size = Iterables.size(existingAccountItr);
 		if (size > 0) {
@@ -203,10 +222,12 @@ public class BeneficiaryValidationService {
 	 * 
 	 */
 	public void validateDuplicateCashBeneficiary(BeneficiaryTrnxModel trnxModel) {
-		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
-		BeneficaryAccount beneAccountMaster = getBeneficaryAccount(beneAccountModel);
 		BenePersonalDetailModel benePersonalDetailModel = trnxModel.getBenePersonalDetailModel();
 		BeneficaryMaster beneMaster = getBeneficaryMaster(benePersonalDetailModel);
+		BigDecimal beneMasterSeqId = (beneMaster != null ? beneMaster.getBeneficaryMasterSeqId() : null);
+		BeneAccountModel beneAccountModel = trnxModel.getBeneAccountModel();
+		BeneficaryAccount beneAccountMaster = getBeneficaryAccountForCash(beneAccountModel, beneMasterSeqId);
+
 		if (beneMaster != null) {
 			logger.info("validateDuplicateCashBeneficiary benemaster found: {}", beneMaster.getBeneficaryMasterSeqId());
 			trnxModel.setBeneficaryMasterSeqId(beneMaster.getBeneficaryMasterSeqId());

@@ -11,6 +11,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.user.UserDevice;
 
 public class UserMetaData extends AbstractModel {
@@ -30,7 +31,13 @@ public class UserMetaData extends AbstractModel {
 	// List<String> features = new ArrayList<String>();
 	String[] features = null;
 	List<String> subscriptions = new ArrayList<String>();
-	String notifyRange = null;
+	String notifyRangeLong = null;
+	String notifyRangeShort = null;
+	BigDecimal customerId = null;
+
+	String returnUrl = null;
+
+	HotPoints[] hotPoints = HotPoints.values();
 
 	public JaxMetaParameter getConfig() {
 		return config;
@@ -128,20 +135,52 @@ public class UserMetaData extends AbstractModel {
 		this.subscriptions = subscriptions;
 	}
 
-	public String getNotifyRange() {
-		return notifyRange;
-	}
-
-	public void setNotifyRange(String notifyRange) {
-		this.notifyRange = notifyRange;
-	}
-
 	public String getTenantCode() {
 		return tenantCode;
 	}
 
 	public void setTenantCode(String tenantCode) {
 		this.tenantCode = tenantCode;
+	}
+
+	public HotPoints[] getHotPoints() {
+		return hotPoints;
+	}
+
+	public void setHotPoints(HotPoints[] hotPoints) {
+		this.hotPoints = hotPoints;
+	}
+
+	public String getNotifyRangeLong() {
+		return notifyRangeLong;
+	}
+
+	public void setNotifyRangeLong(String notifyRangeLong) {
+		this.notifyRangeLong = notifyRangeLong;
+	}
+
+	public String getNotifyRangeShort() {
+		return notifyRangeShort;
+	}
+
+	public void setNotifyRangeShort(String notifyRangeShort) {
+		this.notifyRangeShort = notifyRangeShort;
+	}
+
+	public String getReturnUrl() {
+		return returnUrl;
+	}
+
+	public void setReturnUrl(String returnUrl) {
+		this.returnUrl = returnUrl;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }

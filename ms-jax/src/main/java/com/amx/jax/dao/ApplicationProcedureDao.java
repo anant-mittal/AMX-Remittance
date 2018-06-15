@@ -866,7 +866,7 @@ public class ApplicationProcedureDao {
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
 
-			String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+			String proc = " { call EX_GET_ROUTING_SETUP_ONLINE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
 			cs = connection.prepareCall(proc);
 			// In Parameters
 			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
@@ -874,30 +874,26 @@ public class ApplicationProcedureDao {
 			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
 			cs.setBigDecimal(4, (BigDecimal) inputValue.get(P_BENEFICIARY_BANK_ID));
 			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
-			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
-					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
-			cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
-			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
+			cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
 			// Parameters
+			cs.registerOutParameter(8, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(9, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(10, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(11, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(13, java.sql.Types.NUMERIC);
-			cs.registerOutParameter(14, java.sql.Types.NUMERIC);
-			cs.registerOutParameter(15, java.sql.Types.NUMERIC);
-			cs.registerOutParameter(16, java.sql.Types.VARCHAR);
-			cs.registerOutParameter(17, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(14, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(15, java.sql.Types.VARCHAR);
 			cs.execute();
-			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(10));
-			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(11));
-			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(12));
-			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(13));
-			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(14));
-			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(15));
-			output.put("P_SWIFT", cs.getString(16));
-			output.put("P_ERROR_MESSAGE", cs.getString(17));
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(8));
+			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(9));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(10));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(11));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(12));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(13));
+			output.put("P_SWIFT", cs.getString(14));
+			output.put("P_ERROR_MESSAGE", cs.getString(15));
 		} catch (DataAccessException | SQLException e) {
 			LOGGER.error("error in generate docNo", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());

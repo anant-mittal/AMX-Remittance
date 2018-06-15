@@ -3,7 +3,6 @@ package com.amx.jax.client;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

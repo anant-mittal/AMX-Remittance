@@ -1,6 +1,8 @@
 
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -12,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -23,6 +25,8 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.HotPointService;
+import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -62,14 +66,20 @@ public class UserController {
 	@Value("${ui.features}")
 	private String[] elementToSearch;
 
-	@Value("${notification.range}")
-	private String notifyRange;
+	@Value("${notification.range.long}")
+	private String notifyRangeLong;
+
+	@Value("${notification.range.short}")
+	private String notifyRangeShort;
 
 	@Autowired
 	private WebAppConfig webAppConfig;
 
 	@Autowired
-	FBPushClient fbPushClient;
+	private FBPushClient fbPushClient;
+
+	@Autowired
+	private HotPointService hotPointService;
 
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
@@ -98,16 +108,25 @@ public class UserController {
 
 		if (sessionService.getUserSession().getCustomerModel() != null) {
 			wrapper.getData().setActive(true);
+			wrapper.getData().setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
-			wrapper.getData().setNotifyRange(notifyRange);
+			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
+			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 		}
 
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
+	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint,
+			@RequestParam BigDecimal customerId) throws PostManException {
+		return new ResponseWrapper<Object>(hotPointService.notify(customerId));
 	}
 
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })

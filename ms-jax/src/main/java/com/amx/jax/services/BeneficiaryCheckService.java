@@ -26,9 +26,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
-import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
-import com.amx.jax.dbmodel.bene.BankBlWorld;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
@@ -251,7 +249,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (StringUtils.isBlank(beneDto.getBenificaryName())) {
+		/*if (!StringUtils.isBlank(beneDto.getBenificaryName())) {
 			String[] beneNameArray = beneDto.getBenificaryName().split(" ");
 			for (String stringName : beneNameArray) {
 				List<BankBlWorld> bannedList = beneBankWorldDao.getCheckBankBanned(stringName.trim());
@@ -261,7 +259,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					errorListDto.add(errorStatusDto);
 				}
 			}
-		}
+		}*/
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBankId())
 				&& JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBenificaryCountry())) {
@@ -342,7 +340,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
+		/*if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
 			List<ViewState> stateList = viewStateDao.getState(beneDto.getCountryId(), beneDto.getStateId(),
 					beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
@@ -358,7 +356,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
-		}
+		}*/
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(),

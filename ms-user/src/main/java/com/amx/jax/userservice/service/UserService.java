@@ -285,7 +285,7 @@ public class UserService extends AbstractUserService {
 		return false;
 	}
 
-	private void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
+	public void simplifyAnswers(List<SecurityQuestionModel> securityquestions) {
 		if (securityquestions != null && !securityquestions.isEmpty()) {
 			securityquestions.forEach(qa -> qa.setAnswer(stringUtil.simplifyString(qa.getAnswer())));
 		}
@@ -490,19 +490,18 @@ public class UserService extends AbstractUserService {
 
 	public ApiResponse loginUser(String userId, String password) {
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
-		List<CustomerOnlineRegistration> onlineCustomerList = custDao.getOnlineCustomerWithStatusByLoginIdOrUserName(userId);
-		if (onlineCustomerList == null || onlineCustomerList.isEmpty()) {
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
+		if (onlineCustomer == null) {
 			throw new GlobalException("User with userId: " + userId + " is not registered",
 					JaxError.USER_NOT_REGISTERED);
 		}
-		CustomerOnlineRegistration onlineCustomer = onlineCustomerList.get(0);
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
-		
+
 		userValidationService.validateCustomerLockCount(onlineCustomer);
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());

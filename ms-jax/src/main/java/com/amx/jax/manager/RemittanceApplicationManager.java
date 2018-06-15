@@ -103,7 +103,6 @@ public class RemittanceApplicationManager {
 	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
 			Map<String, Object> remitApplParametersMap) {
-
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -312,7 +311,7 @@ public class RemittanceApplicationManager {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-		if (requestModel.isAvailLoyalityPoints()) {
+		if (requestModel.isAvailLoyalityPoints() && validationResults.getCanRedeemLoyalityPoints()) {
 			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());

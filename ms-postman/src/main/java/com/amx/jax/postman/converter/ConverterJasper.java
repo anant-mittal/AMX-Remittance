@@ -20,6 +20,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.service.TemplateUtils;
 import com.amx.utils.FlatMap;
+import com.codahale.metrics.annotation.Timed;
 
 import net.sf.jasperreports.engine.JREmptyDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -53,7 +54,8 @@ public class ConverterJasper implements FileConverter {
 	private TemplateUtils templateUtils;
 
 	@Override
-	public File toPDF(File file) {
+	@Timed(name = "PDF_CREATION_JASPER", absolute = true)
+	public File toPDF(File file) throws JRException {
 
 		simpleReportFiller.setReportFileName("jasper/" + file.getTemplate().getFileName() + ".jrxml");
 		simpleReportFiller.compileReport();
@@ -68,7 +70,6 @@ public class ConverterJasper implements FileConverter {
 		parameters.put(JRParameter.REPORT_RESOURCE_BUNDLE,
 				new MessageSourceResourceBundle(messageSource, postManConfig.getLocal(file)));
 
-		LOGGER.info("===== {} {}", postManConfig.getLocal(file), file.getLang());
 		simpleReportFiller.setParameters(parameters);
 		simpleReportFiller.fillReport();
 		// simpleReportFiller.getJasperPrint().getDefaultStyle().setFontSize(50f);
@@ -89,8 +90,6 @@ public class ConverterJasper implements FileConverter {
 			file.setBody(outputStream.toByteArray());
 			file.setType(Type.PDF);
 
-		} catch (JRException e) {
-			LOGGER.error("Some Error", e);
 		} finally {
 			if (outputStream != null) {
 				try {

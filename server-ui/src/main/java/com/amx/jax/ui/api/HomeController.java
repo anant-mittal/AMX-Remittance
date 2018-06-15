@@ -64,7 +64,7 @@ public class HomeController {
 
 	@Value("${jax.cdn.url}")
 	private String cleanCDNUrl;
-	
+
 	@Value("${fcm.senderid}")
 	private String fcmSenderId;
 
