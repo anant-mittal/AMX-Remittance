@@ -874,11 +874,7 @@ public class ApplicationProcedureDao {
 			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
 			cs.setBigDecimal(4, (BigDecimal) inputValue.get(P_BENEFICIARY_BANK_ID));
 			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
-			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			/*cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
-					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
-			*/cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
 			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
 			// Parameters
 			cs.registerOutParameter(8, java.sql.Types.NUMERIC);

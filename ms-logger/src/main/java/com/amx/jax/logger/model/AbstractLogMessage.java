@@ -12,10 +12,6 @@ public class AbstractLogMessage extends AuditEvent {
 	@Id
 	private String id;
 
-	public long timestamp;
-
-	private EnumType type;
-
 	@TextIndexed
 	private String moduleName;
 

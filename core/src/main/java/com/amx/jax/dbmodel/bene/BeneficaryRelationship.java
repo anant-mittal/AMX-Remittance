@@ -44,6 +44,8 @@ public class BeneficaryRelationship implements Serializable {
 	private String localThirdName;
 	private String localFourthName;
 	private String localFifthName;
+	private String deviceIp;
+	private String deviceType;
 	
 	
 	@Id
@@ -260,6 +262,7 @@ public class BeneficaryRelationship implements Serializable {
 			this.fourthName = fourthName;
 		}
 
+		
 		/**
 		 * @return the fifthName
 		 */
@@ -317,4 +320,21 @@ public class BeneficaryRelationship implements Serializable {
 		
 		}
 	 
+		@Column(name="DEVICE_IP")
+		public String getDeviceIp() {
+			return deviceIp;
+		}
+
+		public void setDeviceIp(String deviceIp) {
+			this.deviceIp = deviceIp;
+		}
+
+		@Column(name="DEVICE_TYPE")
+		public String getDeviceType() {
+			return deviceType;
+		}
+
+		public void setDeviceType(String deviceType) {
+			this.deviceType = deviceType;
+		}
 }

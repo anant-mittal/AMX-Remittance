@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,7 @@ import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
+import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.codahale.metrics.annotation.Timed;
@@ -62,6 +64,9 @@ public class PubController {
 
 	@Autowired
 	private AppConfig appConfig;
+
+	@Autowired
+	private SessionService sessionService;
 
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
@@ -100,6 +105,27 @@ public class PubController {
 		wrapper.getData().message = calcLibs.get().getRSName();
 		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
 				appConfig.isDebug());
+		return wrapper;
+	}
+
+	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
+	public ResponseWrapper<Email> reportUs(@RequestBody SupportEmail email) {
+		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
+		try {
+
+			if (sessionService.getUserSession().getCustomerModel() != null) {
+				email.setVisitorEmail(sessionService.getUserSession().getCustomerModel().getEmail());
+				email.setVisitorName(sessionService.getUserSession().getCustomerModel().getPersoninfo().getFirstName()
+						+ " " + sessionService.getUserSession().getCustomerModel().getPersoninfo().getLastName());
+				email.setVisitorPhone(sessionService.getUserSession().getCustomerModel().getPersoninfo().getMobile());
+				email.setIdentity(sessionService.getUserSession().getCustomerModel().getPersoninfo().getIdentityInt());
+			}
+			postManService.sendEmailToSupprt(email);
+			wrapper.setData(email);
+		} catch (Exception e) {
+			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			log.error("/pub/report", e);
+		}
 		return wrapper;
 	}
 

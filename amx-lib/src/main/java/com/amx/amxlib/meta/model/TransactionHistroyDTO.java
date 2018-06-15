@@ -74,6 +74,7 @@ public class TransactionHistroyDTO implements Serializable {
 	
 	private String transactionReference;
 	
+	private Boolean beneIsActive;
     private BigDecimal bankRuleFieldId;
     
     private BigDecimal srlId;
@@ -362,6 +363,21 @@ public class TransactionHistroyDTO implements Serializable {
      */
     public void setSrlId(BigDecimal srlId) {
         this.srlId = srlId;
+    }
+
+
+    /**
+     * @return the beneIsActive
+     */
+    public Boolean getBeneIsActive() {
+        return beneIsActive;
+    }
+
+    /**
+     * @param beneIsActive the beneIsActive to set
+     */
+    public void setBeneIsActive(Boolean beneIsActive) {
+        this.beneIsActive = beneIsActive;
     }
 
 }

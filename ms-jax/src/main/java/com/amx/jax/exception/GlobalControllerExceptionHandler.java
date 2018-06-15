@@ -7,10 +7,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +21,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.amx.amxlib.exception.CommonJaxException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.notification.alert.IAlert;
+import com.amx.jax.util.JaxContextUtil;
 import com.amx.utils.JsonUtil;
 
 @ControllerAdvice
@@ -28,7 +31,8 @@ import com.amx.utils.JsonUtil;
 public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
 	private Logger logger = Logger.getLogger(GlobalControllerExceptionHandler.class);
-
+	@Autowired
+	private ApplicationContext appContext;
 	@Autowired
 	private HttpServletResponse httpResponse;
 
@@ -43,7 +47,18 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorCode(), ex);
+		raiseAlert(ex);
 		return response;
+	}
+
+	private void raiseAlert(AbstractJaxException ex) {
+		JaxEvent event = JaxContextUtil.getJaxEvent();
+		if (event != null) {
+			IAlert alert = appContext.getBean(event.getAlertBean());
+			if (alert.isEnabled()) {
+				alert.sendAlert(ex);
+			}
+		}
 	}
 
 	private void setErrorHeaders(AmxApiError error) {
@@ -63,8 +78,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		JaxFieldValidationException exception = new JaxFieldValidationException(
-				processFieldErrors(ex.getBindingResult()));
+		JaxFieldValidationException exception = new JaxFieldValidationException(ex.getBindingResult().toString());
 		ApiResponse apiResponse = getApiResponse(exception);
 		List<AmxApiError> errors = apiResponse.getError();
 		AmxApiError error = errors.get(0);
@@ -74,12 +88,5 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		// errors.get(0).setValidationErrorField(validationErrorField);
 		setErrorHeaders(error);
 		return new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
-	}
-
-	private String processFieldErrors(BindingResult bindingResult) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(bindingResult.getFieldError().getField()).append(" ");
-		sb.append(bindingResult.getFieldError().getDefaultMessage());
-		return sb.toString();
 	}
 }

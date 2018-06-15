@@ -42,6 +42,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		CustomerRegistrationTrnxModel beneficiaryTrnxModel = (CustomerRegistrationTrnxModel) target;
 		CustomerPersonalDetail customerPersonalDetail = beneficiaryTrnxModel.getCustomerPersonalDetail();
 		tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
+		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),

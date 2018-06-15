@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.jax.dal.ImageCheckDao;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dict.Tenant;
@@ -21,6 +22,7 @@ import com.amx.jax.exception.InvalidCivilIdException;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.userservice.dao.CustomerIdProofDao;
 import com.amx.jax.userservice.dao.DmsDocumentDao;
+import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 
 @Component
@@ -35,6 +37,9 @@ public class UserValidationKwt implements CustomerValidation {
 
 	@Autowired
 	private DmsDocumentDao dmsDocDao;
+	
+	@Autowired
+	private CustomerRepository customerRepo;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -117,6 +122,15 @@ public class UserValidationKwt implements CustomerValidation {
 		}
 
 		return true;
+	}
+
+	@Override
+	public void validateEmailId(String emailId) {
+		List<Customer> list = customerRepo.getCustomerByEmailId(emailId);	
+		if (list != null && list.size()!=0) {
+			throw new GlobalException("Email Id already exist", JaxError.ALREADY_EXIST_EMAIL);
+		}
+		
 	}
 
 }
