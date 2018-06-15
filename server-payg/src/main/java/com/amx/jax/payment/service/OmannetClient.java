@@ -162,7 +162,6 @@ public class OmannetClient implements PayGClient {
 		}
 
 		if (tranData == null) {
-
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
 			gatewayResponse.setResult(pipe.getResult());

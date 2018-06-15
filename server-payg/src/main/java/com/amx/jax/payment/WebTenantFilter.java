@@ -2,6 +2,7 @@ package com.amx.jax.payment;
 
 import static com.amx.jax.payment.PaymentConstant.BHR;
 import static com.amx.jax.payment.PaymentConstant.KWT;
+import static com.amx.jax.payment.PaymentConstant.OMN;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
@@ -51,6 +52,10 @@ public class WebTenantFilter implements Filter {
                 }else if (stok.nextToken().equalsIgnoreCase(KWT)) {
                     TenantContextHolder.setCurrent(Tenant.KWT);
                     LOGGER.info("Tenant is :"+ Tenant.KWT);
+                    break;
+                }else if (stok.nextToken().equalsIgnoreCase(OMN)) {
+                    TenantContextHolder.setCurrent(Tenant.OMN);
+                    LOGGER.info("Tenant is :"+ Tenant.OMN);
                     break;
                 }
             }
