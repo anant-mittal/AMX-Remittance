@@ -52,13 +52,13 @@ public class WebTenantFilter implements Filter {
                     TenantContextHolder.setCurrent(Tenant.BHR);
                     LOGGER.info("Tenant is :"+ Tenant.BHR);
                     break;
-                }else if (tnt.equalsIgnoreCase(KWT)) {
-                    TenantContextHolder.setCurrent(Tenant.KWT);
-                    LOGGER.info("Tenant is :"+ Tenant.KWT);
-                    break;
                 }else if (tnt.equalsIgnoreCase(OMN)) {
                     TenantContextHolder.setCurrent(Tenant.OMN);
                     LOGGER.info("Tenant is :"+ Tenant.OMN);
+                    break;
+                }else if (tnt.equalsIgnoreCase(KWT)) {
+                    TenantContextHolder.setCurrent(Tenant.KWT);
+                    LOGGER.info("Tenant is :"+ Tenant.KWT);
                     break;
                 }
             }
