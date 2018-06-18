@@ -19,6 +19,10 @@ public abstract class AbstractJaxException extends AmxApiException {
 		this.errorCode = errorCode;
 	}
 
+	public AbstractJaxException(AmxApiError error) {
+		super(error);
+	}
+
 	@Override
 	public AmxApiException getInstance(AmxApiError apiError) {
 		return null;

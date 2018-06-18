@@ -1,6 +1,7 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception.jax;
 
-import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.exception.AmxApiError;
 
 public class InvalidCivilIdException extends AbstractJaxException {
 
@@ -14,12 +15,8 @@ public class InvalidCivilIdException extends AbstractJaxException {
 	}
 	
 	public InvalidCivilIdException(AmxApiError error) {
-		super(error);
+		super(error.getErrorClass());
 	}
 
-	@Override
-	public String getErrorCode() {
-		return JaxError.INVALID_CIVIL_ID.getCode();
-	}
 
 }

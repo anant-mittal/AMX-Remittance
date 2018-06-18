@@ -25,6 +25,10 @@ public class GlobalException extends AbstractJaxException {
 	public GlobalException(String errorMessage, JaxError error) {
 		super(errorMessage, error.getCode());
 	}
+	
+	public GlobalException(AmxApiError error) {
+		super(error);
+	}
 
 	public GlobalException(JaxError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();

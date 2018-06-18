@@ -5,6 +5,10 @@ public class InvalidJsonInputException extends AbstractJaxException {
 	public InvalidJsonInputException(String errorMessage) {
 		super(errorMessage);
 	}
+	
+	public InvalidJsonInputException(AmxApiError error) {
+		super(error);
+	}
 
 	/**
 	 * 

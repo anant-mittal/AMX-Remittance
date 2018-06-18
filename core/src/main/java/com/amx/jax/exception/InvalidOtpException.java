@@ -12,6 +12,10 @@ public class InvalidOtpException extends AbstractJaxException {
 	public InvalidOtpException(String errorMessage) {
 		super(errorMessage, JaxError.INVALID_OTP.getCode());
 	}
+	
+	public InvalidOtpException(AmxApiError error) {
+		super(error);
+	}
 
 	@Override
 	public String getErrorCode() {
