@@ -87,8 +87,7 @@ public class OmannetClient implements PayGClient {
 			pipe.setAction((String) configMap.get("action"));
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
-			//pipe.setResponseURL((String) configMap.get("https://paygd-omn.modernexchange.com//callback//error"));
-			pipe.setResponseURL("https://paygd-omn.modernexchange.com/callback/error");			
+			pipe.setResponseURL((String) configMap.get("responseUrl"));
 		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
 		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
