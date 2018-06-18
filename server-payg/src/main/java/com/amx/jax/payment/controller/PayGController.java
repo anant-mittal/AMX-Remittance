@@ -150,7 +150,13 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		return "thymeleaf/repback";
+		if (paygCode.equals("OMANNET")) {
+		    return "redirect:" + redirectUrl;
+		}else {
+		    return "thymeleaf/repback";  
+		}
+		
+		
 	}
 
 }
