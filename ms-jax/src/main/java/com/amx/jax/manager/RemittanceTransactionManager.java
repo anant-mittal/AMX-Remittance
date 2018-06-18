@@ -223,6 +223,7 @@ public class RemittanceTransactionManager {
 			logger.info("recalculating del mode for TT and routing countyr india");
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
+		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
 		breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
 		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
 		// commission

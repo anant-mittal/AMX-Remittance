@@ -8,6 +8,7 @@ public class ConstantDocument {
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
 	public static final String No = "N";
 	public static final String Yes = "Y";
+	public static final String Deleted = "D";
 	public static final String Update = "U";
 	// document id
 	public static final BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
