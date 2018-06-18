@@ -2,6 +2,7 @@ package com.amx.jax.service;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -12,6 +13,7 @@ import com.amx.jax.repository.ImpsMasterRepository;
 @Service
 public class ImpsMasterService {
 
+	@Autowired
 	ImpsMasterRepository impsMasterRepository;
 
 	public List<ImpsMaster> getImpsMaster(BankMasterModel rb, BankMasterModel bb, String isActive, CountryMaster cm) {

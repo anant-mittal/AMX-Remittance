@@ -60,11 +60,6 @@ public class RoutingService {
 			// banking
 			output = applicationProcedureDao.getRoutingDetails(inputValue);
 			inputValue.putAll(output);
-			routingLogics.forEach(i -> {
-				if (i.isApplicable()) {
-					i.apply(inputValue, output);
-				}
-			});
 		}
 		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
@@ -80,4 +75,17 @@ public class RoutingService {
 		}
 	}
 
+	public void recalculateRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
+		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
+		if (!ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode)) {
+
+			routingLogics.forEach(i -> {
+				if (i.isApplicable()) {
+					Map<String, Object> output = new HashMap<>();
+					i.apply(inputValue, output);
+					inputValue.putAll(output);
+				}
+			});
+		}
+	}
 }
