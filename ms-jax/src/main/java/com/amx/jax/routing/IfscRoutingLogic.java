@@ -5,19 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.constant.ConstantDocument;
+import static com.amx.jax.constant.ConstantDocument.*;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
+import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankMasterModel;
+import com.amx.jax.dbmodel.BankServiceRule;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.ImpsMaster;
+import com.amx.jax.dbmodel.treasury.BankApplicability;
+import com.amx.jax.dbmodel.treasury.BankIndicator;
 import com.amx.jax.exception.GlobalException;
+import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
 
 @Component
@@ -31,6 +37,10 @@ public class IfscRoutingLogic implements IRoutingLogic {
 	ImpsMasterService impsMasterService;
 	@Autowired
 	BizcomponentDao bizcomponentDao;
+	@Autowired
+	BankMetaService bankMetaService;
+	@Autowired
+	BankDao bankDao;
 
 	@Override
 	public void apply(Map<String, Object> input, Map<String, Object> output) {
@@ -38,11 +48,11 @@ public class IfscRoutingLogic implements IRoutingLogic {
 		try {
 			BigDecimal rouringBankId = null;
 			BigDecimal routingCountryId = (BigDecimal) input.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal beneCountryId = (BigDecimal) input.get("P_BENEFICIARY_COUNTRY_ID");
 			BigDecimal beneBankId = (BigDecimal) input.get("P_BENEFICIARY_BANK_ID");
 			BigDecimal serviceMasterid = (BigDecimal) input.get("P_SERVICE_MASTER_ID");
 			BigDecimal fcurrencyId = (BigDecimal) input.get("P_CURRENCY_ID");
 			BigDecimal fcAmount = (BigDecimal) input.get("P_CALCULATED_FC_AMOUNT");
-			BigDecimal applicationCountryId = (BigDecimal) input.get("P_APPLICATION_COUNTRY_ID");
 			try {
 				rouringBankId = jdbcTemplate.queryForObject("SELECT   ROUTING_BANK_ID"
 						+ "          FROM     EX_ROUTING_HEADER" + "          WHERE    SERVICE_MASTER_ID = 102"
@@ -53,7 +63,7 @@ public class IfscRoutingLogic implements IRoutingLogic {
 			}
 
 			List<ImpsMaster> impsMasters = impsMasterService.getImpsMaster(new BankMasterModel(rouringBankId),
-					new BankMasterModel(beneBankId), ConstantDocument.Yes, new CountryMaster(routingCountryId));
+					new BankMasterModel(beneBankId), Yes, new CountryMaster(routingCountryId));
 
 			if (impsMasters != null && !impsMasters.isEmpty()) {
 				if (routingCountryId.intValue() == 94 && serviceMasterid.intValue() == 102) {
@@ -63,9 +73,9 @@ public class IfscRoutingLogic implements IRoutingLogic {
 						return;
 					}
 					if (fcAmount.intValue() < toAmount.intValue()) {
-						findRemittanceAndDeliveryMode(input, output);
+						findRemittanceAndDeliveryModeIFSC(input, output);
 					} else {
-						
+						findRemittanceAndDeliveryModeNonIFSC(output, beneBankId, beneCountryId, fcurrencyId, rouringBankId);
 					}
 				}
 			}
@@ -75,13 +85,37 @@ public class IfscRoutingLogic implements IRoutingLogic {
 		}
 	}
 
-	private void findRemittanceAndDeliveryMode(Map<String, Object> input, Map<String, Object> output) {
+	private void findRemittanceAndDeliveryModeNonIFSC(Map<String, Object> output, BigDecimal beneBankId,
+			BigDecimal beneCountryId, BigDecimal fcurrencyId, BigDecimal rouringBankId) {
+		BankApplicability bankApplicabality = bankMetaService.getBankApplicability(beneBankId);
+		if (bankApplicabality != null && bankApplicabality.getBankInd() != null) {
+			BankIndicator bankInd = bankApplicabality.getBankInd();
+			if (BANK_INDICATOR_CORRESPONDING_BANK.equals(bankInd.getBankIndicatorCode())) {
+				List<BankServiceRule> eftServiceRule = bankDao.getBankServiceRule(rouringBankId, beneCountryId,
+						fcurrencyId, REMITTANCE_MODE_EFT, DELIVERY_MODE_BANKING_CHANNEL);
+				if (CollectionUtils.isNotEmpty(eftServiceRule)) {
+					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_EFT);
+					output.put("P_DELIVERY_MODE_ID", DELIVERY_MODE_BANKING_CHANNEL);
+				}
+			}
+			if (BANK_INDICATOR_BENEFICIARY_BANK.equals(bankInd.getBankIndicatorCode())) {
+				List<BankServiceRule> eftServiceRule = bankDao.getBankServiceRule(rouringBankId, beneCountryId,
+						fcurrencyId, REMITTANCE_MODE_RTGS, DELIVERY_MODE_BANKING_CHANNEL);
+				if (CollectionUtils.isNotEmpty(eftServiceRule)) {
+					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_EFT);
+					output.put("P_DELIVERY_MODE_ID", DELIVERY_MODE_BANKING_CHANNEL);
+				}
+			}
+		}
+	}
+
+	private void findRemittanceAndDeliveryModeIFSC(Map<String, Object> input, Map<String, Object> output) {
 		List<Object> args = new ArrayList<>();
 		args.add(input.get("P_APPLICATION_COUNTRY_ID"));
-		args.add(input.get("P_BENE_COUNTRY_ID"));
-		args.add(input.get("P_BENE_BANK_ID"));
-		args.add(input.get("P_BENE_BANK_BRANCH_ID"));
-		args.add(output.get("P_ROUTING_COUNTRY_ID"));
+		args.add(input.get("P_BENEFICIARY_COUNTRY_ID"));
+		args.add(input.get("P_BENEFICIARY_BANK_ID"));
+		args.add(input.get("P_BENEFICIARY_BRANCH_ID"));
+		args.add(input.get("P_ROUTING_COUNTRY_ID"));
 		args.add(input.get("P_ROUTING_BANK_ID"));
 		args.add(input.get("P_ROUTING_BANK_BRANCH_ID"));
 		args.add(input.get("P_FOREIGN_CURRENCY_ID"));
@@ -89,7 +123,7 @@ public class IfscRoutingLogic implements IRoutingLogic {
 		args.add(bizcomponentDao.findCustomerTypeId("I")); // Individual
 		args.add(input.get("P_CALCULATED_FC_AMOUNT"));
 
-		String sqlQuery = " SELECT DISTINCT A.REMITTANCE_MODE_ID,A.DELIVERY_MODE_ID"
+		String sqlQuery = " SELECT DISTINCT A.REMITTANCE_MODE_ID as P_REMITTANCE_MODE_ID ,A.DELIVERY_MODE_ID as P_DELIVERY_MODE_ID"
 				+ "  FROM   V_EX_ROUTING_DETAILS_IMPS A , EX_BANK_SERVICE_RULE B,EX_BANK_CHARGES C"
 				+ "  WHERE  A.APPLICATION_COUNTRY_ID =  ?" + "  AND    A.COUNTRY_ID             =  ?"
 				+ "  AND    A.BENE_BANK_ID           =  ?" + "  AND    A.BENE_BANK_BRANCH_ID    =  ?"
@@ -103,10 +137,14 @@ public class IfscRoutingLogic implements IRoutingLogic {
 				+ "  AND    B.APPROVED_BY IS NOT NULL" + "  AND    B.BANK_SERVICE_RULE_ID = C.BANK_SERVICE_RULE_ID"
 				+ "  AND    C.CHARGES_TYPE = 'C'" + "  AND    C.CHARGES_FOR   =   ? "
 				+ "  AND    ? BETWEEN C.FROM_AMOUNT AND C.TO_AMOUNT";
-		Map<String, Object> map = jdbcTemplate.queryForMap(sqlQuery, args.toArray());
+		Map<String, Object> map = null;
+		try {
+			map = jdbcTemplate.queryForMap(sqlQuery, args.toArray());
+		} catch (Exception e) {
+		}
 		if (map == null || map.isEmpty()) {
-			args.remove(args.size() - 1);
-			args.add(new BigDecimal(777));
+			args.remove(args.size() - 2);
+			args.add(args.size() - 1, new BigDecimal(777));
 			map = jdbcTemplate.queryForMap(sqlQuery, args.toArray());
 		}
 		output.putAll(map);
