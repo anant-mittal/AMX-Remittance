@@ -115,6 +115,9 @@ public class LoginService {
 
 			if (sessionService.getGuestSession().getState().isFlow(AuthState.AuthFlow.LOGIN)) {
 				jaxService.getUserclient().customerLoggedIn(sessionService.getAppDevice().toUserDevice());
+
+				wrapper.setRedirectUrl(sessionService.getGuestSession().getReturnUrl());
+				sessionService.getGuestSession().setReturnUrl(null);
 			}
 
 			wrapper.setMessage(WebResponseStatus.AUTH_DONE, ResponseMessage.AUTH_SUCCESS);

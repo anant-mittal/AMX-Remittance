@@ -10,7 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.jax.exception.AbstractException;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.util.JaxContextUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -24,7 +24,7 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public void sendAlert(AbstractException ex) {
+	public void sendAlert(AbstractJaxException ex) {
 
 		PaymentResponseDto model = (PaymentResponseDto) JaxContextUtil.getRequestModel();
 		// TODO fetch bene and customer details

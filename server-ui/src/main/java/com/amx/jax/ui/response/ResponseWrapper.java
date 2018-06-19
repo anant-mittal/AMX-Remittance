@@ -12,4 +12,8 @@ public class ResponseWrapper<T> extends ResponseWrapperM<T, Object> {
 		super(data);
 	}
 
+	public ResponseWrapper(T data, Object meta) {
+		super(data, meta);
+	}
+
 }

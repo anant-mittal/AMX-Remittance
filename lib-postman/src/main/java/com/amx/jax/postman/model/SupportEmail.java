@@ -8,6 +8,7 @@ public class SupportEmail extends Email {
 	private String visitorPhone = null;
 	private String visitorMessage = null;
 	private String captchaCode = null;
+	private String identity = null;
 
 	public SupportEmail() {
 		super();
@@ -51,6 +52,14 @@ public class SupportEmail extends Email {
 
 	public void setCaptchaCode(String captchaCode) {
 		this.captchaCode = captchaCode;
+	}
+
+	public String getIdentity() {
+		return identity;
+	}
+
+	public void setIdentity(String identity) {
+		this.identity = identity;
 	}
 
 }

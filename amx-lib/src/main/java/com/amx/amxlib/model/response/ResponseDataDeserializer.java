@@ -38,6 +38,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.UserModel;
@@ -235,6 +236,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "min-max-exrate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});
+			
+		case "place-order-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>(){});
 			break;	
 	}
 		responseData.setValues(models);

@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Urly;
 
@@ -41,7 +42,7 @@ public class WebTenantFilter implements Filter {
 		 * attribute;
 		 */
 		if (siteId == null) {
-			siteId = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
+			siteId = ArgUtil.parseAsString(request.getSession().getAttribute(TenantContextHolder.TENANT));
 		}
 
 		if (siteId != null && !Constants.BLANK.equals(siteId)) {
