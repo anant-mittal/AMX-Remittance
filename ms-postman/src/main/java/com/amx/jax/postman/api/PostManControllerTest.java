@@ -30,6 +30,7 @@ import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Message;
@@ -53,7 +54,7 @@ public class PostManControllerTest {
 
 	@Autowired
 	PostManClient postManClient;
-	
+
 	@Autowired
 	FBPushClient fbPushClient;
 
@@ -83,7 +84,7 @@ public class PostManControllerTest {
 		try {
 			throw new Exception("Some Error");
 		} catch (Exception e) {
-			postManClient.notifyException("My Error", e);
+			postManClient.notifyException("My Error", new ExceptionReport(e));
 		}
 		return null;
 	}
@@ -110,14 +111,14 @@ public class PostManControllerTest {
 
 		return msg;
 	}
-	
+
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
 		fbPushClient.sendDirect(msg);
 		return msg;
 	}
-	
+
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {

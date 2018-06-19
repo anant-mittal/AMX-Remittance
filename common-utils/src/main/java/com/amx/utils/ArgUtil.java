@@ -556,7 +556,7 @@ public final class ArgUtil {
 	 *            the value
 	 * @return : Long object if valid else null
 	 */
-	public static Long parseAsLong(Object value) {
+	public static Long parseAsLong(Object value, Long defaultValue) {
 		if (value instanceof Long) {
 			return ((Long) value);
 		} else if (value instanceof Number) {
@@ -571,10 +571,14 @@ public final class ArgUtil {
 					return Long.valueOf(Long.parseLong((String) value));
 				}
 			} catch (NumberFormatException e) {
-				return null;
+				return defaultValue;
 			}
 		}
-		return null;
+		return defaultValue;
+	}
+
+	public static Long parseAsLong(Object value) {
+		return parseAsLong(value, null);
 	}
 
 	/**

@@ -10,7 +10,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.ResourceNotFoundException;
@@ -45,7 +45,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			return restService.ajax(getExchangeRateUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ExchangeRateResponseModel>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getExchangeRate : ", e);
@@ -68,7 +68,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			return restService.ajax(getExchangeRateUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in setExchangeRate : ", e);
@@ -81,7 +81,8 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 	 * Min Max Exchange rate client call
 	 * 
 	 */
-	public ApiResponse<MinMaxExRateDTO> getMinMaxExchangeRate()  throws ResourceNotFoundException, InvalidInputException {
+	public ApiResponse<MinMaxExRateDTO> getMinMaxExchangeRate()
+			throws ResourceNotFoundException, InvalidInputException {
 		try {
 			LOGGER.info("Get in Min Max Exchange Rate Client ");
 
@@ -90,7 +91,7 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<MinMaxExRateDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in minMaxExRate : ", e);

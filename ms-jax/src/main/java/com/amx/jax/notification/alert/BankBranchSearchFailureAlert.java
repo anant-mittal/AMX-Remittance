@@ -1,7 +1,6 @@
 package com.amx.jax.notification.alert;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +14,7 @@ import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.config.JaxProperties;
-import com.amx.jax.exception.AbstractException;
-import com.amx.jax.manager.JaxNotificationManager;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.BankService;
@@ -42,7 +40,7 @@ public class BankBranchSearchFailureAlert implements IAlert {
 	JaxProperties jaxProperties;
 
 	@Override
-	public void sendAlert(AbstractException ex) {
+	public void sendAlert(AbstractJaxException ex) {
 		GetBankBranchRequest request = (GetBankBranchRequest) JaxContextUtil.getRequestModel();
 		BranchSearchNotificationModel model = new BranchSearchNotificationModel();
 		PersonInfo pinfo = userService.getPersonInfo(metaData.getCustomerId());
