@@ -2,6 +2,8 @@ package com.amx.jax.ui.service;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,7 @@ import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.client.JaxFieldClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
@@ -21,6 +24,8 @@ import com.amx.utils.ContextUtil;
 
 @Component
 public class JaxService extends AbstractJaxServiceClient {
+
+	private Logger log = LoggerFactory.getLogger(getClass());
 
 	public static final String DEFAULT_COMPANY_ID = "1";
 
@@ -51,6 +56,9 @@ public class JaxService extends AbstractJaxServiceClient {
 
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
+
+	@Autowired
+	private PlaceOrderClient placeOrderClient;
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
@@ -87,6 +95,10 @@ public class JaxService extends AbstractJaxServiceClient {
 		return customerRegistrationClient;
 	}
 
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
+	}
+
 	@Autowired
 	private MetaClient metaClient;
 
@@ -107,6 +119,7 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
 		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
+		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		jaxMetaInfo.setCustomerId(customerId);
 

@@ -63,6 +63,16 @@ public class File {
 	@JsonIgnore
 	private String object;
 
+	public File() {
+	}
+
+	@SuppressWarnings("unchecked")
+	public File(Templates template, Object data, Type fileType) {
+		this.setTemplate(template);
+		this.setType(fileType);
+		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+	}
+
 	public Map<String, Object> getModel() {
 		return model;
 	}

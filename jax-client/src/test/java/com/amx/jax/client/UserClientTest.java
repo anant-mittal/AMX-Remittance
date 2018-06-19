@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
@@ -126,7 +126,7 @@ public class UserClientTest extends AbstractTestClient {
 		ApiResponse<CustomerModel> response = null;
 		try {
 			response = client.login("289053104436", "Amx@123456");
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
 		assertNotNull("Response is null", response);
@@ -160,7 +160,7 @@ public class UserClientTest extends AbstractTestClient {
 		ApiResponse<QuestModelDTO> response = null;
 		try {
 			response = client.getDataVerificationQuestions();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
 		assertNotNull("Response is null", response);
@@ -182,7 +182,7 @@ public class UserClientTest extends AbstractTestClient {
 			response = client.validateOtp(mOtp, eOtp);
 		} catch (JaxSystemError je) {
 			je.printStackTrace();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			LOGGER.info("Error key is ---> " + e.getErrorKey());
 			LOGGER.info("Error message is ---> " + e.getErrorMessage());
 		}
@@ -203,7 +203,7 @@ public class UserClientTest extends AbstractTestClient {
 			response = client.customerLoggedIn(new UserDevice());
 		} catch (JaxSystemError je) {
 			je.printStackTrace();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			LOGGER.info("Error key is ---> " + e.getErrorKey());
 			LOGGER.info("Error message is ---> " + e.getErrorMessage());
 		}

@@ -16,7 +16,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
-import com.amx.jax.exception.AbstractException;
+import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.services.JaxNotificationService;
@@ -46,7 +46,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	}
 
 	@Override
-	public void sendAlert(AbstractException ex) {
+	public void sendAlert(AbstractJaxException ex) {
 
 		// TODO fetch bene and customer details
 		// TODO fill data in RemittanceTransactionFailureAlertModel

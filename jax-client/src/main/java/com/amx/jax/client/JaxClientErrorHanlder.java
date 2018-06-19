@@ -18,7 +18,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.exception.UnknownJaxError;
-import com.amx.amxlib.model.response.ApiError;
+import com.amx.jax.exception.AmxApiError;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -38,9 +38,8 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
-
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
-		ApiError apiError = JsonUtil.fromJson(apiErrorJson, ApiError.class);
+		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
 		checkUnknownJaxError(apiError);
 		checkInvalidInputErrors(apiError);
 		checkCustomerValidationErrors(apiError);
@@ -50,22 +49,21 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		validateRemittanceDataValidation(apiError);
 		validateLimitExeededException(apiError);
 		throw new JaxApplicationException(apiError);
-
 	}
 
-	private void validateLimitExeededException(ApiError error) {
+	private void validateLimitExeededException(AmxApiError error) {
 		if (JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode().equals(error.getErrorId())) {
 			throw new LimitExeededException(error);
 		}
 	}
 
-	private void checkUnknownJaxError(ApiError apiError) {
+	private void checkUnknownJaxError(AmxApiError apiError) {
 		if (JaxError.UNKNOWN_JAX_ERROR.getCode().equals(apiError.getErrorId())) {
 			throw new UnknownJaxError(apiError);
 		}
 	}
 
-	protected void checkInvalidInputErrors(ApiError error) throws InvalidInputException {
+	protected void checkInvalidInputErrors(AmxApiError error) throws InvalidInputException {
 		if (error != null) {
 			if (JaxError.INVALID_CIVIL_ID.getCode().equals(error.getErrorId())) {
 				throw new InvalidInputException(error);
@@ -82,7 +80,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		}
 	}
 
-	protected void checkCustomerValidationErrors(ApiError error)
+	protected void checkCustomerValidationErrors(AmxApiError error)
 			throws CustomerValidationException, LimitExeededException {
 		if (error != null) {
 
@@ -147,7 +145,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		}
 	}
 
-	protected void checkAlreadyExistsError(ApiError error) throws AlreadyExistsException {
+	protected void checkAlreadyExistsError(AmxApiError error) throws AlreadyExistsException {
 
 		if (error != null) {
 
@@ -161,7 +159,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		}
 	}
 
-	protected void checkIncorrectInputError(ApiError error) throws IncorrectInputException {
+	protected void checkIncorrectInputError(AmxApiError error) throws IncorrectInputException {
 
 		if (error != null) {
 
@@ -180,7 +178,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		}
 	}
 
-	protected void checkResourceNotFoundException(ApiError error) throws ResourceNotFoundException {
+	protected void checkResourceNotFoundException(AmxApiError error) throws ResourceNotFoundException {
 		if (error != null) {
 
 			if (JaxError.EXCHANGE_RATE_NOT_FOUND.getCode().equals(error.getErrorId())) {
@@ -189,7 +187,7 @@ public class JaxClientErrorHanlder implements ResponseErrorHandler {
 		}
 	}
 
-	protected void validateRemittanceDataValidation(ApiError error)
+	protected void validateRemittanceDataValidation(AmxApiError error)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
 		if (error != null) {
