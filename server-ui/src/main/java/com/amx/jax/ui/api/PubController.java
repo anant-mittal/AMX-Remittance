@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mobile.device.Device;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -26,6 +27,7 @@ import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
+import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.codahale.metrics.annotation.Timed;
@@ -63,6 +65,9 @@ public class PubController {
 	@Autowired
 	private AppConfig appConfig;
 
+	@Autowired
+	private SessionService sessionService;
+
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -85,53 +90,42 @@ public class PubController {
 		Integer hits = guestSession.hitCounter();
 
 		userDevice.getType();
-
-		wrapper.getData().debug = env.isDebug();
-		wrapper.getData().id = httpSession.getId();
-		wrapper.getData().hits = hits;
-		wrapper.getData().domain = request.getRequestURL().toString();
-		wrapper.getData().serverName = request.getServerName();
-		wrapper.getData().requestUri = request.getRequestURI();
-		wrapper.getData().remoteHost = request.getRemoteHost();
-		wrapper.getData().remoteAddr = httpService.getIPAddress();
-		wrapper.getData().remoteAddr = request.getRemoteAddr();
-
-		wrapper.getData().localAddress = request.getLocalAddr();
-
-		wrapper.getData().scheme = request.getScheme();
-
-		wrapper.getData().device = userDevice.toMap();
+		wrapper.getData().setDebug(env.isDebug());
+		wrapper.getData().setId(httpSession.getId());
+		wrapper.getData().setHits(hits);
+		wrapper.getData().setDomain(request.getRequestURL().toString());
+		wrapper.getData().setServerName(request.getServerName());
+		wrapper.getData().setRequestUri(request.getRequestURI());
+		wrapper.getData().setRemoteHost(request.getRemoteHost());
+		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
+		wrapper.getData().setRemoteAddr(request.getRemoteAddr());
+		wrapper.getData().setLocalAddress(request.getLocalAddr());
+		wrapper.getData().setScheme(request.getScheme());
+		wrapper.getData().setDevice(userDevice.toMap());
 		wrapper.getData().message = calcLibs.get().getRSName();
-
 		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
 				appConfig.isDebug());
-		// jaxService.setDefaults().getMetaClient().getApplicationCountry().getResult();
+		return wrapper;
+	}
 
-		/*
-		 * Email email = new Email(); email.addTo("lalit.tanwar07@gmail.com");
-		 * email.setObject(wrapper);
-		 * 
-		 * email.setSubject("Test Email"); email.setTemplate(Templates.RESET_OTP);
-		 * email.setHtml(true);
-		 * 
-		 * File file = new File(); file.setTemplate(Templates.RESET_OTP);
-		 * file.setObject(wrapper); file.setType(File.Type.PDF); email.addFile(file);
-		 * 
-		 * postManService.sendEmail(email);
-		 *
-		 */
+	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
+	public ResponseWrapper<Email> reportUs(@RequestBody SupportEmail email) {
+		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
+		try {
 
-		/*
-		 * Map<String, Integer> mapCustomers = hazelcastInstance.getMap("test");
-		 * 
-		 * hits = mapCustomers.get("hits"); if (hits == null) { hits = 0; }
-		 * 
-		 * wrapper.getData().put("h-name", hazelcastInstance.getName());
-		 * wrapper.getData().put("hits-h", hits); mapCustomers.put("hits", ++hits);
-		 */
-		// if (!"".equalsIgnoreCase(httpSession.getId()))
-		// throw new Exception();
-
+			if (sessionService.getUserSession().getCustomerModel() != null) {
+				email.setVisitorEmail(sessionService.getUserSession().getCustomerModel().getEmail());
+				email.setVisitorName(sessionService.getUserSession().getCustomerModel().getPersoninfo().getFirstName()
+						+ " " + sessionService.getUserSession().getCustomerModel().getPersoninfo().getLastName());
+				email.setVisitorPhone(sessionService.getUserSession().getCustomerModel().getPersoninfo().getMobile());
+				email.setIdentity(sessionService.getUserSession().getCustomerModel().getPersoninfo().getIdentityInt());
+			}
+			postManService.sendEmailToSupprt(email);
+			wrapper.setData(email);
+		} catch (Exception e) {
+			wrapper.setStatusKey(WebResponseStatus.ERROR);
+			log.error("/pub/report", e);
+		}
 		return wrapper;
 	}
 

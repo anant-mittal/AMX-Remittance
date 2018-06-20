@@ -12,6 +12,7 @@ import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.utils.Utils;
 
 @Component
 @TenantScoped
@@ -39,6 +40,8 @@ public class SupportService {
 		map.put("cphone", email.getVisitorPhone());
 		map.put("cemail", email.getVisitorEmail());
 		map.put("message", email.getVisitorMessage());
+		map.put("identity", email.getIdentity());
+		map.put("lines", Utils.concatenate(email.getLines(), " \n "));
 
 		email.setFrom(this.supportContactFrom);
 		email.setReplyTo(email.getVisitorEmail());

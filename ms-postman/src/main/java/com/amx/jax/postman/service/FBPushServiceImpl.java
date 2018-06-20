@@ -2,8 +2,6 @@ package com.amx.jax.postman.service;
 
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -69,17 +67,18 @@ public class FBPushServiceImpl implements FBPushService {
 			String topic = msg.getTo().get(0);
 
 			if (!ArgUtil.isEmptyString(topic)) {
-
+				String topicLower = topic.toLowerCase();
 				if (msg.getMessage() != null) {
-					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topic, msg, msg.getMessage());
-					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topic, msg, msg.getMessage());
-					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topic, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, msg.getMessage());
 				}
-
-				for (String message : msg.getLines()) {
-					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topic, msg, message);
-					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topic, msg, message);
-					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topic, msg, message);
+				if (msg.getLines() != null) {
+					for (String message : msg.getLines()) {
+						this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, message);
+					}
 				}
 			}
 		}
