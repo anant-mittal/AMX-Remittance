@@ -171,7 +171,7 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			gatewayResponse.setError(pipe.getError_text());
+			gatewayResponse.setError(pipe.getResult());
 			gatewayResponse.setErrorText(pipe.getResult());
 		}
 		 
