@@ -178,10 +178,10 @@ public class OmannetClient implements PayGClient {
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
-/*		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
 		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
 		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
-*/
+
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 		}	
