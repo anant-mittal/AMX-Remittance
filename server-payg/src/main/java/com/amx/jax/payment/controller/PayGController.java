@@ -72,7 +72,8 @@ public class PayGController {
 	                                    @RequestParam String trckid, 
 	                                    @RequestParam String docNo, 
 	                                    @RequestParam(required = false) String docFy,
-	                                    @RequestParam(required = false) String callbackd, Model model) {
+	                                    @RequestParam(required = false) String callbackd, 
+	                                    Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
@@ -87,7 +88,10 @@ public class PayGController {
 			// this is only for testing START 
 			pg = "OMANNET";
 			// END   
-		}
+		}else if (tnt.equals(Tenant.KOMN)) {
+            appRedirectUrl = omnRedirectURL;
+            pg = "KOMANNET";
+        }
 
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
@@ -153,11 +157,16 @@ public class PayGController {
 	        }
 
 		model.addAttribute("REDIRECT", redirectUrl);
+        model.addAttribute("response", payGResponse);
+        model.addAttribute("test", "test");
 
 		if (paygCode.toString().equals("OMANNET")) {
 		    LOGGER.info("REDIRECT  --> "+ redirectUrl);
 		    return "redirect:" + redirectUrl;
-		}else {
+		}else if (paygCode.toString().equals("KOMANNET")) {
+            LOGGER.info("REDIRECT  --> "+ redirectUrl);
+            return "redirect:" + "http://10.28.42.103:8080/payment_capture";
+        }else{
 		    return "thymeleaf/repback";  
 		}
 		
