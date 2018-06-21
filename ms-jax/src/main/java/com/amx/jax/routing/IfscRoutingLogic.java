@@ -1,5 +1,12 @@
 package com.amx.jax.routing;
 
+import static com.amx.jax.constant.ConstantDocument.BANK_INDICATOR_BENEFICIARY_BANK;
+import static com.amx.jax.constant.ConstantDocument.BANK_INDICATOR_CORRESPONDING_BANK;
+import static com.amx.jax.constant.ConstantDocument.DELIVERY_MODE_BANKING_CHANNEL;
+import static com.amx.jax.constant.ConstantDocument.REMITTANCE_MODE_EFT;
+import static com.amx.jax.constant.ConstantDocument.REMITTANCE_MODE_RTGS;
+import static com.amx.jax.constant.ConstantDocument.Yes;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,9 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import static com.amx.jax.constant.ConstantDocument.*;
 import com.amx.jax.dal.BizcomponentDao;
-import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.BankServiceRule;

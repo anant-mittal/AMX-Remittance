@@ -31,6 +31,7 @@ import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.TenantService;
+import com.amx.utils.ArgUtil;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -80,10 +81,23 @@ public class MetaController {
 	}
 
 	@CacheForTenant
-	@RequestMapping(value = { "/api/meta/country/list", "/pub/meta/country/list" }, method = { RequestMethod.GET })
-	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries() {
+	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountries(Boolean bene) {
+		if (bene == true) {
+			return new ResponseWrapper<List<CountryMasterDTO>>(
+					jaxService.setDefaults().getBeneClient().getBeneficiaryCountryList().getResults());
+		}
 		return new ResponseWrapper<List<CountryMasterDTO>>(
 				jaxService.setDefaults().getMetaClient().getAllCountry().getResults());
+	}
+
+	@RequestMapping(value = { "/pub/meta/country/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountriesPub(@RequestParam(required = false) Boolean bene) {
+		return getListOfCountries(ArgUtil.parseAsBoolean(bene, false));
+	}
+
+	@RequestMapping(value = { "/api/meta/country/list" }, method = { RequestMethod.GET })
+	public ResponseWrapper<List<CountryMasterDTO>> getListOfCountriesPri(@RequestParam(required = false) Boolean bene) {
+		return getListOfCountries(ArgUtil.parseAsBoolean(bene, true));
 	}
 
 	@CacheForTenant

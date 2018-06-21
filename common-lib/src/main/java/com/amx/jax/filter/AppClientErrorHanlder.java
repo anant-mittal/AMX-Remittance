@@ -1,15 +1,14 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.ExceptionFactory;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
