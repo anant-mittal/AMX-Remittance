@@ -169,7 +169,9 @@ public class PayGController {
 		    return "redirect:" + redirectUrl;
 		}else if (paygCode.toString().equals("KOMANNET")) {
 		    ra.addAttribute("key1", "value1");
-		    ra.addAttribute("paygresp", payGResponse);
+		    //ra.addAttribute("paygresp", payGResponse);
+		    ra.addFlashAttribute("paygresp", payGResponse);
+		    model.addAttribute("paygresp", payGResponse);
 		    LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
             return "redirect:" + kioskOmnRedirectURL;
             
