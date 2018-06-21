@@ -126,7 +126,7 @@ public enum Tenant {
 
 	OMN("OM", 82, "Oman", true),
 	
-	KOMN("KOM", 82, "Kiosk Oman", true),
+	KOMN("OM", 82, "Kiosk Oman", true),
 
 	PAN("PA", 91, "Panama"), PER("PE", 91, "Peru"), PYF("PF", 91, "French Polynesia"),
 

@@ -42,8 +42,8 @@ public class OmannetKioskClient implements PayGClient {
 	@Value("${omannet.language.code}")
 	String OmemnetLanguageCode;
 		
-	@Value("${kiosk.omannet.callback.url}")
-	String KioskOmemnetCallbackUrl;
+	@Value("${omannet.callback.url}")
+	String OmemnetCallbackUrl;
 
 	
 	@Autowired
@@ -69,7 +69,7 @@ public class OmannetKioskClient implements PayGClient {
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
 		configMap.put("responseUrl",
-		        KioskOmemnetCallbackUrl+"/app/capture/KOMANNET/" + payGParams.getTenant() + "/");
+				OmemnetCallbackUrl+"/app/capture/KOMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
@@ -85,6 +85,7 @@ public class OmannetKioskClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
+		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
 		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
@@ -116,8 +117,15 @@ public class OmannetKioskClient implements PayGClient {
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
 		// Capturing GateWay Response
+		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		gatewayResponse.setCountryId(Tenant.OMN.getCode());
+		gatewayResponse.setResponseCode(request.getParameter("responseData"));
+		gatewayResponse.setUdf1(request.getParameter("udf1"));
+		gatewayResponse.setUdf2(request.getParameter("udf2"));
+		gatewayResponse.setUdf3(request.getParameter("udf3"));
+		gatewayResponse.setUdf4(request.getParameter("udf4"));
+		gatewayResponse.setUdf5(request.getParameter("udf5"));
+		gatewayResponse.setCountryId(Tenant.KOMN.getCode());
 
 		iPayPipe pipe = new iPayPipe(); 
 		//Initialization 
@@ -155,10 +163,11 @@ public class OmannetKioskClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			gatewayResponse.setError(pipe.getError_text());
+			gatewayResponse.setError(pipe.getResult());
+			gatewayResponse.setErrorText(pipe.getResult());
 		}
 		 
-		LOGGER.info("Params captured from KIOSK OMANNET : " + JsonUtil.toJson(gatewayResponse));
+		LOGGER.info("Params captured from OMANNET KIOSK : " + JsonUtil.toJson(gatewayResponse));
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
