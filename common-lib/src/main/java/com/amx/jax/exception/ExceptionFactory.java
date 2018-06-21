@@ -12,8 +12,6 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AssignableTypeFilter;
 
-import com.amx.jax.filter.AppClientInterceptor;
-
 public class ExceptionFactory {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionFactory.class);
