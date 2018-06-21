@@ -46,7 +46,14 @@ public class ConstantDocument {
 	public static final String BANGLADESH_ALPHA3_CODE = "BGD";
 	public static final String SERVICE_GROUP_CODE_CASH = "C";
 	public static final String SERVICE_GROUP_CODE_BANK = "B";
-	
+
 	public static final String CONSTANT_ALL = "ALL";
+
+	public static final String BANK_INDICATOR_CORRESPONDING_BANK = "CB";
+	public static final String BANK_INDICATOR_BENEFICIARY_BANK = "BE";
+	public static final BigDecimal REMITTANCE_MODE_EFT = new BigDecimal(3);
+	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
+
+	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
 
 }
