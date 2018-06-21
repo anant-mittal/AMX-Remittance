@@ -63,6 +63,9 @@ public class PayGController {
 	@Value("${app.url.omn}")
 	String omnRedirectURL;
 	
+	@Value("${app.url.omn.kiosk}")
+	String kioskOmnRedirectURL;
+	
 	@Autowired
 	PayGConfig payGConfig;
 
@@ -160,7 +163,6 @@ public class PayGController {
 	        }
 
 		model.addAttribute("REDIRECT", redirectUrl);
-        
 
         if (paygCode.toString().equals("OMANNET")) {
 		    LOGGER.info("REDIRECT  --> "+ redirectUrl);
@@ -168,8 +170,9 @@ public class PayGController {
 		}else if (paygCode.toString().equals("KOMANNET")) {
 		    ra.addAttribute("key1", "value1");
 		    ra.addFlashAttribute("paygresp", payGResponse);
-            LOGGER.info("REDIRECT  --> "+ redirectUrl);
-            return "redirect:" + "http://10.28.42.103:8080/payment_capture";
+		    LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
+            return "redirect:" + kioskOmnRedirectURL;
+            
         }else{
 		    return "thymeleaf/repback";  
 		}
