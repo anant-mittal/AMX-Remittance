@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestAnswerModelDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.AbstractAnswer;
@@ -18,7 +19,6 @@ import com.amx.amxlib.model.OptionAnswer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.service.QuestionAnswerService;

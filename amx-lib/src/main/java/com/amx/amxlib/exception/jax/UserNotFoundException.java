@@ -1,6 +1,7 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception.jax;
 
-import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.exception.AmxApiError;
 
 public class UserNotFoundException extends AbstractJaxException {
 
@@ -16,10 +17,5 @@ public class UserNotFoundException extends AbstractJaxException {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	@Override
-	public String getErrorCode() {
-		return JaxError.USER_NOT_FOUND.getCode();
-	}
 
 }

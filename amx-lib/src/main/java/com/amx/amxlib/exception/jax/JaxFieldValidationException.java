@@ -1,6 +1,8 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception.jax;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.exception.AmxApiError;
 
 public class JaxFieldValidationException extends AbstractJaxException {
 

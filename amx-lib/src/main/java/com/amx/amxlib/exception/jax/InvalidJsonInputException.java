@@ -1,4 +1,7 @@
-package com.amx.jax.exception;
+package com.amx.amxlib.exception.jax;
+
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.exception.AmxApiError;
 
 public class InvalidJsonInputException extends AbstractJaxException {
 
@@ -15,9 +18,5 @@ public class InvalidJsonInputException extends AbstractJaxException {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public String getErrorCode() {
-		return "INVALID_JSON_BODY";
-	}
 
 }

@@ -15,7 +15,7 @@ public class InvalidCivilIdException extends AbstractJaxException {
 	}
 	
 	public InvalidCivilIdException(AmxApiError error) {
-		super(error.getErrorClass());
+		super(error);
 	}
 
 
