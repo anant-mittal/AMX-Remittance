@@ -25,6 +25,7 @@ import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
 import com.amx.jax.dbmodel.ViewCity;
@@ -81,12 +82,12 @@ public class MetaService extends AbstractService {
 	ServiceGroupMasterRepository serviceGroupMasterRepository;
 	@Autowired
 	ServiceMasterRepository serviceMasterRepository;
-	
 	@Autowired
 	MetaData metaData;
-	
 	@Autowired
 	JaxUtil jaxUtil;
+	@Autowired
+	JaxProperties jaxProperties;
 
 	public ApiResponse getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
@@ -157,14 +158,14 @@ public class MetaService extends AbstractService {
 				.findActiveByLanguageId(metaData.getLanguageId());
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
-			// disable cash
-			//if (!i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE)) {
+
+			if (!jaxProperties.getCashDisable()) {
 				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
 				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
 				dto.setServiceGroupDesc(i.getServiceGroupDesc());
 				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
 				outputDto.add(dto);
-			//}
+			}
 		});
 		return outputDto;
 	}

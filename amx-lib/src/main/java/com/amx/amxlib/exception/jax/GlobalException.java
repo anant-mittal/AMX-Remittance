@@ -16,6 +16,10 @@ public class GlobalException extends AbstractJaxException {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public GlobalException(AmxApiError error) {
+		super(error);
+	}
+	
 	public GlobalException(String errorMessage) {
 		super(errorMessage);
 	}

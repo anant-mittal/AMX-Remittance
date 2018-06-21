@@ -10,6 +10,10 @@ public class JaxFieldValidationException extends AbstractJaxException {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	public JaxFieldValidationException(AmxApiError error) {
+		super(error);
+	}
 
 	public JaxFieldValidationException(AmxApiError error) {
 		super(error);
