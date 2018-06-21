@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ScopedBeanFactory<E, T> {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private final Map<String, T> libsByCode = new HashMap<>();
 
@@ -69,7 +69,7 @@ public abstract class ScopedBeanFactory<E, T> {
 		if (this.libsByCode.containsKey(key.toString().toLowerCase())) {
 			return this.libsByCode.get(key.toString().toLowerCase());
 		}
-		log.error("libsByCode Not Exists for Code== " + key);
+		LOGGER.error("libsByCode Not Exists for Code== {}", key);
 		return null;
 	}
 

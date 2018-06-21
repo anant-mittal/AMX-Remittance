@@ -88,7 +88,7 @@ public class TemplateUtils {
 	}
 
 	public static String fixBiDi(String wordTemp) {
-		String word = ArgUtil.parseAsString(wordTemp, Constants.defaultString);
+		String word = ArgUtil.parseAsString(wordTemp, Constants.DEFAULT_STRING);
 		Bidi bidi = new Bidi(word, -2);
 		if (!bidi.isMixed() && bidi.getBaseLevel() == 0) {
 			return word;

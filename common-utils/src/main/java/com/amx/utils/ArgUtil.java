@@ -64,7 +64,7 @@ public final class ArgUtil {
 			return "integer";
 		} else if (object instanceof Boolean) {
 			return "boolean";
-		} else if (object == Constants.emptyMap) {
+		} else if (object == Constants.EMPTY_MAP) {
 			return "object";
 		}
 		return "unknown";
@@ -99,7 +99,7 @@ public final class ArgUtil {
 		public static final String CODE = "code";
 
 		/** The Constant DATA. */
-		public static final String DATA = "data";
+		public static final String DATA_KEY = "data";
 
 		/** The warn local. */
 		private static ThreadLocal<Set<String>> warnLocal = new ThreadLocal<Set<String>>() {
@@ -177,7 +177,7 @@ public final class ArgUtil {
 		public Map<String, Object> errors() {
 			Map<String, Object> innerMap = new LinkedHashMap<String, Object>();
 			innerMap.put(CODE, this.errorCode);
-			innerMap.put(DATA, this.data);
+			innerMap.put(DATA_KEY, this.data);
 			return innerMap;
 		}
 
@@ -658,7 +658,7 @@ public final class ArgUtil {
 	 * @return the string
 	 */
 	public static String parseAsString(Object object, String defaultValue) {
-		if (object == null || Constants.defaultString.equals(object)) {
+		if (object == null || Constants.DEFAULT_STRING.equals(object)) {
 			return defaultValue;
 		}
 		return parseAsString(object);
