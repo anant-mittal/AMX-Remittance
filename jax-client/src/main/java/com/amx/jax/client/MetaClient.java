@@ -102,7 +102,18 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		return beneClient.getBeneficiaryCountryList();
+		try {
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 	@Deprecated
