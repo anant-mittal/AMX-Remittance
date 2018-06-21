@@ -168,7 +168,6 @@ public class PayGController {
 		    LOGGER.info("REDIRECT  --> "+ redirectUrl);
 		    return "redirect:" + redirectUrl;
 		}else if (paygCode.toString().equals("KOMANNET")) {
-		    	    
 		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
 		    ra.addAttribute("result", payGResponse.getResult());
 		    ra.addAttribute("auth_appNo",payGResponse.getAuth() );
@@ -181,13 +180,8 @@ public class PayGController {
 		    ra.addAttribute("udf3", payGResponse.getUdf3());
 		    ra.addAttribute("udf4", payGResponse.getUdf4());
 		    ra.addAttribute("udf5", payGResponse.getUdf5());
-		    
-		    //ra.addAttribute("paygresp", payGResponse);
-		    ra.addFlashAttribute("paygresp", payGResponse);
-		    model.addAttribute("paygresp", payGResponse);
 		    LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
             return "redirect:" + kioskOmnRedirectURL;
-            
         }else{
 		    return "thymeleaf/repback";  
 		}
