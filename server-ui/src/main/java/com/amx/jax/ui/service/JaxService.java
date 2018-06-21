@@ -58,7 +58,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	private JaxFieldClient jaxFieldClient;
 
 	@Autowired
-	private PlaceOrderClient placeOrderClient;
+	PlaceOrderClient placeOrderClient;
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
@@ -91,6 +91,14 @@ public class JaxService extends AbstractJaxServiceClient {
 		return metaClient;
 	}
 
+	public CustomerRegistrationClient getCustRegClient() {
+		return customerRegistrationClient;
+	}
+
+	public PlaceOrderClient getPlaceOrderClient() {
+		return placeOrderClient;
+	}
+
 	@Autowired
 	private MetaClient metaClient;
 
@@ -98,8 +106,7 @@ public class JaxService extends AbstractJaxServiceClient {
 		return jaxMetaInfo;
 	}
 
-	public JaxService setDefaults() {
-
+	public JaxService setDefaults(BigDecimal customerId) {
 		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setLanguageId(sessionService.getGuestSession().getLang().getBDCode());
@@ -112,25 +119,20 @@ public class JaxService extends AbstractJaxServiceClient {
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
 		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
+		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
-		if (sessionService.getUserSession().getCustomerModel() != null) {
-			jaxMetaInfo.setCustomerId(sessionService.getUserSession().getCustomerModel().getCustomerId());
-		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
-			jaxMetaInfo.setCustomerId(sessionService.getGuestSession().getCustomerModel().getCustomerId());
-		}
+		jaxMetaInfo.setCustomerId(customerId);
+
 		return this;
 	}
 
-	public CustomerRegistrationClient getCustRegClient() {
-		return customerRegistrationClient;
-	}
-
-	public PlaceOrderClient getPlaceOrderClient() {
-		return placeOrderClient;
-	}
-
-	public void setPlaceOrderClient(PlaceOrderClient placeOrderClient) {
-		this.placeOrderClient = placeOrderClient;
+	public JaxService setDefaults() {
+		if (sessionService.getUserSession().getCustomerModel() != null) {
+			return this.setDefaults(sessionService.getUserSession().getCustomerModel().getCustomerId());
+		} else if (sessionService.getGuestSession().getCustomerModel() != null) {
+			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
+		}
+		return this.setDefaults(null);
 	}
 
 }

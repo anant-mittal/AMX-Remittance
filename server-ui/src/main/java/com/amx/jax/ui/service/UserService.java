@@ -20,7 +20,6 @@ import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.utils.ArgUtil;
-
 import com.amx.utils.Constants;
 
 @Service

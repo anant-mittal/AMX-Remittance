@@ -183,7 +183,7 @@ public class CurrencyMasterService extends AbstractService {
 		return output;
 	}
 
-	private CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
+	public CurrencyMasterDTO convertModel(CurrencyMasterModel currency) {
 		CurrencyMasterDTO dto = new CurrencyMasterDTO();
 		try {
 			BeanUtils.copyProperties(dto, currency);

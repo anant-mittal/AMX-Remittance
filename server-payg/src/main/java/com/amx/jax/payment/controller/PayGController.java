@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
@@ -62,13 +63,21 @@ public class PayGController {
 	@Value("${app.url.omn}")
 	String omnRedirectURL;
 	
+	@Value("${app.url.omn.kiosk}")
+	String kioskOmnRedirectURL;
+	
 	@Autowired
 	PayGConfig payGConfig;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
-	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
-			@RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
-			@RequestParam(required = false) String callbackd, Model model) {
+	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, 
+	                                    @RequestParam String pg, 
+	                                    @RequestParam String amount,
+	                                    @RequestParam String trckid, 
+	                                    @RequestParam String docNo, 
+	                                    @RequestParam(required = false) String docFy,
+	                                    @RequestParam(required = false) String callbackd, 
+	                                    Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
@@ -80,7 +89,13 @@ public class PayGController {
 			appRedirectUrl = kwtRedirectURL;
 		}else if (tnt.equals(Tenant.OMN)) {
 			appRedirectUrl = omnRedirectURL;
-		}
+			// this is only for testing START 
+			pg = "OMANNET";
+			// END   
+		}else if (tnt.equals(Tenant.KOMN)) {
+            appRedirectUrl = omnRedirectURL;
+            pg = "KOMANNET";
+        }
 
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
@@ -118,8 +133,10 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode) {
+	public String paymentCapture( Model model, 
+	                              @PathVariable("tenant") Tenant tnt,
+			                      @PathVariable("paygCode") PayGServiceCode paygCode,
+			                      RedirectAttributes ra) {
 	    
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
@@ -147,7 +164,20 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		return "thymeleaf/repback";
+        if (paygCode.toString().equals("OMANNET")) {
+		    LOGGER.info("REDIRECT  --> "+ redirectUrl);
+		    return "redirect:" + redirectUrl;
+		}else if (paygCode.toString().equals("KOMANNET")) {
+		    ra.addAttribute("key1", "value1");
+		    ra.addFlashAttribute("paygresp", payGResponse);
+		    LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
+            return "redirect:" + kioskOmnRedirectURL;
+            
+        }else{
+		    return "thymeleaf/repback";  
+		}
+		
+		
 	}
 
 }

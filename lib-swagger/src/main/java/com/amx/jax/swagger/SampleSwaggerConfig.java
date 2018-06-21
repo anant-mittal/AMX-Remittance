@@ -1,10 +1,8 @@
 package com.amx.jax.swagger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,24 +30,12 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ConditionalOnProperty("app.swagger")
 public class SampleSwaggerConfig {
 
-	@Autowired(required = false)
-	public Parameter swaggerHeaderParam;
-
-	@Autowired(required = false)
-	public Parameter swaggerTenantParam;
-
 	@Bean
 	public Docket productApi(List<MockParam> mockParams) {
 		Docket docket = new Docket(DocumentationType.SWAGGER_2).select()
 				.apis(RequestHandlerSelectors.basePackage("com.amx.jax"))
 				// .paths(regex("/product.*"))
 				.build();
-		if (swaggerHeaderParam != null) {
-			docket.globalOperationParameters(Arrays.asList(swaggerHeaderParam));
-		}
-		if (swaggerTenantParam != null) {
-			docket.globalOperationParameters(Arrays.asList(swaggerTenantParam));
-		}
 
 		List<Parameter> operationParameters = new ArrayList<Parameter>();
 		for (MockParam mockParam : mockParams) {

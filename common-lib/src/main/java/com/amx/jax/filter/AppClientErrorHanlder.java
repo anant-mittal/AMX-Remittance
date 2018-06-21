@@ -2,7 +2,6 @@ package com.amx.jax.filter;
 
 import java.io.IOException;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;

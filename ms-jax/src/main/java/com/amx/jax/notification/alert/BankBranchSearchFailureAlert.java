@@ -1,7 +1,6 @@
 package com.amx.jax.notification.alert;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.exception.AbstractJaxException;
-import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.BankService;

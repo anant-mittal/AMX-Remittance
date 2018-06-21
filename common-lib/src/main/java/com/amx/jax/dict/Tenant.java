@@ -125,6 +125,8 @@ public enum Tenant {
 	NIU("NU", 91, "Niue"), NZL("NZ", 91, "New Zealand"),
 
 	OMN("OM", 82, "Oman", true),
+	
+	KOMN("OM", 82, "Kiosk Oman", true),
 
 	PAN("PA", 91, "Panama"), PER("PE", 91, "Peru"), PYF("PF", 91, "French Polynesia"),
 

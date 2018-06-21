@@ -7,11 +7,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-
-import org.springframework.stereotype.Component;
-
-import com.amx.jax.def.CacheForTenant;
-
 import com.amx.utils.FileUtil;
 //import com.sun.codemodel.JClassAlreadyExistsException;
 //import com.sun.codemodel.JCodeModel;
