@@ -1,4 +1,4 @@
-package com.amx.jax.session;
+package com.amx.jax.ui.config;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

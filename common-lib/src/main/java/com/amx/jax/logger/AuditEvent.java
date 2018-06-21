@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
 public abstract class AuditEvent extends AbstractAuditEvent {
 
+	private static final long serialVersionUID = -1539116953165424464L;
 	protected long tranxTime;
 	protected long traceTime;
 	protected long eventTime;

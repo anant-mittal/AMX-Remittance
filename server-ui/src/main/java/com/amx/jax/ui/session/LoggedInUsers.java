@@ -1,4 +1,4 @@
-package com.amx.jax.session;
+package com.amx.jax.ui.session;
 
 import org.springframework.stereotype.Component;
 

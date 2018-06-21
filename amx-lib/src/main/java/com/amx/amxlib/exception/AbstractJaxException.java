@@ -1,7 +1,6 @@
 package com.amx.amxlib.exception;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import org.apache.log4j.Logger;
 

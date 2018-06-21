@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>lib-cache</artifactId>
+	<artifactId>lib-mcq</artifactId>
 	<packaging>jar</packaging>
-	<name>lib-cache</name>
+	<name>lib-mcq</name>
 	<description>Common lib for caching</description>
 	<url>http://maven.apache.org</url>
 

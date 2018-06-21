@@ -66,9 +66,7 @@
 		<module>common-lib</module>
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
-		<module>lib-cache</module>
- 		<module>lib-tunnel</module>
-		<module>lib-session</module>
+		<module>lib-mcq</module>
 		<module>lib-monitor</module>
 		<module>lib-sso</module>
 

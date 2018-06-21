@@ -43,7 +43,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-tunnel</artifactId>
+			<artifactId>lib-mcq</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
