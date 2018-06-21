@@ -5,10 +5,12 @@ import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public abstract class TunnelPublisher {
+@Service
+public class TunnelService implements ITunnelService {
 
-	private Logger LOGGER = LoggerFactory.getLogger(TunnelPublisher.class);
+	private Logger LOGGER = LoggerFactory.getLogger(TunnelService.class);
 
 	@Autowired
 	RedissonClient redisson;
@@ -18,4 +20,9 @@ public abstract class TunnelPublisher {
 		LOGGER.info("======send===");
 		topicQueue.publish(messagePayload);
 	}
+
+	public void sayHello() {
+		this.send(TunnelClient.TEST_TOPIC, "Hey There");
+	}
+
 }

@@ -2,8 +2,14 @@ package com.amx.jax.logger;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.MongoDbFactory;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.scheduling.annotation.EnableAsync;
+
+import com.mongodb.MongoClient;
 
 @SpringBootApplication
 @ComponentScan("com.amx.jax")

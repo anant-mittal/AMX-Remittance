@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @TunnelEvent(topic = TunnelClient.TEST_TOPIC)
-public class TunnelSubscriberImpl extends TunnelSubscriber<String> {
+public class SampleTunnelSubscriber implements ITunnelSubscriber<String> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 

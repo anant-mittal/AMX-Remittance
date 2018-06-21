@@ -114,11 +114,11 @@ public class UserController {
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
 
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
-
-			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
-			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 		}
+		
+		wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+		wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 
 		return wrapper;
 	}

@@ -6,10 +6,6 @@ import org.redisson.api.listener.MessageListener;
 
 public abstract class TunnelSubscriber<T> implements MessageListener<T> {
 
-	public String getTopic() {
-		return TunnelClient.TEST_TOPIC;
-	}
-
 	public void addListener(String topic, RedissonClient redisson) {
 		RTopic<T> topicQueue = redisson.getTopic(topic);
 		topicQueue.addListener(this);

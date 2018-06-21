@@ -72,8 +72,8 @@
 		<module>lib-monitor</module>
 		<module>lib-sso</module>
 
-		<!-- <module>ms-logger</module> -->
 
+		<module>ms-logger</module>
 		<module>lib-postman</module>
 		<module>ms-postman</module>
 
