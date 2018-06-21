@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
@@ -129,8 +130,10 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode) {
+	public String paymentCapture( Model model, 
+	                              @PathVariable("tenant") Tenant tnt,
+			                      @PathVariable("paygCode") PayGServiceCode paygCode,
+			                      RedirectAttributes ra) {
 	    
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
@@ -157,13 +160,14 @@ public class PayGController {
 	        }
 
 		model.addAttribute("REDIRECT", redirectUrl);
-        model.addAttribute("response", payGResponse);
-        model.addAttribute("test", "test");
+        
 
-		if (paygCode.toString().equals("OMANNET")) {
+        if (paygCode.toString().equals("OMANNET")) {
 		    LOGGER.info("REDIRECT  --> "+ redirectUrl);
 		    return "redirect:" + redirectUrl;
 		}else if (paygCode.toString().equals("KOMANNET")) {
+		    ra.addAttribute("key1", "value1");
+		    ra.addFlashAttribute("paygresp", payGResponse);
             LOGGER.info("REDIRECT  --> "+ redirectUrl);
             return "redirect:" + "http://10.28.42.103:8080/payment_capture";
         }else{
