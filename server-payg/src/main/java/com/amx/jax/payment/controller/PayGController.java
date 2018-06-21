@@ -170,7 +170,7 @@ public class PayGController {
 		}else if (paygCode.toString().equals("KOMANNET")) {
 		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
 		    ra.addAttribute("result", payGResponse.getResult());
-		    ra.addAttribute("auth_appNo",payGResponse.getAuth() );
+		    ra.addAttribute("auth",payGResponse.getAuth() );
 		    ra.addAttribute("referenceId",payGResponse.getRef() );
 		    ra.addAttribute("postDate",payGResponse.getPostDate() );
 		    ra.addAttribute("trackId", payGResponse.getTrackId());
