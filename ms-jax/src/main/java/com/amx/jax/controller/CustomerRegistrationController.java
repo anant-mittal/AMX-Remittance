@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.CUSTOMER_REG_ENDPOINT;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +92,7 @@ public class CustomerRegistrationController {
 	 * save credentails
 	 */
 	@RequestMapping(value = "/save-login-detail/", method = RequestMethod.POST)
-	public ApiResponse saveLoginDetail(@RequestBody CustomerCredential customerCredential ) {
+	public ApiResponse saveLoginDetail(@RequestBody @Valid CustomerCredential customerCredential ) {
 		logger.info("in saveLoginDetail: ");
 		ApiResponse response = customerRegistrationService.saveLoginDetail(customerCredential);
 		return response;

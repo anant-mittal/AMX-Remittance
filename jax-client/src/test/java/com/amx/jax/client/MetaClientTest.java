@@ -127,7 +127,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getDistrictDesc());
 	}
 	
-	//@Test
+	@Test
 	public void testgetServiceGroupList() {
 		setDefaults();
 		ApiResponse<ServiceGroupMasterDescDto> response = null;
@@ -189,7 +189,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResults());
 	}
 	
-	@Test
+	// @Test
 	public void testGetAllBranchDetail() {
 		setDefaults();
 		ApiResponse<BranchDetailDTO> response = null;

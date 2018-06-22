@@ -59,12 +59,15 @@ public class PayGController {
 	@Value("${app.url.bhr}")
 	String bhrRedirectURL;
 
+	@Value("${app.url.omn}")
+	String omnRedirectURL;
+	
 	@Autowired
 	PayGConfig payGConfig;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
-			@RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam(required = false) String callbackd, Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
@@ -75,6 +78,8 @@ public class PayGController {
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
+		}else if (tnt.equals(Tenant.OMN)) {
+			appRedirectUrl = omnRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -142,7 +147,12 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		return "thymeleaf/repback";
+		//return "thymeleaf/repback";
+		if (paygCode.equals("OMANNET")) {
+			return "redirect:" + redirectUrl;
+		}else {
+		    return "thymeleaf/repback";  
+		}
 	}
 
 }
