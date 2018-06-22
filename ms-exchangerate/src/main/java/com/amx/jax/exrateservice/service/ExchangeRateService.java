@@ -228,7 +228,8 @@ public class ExchangeRateService extends AbstractService {
 					}
 				}
 			}
-		} else {
+		} 
+		if (exrate == null) {
 			exrate = rate.getSellRateMax();
 		}
 		return createBreakUp(exrate, lcAmount);
