@@ -1,6 +1,12 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,10 +14,14 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.SqlOutParameter;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -20,6 +30,7 @@ import com.amx.jax.dbmodel.meta.ServiceMaster;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.routing.IRoutingLogic;
 import com.amx.jax.service.MetaService;
+import com.amx.jax.util.DBUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -35,6 +46,8 @@ public class RoutingService {
 	RoutingProcedureDao routingProcedureDao;
 	@Autowired
 	List<IRoutingLogic> routingLogics;
+	@Autowired
+	JaxProperties jaxProperties;
 
 	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
 		Map<String, Object> output;
@@ -58,13 +71,12 @@ public class RoutingService {
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
 		} else {
 			// banking
-			output = applicationProcedureDao.getRoutingDetails(inputValue);
+			if (jaxProperties.getRoutingProcOthDisable()) {
+				output = applicationProcedureDao.getRoutingDetails(inputValue);
+			} else {
+				output = applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
+			}
 			inputValue.putAll(output);
-			routingLogics.forEach(i -> {
-				if (i.isApplicable()) {
-					i.apply(inputValue, output);
-				}
-			});
 		}
 		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
@@ -80,4 +92,17 @@ public class RoutingService {
 		}
 	}
 
+	public void recalculateRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
+		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
+		if (!ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode)) {
+
+			routingLogics.forEach(i -> {
+				if (i.isApplicable()) {
+					Map<String, Object> output = new HashMap<>();
+					i.apply(inputValue, output);
+					inputValue.putAll(output);
+				}
+			});
+		}
+	}
 }

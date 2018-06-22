@@ -12,6 +12,11 @@ public class InvalidCivilIdException extends AbstractJaxException {
 	public InvalidCivilIdException(String errorMessage) {
 		super(errorMessage);
 	}
+	
+	public InvalidCivilIdException(AmxApiError error) {
+		super(error);
+	}
+
 
 	@Override
 	public String getErrorCode() {

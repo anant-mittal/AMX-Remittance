@@ -26,10 +26,12 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
+import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
+import com.amx.jax.repository.meta.BankApplicabilityRepository;
 import com.amx.jax.services.AbstractService;
 
 @Component
@@ -41,12 +43,12 @@ public class BankMetaService extends AbstractService {
 
 	@Autowired
 	private BankMasterRepository repo;
-
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
-
 	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
+	@Autowired
+	BankApplicabilityRepository bankApplicabilityRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
 		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
@@ -162,6 +164,10 @@ public class BankMetaService extends AbstractService {
 			logger.info("error in copy properties", e);
 		}
 		return dto;
+	}
+	
+	public BankApplicability getBankApplicability(BigDecimal bankId) {
+		return bankApplicabilityRepository.findByBankMaster(new BankMasterModel(bankId));
 	}
 
 	@Override
