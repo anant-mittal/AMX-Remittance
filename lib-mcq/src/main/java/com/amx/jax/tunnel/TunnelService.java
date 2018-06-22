@@ -12,7 +12,7 @@ public class TunnelService implements ITunnelService {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelService.class);
 
-	@Autowired
+	@Autowired(required = false)
 	RedissonClient redisson;
 
 	public <T> void send(String topic, T messagePayload) {
