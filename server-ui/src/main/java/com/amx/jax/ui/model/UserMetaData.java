@@ -34,6 +34,7 @@ public class UserMetaData extends AbstractModel {
 	String notifyRangeLong = null;
 	String notifyRangeShort = null;
 	BigDecimal customerId = null;
+	String notificationGap = null;
 
 	String returnUrl = null;
 
@@ -181,6 +182,14 @@ public class UserMetaData extends AbstractModel {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	public String getNotificationGap() {
+		return notificationGap;
+	}
+
+	public void setNotificationGap(String notificationGap) {
+		this.notificationGap = notificationGap;
 	}
 
 }

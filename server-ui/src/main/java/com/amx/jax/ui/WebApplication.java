@@ -20,6 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.ui.config.WebTenantFilter;
 
 @ServletComponentScan
@@ -33,9 +34,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	public static final String USE_REDIS = "true";
 
 	public static void main(String[] args) {
-		// ConfigurableApplicationContext context =
 		SpringApplication.run(WebApplication.class, args);
-		// context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
 	@Override
@@ -60,22 +59,12 @@ public class WebApplication extends SpringBootServletInitializer {
 			SecurityProperties securityProperties) {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean("checkSession");
 		registration.setOrder(securityProperties.getFilterOrder());
-		// registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
 		return registration;
 	}
 
-	// @Bean
-	// ServletListenerRegistrationBean<ServletRequestListener>
-	// myServletRequestListener() {
-	// ServletListenerRegistrationBean<ServletRequestListener> srb = new
-	// ServletListenerRegistrationBean<>();
-	// srb.setListener(new WebRequestListener());
-	// return srb;
-	// }
-
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
+	public JaxMetaInfo jaxMetaInfo() {
 		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
 		return metaInfo;
 	}

@@ -9,8 +9,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 

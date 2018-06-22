@@ -51,7 +51,7 @@ public class RateAlertClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	//@Test
+	@Test
 	public void deleteRateAlert() throws ParseException{
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -59,7 +59,7 @@ public class RateAlertClientTest {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		
 		RateAlertDTO rateAlertDTO = new RateAlertDTO();
-		rateAlertDTO.setRateAlertId(new BigDecimal(2147));
+		rateAlertDTO.setRateAlertId(new BigDecimal(9992147));
 		rateAlertDTO.setCustomerId(new BigDecimal(596142));
 		rateAlertDTO.setAlertRate(new BigDecimal(253.15));
 		rateAlertDTO.setBaseCurrencyId(new BigDecimal(1));
@@ -73,7 +73,7 @@ public class RateAlertClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	public void getRateAlert() throws ParseException{
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

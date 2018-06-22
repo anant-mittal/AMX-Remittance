@@ -8,8 +8,8 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerCredential;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.service.UserValidationService;
 

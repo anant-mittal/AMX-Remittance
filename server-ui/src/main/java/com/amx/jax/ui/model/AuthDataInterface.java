@@ -68,9 +68,17 @@ public final class AuthDataInterface {
 
 		public void setState(AuthState state);
 
+		/**
+		 * @deprecated - keeping it only for backward compatibility
+		 * @param description
+		 */
 		@Deprecated
 		public String getQuestion();
 
+		/**
+		 * @deprecated - keeping it only for backward compatibility
+		 * @param description
+		 */
 		@Deprecated
 		public void setQuestion(String description);
 

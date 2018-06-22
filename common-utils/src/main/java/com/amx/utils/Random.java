@@ -2,6 +2,10 @@ package com.amx.utils;
 
 public class Random {
 
+	private Random() {
+		// private constructor to hide the implicit public one.
+	}
+
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	private static final String ALPHA_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	private static final String NUMERIC_STRING = "0123456789";

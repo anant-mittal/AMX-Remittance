@@ -66,14 +66,12 @@
 		<module>common-lib</module>
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
-		<module>lib-cache</module>
- 		<module>lib-tunnel</module>
-		<module>lib-session</module>
+		<module>lib-mcq</module>
 		<module>lib-monitor</module>
 		<module>lib-sso</module>
 
-		<!-- <module>ms-logger</module> -->
 
+		<module>ms-logger</module>
 		<module>lib-postman</module>
 		<module>ms-postman</module>
 
@@ -84,6 +82,7 @@
 		<module>ms-exchangerate</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
+		<module>ms-auth</module>
 
 		<module>ms-scheduler</module>
 

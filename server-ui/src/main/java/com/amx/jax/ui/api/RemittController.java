@@ -264,10 +264,9 @@ public class RemittController {
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
 					"https://" + request.getServerName() + "/app/landing/remittance"));
 
-		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
+		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
+				| URISyntaxException e) {
 			wrapper.setMessage(WebResponseStatus.ERROR, e);
-		} catch (MalformedURLException | URISyntaxException e) {
-			wrapper.setMessage(WebResponseStatus.ERROR, e.getMessage());
 		}
 		return wrapper;
 	}

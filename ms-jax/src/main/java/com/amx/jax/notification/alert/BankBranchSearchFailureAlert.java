@@ -10,11 +10,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.config.JaxProperties;
-import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.services.BankService;

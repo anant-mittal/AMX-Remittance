@@ -7,6 +7,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class MapBuilder {
 
+	private MapBuilder() {
+		// private constructor to hide the implicit public one.
+	}
+
 	public static class MapItem {
 		String key;
 		Object value;
