@@ -1,9 +1,10 @@
 package com.amx.jax.ui.request;
 
 public class LoginRequest {
-	String identity;
-	String password;
-	String otp;
+
+	private String identity;
+	private String password;
+	private String otp;
 
 	public String getIdentity() {
 		return identity;

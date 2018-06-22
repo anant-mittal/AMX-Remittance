@@ -8,8 +8,14 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JaxProperties {
 
-	@Value("#{'${support.soa.email}'.split(',')}") 
+	@Value("#{'${support.soa.email}'.split(',')}")
 	List<String> supportSoaEmail;
+
+	@Value("${jax.properties.othroutingproc.disable}")
+	Boolean routingProcOthDisable;
+
+	@Value("${jax.properties.cash.disable}")
+	Boolean cashDisable;
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -17,6 +23,22 @@ public class JaxProperties {
 
 	public void setSupportSoaEmail(List<String> supportSoaEmail) {
 		this.supportSoaEmail = supportSoaEmail;
+	}
+
+	public Boolean getRoutingProcOthDisable() {
+		return routingProcOthDisable;
+	}
+
+	public void setRoutingProcOthDisable(Boolean routingProcOthDisable) {
+		this.routingProcOthDisable = routingProcOthDisable;
+	}
+
+	public Boolean getCashDisable() {
+		return cashDisable;
+	}
+
+	public void setCashDisable(Boolean cashDiable) {
+		this.cashDisable = cashDiable;
 	}
 
 }

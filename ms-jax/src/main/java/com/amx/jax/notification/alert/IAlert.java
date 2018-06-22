@@ -3,7 +3,7 @@ package com.amx.jax.notification.alert;
 import java.util.List;
 
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.jax.exception.AbstractJaxException;
+import com.amx.amxlib.exception.AbstractJaxException;
 
 /**
  * @author Prashant

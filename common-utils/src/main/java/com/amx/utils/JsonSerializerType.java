@@ -1,6 +1,5 @@
 package com.amx.utils;
 
-//TODO: Auto-generated Javadoc
 /**
  * The Interface JsonSerializerType.
  *

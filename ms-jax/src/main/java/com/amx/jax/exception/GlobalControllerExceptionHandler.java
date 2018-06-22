@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import com.amx.amxlib.exception.CommonJaxException;
+import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.amxlib.exception.jax.JaxFieldValidationException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.JaxEvent;
@@ -42,11 +43,11 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
 		ApiResponse response = getApiResponse(ex);
 		AmxApiError error = (AmxApiError) response.getError().get(0);
-		error.setErrorClass(CommonJaxException.class.getName());
+		error.setErrorClass(ex.getClass().getName());
 		setErrorHeaders(error);
 		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
-				+ ex.getErrorMessage() + " error code: " + ex.getErrorCode(), ex);
+				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		raiseAlert(ex);
 		return response;
 	}
@@ -68,7 +69,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	private ApiResponse getApiResponse(AbstractJaxException ex) {
 		ApiResponse response = new ApiResponse();
 		List<AmxApiError> errors = new ArrayList<>();
-		AmxApiError error = new AmxApiError(ex.getErrorCode(), ex.getErrorMessage());
+		AmxApiError error = new AmxApiError(ex.getErrorKey(), ex.getErrorMessage());
 		errors.add(error);
 		response.setError(errors);
 		return response;

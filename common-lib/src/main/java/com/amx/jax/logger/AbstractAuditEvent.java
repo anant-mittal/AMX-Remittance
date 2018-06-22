@@ -1,9 +1,12 @@
 package com.amx.jax.logger;
 
+import java.io.Serializable;
+
 import com.amx.utils.EnumType;
 
-public abstract class AbstractAuditEvent {
+public abstract class AbstractAuditEvent implements Serializable {
 
+	private static final long serialVersionUID = -3042991299608634785L;
 	protected String component;
 	protected String category = getClass().getSimpleName();
 	protected EnumType type;

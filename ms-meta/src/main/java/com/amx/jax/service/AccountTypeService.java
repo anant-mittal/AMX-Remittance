@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AccountTypeDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IAccountTypeFromViewDao;
 import com.amx.jax.services.AbstractService;
 

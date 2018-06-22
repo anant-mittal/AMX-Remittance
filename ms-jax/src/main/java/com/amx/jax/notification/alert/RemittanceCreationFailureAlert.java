@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
-import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.util.JaxContextUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

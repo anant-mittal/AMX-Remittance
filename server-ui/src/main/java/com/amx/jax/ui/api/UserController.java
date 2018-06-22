@@ -118,10 +118,11 @@ public class UserController {
 
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
 
-			wrapper.getData().setNotifyRangeShort(notifyRangeShort);
-			wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 		}
+
+		wrapper.getData().setNotifyRangeShort(notifyRangeShort);
+		wrapper.getData().setNotifyRangeLong(notifyRangeLong);
 
 		return wrapper;
 	}
