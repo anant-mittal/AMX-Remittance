@@ -63,15 +63,6 @@ public class UserController {
 	@Autowired
 	private AppConfig appConfig;
 
-	@Value("${ui.features}")
-	private String[] elementToSearch;
-
-	@Value("${notification.range.long}")
-	private String notifyRangeLong;
-
-	@Value("${notification.range.short}")
-	private String notifyRangeShort;
-
 	@Autowired
 	private WebAppConfig webAppConfig;
 
@@ -99,7 +90,7 @@ public class UserController {
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-		wrapper.getData().setFeatures(elementToSearch);
+		wrapper.getData().setFeatures(webAppConfig.getElementToSearch());
 		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
@@ -112,14 +103,13 @@ public class UserController {
 			wrapper.getData().setInfo(sessionService.getUserSession().getCustomerModel().getPersoninfo());
 			wrapper.getData().setDomCurrency(tenantContext.getDomCurrency());
 			wrapper.getData().setConfig(jaxService.setDefaults().getMetaClient().getJaxMetaParameter().getResult());
-
 			wrapper.getData().getSubscriptions().addAll(userService.getNotifyTopics("/topics/"));
-
 			wrapper.getData().setReturnUrl(sessionService.getGuestSession().getReturnUrl());
 		}
 
-		wrapper.getData().setNotifyRangeShort(notifyRangeShort);
-		wrapper.getData().setNotifyRangeLong(notifyRangeLong);
+		wrapper.getData().setNotifyRangeShort(webAppConfig.getNotifyRangeShort());
+		wrapper.getData().setNotifyRangeLong(webAppConfig.getNotifyRangeLong());
+		wrapper.getData().setNotificationGap(webAppConfig.getNotificationGap());
 
 		return wrapper;
 	}

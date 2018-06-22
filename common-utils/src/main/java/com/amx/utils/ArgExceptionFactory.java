@@ -57,16 +57,4 @@ public final class ArgExceptionFactory {
 		return argException;
 	}
 
-	public static boolean validatePattern(String key, String value, String pattern) {
-		ParameterException argException = null;
-		if (value == null) {
-			argException = new ParameterException(value == null);
-		}
-
-		if (argException != null) {
-
-		}
-
-		return true;
-	}
 }

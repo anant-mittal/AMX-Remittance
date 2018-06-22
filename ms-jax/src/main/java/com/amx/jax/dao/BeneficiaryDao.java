@@ -24,8 +24,8 @@ import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.dbmodel.SwiftMasterView;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ISwiftMasterDao;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

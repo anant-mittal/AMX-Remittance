@@ -8,6 +8,8 @@ import com.amx.utils.EnumType;
 
 public class SessionEvent extends AuditEvent {
 
+	private static final long serialVersionUID = 6277691611931240782L;
+
 	public static enum Type implements EnumType {
 		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
 	}
@@ -38,6 +40,10 @@ public class SessionEvent extends AuditEvent {
 
 	public void setDevice(Map<String, Object> device) {
 		this.device = device;
+	}
+
+	public void setType(Type type) {
+		super.setType(type);
 	}
 
 }

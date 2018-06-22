@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.amx.jax.exception.GlobalException;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 
 @Component
