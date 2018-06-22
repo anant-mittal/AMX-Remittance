@@ -5,19 +5,29 @@ import java.util.List;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TunnelSubscriberFactory {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public TunnelSubscriberFactory(List<ITunnelSubscriber> listeners, RedissonClient redisson) {
+	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
 
-		for (ITunnelSubscriber listener : listeners) {
-			Class<?> c = listener.getClass();
-			TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
-			String eventTopic = tunnelEvent.topic();
-			this.addListener(eventTopic, redisson, listener);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public TunnelSubscriberFactory(List<ITunnelSubscriber> listeners,
+			@Autowired(required = false) RedissonClient redisson) {
+
+		if (redisson == null) {
+			LOGGER.warn("Redisson Not avaiable for {} Listeners", listeners.size());
+		} else {
+			for (ITunnelSubscriber listener : listeners) {
+				Class<?> c = listener.getClass();
+				TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
+				String eventTopic = tunnelEvent.topic();
+				this.addListener(eventTopic, redisson, listener);
+			}
 		}
 
 	}
