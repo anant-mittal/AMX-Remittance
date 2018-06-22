@@ -11,6 +11,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -79,7 +80,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 
-		JaxFieldValidationException exception = new JaxFieldValidationException(ex.getBindingResult().toString());
+		JaxFieldValidationException exception = new JaxFieldValidationException(processFieldErrors(ex.getBindingResult()));
 		ApiResponse apiResponse = getApiResponse(exception);
 		List<AmxApiError> errors = apiResponse.getError();
 		AmxApiError error = errors.get(0);
@@ -89,5 +90,12 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		// errors.get(0).setValidationErrorField(validationErrorField);
 		setErrorHeaders(error);
 		return new ResponseEntity(apiResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	private String processFieldErrors(BindingResult bindingResult) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(bindingResult.getFieldError().getField()).append(" ");
+		sb.append(bindingResult.getFieldError().getDefaultMessage());
+		return sb.toString();
 	}
 }
