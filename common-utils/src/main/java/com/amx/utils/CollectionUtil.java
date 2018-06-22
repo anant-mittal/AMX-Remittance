@@ -144,7 +144,6 @@ public final class CollectionUtil {
 		List<T> list = new ArrayList<T>(c);
 		java.util.Collections.sort(list);
 		Set<T> set = new LinkedHashSet<T>(list);
-		// set.addAll(list);
 		return set;
 	}
 

@@ -39,13 +39,10 @@ public class AuthController {
 	 * @param identity
 	 * @param password
 	 * @return
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
-	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) throws Exception {
-		if(authData==null) {
-			throw new Exception("sdsds");
-		}
+	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
 		return loginService.login(authData.getIdentity(), authData.getPassword());
 	}
 

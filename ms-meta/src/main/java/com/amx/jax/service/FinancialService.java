@@ -6,11 +6,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.UserFinancialYear;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IFinanceYearRespository;
 import com.amx.jax.services.AbstractService;
 

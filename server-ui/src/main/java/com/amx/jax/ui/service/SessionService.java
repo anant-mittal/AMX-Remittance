@@ -20,13 +20,13 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.HttpService;
-import com.amx.jax.session.LoggedInUsers;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.jax.ui.session.LoggedInUsers;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.jax.ui.session.UserSession;
 

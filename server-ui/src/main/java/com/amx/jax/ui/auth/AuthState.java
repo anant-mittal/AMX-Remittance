@@ -1,8 +1,12 @@
 package com.amx.jax.ui.auth;
 
+import java.io.Serializable;
+
 import com.amx.utils.EnumType;
 
-public class AuthState {
+public class AuthState implements Serializable {
+
+	private static final long serialVersionUID = 6704113792186284121L;
 
 	public static enum AuthFlow implements EnumType {
 		DEFAULT, LOGIN, ACTIVATION, REGISTRATION, RESET_PASS, LOGOUT

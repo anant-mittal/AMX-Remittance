@@ -176,6 +176,12 @@ public class ResponseWrapperM<T, M> implements Serializable {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 
+	public void setMessage(WebResponseStatus status, Exception excep) {
+		this.setStatus(status);
+		this.message = excep.getMessage();
+		this.exception = excep.getClass().getName();
+	}
+
 	public M getMeta() {
 		return meta;
 	}
