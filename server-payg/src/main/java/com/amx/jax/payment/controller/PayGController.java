@@ -43,8 +43,6 @@ public class PayGController {
 
 	private static final Logger LOGGER = Logger.getLogger(PayGController.class);
 
-	private static String URL_PARAMS = "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s";
-
 	@Autowired
 	private PayGClients payGClients;
 
@@ -90,12 +88,9 @@ public class PayGController {
 		}else if (tnt.equals(Tenant.OMN)) {
 			appRedirectUrl = omnRedirectURL;
 			// this is only for testing START 
-			pg = "OMANNET";
+			//pg = "OMANNET";
 			// END   
-		}else if (tnt.equals(Tenant.KOMN)) {
-            appRedirectUrl = omnRedirectURL;
-            pg = "KOMANNET";
-        }
+		}
 
 		if (callbackd != null) {
 			byte[] decodedBytes = Base64.getDecoder().decode(callbackd);
@@ -181,6 +176,7 @@ public class PayGController {
 		    ra.addAttribute("udf4", payGResponse.getUdf4());
 		    ra.addAttribute("udf5", payGResponse.getUdf5());
 		    LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
+		    LOGGER.info("REDIRECT  --> "+ kioskOmnRedirectURL);
             return "redirect:" + kioskOmnRedirectURL;
         }else{
 		    return "thymeleaf/repback";  

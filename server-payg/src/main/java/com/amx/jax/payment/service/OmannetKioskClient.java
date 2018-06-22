@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -125,7 +124,7 @@ public class OmannetKioskClient implements PayGClient {
 		gatewayResponse.setUdf3(request.getParameter("udf3"));
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
-		gatewayResponse.setCountryId(Tenant.KOMN.getCode());
+		gatewayResponse.setCountryId(Tenant.OMN.getCode());
 
 		iPayPipe pipe = new iPayPipe(); 
 		//Initialization 
