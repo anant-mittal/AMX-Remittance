@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
@@ -59,6 +60,9 @@ public class CurrencyMasterService extends AbstractService {
 	
 	@Autowired
 	MetaService metaSerivce;
+	
+	@Autowired
+	JaxProperties jaxProperties; 
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
@@ -245,10 +249,10 @@ public class CurrencyMasterService extends AbstractService {
 		List<CurrencyMasterDTO> currencyListDto = new ArrayList<>();
 		currencyList.forEach(currency -> {
 			CurrencyMasterModel currencyMaster = allCurrencies.get(currency.getCurrencyId());
-			// enable only bene country related currencies
-		//	if (beneCountryId.equals(currencyMaster.getCountryId())) {
-				currencyListDto.add(convertModel(currencyMaster));
-		//	}
+			if (jaxProperties.getBeneThreeCountryCheck() && !beneCountryId.equals(currencyMaster.getCountryId())) {
+				return;
+			}
+			currencyListDto.add(convertModel(currencyMaster));
 		});
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(currencyListDto);

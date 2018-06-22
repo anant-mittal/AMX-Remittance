@@ -16,6 +16,11 @@ public class JaxProperties {
 
 	@Value("${jax.properties.cash.disable}")
 	Boolean cashDisable;
+	
+
+	@Value("${jax.properties.bene.threecountrycheck.enable}")
+	Boolean beneThreeCountryCheck;
+	
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -39,6 +44,14 @@ public class JaxProperties {
 
 	public void setCashDisable(Boolean cashDiable) {
 		this.cashDisable = cashDiable;
+	}
+
+	public Boolean getBeneThreeCountryCheck() {
+		return beneThreeCountryCheck;
+	}
+
+	public void setBeneThreeCountryCheck(Boolean beneThreeCountryCheck) {
+		this.beneThreeCountryCheck = beneThreeCountryCheck;
 	}
 
 }
