@@ -67,7 +67,7 @@ public class PayGController {
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
 	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
-			@RequestParam String trckid, @RequestParam String docNo, @RequestParam String docFy,
+			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam(required = false) String callbackd, Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
@@ -147,7 +147,12 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-		return "thymeleaf/repback";
+		//return "thymeleaf/repback";
+		if (paygCode.equals("OMANNET")) {
+			return "redirect:" + redirectUrl;
+		}else {
+		    return "thymeleaf/repback";  
+		}
 	}
 
 }

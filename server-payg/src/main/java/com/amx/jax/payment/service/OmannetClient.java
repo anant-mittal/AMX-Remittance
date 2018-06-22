@@ -44,6 +44,7 @@ public class OmannetClient implements PayGClient {
 		
 	@Value("${omannet.callback.url}")
 	String OmemnetCallbackUrl;
+
 	
 	@Autowired
 	HttpServletResponse response;
@@ -87,8 +88,8 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-			pipe.setErrorURL("https://paygd-omn.modernexchange.com");
-		    //pipe.setErrorURL((String) configMap.get("responseUrl"));
+		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
+		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
 			pipe.setAlias((String) configMap.get("aliasName"));
@@ -121,12 +122,11 @@ public class OmannetClient implements PayGClient {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		gatewayResponse.setRef(request.getParameter("ref"));
+		/*gatewayResponse.setRef(request.getParameter("ref"));
 		gatewayResponse.setPostDate(request.getParameter("postdate"));
 		gatewayResponse.setTrackId(request.getParameter("trackid"));
-		gatewayResponse.setTranxId(request.getParameter("tranid"));
+		gatewayResponse.setTranxId(request.getParameter("tranid"));*/
 		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
@@ -134,10 +134,47 @@ public class OmannetClient implements PayGClient {
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.OMN.getCode());
-		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
-		gatewayResponse.setError(request.getParameter("Error"));
 
+		iPayPipe pipe = new iPayPipe(); 
+		//Initialization 
+		pipe.setResourcePath(OmemnetCertpath); 
+		pipe.setKeystorePath(OmemnetCertpath);
+		pipe.setAlias(OmemnetAliasName); 
+		 
+		String errorText = request.getParameter("ErrorText");
+	    String tranresult = request.getParameter("result"); 
+		String tranData = request.getParameter("trandata");
+	    LOGGER.info("tranData : " +tranData);
+		int result = 0; 
 		
+		if (tranData != null) {
+			result = pipe.parseEncryptedRequest(request.getParameter("trandata"));
+		}
+		if (result != 0) {
+			// Merchant to Handle the error scenario
+		} else {
+			if (errorText != null) {
+				gatewayResponse.setErrorText(request.getParameter("ErrorText"));
+			}
+			if (tranresult != null) {
+				gatewayResponse.setResult(request.getParameter("result"));
+			}
+		}
+
+		if (tranData == null) {
+			// Null response from PG. Merchant to handle the error scenario
+		} else {
+			gatewayResponse.setResult(pipe.getResult());
+			gatewayResponse.setPostDate(pipe.getDate());
+			gatewayResponse.setRef(pipe.getRef());
+			gatewayResponse.setTrackId(pipe.getTrackId());
+			gatewayResponse.setTranxId(pipe.getTransId());
+			gatewayResponse.setUdf3(pipe.getUdf3());
+			gatewayResponse.setPaymentId(pipe.getPaymentId());
+			gatewayResponse.setError(pipe.getResult());
+			gatewayResponse.setErrorText(pipe.getResult());
+		}
+		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
@@ -148,10 +185,12 @@ public class OmannetClient implements PayGClient {
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-		} else {
-			gatewayResponse.setPayGStatus(PayGStatus.ERROR);
+		}	
+//		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+//			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+//		} 
+		else {
+			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
 		return gatewayResponse;
 	}
