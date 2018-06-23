@@ -670,6 +670,7 @@ public class RemittanceTransactionManager {
 		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		model.setErrorMessage(application.getErrorMessage());
 		return model;
 	}
 
