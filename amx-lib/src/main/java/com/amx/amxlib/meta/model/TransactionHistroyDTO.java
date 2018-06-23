@@ -73,11 +73,12 @@ public class TransactionHistroyDTO implements Serializable {
 	private List<BeneficiaryErrorStatusDto> beneficiaryErrorStatus;
 	
 	private String transactionReference;
-	
-	private Boolean beneIsActive;
+
     private BigDecimal bankRuleFieldId;
     
     private BigDecimal srlId;
+
+	private Boolean beneIsActive;
 	
 	
 	public String getTransactionReference() {

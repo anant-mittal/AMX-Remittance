@@ -166,7 +166,7 @@ public class BeneClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	// @Test
 	@SuppressWarnings("rawtypes")
 	public void testGetBeneficiaryAccountType() {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -180,8 +180,12 @@ public class BeneClientTest extends AbstractTestClient {
 		assertNotNull("Response is null", response);
 	}
 	
+	/**
+	 * @author Chetan Pawar
+	 * @return remove parameter beneCountryId which is not in use 11-05-2018	 
+	 */
 	//@Test
-	@SuppressWarnings("rawtypes")
+	//@SuppressWarnings("rawtypes")	
 	public void testGetBeneficiaryCountry() {
 		setDefaults();
 		ApiResponse response = null;
@@ -215,4 +219,14 @@ public class BeneClientTest extends AbstractTestClient {
         assertNotNull(response.getResult());
         assertNotNull(response.getResult().getModelType());
     }
+    
+    @Test
+  	@SuppressWarnings("rawtypes")	
+  	public void testGetBenCountryList() {
+  		setDefaults();
+  		ApiResponse response = null;
+  		response = client.getBeneficiaryCountryList();
+  		assertNotNull("Response is null", response);
+  		assertNotNull("result is null", response.getResult());
+  	}
 }
