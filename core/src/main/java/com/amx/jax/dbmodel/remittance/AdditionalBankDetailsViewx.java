@@ -8,10 +8,15 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Entity
 @Table(name = "VW_EX_ADDITIONAL_BANK_DETAILS")
-public class AdditionalBankDetailsView implements Serializable {
+public class AdditionalBankDetailsViewx implements Serializable {
 
+	private static final Logger logger = LoggerFactory.getLogger(AdditionalBankDetailsViewx.class);
+	
 	  /**
 	   * 
 	   */
@@ -32,12 +37,13 @@ public class AdditionalBankDetailsView implements Serializable {
 	  private BigDecimal deliveryId;
 	  private String fieldType;
 
-	  public AdditionalBankDetailsView() {
+	  public AdditionalBankDetailsViewx() {
 		    super();
+		    logger.info("in AdditionalBankDetailsViewx");
 
 	  }
 
-	  public AdditionalBankDetailsView(BigDecimal srlId, String flexField, BigDecimal countryId, String amiecCode, String amieceDescription, BigDecimal bankId, String bankCode, String bankDescription, BigDecimal serviceApplicabilityRuleId, BigDecimal applicationCountryId, BigDecimal currencyId,
+	  public AdditionalBankDetailsViewx(BigDecimal srlId, String flexField, BigDecimal countryId, String amiecCode, String amieceDescription, BigDecimal bankId, String bankCode, String bankDescription, BigDecimal serviceApplicabilityRuleId, BigDecimal applicationCountryId, BigDecimal currencyId,
 			      BigDecimal remittanceId, BigDecimal deliveryId, String fieldType) {
 		    super();
 		    this.srlId = srlId;
@@ -54,6 +60,7 @@ public class AdditionalBankDetailsView implements Serializable {
 		    this.remittanceId = remittanceId;
 		    this.deliveryId = deliveryId;
 		    this.fieldType = fieldType;
+		    logger.info("in AdditionalBankDetailsViewx with params");
 	  }
 
 	  @Id

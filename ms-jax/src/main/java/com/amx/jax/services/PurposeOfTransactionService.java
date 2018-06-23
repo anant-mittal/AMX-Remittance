@@ -26,7 +26,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.meta.MetaData;
@@ -131,7 +131,7 @@ public class PurposeOfTransactionService extends AbstractService {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
 							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
 									routingCountry, dyamicLabel.getFlexiField());
-							List<AdditionalBankDetailsView> listAdditionaView = additionalBankDetailsDao
+							List<AdditionalBankDetailsViewx> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
 											routingCountry, dyamicLabel.getFlexiField());
 
@@ -163,7 +163,7 @@ public class PurposeOfTransactionService extends AbstractService {
 								System.out.println("listAdditionaView:" + listAdditionaView.size());
 
 								System.out.println("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsView lst : listAdditionaView) {
+								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
 									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
 											+ lst.getAmieceDescription());
 
@@ -234,13 +234,13 @@ public class PurposeOfTransactionService extends AbstractService {
 		return listAdditionalBankDataTable;
 	}
 
-	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsView> listAdditionaView) {
+	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsViewx> listAdditionaView) {
 		List<AdditionalBankDetailsViewDto> listView = new ArrayList<>();
 		listAdditionaView.forEach(viewModel -> listView.add(convertAddModelToDto(viewModel)));
 		return listView;
 	}
 
-	private AdditionalBankDetailsViewDto convertAddModelToDto(AdditionalBankDetailsView viewModel) {
+	private AdditionalBankDetailsViewDto convertAddModelToDto(AdditionalBankDetailsViewx viewModel) {
 		AdditionalBankDetailsViewDto dto = new AdditionalBankDetailsViewDto();
 		try {
 			BeanUtils.copyProperties(dto, viewModel);
