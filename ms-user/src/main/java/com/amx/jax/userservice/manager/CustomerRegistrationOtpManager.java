@@ -117,7 +117,7 @@ public class CustomerRegistrationOtpManager {
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12",
+				throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
