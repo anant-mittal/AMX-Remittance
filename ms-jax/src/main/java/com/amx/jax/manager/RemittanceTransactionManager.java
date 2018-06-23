@@ -607,7 +607,7 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-		this.isSaveRemittanceFlow = true;      
+		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -670,6 +670,7 @@ public class RemittanceTransactionManager {
 		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		model.setErrorMessage(application.getErrorMessage());
 		return model;
 	}
 

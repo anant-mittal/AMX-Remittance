@@ -17,6 +17,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	BigDecimal netAmount;
 	TransactionHistroyDTO transactionHistroyDTO;
 	String transactionReference;
+	String errorMessage;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -54,5 +55,15 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	public void setTransactionReference(String transactionReference) {
 		this.transactionReference = transactionReference;
 	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	
+	
 
 }
