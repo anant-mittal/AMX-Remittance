@@ -155,7 +155,8 @@ public class PayGController {
 
 
 		//return "thymeleaf/repback";
-		if (paygCode.equals("OMANNET")) {
+		if (paygCode.toString().equals("OMANNET")) {
+			LOGGER.info("REDIRECT --->"+ redirectUrl);
 			return "redirect:" + redirectUrl;
 		}else {
 		    return "thymeleaf/repback";  
