@@ -83,9 +83,7 @@ public class PayGController {
 			appRedirectUrl = kwtRedirectURL;
 		}else if (tnt.equals(Tenant.OMN)) {
 			appRedirectUrl = omnRedirectURL;
-			// this is only for testing START 
-			//pg = "OMANNET";
-			// END   
+			pg = "OMANNET";
 		}
 
 		if (callbackd != null) {
