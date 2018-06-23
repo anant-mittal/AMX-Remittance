@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
@@ -42,8 +43,6 @@ public class PayGController {
 
 	private static final Logger LOGGER = Logger.getLogger(PayGController.class);
 
-	private static String URL_PARAMS = "PaymentID=%s&result=%s&auth=%s&ref=%s&postdate=%s&trackid=%s&tranid=%s&udf1=%s&udf2=%s&udf3=%s&udf4=%s&udf5=%s&doccode=%s&docno=%s&finyear=%s";
-
 	@Autowired
 	private PayGClients payGClients;
 
@@ -62,10 +61,14 @@ public class PayGController {
 	@Value("${app.url.omn}")
 	String omnRedirectURL;
 	
+	@Value("${app.url.omn.kiosk}")
+	String kioskOmnRedirectURL;
+	
 	@Autowired
 	PayGConfig payGConfig;
 
 	@RequestMapping(value = { "/payment/*", "/payment" }, method = RequestMethod.GET)
+
 	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
 			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
 			@RequestParam(required = false) String callbackd, Model model) {
@@ -80,6 +83,7 @@ public class PayGController {
 			appRedirectUrl = kwtRedirectURL;
 		}else if (tnt.equals(Tenant.OMN)) {
 			appRedirectUrl = omnRedirectURL;
+			pg = "OMANNET";
 		}
 
 		if (callbackd != null) {
@@ -118,8 +122,10 @@ public class PayGController {
 	}
 
 	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
-	public String paymentCapture(Model model, @PathVariable("tenant") Tenant tnt,
-			@PathVariable("paygCode") PayGServiceCode paygCode) {
+	public String paymentCapture( Model model, 
+	                              @PathVariable("tenant") Tenant tnt,
+			                      @PathVariable("paygCode") PayGServiceCode paygCode,
+			                      RedirectAttributes ra) {
 	    
 		TenantContextHolder.setCurrent(tnt);
 		LOGGER.info("Inside capture method with parameters tenant : " + tnt + " paygCode : " + paygCode);
@@ -147,8 +153,10 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
+
 		//return "thymeleaf/repback";
-		if (paygCode.equals("OMANNET")) {
+		if (paygCode.toString().equals("OMANNET")) {
+			LOGGER.info("REDIRECT --->"+ redirectUrl);
 			return "redirect:" + redirectUrl;
 		}else {
 		    return "thymeleaf/repback";  

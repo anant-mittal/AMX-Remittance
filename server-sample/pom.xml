@@ -8,7 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>server-admin</name>
+	<name>server-sample</name>
 	<description>Admin related services.</description>
 
 	<parent>
