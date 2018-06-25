@@ -80,7 +80,6 @@ public class LoginService {
 
 		loginData.setImageId(customerModel.getImageUrl());
 		loginData.setImageCaption(customerModel.getCaption());
-		// loginData.setAnswer(answer);
 		return loginData;
 	}
 
@@ -174,7 +173,6 @@ public class LoginService {
 					wrapper.getData().setQues(questModelDTO);
 				}
 			}
-			// wrapper.getData().setAnswer(answer);
 			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 			auditService.log(
 					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));

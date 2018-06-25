@@ -150,9 +150,7 @@ public class UserService {
 	public ResponseWrapper<UserUpdateResponse> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
 			String eOtp) {
 		ResponseWrapper<UserUpdateResponse> wrapper = new ResponseWrapper<UserUpdateResponse>(new UserUpdateData());
-		CustomerModel customerModel = jaxService.setDefaults().getUserclient()
-				.saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
-		// wrapper.getData().setSecQuesAns(customerModel.getSecurityquestions());
+		jaxService.setDefaults().getUserclient().saveSecurityQuestions(securityquestions, mOtp, eOtp).getResult();
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "Question Answer Saved Scfuly");
 		return wrapper;
 	}

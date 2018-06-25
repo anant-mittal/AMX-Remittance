@@ -89,8 +89,7 @@ public class PubController {
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
-		ResponseWrapper<ResponseMeta> wrapper = new ResponseWrapper<ResponseMeta>(new ResponseMeta());
-		return wrapper;
+		return new ResponseWrapper<>(new ResponseMeta());
 	}
 
 	/**
@@ -125,8 +124,8 @@ public class PubController {
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
-			HttpServletRequest request, Device device) throws Exception {
-		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<ServerStatus>(new ServerStatus());
+			HttpServletRequest request, Device device) {
+		ResponseWrapper<ServerStatus> wrapper = new ResponseWrapper<>(new ServerStatus());
 		Integer hits = guestSession.hitCounter();
 
 		userDevice.getType();
@@ -157,7 +156,7 @@ public class PubController {
 	 */
 	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
 	public ResponseWrapper<Email> reportUs(@RequestBody SupportEmail email) {
-		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
+		ResponseWrapper<Email> wrapper = new ResponseWrapper<>();
 		try {
 
 			if (sessionService.getUserSession().getCustomerModel() != null) {
@@ -194,7 +193,7 @@ public class PubController {
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
 	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
 			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
-		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
+		ResponseWrapper<Email> wrapper = new ResponseWrapper<>();
 		try {
 			if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
 				SupportEmail email = new SupportEmail();

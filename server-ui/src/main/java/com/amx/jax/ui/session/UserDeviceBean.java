@@ -34,10 +34,10 @@ public class UserDeviceBean extends UserDevice {
 
 	private static final long serialVersionUID = -6869375666742059912L;
 
-	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
+	private transient Logger logger = LoggerService.getLogger(getClass());
 
 	@Autowired
-	private HttpService httpService;
+	private transient HttpService httpService;
 
 	/**
 	 * Resolve.
@@ -52,7 +52,7 @@ public class UserDeviceBean extends UserDevice {
 					: (currentDevice.isTablet() ? DeviceType.TABLET : DeviceType.NORMAL));
 			this.platform = currentDevice.getDevicePlatform();
 		} else {
-			LOGGER.warn("DeviceUtils by Springframework is not able to determin UserDevice");
+			logger.warn("DeviceUtils by Springframework is not able to determin UserDevice");
 		}
 
 		this.fingerprint = httpService.getDeviceId();
@@ -234,7 +234,7 @@ public class UserDeviceBean extends UserDevice {
 	 * @return the map
 	 */
 	public Map<String, Object> toMap() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("id", getId());
 		map.put("fingerprint", fingerprint);
 		map.put("platform", platform);

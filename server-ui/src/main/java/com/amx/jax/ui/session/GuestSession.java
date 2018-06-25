@@ -49,7 +49,7 @@ public class GuestSession implements Serializable {
 	TenantContext<AuthLib> tenantContext;
 
 	@Autowired
-	AuditService auditService;
+	transient AuditService auditService;
 
 	Language language = Language.DEFAULT;
 
@@ -72,8 +72,7 @@ public class GuestSession implements Serializable {
 		this.language = lang;
 	}
 
-	/** The state. */
-	public AuthState state = new AuthState();
+	private AuthState state = new AuthState();
 
 	/**
 	 * Gets the state.
@@ -149,11 +148,9 @@ public class GuestSession implements Serializable {
 	 *            the step
 	 */
 	public void initStep(AuthStep step) {
-		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.nStep) {
 			auditService.log(new CAuthEvent(state, CAuthEvent.Result.FAIL, HttpUnauthorizedException.UN_SEQUENCE,
 					TimeUtils.timeSince(state.timestamp)));
-			// throw new HttpUnauthorizedException(HttpUnauthorizedException.UN_SEQUENCE);
 		}
 	}
 
@@ -175,12 +172,10 @@ public class GuestSession implements Serializable {
 		return state;
 	}
 
-	/** The response. */
 	@Autowired
-	private HttpServletResponse response;
+	private transient HttpServletResponse response;
 
-	/** The next token map. */
-	private Map<String, String> nextTokenMap = new HashMap<String, String>();
+	private Map<String, String> nextTokenMap = new HashMap<>();
 
 	/**
 	 * Gets the next token.
@@ -207,11 +202,10 @@ public class GuestSession implements Serializable {
 	public void validate(String curEnd, String[] validEnds) {
 		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, this.getNextToken(curEnd));
 		kooky.setMaxAge(300);
-		// kooky.setPath("/");
+		kooky.setSecure(true);
 		response.addCookie(kooky);
 	}
 
-	/** The hits. */
 	private Integer hits = 0;
 
 	/**
@@ -242,7 +236,6 @@ public class GuestSession implements Serializable {
 		return this.hits++;
 	}
 
-	/** The customer model. */
 	private CustomerModel customerModel = null;
 
 	/**
@@ -264,8 +257,7 @@ public class GuestSession implements Serializable {
 		this.customerModel = customerModel;
 	}
 
-	/** The ques index. */
-	public Integer quesIndex = 0;
+	private Integer quesIndex = 0;
 
 	/**
 	 * Gets the ques index.
@@ -300,7 +292,7 @@ public class GuestSession implements Serializable {
 	 *             the exception
 	 */
 	@PostConstruct
-	public void started() throws Exception {
+	public void started() {
 		SessionEvent evt = new SessionEvent();
 		evt.setType(SessionEvent.Type.SESSION_STARTED);
 		auditService.log(evt);
@@ -313,7 +305,7 @@ public class GuestSession implements Serializable {
 	 *             the exception
 	 */
 	@PreDestroy
-	public void ended() throws Exception {
+	public void ended() {
 		SessionEvent evt = new SessionEvent();
 		evt.setType(SessionEvent.Type.SESSION_ENDED);
 		auditService.log(evt);
