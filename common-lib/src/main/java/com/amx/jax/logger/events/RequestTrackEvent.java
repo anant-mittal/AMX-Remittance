@@ -17,14 +17,19 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class RequestTrackEvent extends AuditEvent {
 
+	private static final long serialVersionUID = -8735500343787196557L;
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestTrackEvent.class);
 
-	public static enum Type implements EnumType {
+	public static enum Type implements EventType {
 		REQT_IN, RESP_OUT, REQT_OUT, RESP_IN;
+
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 	}
 
 	private MultiValueMap<String, String> header;
@@ -104,7 +109,7 @@ public class RequestTrackEvent extends AuditEvent {
 		try {
 			this.description = String.format("%s %s=%s", this.type, response.getStatusCode(), uri);
 		} catch (IOException e) {
-			LOGGER.error("RequestTrackEvent.track while logging response out", e);
+			LOGGER.error("RequestTrackEvent.track while logging response in", e);
 			this.description = String.format("%s %s=%s", this.type, "EXCEPTION", uri);
 		}
 		this.header = response.getHeaders();

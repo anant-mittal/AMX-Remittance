@@ -14,16 +14,12 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
 @Component
 public class WebSessionListener implements HttpSessionListener {
-
-	@Autowired(required = false)
-	UserDevice userDevice;
 
 	@Autowired
 	private AppConfig appConfig;
@@ -48,12 +44,12 @@ public class WebSessionListener implements HttpSessionListener {
 			String sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 					UniqueID.generateString());
 			evt.setSessionId(sessionID);
+			AppContextUtil.setSessionId(sessionID);
 			String traceId = ContextUtil.getTraceId(true, sessionID);
 			MDC.put(ContextUtil.TRACE_ID, traceId);
 			MDC.put(TenantContextHolder.TENANT, AppContextUtil.getTenant());
 
 		}
-
 		AuditServiceClient.logStatic(evt);
 	}
 

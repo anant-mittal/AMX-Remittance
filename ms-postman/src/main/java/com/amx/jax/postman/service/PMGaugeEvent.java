@@ -8,11 +8,12 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.amx.utils.EnumType;
 
 public class PMGaugeEvent extends AuditEvent {
 
-	public static enum Type implements EnumType {
+	private static final long serialVersionUID = -6667775998834926934L;
+
+	public static enum Type implements EventType {
 		PM_EVENT,
 		// Sms Events
 		SMS_SENT_NOT, SMS_SENT_SUCCESS, SMS_SENT_ERROR,
@@ -21,7 +22,12 @@ public class PMGaugeEvent extends AuditEvent {
 		// PDF Events
 		PDF_CREATED, PDF_ERROR,
 		// NOTIFCATION Events
-		NOTIFCATION_ANDROID, NOTIFCATION_IOS, NOTIFCATION_WEB
+		NOTIFCATION_ANDROID, NOTIFCATION_IOS, NOTIFCATION_WEB;
+
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 
 	}
 
@@ -33,7 +39,7 @@ public class PMGaugeEvent extends AuditEvent {
 		super();
 	}
 
-	public PMGaugeEvent(EnumType type) {
+	public PMGaugeEvent(EventType type) {
 		super(type);
 	}
 

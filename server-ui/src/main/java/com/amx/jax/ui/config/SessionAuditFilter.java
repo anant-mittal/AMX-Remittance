@@ -2,6 +2,9 @@ package com.amx.jax.ui.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditFilter;
@@ -16,14 +19,16 @@ public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 
 	@Override
 	public void doFilter(SessionEvent event) {
-		if(userDevice!=null) {
-			if (userDevice.getFingerprint() == null) {
-				userDevice.resolve();
-			}
-			event.setDevice(userDevice.toMap());
-		}
 		event.setSessionId(AppContextUtil.getSessionId());
-		
+		RequestAttributes attribs = RequestContextHolder.getRequestAttributes();
+		if (attribs instanceof NativeWebRequest) {
+			if (userDevice != null) {
+				if (userDevice.getFingerprint() == null) {
+					userDevice.resolve();
+				}
+				event.setDevice(userDevice.toMap());
+			}
+		}
 	}
 
 }

@@ -17,7 +17,6 @@ public class TunnelService implements ITunnelService {
 
 	public <T> void send(String topic, T messagePayload) {
 		RTopic<T> topicQueue = redisson.getTopic(topic);
-		LOGGER.info("======send===");
 		topicQueue.publish(messagePayload);
 	}
 

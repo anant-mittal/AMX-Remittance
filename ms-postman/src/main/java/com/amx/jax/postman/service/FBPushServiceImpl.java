@@ -102,7 +102,7 @@ public class FBPushServiceImpl implements FBPushService {
 			}
 			auditServiceClient.gauge(pMGaugeEvent.fillDetail(type, msg, message, response));
 		} catch (PostManException e) {
-			auditServiceClient.fail(pMGaugeEvent.fillDetail(type, msg, message, null));
+			auditServiceClient.gauge(pMGaugeEvent.fillDetail(type, msg, message, null));
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent.fillDetail(type, msg, message, null));
 		}
