@@ -72,17 +72,6 @@ public class AuditServiceClient implements AuditService {
 		}
 	}
 
-	private static Marker getMarker(AuditEvent event) {
-		if (event.getType().marker() == EventMarker.TRACK) {
-			return trackmarker;
-		} else if (event.getType().marker() == EventMarker.GAUGE) {
-			return gaugemarker;
-		} else if (event.getType().marker() == EventMarker.EXCEP) {
-			return excepmarker;
-		}
-		return auditmarker;
-	}
-
 	private static AuditEvent captureException(AuditEvent event, Exception e) {
 		event.setExceptionType(e.getClass().getName());
 		event.setException(e.getMessage());
@@ -100,26 +89,23 @@ public class AuditServiceClient implements AuditService {
 		return event;
 	}
 
-	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
+	public static void publishAbstractEvent(Map<String, Object> map) {
+		AppContext appContext = AppContextUtil.getContext();
+		map.put("traceId", appContext.getTraceId());
+		map.put("tranxId", appContext.getTranxId());
+		map.put("tenant", appContext.getTenant());
+		ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+	}
 
+	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
 		event.setComponent(appName);
 		String json = JsonUtil.toJson(event);
-
 		LOGGER.info(marker, json);
-
 		if (capture && ITUNNEL_SERVICE != null) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
-
-			AppContext appContext = AppContextUtil.getContext();
-
-			map.put("traceId", appContext.getTraceId());
-			map.put("tranxId", appContext.getTranxId());
-			map.put("tenant", appContext.getTenant());
-
-			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+			publishAbstractEvent(map);
 		}
-
 		return null;
 	}
 
@@ -157,7 +143,18 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		return logAuditEvent(getMarker(event), event, true);
+		Marker marker = auditmarker;
+		boolean capture = false;
+		if (event.getType().marker() == EventMarker.TRACK) {
+			marker = trackmarker;
+		} else if (event.getType().marker() == EventMarker.GAUGE) {
+			marker = gaugemarker;
+		} else if (event.getType().marker() == EventMarker.EXCEP) {
+			marker = excepmarker;
+		} else {
+			capture = true;
+		}
+		return logAuditEvent(marker, event, capture);
 	}
 
 	@Override
