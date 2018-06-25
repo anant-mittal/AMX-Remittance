@@ -21,21 +21,16 @@ import com.amx.jax.ui.session.UserSession;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserBean implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
-	/** The Constant LOG. */
 	private static final Logger LOG = Logger.getLogger(UserBean.class);
 
-	/** The user session. */
 	@Autowired
 	private UserSession userSession;
 
-	/** The tenant context. */
 	@Autowired
 	private TenantService tenantService;
 
-	/** The default for currency. */
 	CurrencyMasterDTO defaultForCurrency;
 
 	/**
