@@ -173,6 +173,7 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
 			gatewayResponse.setError(pipe.getResult());
 			gatewayResponse.setErrorText(pipe.getResult());
+			gatewayResponse.setUdf5(pipe.getResponseCode());
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
