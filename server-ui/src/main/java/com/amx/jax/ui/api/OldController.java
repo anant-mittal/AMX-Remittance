@@ -25,6 +25,12 @@ import com.amx.jax.ui.service.SessionService;
 
 import io.swagger.annotations.Api;
 
+/**
+ * @deprecated Only for backward compatibility
+ * 
+ * @author lalittanwar
+ *
+ */
 @RestController
 @Api(value = "Deprecated Auth APIs")
 @Deprecated
@@ -50,7 +56,6 @@ public class OldController {
 	 * @param password
 	 * @return
 	 */
-	@Deprecated
 	@RequestMapping(value = "/pub/user/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(
 			@RequestParam(required = false) @Pattern(regexp = AppConstants.Validator.IDENTITY) String identity,
@@ -58,13 +63,11 @@ public class OldController {
 		return loginService.login(identity, password);
 	}
 
-	@Deprecated
 	@RequestMapping(value = "/pub/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> loginSecQues(@RequestBody SecurityQuestionModel guestanswer) {
 		return loginService.loginSecQues(guestanswer, null);
 	}
 
-	@Deprecated
 	@RequestMapping(value = "/pub/user/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> initReset(@RequestParam String identity,
 			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp) {
@@ -75,14 +78,12 @@ public class OldController {
 		}
 	}
 
-	@Deprecated
 	@RequestMapping(value = "/pub/user/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPassword(@RequestParam(required = false) String oldPassword,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return loginService.updatepwd(password, mOtp, eOtp);
 	}
 
-	@Deprecated
 	@RequestMapping(value = "/pub/user/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
@@ -95,7 +96,6 @@ public class OldController {
 	 * @param request
 	 * @return
 	 */
-	@Deprecated
 	@RequestMapping(value = "/api/secques/get", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues(false);
@@ -105,7 +105,6 @@ public class OldController {
 	 * @param securityquestions
 	 * @return
 	 */
-	@Deprecated
 	@RequestMapping(value = "/api/secques/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> postSecQues(@RequestBody UserUpdateData userUpdateData) {
 		return registrationService.updateSecQues(userUpdateData.getSecQuesAns(), userUpdateData.getmOtp(),
@@ -120,7 +119,6 @@ public class OldController {
 	 * @param eOtp
 	 * @return
 	 */
-	@Deprecated
 	@RequestMapping(value = "/api/phising/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestParam String imageUrl, @RequestParam String caption,
 			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
@@ -135,7 +133,6 @@ public class OldController {
 	 * @param eOtp
 	 * @return
 	 */
-	@Deprecated
 	@RequestMapping(value = "/api/creds/set", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> saveLoginIdAndPassword(@RequestParam String loginId,
 			@RequestParam String password, @RequestParam String mOtp, @RequestParam(required = false) String eOtp,
