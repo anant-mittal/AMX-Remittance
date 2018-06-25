@@ -19,16 +19,12 @@ import com.amx.jax.logger.AuditActor;
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserSession implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6354887590466374869L;
 
-	/** The valid. */
 	private boolean valid = false;
 
-	/** The uuid token. */
 	private String uuidToken = null;
 
-	/** The referrer. */
 	private String referrer = null;
 
 	/**
@@ -69,7 +65,6 @@ public class UserSession implements Serializable {
 		this.uuidToken = uuidToken;
 	}
 
-	/** The customer model. */
 	private CustomerModel customerModel = null;
 
 	/**

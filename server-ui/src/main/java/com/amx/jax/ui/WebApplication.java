@@ -101,8 +101,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {
-		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
-		return metaInfo;
+		return new com.amx.jax.amxlib.model.JaxMetaInfo();
 	}
 
 }

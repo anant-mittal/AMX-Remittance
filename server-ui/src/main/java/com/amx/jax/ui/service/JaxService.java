@@ -28,55 +28,38 @@ import com.amx.utils.ContextUtil;
 @Component
 public class JaxService extends AbstractJaxServiceClient {
 
-	/** The log. */
 	private Logger log = LoggerFactory.getLogger(getClass());
 
-	/** The Constant DEFAULT_COMPANY_ID. */
 	public static final String DEFAULT_COMPANY_ID = "1";
 
-	/** The Constant DEFAULT_CURRENCY_ID. */
 	public static final String DEFAULT_CURRENCY_ID = "1";
 
-	/** The Constant DEFAULT_COUNTRY_BRANCH_ID. */
 	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
 
-	/** The jax meta info. */
-	@Autowired
-	private JaxMetaInfo jaxMetaInfo;
-
-	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
-	/** The userclient. */
 	@Autowired
 	private UserClient userclient;
 
-	/** The remit client. */
 	@Autowired
 	private RemitClient remitClient;
 
-	/** The x rate client. */
 	@Autowired
 	private ExchangeRateClient xRateClient;
 
-	/** The bene client. */
 	@Autowired
 	private BeneClient beneClient;
 
-	/** The rate alert client. */
 	@Autowired
 	private RateAlertClient rateAlertClient;
 
-	/** The jax field client. */
 	@Autowired
 	private JaxFieldClient jaxFieldClient;
 
-	/** The place order client. */
 	@Autowired
 	PlaceOrderClient placeOrderClient;
 
-	/** The customer registration client. */
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
 

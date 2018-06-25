@@ -18,10 +18,8 @@ import com.amx.utils.ContextUtil;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TransactionService implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6736161939905010395L;
 
-	/** The transaction id. */
 	String transactionId = null;
 
 	/**

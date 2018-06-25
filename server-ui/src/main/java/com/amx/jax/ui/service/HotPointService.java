@@ -26,7 +26,7 @@ public class HotPointService {
 	 */
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	@JsonPropertyOrder({ "latitude", "longitude" })
-	public static enum HotPoints {
+	public enum HotPoints {
 
 		/** The salmiya2. */
 		SALMIYA2(" 29.331993", "48.061422"),
@@ -68,32 +68,12 @@ public class HotPointService {
 		}
 
 		/**
-		 * Sets the latitude.
-		 *
-		 * @param latitude
-		 *            the new latitude
-		 */
-		public void setLatitude(String latitude) {
-			this.latitude = latitude;
-		}
-
-		/**
 		 * Gets the longitude.
 		 *
 		 * @return the longitude
 		 */
 		public String getLongitude() {
 			return longitude;
-		}
-
-		/**
-		 * Sets the longitude.
-		 *
-		 * @param longitude
-		 *            the new longitude
-		 */
-		public void setLongitude(String longitude) {
-			this.longitude = longitude;
 		}
 
 		/**
@@ -105,15 +85,6 @@ public class HotPointService {
 			return id;
 		}
 
-		/**
-		 * Sets the id.
-		 *
-		 * @param id
-		 *            the new id
-		 */
-		public void setId(String id) {
-			this.id = id;
-		}
 	}
 
 	/** The jax service. */
@@ -139,7 +110,7 @@ public class HotPointService {
 	 */
 	// @Async
 	public List<String> notify(BigDecimal customerId) throws PostManException {
-		List<String> messages = new ArrayList<String>();
+		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
 				.getResults();
 

@@ -184,7 +184,6 @@ public class SessionService {
 		if (userSession.getCustomerModel() == null) {
 			return null;
 		}
-		// BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
 		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), guestSession.getIdentity());
 
 	}
@@ -211,7 +210,6 @@ public class SessionService {
 	 */
 	public void unIndexUser() {
 		if (guestSession.getIdentity() != null) {
-			// BigDecimal customerId = guestSession.getCustomerModel().getCustomerId();
 			String userKeyString = String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(),
 					guestSession.getIdentity());
 			if (userKeyString != null) {

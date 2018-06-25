@@ -47,12 +47,6 @@ public class WebAuthFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-		// HttpServletRequest httpRequest = (HttpServletRequest) req;
-		// System.out.println(
-		// "===[" + httpRequest.getRequestedSessionId() + "]=====[" +
-		// httpRequest.isRequestedSessionIdValid()
-		//
-		// + "]===========[" + sessionService.getUserSession().isValid());
 
 		if (!sessionService.validateSessionUnique()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);

@@ -138,7 +138,6 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<ResponseError> errors = new ArrayList<ResponseError>();
 		ResponseError newError = new ResponseError();
-		// newError.setField(exception.get);
 		newError.setDescription(HttpService.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);

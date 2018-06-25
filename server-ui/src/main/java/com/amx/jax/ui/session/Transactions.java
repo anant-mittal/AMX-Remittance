@@ -16,10 +16,8 @@ import com.amx.jax.ui.response.ResponseWrapper;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class Transactions implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -7266836144833483130L;
 
-	/** The transaction id. */
 	protected String transactionId = null;
 
 	/**
