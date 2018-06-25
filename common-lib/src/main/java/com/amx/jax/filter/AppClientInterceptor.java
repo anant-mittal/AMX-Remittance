@@ -24,14 +24,14 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 
-		AppContextUtil.importHeadersTo(request.getHeaders());
+		AppContextUtil.exportAppContextTo(request.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));
 		
 		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {
 			LOGGER.info("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
 		}
 		ClientHttpResponse response = execution.execute(request, body);
-		AppContextUtil.exportHeadersFrom(response.getHeaders());
+		AppContextUtil.importAppContextFrom(response.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(response, request));
 
 		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {

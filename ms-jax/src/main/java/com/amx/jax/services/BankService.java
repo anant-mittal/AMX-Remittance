@@ -13,7 +13,7 @@ import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IBankAccountLengthDao;
@@ -47,10 +47,10 @@ public class BankService {
 		return swift;
 	}
 
-	public AdditionalBankDetailsView getAdditionalBankDetail(BigDecimal srlId, BigDecimal currencyId, BigDecimal bankId,
+	public AdditionalBankDetailsViewx getAdditionalBankDetail(BigDecimal srlId, BigDecimal currencyId, BigDecimal bankId,
 			BigDecimal remittanceModeId, BigDecimal deleveryModeId) {
 
-		List<AdditionalBankDetailsView> additionalBankDetails = bankDetailsDao.getAdditionalBankDetails(srlId,
+		List<AdditionalBankDetailsViewx> additionalBankDetails = bankDetailsDao.getAdditionalBankDetails(srlId,
 				currencyId, bankId, remittanceModeId, deleveryModeId);
 		return additionalBankDetails.get(0);
 	}

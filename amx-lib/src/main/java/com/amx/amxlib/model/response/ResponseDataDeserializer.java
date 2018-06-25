@@ -233,12 +233,12 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
 			});
 			break;
+		case "place-order-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>(){});
+			break;	
 		case "min-max-exrate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});
-			
-		case "place-order-dto":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>(){});
 			break;	
 	}
 		responseData.setValues(models);

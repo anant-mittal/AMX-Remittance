@@ -100,7 +100,6 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	// CountryMasterDTO
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
 		try {
@@ -382,11 +381,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @return CurrencyMasterDTO
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
-			BigDecimal serviceGroupId, BigDecimal routingBankId) {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {	
+	  ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
+
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
 					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
 					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);

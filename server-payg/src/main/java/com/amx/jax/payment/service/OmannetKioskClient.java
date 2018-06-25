@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -23,9 +22,9 @@ import com.amx.utils.JsonUtil;
 import com.fss.plugin.iPayPipe;
 
 @Component
-public class OmannetClient implements PayGClient {
+public class OmannetKioskClient implements PayGClient {
 
-	private static final Logger LOGGER = Logger.getLogger(OmannetClient.class);
+	private static final Logger LOGGER = Logger.getLogger(OmannetKioskClient.class);
 	
 	@Value("${omannet.certificate.path}")
 	String OmemnetCertpath;
@@ -55,12 +54,9 @@ public class OmannetClient implements PayGClient {
 	@Autowired
 	PayGConfig payGConfig;
 	
-	@Autowired
-	private PaymentService paymentService;
-	
 	@Override
 	public PayGServiceCode getClientCode() {
-		return PayGServiceCode.OMANNET;
+		return PayGServiceCode.KOMANNET;
 	}
 
 	@Override
@@ -72,7 +68,7 @@ public class OmannetClient implements PayGClient {
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
 		configMap.put("responseUrl",
-				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
+				OmemnetCallbackUrl+"/app/capture/KOMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
@@ -116,17 +112,12 @@ public class OmannetClient implements PayGClient {
 		
 	}
 
-	@SuppressWarnings("finally")
 	@Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		/*gatewayResponse.setRef(request.getParameter("ref"));
-		gatewayResponse.setPostDate(request.getParameter("postdate"));
-		gatewayResponse.setTrackId(request.getParameter("trackid"));
-		gatewayResponse.setTranxId(request.getParameter("tranid"));*/
 		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
@@ -173,24 +164,13 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
 			gatewayResponse.setError(pipe.getResult());
 			gatewayResponse.setErrorText(pipe.getResult());
-			gatewayResponse.setUdf5(pipe.getResponseCode());
 		}
 		 
-		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
-
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		LOGGER.info("Params captured from OMANNET KIOSK : " + JsonUtil.toJson(gatewayResponse));
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		}	
-//		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-//			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-//		} 
-		else {
+		} else {
 			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
 		return gatewayResponse;

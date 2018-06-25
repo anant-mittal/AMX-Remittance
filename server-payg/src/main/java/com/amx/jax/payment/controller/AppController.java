@@ -32,7 +32,11 @@ public class AppController {
 
 		model.addAttribute("page", page);
 		model.addAttribute("callback", payGSession.getCallback());
-		if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
+	/*	if (payGSession.getCallback() != null && !Constants.defaultString.equals(payGSession.getCallback())) {
+			return "redirect:" + payGSession.getCallback();
+		}*/
+		
+		if (payGSession.getCallback() != null) {
 			return "redirect:" + payGSession.getCallback();
 		}
 		return "thymeleaf/pg_response";

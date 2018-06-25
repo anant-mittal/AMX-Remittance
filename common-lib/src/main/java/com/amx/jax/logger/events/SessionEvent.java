@@ -4,14 +4,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class SessionEvent extends AuditEvent {
 
 	private static final long serialVersionUID = 6277691611931240782L;
 
-	public static enum Type implements EnumType {
+	public static enum Type implements EventType {
 		SESSION_CREATED, SESSION_STARTED, SESSION_AUTHED, SESSION_EXPIRED, SESSION_UNAUTHED, SESSION_ENDED, SESSION_DESTROYED;
+
+		@Override
+		public EventMarker marker() {
+			if (this == SESSION_AUTHED || this == SESSION_EXPIRED || this == SESSION_UNAUTHED) {
+				return EventMarker.AUDIT;
+			}
+			return EventMarker.GAUGE;
+		}
 	}
 
 	Map<String, Object> device = new HashMap<String, Object>();

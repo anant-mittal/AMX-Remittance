@@ -109,7 +109,8 @@ public class AuditReporter extends ScheduledReporter {
 	@Override
 	public void report(SortedMap<String, Gauge> gauges, SortedMap<String, Counter> counters,
 			SortedMap<String, Histogram> histograms, SortedMap<String, Meter> meters, SortedMap<String, Timer> timers) {
-		AuditServiceClient.logStatic(metermarker, new ActuatorEvent(gauges, counters, histograms, meters, timers));
+		AuditServiceClient.logAbstractEvent(metermarker,
+				new ActuatorEvent(gauges, counters, histograms, meters, timers), false);
 	}
 
 }

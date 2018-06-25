@@ -1,7 +1,7 @@
 package com.amx.jax.dict;
 
 public enum PayGServiceCode {
-	KNET("knet"), BENEFIT("benefit"), OMANNET("omannet");
+	KNET("knet"), BENEFIT("benefit"), OMANNET("omannet"),KOMANNET("komannet");
 
 	public static final PayGServiceCode DEFAULT = KNET;
 

@@ -58,7 +58,7 @@ public class JaxService extends AbstractJaxServiceClient {
 	private JaxFieldClient jaxFieldClient;
 
 	@Autowired
-	private PlaceOrderClient placeOrderClient;
+	PlaceOrderClient placeOrderClient;
 
 	@Autowired
 	CustomerRegistrationClient customerRegistrationClient;
