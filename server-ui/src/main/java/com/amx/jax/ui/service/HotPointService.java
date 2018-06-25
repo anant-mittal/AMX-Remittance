@@ -5,13 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.PushMessage;
