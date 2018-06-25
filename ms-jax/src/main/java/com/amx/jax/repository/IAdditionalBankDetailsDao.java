@@ -12,7 +12,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 
 public interface IAdditionalBankDetailsDao extends JpaRepository<AdditionalBankDetailsViewx, Serializable> {
 
-	@Query("select a from AdditionalBankDetailsView a where a.currencyId=?1 and a.bankId=?2 "
+	@Query("select a from AdditionalBankDetailsViewx a where a.currencyId=?1 and a.bankId=?2 "
 			+ " and a.remittanceId=?3 and a.deliveryId=?4 and a.countryId=?5 "
 			+ " and a.flexField=?6")
 	public List<AdditionalBankDetailsViewx> getAdditionalBankDetails(BigDecimal currencyId, BigDecimal bankId,
