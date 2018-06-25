@@ -6,6 +6,9 @@ import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.web.context.AbstractHttpSessionApplicationInitializer;
 
+/**
+ * The Class RedissonHttpSessionConfig.
+ */
 @Configuration
 // @EnableRedissonHttpSession
 @ConditionalOnProperty("app.cache.session")

@@ -35,39 +35,57 @@ import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * The Class PubController.
+ */
 @RestController
 @Api(value = "Public APIs")
 public class PubController {
 
+	/** The Constant log. */
 	private static final Logger log = LoggerFactory.getLogger(PubController.class);
 
+	/** The env. */
 	@Autowired
 	private AppEnvironment env;
 
+	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
 
+	/** The geo location service. */
 	@Autowired
 	private GeoLocationService geoLocationService;
 
+	/** The guest session. */
 	@Autowired
 	private GuestSession guestSession;
 
+	/** The http service. */
 	@Autowired
 	private HttpService httpService;
 
+	/** The user device. */
 	@Autowired
 	private UserDeviceBean userDevice;
 
+	/** The calc libs. */
 	@Autowired
 	private CalcLibs calcLibs;
 
+	/** The app config. */
 	@Autowired
 	private AppConfig appConfig;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/**
+	 * Tranxhistory.
+	 *
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "List of All Possible Codes")
 	@RequestMapping(value = "/pub/meta/status/list", method = { RequestMethod.POST })
 	public ResponseWrapper<ResponseMeta> tranxhistory() {
@@ -75,12 +93,34 @@ public class PubController {
 		return wrapper;
 	}
 
+	/**
+	 * Gets the location.
+	 *
+	 * @return the location
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@ApiOperation(value = "Current Location ofr client")
 	@RequestMapping(value = "/pub/location", method = { RequestMethod.GET })
 	public GeoLocation getLocation() throws PostManException {
 		return geoLocationService.getLocation(httpService.getIPAddress());
 	}
 
+	/**
+	 * Status.
+	 *
+	 * @param tnt
+	 *            the tnt
+	 * @param httpSession
+	 *            the http session
+	 * @param request
+	 *            the request
+	 * @param device
+	 *            the device
+	 * @return the response wrapper
+	 * @throws Exception
+	 *             the exception
+	 */
 	@Timed
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
@@ -108,6 +148,13 @@ public class PubController {
 		return wrapper;
 	}
 
+	/**
+	 * Report us.
+	 *
+	 * @param email
+	 *            the email
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/report", method = { RequestMethod.POST })
 	public ResponseWrapper<Email> reportUs(@RequestBody SupportEmail email) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<Email>();
@@ -129,6 +176,21 @@ public class PubController {
 		return wrapper;
 	}
 
+	/**
+	 * Contact us.
+	 *
+	 * @param name
+	 *            the name
+	 * @param cemail
+	 *            the cemail
+	 * @param cphone
+	 *            the cphone
+	 * @param message
+	 *            the message
+	 * @param verify
+	 *            the verify
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/contact", method = { RequestMethod.POST })
 	public ResponseWrapper<Email> contactUs(@RequestParam String name, @RequestParam String cemail,
 			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {

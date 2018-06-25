@@ -26,16 +26,28 @@ import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import eu.bitwalker.useragentutils.Version;
 
+/**
+ * The Class UserDeviceBean.
+ */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserDeviceBean extends UserDevice implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6869375666742059912L;
+
+	/** The logger. */
 	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
 
+	/** The http service. */
 	@Autowired
 	private HttpService httpService;
 
+	/**
+	 * Resolve.
+	 *
+	 * @return the user device
+	 */
 	public UserDevice resolve() {
 		Device currentDevice = httpService.getCurrentDevice();
 		this.ip = httpService.getIPAddress();
@@ -49,7 +61,7 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 
 		this.fingerprint = httpService.getDeviceId();
 		UserAgent userAgent = httpService.getUserAgent();
-		
+
 		if (this.id == null) {
 			String idn = null;
 			if (this.fingerprint != null) {
@@ -103,6 +115,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return this;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getFingerprint()
+	 */
 	@Override
 	public String getFingerprint() {
 		if (type == null) {
@@ -111,6 +128,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return fingerprint;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getId()
+	 */
 	@Override
 	public String getId() {
 		if (type == null) {
@@ -119,6 +141,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return id;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getAppVersion()
+	 */
 	@Override
 	public String getAppVersion() {
 		if (type == null) {
@@ -127,6 +154,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return appVersion;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getIp()
+	 */
 	@Override
 	public String getIp() {
 		if (type == null) {
@@ -135,6 +167,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return ip;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getType()
+	 */
 	@Override
 	public DeviceType getType() {
 		if (type == null) {
@@ -143,6 +180,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return type;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getPlatform()
+	 */
 	@Override
 	public DevicePlatform getPlatform() {
 		if (type == null) {
@@ -151,6 +193,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return platform;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getOperatingSystem()
+	 */
 	@Override
 	public OperatingSystem getOperatingSystem() {
 		if (type == null) {
@@ -159,6 +206,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return operatingSystem;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getBrowser()
+	 */
 	@Override
 	public Browser getBrowser() {
 		if (type == null) {
@@ -167,6 +219,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return browser;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getBrowserVersion()
+	 */
 	@Override
 	public Version getBrowserVersion() {
 		if (type == null) {
@@ -175,6 +232,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return browserVersion;
 	}
 
+	/**
+	 * To map.
+	 *
+	 * @return the map
+	 */
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("id", getId());
@@ -190,6 +252,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return map;
 	}
 
+	/**
+	 * To user device.
+	 *
+	 * @return the user device
+	 */
 	public UserDevice toUserDevice() {
 		UserDeviceBean device = new UserDeviceBean();
 		device.setId(getId());

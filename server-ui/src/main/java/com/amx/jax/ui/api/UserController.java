@@ -37,40 +37,62 @@ import com.codahale.metrics.annotation.Timed;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * The Class UserController.
+ */
 @RestController
 @Api(value = "User APIs")
 public class UserController {
 
+	/** The login service. */
 	@Autowired
 	private LoginService loginService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The user service. */
 	@Autowired
 	private UserService userService;
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The tenant context. */
 	@Autowired
 	private TenantService tenantContext;
 
+	/** The http service. */
 	@Autowired
 	private HttpService httpService;
 
+	/** The app config. */
 	@Autowired
 	private AppConfig appConfig;
 
+	/** The web app config. */
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	/** The fb push client. */
 	@Autowired
 	private FBPushClient fbPushClient;
 
+	/** The hot point service. */
 	@Autowired
 	private HotPointService hotPointService;
 
+	/**
+	 * Gets the meta.
+	 *
+	 * @param appType
+	 *            the app type
+	 * @param appVersion
+	 *            the app version
+	 * @return the meta
+	 */
 	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
@@ -113,12 +135,34 @@ public class UserController {
 		return wrapper;
 	}
 
+	/**
+	 * Me notify.
+	 *
+	 * @param token
+	 *            the token
+	 * @param hotpoint
+	 *            the hotpoint
+	 * @param customerId
+	 *            the customer id
+	 * @return the response wrapper
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint,
 			@RequestParam BigDecimal customerId) throws PostManException {
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId));
 	}
 
+	/**
+	 * Register notify.
+	 *
+	 * @param token
+	 *            the token
+	 * @return the response wrapper
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
 		for (String topic : userService.getNotifyTopics("")) {
@@ -127,16 +171,41 @@ public class UserController {
 		return new ResponseWrapper<Object>();
 	}
 
+	/**
+	 * Unregister notify.
+	 *
+	 * @param token
+	 *            the token
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/notify/unregister", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> unregisterNotify(@RequestParam String token) {
 		return new ResponseWrapper<Object>();
 	}
 
+	/**
+	 * Profile.
+	 *
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/profile", method = { RequestMethod.POST })
 	public ResponseWrapper<CustomerDto> profile() {
 		return userService.getProfileDetails();
 	}
 
+	/**
+	 * Change password.
+	 *
+	 * @param oldPassword
+	 *            the old password
+	 * @param password
+	 *            the password
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	@Deprecated
 	@ApiOperation(value = "Old API to update password with Form")
 	@RequestMapping(value = "/api/user/password", method = {
@@ -146,6 +215,13 @@ public class UserController {
 		return userService.updatepwd(password, mOtp, eOtp);
 	}
 
+	/**
+	 * Change password JSON.
+	 *
+	 * @param userUpdateRequest
+	 *            the user update request
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "new API to update password with Object")
 	@RequestMapping(value = "/api/user/password/**", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateResponse> changePasswordJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
@@ -153,6 +229,17 @@ public class UserController {
 				userUpdateRequest.geteOtp());
 	}
 
+	/**
+	 * Update email.
+	 *
+	 * @param email
+	 *            the email
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	@Deprecated
 	@RequestMapping(value = "/api/user/email", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -161,12 +248,30 @@ public class UserController {
 		return userService.updateEmail(email, mOtp, eOtp);
 	}
 
+	/**
+	 * Update email JSON.
+	 *
+	 * @param userUpdateRequest
+	 *            the user update request
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/email/**", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateResponse> updateEmailJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
 		return userService.updateEmail(userUpdateRequest.getEmail(), userUpdateRequest.getmOtp(),
 				userUpdateRequest.geteOtp());
 	}
 
+	/**
+	 * Update phone.
+	 *
+	 * @param phone
+	 *            the phone
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	@Deprecated
 	@RequestMapping(value = "/api/user/phone", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -175,6 +280,13 @@ public class UserController {
 		return userService.updatePhone(phone, mOtp, eOtp);
 	}
 
+	/**
+	 * Update phone JSON.
+	 *
+	 * @param userUpdateRequest
+	 *            the user update request
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/phone/**", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateResponse> updatePhoneJSON(@RequestBody UserUpdateRequest userUpdateRequest) {
 		return userService.updatePhone(userUpdateRequest.getPhone(), userUpdateRequest.getmOtp(),
@@ -182,8 +294,11 @@ public class UserController {
 	}
 
 	/**
-	 * @param securityquestions
-	 * @return
+	 * Reg sec ques.
+	 *
+	 * @param userUpdateData
+	 *            the user update data
+	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/user/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateResponse> regSecQues(@RequestBody UserUpdateRequest userUpdateData) {
@@ -191,12 +306,28 @@ public class UserController {
 				userUpdateData.geteOtp());
 	}
 
+	/**
+	 * Update phising.
+	 *
+	 * @param userUpdateData
+	 *            the user update data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/phising", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> updatePhising(@RequestBody UserUpdateRequest userUpdateData) {
 		return userService.updatePhising(userUpdateData.getImageUrl(), userUpdateData.getCaption(),
 				userUpdateData.getmOtp(), userUpdateData.geteOtp());
 	}
 
+	/**
+	 * Send OTP.
+	 *
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/user/otpsend", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String eOtp) {

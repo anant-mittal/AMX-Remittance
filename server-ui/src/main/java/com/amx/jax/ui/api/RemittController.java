@@ -54,31 +54,46 @@ import com.amx.utils.JsonUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * The Class RemittController.
+ */
 @RestController
 @Api(value = "Remote APIs")
 public class RemittController {
 
+	/** The response. */
 	@Autowired
 	private HttpServletResponse response;
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The tenant context. */
 	@Autowired
 	private TenantService tenantContext;
 
+	/** The user bean. */
 	@Autowired
 	private UserBean userBean;
 
+	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
 
+	/** The pay G service. */
 	@Autowired
 	private PayGService payGService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/**
+	 * Tranxhistory.
+	 *
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<TransactionHistroyDTO>> tranxhistory() {
@@ -86,6 +101,21 @@ public class RemittController {
 				jaxService.setDefaults().getRemitClient().getTransactionHistroy("2017", null, null, null).getResults());
 	}
 
+	/**
+	 * Send history.
+	 *
+	 * @param fromDate
+	 *            the from date
+	 * @param toDate
+	 *            the to date
+	 * @param docfyr
+	 *            the docfyr
+	 * @return the response wrapper
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.GET })
 	public ResponseWrapper<List<TransactionHistroyDTO>> sendHistory(@RequestParam String fromDate,
 			@RequestParam String toDate, @RequestParam(required = false) String docfyr)
@@ -111,6 +141,17 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Prints the history.
+	 *
+	 * @param wrapper
+	 *            the wrapper
+	 * @return the response wrapper
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@ApiOperation(value = "Returns transaction history")
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
@@ -120,6 +161,21 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Tranxreport.
+	 *
+	 * @param tranxDTO
+	 *            the tranx DTO
+	 * @param duplicate
+	 *            the duplicate
+	 * @param skipd
+	 *            the skipd
+	 * @return the string
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@ApiOperation(value = "Returns transaction reciept")
 	@RequestMapping(value = "/api/user/tranx/report", method = { RequestMethod.POST })
 	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
@@ -139,6 +195,27 @@ public class RemittController {
 		return JsonUtil.toJson(file);
 	}
 
+	/**
+	 * Tranxreport ext.
+	 *
+	 * @param collectionDocumentNo
+	 *            the collection document no
+	 * @param collectionDocumentFinYear
+	 *            the collection document fin year
+	 * @param collectionDocumentCode
+	 *            the collection document code
+	 * @param customerReference
+	 *            the customer reference
+	 * @param ext
+	 *            the ext
+	 * @param duplicate
+	 *            the duplicate
+	 * @return the string
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
@@ -172,6 +249,15 @@ public class RemittController {
 		}
 	}
 
+	/**
+	 * Xrate.
+	 *
+	 * @param forCur
+	 *            the for cur
+	 * @param domAmount
+	 *            the dom amount
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/xrate", method = { RequestMethod.POST })
 	public ResponseWrapper<XRateData> xrate(@RequestParam(required = false) BigDecimal forCur,
 			@RequestParam(required = false) BigDecimal domAmount) {
@@ -201,6 +287,15 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Bnfcry check.
+	 *
+	 * @param beneId
+	 *            the bene id
+	 * @param transactionId
+	 *            the transaction id
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
 			@RequestParam(required = false) BigDecimal transactionId) {
@@ -222,6 +317,13 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Bnfcry check.
+	 *
+	 * @param beneId
+	 *            the bene id
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(@RequestParam BigDecimal beneId) {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
@@ -229,6 +331,13 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Bnfcry check.
+	 *
+	 * @param request
+	 *            the request
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/tranxrate", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceTransactionResponsetModel> bnfcryCheck(
 			@RequestBody RemittanceTransactionRequestModel request) {
@@ -243,6 +352,15 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * Creates the application.
+	 *
+	 * @param transactionRequestModel
+	 *            the transaction request model
+	 * @param request
+	 *            the request
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
 			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
@@ -264,6 +382,13 @@ public class RemittController {
 		return wrapper;
 	}
 
+	/**
+	 * App status.
+	 *
+	 * @param request
+	 *            the request
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/remitt/tranx/status", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceTransactionStatusResponseModel> appStatus(
 			@RequestBody RemittanceTransactionStatusRequestModel request) {

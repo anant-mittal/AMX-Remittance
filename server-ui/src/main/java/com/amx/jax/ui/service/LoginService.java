@@ -29,23 +29,38 @@ import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 import com.amx.utils.ListManager;
 
+/**
+ * The Class LoginService.
+ */
 @Service
 public class LoginService {
 
+	/** The log. */
 	private Logger log = LoggerFactory.getLogger(getClass());
 
+	/** The user session. */
 	@Autowired
 	private UserSession userSession;
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The audit service. */
 	@Autowired
 	private AuditService auditService;
 
+	/**
+	 * Gets the random security question.
+	 *
+	 * @param customerModel
+	 *            the customer model
+	 * @return the random security question
+	 */
 	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
 		AuthData loginData = new AuthData();
 		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
@@ -69,6 +84,15 @@ public class LoginService {
 		return loginData;
 	}
 
+	/**
+	 * Login.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param password
+	 *            the password
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
@@ -87,6 +111,15 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Login sec ques.
+	 *
+	 * @param guestanswer
+	 *            the guestanswer
+	 * @param mOtp
+	 *            the m otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> loginSecQues(SecurityQuestionModel guestanswer, String mOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.SECQUES);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
@@ -149,6 +182,15 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Send OTP.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param motp
+	 *            the motp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> sendOTP(String identity, String motp) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		CivilIdOtpModel model;
@@ -165,6 +207,13 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Inits the reset password.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
 		sessionService.clear();
 		sessionService.invalidate();
@@ -181,6 +230,17 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Verify reset password.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param motp
+	 *            the motp
+	 * @param eotp
+	 *            the eotp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> verifyResetPassword(String identity, String motp, String eotp) {
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
@@ -198,6 +258,17 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Updatepwd.
+	 *
+	 * @param password
+	 *            the password
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());

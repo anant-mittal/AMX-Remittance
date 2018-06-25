@@ -17,14 +17,32 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.service.FBPushServiceImpl;
 
+/**
+ * The Class FBPushController.
+ */
 @RestController
 public class FBPushController {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(FBPushController.class);
 
+	/** The b push service. */
 	@Autowired
 	FBPushServiceImpl fBPushService;
 
+	/**
+	 * Fb push.
+	 *
+	 * @param msg
+	 *            the msg
+	 * @return the push message
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
@@ -32,6 +50,21 @@ public class FBPushController {
 		return msg;
 	}
 
+	/**
+	 * Fb push.
+	 *
+	 * @param token
+	 *            the token
+	 * @param topic
+	 *            the topic
+	 * @return the string
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {

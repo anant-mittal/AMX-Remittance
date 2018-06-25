@@ -23,6 +23,9 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.ui.config.WebTenantFilter;
 
+/**
+ * The Class WebApplication.
+ */
 @ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
@@ -30,18 +33,39 @@ import com.amx.jax.ui.config.WebTenantFilter;
 @EnableCaching
 public class WebApplication extends SpringBootServletInitializer {
 
+	/** The Constant USE_HAZELCAST. */
 	public static final String USE_HAZELCAST = "false";
+
+	/** The Constant USE_REDIS. */
 	public static final String USE_REDIS = "true";
 
+	/**
+	 * The main method.
+	 *
+	 * @param args
+	 *            the arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(WebApplication.class, args);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.boot.web.support.SpringBootServletInitializer#configure(
+	 * org.springframework.boot.builder.SpringApplicationBuilder)
+	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
 		return applicationBuilder.sources(WebApplication.class);
 	}
 
+	/**
+	 * Filter registration bean.
+	 *
+	 * @return the filter registration bean
+	 */
 	@Bean(name = "checkSession")
 	public FilterRegistrationBean filterRegistrationBean() {
 		WebTenantFilter f = new WebTenantFilter();
@@ -53,6 +77,13 @@ public class WebApplication extends SpringBootServletInitializer {
 		return registrationBean;
 	}
 
+	/**
+	 * Security filter chain registration.
+	 *
+	 * @param securityProperties
+	 *            the security properties
+	 * @return the delegating filter proxy registration bean
+	 */
 	@Bean
 	@ConditionalOnBean(name = "checkSession")
 	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
@@ -62,6 +93,11 @@ public class WebApplication extends SpringBootServletInitializer {
 		return registration;
 	}
 
+	/**
+	 * Jax meta info.
+	 *
+	 * @return the jax meta info
+	 */
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {

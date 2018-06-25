@@ -10,27 +10,43 @@ import com.amx.jax.postman.model.File.PDFConverter;
 
 import net.sf.jasperreports.engine.JRException;
 
+/**
+ * The Class PdfService.
+ */
 @Component
 public class PdfService {
 
+	/** The converter flying saucer. */
 	@Autowired
 	private FileConverter converterFlyingSaucer;
 
+	/** The converter amx flying saucer. */
 	@Autowired
 	private FileConverter converterAmxFlyingSaucer;
 
+	/** The converter jasper. */
 	@Autowired
 	private FileConverter converterJasper;
 
 	// @Autowired
 	// private ConverterIText7 converterIText7;
 
+	/** The p DF converter. */
 	@Value("${default.pDFConverter}")
 	private PDFConverter pDFConverter;
 
 	// @Autowired
 	// private ConverterIText5 converterIText5;
 
+	/**
+	 * Convert.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the file
+	 * @throws JRException
+	 *             the JR exception
+	 */
 	public File convert(File file) throws JRException {
 
 		PDFConverter conv = file.getConverter();

@@ -18,14 +18,32 @@ import com.maxmind.geoip2.exception.GeoIp2Exception;
 
 import io.swagger.annotations.ApiParam;
 
+/**
+ * The Class GeoServiceController.
+ */
 @RestController
 public class GeoServiceController {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoServiceController.class);
 
+	/** The geo location service. */
 	@Autowired
 	GeoLocationServiceImpl geoLocationService;
 
+	/**
+	 * Geo location.
+	 *
+	 * @param ip
+	 *            the ip
+	 * @return the geo location
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws GeoIp2Exception
+	 *             the geo ip 2 exception
+	 */
 	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
 	public GeoLocation geoLocation(@RequestParam @ApiParam(defaultValue = "171.50.210.63") String ip)
 			throws PostManException, IOException, GeoIp2Exception {

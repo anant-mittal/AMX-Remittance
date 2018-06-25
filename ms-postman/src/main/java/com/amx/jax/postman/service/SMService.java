@@ -24,48 +24,79 @@ import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.Utils;
 
+/**
+ * The Class SMService.
+ */
 @Component
 @TenantScoped
 public class SMService {
 
+	/** The logger. */
 	private static Logger LOGGER = LoggerService.getLogger(SMService.class);
 
+	/** The auth key. */
 	@Value("${msg91.auth.key}")
 	private String authKey;
+
+	/** The remote url. */
 	@Value("${msg91.remote.url}")
 	private String remoteUrl;
+
+	/** The sender id. */
 	@Value("${msg91.sender.id}")
 	private String senderId;
+
+	/** The route. */
 	@Value("${msg91.route}")
 	private String route;
 
+	/** The username. */
 	@TenantValue("${sms.username}")
 	private String username;
 
+	/** The password. */
 	@TenantValue("${sms.password}")
 	private String password;
 
+	/** The secret. */
 	@TenantValue("${sms.secret}")
 	private String secret;
 
+	/** The rest service. */
 	@Autowired
 	RestService restService;
 
+	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
+	/** The slack service. */
 	@Autowired
 	SlackService slackService;
 
+	/** The template service. */
 	@Autowired
 	private TemplateService templateService;
 
+	/** The message path. */
 	public static JsonPath messagePath = new JsonPath("sms/[0]/message");
+
+	/** The to path. */
 	public static JsonPath toPath = new JsonPath("sms/[0]/to/[0]");
 
+	/** The Constant EMPTY_TO. */
 	public static final String EMPTY_TO = "EMPTY_TO";
+
+	/** The Constant EXCEPTION. */
 	public static final String EXCEPTION = "EXECPTION";
 
+	/**
+	 * Send SMS.
+	 *
+	 * @param sms
+	 *            the sms
+	 * @return the sms
+	 */
 	public SMS sendSMS(SMS sms) {
 		String to = null;
 		try {
@@ -93,6 +124,13 @@ public class SMService {
 
 	}
 
+	/**
+	 * Do send SMS.
+	 *
+	 * @param sms
+	 *            the sms
+	 * @return the sms
+	 */
 	public SMS doSendSMS(SMS sms) {
 
 		if (AppParam.DEBUG_INFO.isEnabled()) {

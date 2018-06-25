@@ -19,17 +19,29 @@ import com.amx.jax.ui.response.ResponseMessage;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 
+/**
+ * The Class PartialRegService.
+ */
 @Service
 public class PartialRegService {
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The jax client. */
 	@Autowired
 	private JaxService jaxClient;
 
 	// New Registration
 
+	/**
+	 * New user register init.
+	 *
+	 * @param personalDetail
+	 *            the personal detail
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> newUserRegisterInit(CustomerPersonalDetail personalDetail) {
 
 		/**
@@ -50,6 +62,15 @@ public class PartialRegService {
 		return wrapper;
 	}
 
+	/**
+	 * New user register validate.
+	 *
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> newUserRegisterValidate(String mOtp, String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.DOTPVFY);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
@@ -69,6 +90,13 @@ public class PartialRegService {
 		return wrapper;
 	}
 
+	/**
+	 * Save home address.
+	 *
+	 * @param customerHomeAddress
+	 *            the customer home address
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> saveHomeAddress(CustomerHomeAddress customerHomeAddress) {
 		sessionService.getGuestSession().initStep(AuthStep.SAVE_HOME);
 		ResponseWrapper<AuthData> wrapper = new ResponseWrapper<AuthData>(new AuthData());
@@ -90,11 +118,11 @@ public class PartialRegService {
 	}
 
 	/**
-	 * 
-	 * New Registration does not require OTPs (already validated)
-	 * 
+	 * New Registration does not require OTPs (already validated).
+	 *
 	 * @param securityquestions
-	 * @return
+	 *            the securityquestions
+	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions) {
 
@@ -114,12 +142,13 @@ public class PartialRegService {
 	}
 
 	/**
-	 * 
+	 * Update phising.
+	 *
 	 * @param imageUrl
+	 *            the image url
 	 * @param caption
-	 * @param mOtp
-	 * @param eOtp
-	 * @return
+	 *            the caption
+	 * @return the response wrapper
 	 */
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption) {
 		sessionService.getGuestSession().initStep(AuthStep.CAPTION_SET);
@@ -133,6 +162,13 @@ public class PartialRegService {
 		return wrapper;
 	}
 
+	/**
+	 * Sets the credentials.
+	 *
+	 * @param customerCredential
+	 *            the customer credential
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> setCredentials(CustomerCredential customerCredential) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());

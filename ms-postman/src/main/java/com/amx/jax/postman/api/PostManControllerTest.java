@@ -42,42 +42,61 @@ import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ibm.icu.text.Transliterator;
 
+/**
+ * The Class PostManControllerTest.
+ */
 @RestController
 @RequestMapping("test/")
 public class PostManControllerTest {
 
+	/** The response. */
 	@Autowired
 	private HttpServletResponse response;
 
+	/** The postman url. */
 	@Value("${jax.postman.url}")
 	private String postmanUrl;
 
+	/** The post man client. */
 	@Autowired
 	PostManClient postManClient;
 
+	/** The fb push client. */
 	@Autowired
 	FBPushClient fbPushClient;
 
+	/** The post man service impl. */
 	@Autowired
 	PostManServiceImpl postManServiceImpl;
 
+	/** The context. */
 	@Autowired
 	private ApplicationContext context;
 
+	/** The request. */
 	@Autowired
 	private HttpServletRequest request;
 
+	/** The message source. */
 	@Autowired
 	private MessageSource messageSource;
 
+	/** The locale resolver. */
 	@Autowired
 	private LocaleResolver localeResolver;
 
+	/** The geo location client. */
 	@Autowired
 	GeoLocationClient geoLocationClient;
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(PostManControllerTest.class);
 
+	/**
+	 * Notify slack.
+	 *
+	 * @return the message
+	 */
 	@RequestMapping(value = "exception")
 	public Message notifySlack() {
 
@@ -89,6 +108,13 @@ public class PostManControllerTest {
 		return null;
 	}
 
+	/**
+	 * Location.
+	 *
+	 * @return the geo location
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = PostManUrls.GEO_LOC, method = RequestMethod.GET)
 	public GeoLocation location() throws PostManException {
 		String remoteAddr = null;
@@ -101,6 +127,15 @@ public class PostManControllerTest {
 		return geoLocationClient.getLocation(remoteAddr);
 	}
 
+	/**
+	 * Prints the.
+	 *
+	 * @param tnt
+	 *            the tnt
+	 * @return the message
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/print", method = RequestMethod.GET)
 	public Message print(@RequestParam Tenant tnt) throws PostManException {
 
@@ -112,6 +147,19 @@ public class PostManControllerTest {
 		return msg;
 	}
 
+	/**
+	 * Fb push.
+	 *
+	 * @param msg
+	 *            the msg
+	 * @return the push message
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
@@ -119,6 +167,21 @@ public class PostManControllerTest {
 		return msg;
 	}
 
+	/**
+	 * Fb push.
+	 *
+	 * @param token
+	 *            the token
+	 * @param topic
+	 *            the topic
+	 * @return the string
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
@@ -126,6 +189,27 @@ public class PostManControllerTest {
 		return topic;
 	}
 
+	/**
+	 * Process template.
+	 *
+	 * @param template
+	 *            the template
+	 * @param ext
+	 *            the ext
+	 * @param email
+	 *            the email
+	 * @param data
+	 *            the data
+	 * @param tnt
+	 *            the tnt
+	 * @param lib
+	 *            the lib
+	 * @return the string
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
 	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
@@ -180,6 +264,15 @@ public class PostManControllerTest {
 
 	}
 
+	/**
+	 * Read json with object mapper.
+	 *
+	 * @param jsonFile
+	 *            the json file
+	 * @return the map
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	@SuppressWarnings("unchecked")
 	public Map<String, Object> readJsonWithObjectMapper(String jsonFile) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -187,6 +280,15 @@ public class PostManControllerTest {
 		return objectMapper.readValue(context.getResource("classpath:" + jsonFile).getInputStream(), Map.class);
 	}
 
+	/**
+	 * Read image with object mapper.
+	 *
+	 * @param jsonFile
+	 *            the json file
+	 * @return the input stream source
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public InputStreamSource readImageWithObjectMapper(String jsonFile) throws IOException {
 		// return objectMapper.readValue(new File(jsonFile), Map.class);
 		InputStreamSource imageSource = new ByteArrayResource(

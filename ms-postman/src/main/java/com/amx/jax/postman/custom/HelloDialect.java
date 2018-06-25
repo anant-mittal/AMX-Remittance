@@ -7,14 +7,25 @@ import org.thymeleaf.dialect.AbstractProcessorDialect;
 import org.thymeleaf.processor.IProcessor;
 import org.thymeleaf.templatemode.TemplateMode;
 
+/**
+ * The Class HelloDialect.
+ */
 public class HelloDialect extends AbstractProcessorDialect {
 
+	/**
+	 * Instantiates a new hello dialect.
+	 */
 	public HelloDialect() {
 		super("Hello Dialect", // Dialect name
 				"pm", // Dialect prefix (hello:*)
 				1000); // Dialect precedence
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.thymeleaf.dialect.IProcessorDialect#getProcessors(java.lang.String)
+	 */
 	/*
 	 * Initialize the dialect's processors.
 	 *
@@ -26,7 +37,7 @@ public class HelloDialect extends AbstractProcessorDialect {
 	public Set<IProcessor> getProcessors(final String dialectPrefix) {
 		final Set<IProcessor> processors = new HashSet<IProcessor>();
 		processors.add(new SayToAttributeTagProcessor(TemplateMode.HTML, dialectPrefix));
-		//processors.add(new PanelTagProcessor(dialectPrefix));
+		// processors.add(new PanelTagProcessor(dialectPrefix));
 		return processors;
 	}
 
