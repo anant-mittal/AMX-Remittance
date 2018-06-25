@@ -9,6 +9,9 @@ import org.thymeleaf.templatemode.TemplateMode;
 
 /**
  * The Class HelloDialect.
+ * 
+ * @author lalittanwar
+ *
  */
 public class HelloDialect extends AbstractProcessorDialect {
 
