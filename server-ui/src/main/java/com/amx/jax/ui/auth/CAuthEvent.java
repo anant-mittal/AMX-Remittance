@@ -10,6 +10,8 @@ import com.amx.utils.ArgUtil;
 
 public class CAuthEvent extends AuditEvent {
 
+	private static final long serialVersionUID = 5461833493967079133L;
+
 	public enum Result {
 		PASS, FAIL;
 	}

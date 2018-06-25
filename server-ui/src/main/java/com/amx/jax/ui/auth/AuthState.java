@@ -2,14 +2,20 @@ package com.amx.jax.ui.auth;
 
 import java.io.Serializable;
 
-import com.amx.utils.EnumType;
+import com.amx.jax.logger.AbstractEvent.EventMarker;
+import com.amx.jax.logger.AbstractEvent.EventType;
 
 public class AuthState implements Serializable {
 
 	private static final long serialVersionUID = 6704113792186284121L;
 
-	public static enum AuthFlow implements EnumType {
-		DEFAULT, LOGIN, ACTIVATION, REGISTRATION, RESET_PASS, LOGOUT
+	public static enum AuthFlow implements EventType {
+		DEFAULT, LOGIN, ACTIVATION, REGISTRATION, RESET_PASS, LOGOUT;
+
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 	}
 
 	public static enum AuthStep {

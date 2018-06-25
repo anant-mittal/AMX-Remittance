@@ -1,12 +1,18 @@
 package com.amx.jax.logger.events;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class CActivityEvent extends AuditEvent {
 
-	public static enum Type implements EnumType {
+	private static final long serialVersionUID = -3189696554945071766L;
+
+	public static enum Type implements EventType {
 		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE;
+
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 	}
 
 	public enum Result {

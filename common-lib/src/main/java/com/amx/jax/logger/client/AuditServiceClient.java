@@ -14,11 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.logger.AbstractAuditEvent;
+import com.amx.jax.logger.AbstractEvent;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.AbstractEvent.EventMarker;
+import com.amx.jax.tunnel.ITunnelService;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
@@ -27,31 +30,57 @@ public class AuditServiceClient implements AuditService {
 
 	public static final Pattern pattern = Pattern.compile("^com.amx.jax.logger.client.AuditFilter<(.*)>$");
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuditService.class);
-	private static final Marker auditmarker = MarkerFactory.getMarker("AUDIT");
-	private static final Marker trackmarker = MarkerFactory.getMarker("TRACK");
-	private static final Marker gaugemarker = MarkerFactory.getMarker("GAUGE");
-	private static final Marker excepmarker = MarkerFactory.getMarker("EXCEP");
-	private static final Marker failmarker = MarkerFactory.getMarker("FAIL");
+	private static final Logger LOGGER2 = LoggerFactory.getLogger(AuditServiceClient.class);
+	private static final Marker auditmarker = MarkerFactory.getMarker(EventMarker.AUDIT.toString());
+	private static final Marker trackmarker = MarkerFactory.getMarker(EventMarker.TRACK.toString());
+	private static final Marker gaugemarker = MarkerFactory.getMarker(EventMarker.GAUGE.toString());
+	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
+	private static boolean FILTER_MAP_DONE = false;
 	private static String appName = null;
+
+	private static ITunnelService ITUNNEL_SERVICE;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Autowired
-	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters) {
-		appName = appConfig.getAppName();
-		for (AuditFilter filter : filters) {
-			Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
-			if (matcher.find()) {
-				filtersMap.put(matcher.group(1), filter);
+	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
+			@Autowired(required = false) ITunnelService iTunnelService) {
+		if (!FILTER_MAP_DONE) {
+			appName = appConfig.getAppName();
+			for (AuditFilter filter : filters) {
+				Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
+				if (matcher.find()) {
+					filtersMap.put(matcher.group(1), filter);
+				}
 			}
+			ITUNNEL_SERVICE = iTunnelService;
+			FILTER_MAP_DONE = true;
+			LOGGER2.warn("Audit Filters scanned");
+		} else {
+			LOGGER2.warn("Skipping Audit Filters scanning");
 		}
 	}
 
 	private void excuteFilters(AuditEvent event) {
 		if (filtersMap.containsKey(event.getClass().getName())) {
 			AuditFilter<AuditEvent> filter = filtersMap.get(event.getClass().getName());
-			filter.doFilter(event);
+			try {
+				filter.doFilter(event);
+			} catch (Exception e) {
+				LOGGER2.error("Exception while executing Filters", e);
+			}
 		}
+	}
+
+	private static Marker getMarker(AuditEvent event) {
+		if (event.getType().marker() == EventMarker.TRACK) {
+			return trackmarker;
+		} else if (event.getType().marker() == EventMarker.GAUGE) {
+			return gaugemarker;
+		} else if (event.getType().marker() == EventMarker.EXCEP) {
+			return excepmarker;
+		}
+		return auditmarker;
 	}
 
 	private static AuditEvent captureException(AuditEvent event, Exception e) {
@@ -71,79 +100,98 @@ public class AuditServiceClient implements AuditService {
 		return event;
 	}
 
-	public static AuditLoggerResponse logStatic(Marker marker, AbstractAuditEvent event) {
+	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
+
 		event.setComponent(appName);
-		LOGGER.info(marker, JsonUtil.toJson(event));
+		String json = JsonUtil.toJson(event);
+
+		LOGGER.info(marker, json);
+
+		if (capture && ITUNNEL_SERVICE != null) {
+			@SuppressWarnings("unchecked")
+			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
+
+			AppContext appContext = AppContextUtil.getContext();
+
+			map.put("traceId", appContext.getTraceId());
+			map.put("tranxId", appContext.getTranxId());
+			map.put("tenant", appContext.getTenant());
+
+			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+		}
+
 		return null;
 	}
 
 	/**
 	 * 
-	 * No filters will be called
+	 * @param marker
+	 * @param event
+	 * @param capture
+	 *            - true to capture value in logger service, default is false
+	 * @return
+	 */
+	public static AuditLoggerResponse logAuditEvent(Marker marker, AuditEvent event, boolean capture) {
+		try {
+			captureDetails(event);
+			return logAbstractEvent(marker, event, capture);
+		} catch (Exception e) {
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+		}
+		return null;
+	}
+
+	/**
+	 * 
+	 * @param marker
+	 * @param event
+	 * @return
+	 */
+	public static AuditLoggerResponse logAuditEvent(Marker marker, AuditEvent event) {
+		return logAuditEvent(marker, event, false);
+	}
+
+	/**
 	 * 
 	 * @param event
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		captureDetails(event);
-		logStatic(auditmarker, event);
-		return null;
+		return logAuditEvent(getMarker(event), event, true);
 	}
 
 	@Override
 	public AuditLoggerResponse log(AuditEvent event) {
-		this.excuteFilters(event);
+		excuteFilters(event);
 		return logStatic(event);
 	}
 
 	// TRACK LOGS
 
 	public static AuditLoggerResponse trackStatic(AuditEvent event) {
-		captureDetails(event);
-		LOGGER.info(trackmarker, JsonUtil.toJson(event));
-		return null;
+		return logAuditEvent(trackmarker, event);
 	}
 
 	@Override
 	public AuditLoggerResponse track(AuditEvent event) {
-		this.excuteFilters(event);
+		excuteFilters(event);
 		return trackStatic(event);
 	}
 
 	// GAUGE LOGS
-
 	/**
 	 * 
 	 * @param event
 	 * @return
 	 */
 	public static AuditLoggerResponse gaugeStatic(AuditEvent event) {
-		captureDetails(event);
-		LOGGER.info(gaugemarker, JsonUtil.toJson(event));
-		return null;
+		return logAuditEvent(gaugemarker, event);
 	}
 
 	@Override
 	public AuditLoggerResponse gauge(AuditEvent event) {
-		this.excuteFilters(event);
+		excuteFilters(event);
 		return gaugeStatic(event);
-	}
-
-	/**
-	 * 
-	 * @param event
-	 * @return
-	 */
-	public static AuditLoggerResponse failStatic(AuditEvent event) {
-		captureDetails(event);
-		LOGGER.info(failmarker, JsonUtil.toJson(event));
-		return null;
-	}
-
-	@Override
-	public AuditLoggerResponse fail(AuditEvent event) {
-		this.excuteFilters(event);
-		return failStatic(event);
 	}
 
 	// Excep LOGS
@@ -154,13 +202,11 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse excepStatic(AuditEvent event) {
-		captureDetails(event);
-		LOGGER.info(excepmarker, JsonUtil.toJson(event));
-		return null;
+		return logAuditEvent(excepmarker, event);
 	}
 
 	public AuditLoggerResponse excep(AuditEvent event) {
-		this.excuteFilters(event);
+		excuteFilters(event);
 		return excepStatic(event);
 	}
 
