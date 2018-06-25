@@ -1,6 +1,5 @@
 package com.amx.jax.ui.session;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -31,15 +30,12 @@ import eu.bitwalker.useragentutils.Version;
  */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserDeviceBean extends UserDevice implements Serializable {
+public class UserDeviceBean extends UserDevice {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -6869375666742059912L;
 
-	/** The logger. */
 	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
 
-	/** The http service. */
 	@Autowired
 	private HttpService httpService;
 
