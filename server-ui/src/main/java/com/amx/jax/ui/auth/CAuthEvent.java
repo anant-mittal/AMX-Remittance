@@ -20,7 +20,6 @@ public class CAuthEvent extends AuditEvent {
 	 * The Enum Result.
 	 */
 	public enum Result {
-
 		/** The pass. */
 		PASS,
 		/** The fail. */
@@ -99,17 +98,13 @@ public class CAuthEvent extends AuditEvent {
 		this(state, Result.PASS, 0L);
 	}
 
-	/** The step. */
 	AuthStep step = null;
 
-	/** The identiy. */
 	String identiy = null;
 
-	/** The user id. */
 	String userId = null;
 
-	/** The device. */
-	Map<String, Object> device = new HashMap<String, Object>();
+	Map<String, Object> device = new HashMap<String, Object>(); // Noncompliant; Address isn't serializable
 
 	/**
 	 * Gets the device.

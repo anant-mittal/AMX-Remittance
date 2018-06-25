@@ -41,30 +41,25 @@ import com.amx.utils.TimeUtils;
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GuestSession implements Serializable {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8825493107883952226L;
 
-	/** The log. */
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final Logger log = LoggerFactory.getLogger(GuestSession.class);
 
-	/** The tenant context. */
 	@Autowired
 	TenantContext<AuthLib> tenantContext;
 
-	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
-	/** The lang. */
-	Language lang = Language.DEFAULT;
+	Language language = Language.DEFAULT;
 
 	/**
 	 * Gets the lang.
 	 *
 	 * @return the lang
 	 */
-	public Language getLang() {
-		return lang;
+	public Language getLanguage() {
+		return language;
 	}
 
 	/**
@@ -73,8 +68,8 @@ public class GuestSession implements Serializable {
 	 * @param lang
 	 *            the new lang
 	 */
-	public void setLang(Language lang) {
-		this.lang = lang;
+	public void setLanguage(Language lang) {
+		this.language = lang;
 	}
 
 	/** The state. */

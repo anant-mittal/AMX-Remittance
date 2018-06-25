@@ -1,5 +1,6 @@
 package com.amx.jax.ui.service;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,10 @@ import com.amx.jax.scope.TenantScoped;
  */
 @Component
 @TenantScoped
-public class TenantService {
+public class TenantService implements Serializable {
 
+	private static final long serialVersionUID = -5588109359887763628L;
+	
 	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;

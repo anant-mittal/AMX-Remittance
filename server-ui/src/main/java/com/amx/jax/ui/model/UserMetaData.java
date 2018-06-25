@@ -19,62 +19,42 @@ import com.amx.jax.user.UserDevice;
  */
 public class UserMetaData extends AbstractModel {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1243745569228714127L;
 
-	/** The valid session. */
 	public Boolean validSession = false;
 
-	/** The active. */
 	public Boolean active = false;
 
-	/** The info. */
 	PersonInfo info = null;
 
-	/** The dom currency. */
 	CurrencyMasterDTO domCurrency = null;
 
-	/** The device. */
 	UserDevice device = null;
 
-	/** The state. */
 	AuthState state = null;
 
-	/** The tenant. */
 	Tenant tenant = null;
 
-	/** The tenant code. */
 	String tenantCode = null;
 
-	/** The lang. */
 	Language lang = null;
 
-	/** The config. */
 	JaxMetaParameter config = null;
 
-	/** The cdn url. */
 	String cdnUrl = null;
 
-	/** The features. */
-	// List<String> features = new ArrayList<String>();
 	String[] features = null;
 
-	/** The subscriptions. */
 	List<String> subscriptions = new ArrayList<String>();
 
-	/** The notify range long. */
 	String notifyRangeLong = null;
 
-	/** The notify range short. */
 	String notifyRangeShort = null;
 
-	/** The customer id. */
 	BigDecimal customerId = null;
 
-	/** The notification gap. */
 	String notificationGap = null;
 
-	/** The return url. */
 	String returnUrl = null;
 
 	/** The hot points. */
