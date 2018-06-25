@@ -125,7 +125,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5128));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.login("281050207628", "Amx@1234");
+			response = client.login("2810502076280", "Amx@12345");
 		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}

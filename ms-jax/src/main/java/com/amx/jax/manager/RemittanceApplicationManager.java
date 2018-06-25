@@ -33,7 +33,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
@@ -277,7 +277,7 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
 					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
 				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
