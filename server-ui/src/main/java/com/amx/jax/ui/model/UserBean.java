@@ -33,7 +33,7 @@ public class UserBean implements Serializable {
 
 	/** The tenant context. */
 	@Autowired
-	private TenantService tenantContext;
+	private TenantService tenantService;
 
 	/** The default for currency. */
 	CurrencyMasterDTO defaultForCurrency;
@@ -46,9 +46,9 @@ public class UserBean implements Serializable {
 	public CurrencyMasterDTO getDefaultForCurrency() {
 		BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
 		if (nationalityId == null) {
-			defaultForCurrency = tenantContext.getOnlineCurrencies().get(0);
+			defaultForCurrency = tenantService.getOnlineCurrencies().get(0);
 		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
 				if (nationalityId.equals(currency.getCountryId())) {
 					defaultForCurrency = currency;
 					break;
@@ -70,7 +70,7 @@ public class UserBean implements Serializable {
 		if (forCur == null) {
 			return this.getDefaultForCurrency();
 		} else {
-			for (CurrencyMasterDTO currency : tenantContext.getOnlineCurrencies()) {
+			for (CurrencyMasterDTO currency : tenantService.getOnlineCurrencies()) {
 				if (currency.getCurrencyId().equals(forCur)) {
 					return currency;
 				}
