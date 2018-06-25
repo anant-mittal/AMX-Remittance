@@ -14,22 +14,35 @@ import com.amx.jax.def.CacheForUser;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.session.UserSession;
 
+/**
+ * The Class UserBean.
+ */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class UserBean implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
+	/** The Constant LOG. */
 	private static final Logger LOG = Logger.getLogger(UserBean.class);
 
+	/** The user session. */
 	@Autowired
 	private UserSession userSession;
 
+	/** The tenant context. */
 	@Autowired
 	private TenantService tenantContext;
 
+	/** The default for currency. */
 	CurrencyMasterDTO defaultForCurrency;
 
+	/**
+	 * Gets the default for currency.
+	 *
+	 * @return the default for currency
+	 */
 	public CurrencyMasterDTO getDefaultForCurrency() {
 		BigDecimal nationalityId = userSession.getCustomerModel().getPersoninfo().getNationalityId();
 		if (nationalityId == null) {
@@ -45,6 +58,13 @@ public class UserBean implements Serializable {
 		return defaultForCurrency;
 	}
 
+	/**
+	 * Gets the default for currency.
+	 *
+	 * @param forCur
+	 *            the for cur
+	 * @return the default for currency
+	 */
 	@CacheForUser
 	public CurrencyMasterDTO getDefaultForCurrency(BigDecimal forCur) {
 		if (forCur == null) {

@@ -15,59 +15,128 @@ import com.amx.jax.ui.WebAppConfig;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+/**
+ * The Class HotPointService.
+ */
 @Component
 public class HotPointService {
 
+	/**
+	 * The Enum HotPoints.
+	 */
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	@JsonPropertyOrder({ "latitude", "longitude" })
 	public static enum HotPoints {
 
-		SALMIYA2(" 29.331993", "48.061422"), MURGAB3("29.369429", "47.978551"), SALMIYA4(" 29.325602", "48.058039");
+		/** The salmiya2. */
+		SALMIYA2(" 29.331993", "48.061422"),
+		/** The murgab3. */
+		MURGAB3("29.369429", "47.978551"),
+		/** The salmiya4. */
+		SALMIYA4(" 29.325602", "48.058039");
 
+		/** The latitude. */
 		private String latitude;
+
+		/** The longitude. */
 		private String longitude;
+
+		/** The id. */
 		private String id;
 
+		/**
+		 * Instantiates a new hot points.
+		 *
+		 * @param latitude
+		 *            the latitude
+		 * @param longitude
+		 *            the longitude
+		 */
 		HotPoints(String latitude, String longitude) {
 			this.id = this.name();
 			this.latitude = latitude;
 			this.longitude = longitude;
 		}
 
+		/**
+		 * Gets the latitude.
+		 *
+		 * @return the latitude
+		 */
 		public String getLatitude() {
 			return latitude;
 		}
 
+		/**
+		 * Sets the latitude.
+		 *
+		 * @param latitude
+		 *            the new latitude
+		 */
 		public void setLatitude(String latitude) {
 			this.latitude = latitude;
 		}
 
+		/**
+		 * Gets the longitude.
+		 *
+		 * @return the longitude
+		 */
 		public String getLongitude() {
 			return longitude;
 		}
 
+		/**
+		 * Sets the longitude.
+		 *
+		 * @param longitude
+		 *            the new longitude
+		 */
 		public void setLongitude(String longitude) {
 			this.longitude = longitude;
 		}
 
+		/**
+		 * Gets the id.
+		 *
+		 * @return the id
+		 */
 		public String getId() {
 			return id;
 		}
 
+		/**
+		 * Sets the id.
+		 *
+		 * @param id
+		 *            the new id
+		 */
 		public void setId(String id) {
 			this.id = id;
 		}
 	}
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The b push service. */
 	@Autowired
 	FBPushService fBPushService;
 
+	/** The web app config. */
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	/**
+	 * Notify.
+	 *
+	 * @param customerId
+	 *            the customer id
+	 * @return the list
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	// @Async
 	public List<String> notify(BigDecimal customerId) throws PostManException {
 		List<String> messages = new ArrayList<String>();

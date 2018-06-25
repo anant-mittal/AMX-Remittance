@@ -4,7 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class CloseUtil.
  */

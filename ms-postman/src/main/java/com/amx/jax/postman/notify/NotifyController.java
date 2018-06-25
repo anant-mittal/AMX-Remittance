@@ -23,25 +23,65 @@ import com.amx.jax.postman.model.PushMessage;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
 
+/**
+ * The Class NotifyController.
+ */
 @RestController
 @Api(value = "Push Notifiation APIs")
 public class NotifyController {
 
+	/** The logger. */
 	private Logger logger = Logger.getLogger(NotifyController.class);
 
+	/** The fb push client. */
 	@Autowired
 	FBPushClient fbPushClient;
 
+	/**
+	 * List of tenants.
+	 *
+	 * @return the list
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.LIST_TENANT, method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Tenant.values());
 	}
 
+	/**
+	 * List of nations.
+	 *
+	 * @return the list
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.LIST_NATIONS, method = RequestMethod.POST)
 	public List<Nations> listOfNations() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Nations.values());
 	}
 
+	/**
+	 * List of nations.
+	 *
+	 * @param tenant
+	 *            the tenant
+	 * @return the list
+	 * @throws PostManException
+	 *             the post man exception
+	 * @throws InterruptedException
+	 *             the interrupted exception
+	 * @throws ExecutionException
+	 *             the execution exception
+	 */
 	@RequestMapping(value = PostManUrls.LIST_BRANCHES, method = RequestMethod.POST)
 	public List<?> listOfNations(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant)
@@ -54,6 +94,19 @@ public class NotifyController {
 
 	}
 
+	/**
+	 * Notify all.
+	 *
+	 * @param tenant
+	 *            the tenant
+	 * @param message
+	 *            the message
+	 * @param title
+	 *            the title
+	 * @return the push message
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = "/postman/notify/all", method = RequestMethod.POST)
 	public PushMessage notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
@@ -65,6 +118,21 @@ public class NotifyController {
 		return fbPushClient.sendDirect(msg);
 	}
 
+	/**
+	 * Notify national.
+	 *
+	 * @param tenant
+	 *            the tenant
+	 * @param nationality
+	 *            the nationality
+	 * @param message
+	 *            the message
+	 * @param title
+	 *            the title
+	 * @return the push message
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	@RequestMapping(value = "/postman/notify/nationality", method = RequestMethod.POST)
 	public PushMessage notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,

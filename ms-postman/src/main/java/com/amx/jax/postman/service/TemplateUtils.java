@@ -24,21 +24,37 @@ import com.amx.utils.IoUtils;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 
+/**
+ * The Class TemplateUtils.
+ */
 @Component
 public class TemplateUtils {
 
+	/** The log. */
 	private static Logger log = Logger.getLogger(TemplateUtils.class);
+
+	/** The Constant base64. */
 	private static final Map<String, String> base64 = new ConcurrentHashMap<String, String>();
 
+	/** The tenant properties. */
 	@Autowired
 	TenantProperties tenantProperties;
 
+	/** The env. */
 	@Autowired
 	private Environment env;
 
+	/** The application context. */
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	/**
+	 * Prop.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the string
+	 */
 	public String prop(String key) {
 		String value = tenantProperties.getProperties().getProperty(key);
 		if (ArgUtil.isEmpty(value)) {
@@ -47,6 +63,15 @@ public class TemplateUtils {
 		return ArgUtil.parseAsString(value);
 	}
 
+	/**
+	 * Image.
+	 *
+	 * @param key
+	 *            the key
+	 * @param clean
+	 *            the clean
+	 * @return the string
+	 */
 	public String image(String key, boolean clean) {
 		if (clean) {
 			return this.prop(key).replace("data:image/png;base64,", "");
@@ -54,27 +79,72 @@ public class TemplateUtils {
 		return this.prop(key);
 	}
 
+	/**
+	 * Image jasper.
+	 *
+	 * @param key
+	 *            the key
+	 * @param clean
+	 *            the clean
+	 * @return the image
+	 * @throws JRException
+	 *             the JR exception
+	 */
 	public Image imageJasper(String key, boolean clean) throws JRException {
 		return net.sf.jasperreports.engine.util.JRImageLoader.getInstance(new SimpleJasperReportsContext())
 				.loadAwtImageFromBytes(javax.xml.bind.DatatypeConverter.parseBase64Binary(image(key, clean)));
 	}
 
+	/**
+	 * Image.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the string
+	 */
 	public String image(String key) {
 		return this.image(key, false);
 	}
 
+	/**
+	 * Image jasper.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the image
+	 * @throws JRException
+	 *             the JR exception
+	 */
 	public Image imageJasper(String key) throws JRException {
 		return this.imageJasper(key, false);
 	}
 
+	/**
+	 * Reverse flag.
+	 *
+	 * @param set
+	 *            the set
+	 */
 	public static void reverseFlag(boolean set) {
 		ContextUtil.map().put("reverseflag", true);
 	}
 
+	/**
+	 * Reverse flag.
+	 *
+	 * @return true, if successful
+	 */
 	public static boolean reverseFlag() {
 		return ArgUtil.parseAsBoolean(ContextUtil.map().get("reverseflag"), false);
 	}
 
+	/**
+	 * Reverse.
+	 *
+	 * @param str
+	 *            the str
+	 * @return the string
+	 */
 	public String reverse(String str) {
 		if (reverseFlag()) {
 			return fixBiDi(str);
@@ -83,10 +153,22 @@ public class TemplateUtils {
 		return str;
 	}
 
+	/**
+	 * Reverse.
+	 *
+	 * @return the string
+	 */
 	public String reverse() {
 		return "-X-X-";
 	}
 
+	/**
+	 * Fix bi di.
+	 *
+	 * @param wordTemp
+	 *            the word temp
+	 * @return the string
+	 */
 	public static String fixBiDi(String wordTemp) {
 		String word = ArgUtil.parseAsString(wordTemp, Constants.DEFAULT_STRING);
 		Bidi bidi = new Bidi(word, -2);
@@ -133,6 +215,15 @@ public class TemplateUtils {
 		}
 	}
 
+	/**
+	 * Read as base 64 string.
+	 *
+	 * @param contentId
+	 *            the content id
+	 * @return the string
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public String readAsBase64String(String contentId) throws IOException {
 		StringBuilder sb = new StringBuilder();
 		sb.append("data:image/png;base64,");
@@ -149,10 +240,26 @@ public class TemplateUtils {
 		return sb.toString();
 	}
 
+	/**
+	 * Read as resource.
+	 *
+	 * @param contentId
+	 *            the content id
+	 * @return the resource
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public Resource readAsResource(String contentId) throws IOException {
 		return applicationContext.getResource("classpath:" + contentId);
 	}
 
+	/**
+	 * Fix bi di check.
+	 *
+	 * @param parseAsString
+	 *            the parse as string
+	 * @return the string
+	 */
 	public static String fixBiDiCheck(String parseAsString) {
 		if (reverseFlag()) {
 			return fixBiDi(parseAsString);

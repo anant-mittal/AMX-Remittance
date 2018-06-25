@@ -33,60 +33,113 @@ import com.amx.utils.TimeUtils;
 
 /**
  * To Save Values to Session Use this class, only if these values are not
- * related to Valid user Request
- * 
- * @author lalittanwar
+ * related to Valid user Request.
  *
+ * @author lalittanwar
  */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class GuestSession implements Serializable {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8825493107883952226L;
+
+	/** The log. */
 	private Logger log = LoggerFactory.getLogger(getClass());
 
+	/** The tenant context. */
 	@Autowired
 	TenantContext<AuthLib> tenantContext;
 
+	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
+	/** The lang. */
 	Language lang = Language.DEFAULT;
 
+	/**
+	 * Gets the lang.
+	 *
+	 * @return the lang
+	 */
 	public Language getLang() {
 		return lang;
 	}
 
+	/**
+	 * Sets the lang.
+	 *
+	 * @param lang
+	 *            the new lang
+	 */
 	public void setLang(Language lang) {
 		this.lang = lang;
 	}
 
+	/** The state. */
 	public AuthState state = new AuthState();
 
+	/**
+	 * Gets the state.
+	 *
+	 * @return the state
+	 */
 	public AuthState getState() {
 		return state;
 	}
 
+	/**
+	 * Sets the state.
+	 *
+	 * @param state
+	 *            the new state
+	 */
 	public void setState(AuthState state) {
 		this.state = state;
 	}
 
+	/** The identity. */
 	String identity = null;
 
+	/**
+	 * Gets the identity.
+	 *
+	 * @return the identity
+	 */
 	public String getIdentity() {
 		return identity;
 	}
 
+	/**
+	 * Sets the identity.
+	 *
+	 * @param identiy
+	 *            the new identity
+	 */
 	public void setIdentity(String identiy) {
 		this.identity = identiy;
 	}
 
+	/** The return url. */
 	String returnUrl = null;
 
+	/**
+	 * Sets the return url.
+	 *
+	 * @param returnUrl
+	 *            the new return url
+	 */
 	public void setReturnUrl(String returnUrl) {
 		this.returnUrl = returnUrl;
 	}
 
+	/**
+	 * Inits the flow.
+	 *
+	 * @param flow
+	 *            the flow
+	 */
 	public void initFlow(AuthFlow flow) {
 		state.flow = flow;
 		state.cStep = null;
@@ -94,6 +147,12 @@ public class GuestSession implements Serializable {
 		state.nStep = tenantContext.get().getNextAuthStep(state);
 	}
 
+	/**
+	 * Inits the step.
+	 *
+	 * @param step
+	 *            the step
+	 */
 	public void initStep(AuthStep step) {
 		// AuthStep nStep = tenantContext.get().getNextAuthStep(state);
 		if (step != state.nStep) {
@@ -103,6 +162,13 @@ public class GuestSession implements Serializable {
 		}
 	}
 
+	/**
+	 * End step.
+	 *
+	 * @param step
+	 *            the step
+	 * @return the auth state
+	 */
 	public AuthState endStep(AuthStep step) {
 		auditService.log(new CAuthEvent(state));
 		state.cStep = step;
@@ -114,11 +180,20 @@ public class GuestSession implements Serializable {
 		return state;
 	}
 
+	/** The response. */
 	@Autowired
 	private HttpServletResponse response;
 
+	/** The next token map. */
 	private Map<String, String> nextTokenMap = new HashMap<String, String>();
 
+	/**
+	 * Gets the next token.
+	 *
+	 * @param key
+	 *            the key
+	 * @return the next token
+	 */
 	public String getNextToken(String key) {
 		String nextToken = Random.randomAlpha(6);
 		nextTokenMap.put(key, nextToken);
@@ -126,6 +201,14 @@ public class GuestSession implements Serializable {
 		return nextToken;
 	}
 
+	/**
+	 * Validate.
+	 *
+	 * @param curEnd
+	 *            the cur end
+	 * @param validEnds
+	 *            the valid ends
+	 */
 	public void validate(String curEnd, String[] validEnds) {
 		Cookie kooky = new Cookie(UIConstants.SEQ_KEY, this.getNextToken(curEnd));
 		kooky.setMaxAge(300);
@@ -133,44 +216,94 @@ public class GuestSession implements Serializable {
 		response.addCookie(kooky);
 	}
 
+	/** The hits. */
 	private Integer hits = 0;
 
+	/**
+	 * Gets the hits.
+	 *
+	 * @return the hits
+	 */
 	public Integer getHits() {
 		return hits;
 	}
 
+	/**
+	 * Sets the hits.
+	 *
+	 * @param hits
+	 *            the new hits
+	 */
 	public void setHits(Integer hits) {
 		this.hits = hits;
 	}
 
+	/**
+	 * Hit counter.
+	 *
+	 * @return the integer
+	 */
 	public Integer hitCounter() {
 		return this.hits++;
 	}
 
+	/** The customer model. */
 	private CustomerModel customerModel = null;
 
+	/**
+	 * Gets the customer model.
+	 *
+	 * @return the customer model
+	 */
 	public CustomerModel getCustomerModel() {
 		return customerModel;
 	}
 
+	/**
+	 * Sets the customer model.
+	 *
+	 * @param customerModel
+	 *            the new customer model
+	 */
 	public void setCustomerModel(CustomerModel customerModel) {
 		this.customerModel = customerModel;
 	}
 
+	/** The ques index. */
 	public Integer quesIndex = 0;
 
+	/**
+	 * Gets the ques index.
+	 *
+	 * @return the ques index
+	 */
 	public Integer getQuesIndex() {
 		return quesIndex;
 	}
 
+	/**
+	 * Sets the ques index.
+	 *
+	 * @param quesIndex
+	 *            the new ques index
+	 */
 	public void setQuesIndex(Integer quesIndex) {
 		this.quesIndex = quesIndex;
 	}
 
+	/**
+	 * Next ques index.
+	 */
 	public void nextQuesIndex() {
 		quesIndex++;
 	}
 
+	/**
+	 * Started.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
 	@PostConstruct
 	public void started() throws Exception {
 		SessionEvent evt = new SessionEvent();
@@ -178,6 +311,12 @@ public class GuestSession implements Serializable {
 		auditService.log(evt);
 	}
 
+	/**
+	 * Ended.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
 	@PreDestroy
 	public void ended() throws Exception {
 		SessionEvent evt = new SessionEvent();
@@ -185,6 +324,11 @@ public class GuestSession implements Serializable {
 		auditService.log(evt);
 	}
 
+	/**
+	 * Gets the return url.
+	 *
+	 * @return the return url
+	 */
 	public String getReturnUrl() {
 		return returnUrl;
 	}

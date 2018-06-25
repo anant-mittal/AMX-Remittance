@@ -10,19 +10,33 @@ import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
 
+/**
+ * The Class TenantService.
+ */
 @Component
 @TenantScoped
 public class TenantService {
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/**
+	 * Gets the dom currency.
+	 *
+	 * @return the dom currency
+	 */
 	@CacheForTenant
 	public CurrencyMasterDTO getDomCurrency() {
 		return jaxService.setDefaults().getMetaClient()
 				.getCurrencyByCountryId(TenantContextHolder.currentSite().getBDCode()).getResult();
 	}
 
+	/**
+	 * Gets the online currencies.
+	 *
+	 * @return the online currencies
+	 */
 	@CacheForTenant
 	public List<CurrencyMasterDTO> getOnlineCurrencies() {
 		return jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();

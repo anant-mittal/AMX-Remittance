@@ -11,12 +11,22 @@ import com.amx.jax.logger.client.AuditFilter;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.ui.session.UserDeviceBean;
 
+/**
+ * The Class SessionAuditFilter.
+ */
 @Component
 public class SessionAuditFilter implements AuditFilter<SessionEvent> {
 
+	/** The user device. */
 	@Autowired(required = false)
 	UserDeviceBean userDevice;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.logger.client.AuditFilter#doFilter(com.amx.jax.logger.AuditEvent)
+	 */
 	@Override
 	public void doFilter(SessionEvent event) {
 		event.setSessionId(AppContextUtil.getSessionId());

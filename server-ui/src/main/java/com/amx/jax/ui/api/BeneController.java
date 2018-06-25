@@ -32,16 +32,26 @@ import com.amx.jax.ui.session.Transactions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+/**
+ * The Class BeneController.
+ */
 @RestController
 @Api(value = "Beneficiary APIs")
 public class BeneController {
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The transactions. */
 	@Autowired
 	private Transactions transactions;
 
+	/**
+	 * Bene list.
+	 *
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "List of All bnfcry")
 	@RequestMapping(value = "/api/user/bnfcry/list", method = { RequestMethod.POST })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneList() {
@@ -52,17 +62,27 @@ public class BeneController {
 		return wrapper;
 	}
 
+	/**
+	 * Bene details.
+	 *
+	 * @param beneficiaryId
+	 *            the beneficiary id
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Get Beneficiary Details")
 	@RequestMapping(value = "/api/user/bnfcry/details", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneCountryDTO> beneDetails(BigDecimal beneficiaryId) {
-		ResponseWrapper<BeneCountryDTO> wrapper = new ResponseWrapper<BeneCountryDTO>();
-
-		// Disable Beneficiary
-		// jaxService.setDefaults().getBeneClient().beneDisable(beneRelSeqId, remarks);
-
-		return wrapper;
+		return new ResponseWrapper<BeneCountryDTO>();
 	}
 
+	/**
+	 * Bene details.
+	 *
+	 * @param beneficiary
+	 *            the beneficiary
+	 * @return the response wrapper
+	 * @deprecated - not used any more
+	 */
 	@Deprecated
 	@ApiOperation(value = "Update Beneficiary Details")
 	@RequestMapping(value = "/api/user/bnfcry/update", method = { RequestMethod.POST })
@@ -74,6 +94,25 @@ public class BeneController {
 		return wrapper;
 	}
 
+	/**
+	 * Bene disable.
+	 *
+	 * @param mOtpHeader
+	 *            the m otp header
+	 * @param eOtpHeader
+	 *            the e otp header
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @param beneficaryMasterSeqId
+	 *            the beneficary master seq id
+	 * @param remarks
+	 *            the remarks
+	 * @param status
+	 *            the status
+	 * @return the response wrapper M
+	 */
 	@ApiOperation(value = "Disable Beneficiary")
 	@RequestMapping(value = "/api/user/bnfcry/disable", method = { RequestMethod.POST })
 	public ResponseWrapperM<Object, AuthResponseOTPprefix> beneDisable(
@@ -101,6 +140,13 @@ public class BeneController {
 		return wrapper;
 	}
 
+	/**
+	 * Bene fav.
+	 *
+	 * @param beneficaryMasterSeqId
+	 *            the beneficary master seq id
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Set Beneficiary As Favorite")
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneficiaryListDTO> beneFav(@RequestParam BigDecimal beneficaryMasterSeqId) {
@@ -109,6 +155,11 @@ public class BeneController {
 		return wrapper;
 	}
 
+	/**
+	 * Bene fav get.
+	 *
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "get List Of Favorite Beneficiary ")
 	@RequestMapping(value = "/api/user/bnfcry/fav", method = { RequestMethod.GET })
 	public ResponseWrapper<List<BeneficiaryListDTO>> beneFavGet() {
@@ -116,6 +167,13 @@ public class BeneController {
 				jaxService.setDefaults().getBeneClient().beneFavoriteList().getResults());
 	}
 
+	/**
+	 * Save bene account in trnx.
+	 *
+	 * @param beneAccountModel
+	 *            the bene account model
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Save Bene Account Info")
 	@RequestMapping(value = "/api/user/bnfcry/account", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBeneAccountInTrnx(
@@ -124,6 +182,13 @@ public class BeneController {
 				jaxService.setDefaults().getBeneClient().saveBeneAccountInTrnx(beneAccountModel).getResult()));
 	}
 
+	/**
+	 * Save bene personal detail in trnx.
+	 *
+	 * @param benePersonalDetailModel
+	 *            the bene personal detail model
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Save Bene Personal Detail")
 	@RequestMapping(value = "/api/user/bnfcry/personal", method = { RequestMethod.POST })
 	public ResponseWrapper<JaxTransactionResponse> saveBenePersonalDetailInTrnx(
@@ -133,6 +198,11 @@ public class BeneController {
 				.saveBenePersonalDetailInTrnx(benePersonalDetailModel).getResult());
 	}
 
+	/**
+	 * Send OTP.
+	 *
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Sends OTP for Beneficiary Add")
 	@RequestMapping(value = "/api/user/bnfcry/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponseOTPprefix> sendOTP() {
@@ -144,6 +214,13 @@ public class BeneController {
 		return wrapper;
 	}
 
+	/**
+	 * Commit add bene trnx.
+	 *
+	 * @param req
+	 *            the req
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Save the current beneficary in progress")
 	@RequestMapping(value = "/api/user/bnfcry/commit", method = { RequestMethod.POST })
 	public ResponseWrapper<BeneficiaryTrnxModel> commitAddBeneTrnx(@RequestBody AuthRequestOTP req) {
