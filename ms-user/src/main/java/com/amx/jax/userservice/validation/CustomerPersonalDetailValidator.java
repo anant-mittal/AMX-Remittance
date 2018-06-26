@@ -70,7 +70,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		}	
 		List<BlackListModel> blist =blackListDao.getBlackByName(customerName.toString());		
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer registration name found matching with black list. You can't register. Contact to branch.",
+			throw new GlobalException("Customer is black listed",
 					JaxError.BLACK_LISTED_CUSTOMER.getCode());
 		}
 	}
