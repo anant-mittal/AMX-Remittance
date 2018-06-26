@@ -18,7 +18,7 @@ public interface IAdditionalBankDetailsDao extends JpaRepository<AdditionalBankD
 	public List<AdditionalBankDetailsViewx> getAdditionalBankDetails(BigDecimal currencyId, BigDecimal bankId,
 			BigDecimal remittanceModeId, BigDecimal deleveryModeId, BigDecimal countryId, String flexiField);
 
-	@Query("select a from AdditionalBankDetailsView a where a.srlId=:srlId and a.currencyId=:currencyId and a.bankId=:bankId "
+	@Query("select a from AdditionalBankDetailsViewx a where a.srlId=:srlId and a.currencyId=:currencyId and a.bankId=:bankId "
 			+ " and a.remittanceId=:remittanceModeId and a.deliveryId=:deleveryModeId ")
 	public List<AdditionalBankDetailsViewx> getAdditionalBankDetails(@Param("srlId") BigDecimal srlId,
 			@Param("currencyId") BigDecimal currencyId, @Param("bankId") BigDecimal bankId,
