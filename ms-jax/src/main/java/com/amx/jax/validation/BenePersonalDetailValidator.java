@@ -42,7 +42,14 @@ public class BenePersonalDetailValidator implements Validator {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = (BeneficiaryTrnxModel) target;
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
-		
+	    validateBeneBlacklist(benePersonalDetailModel);
+
+		//TODO : add blakc listed checki. use benePersonalDetailModel obj and concat
+		// call blacklistr dao and throw exp
+	}
+
+	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel)
+	{
 		StringBuilder beneName = new StringBuilder();
 		if(StringUtils.isNotBlank(benePersonalDetailModel.getFirstName())) {
 			beneName.append(benePersonalDetailModel.getFirstName().trim());
@@ -59,17 +66,15 @@ public class BenePersonalDetailValidator implements Validator {
 		if(StringUtils.isNotBlank(benePersonalDetailModel.getFifthName())) {
 			beneName.append(benePersonalDetailModel.getFifthName().trim());
 		}
-		
+	
 		List<BlackListModel> blist =blackListDao.getBlackByName(beneName.toString());
 		
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("Beneficiary name found matching with black list ",
 					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
 		}
-		//TODO : add blakc listed checki. use benePersonalDetailModel obj and concat
-		// call blacklistr dao and throw exp
 	}
-
+	
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
