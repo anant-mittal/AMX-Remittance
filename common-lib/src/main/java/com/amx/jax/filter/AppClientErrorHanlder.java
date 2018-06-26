@@ -32,17 +32,26 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 	public void handleError(ClientHttpResponse response) throws IOException {
 
 		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
-		
+
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
 
-		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
+		if (!ArgUtil.isEmpty(apiError)) {
+			AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
 
-		if (defExcp == null) {
-			defExcp = ExceptionFactory.get(apiError.getErrorId());
-		}
+			if (defExcp == null) {
+				defExcp = ExceptionFactory.get(apiError.getErrorId());
+			}
 
-		if (defExcp != null) {
-			throw defExcp.getInstance(apiError);
+			if (defExcp != null) {
+				throw defExcp.getInstance(apiError);
+			}
+		} else if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
+			// handle SERVER_ERROR
+		} else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
+			// handle CLIENT_ERROR
+			if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+				// throw new NotFoundException();
+			}
 		}
 
 	}
