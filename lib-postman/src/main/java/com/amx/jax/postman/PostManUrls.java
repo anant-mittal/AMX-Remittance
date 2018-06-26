@@ -1,6 +1,9 @@
 package com.amx.jax.postman;
 
 public final class PostManUrls {
+	
+	private PostManUrls() {
+	}
 
 	public static final String SEND_SMS = "/postman/sms/send";
 	public static final String SEND_EMAIL = "/postman/email/send";

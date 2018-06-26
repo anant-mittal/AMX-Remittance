@@ -49,7 +49,7 @@ public class RestService {
 	public Ajax ajax(String url) {
 		return new Ajax(getRestTemplate(), url);
 	}
-	
+
 	public Ajax ajax(URI uri) {
 		return new Ajax(getRestTemplate(), uri);
 	}
@@ -100,6 +100,15 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax contentTypeJson() {
+			headers.add("content-type", "application/json");
+			return this;
+		}
+		public Ajax acceptJson() {
+			headers.add("accept", "application/json");
+			return this;
+		}
+
 		public Ajax header(HttpHeaders header) {
 			this.headers = header;
 			return this;
@@ -118,7 +127,7 @@ public class RestService {
 		public Ajax put() {
 			return this.put(new HttpEntity<Object>(null, headers));
 		}
-		
+
 		public Ajax put(HttpEntity<?> requestEntity) {
 			this.method = HttpMethod.PUT;
 			this.requestEntity = requestEntity;
