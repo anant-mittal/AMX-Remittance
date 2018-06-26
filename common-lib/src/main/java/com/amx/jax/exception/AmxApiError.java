@@ -1,5 +1,8 @@
 package com.amx.jax.exception;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiError {
 
 	private String errorClass;
@@ -8,8 +11,15 @@ public class AmxApiError {
 
 	private String errorMessage;
 
-	// warning error
 	private String errorType;
+
+	// Spring Norms
+
+	String status;
+	String error;
+	String exception;
+	String message;
+	String path;
 
 	public AmxApiError(String errorId, String errorMessage, String errorType) {
 		super();
@@ -59,5 +69,45 @@ public class AmxApiError {
 
 	public void setErrorClass(String errorClass) {
 		this.errorClass = errorClass;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public String getError() {
+		return error;
+	}
+
+	public void setError(String error) {
+		this.error = error;
+	}
+
+	public String getException() {
+		return exception;
+	}
+
+	public void setException(String exception) {
+		this.exception = exception;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
 	}
 }

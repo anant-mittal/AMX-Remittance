@@ -309,7 +309,15 @@ public class PostManController {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP, method = RequestMethod.POST)
-	public Exception notifySlack(@RequestBody ExceptionReport eMsg, @RequestParam(required = false) String title,
+	public Exception notifySlack(@RequestBody Exception eMsg, @RequestParam(required = false) String title,
+			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
+			throws PostManException {
+		postManService.notifyException(appname, title, exception, new ExceptionReport(eMsg));
+		return eMsg;
+	}
+
+	@RequestMapping(value = PostManUrls.NOTIFY_SLACK_EXCEP_REPORT, method = RequestMethod.POST)
+	public Exception notifySlackReport(@RequestBody ExceptionReport eMsg, @RequestParam(required = false) String title,
 			@RequestParam(required = false) String appname, @RequestParam(required = false) String exception)
 			throws PostManException {
 		postManService.notifyException(appname, title, exception, eMsg);
