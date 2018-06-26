@@ -8,6 +8,10 @@ public class ExceptionReport extends Exception {
 	private String exception = null;
 	private Email email = null;
 
+	public ExceptionReport(String message) {
+		super(message);
+	}
+
 	public ExceptionReport(Exception e) {
 		super(e.getMessage());
 		this.exception = e.getClass().getName();
