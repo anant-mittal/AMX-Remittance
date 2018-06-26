@@ -37,11 +37,9 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 
 		if (!ArgUtil.isEmpty(apiError)) {
 			AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
-
 			if (defExcp == null) {
 				defExcp = ExceptionFactory.get(apiError.getErrorId());
 			}
-
 			if (defExcp != null) {
 				throw defExcp.getInstance(apiError);
 			}
