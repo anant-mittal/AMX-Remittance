@@ -9,8 +9,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
+/**
+ * The Class CustomerAuthProvider.
+ */
 @Component
 public class CustomerAuthProvider implements AuthenticationProvider {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.authentication.AuthenticationProvider#
+	 * authenticate(org.springframework.security.core.Authentication)
+	 */
 	@Override
 	public Authentication authenticate(Authentication auth) throws AuthenticationException {
 		String username = auth.getName();
@@ -21,6 +31,13 @@ public class CustomerAuthProvider implements AuthenticationProvider {
 		return new UsernamePasswordAuthenticationToken(username, password, Collections.emptyList());
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.security.authentication.AuthenticationProvider#supports(
+	 * java.lang.Class)
+	 */
 	@Override
 	public boolean supports(Class<?> auth) {
 		return auth.equals(UsernamePasswordAuthenticationToken.class);

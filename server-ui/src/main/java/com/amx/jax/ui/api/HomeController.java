@@ -35,39 +35,59 @@ import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
+/**
+ * The Class HomeController.
+ */
 @Controller
 @Api(value = "Auth APIs")
 public class HomeController {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
 
+	/** The web app config. */
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	/** The user device. */
 	@Autowired
 	private UserDeviceBean userDevice;
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The http service. */
 	@Autowired
 	HttpService httpService;
 
+	/** The check time. */
 	private long checkTime = 0L;
+
+	/** The version new. */
 	private String versionNew = "_";
 
+	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
 
+	/** The clean CDN url. */
 	@Value("${jax.cdn.url}")
 	private String cleanCDNUrl;
 
+	/** The fcm sender id. */
 	@Value("${fcm.senderid}")
 	private String fcmSenderId;
 
+	/**
+	 * Gets the version.
+	 *
+	 * @return the version
+	 */
 	public String getVersion() {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
@@ -84,6 +104,13 @@ public class HomeController {
 		return versionNew;
 	}
 
+	/**
+	 * Login ping.
+	 *
+	 * @param request
+	 *            the request
+	 * @return the string
+	 */
 	@Timed
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
@@ -99,6 +126,13 @@ public class HomeController {
 		return JsonUtil.toJson(wrapper);
 	}
 
+	/**
+	 * Login J page.
+	 *
+	 * @param model
+	 *            the model
+	 * @return the string
+	 */
 	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
@@ -111,6 +145,11 @@ public class HomeController {
 		return "app";
 	}
 
+	/**
+	 * Login P json.
+	 *
+	 * @return the string
+	 */
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET, RequestMethod.POST }, headers = {
 			"Accept=application/json", "Accept=application/v0+json" })
 	@ResponseBody
@@ -120,6 +159,13 @@ public class HomeController {
 		return JsonUtil.toJson(wrapper);
 	}
 
+	/**
+	 * Default page.
+	 *
+	 * @param model
+	 *            the model
+	 * @return the string
+	 */
 	@RequestMapping(value = { "/register/**", "/app/**", "/home/**", "/" }, method = { RequestMethod.GET })
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
@@ -131,10 +177,19 @@ public class HomeController {
 		return "app";
 	}
 
+	/**
+	 * Terms page.
+	 *
+	 * @param model
+	 *            the model
+	 * @param lang
+	 *            the lang
+	 * @return the string
+	 */
 	@RequestMapping(value = { "/app/terms", "/pub/terms" }, method = { RequestMethod.GET })
 	public String termsPage(Model model, @RequestParam Language lang) {
 		model.addAttribute("lang", httpService.getLanguage());
-		sessionService.getGuestSession().setLang(lang);
+		sessionService.getGuestSession().setLanguage(lang);
 		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
 		return "terms";
 	}

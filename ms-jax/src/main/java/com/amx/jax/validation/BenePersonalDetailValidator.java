@@ -2,6 +2,7 @@ package com.amx.jax.validation;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -12,6 +13,8 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
@@ -24,6 +27,9 @@ public class BenePersonalDetailValidator implements Validator {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	BlackListDao blackListDao;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -36,8 +42,39 @@ public class BenePersonalDetailValidator implements Validator {
 		BeneficiaryTrnxModel beneficiaryTrnxModel = (BeneficiaryTrnxModel) target;
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+	    validateBeneBlacklist(benePersonalDetailModel);
+
+		//TODO : add blakc listed checki. use benePersonalDetailModel obj and concat
+		// call blacklistr dao and throw exp
 	}
 
+	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel)
+	{
+		StringBuilder beneName = new StringBuilder();
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFirstName())) {
+			beneName.append(benePersonalDetailModel.getFirstName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getSecondName())) {
+			beneName.append(benePersonalDetailModel.getSecondName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getThirdName())) {
+			beneName.append(benePersonalDetailModel.getThirdName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFourthName())) {
+			beneName.append(benePersonalDetailModel.getFourthName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFifthName())) {
+			beneName.append(benePersonalDetailModel.getFifthName().trim());
+		}
+	
+		List<BlackListModel> blist =blackListDao.getBlackByName(beneName.toString());
+		
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException("Beneficiary name found matching with black list ",
+					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+		}
+	}
+	
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 

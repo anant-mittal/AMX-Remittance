@@ -114,11 +114,13 @@ public class BankMetaService extends AbstractService {
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
 		if (StringUtils.isNotBlank(ifsc)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCase(countryId, bankId, ifsc));
+			ifsc =  ifsc + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCase(countryId, bankId, swift));
+			swift =  swift + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {

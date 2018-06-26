@@ -18,12 +18,29 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
+/**
+ * The listener interface for receiving webSession events. The class that is
+ * interested in processing a webSession event implements this interface, and
+ * the object created with that class is registered with a component using the
+ * component's <code>addWebSessionListener<code> method. When the webSession
+ * event occurs, that object's appropriate method is invoked.
+ *
+ * @see WebSessionEvent
+ */
 @Component
 public class WebSessionListener implements HttpSessionListener {
 
+	/** The app config. */
 	@Autowired
 	private AppConfig appConfig;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.
+	 * HttpSessionEvent)
+	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
 		SessionEvent evt = new SessionEvent();
@@ -33,6 +50,13 @@ public class WebSessionListener implements HttpSessionListener {
 		AuditServiceClient.logStatic(evt);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpSessionListener#sessionDestroyed(javax.servlet.http.
+	 * HttpSessionEvent)
+	 */
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
 		SessionEvent evt = new SessionEvent();

@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class CollectionUtil.
  */

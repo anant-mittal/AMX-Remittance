@@ -21,41 +21,67 @@ import com.amx.jax.ui.service.SessionService;
 
 import io.swagger.annotations.Api;
 
+/**
+ * The Class AuthController.
+ */
 @RestController
 @Api(value = "User Auth APIs")
 public class AuthController {
 
+	/** The Constant SECURITYQUESTIONMODEL. */
 	public static final String SECURITYQUESTIONMODEL = "" + SecurityQuestionModel.class.getName();
 
+	/** The login service. */
 	@Autowired
 	private LoginService loginService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
 	/**
-	 * Asks for user login and password
-	 * 
-	 * @param identity
-	 * @param password
-	 * @return
-	 * @throws Exception
+	 * Asks for user login and password.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/auth/login", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> login(@Valid @RequestBody AuthRequest authData) {
 		return loginService.login(authData.getIdentity(), authData.getPassword());
 	}
 
+	/**
+	 * Login sec ques.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/auth/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> loginSecQues(@Valid @RequestBody AuthRequest authData) {
 		return loginService.loginSecQues(authData.getAnswer(), authData.getmOtp());
 	}
 
+	/**
+	 * Send OTP.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/auth/otp", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> sendOTP(@Valid @RequestBody AuthRequest authData) {
 		return loginService.sendOTP(authData.getIdentity(), null);
 	}
 
+	/**
+	 * Inits the reset.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/auth/reset", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthResponse> initReset(@Valid @RequestBody AuthRequest authData) {
 		if (authData.getmOtp() == null && authData.geteOtp() == null) {
@@ -65,11 +91,23 @@ public class AuthController {
 		}
 	}
 
+	/**
+	 * Reset password.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/auth/password", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> resetPassword(@Valid @RequestBody AuthRequest authData) {
 		return loginService.updatepwd(authData.getPassword(), authData.getmOtp(), authData.geteOtp());
 	}
 
+	/**
+	 * Logout.
+	 *
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/auth/logout", method = { RequestMethod.POST })
 	public ResponseWrapper<UserMetaData> logout() {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());

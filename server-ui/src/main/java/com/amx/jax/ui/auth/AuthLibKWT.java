@@ -6,16 +6,33 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 
+/**
+ * The Class AuthLibKWT.
+ */
 @Component
 @TenantSpecific({ Tenant.KWT, Tenant.BHR, Tenant.OMN })
 public class AuthLibKWT implements AuthLib {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.ui.auth.AuthLibContext.AuthLib#toNextAuthState(com.amx.jax.ui.
+	 * auth.AuthState)
+	 */
 	@Override
 	public AuthState toNextAuthState(AuthState authState) {
 		authState.cStep = getNextAuthStep(authState);
 		return authState;
 	}
 
+	/**
+	 * Check login step.
+	 *
+	 * @param authState
+	 *            the auth state
+	 * @return the auth state. auth step
+	 */
 	private AuthState.AuthStep checkLoginStep(AuthState authState) {
 		if (authState.cStep == null) {
 			return AuthState.AuthStep.USERPASS;
@@ -30,6 +47,13 @@ public class AuthLibKWT implements AuthLib {
 		}
 	}
 
+	/**
+	 * Check reset step.
+	 *
+	 * @param authState
+	 *            the auth state
+	 * @return the auth state. auth step
+	 */
 	private AuthState.AuthStep checkResetStep(AuthState authState) {
 		if (authState.cStep == null) {
 			return AuthState.AuthStep.IDVALID;
@@ -44,6 +68,13 @@ public class AuthLibKWT implements AuthLib {
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.ui.auth.AuthLibContext.AuthLib#getNextAuthStep(com.amx.jax.ui.
+	 * auth.AuthState)
+	 */
 	public AuthState.AuthStep getNextAuthStep(AuthState authState) {
 		if (authState.flow == AuthState.AuthFlow.LOGIN) {
 			return checkLoginStep(authState);
@@ -57,6 +88,13 @@ public class AuthLibKWT implements AuthLib {
 		return authState.cStep;
 	}
 
+	/**
+	 * Check reg step.
+	 *
+	 * @param authState
+	 *            the auth state
+	 * @return the auth state. auth step
+	 */
 	private AuthState.AuthStep checkRegStep(AuthState authState) {
 		if (authState.cStep == null) {
 			return AuthState.AuthStep.IDVALID;
@@ -79,6 +117,13 @@ public class AuthLibKWT implements AuthLib {
 		}
 	}
 
+	/**
+	 * Check activation step.
+	 *
+	 * @param authState
+	 *            the auth state
+	 * @return the auth state. auth step
+	 */
 	private AuthState.AuthStep checkActivationStep(AuthState authState) {
 		if (authState.cStep == null) {
 			return AuthState.AuthStep.IDVALID;

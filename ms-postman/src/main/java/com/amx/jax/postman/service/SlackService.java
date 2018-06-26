@@ -27,23 +27,40 @@ import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
+/**
+ * The Class SlackService.
+ */
 @Component
 public class SlackService {
 
+	/** The logger. */
 	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+	/** The exception channel code. */
 	@Value("${slack.exception.channel}")
 	private String exceptionChannelCode;
 
+	/** The app config. */
 	@Autowired
 	AppConfig appConfig;
 
+	/** The post man config. */
 	@Autowired
 	PostManConfig postManConfig;
 
+	/** The rest service. */
 	@Autowired
 	RestService restService;
 
+	/**
+	 * Send.
+	 *
+	 * @param message
+	 *            the message
+	 * @param channel
+	 *            the channel
+	 * @return the string
+	 */
 	private String send(Map<String, Object> message, Channel channel) {
 		return restService.ajax("https://slack.com/api/chat.postMessage")
 				.header("Authorization",
@@ -53,6 +70,13 @@ public class SlackService {
 				.postJson(message).asString();
 	}
 
+	/**
+	 * Send notification.
+	 *
+	 * @param msg
+	 *            the msg
+	 * @return the notipy
+	 */
 	public Notipy sendNotification(Notipy msg) {
 
 		Map<String, Object> message = new HashMap<>();
@@ -78,16 +102,47 @@ public class SlackService {
 		return msg;
 	}
 
+	/**
+	 * Send exception.
+	 *
+	 * @param title
+	 *            the title
+	 * @param e
+	 *            the e
+	 * @return the exception report
+	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public ExceptionReport sendException(String title, Exception e) {
 		return this.sendException(title, new ExceptionReport(e));
 	}
 
+	/**
+	 * Send exception.
+	 *
+	 * @param title
+	 *            the title
+	 * @param e
+	 *            the e
+	 * @return the exception report
+	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public ExceptionReport sendException(String title, ExceptionReport e) {
 		return this.sendException(appConfig.getAppName(), title, e.getClass().getName(), e);
 	}
 
+	/**
+	 * Send exception.
+	 *
+	 * @param appname
+	 *            the appname
+	 * @param title
+	 *            the title
+	 * @param exception
+	 *            the exception
+	 * @param e
+	 *            the e
+	 * @return the exception report
+	 */
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
 	public ExceptionReport sendException(String appname, String title, String exception, ExceptionReport e) {
 

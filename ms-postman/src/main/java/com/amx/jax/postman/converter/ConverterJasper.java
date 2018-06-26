@@ -33,26 +33,42 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.JasperReportsContext;
 import net.sf.jasperreports.engine.SimpleJasperReportsContext;
 
+/**
+ * The Class ConverterJasper.
+ */
 @Component
 public class ConverterJasper implements FileConverter {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterJasper.class);
 
+	/** The simple report filler. */
 	@Autowired
 	SimpleReportFiller simpleReportFiller;
 
+	/** The simple exporter. */
 	@Autowired
 	SimpleReportExporter simpleExporter;
 
+	/** The post man config. */
 	@Autowired
 	PostManConfig postManConfig;
 
+	/** The message source. */
 	@Autowired
 	private MessageSource messageSource;
 
+	/** The template utils. */
 	@Autowired
 	private TemplateUtils templateUtils;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.postman.converter.FileConverter#toPDF(com.amx.jax.postman.model.
+	 * File)
+	 */
 	@Override
 	@Timed(name = "PDF_CREATION_JASPER", absolute = true)
 	public File toPDF(File file) throws JRException {
@@ -102,6 +118,13 @@ public class ConverterJasper implements FileConverter {
 		return file;
 	}
 
+	/**
+	 * To PDF 2.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the file
+	 */
 	public File toPDF2(File file) {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try {

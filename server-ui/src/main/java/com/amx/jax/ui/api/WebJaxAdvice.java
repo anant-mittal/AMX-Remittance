@@ -38,23 +38,42 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.utils.ArgUtil;
 
+/**
+ * The Class WebJaxAdvice.
+ */
 @ControllerAdvice
 public class WebJaxAdvice {
 
+	/** The audit service. */
 	@Autowired
 	private AuditService auditService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The guest session. */
 	@Autowired
 	private GuestSession guestSession;
 
+	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
 
+	/** The log. */
 	private Logger LOG = LoggerFactory.getLogger(WebJaxAdvice.class);
 
+	/**
+	 * Handle.
+	 *
+	 * @param exc
+	 *            the exc
+	 * @param request
+	 *            the request
+	 * @param response
+	 *            the response
+	 * @return the response entity
+	 */
 	@ExceptionHandler(AbstractJaxException.class)
 	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractJaxException exc, HttpServletRequest request,
 			HttpServletResponse response) {
@@ -80,6 +99,13 @@ public class WebJaxAdvice {
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
+	/**
+	 * Handle.
+	 *
+	 * @param exception
+	 *            the exception
+	 * @return the response entity
+	 */
 	@ExceptionHandler(ConstraintViolationException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -98,6 +124,13 @@ public class WebJaxAdvice {
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * Handle.
+	 *
+	 * @param exception
+	 *            the exception
+	 * @return the response entity
+	 */
 	@ExceptionHandler(HttpMessageNotReadableException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -105,7 +138,6 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<ResponseError> errors = new ArrayList<ResponseError>();
 		ResponseError newError = new ResponseError();
-		// newError.setField(exception.get);
 		newError.setDescription(HttpService.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
@@ -114,6 +146,17 @@ public class WebJaxAdvice {
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * Handle.
+	 *
+	 * @param ex
+	 *            the ex
+	 * @param request
+	 *            the request
+	 * @param response
+	 *            the response
+	 * @return the response entity
+	 */
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -135,6 +178,17 @@ public class WebJaxAdvice {
 		return notValidArgument(ex, errors, request, response);
 	}
 
+	/**
+	 * Handle.
+	 *
+	 * @param ex
+	 *            the ex
+	 * @param request
+	 *            the request
+	 * @param response
+	 *            the response
+	 * @return the response entity
+	 */
 	@ExceptionHandler(MethodArgumentTypeMismatchException.class)
 	@ResponseBody
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -148,6 +202,19 @@ public class WebJaxAdvice {
 		return notValidArgument(ex, errors, request, response);
 	}
 
+	/**
+	 * Not valid argument.
+	 *
+	 * @param ex
+	 *            the ex
+	 * @param errors
+	 *            the errors
+	 * @param request
+	 *            the request
+	 * @param response
+	 *            the response
+	 * @return the response entity
+	 */
 	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<ResponseError> errors,
 			HttpServletRequest request, HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
@@ -157,6 +224,15 @@ public class WebJaxAdvice {
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.BAD_REQUEST);
 	}
 
+	/**
+	 * Handle all.
+	 *
+	 * @param ex
+	 *            the ex
+	 * @param request
+	 *            the request
+	 * @return the response entity
+	 */
 	@ExceptionHandler({ Exception.class })
 	public ResponseEntity<ResponseWrapper<Object>> handleAll(Exception ex, WebRequest request) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
