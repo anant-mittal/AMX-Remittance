@@ -2,18 +2,21 @@ package com.amx.jax.postman.model;
 
 public class ExceptionReport extends Exception {
 
-	private static final long serialVersionUID = -2576530798373715398L;
-
+	private static final long serialVersionUID = -3506343577395440166L;
 	private String title = null;
 	private String exception = null;
 	private Email email = null;
+
+	public ExceptionReport() {
+		super();
+	}
 
 	public ExceptionReport(String message) {
 		super(message);
 	}
 
 	public ExceptionReport(Exception e) {
-		super(e.getMessage());
+		this(e.getMessage());
 		this.exception = e.getClass().getName();
 		this.setStackTrace(e.getStackTrace());
 	}
