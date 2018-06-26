@@ -162,8 +162,8 @@ public class PostManClient implements PostManService {
 	public ExceptionReport notifyException(ExceptionReport e) {
 		LOGGER.info("Sending exception = {} : {}", e.getTitle(), e.getClass().getName());
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP).contentTypeJson()
-					.queryParam("appname", appConfig.getAppName()).queryParam("title", e.getTitle())
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP_REPORT)
+					.contentTypeJson().queryParam("appname", appConfig.getAppName()).queryParam("title", e.getTitle())
 					.queryParam("exception", e.getException()).post(e).as(ExceptionReport.class);
 
 		} catch (Exception e1) {

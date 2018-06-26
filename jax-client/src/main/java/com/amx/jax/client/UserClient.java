@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -356,7 +357,7 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			LOGGER.info("Bene Clinet to get bene list Input String :");
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(new HttpHeaders());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
 					});
