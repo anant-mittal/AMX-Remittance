@@ -11,30 +11,22 @@ public class JaxTransactionEvent extends JaxAuditEvent {
 	String applicationDocumentNo;
 
 	BigDecimal applicationDocumentFinYear;
-	
-	
 
 	public JaxTransactionEvent(JaxTransactionStatus transactionStatus, String applicationDocumentNo,
 			BigDecimal applicationDocumentFinYear) {
-		super();
+		super(Type.APPLICATION_CREATED);
 		this.transactionStatus = transactionStatus;
 		this.applicationDocumentNo = applicationDocumentNo;
 		this.applicationDocumentFinYear = applicationDocumentFinYear;
 	}
 
-	
-
 	public String getApplicationDocumentNo() {
 		return applicationDocumentNo;
 	}
 
-
-
 	public void setApplicationDocumentNo(String applicationDocumentNo) {
 		this.applicationDocumentNo = applicationDocumentNo;
 	}
-
-
 
 	public BigDecimal getApplicationDocumentFinYear() {
 		return applicationDocumentFinYear;
