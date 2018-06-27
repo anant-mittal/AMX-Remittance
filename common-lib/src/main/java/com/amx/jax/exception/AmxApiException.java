@@ -69,6 +69,10 @@ public abstract class AmxApiException extends RuntimeException {
 		this.errorKey = errorKey;
 	}
 
+	public AmxApiError createAmxApiError() {
+		return new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+	}
+
 	/**
 	 * Should return fresh new instance of exception
 	 * 
