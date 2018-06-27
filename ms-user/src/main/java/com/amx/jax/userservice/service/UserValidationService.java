@@ -290,7 +290,7 @@ public class UserValidationService {
 		}
 	}
 
-	private void validateBlackListedCustomer(Customer customer) {
+	void validateBlackListedCustomer(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -316,11 +316,13 @@ public class UserValidationService {
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("Customer name found matching with black list ",
 					JaxError.BLACK_LISTED_CUSTOMER.getCode());
-		}
-		blist = blistDao.getBlackByName(localNamesbuf.toString());
-		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer local name found matching with black list ",
-					JaxError.BLACK_LISTED_CUSTOMER.getCode());
+		}		
+		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
+			blist = blistDao.getBlackByName(localNamesbuf.toString());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Customer local name found matching with black list ",
+						JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			}
 		}
 	}
 

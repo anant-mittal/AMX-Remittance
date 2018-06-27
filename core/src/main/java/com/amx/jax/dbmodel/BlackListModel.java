@@ -24,6 +24,7 @@ public class BlackListModel implements Serializable{
 	private  String cName;
 	private String fullName;
 	private String arabicName;
+	private  String cAName;
 	
 	
 
@@ -54,6 +55,16 @@ public class BlackListModel implements Serializable{
 	public void setArabicName(String arabicName) {
 		this.arabicName = arabicName;
 	}
+
+	@Column(name="CANAME")
+	public String getcAName() {
+		return cAName;
+	}
+
+	public void setcAName(String cAName) {
+		this.cAName = cAName;
+	}
+	
 	
 
 }
