@@ -47,7 +47,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		raiseAlert(ex);
-		return new ResponseEntity<AmxApiError>(error, HttpStatus.OK);
+		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
 	}
 
 	private void raiseAlert(AbstractJaxException ex) {
