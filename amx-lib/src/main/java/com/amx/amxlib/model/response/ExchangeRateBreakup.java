@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class ExchangeRateBreakup {
+public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 
 	@JsonProperty("domXRate")
 	BigDecimal rate;
@@ -19,13 +19,13 @@ public class ExchangeRateBreakup {
 	BigDecimal convertedLCAmount;
 
 	BigDecimal netAmount;
-	
+
 	BigDecimal netAmountWithoutLoyality;
-	
+
 	BigDecimal lcDecimalNumber;
-	
+
 	BigDecimal fcDecimalNumber;
-	
+
 	public BigDecimal getRate() {
 		return rate;
 	}
@@ -88,6 +88,11 @@ public class ExchangeRateBreakup {
 
 	public void setLcDecimalNumber(BigDecimal lcDecimalNumber) {
 		this.lcDecimalNumber = lcDecimalNumber;
+	}
+
+	@Override
+	public int compareTo(ExchangeRateBreakup o) {
+		return this.rate.compareTo(o.rate);
 	}
 
 }

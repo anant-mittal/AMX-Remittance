@@ -79,6 +79,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -149,6 +150,7 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private BeneficiaryCheckService beneCheckService;
+	@Autowired RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 	
@@ -609,6 +611,10 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+		
+		remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);
+		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();

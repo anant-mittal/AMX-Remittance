@@ -6,6 +6,7 @@ package com.amx.amxlib.model.request;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 
 /**
  * @author Prashant
@@ -24,6 +25,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
+	private ExchangeRateBreakup exRateBreakup;
 
 	/*
 	 * (non-Javadoc)
@@ -96,6 +98,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
+	}
+
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
+	}
+
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
 	}
 
 }
