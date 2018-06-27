@@ -357,7 +357,9 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			LOGGER.info("Bene Clinet to get bene list Input String :");
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			// new HttpHeaders()
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(new HttpHeaders());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
 					});
@@ -365,7 +367,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getMyProfileInfo : ", e);
-			throw new JaxSystemError();
+			throw new JaxSystemError(e);
 		} // end of try-catch
 
 	}
