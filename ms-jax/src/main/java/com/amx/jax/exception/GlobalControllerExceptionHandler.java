@@ -3,6 +3,7 @@ package com.amx.jax.exception;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -22,7 +23,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.jax.JaxFieldValidationException;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.util.JaxContextUtil;
@@ -40,18 +40,14 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
 	@ExceptionHandler(AbstractJaxException.class)
 	@ResponseBody
-	public AmxApiError handleInvalidInputException(AbstractJaxException ex) {
-
-		ApiResponse response = getApiResponse(ex);
-		List<AmxApiError> errors = response.getError();
-		AmxApiError error = errors.get(0);
+	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
+			HttpServletResponse response) {
+		AmxApiError error = ex.createAmxApiError();
 		error.setErrorClass(ex.getClass().getName());
-		setErrorHeaders(error);
-		response.setResponseStatus(ResponseStatus.BAD_REQUEST);
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		raiseAlert(ex);
-		return error;
+		return new ResponseEntity<AmxApiError>(error, HttpStatus.OK);
 	}
 
 	private void raiseAlert(AbstractJaxException ex) {
@@ -65,7 +61,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	}
 
 	private void setErrorHeaders(AmxApiError error) {
-		// httpResponse.addHeader("apiErrorJson", JsonUtil.toJson(error));
+		httpResponse.addHeader("apiErrorJson", JsonUtil.toJson(error));
 	}
 
 	private ApiResponse getApiResponse(AbstractJaxException ex) {
@@ -83,14 +79,12 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 
 		JaxFieldValidationException exception = new JaxFieldValidationException(
 				processFieldErrors(ex.getBindingResult()));
-		ApiResponse apiResponse = getApiResponse(exception);
-		List<AmxApiError> errors = apiResponse.getError();
-		AmxApiError error = errors.get(0);
+		AmxApiError error = exception.createAmxApiError();
 		error.setErrorClass(ex.getClass().getName());
 		// JaxFieldError validationErrorField = new
 		// JaxFieldError(ex.getBindingResult().getFieldError().getField());
 		// errors.get(0).setValidationErrorField(validationErrorField);
-		setErrorHeaders(error);
+		// setErrorHeaders(error);
 		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
 

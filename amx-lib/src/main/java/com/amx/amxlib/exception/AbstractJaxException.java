@@ -49,6 +49,5 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	public AbstractJaxException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 }
