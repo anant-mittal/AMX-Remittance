@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.constraints.Null;
-
 import com.amx.jax.dict.Language;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,10 +23,6 @@ public class Message implements Serializable {
 	private MessageType messageType = null;
 
 	private List<String> lines = new ArrayList<String>();
-
-	@Null
-	@JsonIgnore
-	private String object;
 
 	public Map<String, Object> getModel() {
 		return model;

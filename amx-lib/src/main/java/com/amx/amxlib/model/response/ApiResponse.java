@@ -44,7 +44,7 @@ public class ApiResponse<T> {
 		List<T> result = new ArrayList<>();
 		if (this.getData() != null && this.getData().getValues() != null && this.getData().getValues().size() > 0) {
 			List<Object> values = this.getData().getValues();
-			
+
 			for (Object value : values) {
 				result.add((T) value);
 			}

@@ -117,8 +117,7 @@ public class PostManClient implements PostManService {
 	public File processTemplate(File file) throws PostManException {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.PROCESS_TEMPLATE_FILE)
-					.queryParam(PARAM_LANG, getLang()).header("content-type", "application/json")
-					.header("accept", "application/json").post(file).as(File.class);
+					.queryParam(PARAM_LANG, getLang()).contentTypeJson().acceptJson().post(file).as(File.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
@@ -129,13 +128,13 @@ public class PostManClient implements PostManService {
 	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException {
 		try {
 			@SuppressWarnings("unchecked")
-			Map<String, Object> resp = restService.ajax("https://www.google.com/recaptcha/api/siteverify")
-					.header("accept", "application/json").field("secret", googleSecret).field("response", responseKey)
-					.field("remoteip", remoteIP).postForm().as(Map.class);
+			Map<String, Object> resp = restService.ajax("https://www.google.com/recaptcha/api/siteverify").acceptJson()
+					.field("secret", googleSecret).field("response", responseKey).field("remoteip", remoteIP).postForm()
+					.as(Map.class);
 			if (resp != null) {
 				return ArgUtil.parseAsBoolean(resp.get("success"));
 			}
-			return null;
+			return false;
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
@@ -148,7 +147,7 @@ public class PostManClient implements PostManService {
 		try {
 			Map<String, Object> response = restService.ajax(url)
 					// .header("content-type", "application/json")
-					.header("accept", "application/json").get().as(Map.class);
+					.acceptJson().get().as(Map.class);
 			if (response != null) {
 				return response;
 			}
@@ -163,10 +162,9 @@ public class PostManClient implements PostManService {
 	public ExceptionReport notifyException(ExceptionReport e) {
 		LOGGER.info("Sending exception = {} : {}", e.getTitle(), e.getClass().getName());
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
-					.header("content-type", "application/json").queryParam("appname", appConfig.getAppName())
-					.queryParam("title", e.getTitle()).queryParam("exception", e.getException()).post(e)
-					.as(ExceptionReport.class);
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP_REPORT)
+					.contentTypeJson().queryParam("appname", appConfig.getAppName()).queryParam("title", e.getTitle())
+					.queryParam("exception", e.getException()).post(e).as(ExceptionReport.class);
 
 		} catch (Exception e1) {
 			LOGGER.error("Exception while sending title={}", e.getTitle(), e1);
