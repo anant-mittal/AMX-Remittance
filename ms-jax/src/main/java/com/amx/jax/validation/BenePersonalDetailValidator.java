@@ -43,9 +43,7 @@ public class BenePersonalDetailValidator implements Validator {
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
 		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
 	    validateBeneBlacklist(benePersonalDetailModel);
-
-		//TODO : add blakc listed checki. use benePersonalDetailModel obj and concat
-		// call blacklistr dao and throw exp
+	    validateBeneArabicBlacklist(benePersonalDetailModel);
 	}
 
 	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel)
@@ -72,6 +70,35 @@ public class BenePersonalDetailValidator implements Validator {
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("Beneficiary name found matching with black list ",
 					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+		}
+	}
+	
+	private void validateBeneArabicBlacklist(BenePersonalDetailModel benePersonalDetailModel)
+	{
+		StringBuilder beneArabicName = new StringBuilder();
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFirstName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFirstName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalSecondName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalSecondName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalThirdName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalThirdName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFourthName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFourthName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFifthName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFifthName().trim());
+		}
+	
+		if (beneArabicName.toString() != null && !beneArabicName.toString().isEmpty()) {
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneArabicName.toString());
+
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
+						JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+			}
 		}
 	}
 	
