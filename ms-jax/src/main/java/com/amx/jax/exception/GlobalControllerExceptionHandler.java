@@ -1,8 +1,5 @@
 package com.amx.jax.exception;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,11 +19,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.jax.JaxFieldValidationException;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.util.JaxContextUtil;
-import com.amx.utils.JsonUtil;
 
 @ControllerAdvice
 @SuppressWarnings(value = { "unchecked", "rawtypes" })
@@ -35,8 +30,6 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	private Logger logger = Logger.getLogger(GlobalControllerExceptionHandler.class);
 	@Autowired
 	private ApplicationContext appContext;
-	@Autowired
-	private HttpServletResponse httpResponse;
 
 	@ExceptionHandler(AbstractJaxException.class)
 	@ResponseBody
@@ -58,19 +51,6 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 				alert.sendAlert(ex);
 			}
 		}
-	}
-
-	private void setErrorHeaders(AmxApiError error) {
-		httpResponse.addHeader("apiErrorJson", JsonUtil.toJson(error));
-	}
-
-	private ApiResponse getApiResponse(AbstractJaxException ex) {
-		ApiResponse response = new ApiResponse();
-		List<AmxApiError> errors = new ArrayList<>();
-		AmxApiError error = ex.createAmxApiError();
-		errors.add(error);
-		response.setError(errors);
-		return response;
 	}
 
 	@Override
