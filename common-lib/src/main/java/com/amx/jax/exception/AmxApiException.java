@@ -1,5 +1,7 @@
 package com.amx.jax.exception;
 
+import org.springframework.http.HttpStatus;
+
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
@@ -13,11 +15,15 @@ public abstract class AmxApiException extends RuntimeException {
 
 	protected IExceptionEnum error;
 
+	protected HttpStatus httpStatus;
+
 	public AmxApiException() {
 		super();
+		this.httpStatus = HttpStatus.BAD_REQUEST;
 	}
 
 	public AmxApiException(AmxApiError error) {
+		super();
 		try {
 			this.error = getErrorIdEnum(error.getErrorId());
 		} catch (Exception e) {
@@ -69,6 +75,10 @@ public abstract class AmxApiException extends RuntimeException {
 		this.errorKey = errorKey;
 	}
 
+	public AmxApiError createAmxApiError() {
+		return new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+	}
+
 	/**
 	 * Should return fresh new instance of exception
 	 * 
@@ -79,4 +89,12 @@ public abstract class AmxApiException extends RuntimeException {
 	public abstract AmxApiException getInstance(AmxApiError apiError);
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
+
+	public HttpStatus getHttpStatus() {
+		return httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus;
+	}
+
+	public void setHttpStatus(HttpStatus httpStatus) {
+		this.httpStatus = httpStatus;
+	}
 }

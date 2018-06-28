@@ -1,8 +1,11 @@
 package com.amx.amxlib.meta.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class JaxMetaParameter {
+public class JaxMetaParameter implements Serializable {
+
+	private static final long serialVersionUID = -1863361054395335347L;
 
 	BigDecimal newBeneTransactionTimeLimit;
 	BigDecimal maxDomAmountLimit;
@@ -31,6 +34,5 @@ public class JaxMetaParameter {
 	public void setApplicationCountryId(BigDecimal applicationCountryId) {
 		this.applicationCountryId = applicationCountryId;
 	}
-	
-	
+
 }

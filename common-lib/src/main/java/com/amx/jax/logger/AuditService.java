@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 
 public interface AuditService {
 
+	public static final String AUDIT_EVENT_TOPIC = "AUDIT_EVENT_TOPIC";
+
 	/**
 	 * Log Audit Events
 	 * 
@@ -27,14 +29,6 @@ public interface AuditService {
 	 * @return
 	 */
 	public AuditLoggerResponse gauge(AuditEvent event);
-
-	/**
-	 * Missed / failed /No Action events
-	 * 
-	 * @param event
-	 * @return
-	 */
-	public AuditLoggerResponse fail(AuditEvent event);
 
 	/**
 	 * 

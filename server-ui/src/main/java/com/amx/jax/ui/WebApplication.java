@@ -20,8 +20,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.ui.config.WebTenantFilter;
 
+/**
+ * The Class WebApplication.
+ */
 @ServletComponentScan
 @SpringBootApplication(exclude = DataSourceAutoConfiguration.class)
 @ComponentScan("com.amx.jax")
@@ -29,20 +33,39 @@ import com.amx.jax.ui.config.WebTenantFilter;
 @EnableCaching
 public class WebApplication extends SpringBootServletInitializer {
 
+	/** The Constant USE_HAZELCAST. */
 	public static final String USE_HAZELCAST = "false";
+
+	/** The Constant USE_REDIS. */
 	public static final String USE_REDIS = "true";
 
+	/**
+	 * The main method.
+	 *
+	 * @param args
+	 *            the arguments
+	 */
 	public static void main(String[] args) {
-		// ConfigurableApplicationContext context =
 		SpringApplication.run(WebApplication.class, args);
-		// context.getBean(HealthService.class).sendApplicationLiveMessage();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.boot.web.support.SpringBootServletInitializer#configure(
+	 * org.springframework.boot.builder.SpringApplicationBuilder)
+	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder applicationBuilder) {
 		return applicationBuilder.sources(WebApplication.class);
 	}
 
+	/**
+	 * Filter registration bean.
+	 *
+	 * @return the filter registration bean
+	 */
 	@Bean(name = "checkSession")
 	public FilterRegistrationBean filterRegistrationBean() {
 		WebTenantFilter f = new WebTenantFilter();
@@ -54,30 +77,31 @@ public class WebApplication extends SpringBootServletInitializer {
 		return registrationBean;
 	}
 
+	/**
+	 * Security filter chain registration.
+	 *
+	 * @param securityProperties
+	 *            the security properties
+	 * @return the delegating filter proxy registration bean
+	 */
 	@Bean
 	@ConditionalOnBean(name = "checkSession")
 	public DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(
 			SecurityProperties securityProperties) {
 		DelegatingFilterProxyRegistrationBean registration = new DelegatingFilterProxyRegistrationBean("checkSession");
 		registration.setOrder(securityProperties.getFilterOrder());
-		// registration.setDispatcherTypes(getDispatcherTypes(securityProperties));
 		return registration;
 	}
 
-	// @Bean
-	// ServletListenerRegistrationBean<ServletRequestListener>
-	// myServletRequestListener() {
-	// ServletListenerRegistrationBean<ServletRequestListener> srb = new
-	// ServletListenerRegistrationBean<>();
-	// srb.setListener(new WebRequestListener());
-	// return srb;
-	// }
-
+	/**
+	 * Jax meta info.
+	 *
+	 * @return the jax meta info
+	 */
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
-		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
-		return metaInfo;
+	public JaxMetaInfo jaxMetaInfo() {
+		return new com.amx.jax.amxlib.model.JaxMetaInfo();
 	}
 
 }

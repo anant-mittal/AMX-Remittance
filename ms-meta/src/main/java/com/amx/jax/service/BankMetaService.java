@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
@@ -27,7 +28,6 @@ import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
@@ -114,11 +114,13 @@ public class BankMetaService extends AbstractService {
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
 		if (StringUtils.isNotBlank(ifsc)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCase(countryId, bankId, ifsc));
+			ifsc =  ifsc + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCase(countryId, bankId, swift));
+			swift =  swift + "%";
+			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {

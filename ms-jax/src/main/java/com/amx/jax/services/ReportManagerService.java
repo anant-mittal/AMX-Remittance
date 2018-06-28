@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.RemittanceReportBean;
@@ -32,7 +33,6 @@ import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
 import com.amx.jax.repository.ICompanyDAO;

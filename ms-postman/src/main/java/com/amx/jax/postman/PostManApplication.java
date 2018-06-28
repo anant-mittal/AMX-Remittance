@@ -8,28 +8,34 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
-import com.amx.jax.def.MockParamBuilder;
-import com.amx.jax.def.MockParamBuilder.MockParam;
-
+/**
+ * The Class PostManApplication.
+ */
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.amx.jax", "com.bootloaderjs" })
 @EnableAsync(proxyTargetClass = true)
 public class PostManApplication {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args
+	 *            the arguments
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(PostManApplication.class, args);
 	}
 
+	/**
+	 * Rest template.
+	 *
+	 * @param builder
+	 *            the builder
+	 * @return the rest template
+	 */
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) {
 		RestTemplate restTemplate = builder.build();
 		return restTemplate;
-	}
-
-	@Bean
-	public MockParam metaInfo() {
-		return new MockParamBuilder().name("meta-info").description("meta-info").defaultValue(
-				"{\"countryId\":91,\"customerId\":5218,\"companyId\":1,\"channel\":\"ONLINE\" , \"countryBranchId\":\"78\", \"tenant\":\"KWT2\"}")
-				.parameterType(MockParamBuilder.MockParamType.HEADER).required(true).build();
 	}
 }

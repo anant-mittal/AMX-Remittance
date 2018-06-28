@@ -20,75 +20,117 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.HttpService;
-import com.amx.jax.session.LoggedInUsers;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.jax.ui.session.LoggedInUsers;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.jax.ui.session.UserSession;
 
+/**
+ * The Class SessionService.
+ */
 @Component
 public class SessionService {
 
+	/** The Constant USER_KEY_FORMAT. */
 	private static final String USER_KEY_FORMAT = "%s#%s";
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(SessionService.class);
 
+	/** The request. */
 	@Autowired
 	private HttpServletRequest request;
 
+	/** The customer auth provider. */
 	@Autowired
 	private CustomerAuthProvider customerAuthProvider;
 
+	/** The guest session. */
 	@Autowired
 	private GuestSession guestSession;
 
+	/** The user session. */
 	@Autowired
 	private UserSession userSession;
 
+	/** The app device. */
 	@Autowired
 	private UserDeviceBean appDevice;
 
+	/** The http service. */
 	@Autowired
 	private HttpService httpService;
 
+	/**
+	 * Gets the app device.
+	 *
+	 * @return the app device
+	 */
 	public UserDeviceBean getAppDevice() {
 		return appDevice;
 	}
 
+	/**
+	 * Sets the app device.
+	 *
+	 * @param appDevice
+	 *            the new app device
+	 */
 	public void setAppDevice(UserDeviceBean appDevice) {
 		this.appDevice = appDevice;
 	}
 
+	/** The tenant context. */
 	@Autowired
 	private TenantService tenantContext;
 
+	/** The audit service. */
 	@Autowired
 	private AuditService auditService;
 
+	/**
+	 * Gets the tenant context.
+	 *
+	 * @return the tenant context
+	 */
 	public TenantService getTenantContext() {
 		return tenantContext;
 	}
 
+	/** The logged in users. */
 	@Autowired
 	LoggedInUsers loggedInUsers;
 
+	/**
+	 * Gets the guest session.
+	 *
+	 * @return the guest session
+	 */
 	public GuestSession getGuestSession() {
 		return guestSession;
 	}
 
+	/**
+	 * Gets the user session.
+	 *
+	 * @return the user session
+	 */
 	public UserSession getUserSession() {
 		return userSession;
 	}
 
 	/**
-	 * authorize user based on customerModel
-	 * 
+	 * authorize user based on customerModel.
+	 *
 	 * @param customerModel
+	 *            the customer model
 	 * @param valid
+	 *            the valid
 	 */
 	public void authorize(CustomerModel customerModel, Boolean valid) {
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(
@@ -126,18 +168,22 @@ public class SessionService {
 
 	/**
 	 * True - if Current sesison is for validated user otherwise fasle.
-	 * 
-	 * @return
+	 *
+	 * @return the boolean
 	 */
 	public Boolean validatedUser() {
 		return userSession.isValid();
 	}
 
+	/**
+	 * Gets the user key string.
+	 *
+	 * @return the user key string
+	 */
 	private String getUserKeyString() {
 		if (userSession.getCustomerModel() == null) {
 			return null;
 		}
-		// BigDecimal customerId = userSession.getCustomerModel().getCustomerId();
 		return String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(), guestSession.getIdentity());
 
 	}
@@ -145,7 +191,9 @@ public class SessionService {
 	/**
 	 * Creates Index for current user and session. which will be maintained across
 	 * multiple deployments.
-	 * 
+	 *
+	 * @param authentication
+	 *            the authentication
 	 */
 	public void indexUser(Authentication authentication) {
 		String userKeyString = getUserKeyString();
@@ -157,9 +205,11 @@ public class SessionService {
 		}
 	}
 
+	/**
+	 * Un index user.
+	 */
 	public void unIndexUser() {
 		if (guestSession.getIdentity() != null) {
-			// BigDecimal customerId = guestSession.getCustomerModel().getCustomerId();
 			String userKeyString = String.format(USER_KEY_FORMAT, TenantContextHolder.currentSite().toString(),
 					guestSession.getIdentity());
 			if (userKeyString != null) {
@@ -174,8 +224,8 @@ public class SessionService {
 	 * Check if user is index in SessionTable and his UUID key matches with Key in
 	 * SessionTable, It returns true if user is indexed and has not started another
 	 * session.
-	 * 
-	 * @return
+	 *
+	 * @return the boolean
 	 */
 	public Boolean indexedUser() {
 		String userKeyString = getUserKeyString();
@@ -192,6 +242,11 @@ public class SessionService {
 		return Boolean.FALSE;
 	}
 
+	/**
+	 * Validate session unique.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean validateSessionUnique() {
 		if (this.validatedUser() && !this.indexedUser()) {
 			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
@@ -201,6 +256,9 @@ public class SessionService {
 		return true;
 	}
 
+	/**
+	 * Logout.
+	 */
 	public void logout() {
 		this.unauthorize();
 	}

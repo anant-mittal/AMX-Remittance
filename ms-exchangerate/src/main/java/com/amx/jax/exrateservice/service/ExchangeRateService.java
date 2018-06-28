@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
@@ -38,7 +39,6 @@ import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
@@ -228,7 +228,8 @@ public class ExchangeRateService extends AbstractService {
 					}
 				}
 			}
-		} else {
+		} 
+		if (exrate == null) {
 			exrate = rate.getSellRateMax();
 		}
 		return createBreakUp(exrate, lcAmount);

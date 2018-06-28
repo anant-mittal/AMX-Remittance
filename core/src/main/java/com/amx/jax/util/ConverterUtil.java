@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.exception.InvalidJsonInputException;
+import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component

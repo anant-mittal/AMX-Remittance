@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
@@ -60,7 +61,6 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.logger.AuditEvent;
@@ -607,7 +607,7 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-		this.isSaveRemittanceFlow = true;      
+		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -670,6 +670,7 @@ public class RemittanceTransactionManager {
 		model.setNetAmount(application.getLocalNetTranxAmount());
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		model.setErrorMessage(application.getErrorMessage());
 		return model;
 	}
 

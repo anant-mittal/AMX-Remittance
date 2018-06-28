@@ -49,7 +49,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(123123123));
 		ApiResponse<CustomerDto> response = null;
 		response = client.getMyProfileInfo();
 		assertNotNull("Response is null", response);
@@ -116,7 +116,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	 @Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -125,7 +125,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5128));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.login("289053104436", "Amx@123456");
+			response = client.login("2810502076280", "Amx@12345");
 		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
@@ -224,7 +224,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 @Test
+	// @Test
 	public void testInitReg() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();

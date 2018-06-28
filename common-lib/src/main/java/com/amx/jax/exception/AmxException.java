@@ -1,6 +1,8 @@
 package com.amx.jax.exception;
 
-public class AmxException extends Exception {
+import com.amx.utils.ArgUtil;
+
+public class AmxException extends RuntimeException {
 
 	private static final long serialVersionUID = 7427401687837732495L;
 
@@ -14,6 +16,16 @@ public class AmxException extends Exception {
 
 	public AmxException(String msg) {
 		super(msg);
+	}
+
+	public AmxException(String errorCode, String errorMessage) {
+		super(String.format("[%s] - %s", errorCode, errorMessage));
+		this.errorMessage = errorMessage;
+		this.errorCode = errorCode;
+	}
+
+	public AmxException(int errorCode, String statusText) {
+		this(ArgUtil.parseAsString(errorCode), statusText);
 	}
 
 	public String getErrorMessage() {

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.jax.exception.GlobalException;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.service.CountryService;
 
 /**

@@ -1,11 +1,11 @@
 package com.amx.jax.logger;
 
-import com.amx.utils.EnumType;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
-public abstract class AuditEvent extends AbstractAuditEvent {
+public abstract class AuditEvent extends AbstractEvent {
 
+	private static final long serialVersionUID = -1539116953165424464L;
 	protected long tranxTime;
 	protected long traceTime;
 	protected long eventTime;
@@ -19,16 +19,16 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 		super();
 	}
 
-	public AuditEvent(EnumType type) {
+	public AuditEvent(EventType type) {
 		super(type);
 	}
 
-	public AuditEvent(EnumType type, String description) {
+	public AuditEvent(EventType type, String description) {
 		this(type);
 		this.description = description;
 	}
 
-	public AuditEvent(EnumType type, String description, String message) {
+	public AuditEvent(EventType type, String description, String message) {
 		this(type);
 		this.description = description;
 		this.message = message;

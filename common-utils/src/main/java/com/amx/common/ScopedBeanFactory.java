@@ -1,5 +1,6 @@
 package com.amx.common;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,9 +17,11 @@ import org.slf4j.LoggerFactory;
  *            member;
  * @param <T>
  */
-public abstract class ScopedBeanFactory<E, T> {
+public abstract class ScopedBeanFactory<E, T> implements Serializable {
 
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static final long serialVersionUID = -8272275904163644429L;
+
+	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	private final Map<String, T> libsByCode = new HashMap<>();
 
@@ -69,7 +72,7 @@ public abstract class ScopedBeanFactory<E, T> {
 		if (this.libsByCode.containsKey(key.toString().toLowerCase())) {
 			return this.libsByCode.get(key.toString().toLowerCase());
 		}
-		log.error("libsByCode Not Exists for Code== " + key);
+		LOGGER.error("libsByCode Not Exists for Code== {}", key);
 		return null;
 	}
 

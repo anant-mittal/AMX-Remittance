@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -33,7 +34,6 @@ import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
@@ -158,14 +158,16 @@ public class MetaService extends AbstractService {
 				.findActiveByLanguageId(metaData.getLanguageId());
 		final List<ServiceGroupMasterDescDto> outputDto = new ArrayList<>();
 		output.forEach(i -> {
-
-			if (!jaxProperties.getCashDisable()) {
-				ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
-				dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
-				dto.setServiceGroupDesc(i.getServiceGroupDesc());
-				dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
-				outputDto.add(dto);
+			boolean isCash = i.getServiceGroupMasterId().getServiceGroupId().equals(BigDecimal.ONE);
+			if (isCash && jaxProperties.getCashDisable()) {
+				return;
 			}
+			ServiceGroupMasterDescDto dto = new ServiceGroupMasterDescDto();
+			dto.setServiceGroupMasterId(i.getServiceGroupMasterId().getServiceGroupId());
+			dto.setServiceGroupDesc(i.getServiceGroupDesc());
+			dto.setServiceGroupShortDesc(i.getServiceGroupShortDesc());
+			outputDto.add(dto);
+
 		});
 		return outputDto;
 	}

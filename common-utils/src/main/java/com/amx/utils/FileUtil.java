@@ -16,7 +16,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// TODO: Auto-generated Javadoc
+
 /**
  * The Class FileUtil.
  */
@@ -153,7 +153,7 @@ public final class FileUtil {
 		if (clazz == null) {
 			return getResource(filePath);
 		}
-		URL u = clazz.getClassLoader().getResource("classpath:" + filePath);
+		URL u = clazz.getClassLoader().getResource(CLASSPATH_PREFIX + filePath);
 		if (u != null) {
 			return u;
 		}
@@ -198,7 +198,7 @@ public final class FileUtil {
 		}
 
 		// Search in target folder
-		u = clazz.getClassLoader().getResource("file:/" + propertiesPath + "/target/" + filePath);
+		u = clazz.getClassLoader().getResource(FILE_PREFIX2 + propertiesPath + "/target/" + filePath);
 		if (u != null) {
 			LOG.info("Step 5 URL:{}", u.getPath());
 			return u;

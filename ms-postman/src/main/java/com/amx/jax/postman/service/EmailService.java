@@ -29,54 +29,88 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
 
+/**
+ * The Class EmailService.
+ */
 @TenantScoped
 @Component
 public class EmailService {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
+	/** The template utils. */
 	@Autowired
 	private TemplateUtils templateUtils;
 
+	/** The file service. */
 	@Autowired
 	private FileService fileService;
 
+	/** The mail from. */
 	@TenantValue("${spring.mail.from}")
 	private String mailFrom;
+
+	/** The mail host. */
 	@TenantValue("${spring.mail.host}")
 	private String mailHost;
+
+	/** The mail port. */
 	@TenantValue("${spring.mail.port}")
 	private int mailPort;
+
+	/** The mail username. */
 	@TenantValue("${spring.mail.username}")
 	private String mailUsername;
+
+	/** The mail password. */
 	@TenantValue("${spring.mail.password}")
 	private String mailPassword;
+
+	/** The mail smtp auth. */
 	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
 	private Boolean mailSmtpAuth;
+
+	/** The mail smtp tls. */
 	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
 	private boolean mailSmtpTls;
+
+	/** The mail protocol. */
 	@TenantValue("${spring.mail.protocol}")
 	private String mailProtocol;
+
+	/** The mail default encoding. */
 	@TenantValue("${spring.mail.defaultEncoding}")
 	private String mailDefaultEncoding;
 
+	/** The default sender. */
 	@Value("${spring.mail.from}")
 	private String defaultSender;
 
+	/** The mail sender. */
 	private JavaMailSender mailSender;
 
+	/** The default mail sender. */
 	@Autowired
 	private JavaMailSender defaultMailSender;
 
+	/** The post man config. */
 	@Autowired
 	private PostManConfig postManConfig;
 
+	/** The slack service. */
 	@Autowired
 	SlackService slackService;
 
+	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
+	/**
+	 * Gets the mail sender.
+	 *
+	 * @return the mail sender
+	 */
 	public JavaMailSender getMailSender() {
 		if (mailSender == null) {
 			if (postManConfig.getTenant() != null) {
@@ -102,6 +136,15 @@ public class EmailService {
 		return this.mailSender;
 	}
 
+	/**
+	 * Send email.
+	 *
+	 * @param email
+	 *            the email
+	 * @return the email
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	public Email sendEmail(Email email) throws PostManException {
 
 		String to = null;
@@ -134,7 +177,7 @@ public class EmailService {
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
 			} else {
-				auditService.fail(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
 			}
 		} catch (Exception e) {
 			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
@@ -143,6 +186,17 @@ public class EmailService {
 		return email;
 	}
 
+	/**
+	 * Send.
+	 *
+	 * @param eParams
+	 *            the e params
+	 * @return the email
+	 * @throws MessagingException
+	 *             the messaging exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	public Email send(Email eParams) throws MessagingException, IOException {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
 		if (eParams.isHtml()) {
@@ -154,6 +208,16 @@ public class EmailService {
 		return eParams;
 	}
 
+	/**
+	 * Send html mail.
+	 *
+	 * @param eParams
+	 *            the e params
+	 * @throws MessagingException
+	 *             the messaging exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	private void sendHtmlMail(Email eParams) throws MessagingException, IOException {
 
 		boolean isHtml = true;
@@ -163,11 +227,11 @@ public class EmailService {
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
-		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
+		if (eParams.getFrom() == null || Constants.DEFAULT_STRING.equals(eParams.getFrom())) {
 			eParams.setFrom(mailFrom);
 		}
 
-		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
+		if (eParams.getReplyTo() == null || Constants.DEFAULT_STRING.equals(eParams.getReplyTo())) {
 			eParams.setReplyTo(eParams.getFrom());
 		}
 
@@ -200,6 +264,12 @@ public class EmailService {
 		getMailSender().send(message);
 	}
 
+	/**
+	 * Send plain text mail.
+	 *
+	 * @param eParams
+	 *            the e params
+	 */
 	private void sendPlainTextMail(Email eParams) {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 

@@ -7,7 +7,13 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class HmacOneTimePasswordGenerator {
+
+	private Logger LOGGER = LoggerFactory.getLogger(getClass());
+
 	private final String algorithm;
 	private final int passwordLength;
 
@@ -139,16 +145,15 @@ public class HmacOneTimePasswordGenerator {
 		final ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putLong(0, counter);
 
-		System.out.println("buffer == " + buffer.getLong());
+		LOGGER.info("buffer == {}", buffer.getLong());
 
 		final byte[] hmac = mac.doFinal(buffer.array());
-		
-			System.out.println("hmac == " + new String(hmac));
-			// TODO Auto-generated catch block
-		
+
+		LOGGER.info("hmac == {}", new String(hmac));
+
 		final int offset = hmac[hmac.length - 1] & 0x0f;
-		
-		System.out.println("offset ==== "+ offset);
+
+		LOGGER.info("offset ==== {}", offset);
 
 		for (int i = 0; i < 4; i++) {
 			// Note that we're re-using the first four bytes of the buffer here; we just
@@ -158,7 +163,7 @@ public class HmacOneTimePasswordGenerator {
 		}
 
 		final int hotp = buffer.getInt(0) & 0x7fffffff;
-		System.out.println("hotp ==== "+ hotp);
+		LOGGER.info("hotp ==== {}", hotp);
 
 		return hotp % this.modDivisor;
 	}

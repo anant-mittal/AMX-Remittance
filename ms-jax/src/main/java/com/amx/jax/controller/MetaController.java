@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
@@ -320,7 +322,7 @@ public class MetaController {
 		LOGGER.info("in getbankBranches" + request.toString());
 		JaxContextUtil.setJaxEvent(JaxEvent.BANK_BRANCH_SEARCH);
 		JaxContextUtil.setRequestModel(request);
-		//bankBranchSearchRequestlValidator.validate(request, bindingResult);
+		bankBranchSearchRequestlValidator.validate(request, bindingResult);
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
 		return apiResponse;
 	}

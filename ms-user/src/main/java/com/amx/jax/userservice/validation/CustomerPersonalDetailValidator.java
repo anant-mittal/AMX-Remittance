@@ -1,12 +1,19 @@
 package com.amx.jax.userservice.validation;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.scope.TenantContext;
@@ -31,6 +38,8 @@ public class CustomerPersonalDetailValidator implements Validator {
 	CustomerDao custDao;
 	@Autowired
 	UserValidationService userValidationService;
+	@Autowired
+	BlackListDao blackListDao;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -47,6 +56,22 @@ public class CustomerPersonalDetailValidator implements Validator {
 				customerPersonalDetail.getMobile());
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),
 				JaxApiFlow.SIGNUP_DEFAULT);
+		validateCustomerBlackList(customerPersonalDetail);
 	}
 
+	private void validateCustomerBlackList(CustomerPersonalDetail customerPersonalDetail)
+	{
+		StringBuilder customerName = new StringBuilder();
+		if(StringUtils.isNotBlank(customerPersonalDetail.getFirstName())) {
+			customerName.append(customerPersonalDetail.getFirstName().trim().toUpperCase());
+		}		
+		if(StringUtils.isNotBlank(customerPersonalDetail.getLastName())) {
+			customerName.append(customerPersonalDetail.getLastName().trim().toUpperCase());
+		}	
+		List<BlackListModel> blist =blackListDao.getBlackByName(customerName.toString());		
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException("Customer is black listed",
+					JaxError.BLACK_LISTED_CUSTOMER.getCode());
+		}
+	}
 }

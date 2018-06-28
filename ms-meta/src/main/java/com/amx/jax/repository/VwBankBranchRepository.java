@@ -9,9 +9,9 @@ import com.amx.jax.dbmodel.BankBranchView;
 
 public interface VwBankBranchRepository extends CrudRepository<BankBranchView, BigDecimal> {
 
-	List<BankBranchView> findByCountryIdAndBankIdAndIfscCodeIgnoreCase(BigDecimal countryId, BigDecimal bankId, String ifsc);
+	List<BankBranchView> findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(BigDecimal countryId, BigDecimal bankId, String ifsc);
 
-	List<BankBranchView> findByCountryIdAndBankIdAndSwiftIgnoreCase(BigDecimal countryId, BigDecimal bankId, String swift);
+	List<BankBranchView> findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(BigDecimal countryId, BigDecimal bankId, String swift);
 
 	List<BankBranchView> findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(BigDecimal countryId, BigDecimal bankId,
 			String branchName);

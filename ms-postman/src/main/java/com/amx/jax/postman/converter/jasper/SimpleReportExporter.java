@@ -17,25 +17,57 @@ import net.sf.jasperreports.export.SimplePdfReportConfiguration;
 import net.sf.jasperreports.export.SimpleWriterExporterOutput;
 import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 
+/**
+ * The Class SimpleReportExporter.
+ */
 public class SimpleReportExporter {
 
+	/** The jasper print. */
 	private JasperPrint jasperPrint;
 
+	/**
+	 * Instantiates a new simple report exporter.
+	 */
 	public SimpleReportExporter() {
 	}
 
+	/**
+	 * Instantiates a new simple report exporter.
+	 *
+	 * @param jasperPrint
+	 *            the jasper print
+	 */
 	public SimpleReportExporter(JasperPrint jasperPrint) {
 		this.jasperPrint = jasperPrint;
 	}
 
+	/**
+	 * Gets the jasper print.
+	 *
+	 * @return the jasper print
+	 */
 	public JasperPrint getJasperPrint() {
 		return jasperPrint;
 	}
 
+	/**
+	 * Sets the jasper print.
+	 *
+	 * @param jasperPrint
+	 *            the new jasper print
+	 */
 	public void setJasperPrint(JasperPrint jasperPrint) {
 		this.jasperPrint = jasperPrint;
 	}
 
+	/**
+	 * Export to pdf.
+	 *
+	 * @param fileName
+	 *            the file name
+	 * @param author
+	 *            the author
+	 */
 	public void exportToPdf(String fileName, String author) {
 
 		// print report to file
@@ -62,6 +94,14 @@ public class SimpleReportExporter {
 		}
 	}
 
+	/**
+	 * Export to xlsx.
+	 *
+	 * @param fileName
+	 *            the file name
+	 * @param sheetName
+	 *            the sheet name
+	 */
 	public void exportToXlsx(String fileName, String sheetName) {
 		JRXlsxExporter exporter = new JRXlsxExporter();
 
@@ -80,6 +120,12 @@ public class SimpleReportExporter {
 		}
 	}
 
+	/**
+	 * Export to csv.
+	 *
+	 * @param fileName
+	 *            the file name
+	 */
 	public void exportToCsv(String fileName) {
 		JRCsvExporter exporter = new JRCsvExporter();
 
@@ -93,6 +139,12 @@ public class SimpleReportExporter {
 		}
 	}
 
+	/**
+	 * Export to html.
+	 *
+	 * @param fileName
+	 *            the file name
+	 */
 	public void exportToHtml(String fileName) {
 		HtmlExporter exporter = new HtmlExporter();
 

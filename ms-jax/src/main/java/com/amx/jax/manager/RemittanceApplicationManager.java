@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -32,13 +33,12 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
@@ -277,7 +277,7 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
 					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
 				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "

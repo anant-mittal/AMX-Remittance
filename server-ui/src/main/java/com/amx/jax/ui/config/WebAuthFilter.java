@@ -18,26 +18,35 @@ import com.amx.jax.logger.AuditActor;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.service.SessionService;
 
+/**
+ * The Class WebAuthFilter.
+ */
 @Component
 public class WebAuthFilter implements Filter {
 
+	/** The session service. */
 	@Autowired
 	SessionService sessionService;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// empty
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
-		// HttpServletRequest httpRequest = (HttpServletRequest) req;
-		// System.out.println(
-		// "===[" + httpRequest.getRequestedSessionId() + "]=====[" +
-		// httpRequest.isRequestedSessionIdValid()
-		//
-		// + "]===========[" + sessionService.getUserSession().isValid());
 
 		if (!sessionService.validateSessionUnique()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
@@ -55,6 +64,11 @@ public class WebAuthFilter implements Filter {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#destroy()
+	 */
 	@Override
 	public void destroy() {
 		// empty

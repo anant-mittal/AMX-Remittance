@@ -3,7 +3,6 @@ package com.amx.jax.auth.api;
 import java.io.IOException;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.auth.perms.PermScope;
 import com.amx.jax.auth.perms.Permission;
 import com.amx.jax.auth.service.AuthServiceImpl;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManException;
 
 import io.swagger.annotations.ApiOperation;
@@ -20,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class AuthServiceController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceController.class);
+	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceController.class);
 
 	@Autowired
 	AuthServiceImpl authServiceImpl;
