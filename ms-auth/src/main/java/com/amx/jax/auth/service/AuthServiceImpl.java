@@ -1,6 +1,7 @@
 package com.amx.jax.auth.service;
 
-import org.slf4j.Logger;
+import java.util.logging.Logger;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
