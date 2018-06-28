@@ -1,11 +1,11 @@
-package com.amx.jax.ui.response;
+package com.amx.jax.api;
 
 import java.io.Serializable;
 
 /**
  * The Class ResponseError.
  */
-public class ResponseError implements Serializable {
+public class AmxFieldError implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -3253269120058295762L;

@@ -36,6 +36,7 @@ public class AppConfig {
 	public static final String JAX_PAYMENT_URL = "${jax.payment.url}";
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
+	public static final String JAX_AUTH_URL = "${jax.auth.url}";
 
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
@@ -84,6 +85,10 @@ public class AppConfig {
 	@Value(JAX_SSO_URL)
 	@AppParamKey(AppParam.JAX_SSO_URL)
 	private String ssoURL;
+
+	@Value(JAX_AUTH_URL)
+	@AppParamKey(AppParam.JAX_AUTH_URL)
+	private String authURL;
 
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
@@ -188,6 +193,14 @@ public class AppConfig {
 
 	public String getSsoURL() {
 		return ssoURL;
+	}
+
+	public String getAuthURL() {
+		return authURL;
+	}
+
+	public void setAuthURL(String authURL) {
+		this.authURL = authURL;
 	}
 
 }
