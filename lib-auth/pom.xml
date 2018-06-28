@@ -2,9 +2,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ms-auth</artifactId>
+	<artifactId>lib-auth</artifactId>
 	<packaging>jar</packaging>
-	<name>ms-auth</name>
+	<name>lib-auth</name>
 	<url>http://maven.apache.org</url>
 	<description>Common Notificationa nd Templating Service</description>
 
@@ -44,12 +44,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-auth</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
