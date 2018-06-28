@@ -41,7 +41,7 @@ public class BenePersonalDetailValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(e, "mobileNumber", "mobileNumber.empty");
 		BeneficiaryTrnxModel beneficiaryTrnxModel = (BeneficiaryTrnxModel) target;
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
-		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+	    validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
 	    validateBeneBlacklist(benePersonalDetailModel);
 	    validateBeneArabicBlacklist(benePersonalDetailModel);
 	}
@@ -68,7 +68,7 @@ public class BenePersonalDetailValidator implements Validator {
 		List<BlackListModel> blist =blackListDao.getBlackByName(beneName.toString());
 		
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Beneficiary name found matching with black list ",
+			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
 					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
 		}
 	}
@@ -97,7 +97,7 @@ public class BenePersonalDetailValidator implements Validator {
 
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
-						JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
 			}
 		}
 	}

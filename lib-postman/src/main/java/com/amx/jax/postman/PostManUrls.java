@@ -7,6 +7,7 @@ public final class PostManUrls {
 
 	public static final String SEND_SMS = "/postman/sms/send";
 	public static final String SEND_EMAIL = "/postman/email/send";
+	public static final String SEND_EMAIL_DB = "/postman/email/";
 	public static final String SEND_EMAIL_OLD = "/email/api/send/transaction/email";
 	public static final String SEND_EMAIL_SUPPORT = "/postman/email/support";
 	public static final String NOTIFY_SLACK = "/postman/slack/notify";
