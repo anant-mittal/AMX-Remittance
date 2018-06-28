@@ -1,4 +1,4 @@
-package com.amx.jax.auth.perms;
+package com.amx.jax.auth.models;
 
 public enum PermScope {
 	GLOBAL, COUNTRY, AREA, BRANCH, USER, IP
