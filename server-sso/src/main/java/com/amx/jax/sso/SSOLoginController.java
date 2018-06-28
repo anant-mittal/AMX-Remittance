@@ -42,6 +42,9 @@ public class SSOLoginController {
 
 	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = RequestMethod.GET)
 	public String authLogin(Model model) {
+		if (AppContextUtil.getTranxId() == null) {
+			sSOTranx.init();
+		}
 		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
 		return "index";
 	}
@@ -66,21 +69,18 @@ public class SSOLoginController {
 	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = { RequestMethod.POST }, headers = {
 			"Accept=application/json", "Accept=application/v0+json" }, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
-	public String loginJson(@RequestBody SSOLoginFormData formdata)
-			throws MalformedURLException, URISyntaxException {
+	public String loginJson(@RequestBody SSOLoginFormData formdata) throws MalformedURLException, URISyntaxException {
 		Map<String, String> model = new HashMap<String, String>();
 		model.put(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
 		model.put("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL);
 		// if (adminuser.equals(username) && adminpass.equals(password)) {
 		/**
-		if (sSOTranx.get() == null) {
-			sSOTranx.init();
-		}
-		model.put("redirect",
-				Urly.parse(sSOTranx.get().getLandingUrl())
-						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-						.addParameter("auth", SSOAuth.DONE).addParameter("sotp", sSOTranx.get().getSotp()).getURL());
-						*/
+		 * if (sSOTranx.get() == null) { sSOTranx.init(); } model.put("redirect",
+		 * Urly.parse(sSOTranx.get().getLandingUrl())
+		 * .addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
+		 * .addParameter("auth", SSOAuth.DONE).addParameter("sotp",
+		 * sSOTranx.get().getSotp()).getURL());
+		 */
 		// }
 		return JsonUtil.toJson(model);
 	}
