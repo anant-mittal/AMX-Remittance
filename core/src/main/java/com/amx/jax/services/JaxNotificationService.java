@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
@@ -234,4 +235,25 @@ public class JaxNotificationService {
 			logger.error("error in sendErrormail", e);
 		}
 	}
+	
+	// employee otp to login
+	public void sendOtpSms(EmployeeInfo einfo, CivilIdOtpModel model) {
+
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
+				einfo.getTelephoneNumber()));
+
+		SMS sms = new SMS();
+		sms.addTo(einfo.getTelephoneNumber());
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setTemplate(Templates.RESET_OTP_SMS);
+
+		try {
+			postManService.sendSMSAsync(sms);
+			if (!appConfig.isProdMode()) {
+				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+			}
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	} // end of sendOtpSms
 }

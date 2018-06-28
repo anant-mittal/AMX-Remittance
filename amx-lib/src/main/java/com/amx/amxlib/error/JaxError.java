@@ -111,7 +111,14 @@ public enum JaxError implements IExceptionEnum {
     
     BANK_BRANCH_SEARCH_EMPTY,
     INVALID_INPUT,
-	ALREADY_EXIST_EMAIL;
+	ALREADY_EXIST_EMAIL,
+	
+	// RBAC error
+	INVALID_DATA,
+	INVALID_EMPLOYEE_DETAILS,
+	INVALID_ROLE_DEFINITION,
+	INVALID_USER_DETAILS;
+	
 
     public String getCode() {
         return this.toString();

@@ -1,8 +1,13 @@
+<<<<<<< Updated upstream
 target/
 !.mvn/wrapper/maven-wrapper.jar
 mvnw.cmd
 mvnw
 .mvn
+=======
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+>>>>>>> Stashed changes
 
 ### STS ###
 .apt_generated
@@ -11,6 +16,10 @@ mvnw
 .project
 .settings
 .springBeans
+<<<<<<< Updated upstream
+=======
+.sts4-cache
+>>>>>>> Stashed changes
 
 ### IntelliJ IDEA ###
 .idea
@@ -19,6 +28,7 @@ mvnw
 *.ipr
 
 ### NetBeans ###
+<<<<<<< Updated upstream
 nbproject/private/
 build/
 nbbuild/
@@ -26,3 +36,11 @@ dist/
 nbdist/
 .nb-gradle/
 #ext-resources/
+=======
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+>>>>>>> Stashed changes

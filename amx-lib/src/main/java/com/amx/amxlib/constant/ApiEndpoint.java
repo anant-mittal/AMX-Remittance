@@ -46,4 +46,28 @@ public class ApiEndpoint {
     
     public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
 
+    public static final String LOGIN_ENDPOINT = "/login";
+    
+    public static final String VALIDATE_USER_ENDPOINT = "/validate-user/";
+    
+    public static final String VALIDATE_EMPNO_ENDPOINT = "/validate-ecno/";
+    
+    public static final String GET_USER_MENU_ENDPOINT = "/user-menu/";
+    
+    public static final String VALIDATE_USER_MENU_ENDPOINT = "/validate-user-menu/";
+    
+    public static final String SYNC_ENUMS_ENDPOINT = "/api/sync/perms/";
+    
+    public static final String VALIDATE_AUTH_USER_ENDPOINT = "/api/user/validate/";
+    
+    public static final String VALIDATE_USER_DETAIL_ENDPOINT = "/api/user/auth/";
+    
+    public static final String SAVE_ROLE_ENDPOINT = "/api/role/";
+    
+    public static final String SAVE_PERM_ENDPOINT = "/api/role/perm/";
+    
+    public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
+    
+    public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
+    
 }

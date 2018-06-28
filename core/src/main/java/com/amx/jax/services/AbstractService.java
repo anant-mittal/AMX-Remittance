@@ -33,5 +33,13 @@ public abstract class AbstractService {
 		apiResponse.getData().setType("boolean_response");
 		return apiResponse;
 	}
+	
+	public ApiResponse getBooleanResponse(boolean status) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		BooleanResponse output = new BooleanResponse(status);
+		apiResponse.getData().getValues().add(output);
+		apiResponse.getData().setType("boolean_response");
+		return apiResponse;
+	}
 
 }
