@@ -1,6 +1,5 @@
 package com.amx.jax.postman.api;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
-import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -158,89 +156,6 @@ public class PostManController {
 		return sms;
 	}
 
-	/**
-	 * Send email get.
-	 *
-	 * @param tnt
-	 *            the tnt
-	 * @param language
-	 *            the language
-	 * @param to
-	 *            the to
-	 * @param customer
-	 *            the customer
-	 * @param amount
-	 *            the amount
-	 * @param loyaltypoints
-	 *            the loyaltypoints
-	 * @param refno
-	 *            the refno
-	 * @param date
-	 *            the date
-	 * @param languageid
-	 *            the languageid
-	 * @param template
-	 *            the template
-	 * @return the map
-	 * @throws PostManException
-	 *             the post man exception
-	 */
-	@Deprecated
-	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.GET)
-	public Map<String, Object> sendEmailGet(@RequestParam Tenant tnt, @RequestParam(required = false) Language language,
-			@RequestParam String to, @RequestParam String customer, @RequestParam String amount,
-			@RequestParam String loyaltypoints, @RequestParam String refno, @RequestParam String date,
-			@RequestParam(required = false) String languageid, @RequestParam Templates template)
-			throws PostManException {
-
-		Map<String, Object> wrapper = new HashMap<String, Object>();
-		Map<String, Object> modeldata = new HashMap<String, Object>();
-		modeldata.put("to", to);
-		modeldata.put("customer", customer);
-		modeldata.put("amount", amount);
-		modeldata.put("loyaltypoints", loyaltypoints);
-		modeldata.put("refno", refno);
-		modeldata.put("date", date);
-		wrapper.put("data", modeldata);
-
-		Email email = new Email();
-
-		if ("2".equals(languageid)) {
-			email.setLang(Language.AR);
-			modeldata.put("languageid", Language.AR);
-		} else {
-			email.setLang(Language.EN);
-			modeldata.put("languageid", Language.EN);
-		}
-		email.setModel(wrapper);
-		email.addTo(to);
-		email.setHtml(true);
-		email.setSubject("Feedback Email"); // Given by Umesh
-
-		email.setTemplate(template);
-		postManService.sendEmailAsync(email);
-		Map<String, Object> map = new HashMap<String, Object>();
-		Map<String, String> data = new HashMap<String, String>();
-		data.put("msg", String.format("Email is send to %s and Ref NO. is %s", customer, refno));
-		map.put("data", data);
-		map.put("error", null);
-		map.put("meta", null);
-		map.put("responseCode", "SUCCESS");
-		map.put("responseMessage", "Email is successfully sent.");
-		return map;
-	}
-
-	/**
-	 * Send email.
-	 *
-	 * @param email
-	 *            the email
-	 * @param async
-	 *            the async
-	 * @return the email
-	 * @throws PostManException
-	 *             the post man exception
-	 */
 	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.POST)
 	public Email sendEmail(@RequestBody Email email,
 			@RequestParam(required = false, defaultValue = "false") Boolean async) throws PostManException {
