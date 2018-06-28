@@ -13,6 +13,7 @@ public interface IBlackMasterRepository extends JpaRepository<BlackListModel, Se
 	@Query(value = "select bm  from BlackListModel  bm where cAName=?1")
 	public List<BlackListModel> findByarabicName(String localName);
 
+	@Query(value = "select bm  from BlackListModel  bm where cName=?1")
 	public List<BlackListModel> findByCANameIgnoreCase(String name);
 
 }
