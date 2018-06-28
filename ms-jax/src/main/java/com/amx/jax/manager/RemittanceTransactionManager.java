@@ -338,7 +338,7 @@ public class RemittanceTransactionManager {
 
 		Boolean canTransact = beneCheckService.canTransact(beneficiary.getCreatedDate());
 		if (!canTransact) {
-			throw new GlobalException("Newly added beneficiary cant transact util certain time",
+			throw new GlobalException("Newly added beneficiary cannot transact until certain time",
 					JaxError.NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT);
 		}
 	}

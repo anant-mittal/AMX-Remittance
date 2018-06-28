@@ -16,7 +16,7 @@ public class BlackListDao {
 
 	public List<BlackListModel> getBlackByName(String name) {
 		name = name.replaceAll("\\s+", "");
-		return repo.getBlackByName(name);
+		return repo.findByCANameIgnoreCase(name);
 	}
 
 	public List<BlackListModel> getBlackByLocalName(String localName) {
