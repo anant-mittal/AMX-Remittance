@@ -358,8 +358,8 @@ public class UserClient extends AbstractJaxServiceClient {
 			LOGGER.info("Bene Clinet to get bene list Input String :");
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
 			// new HttpHeaders()
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(new HttpHeaders());
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(new HttpHeaders());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
 					});
