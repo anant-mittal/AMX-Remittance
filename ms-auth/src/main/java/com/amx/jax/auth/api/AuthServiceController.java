@@ -1,7 +1,6 @@
 package com.amx.jax.auth.api;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

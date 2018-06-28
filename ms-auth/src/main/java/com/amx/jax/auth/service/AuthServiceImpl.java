@@ -1,7 +1,6 @@
 package com.amx.jax.auth.service;
 
-import java.util.logging.Logger;
-
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +17,5 @@ public class AuthServiceImpl implements AuthService {
 
 	@Value("${default.tenant}")
 	String defaultTennatId;
-
 
 }
