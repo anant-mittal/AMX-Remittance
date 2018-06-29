@@ -340,7 +340,7 @@ public class RemittanceTransactionManager {
 
 		Boolean canTransact = beneCheckService.canTransact(beneficiary.getCreatedDate());
 		if (!canTransact) {
-			throw new GlobalException("Newly added beneficiary cant transact util certain time",
+			throw new GlobalException("Newly added beneficiary cannot transact until certain time",
 					JaxError.NEW_BENEFICIARY_TRANSACTION_TIME_LIMIT);
 		}
 	}
@@ -562,7 +562,7 @@ public class RemittanceTransactionManager {
 	private void validateBlackListedBene(BenificiaryListView beneficiary) {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Beneficiary name found matching with black list ", BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ", BLACK_LISTED_CUSTOMER.getCode());
 		}
 		if (beneficiary.getArbenificaryName() != null) {
 			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());

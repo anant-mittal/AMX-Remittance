@@ -10,6 +10,7 @@ import org.springframework.validation.Validator;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerCredential;
+import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.service.UserValidationService;
 
@@ -36,7 +37,7 @@ public class CustomerCredentialValidator implements Validator {
 			throw new GlobalException("Login id should be same as identity number entered", JaxError.INVALID_INPUT);
 		}*/
 		userValidation.validateAllLoginId(loginId);
-
+		userValidation.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.SIGNUP_DEFAULT);
 	}
 
 }

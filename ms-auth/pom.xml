@@ -10,7 +10,7 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>jax</artifactId>
+		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -49,10 +49,20 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-auth</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
 
 	</dependencies>
 
@@ -86,3 +96,4 @@
 	</repositories>
 
 </project>
+

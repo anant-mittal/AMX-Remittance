@@ -68,6 +68,7 @@
 		<module>lib-swagger</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
+		<module>lib-auth</module>
 		<module>lib-sso</module>
 
 

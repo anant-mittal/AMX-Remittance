@@ -38,24 +38,25 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 		HttpStatus statusCode = response.getStatusCode();
 		String statusText = response.getStatusText();
 		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst("apiErrorJson"));
-		throwError(apiErrorJson);
+		AmxApiError apiError = throwError(apiErrorJson);
+
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new AmxHttpNotFoundException(statusCode);
+		}
 
 		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
 			String body = IoUtils.inputstream_to_string(response.getBody());
-			throwError(body);
-			throw new AmxHttpServerException(statusCode.value(), statusText);
+			apiError = throwError(body);
+			throw new AmxHttpServerException(statusCode, apiError);
 		} else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
-			if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
-				throw new AmxHttpNotFoundException(statusCode.value(), statusText);
-			}
 			String body2 = IoUtils.inputstream_to_string(response.getBody());
-			throwError(body2);
-			throw new AmxHttpClientException(statusCode.value(), statusText);
+			apiError = throwError(body2);
+			throw new AmxHttpClientException(statusCode, apiError);
 		}
 
 	}
 
-	private void throwError(String apiErrorJson) {
+	private AmxApiError throwError(String apiErrorJson) {
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
 		if (!ArgUtil.isEmpty(apiError)) {
 			AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
@@ -66,6 +67,7 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 				throw defExcp.getInstance(apiError);
 			}
 		}
+		return apiError;
 	}
 
 	static {

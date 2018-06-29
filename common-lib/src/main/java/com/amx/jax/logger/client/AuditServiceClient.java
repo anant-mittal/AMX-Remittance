@@ -21,6 +21,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AbstractEvent.EventMarker;
+import com.amx.jax.logger.AbstractEvent.EventType;
 import com.amx.jax.tunnel.ITunnelService;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
@@ -145,11 +146,14 @@ public class AuditServiceClient implements AuditService {
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
 		Marker marker = auditmarker;
 		boolean capture = false;
-		if (event.getType().marker() == EventMarker.TRACK) {
+		EventType eventType = event.getType();
+		if (eventType == null || eventType.marker() == EventMarker.AUDIT) {
+			capture = true;
+		} else if (eventType.marker() == EventMarker.TRACK) {
 			marker = trackmarker;
-		} else if (event.getType().marker() == EventMarker.GAUGE) {
+		} else if (eventType.marker() == EventMarker.GAUGE) {
 			marker = gaugemarker;
-		} else if (event.getType().marker() == EventMarker.EXCEP) {
+		} else if (eventType.marker() == EventMarker.EXCEP) {
 			marker = excepmarker;
 		} else {
 			capture = true;

@@ -19,6 +19,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -78,7 +79,7 @@ public class BeneficiaryCheckService extends AbstractService {
 	IBeneficiaryRelationshipDao beneficiaryRelationshipDao;
 
 	@Autowired
-	IBlackMasterRepository blackListDao;
+	BlackListDao blackListDao;
 
 	@Autowired
 	IBeneBankBlackCheckDao beneBankWorldDao;
@@ -129,7 +130,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 		if (!StringUtils.isBlank(beneDto.getArbenificaryName())) {
-			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
 				errorDesc = "Arabic name Of beneficary matching with black listed customer";
