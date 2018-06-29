@@ -155,12 +155,12 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-
 		//return "thymeleaf/repback";
 		if (paygCode.toString().equals("OMANNET")) {
-			LOGGER.info("REDIRECT --->"+ redirectUrl);
 			return "redirect:" + redirectUrl;
-		}else {
+		}else if (paygCode.toString().equals("KOMANNET")) {
+            return "redirect:" + kioskOmnRedirectURL;
+        }else {
 		    return "thymeleaf/repback";  
 		}
 	}
