@@ -88,7 +88,6 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
 		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
@@ -123,10 +122,6 @@ public class OmannetClient implements PayGClient {
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		/*gatewayResponse.setRef(request.getParameter("ref"));
-		gatewayResponse.setPostDate(request.getParameter("postdate"));
-		gatewayResponse.setTrackId(request.getParameter("trackid"));
-		gatewayResponse.setTranxId(request.getParameter("tranid"));*/
 		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
@@ -171,9 +166,15 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			gatewayResponse.setError(pipe.getResult());
-			gatewayResponse.setErrorText(pipe.getResult());
-			gatewayResponse.setUdf5(pipe.getResponseCode());
+			if(pipe.getResult().toString().equals("CAPTURED") || pipe.getResult().toString().equals("NOT CAPTURED")) {
+				gatewayResponse.setError(pipe.getError());
+				gatewayResponse.setErrorText(pipe.getError_text());
+			}else {
+				gatewayResponse.setError(pipe.getResult());
+				gatewayResponse.setErrorText(pipe.getResult());
+			}
+			gatewayResponse.setResponseCode(pipe.getResponseCode());
+			
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
@@ -186,10 +187,9 @@ public class OmannetClient implements PayGClient {
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		}	
-//		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-//			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-//		} 
+		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+		} 
 		else {
 			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
