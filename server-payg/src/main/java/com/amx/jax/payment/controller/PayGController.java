@@ -81,9 +81,11 @@ public class PayGController {
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
-		}else if (tnt.equals(Tenant.OMN)) {
+		}else if (tnt.equals(Tenant.OMN)&& pg.equals("KOMANNET")) {
 			appRedirectUrl = omnRedirectURL;
-			pg = "OMANNET";
+		}else if(tnt.equals(Tenant.OMN)) {
+		    appRedirectUrl = omnRedirectURL;
+		    pg = "OMANNET";
 		}
 
 		if (callbackd != null) {
