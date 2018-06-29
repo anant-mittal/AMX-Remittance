@@ -159,6 +159,19 @@ public class PayGController {
 		if (paygCode.toString().equals("OMANNET")) {
 			return "redirect:" + redirectUrl;
 		}else if (paygCode.toString().equals("KOMANNET")) {
+		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
+            ra.addAttribute("result", payGResponse.getResult());
+            ra.addAttribute("auth",payGResponse.getAuth() );
+            ra.addAttribute("referenceId",payGResponse.getRef() );
+            ra.addAttribute("postDate",payGResponse.getPostDate() );
+            ra.addAttribute("trackId", payGResponse.getTrackId());
+            ra.addAttribute("tranId", payGResponse.getTranxId());
+            ra.addAttribute("udf1", payGResponse.getUdf1());
+            ra.addAttribute("udf2", payGResponse.getUdf2());
+            ra.addAttribute("udf3", payGResponse.getUdf3());
+            ra.addAttribute("udf4", payGResponse.getUdf4());
+            ra.addAttribute("udf5", payGResponse.getUdf5());
+            LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
             return "redirect:" + kioskOmnRedirectURL;
         }else {
 		    return "thymeleaf/repback";  
