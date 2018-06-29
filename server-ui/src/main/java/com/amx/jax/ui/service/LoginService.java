@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -156,7 +156,7 @@ public class LoginService {
 			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
-		} catch (IncorrectInputException e) {
+		} catch (GlobalException e) {
 			customerModel = sessionService.getGuestSession().getCustomerModel();
 
 			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(

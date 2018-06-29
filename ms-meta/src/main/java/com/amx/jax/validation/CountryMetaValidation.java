@@ -2,6 +2,7 @@ package com.amx.jax.validation;
 
 import java.math.BigDecimal;
 import java.util.function.IntPredicate;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -40,6 +41,16 @@ public class CountryMetaValidation {
 		if (!isValid) {
 			throw new GlobalException("Mobile Number length is not correct.", JaxError.INCORRECT_LENGTH,
 					mobileLength.replaceAll(",", ":"));
+		}
+	}
+
+	public void validateMobileNumber(BigDecimal countryId, String mobile) {
+		String CountryCode = countryService.getCountryMaster(countryId).getCountryCode();
+		if(CountryCode.toString().equals("001")) {
+			final Pattern pattern = Pattern.compile("^[5679]\\d+$");
+			if (!pattern.matcher(mobile).matches()) {
+				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+			}
 		}
 	}
 }
