@@ -4,8 +4,10 @@
 package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 
 /**
@@ -26,6 +28,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
 	private ExchangeRateBreakup exRateBreakup;
+	private Map<String, FlexFieldDto> flexFields;
 
 	/*
 	 * (non-Javadoc)
@@ -107,5 +110,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
 		this.exRateBreakup = exRateBreakup;
 	}
+
+	public Map<String, FlexFieldDto> getFlexFields() {
+		return flexFields;
+	}
+
+	public void setFlexFields(Map<String, FlexFieldDto> flexFields) {
+		this.flexFields = flexFields;
+	}
+
 
 }
