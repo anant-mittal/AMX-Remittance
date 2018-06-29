@@ -1,6 +1,7 @@
 package com.amx.jax.validation;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
@@ -51,6 +53,7 @@ public class RemittanceTransactionRequestValidator {
 
 		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
+		oldExchangeRate.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
 		}
@@ -108,12 +111,15 @@ public class RemittanceTransactionRequestValidator {
 					requiredFlexFields.add(dto);
 				}
 			}
-
-			if (!requiredFlexFields.isEmpty()) {
-				LOGGER.error(requiredFlexFields.toString());
-				throw new GlobalException("Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
-			}
 		}
+		if (!requiredFlexFields.isEmpty()) {
+			LOGGER.error(requiredFlexFields.toString());
+			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
+					"Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
+			exp.setMeta(requiredFlexFields);
+			throw exp;
+		}
+
 	}
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
