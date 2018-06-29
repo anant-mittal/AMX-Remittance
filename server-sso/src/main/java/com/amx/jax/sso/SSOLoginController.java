@@ -74,13 +74,13 @@ public class SSOLoginController {
 		model.put(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
 		model.put("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL);
 		// if (adminuser.equals(username) && adminpass.equals(password)) {
-		/**
-		 * if (sSOTranx.get() == null) { sSOTranx.init(); } model.put("redirect",
-		 * Urly.parse(sSOTranx.get().getLandingUrl())
-		 * .addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
-		 * .addParameter("auth", SSOAuth.DONE).addParameter("sotp",
-		 * sSOTranx.get().getSotp()).getURL());
-		 */
+
+		if (sSOTranx.get() != null) {
+			model.put("redirect", Urly.parse(sSOTranx.get().getLandingUrl())
+					.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
+					.addParameter("auth", SSOAuth.DONE).addParameter("sotp", sSOTranx.get().getSotp()).getURL());
+		}
+
 		// }
 		return JsonUtil.toJson(model);
 	}

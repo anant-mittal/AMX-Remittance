@@ -512,6 +512,9 @@
 				})
 			}).done(function(resp) {
 				console.log(resp);
+				if(resp.redirect){
+					window.location = resp.redirect;
+				}
 			});
 		})
 
