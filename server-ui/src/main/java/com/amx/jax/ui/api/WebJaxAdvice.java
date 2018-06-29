@@ -26,12 +26,12 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.CAuthEvent;
-import com.amx.jax.ui.response.ResponseError;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.SessionService;
@@ -111,9 +111,9 @@ public class WebJaxAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ResponseWrapper<Object>> handle(ConstraintViolationException exception) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		List<ResponseError> errors = new ArrayList<ResponseError>();
+		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
-			ResponseError newError = new ResponseError();
+			AmxFieldError newError = new AmxFieldError();
 			newError.setField(responseError.getPropertyPath().toString());
 			newError.setDescription(HttpService.sanitze(responseError.getMessage()));
 			errors.add(newError);
@@ -136,8 +136,8 @@ public class WebJaxAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	public ResponseEntity<ResponseWrapper<Object>> handle(HttpMessageNotReadableException exception) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		List<ResponseError> errors = new ArrayList<ResponseError>();
-		ResponseError newError = new ResponseError();
+		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
+		AmxFieldError newError = new AmxFieldError();
 		newError.setDescription(HttpService.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
@@ -162,15 +162,15 @@ public class WebJaxAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	protected ResponseEntity<ResponseWrapper<Object>> handle(MethodArgumentNotValidException ex,
 			HttpServletRequest request, HttpServletResponse response) {
-		List<ResponseError> errors = new ArrayList<ResponseError>();
+		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-			ResponseError newError = new ResponseError();
+			AmxFieldError newError = new AmxFieldError();
 			newError.setField(error.getField());
 			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-			ResponseError newError = new ResponseError();
+			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
 			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
@@ -194,8 +194,8 @@ public class WebJaxAdvice {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	protected ResponseEntity<ResponseWrapper<Object>> handle(MethodArgumentTypeMismatchException ex,
 			HttpServletRequest request, HttpServletResponse response) {
-		List<ResponseError> errors = new ArrayList<ResponseError>();
-		ResponseError newError = new ResponseError();
+		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
+		AmxFieldError newError = new AmxFieldError();
 		newError.setField(ex.getName());
 		newError.setDescription(HttpService.sanitze(ex.getMessage()));
 		errors.add(newError);
@@ -215,7 +215,7 @@ public class WebJaxAdvice {
 	 *            the response
 	 * @return the response entity
 	 */
-	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<ResponseError> errors,
+	protected ResponseEntity<ResponseWrapper<Object>> notValidArgument(Exception ex, List<AmxFieldError> errors,
 			HttpServletRequest request, HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
