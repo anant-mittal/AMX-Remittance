@@ -84,5 +84,7 @@ public abstract class AmxApiException extends AmxException {
 	public abstract AmxApiException getInstance(AmxApiError apiError);
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
+	
+	public abstract void deserializeMeta(AmxApiError amxApiError);
 
 }

@@ -15,11 +15,4 @@ public class RemittanceTransactionValidationException extends AbstractJaxExcepti
 	public RemittanceTransactionValidationException(AmxApiError error) {
 		super(error);
 	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<JaxConditionalFieldDto> getMeta() {
-		return (List<JaxConditionalFieldDto>) super.getMeta();
-	}
-
 }

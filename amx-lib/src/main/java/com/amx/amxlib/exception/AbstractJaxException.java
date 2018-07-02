@@ -21,7 +21,7 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	public AbstractJaxException(AmxApiError error) {
 		super(error);
-		this.meta = error.getMeta();
+		this.deserializeMeta(error);
 	}
 
 	public AbstractJaxException(String errorMessage) {
@@ -60,4 +60,10 @@ public abstract class AbstractJaxException extends AmxApiException {
 	public void setMeta(Object meta) {
 		this.meta = meta;
 	}
+
+	@Override
+	public void deserializeMeta(AmxApiError amxApiError) {
+		
+	}
+	
 }

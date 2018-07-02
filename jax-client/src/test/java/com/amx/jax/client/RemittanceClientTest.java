@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -60,26 +63,31 @@ public class RemittanceClientTest {
 
 	 @Test
 		public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
-				RemittanceTransactionValidationException, LimitExeededException {
-			jaxMetaInfo.setCountryId(new BigDecimal(91));
-			jaxMetaInfo.setCompanyId(new BigDecimal(1));
-			jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-			jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-			jaxMetaInfo.setTenant(Tenant.KWT);
-			ApiResponse<RemittanceApplicationResponseModel> response = null;
-			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-			request.setBeneId(new BigDecimal(4312567));
-			request.setLocalAmount(new BigDecimal(500));
-			request.setAdditionalBankRuleFiledId(new BigDecimal(181));
-			request.setSrlId(new BigDecimal(20180));
-			ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-			exRateBreakup.setRate(new BigDecimal(2.5933609959));
-			request.setExRateBreakup(exRateBreakup);
+			RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		ApiResponse<RemittanceApplicationResponseModel> response = null;
+		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+		request.setBeneId(new BigDecimal(4312567));
+		request.setLocalAmount(new BigDecimal(500));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(181));
+		request.setSrlId(new BigDecimal(20180));
+		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
+		exRateBreakup.setRate(new BigDecimal(2.5933609959));
+		request.setExRateBreakup(exRateBreakup);
+		try {
 			response = client.saveTransaction(request);
-			assertNotNull("Response is null", response);
-			assertNotNull(response.getResult());
-			assertNotNull(response.getResult().getModelType());
+		} catch (AdditionalFlexRequiredException exp) {
+			List<JaxConditionalFieldDto> list = exp.getMeta();
+			list.get(0);
 		}
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
 
 	// @Test
 	public void testvalidateTransactionForNEFTRTGS() throws IOException, ResourceNotFoundException, InvalidInputException,
