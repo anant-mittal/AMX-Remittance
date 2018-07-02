@@ -177,7 +177,7 @@ public class OmannetClient implements PayGClient {
 				gatewayResponse.setErrorText(pipe.getResult());
 			}
 	
-     		for(ResponseCode res : ResponseCode.values()) {
+	    	for(ResponseCode res : ResponseCode.values()) {
 				if(resultReponse.contains(res.getResponseCode()));
 				{
 					gatewayResponse.setResult(res.toString());
