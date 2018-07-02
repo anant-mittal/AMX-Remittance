@@ -350,13 +350,13 @@ public class UserValidationService {
 		}
 		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK",
+			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
 					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
 		}		
 		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
 			blist = blistDao.getBlackByName(localNamesbuf.toString());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK",
+				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
 						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
 			}
 		}
