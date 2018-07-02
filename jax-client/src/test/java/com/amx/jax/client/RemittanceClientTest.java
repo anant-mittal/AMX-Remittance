@@ -74,7 +74,7 @@ public class RemittanceClientTest {
 		request.setBeneId(new BigDecimal(4312567));
 		request.setLocalAmount(new BigDecimal(500));
 		request.setAdditionalBankRuleFiledId(new BigDecimal(181));
-		request.setSrlId(new BigDecimal(20180));
+		request.setSrlId(new BigDecimal(2048));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
 		exRateBreakup.setRate(new BigDecimal(2.5933609959));
 		request.setExRateBreakup(exRateBreakup);

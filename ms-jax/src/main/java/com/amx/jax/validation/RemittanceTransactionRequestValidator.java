@@ -65,6 +65,7 @@ public class RemittanceTransactionRequestValidator {
 		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFields();
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
+			request.setFlexFields(requestFlexFields);
 		}
 		requestFlexFields.put("INDIC1",
 				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
