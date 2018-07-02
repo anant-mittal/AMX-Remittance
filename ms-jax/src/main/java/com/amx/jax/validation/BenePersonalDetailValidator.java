@@ -68,7 +68,7 @@ public class BenePersonalDetailValidator implements Validator {
 		List<BlackListModel> blist =blackListDao.getBlackByName(beneName.toString());
 		
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Beneficiary name found matching with black list ",
+			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
 					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
 		}
 	}

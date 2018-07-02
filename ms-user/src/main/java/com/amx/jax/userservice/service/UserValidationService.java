@@ -325,42 +325,6 @@ public class UserValidationService {
 			}
 		}
 	}
-	
-	void validateBlackListedCustomerForLogin(Customer customer) {
-
-		StringBuffer engNamesbuf = new StringBuffer();
-		if (StringUtils.isNotBlank(customer.getFirstName())) {
-			engNamesbuf.append(customer.getFirstName().trim());
-		}
-		if (StringUtils.isNotBlank(customer.getMiddleName())) {
-			engNamesbuf.append(customer.getMiddleName().trim());
-		}
-		if (StringUtils.isNotBlank(customer.getLastName())) {
-			engNamesbuf.append(customer.getLastName().trim());
-		}
-		StringBuffer localNamesbuf = new StringBuffer();
-		if (StringUtils.isNotBlank(customer.getFirstNameLocal())) {
-			localNamesbuf.append(customer.getFirstNameLocal().trim());
-		}
-		if (StringUtils.isNotBlank(customer.getMiddleNameLocal())) {
-			localNamesbuf.append(customer.getMiddleNameLocal().trim());
-		}
-		if (StringUtils.isNotBlank(customer.getLastNameLocal())) {
-			localNamesbuf.append(customer.getLastNameLocal().trim());
-		}
-		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
-		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK",
-					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
-		}		
-		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
-			blist = blistDao.getBlackByName(localNamesbuf.toString());
-			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK",
-						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
-			}
-		}
-	}
 
 	protected void validateCustomerSecurityQuestions(List<SecurityQuestionModel> answers,
 			CustomerOnlineRegistration customer) {
