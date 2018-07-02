@@ -18,6 +18,7 @@ import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.WebAppConfig;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -137,7 +138,7 @@ public class HotPointService {
 					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
 		}
 		CActivityEvent event = new CActivityEvent(CActivityEvent.Type.GEO_LOCATION);
-
+		event.setCustomer(ArgUtil.parseAsString(customerId));
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("hotpoint", hotpoint);
 		data.put("messages", messages);

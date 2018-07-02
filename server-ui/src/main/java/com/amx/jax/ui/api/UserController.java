@@ -153,7 +153,7 @@ public class UserController {
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
 			@RequestParam(required = false) HotPoints hotpoint, @RequestParam BigDecimal customerId)
 			throws PostManException {
-		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.CUSTOMER, customerId));
+		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
 	}
 
