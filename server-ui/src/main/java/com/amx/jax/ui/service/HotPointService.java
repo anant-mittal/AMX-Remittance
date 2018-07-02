@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.postman.FBPushService;
@@ -119,6 +121,7 @@ public class HotPointService {
 	 */
 	// @Async
 	public List<String> notify(BigDecimal customerId, String token, HotPoints hotpoint) throws PostManException {
+
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
 				.getResults();

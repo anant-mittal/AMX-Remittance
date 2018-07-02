@@ -39,6 +39,7 @@ public class CActivityEvent extends AuditEvent {
 	private String fromValue = null;
 	private String toValue = null;
 	private String actor = null;
+	private String customer = null;
 	private Result result = Result.PASS;
 
 	@Override
@@ -76,6 +77,14 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setResult(Result result) {
 		this.result = result;
+	}
+
+	public String getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(String customer) {
+		this.customer = customer;
 	}
 
 }
