@@ -179,6 +179,9 @@ public class OmannetClient implements PayGClient {
 			}
 	
 	    	for(ResponseCode res : ResponseCode.values()) {
+	    		
+	    		LOGGER.info("res.getResponseCode()   ----> "+res.getResponseCode());
+	    		LOGGER.info("resultReponse   ----> "+resultReponse);
 				if(resultReponse.contains(res.getResponseCode()));
 				{
 					LOGGER.info("res.toString()   ----> "+res.toString());
