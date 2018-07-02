@@ -149,9 +149,10 @@ public class UserController {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint,
-			@RequestParam BigDecimal customerId) throws PostManException {
-		return new ResponseWrapper<Object>(hotPointService.notify(customerId));
+	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
+			@RequestParam(required = false) HotPoints hotpoint, @RequestParam BigDecimal customerId)
+			throws PostManException {
+		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
 	}
 
 	/**

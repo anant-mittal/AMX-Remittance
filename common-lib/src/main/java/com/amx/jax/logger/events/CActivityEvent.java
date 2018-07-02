@@ -7,7 +7,9 @@ public class CActivityEvent extends AuditEvent {
 	private static final long serialVersionUID = -3189696554945071766L;
 
 	public static enum Type implements EventType {
-		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE;
+		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE,
+
+		GEO_LOCATION;
 
 		@Override
 		public EventMarker marker() {
@@ -28,6 +30,10 @@ public class CActivityEvent extends AuditEvent {
 	CActivityEvent(Type type, String fromValue, String toValue, Result result) {
 		this(type, fromValue, toValue);
 		this.result = result;
+	}
+
+	public CActivityEvent(Type type) {
+		super(type);
 	}
 
 	private String fromValue = null;
