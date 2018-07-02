@@ -162,6 +162,7 @@ public class OmannetClient implements PayGClient {
 		} else {
 			
 			String resultReponse = pipe.getResult();
+			LOGGER.info("resultReponse  -----> "+resultReponse);
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -180,6 +181,7 @@ public class OmannetClient implements PayGClient {
 	    	for(ResponseCode res : ResponseCode.values()) {
 				if(resultReponse.contains(res.getResponseCode()));
 				{
+					LOGGER.info("res.toString()   ----> "+res.toString());
 					gatewayResponse.setResult(res.toString());
 					break;
 				}
