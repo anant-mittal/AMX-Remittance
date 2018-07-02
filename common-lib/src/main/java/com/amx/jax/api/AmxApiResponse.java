@@ -13,7 +13,9 @@ public class AmxApiResponse<T, M> implements Serializable {
 	private static final long serialVersionUID = 2026047322050489651L;
 
 	protected Long timestamp;
-	protected String status = "200";
+
+	protected String status;
+
 	protected String message = Constants.BLANK;
 	protected String path;
 
