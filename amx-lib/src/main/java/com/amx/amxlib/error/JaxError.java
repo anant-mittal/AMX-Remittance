@@ -114,7 +114,8 @@ public enum JaxError implements IExceptionEnum {
     INVALID_INPUT,
 	ALREADY_EXIST_EMAIL,
 	
-	INVALID_MOBILE_NUMBER;
+	INVALID_MOBILE_NUMBER,
+	BLACK_LISTED_EXISTING_CIVIL_ID;
 
     public String getCode() {
         return this.toString();
