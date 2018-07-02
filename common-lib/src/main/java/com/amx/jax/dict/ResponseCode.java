@@ -55,4 +55,5 @@ public enum ResponseCode {
 	public String getResponseDesc() {
 		return this.responseDesc;
 	}
+
 }
