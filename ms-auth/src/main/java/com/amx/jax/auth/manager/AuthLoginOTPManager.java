@@ -21,7 +21,7 @@ import com.amx.jax.auth.dbmodel.UserRoleMaster;
 import com.amx.jax.auth.error.JaxError;
 import com.amx.jax.auth.exception.GlobalException;
 import com.amx.jax.auth.models.EmployeeInfo;
-import com.amx.jax.auth.service.JaxNotificationService;
+import com.amx.jax.auth.service.AuthNotificationService;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
 import com.amx.jax.trnx.model.OtpData;
 import com.amx.jax.util.CryptoUtil;
@@ -41,7 +41,7 @@ public class AuthLoginOTPManager {
 	JaxUtil jaxUtil;
 	
 	@Autowired
-	JaxNotificationService jaxNotificationService;
+	AuthNotificationService authNotificationService;
 	
 	@Autowired
 	AuthLoginManager authLoginManager;
@@ -71,7 +71,7 @@ public class AuthLoginOTPManager {
 		EmployeeInfo einfo = new EmployeeInfo();
 		jaxUtil.convert(employeeDetail, einfo);
 		jaxUtil.convert(otpData,civilIdOtpModel);
-		jaxNotificationService.sendOtpSms(einfo, civilIdOtpModel);
+		authNotificationService.sendOtpSms(einfo, civilIdOtpModel);
 	}
 	
 	/**
