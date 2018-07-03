@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -159,6 +160,8 @@ public class OmannetClient implements PayGClient {
 		if (tranData == null) {
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
+			
+			String resultReponse = pipe.getResult();
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -166,15 +169,21 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			if(pipe.getResult().toString().equals("CAPTURED") || pipe.getResult().toString().equals("NOT CAPTURED")) {
+			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
 				gatewayResponse.setError(pipe.getError());
 				gatewayResponse.setErrorText(pipe.getError_text());
 			}else {
 				gatewayResponse.setError(pipe.getResult());
 				gatewayResponse.setErrorText(pipe.getResult());
 			}
-			gatewayResponse.setResponseCode(pipe.getResponseCode());
-			
+	
+	    	for(ResponseCode res : ResponseCode.values()) {
+				if(resultReponse.contains(res.getResponseCode()))
+				{
+					gatewayResponse.setResult(res.toString());
+					break;
+				}
+			}
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));

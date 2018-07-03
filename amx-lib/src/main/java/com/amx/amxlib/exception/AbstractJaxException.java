@@ -60,4 +60,9 @@ public abstract class AbstractJaxException extends AmxApiException {
 	public void setMeta(Object meta) {
 		this.meta = meta;
 	}
+
+	@Override
+	public boolean isReportable() {
+		return false;
+	}
 }

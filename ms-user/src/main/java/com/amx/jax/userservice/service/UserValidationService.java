@@ -242,8 +242,7 @@ public class UserValidationService {
 		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
 		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
 			throw new GlobalException("ID is expired", JaxError.ID_PROOF_EXPIRED);
-		}
-		validateBlackListedCustomer(customer);
+		}		
 		validateOldEmosData(customer);
 
 	}
@@ -289,8 +288,8 @@ public class UserValidationService {
 			throw new GlobalException("No local details found", JaxError.MISSING_LOCAL_CONTACT_DETAILS);
 		}
 	}
-
-	void validateBlackListedCustomer(Customer customer) {
+	
+	void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -314,14 +313,14 @@ public class UserValidationService {
 		}
 		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer name found matching with black list ",
-					JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
+					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
 		}		
 		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
 			blist = blistDao.getBlackByName(localNamesbuf.toString());
 			if (blist != null && !blist.isEmpty()) {
-				throw new GlobalException("Customer local name found matching with black list ",
-						JaxError.BLACK_LISTED_CUSTOMER.getCode());
+				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
+						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
 			}
 		}
 	}
