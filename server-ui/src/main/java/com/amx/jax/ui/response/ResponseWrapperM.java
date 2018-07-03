@@ -3,6 +3,7 @@ package com.amx.jax.ui.response;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.ui.UIConstants;
 import com.amx.utils.ContextUtil;
 
@@ -236,7 +237,7 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	 * @param jaxExcep
 	 *            the jax excep
 	 */
-	public void setMessage(WebResponseStatus status, AbstractJaxException jaxExcep) {
+	public void setMessage(WebResponseStatus status, AmxApiException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
 	}
 
