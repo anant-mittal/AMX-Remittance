@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.service.HttpService;
@@ -149,9 +150,11 @@ public class UserController {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
-	public ResponseWrapper<Object> meNotify(@RequestParam String token, @RequestParam HotPoints hotpoint,
-			@RequestParam BigDecimal customerId) throws PostManException {
-		return new ResponseWrapper<Object>(hotPointService.notify(customerId));
+	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
+			@RequestParam(required = false) HotPoints hotpoint, @RequestParam BigDecimal customerId)
+			throws PostManException {
+		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
+		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
 	}
 
 	/**

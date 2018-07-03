@@ -95,5 +95,6 @@ public abstract class AmxApiException extends AmxException {
 	public void setApiError(AmxApiError apiError) {
 		this.apiError = apiError;
 	}
+	public abstract boolean isReportable();
 
 }
