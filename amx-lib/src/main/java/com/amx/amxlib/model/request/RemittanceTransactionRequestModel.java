@@ -6,6 +6,8 @@ package com.amx.amxlib.model.request;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -27,6 +29,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
+	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, FlexFieldDto> flexFields;
 

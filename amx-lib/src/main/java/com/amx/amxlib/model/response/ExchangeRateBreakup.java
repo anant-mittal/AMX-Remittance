@@ -2,11 +2,14 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 
 	@JsonProperty("domXRate")
+	@NotNull
 	BigDecimal rate;
 
 	@JsonProperty("forXRate")
