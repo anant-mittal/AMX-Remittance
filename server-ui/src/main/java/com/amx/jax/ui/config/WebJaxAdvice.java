@@ -1,4 +1,4 @@
-package com.amx.jax.ui.api;
+package com.amx.jax.ui.config;
 
 import java.util.ArrayList;
 import java.util.List;

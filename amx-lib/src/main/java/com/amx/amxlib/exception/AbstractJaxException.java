@@ -50,4 +50,9 @@ public abstract class AbstractJaxException extends AmxApiException {
 	public AbstractJaxException() {
 		super();
 	}
+
+	@Override
+	public boolean isReportable() {
+		return false;
+	}
 }

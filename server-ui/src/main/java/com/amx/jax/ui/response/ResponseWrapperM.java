@@ -1,12 +1,9 @@
 package com.amx.jax.ui.response;
 
-import org.springframework.http.HttpStatus;
-
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.ui.UIConstants;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 /**
@@ -21,9 +18,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7545829974699803746L;
-
-	/** The status key. */
-	private WebResponseStatus statusKey = WebResponseStatus.SUCCESS;
 
 	/** The message key. */
 	private String messageKey = UIConstants.EMPTY;
@@ -151,51 +145,18 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	}
 
 	/**
-	 * Gets the status key.
-	 *
-	 * @return the status key
-	 */
-	public WebResponseStatus getStatusKey() {
-		return statusKey;
-	}
-
-	/**
-	 * Sets the status key.
-	 *
-	 * @param statusKey
-	 *            the new status key
-	 */
-	public void setStatusKey(WebResponseStatus statusKey) {
-		this.statusKey = statusKey;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param status
-	 *            the new status
-	 */
-	public void setStatus(HttpStatus status) {
-		if (status.is5xxServerError()) {
-			this.statusKey = WebResponseStatus.SERVER_ERROR;
-		} else if (status.is4xxClientError()) {
-			this.statusKey = WebResponseStatus.CLIENT_ERROR;
-		} else if (status.is3xxRedirection()) {
-			this.statusKey = WebResponseStatus.REDIRECTION;
-		}
-		this.status = ArgUtil.parseAsString(status.value());
-		this.message = status.getReasonPhrase();
-	}
-
-	/**
 	 * Sets the status.
 	 *
 	 * @param status
 	 *            the new status
 	 */
 	public void setStatus(WebResponseStatus status) {
-		this.statusKey = status;
+		this.statusKey = status.name();
 		this.status = status.getCode();
+	}
+
+	public void setStatusKey(WebResponseStatus error) {
+		this.statusKey = error.name();
 	}
 
 	/**
