@@ -13,9 +13,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AdditionalFlexRequiredException extends AbstractJaxException {
 
+	private static final long serialVersionUID = 3705286852744314145L;
+
 	public AdditionalFlexRequiredException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 	public AdditionalFlexRequiredException(AmxApiError error) {
@@ -26,21 +27,21 @@ public class AdditionalFlexRequiredException extends AbstractJaxException {
 		super(errorMessage, error.getCode());
 	}
 
-	@Override
-	public void deserializeMeta(AmxApiError amxApiError) {
-		try {
-			List meta = (List) amxApiError.getMeta();
-			String jsonString = JsonUtil.toJson(meta);
-			List<JaxConditionalFieldDto> model = new ObjectMapper().readValue(jsonString, new TypeReference<List<JaxConditionalFieldDto>>(){});
-			this.setMeta(model);
-		} catch (Exception e) {
-		}
-	}
+	// public void deserializeMeta(AmxApiError amxApiError) {
+	// try {
+	// List meta = (List) amxApiError.getMeta();
+	// String jsonString = JsonUtil.toJson(meta);
+	// List<JaxConditionalFieldDto> model = new ObjectMapper().readValue(jsonString,
+	// new TypeReference<List<JaxConditionalFieldDto>>() {
+	// });
+	// this.setMeta(model);
+	// } catch (Exception e) {
+	// }
+	// }
 
 	@SuppressWarnings("unchecked")
-	@Override
-	public List<JaxConditionalFieldDto> getMeta() {
-		return (List<JaxConditionalFieldDto>) super.getMeta();
+	public List<JaxConditionalFieldDto> getConditionalFileds() {
+		return (List<JaxConditionalFieldDto>) this.getApiError().getMeta();
 	}
 
 }

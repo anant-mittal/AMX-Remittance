@@ -157,10 +157,4 @@ public class CommonJaxException extends AmxApiException {
 		return null;
 	}
 
-	@Override
-	public void deserializeMeta(AmxApiError amxApiError) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }

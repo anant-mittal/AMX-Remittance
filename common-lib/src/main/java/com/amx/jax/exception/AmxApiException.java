@@ -13,18 +13,21 @@ public abstract class AmxApiException extends AmxException {
 
 	protected IExceptionEnum error;
 
+	protected AmxApiError apiError;
+
 	public AmxApiException() {
 		super(null, null, true, false);
 	}
 
-	public AmxApiException(AmxApiError error) {
+	public AmxApiException(AmxApiError amxApiError) {
 		this();
+		this.apiError = amxApiError;
 		try {
-			this.error = getErrorIdEnum(error.getErrorId());
+			this.error = getErrorIdEnum(amxApiError.getErrorId());
 		} catch (Exception e) {
 		}
-		this.errorKey = error.getErrorId();
-		this.errorMessage = error.getErrorMessage();
+		this.errorKey = amxApiError.getErrorId();
+		this.errorMessage = amxApiError.getErrorMessage();
 	}
 
 	public AmxApiException(String errorMessage) {
@@ -84,7 +87,13 @@ public abstract class AmxApiException extends AmxException {
 	public abstract AmxApiException getInstance(AmxApiError apiError);
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
-	
-	public abstract void deserializeMeta(AmxApiError amxApiError);
+
+	public AmxApiError getApiError() {
+		return apiError;
+	}
+
+	public void setApiError(AmxApiError apiError) {
+		this.apiError = apiError;
+	}
 
 }
