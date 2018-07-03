@@ -4,9 +4,9 @@ import com.amx.jax.exception.AmxApiError;
 
 public class AlreadyExistsException extends AbstractJaxException {
 
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public AlreadyExistsException(AmxApiError error) {
+	public AlreadyExistsException(AmxApiError error) {
 		super(error);
 	}
 

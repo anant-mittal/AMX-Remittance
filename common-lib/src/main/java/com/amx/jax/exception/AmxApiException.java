@@ -85,4 +85,6 @@ public abstract class AmxApiException extends AmxException {
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 
+	public abstract boolean isReportable();
+
 }

@@ -1,6 +1,8 @@
 package com.bootloaderjs;
 
 import java.text.Bidi;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.amx.jax.postman.service.TemplateUtils;
 
@@ -11,11 +13,23 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	TemplateUtils templateUtils = new TemplateUtils();
+	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
 
 	public static void main(String[] args) {
+		String from = "Al Mulla International Exchange<amxjax@gmail.com>";
+		//String from = "amxjax@gmail.com";
+		Matcher matcher = pattern.matcher(from);
+		if (matcher.find()) {
+			System.out.println(matcher.group(1) + "   =   " + matcher.group(2));
+		} else {
+			System.out.println(from);
+		}
+	}
+
+	public static void main2(String[] args) {
 		String input = "\u0628\u064A\u0627\u0646\u0627\u062A 177 \u0627\u0644\u063189\u0627\u0633\u0644";
 		System.out.println(input);
-		
+
 		System.out.println(fixBiDi(input));
 
 		char[] temparray = input.toCharArray();

@@ -72,7 +72,11 @@ public class CustomerRegistrationOtpManager {
 		jaxUtil.convert(otpData, civilIdOtpModel);
 		jaxNotificationService.sendOtpEmail(pinfo, civilIdOtpModel);
 		jaxNotificationService.sendOtpSms(pinfo, civilIdOtpModel);
-
+		otpData.incrementSentCount();
+		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		customerRegistrationManager.saveOtpData(otpData);
 	}
 
 	/**
@@ -117,18 +121,34 @@ public class CustomerRegistrationOtpManager {
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
+				throw new GlobalException(
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.geteOtp().equals(eOtp) || !otpData.getmOtp().equals(mOtp)) {
-				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+				otpMismatch(otpData);
 			}
 			otpData.setOtpValidated(true);
+			otpData.resetCounts();
 		} finally {
 			customerRegistrationManager.saveOtpData(otpData);
 		}
+	}
+
+	/**
+	 * called when otp is not matching
+	 * 
+	 * @param otpData
+	 * 
+	 */
+	private void otpMismatch(OtpData otpData) {
+		otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
+		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+
 	}
 
 	/** resets attempts of otp */
@@ -136,8 +156,7 @@ public class CustomerRegistrationOtpManager {
 		Date midnightToday = dateUtil.getMidnightToday();
 
 		if (otpData.getLockDate() != null && midnightToday.compareTo(otpData.getLockDate()) > 0) {
-			otpData.setLockDate(null);
-			otpData.setValidateOtpAttempts(0);
+			otpData.resetCounts();
 		}
 	}
 

@@ -91,11 +91,15 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	public static void publishAbstractEvent(Map<String, Object> map) {
-		AppContext appContext = AppContextUtil.getContext();
-		map.put("traceId", appContext.getTraceId());
-		map.put("tranxId", appContext.getTranxId());
-		map.put("tenant", appContext.getTenant());
-		ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+		try {
+			AppContext appContext = AppContextUtil.getContext();
+			map.put("traceId", appContext.getTraceId());
+			map.put("tranxId", appContext.getTranxId());
+			map.put("tenant", appContext.getTenant());
+			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+		} catch (Exception e) {
+			LOGGER2.error("Exception while Publishing Event", e);
+		}
 	}
 
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {

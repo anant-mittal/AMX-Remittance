@@ -157,4 +157,9 @@ public class CommonJaxException extends AmxApiException {
 		return null;
 	}
 
+	@Override
+	public boolean isReportable() {
+		return false;
+	}
+
 }
