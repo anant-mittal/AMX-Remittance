@@ -56,5 +56,4 @@ public enum ResponseCode {
 		return this.responseDesc;
 	}
 
-
 }

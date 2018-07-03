@@ -131,4 +131,12 @@ public class OtpData implements Serializable {
 		this.validateOtpAttempts = validateOtpAttempts;
 	}
 
+	public void incrementSentCount() {
+		this.sendOtpAttempts = this.sendOtpAttempts + 1;
+	}
+
+	public void resetCounts() {
+		this.sendOtpAttempts = 0;
+		this.validateOtpAttempts = 0;
+	}
 }
