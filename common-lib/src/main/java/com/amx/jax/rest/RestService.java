@@ -104,6 +104,7 @@ public class RestService {
 			headers.add("content-type", "application/json");
 			return this;
 		}
+
 		public Ajax acceptJson() {
 			headers.add("accept", "application/json");
 			return this;
