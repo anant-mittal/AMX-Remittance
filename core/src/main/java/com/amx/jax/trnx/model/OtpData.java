@@ -138,5 +138,6 @@ public class OtpData implements Serializable {
 	public void resetCounts() {
 		this.sendOtpAttempts = 0;
 		this.validateOtpAttempts = 0;
+		this.setLockDate(null);
 	}
 }

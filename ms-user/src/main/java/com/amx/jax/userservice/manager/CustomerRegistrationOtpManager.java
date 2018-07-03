@@ -156,8 +156,7 @@ public class CustomerRegistrationOtpManager {
 		Date midnightToday = dateUtil.getMidnightToday();
 
 		if (otpData.getLockDate() != null && midnightToday.compareTo(otpData.getLockDate()) > 0) {
-			otpData.setLockDate(null);
-			otpData.setValidateOtpAttempts(0);
+			otpData.resetCounts();
 		}
 	}
 
