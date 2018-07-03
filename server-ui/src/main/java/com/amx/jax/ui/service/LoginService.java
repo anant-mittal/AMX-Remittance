@@ -20,6 +20,7 @@ import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -176,6 +177,8 @@ public class LoginService {
 			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 			auditService.log(
 					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));
+		} catch (Exception e) {
+			UIServerError.evaluate(e);
 		}
 		return wrapper;
 	}

@@ -3,6 +3,9 @@ package com.amx.jax.api;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,6 +17,8 @@ public class AmxApiResponse<T, M> implements Serializable {
 
 	protected Long timestamp;
 	protected String status = "200";
+	/** The status key. */
+	protected String statusKey = "SUCCESS";
 	protected String message = Constants.BLANK;
 	protected String path;
 
@@ -58,6 +63,40 @@ public class AmxApiResponse<T, M> implements Serializable {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	/**
+	 * Gets the status key.
+	 *
+	 * @return the status key
+	 */
+	public String getStatusKey() {
+		return statusKey;
+	}
+
+	/**
+	 * Sets the status key.
+	 *
+	 * @param statusKey
+	 *            the new status key
+	 */
+	public void setStatusKey(String statusKey) {
+		this.statusKey = statusKey;
+	}
+
+	/**
+	 * Sets the status.
+	 *
+	 * @param status
+	 *            the new status
+	 */
+	@JsonIgnore
+	public void setStatus(HttpStatus status) {
+		if (status.is5xxServerError() || status.is4xxClientError() || status.is3xxRedirection()) {
+			this.statusKey = status.series().name();
+		}
+		this.status = ArgUtil.parseAsString(status.value());
+		this.message = status.getReasonPhrase();
 	}
 
 	public String getMessage() {
