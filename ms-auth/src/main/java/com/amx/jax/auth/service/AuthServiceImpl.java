@@ -31,7 +31,7 @@ import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.dto.RoleDefinitionDataTable;
 import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.error.JaxError;
-import com.amx.jax.auth.exception.GlobalException;
+import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.manager.AuthLoginManager;
 import com.amx.jax.auth.manager.AuthLoginOTPManager;
 import com.amx.jax.auth.models.Module;
@@ -107,7 +107,7 @@ public class AuthServiceImpl implements AuthService {
 	 * Boolean.TRUE; break; } }else{ status = Boolean.TRUE; break; } } }else{ status
 	 * = Boolean.TRUE; break; } } } } } } catch (MalformedURLException e) {
 	 * e.printStackTrace(); throw new
-	 * GlobalException("validateEmployeeRoleDef fail ",e.getMessage()); }
+	 * AuthServiceException("validateEmployeeRoleDef fail ",e.getMessage()); }
 	 * 
 	 * return status; }
 	 */
@@ -132,7 +132,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException("saveEnums fail ", e.getMessage());
 		}
 		return AmxApiResponseM.build(new BoolRespModel(savesStatus));
 	}
@@ -184,7 +184,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException("saveModule fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -235,7 +235,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -286,7 +286,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -366,7 +366,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException("savePermission fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -446,7 +446,7 @@ public class AuthServiceImpl implements AuthService {
 
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
 		}
 		AmxApiResponse<BoolRespModel, Object> response = new AmxApiResponse<BoolRespModel, Object>();
 		response.addResult(new BoolRespModel(savesStatus));
@@ -479,7 +479,7 @@ public class AuthServiceImpl implements AuthService {
 				userM.setEmployeeId(user.getEmployeeId());
 				if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 					// error already exist
-					throw new GlobalException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
+					throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
 				} else {
 					userM.setRoleId(roleId);
 				}
@@ -492,7 +492,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -546,7 +546,7 @@ public class AuthServiceImpl implements AuthService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			throw new GlobalException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
 		}
 
 		return AmxApiResponse.build(new BoolRespModel(savesStatus));
@@ -565,7 +565,7 @@ public class AuthServiceImpl implements AuthService {
 			return AmxApiResponse.build(output);
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException("sendOtp fail ", e.getMessage());
 		}
 	}
 
@@ -611,14 +611,14 @@ public class AuthServiceImpl implements AuthService {
 				if (emp != null) {
 					return sendOtp(emp);
 				} else {
-					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
 		}
 	}
 
@@ -631,14 +631,14 @@ public class AuthServiceImpl implements AuthService {
 				if (emp != null) {
 					return validateOtp(emp, mOtp);
 				} else {
-					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			throw new GlobalException("verifyUserOTPDetails fail ", e.getMessage());
+			throw new AuthServiceException("verifyUserOTPDetails fail ", e.getMessage());
 		}
 	}
 

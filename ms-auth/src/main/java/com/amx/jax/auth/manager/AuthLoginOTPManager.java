@@ -19,7 +19,7 @@ import com.amx.jax.auth.dbmodel.Employee;
 import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
 import com.amx.jax.auth.error.JaxError;
-import com.amx.jax.auth.exception.GlobalException;
+import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.models.EmployeeInfo;
 import com.amx.jax.auth.service.AuthNotificationService;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
@@ -31,35 +31,35 @@ import com.amx.utils.Random;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AuthLoginOTPManager {
-	
+
 	public static final Logger logger = LoggerFactory.getLogger(AuthLoginOTPManager.class);
-	
+
 	@Autowired
 	JaxUtil util;
-	
+
 	@Autowired
 	JaxUtil jaxUtil;
-	
+
 	@Autowired
 	AuthNotificationService authNotificationService;
-	
+
 	@Autowired
 	AuthLoginManager authLoginManager;
-	
+
 	@Autowired
 	CryptoUtil cryptoUtil;
-	
+
 	@Autowired
 	OtpSettings otpSettings;
-	
+
 	@Autowired
 	LoginDao loginDao;
-	
+
 	// Initiate new OTP
 	public void init() {
 		authLoginManager.init();
 	}
-	
+
 	/**
 	 * sends the otp to staff
 	 */
@@ -70,10 +70,10 @@ public class AuthLoginOTPManager {
 		OtpData otpData = model.getOtpData();
 		EmployeeInfo einfo = new EmployeeInfo();
 		jaxUtil.convert(employeeDetail, einfo);
-		jaxUtil.convert(otpData,civilIdOtpModel);
+		jaxUtil.convert(otpData, civilIdOtpModel);
 		authNotificationService.sendOtpSms(einfo, civilIdOtpModel);
 	}
-	
+
 	/**
 	 * generates otp to staff
 	 */
@@ -96,45 +96,46 @@ public class AuthLoginOTPManager {
 		authLoginManager.saveOtpData(otpData);
 		return sendOtpModel;
 	}
-	
+
 	/**
 	 * Validates the otp for staff
 	 */
-	public AuthLoginTrnxModel validateOtpStaff(Employee empDetails,String mOtp) {
+	public AuthLoginTrnxModel validateOtpStaff(Employee empDetails, String mOtp) {
 		AuthLoginTrnxModel authLoginTrnxModel = null;
 		OtpData otpData = authLoginManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(mOtp)) {
-				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
+				throw new AuthServiceException("Otp field is required", JaxError.MISSING_OTP);
 			}
 			// call from parameter master
 			if (otpData.getValidateOtpAttempts() >= 3) {
-				throw new GlobalException("Sorry, you cannot proceed to login. Please contact head office to unlock account",
+				throw new AuthServiceException(
+						"Sorry, you cannot proceed to login. Please contact head office to unlock account",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.getmOtp().equals(mOtp)) {
 				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+				throw new AuthServiceException("Invalid otp", JaxError.INVALID_OTP);
 			}
 			otpData.setOtpValidated(true);
 			UserRoleMaster usermaster = loginDao.fetchUserMasterDetails(empDetails.getEmployeeId());
-			if(usermaster != null && usermaster.getUserRoleId() != null){
+			if (usermaster != null && usermaster.getUserRoleId() != null) {
 				List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(usermaster.getUserRoleId());
-				if(roleDef != null && roleDef.size() != 0){
+				if (roleDef != null && roleDef.size() != 0) {
 					authLoginTrnxModel = authLoginManager.fetchEmployeeDetails(empDetails, usermaster, roleDef);
-				}else{
-					throw new GlobalException("Sorry, you cannot proceed to login. Please contact head office",
+				} else {
+					throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
 							JaxError.INVALID_ROLE_DEFINITION);
 				}
-			}else{
-				throw new GlobalException("Sorry, you cannot proceed to login. Please contact head office",
+			} else {
+				throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
 						JaxError.INVALID_EMPLOYEE_DETAILS);
 			}
 		} finally {
 			authLoginManager.saveOtpData(otpData);
 		}
-		
+
 		return authLoginTrnxModel;
 	}
 

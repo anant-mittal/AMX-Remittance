@@ -18,6 +18,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
 
@@ -172,8 +173,30 @@ public class RestService {
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
+		public <T> AmxApiResponse<T, Object> asResponseModel(Class<T> responseType) {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate
+					.exchange(uri, method, requestEntity, new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
+					}).getBody();
+		}
+
+		public <T, M> AmxApiResponse<T, M> asResponseModel(Class<T> responseType, Class<M> modelType) {
+			URI uri = builder.buildAndExpand(uriParams).toUri();
+			return restTemplate
+					.exchange(uri, method, requestEntity, new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
+					}).getBody();
+		}
+
 		public String asString() {
 			return this.as(String.class);
+		}
+
+		public Object asObject() {
+			return this.as(Object.class);
+		}
+
+		public Object as() {
+			return this.asObject();
 		}
 
 	}

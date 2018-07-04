@@ -9,37 +9,34 @@ import com.amx.jax.auth.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.util.JaxUtil;
 
-public class GlobalException extends AbstractJaxException {
+public class AuthServiceException extends AbstractJaxException {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
-	public GlobalException(String errorMessage) {
+	public AuthServiceException(String errorMessage) {
 		super(errorMessage);
 	}
 
-	public GlobalException(String errorMessage, String errorCode) {
+	public AuthServiceException(String errorMessage, String errorCode) {
 		super(errorMessage, errorCode);
 	}
 
-	public GlobalException(String errorMessage, JaxError error) {
+	public AuthServiceException(String errorMessage, JaxError error) {
 		super(errorMessage, error.getCode());
 	}
-	
-	public GlobalException(AmxApiError error) {
+
+	public AuthServiceException(AmxApiError error) {
 		super(error);
 	}
 
-	public GlobalException(JaxError error, Object... expressions) {
+	public AuthServiceException(JaxError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
 		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
 
 	}
-	
-	public GlobalException(String errorMessage, JaxError error, Object... expressions) {
+
+	public AuthServiceException(String errorMessage, JaxError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
 		this.errorKey = util.buildErrorExpressions(error.getCode(), list);

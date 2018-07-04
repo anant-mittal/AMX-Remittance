@@ -27,13 +27,13 @@ import com.amx.jax.auth.dbmodel.PermissionScopeMaster;
 import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.RoleMaster;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
+import com.amx.jax.auth.dto.EmployeeDetailsDTO;
+import com.amx.jax.auth.dto.RoleDefinitionDataTable;
+import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.error.JaxError;
-import com.amx.jax.auth.exception.GlobalException;
+import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.manager.AuthLoginManager;
 import com.amx.jax.auth.manager.AuthLoginOTPManager;
-import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
-import com.amx.jax.auth.meta.model.RoleDefinitionDataTable;
-import com.amx.jax.auth.meta.model.UserDetailsDTO;
 import com.amx.jax.auth.models.Module;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.PermType;
@@ -112,7 +112,7 @@ public class LoginService extends AbstractService {
 	 * Boolean.TRUE; break; } }else{ status = Boolean.TRUE; break; } } }else{ status
 	 * = Boolean.TRUE; break; } } } } } } catch (MalformedURLException e) {
 	 * e.printStackTrace(); throw new
-	 * GlobalException("validateEmployeeRoleDef fail ",e.getMessage()); }
+	 * AuthServiceException("validateEmployeeRoleDef fail ",e.getMessage()); }
 	 * 
 	 * return status; }
 	 */
@@ -137,7 +137,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveEnums fail ", e.getMessage());
+			throw new AuthServiceException("saveEnums fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -190,7 +190,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveModule fail ", e.getMessage());
+			throw new AuthServiceException("saveModule fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -241,7 +241,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveFunctionalityTypeMaster fail ", e.getMessage());
+			throw new AuthServiceException("saveFunctionalityTypeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -292,7 +292,7 @@ public class LoginService extends AbstractService {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("savePermissionScopeMaster fail ", e.getMessage());
+			throw new AuthServiceException("savePermissionScopeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -372,7 +372,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("savePermission fail ", e.getMessage());
+			throw new AuthServiceException("savePermission fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -452,7 +452,7 @@ public class LoginService extends AbstractService {
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveRoleMaster fail ", e.getMessage());
+			throw new AuthServiceException("saveRoleMaster fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -492,7 +492,7 @@ public class LoginService extends AbstractService {
 					userM.setEmployeeId(user.getEmployeeId());
 					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new GlobalException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
+						throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
 					} else {
 						userM.setRoleId(roleId);
 					}
@@ -504,11 +504,11 @@ public class LoginService extends AbstractService {
 				loginDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
 			} else {
-				throw new GlobalException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
+				throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveAssignRoleToUser fail ", e.getMessage());
+			throw new AuthServiceException("saveAssignRoleToUser fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -562,7 +562,7 @@ public class LoginService extends AbstractService {
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveAssignPermToRole fail ", e.getMessage());
+			throw new AuthServiceException("saveAssignPermToRole fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -585,7 +585,7 @@ public class LoginService extends AbstractService {
 			apiResponse.getData().setType("send-otp-model");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("sendOtp fail ", e.getMessage());
+			throw new AuthServiceException("sendOtp fail ", e.getMessage());
 		}
 
 		return apiResponse;
@@ -638,14 +638,14 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = sendOtp(emp);
 				} else {
-					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("verifyUserDetails fail ", e.getMessage());
+			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
 		}
 
 		return apiResponse;
@@ -660,14 +660,14 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
-					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("verifyUserOTPDetails fail ", e.getMessage());
+			throw new AuthServiceException("verifyUserOTPDetails fail ", e.getMessage());
 		}
 
 		return apiResponse;

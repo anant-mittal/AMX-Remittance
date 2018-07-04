@@ -1,4 +1,4 @@
-package com.amx.jax.auth.api;
+package com.amx.jax.auth;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,22 +15,23 @@ import com.amx.amxlib.model.SendOtpModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auth.AuthService;
+import com.amx.jax.auth.AuthServiceClient;
 import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
-import com.amx.jax.auth.service.AuthServiceImpl;
 import com.amx.jax.postman.PostManException;
 
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-public class AuthServiceController implements AuthService {
+@RequestMapping("test/")
+public class AuthServiceControllerTest implements AuthService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceController.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceControllerTest.class);
 
 	@Autowired
-	AuthServiceImpl authService;
+	AuthServiceClient authService;
 
 	/**
 	 * @task Sync DB perms
