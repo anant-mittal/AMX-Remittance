@@ -22,7 +22,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppConfig;
 import com.amx.jax.auth.AuthConstants;
-import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
+import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.client.AbstractJaxServiceClient;

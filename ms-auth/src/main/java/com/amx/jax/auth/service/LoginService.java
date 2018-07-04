@@ -463,7 +463,9 @@ public class LoginService extends AbstractService {
 		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
 
 		UserDetailsDTO userDetail = new UserDetailsDTO();
+
 		apiResponse = getBlackApiResponse();
+
 		jaxUtil.convert(user, userDetail);
 
 		apiResponse.getData().getValues().add(userDetail);

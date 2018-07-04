@@ -15,9 +15,6 @@ import javax.persistence.Table;
 @Table(name = "EX_USER_ROLE_MASTER" )
 public class UserRoleMaster implements java.io.Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal userRoleId;

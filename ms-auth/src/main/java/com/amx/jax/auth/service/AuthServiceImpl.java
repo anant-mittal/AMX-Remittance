@@ -27,13 +27,13 @@ import com.amx.jax.auth.dbmodel.PermissionScopeMaster;
 import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.RoleMaster;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
+import com.amx.jax.auth.dto.EmployeeDetailsDTO;
+import com.amx.jax.auth.dto.RoleDefinitionDataTable;
+import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.error.JaxError;
 import com.amx.jax.auth.exception.GlobalException;
 import com.amx.jax.auth.manager.AuthLoginManager;
 import com.amx.jax.auth.manager.AuthLoginOTPManager;
-import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
-import com.amx.jax.auth.meta.model.RoleDefinitionDataTable;
-import com.amx.jax.auth.meta.model.UserDetailsDTO;
 import com.amx.jax.auth.models.Module;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.PermType;
@@ -453,14 +453,14 @@ public class AuthServiceImpl implements AuthService {
 		return response;
 	}
 
-	public AmxApiResponse<UserRoleMaster, Object> fetchUserMasterDetails(BigDecimal userId) {
+	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(BigDecimal userId) {
 		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
 
 		// ????
 		UserDetailsDTO userDetail = new UserDetailsDTO();
 		jaxUtil.convert(user, userDetail);
 
-		return AmxApiResponse.build(user);
+		return AmxApiResponse.build(userDetail);
 	}
 
 	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
@@ -468,33 +468,28 @@ public class AuthServiceImpl implements AuthService {
 		boolean savesStatus = Boolean.FALSE;
 
 		try {
-			AmxApiResponse<UserRoleMaster, Object> userMaster = fetchUserMasterDetails(userId);
-			if (userMaster != null) {
-				UserRoleMaster user = userMaster.getResult();
+			UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
 
-				UserRoleMaster userM = new UserRoleMaster();
+			UserRoleMaster userM = new UserRoleMaster();
 
-				if (user != null) {
-					userM.setCreatedDate(new Date());
-					userM.setIsactive("Y");
-					userM.setUserRoleId(user.getUserRoleId());
-					userM.setEmployeeId(user.getEmployeeId());
-					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
-						// error already exist
-						throw new GlobalException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
-					} else {
-						userM.setRoleId(roleId);
-					}
+			if (user != null) {
+				userM.setCreatedDate(new Date());
+				userM.setIsactive("Y");
+				userM.setUserRoleId(user.getUserRoleId());
+				userM.setEmployeeId(user.getEmployeeId());
+				if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
+					// error already exist
+					throw new GlobalException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
 				} else {
-					userM.setEmployeeId(userId);
 					userM.setRoleId(roleId);
 				}
-
-				loginDao.saveRoleToUser(userM);
-				savesStatus = Boolean.TRUE;
 			} else {
-				throw new GlobalException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
+				userM.setEmployeeId(userId);
+				userM.setRoleId(roleId);
 			}
+
+			loginDao.saveRoleToUser(userM);
+			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveAssignRoleToUser fail ", e.getMessage());

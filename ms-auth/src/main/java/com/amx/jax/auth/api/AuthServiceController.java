@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.auth.dbmodel.UserRoleMaster;
-import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
+import com.amx.jax.auth.AuthService;
+import com.amx.jax.auth.dto.EmployeeDetailsDTO;
+import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.auth.service.AuthServiceImpl;
@@ -32,7 +33,7 @@ import com.amx.jax.postman.PostManException;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-public class AuthServiceController {
+public class AuthServiceController implements AuthService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceController.class);
 
@@ -44,27 +45,23 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Sync Permissions")
 	@RequestMapping(value = SYNC_PERMS, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> syncPermsMeta() {
-
+	public AmxApiResponse<BoolRespModel, Object> saveEnums() {
 		// modules enums
 		// permissions enums
 		// perm scope enums
 		// perm type enums
-
 		return authService.saveEnums();
 
 	}
 
 	@ApiOperation("User Auth")
 	@RequestMapping(value = USER_VALID, method = RequestMethod.GET)
-	public AmxApiResponse<SendOtpModel, Object> validateUser(@RequestParam String empCode,
+	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(@RequestParam String empCode,
 			@RequestParam String identity, @RequestParam(required = false) String ipaddress) {
-
 		// point 1 : need to fetch employee details based on empCode
 		// point 2 : need to check identity by empCode data
 		// point 3 : once success, sending OTP to staff
 		// point 4 : finally success or fail need to json object
-
 		return authService.verifyUserDetails(empCode, identity, ipaddress);
 
 	}
@@ -83,7 +80,7 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("User Auth")
 	@RequestMapping(value = USER_AUTH, method = RequestMethod.GET)
-	public AmxApiResponse<EmployeeDetailsDTO, Object> authUser(@RequestParam String empCode,
+	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(@RequestParam String empCode,
 			@RequestParam String identity, @RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String ipaddress) {
 
@@ -106,7 +103,7 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Create Role")
 	@RequestMapping(value = ROLE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> createRole(@RequestParam String roleTitle) {
+	public AmxApiResponse<BoolRespModel, Object> saveRoleMaster(@RequestParam String roleTitle) {
 		return authService.saveRoleMaster(roleTitle);
 	}
 
@@ -119,7 +116,7 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Assign perms to Role")
 	@RequestMapping(value = ROLE_PERM, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> assinPerm(@RequestParam BigDecimal roleId,
+	public AmxApiResponse<BoolRespModel, Object> saveAssignPermToRole(@RequestParam BigDecimal roleId,
 			@RequestParam Permission permission, @RequestParam(required = false) PermScope permScope,
 			@RequestParam(required = false) String admin) {
 		return authService.saveAssignPermToRole(roleId, permission, permScope, admin);
@@ -133,7 +130,7 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Assign Role to user")
 	@RequestMapping(value = USER_ROLE, method = RequestMethod.POST)
-	public AmxApiResponse<BoolRespModel, Object> assinRole(@RequestParam BigDecimal roleId,
+	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(@RequestParam BigDecimal roleId,
 			@RequestParam BigDecimal userId) {
 		return authService.saveAssignRoleToUser(roleId, userId);
 	}
@@ -146,7 +143,7 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Fetch User permissions")
 	@RequestMapping(value = USER_PERMS, method = RequestMethod.GET)
-	public AmxApiResponse<UserRoleMaster, Object> getUserPerms(@RequestParam BigDecimal userId) {
+	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(@RequestParam BigDecimal userId) {
 		return authService.fetchUserMasterDetails(userId);
 	}
 

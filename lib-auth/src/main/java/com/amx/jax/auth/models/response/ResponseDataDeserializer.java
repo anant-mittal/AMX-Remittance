@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import com.amx.amxlib.model.response.ResponseData;
-import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
-import com.amx.jax.auth.meta.model.UserDetailsDTO;
+import com.amx.jax.auth.dto.EmployeeDetailsDTO;
+import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

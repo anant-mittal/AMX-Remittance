@@ -1,4 +1,4 @@
-package com.amx.jax.auth.meta.model;
+package com.amx.jax.auth.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
