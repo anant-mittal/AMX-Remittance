@@ -19,11 +19,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.auth.manager.AuthLoginManager;
+import com.amx.amxlib.model.SendOtpModel;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
+import com.amx.jax.auth.dbmodel.UserRoleMaster;
+import com.amx.jax.auth.meta.model.EmployeeDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
-import com.amx.jax.auth.service.LoginService;
+import com.amx.jax.auth.service.AuthServiceImpl;
 import com.amx.jax.postman.PostManException;
 
 import io.swagger.annotations.ApiOperation;
@@ -34,44 +37,35 @@ public class AuthServiceController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceController.class);
 
 	@Autowired
-	LoginService loginService;
-	
-	@Autowired
-	AuthLoginManager authLoginManager;
+	AuthServiceImpl authService;
 
 	/**
 	 * @task Sync DB perms
 	 */
 	@ApiOperation("Sync Permissions")
 	@RequestMapping(value = SYNC_PERMS, method = RequestMethod.POST)
-	public ApiResponse syncPermsMeta() {
-		
+	public AmxApiResponse<BoolRespModel, Object> syncPermsMeta() {
+
 		// modules enums
 		// permissions enums
 		// perm scope enums
 		// perm type enums
-		
-		ApiResponse status = loginService.saveEnums();
-		System.out.println("status : " + status);
-		
-		return status;
+
+		return authService.saveEnums();
+
 	}
-	
+
 	@ApiOperation("User Auth")
 	@RequestMapping(value = USER_VALID, method = RequestMethod.GET)
-	public ApiResponse validateUser(@RequestParam String empCode, @RequestParam String identity,@RequestParam(required = false) String ipaddress) {
-		
-		LOGGER.info("employee code : "+empCode + " identity : "+identity+ "ipaddress :" +ipaddress);
-		ApiResponse apiResponse = null;
-		
+	public AmxApiResponse<SendOtpModel, Object> validateUser(@RequestParam String empCode,
+			@RequestParam String identity, @RequestParam(required = false) String ipaddress) {
+
 		// point 1 : need to fetch employee details based on empCode
 		// point 2 : need to check identity by empCode data
 		// point 3 : once success, sending OTP to staff
 		// point 4 : finally success or fail need to json object
-		
-		apiResponse = loginService.verifyUserDetails(empCode, identity,ipaddress);
-		
-		return apiResponse;
+
+		return authService.verifyUserDetails(empCode, identity, ipaddress);
 
 	}
 
@@ -89,20 +83,19 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("User Auth")
 	@RequestMapping(value = USER_AUTH, method = RequestMethod.GET)
-	public ApiResponse authUser(@RequestParam String empCode, @RequestParam String identity,
-			@RequestParam(required = false) String mOtp,@RequestParam(required = false) String ipaddress) {
-		
-		LOGGER.info("employee code : "+empCode + " identity : "+identity + " mOtp : " + mOtp + "ipaddress :" +ipaddress);
-		ApiResponse apiResponse = null;
-		
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authUser(@RequestParam String empCode,
+			@RequestParam String identity, @RequestParam(required = false) String mOtp,
+			@RequestParam(required = false) String ipaddress) {
+
+		LOGGER.info("employee code : " + empCode + " identity : " + identity + " mOtp : " + mOtp + "ipaddress :"
+				+ ipaddress);
+
 		// point 1 : need to fetch employee details based on empCode
 		// point 2 : need to check identity by empCode data
 		// point 3 : once success of checking data OTP verification need to check
 		// point 4 : finally success or fail need to json object
-		
-		apiResponse = loginService.verifyUserOTPDetails(empCode, identity,mOtp,ipaddress);
-		
-		return apiResponse;
+
+		return authService.verifyUserOTPDetails(empCode, identity, mOtp, ipaddress);
 
 	}
 
@@ -113,10 +106,8 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Create Role")
 	@RequestMapping(value = ROLE, method = RequestMethod.POST)
-	public ApiResponse createRole(@RequestParam String roleTitle) {
-		ApiResponse status = loginService.saveRoleMaster(roleTitle);
-		System.out.println("status : " + status);
-		return status;
+	public AmxApiResponse<BoolRespModel, Object> createRole(@RequestParam String roleTitle) {
+		return authService.saveRoleMaster(roleTitle);
 	}
 
 	/**
@@ -128,11 +119,10 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Assign perms to Role")
 	@RequestMapping(value = ROLE_PERM, method = RequestMethod.POST)
-	public ApiResponse assinPerm(@RequestParam BigDecimal roleId, @RequestParam Permission permission,
-			@RequestParam(required = false) PermScope permScope,@RequestParam(required = false) String admin) {
-		ApiResponse status = loginService.saveAssignPermToRole(roleId,permission,permScope,admin);
-		System.out.println("status : " + status);
-		return status;
+	public AmxApiResponse<BoolRespModel, Object> assinPerm(@RequestParam BigDecimal roleId,
+			@RequestParam Permission permission, @RequestParam(required = false) PermScope permScope,
+			@RequestParam(required = false) String admin) {
+		return authService.saveAssignPermToRole(roleId, permission, permScope, admin);
 	}
 
 	/**
@@ -143,10 +133,9 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Assign Role to user")
 	@RequestMapping(value = USER_ROLE, method = RequestMethod.POST)
-	public ApiResponse assinRole(@RequestParam BigDecimal roleId, @RequestParam BigDecimal userId) {
-		ApiResponse status = loginService.saveAssignRoleToUser(roleId,userId);
-		System.out.println("status : " + status);
-		return status;
+	public AmxApiResponse<BoolRespModel, Object> assinRole(@RequestParam BigDecimal roleId,
+			@RequestParam BigDecimal userId) {
+		return authService.saveAssignRoleToUser(roleId, userId);
 	}
 
 	/**
@@ -157,10 +146,8 @@ public class AuthServiceController {
 	 */
 	@ApiOperation("Fetch User permissions")
 	@RequestMapping(value = USER_PERMS, method = RequestMethod.GET)
-	public ApiResponse getUserPerms(@RequestParam BigDecimal userId) {
-		ApiResponse user = loginService.fetchUserMasterDetails(userId);
-		System.out.println(user);
-		return user;
+	public AmxApiResponse<UserRoleMaster, Object> getUserPerms(@RequestParam BigDecimal userId) {
+		return authService.fetchUserMasterDetails(userId);
 	}
-	
+
 }

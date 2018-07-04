@@ -41,6 +41,7 @@ import com.amx.jax.auth.models.Permission;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class AuthServiceImpl implements AuthService {
@@ -85,14 +86,14 @@ public class AuthServiceImpl implements AuthService {
 	 * 
 	 * // sample https://example.com:8080/Bank/Enquiry/District_Master.html URL url;
 	 * String module = null,functionalityType = null,function= null; try { url = new
-	 * URL(urlPath); System.out.println("protocol: " + url.getProtocol());
-	 * System.out.println("domain: " + url.getHost()); System.out.println("port: " +
-	 * url.getPort()); System.out.println("uri: " + url.getPath());
+	 * URL(urlPath); LOGGER.info("protocol: " + url.getProtocol());
+	 * LOGGER.info("domain: " + url.getHost()); LOGGER.info("port: " +
+	 * url.getPort()); LOGGER.info("uri: " + url.getPath());
 	 * 
 	 * String[] data = url.getPath().split("/"); if(data.length > 3){ module =
 	 * data[1]; functionalityType = data[2]; function = data[3].split("\\.")[0];
 	 * 
-	 * System.out.println(module + "|" + functionalityType + "|" + function);
+	 * LOGGER.info(module + "|" + functionalityType + "|" + function);
 	 * 
 	 * List<RoleDefinition> roleMenu = fetchEmployeeRoleDef(role); for
 	 * (RoleDefinition roleDefinition : roleMenu) { status = Boolean.FALSE;
@@ -112,31 +113,28 @@ public class AuthServiceImpl implements AuthService {
 	 */
 
 	// store enums
-	public AmxApiResponseM<BoolRespModel> saveEnums() {
+	public AmxApiResponse<BoolRespModel, Object> saveEnums() {
 		boolean savesStatus = Boolean.FALSE;
 		try {
 			// fetch module enums
 			boolean modulestatus = saveModule();
-			System.out.println("Module : " + modulestatus);
+			LOGGER.info("Module : " + modulestatus);
 			boolean funcTypestatus = saveFunctionalityTypeMaster();
-			System.out.println("FunctionalityType : " + funcTypestatus);
+			LOGGER.info("FunctionalityType : " + funcTypestatus);
 			boolean permScope = savePermissionScopeMaster();
-			System.out.println("PermScope : " + permScope);
+			LOGGER.info("PermScope : " + permScope);
 			boolean perm = savePermission();
-			System.out.println("perm : " + perm);
+			LOGGER.info("perm : " + perm);
 
 			if (modulestatus || funcTypestatus || permScope || perm) {
 				savesStatus = Boolean.TRUE;
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveEnums fail ", e.getMessage());
 		}
-		BoolRespModel result = new BoolRespModel(savesStatus);
-		AmxApiResponseM<BoolRespModel> response = new AmxApiResponseM<BoolRespModel>();
-		response.addResult(result);
-		return response;
+		return AmxApiResponseM.build(new BoolRespModel(savesStatus));
 	}
 
 	// save Modules
@@ -167,7 +165,7 @@ public class AuthServiceImpl implements AuthService {
 
 			moduleEnumData.removeAll(moduleDBData);
 
-			System.out.println("not available in db : " + moduleEnumData);
+			LOGGER.info("not available in db : " + moduleEnumData);
 
 			for (String moduleMaster : moduleEnumData) {
 				ModuleMaster module = new ModuleMaster();
@@ -185,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveModule fail ", e.getMessage());
 		}
 
@@ -218,7 +216,7 @@ public class AuthServiceImpl implements AuthService {
 
 			funTypeEnumData.removeAll(funTypeDBData);
 
-			System.out.println("not available in db : " + funTypeEnumData);
+			LOGGER.info("not available in db : " + funTypeEnumData);
 
 			for (String funTypeMaster : funTypeEnumData) {
 				FunctionalityTypeMaster funcTypeM = new FunctionalityTypeMaster();
@@ -236,7 +234,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveFunctionalityTypeMaster fail ", e.getMessage());
 		}
 
@@ -270,7 +268,7 @@ public class AuthServiceImpl implements AuthService {
 
 			permScopeEnumData.removeAll(permScopeDBData);
 
-			System.out.println("not available in db : " + permScopeEnumData);
+			LOGGER.info("not available in db : " + permScopeEnumData);
 
 			for (String permScopeMaster : permScopeEnumData) {
 				PermissionScopeMaster permScopeM = new PermissionScopeMaster();
@@ -287,7 +285,7 @@ public class AuthServiceImpl implements AuthService {
 				savesStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("savePermissionScopeMaster fail ", e.getMessage());
 		}
 
@@ -349,7 +347,7 @@ public class AuthServiceImpl implements AuthService {
 			 * 
 			 * permEnumData.removeAll(permDBData);
 			 * 
-			 * System.out.println("not available in db : " + permEnumData);
+			 * LOGGER.info("not available in db : " + permEnumData);
 			 * 
 			 * for (String permMaster : permEnumData) { PermissionMaster permM = new
 			 * PermissionMaster();
@@ -367,7 +365,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("savePermission fail ", e.getMessage());
 		}
 
@@ -429,7 +427,7 @@ public class AuthServiceImpl implements AuthService {
 
 			roleMasterData.removeAll(roleMasterDBData);
 
-			System.out.println("not available in db : " + roleMasterData);
+			LOGGER.info("not available in db : " + roleMasterData);
 
 			for (String roleMaster : roleMasterData) {
 				RoleMaster roleM = new RoleMaster();
@@ -447,7 +445,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveRoleMaster fail ", e.getMessage());
 		}
 		AmxApiResponse<BoolRespModel, Object> response = new AmxApiResponse<BoolRespModel, Object>();
@@ -455,21 +453,24 @@ public class AuthServiceImpl implements AuthService {
 		return response;
 	}
 
-	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(BigDecimal userId) {
+	public AmxApiResponse<UserRoleMaster, Object> fetchUserMasterDetails(BigDecimal userId) {
 		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
+
+		// ????
 		UserDetailsDTO userDetail = new UserDetailsDTO();
 		jaxUtil.convert(user, userDetail);
-		return AmxApiResponse.build(userDetail);
+
+		return AmxApiResponse.build(user);
 	}
 
-	public ApiResponse saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
+	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
 
 		boolean savesStatus = Boolean.FALSE;
 
 		try {
-			ApiResponse userMaster = fetchUserMasterDetails(userId);
+			AmxApiResponse<UserRoleMaster, Object> userMaster = fetchUserMasterDetails(userId);
 			if (userMaster != null) {
-				UserRoleMaster user = (UserRoleMaster) userMaster.getData().getValues().get(0);
+				UserRoleMaster user = userMaster.getResult();
 
 				UserRoleMaster userM = new UserRoleMaster();
 
@@ -495,11 +496,11 @@ public class AuthServiceImpl implements AuthService {
 				throw new GlobalException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("saveAssignRoleToUser fail ", e.getMessage());
 		}
 
-		return getBooleanResponse(savesStatus);
+		return AmxApiResponse.build(new BoolRespModel(savesStatus));
 	}
 
 	// fetch permission scope Id by permission description
@@ -514,19 +515,19 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	// save Permission and scope to a role
-	public ApiResponse saveAssignPermToRole(BigDecimal roleId, Permission permission, PermScope permScope,
-			String admin) {
+	public AmxApiResponse<BoolRespModel, Object> saveAssignPermToRole(BigDecimal roleId, Permission permission,
+			PermScope permScope, String admin) {
 		boolean savesStatus = Boolean.FALSE;
 		try {
 			BigDecimal moduleId = fetchModuleId(permission.getModule().name());
 			BigDecimal functionalityTypeId = fetchFunctionalityTypeId(permission.getPermType().name());
 			String functionality = permission.getPermission();
 			BigDecimal permissionId = fetchPermissionMasterId(moduleId, functionalityTypeId, functionality);
-			System.out.println("permission" + permissionId);
+			LOGGER.info("permission" + permissionId);
 			BigDecimal scopeId = fetchPermissionScopeId(permScope.name());
 
 			RoleDefinition roleDef = loginDao.fetchRoleDefinitionByRolePermScope(roleId, permissionId, scopeId);
-			System.out.println(roleDef);
+			LOGGER.info(JsonUtil.toJson(roleDef));
 
 			RoleDefinition roleDefinition = new RoleDefinition();
 			if (roleDef != null) {
@@ -549,43 +550,35 @@ public class AuthServiceImpl implements AuthService {
 			loginDao.saveRoleDefintionDetails(roleDefinition);
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error(e.getMessage());
 			throw new GlobalException("saveAssignPermToRole fail ", e.getMessage());
 		}
 
-		return getBooleanResponse(savesStatus);
+		return AmxApiResponse.build(new BoolRespModel(savesStatus));
 	}
 
 	/**
 	 * Sends otp initiating trnx
 	 */
-	public ApiResponse sendOtp(Employee emp) {
-		ApiResponse apiResponse = null;
-
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(Employee emp) {
 		try {
 			BeanPropertyBindingResult errors = new BeanPropertyBindingResult(emp, "emp");
 			// initiate transaction
 			AuthLoginTrnxModel trnxModel = authLoginManager.init(emp);
-			apiResponse = getBlackApiResponse();
 			SendOtpModel output = authLoginOTPManager.generateOtpTokensStaff(emp.getEmployeeNumber());
 			authLoginOTPManager.sendOtpStaff();
-			apiResponse.getData().getValues().add(output);
-			apiResponse.getData().setType("send-otp-model");
+			return AmxApiResponse.build(output);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("sendOtp fail ", e.getMessage());
 		}
-
-		return apiResponse;
 	}
 
 	/**
 	 * validates otp
 	 */
-	public ApiResponse validateOtp(Employee emp, String mOtp) {
+	public AmxApiResponse<EmployeeDetailsDTO, Object> validateOtp(Employee emp, String mOtp) {
 		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp, mOtp);
-		ApiResponse apiResponse = getBlackApiResponse();
-
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
 		empDetail.setCivilId(authLoginTrnxModel.getEmpDetails().getCivilId());
@@ -612,19 +605,16 @@ public class AuthServiceImpl implements AuthService {
 		}
 		empDetail.setRoleDef(lstRoleDF);
 
-		apiResponse.getData().getValues().add(empDetail);
-		apiResponse.getData().setType("employee-detail");
-		return apiResponse;
+		return AmxApiResponse.build(empDetail);
 	}
 
 	// Validate the ec no and then civil id number and the generate OTP and send otp
-	public ApiResponse verifyUserDetails(String empCode, String identity, String ipaddress) {
-		ApiResponse apiResponse = null;
+	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(String empCode, String identity, String ipaddress) {
 		try {
 			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity);
 				if (emp != null) {
-					apiResponse = sendOtp(emp);
+					return sendOtp(emp);
 				} else {
 					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
@@ -632,21 +622,19 @@ public class AuthServiceImpl implements AuthService {
 				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("verifyUserDetails fail ", e.getMessage());
 		}
-
-		return apiResponse;
 	}
 
 	// Validate the ec no and then civil id number and the generate OTP and send otp
-	public ApiResponse verifyUserOTPDetails(String empCode, String identity, String mOtp, String ipaddress) {
-		ApiResponse apiResponse = null;
+	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(String empCode, String identity, String mOtp,
+			String ipaddress) {
 		try {
 			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity);
 				if (emp != null) {
-					apiResponse = validateOtp(emp, mOtp);
+					return validateOtp(emp, mOtp);
 				} else {
 					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
@@ -654,11 +642,9 @@ public class AuthServiceImpl implements AuthService {
 				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.info(e.getMessage());
 			throw new GlobalException("verifyUserOTPDetails fail ", e.getMessage());
 		}
-
-		return apiResponse;
 	}
 
 }
