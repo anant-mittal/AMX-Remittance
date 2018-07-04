@@ -66,16 +66,16 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312567));
-		request.setLocalAmount(new BigDecimal(500));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(181));
-		request.setSrlId(new BigDecimal(2048));
+		request.setBeneId(new BigDecimal(4312610));
+		request.setLocalAmount(new BigDecimal(10));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(142));
+		request.setSrlId(new BigDecimal(673));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(2.5933609959));
+		exRateBreakup.setRate(new BigDecimal(266.6666666667));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);
