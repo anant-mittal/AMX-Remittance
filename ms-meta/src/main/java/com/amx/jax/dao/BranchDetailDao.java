@@ -28,7 +28,7 @@ public class BranchDetailDao {
 		List<BranchDetailModel> branchDetail = jdbcTemplate.query(
 				"SELECT BRANCH_NAME, GOV_NAME, TELEPHONE_NUMBER, ADDRESS, LATITUDE, LONGITUDE from EX_COUNTRY_BRANCH  WHERE ISACTIVE='Y' AND "
 						+ "COUNTRY_ID=?  and CORPORATE_STATUS='N' and branch_name != 'ONLINE' and HEAD_OFFICE_INDICATOR=0  and "
-						+ " ADDRESS NOT NULL AND LATITUDE IS NOT NULL AND LONGITUDE IS NOT NULL ORDER BY BRANCH_NAME ASC",
+						+ " ADDRESS IS NOT NULL AND LATITUDE IS NOT NULL AND LONGITUDE IS NOT NULL ORDER BY BRANCH_NAME ASC",
 				new BranchDetailRowMapper(), countryId);
 
 		return branchDetail;
