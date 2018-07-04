@@ -31,7 +31,6 @@ import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class RemittanceClientTest {
@@ -61,8 +60,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	 @Test
-		public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
+	@Test
+	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -81,7 +80,7 @@ public class RemittanceClientTest {
 		try {
 			response = client.saveTransaction(request);
 		} catch (AdditionalFlexRequiredException exp) {
-			List<JaxConditionalFieldDto> list = exp.getMeta();
+			List<JaxConditionalFieldDto> list = exp.getConditionalFileds();
 			list.get(0);
 		}
 		assertNotNull("Response is null", response);
@@ -90,8 +89,8 @@ public class RemittanceClientTest {
 	}
 
 	// @Test
-	public void testvalidateTransactionForNEFTRTGS() throws IOException, ResourceNotFoundException, InvalidInputException,
-			RemittanceTransactionValidationException, LimitExeededException {
+	public void testvalidateTransactionForNEFTRTGS() throws IOException, ResourceNotFoundException,
+			InvalidInputException, RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -108,28 +107,28 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	 
-	// @Test
-		public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
-				RemittanceTransactionValidationException, LimitExeededException {
-			jaxMetaInfo.setCountryId(new BigDecimal(91));
-			jaxMetaInfo.setCompanyId(new BigDecimal(1));
-			jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-			jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-			jaxMetaInfo.setTenant(Tenant.KWT);
-			ApiResponse<RemittanceTransactionResponsetModel> response = null;
-			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-			request.setBeneId(new BigDecimal(88041));
-			request.setLocalAmount(new BigDecimal(100));
-			// request.setAdditionalBankRuleFiledId(new BigDecimal(101));
-			// request.setSrlId(new BigDecimal(48));
-			response = client.validateTransaction(request);
-			assertNotNull("Response is null", response);
-			assertNotNull(response.getResult());
-			assertNotNull(response.getResult().getModelType());
-		}
 
-	//@Test
+	// @Test
+	public void testvalidateTransaction() throws IOException, ResourceNotFoundException, InvalidInputException,
+			RemittanceTransactionValidationException, LimitExeededException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setTenant(Tenant.KWT);
+		ApiResponse<RemittanceTransactionResponsetModel> response = null;
+		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
+		request.setBeneId(new BigDecimal(88041));
+		request.setLocalAmount(new BigDecimal(100));
+		// request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+		// request.setSrlId(new BigDecimal(48));
+		response = client.validateTransaction(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+
+	// @Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -154,7 +153,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void testfetchTransactionDetails() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -170,20 +169,18 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-	
-	//@Test
+
+	// @Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;
-	   
-		String fromDate ="09/06/2010";
+
+		String fromDate = "09/06/2010";
 		String toDate = "07/07/2011";
-		String docfyr = null,docNumber = null;
-		response = client.getTransactionHistroy(docfyr, docNumber,fromDate,
-			toDate);
+		String docfyr = null, docNumber = null;
+		response = client.getTransactionHistroy(docfyr, docNumber, fromDate, toDate);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
-	
+
 	}
 }

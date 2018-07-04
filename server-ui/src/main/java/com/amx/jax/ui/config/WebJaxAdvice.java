@@ -25,7 +25,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditService;

@@ -13,7 +13,7 @@ public abstract class AmxApiException extends AmxException {
 
 	protected IExceptionEnum error;
 
-	protected AmxApiError apiError;
+	private Object meta;
 
 	public AmxApiException() {
 		super(null, null, true, false);
@@ -21,7 +21,7 @@ public abstract class AmxApiException extends AmxException {
 
 	public AmxApiException(AmxApiError amxApiError) {
 		this();
-		this.apiError = amxApiError;
+		this.meta = amxApiError.getMeta();
 		try {
 			this.error = getErrorIdEnum(amxApiError.getErrorId());
 		} catch (Exception e) {
@@ -88,13 +88,14 @@ public abstract class AmxApiException extends AmxException {
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 
-	public AmxApiError getApiError() {
-		return apiError;
+	public Object getMeta() {
+		return meta;
 	}
 
-	public void setApiError(AmxApiError apiError) {
-		this.apiError = apiError;
+	public void setMeta(Object meta) {
+		this.meta = meta;
 	}
+
 	public abstract boolean isReportable();
 
 }

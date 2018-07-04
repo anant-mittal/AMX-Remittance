@@ -13,7 +13,6 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(AbstractJaxException.class);
-	private Object meta;
 
 	public AbstractJaxException(Exception e) {
 		super(e);
@@ -21,7 +20,6 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	public AbstractJaxException(AmxApiError error) {
 		super(error);
-		this.meta = error.getMeta();
 	}
 
 	public AbstractJaxException(String errorMessage) {
@@ -51,14 +49,6 @@ public abstract class AbstractJaxException extends AmxApiException {
 
 	public AbstractJaxException() {
 		super();
-	}
-
-	public Object getMeta() {
-		return meta;
-	}
-
-	public void setMeta(Object meta) {
-		this.meta = meta;
 	}
 
 	@Override
