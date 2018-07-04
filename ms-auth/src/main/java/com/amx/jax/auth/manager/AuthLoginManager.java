@@ -12,7 +12,7 @@ import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
 import com.amx.jax.cache.TransactionModel;
-import com.amx.jax.trnx.model.OtpData;
+import com.amx.jax.model.OtpData;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

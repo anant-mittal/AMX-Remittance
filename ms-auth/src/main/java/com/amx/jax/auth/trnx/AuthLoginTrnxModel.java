@@ -6,7 +6,7 @@ import java.util.List;
 import com.amx.jax.auth.dbmodel.Employee;
 import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
-import com.amx.jax.trnx.model.OtpData;
+import com.amx.jax.model.OtpData;
 
 public class AuthLoginTrnxModel implements Serializable {
 

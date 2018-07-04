@@ -23,7 +23,7 @@ import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.models.EmployeeInfo;
 import com.amx.jax.auth.service.AuthNotificationService;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
-import com.amx.jax.trnx.model.OtpData;
+import com.amx.jax.model.OtpData;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Random;

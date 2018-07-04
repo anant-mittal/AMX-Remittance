@@ -28,7 +28,7 @@ public class PersistenceJPAConfig {
 
 	@Autowired
 	private JpaProperties jpaProperties;
-	
+
 	@Autowired
 	private MultiTenantConnectionProviderImpl multiTenantConnectionProviderImpl;
 
@@ -46,7 +46,7 @@ public class PersistenceJPAConfig {
 		properties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.SCHEMA);
 		properties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProviderImpl);
 		properties.put(Environment.MULTI_TENANT_IDENTIFIER_RESOLVER, currentTenantIdentifierResolverImpl);
-		properties.put("hibernate.show_sql", "true");
+		properties.put("hibernate.show_sql", "false");
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(dataSource);
 		em.setPackagesToScan("com.amx.jax");
@@ -54,10 +54,10 @@ public class PersistenceJPAConfig {
 		em.setJpaPropertyMap(properties);
 		return em;
 	}
-	
+
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public JdbcTemplate jdbcTemplate( ) {
+	public JdbcTemplate jdbcTemplate() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(multiTenantConnectionProviderImpl.getDataSource());
 		return jdbcTemplate;
 	}

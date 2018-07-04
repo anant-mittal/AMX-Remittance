@@ -1,4 +1,4 @@
-package com.amx.jax.trnx.model;
+package com.amx.jax.model;
 
 import java.io.Serializable;
 import java.util.Date;

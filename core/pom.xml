@@ -42,10 +42,10 @@
 			<groupId>commons-beanutils</groupId>
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
-
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-db</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -83,36 +83,19 @@
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-core</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
-	</dependencies>
-	
-	<!-- <build>
-		<plugins>
-			<plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>apt-maven-plugin</artifactId>
-				<version>1.0.5</version>
-				<executions>
-					<execution>
-						<id>apt-maven-plugin-remote-module-QuerydslAnnotationProcessor</id>
 
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/generated-sources/java</outputDirectory>
-							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build> -->
+	</dependencies>
+
+	<!-- <build> <plugins> <plugin> <groupId>com.mysema.maven</groupId> <artifactId>apt-maven-plugin</artifactId> 
+		<version>1.0.5</version> <executions> <execution> <id>apt-maven-plugin-remote-module-QuerydslAnnotationProcessor</id> 
+		<goals> <goal>process</goal> </goals> <configuration> <outputDirectory>target/generated-sources/java</outputDirectory> 
+		<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor> </configuration> 
+		</execution> </executions> </plugin> </plugins> </build> -->
 
 </project>

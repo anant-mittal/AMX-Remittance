@@ -8,9 +8,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
-import com.amx.jax.constant.Country;
+import com.amx.jax.dict.Country;
 import com.amx.jax.dict.Tenant;
-import com.amx.jax.services.AbstractServiceFactory;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -45,15 +44,6 @@ public class MetaData implements IMetaData {
     private String referrer;
     private String deviceType;
     private String appType;
-
-	/**
-	 * This returns service factory object depending on site country
-	 */
-	@Override
-	public AbstractServiceFactory getServiceFactory() {
-
-		return null;
-	}
 
 	public Country getCountry() {
 		Country country = Country.countryIdToCountryMap.get(countryId.intValue());
@@ -147,8 +137,6 @@ public class MetaData implements IMetaData {
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
 	}
-
-	
 
 	public String getReferrer() {
 		return referrer;
