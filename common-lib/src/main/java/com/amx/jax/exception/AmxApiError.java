@@ -12,6 +12,8 @@ public class AmxApiError {
 	private String errorMessage;
 
 	private String errorType;
+	
+	private Object meta;
 
 	// Spring Norms
 
@@ -109,5 +111,13 @@ public class AmxApiError {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public Object getMeta() {
+		return meta;
+	}
+
+	public void setMeta(Object meta) {
+		this.meta = meta;
 	}
 }
