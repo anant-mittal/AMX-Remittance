@@ -402,6 +402,7 @@ public class BeneficiaryCheckService extends AbstractService {
 
 		if (serviceAppList.isEmpty()) {
 			errorDesc = "Data not found";
+			beneDto.setUpdateNeeded(true);
 			errorStatusDto = this.setBeneError(JaxError.DATA_NOT_FOUND.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
 
