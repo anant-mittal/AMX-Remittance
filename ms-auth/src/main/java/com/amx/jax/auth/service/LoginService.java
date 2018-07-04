@@ -56,7 +56,7 @@ public class LoginService extends AbstractService {
 
 	@Autowired
 	AuthLoginOTPManager authLoginOTPManager;
-	
+
 	@Autowired
 	JaxUtil jaxUtil;
 
@@ -65,115 +65,93 @@ public class LoginService extends AbstractService {
 		return null;
 	}
 
-	public Employee validateEmployeeData(String empcode,String identity){
+	public Employee validateEmployeeData(String empcode, String identity) {
 		Employee emp = loginDao.validateEmpDetails(empcode, identity);
 		return emp;
 	}
 
-	public Employee fetchEmployeeDetails(String user,String pass){
+	public Employee fetchEmployeeDetails(String user, String pass) {
 		Employee emp = loginDao.fetchEmpDetails(user, pass);
 		return emp;
 	}
 
-	public Employee fetchEmployeeDetailsByECNO(String empNo){
+	public Employee fetchEmployeeDetailsByECNO(String empNo) {
 		Employee emp = loginDao.fetchEmpDetailsByECNO(empNo);
 		return emp;
 	}
 
-	public List<RoleDefinition> fetchEmployeeRoleDef(BigDecimal role){
+	public List<RoleDefinition> fetchEmployeeRoleDef(BigDecimal role) {
 		List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(role);
 		return roleDef;
 	}
 
-	/*public boolean validateEmployeeRoleDef(String user,String role,String urlPath){
-		boolean status = Boolean.FALSE;
-
-		// sample https://example.com:8080/Bank/Enquiry/District_Master.html
-		URL url;
-		String module = null,functionalityType = null,function= null;
-		try {
-			url = new URL(urlPath);
-			System.out.println("protocol: " + url.getProtocol());
-			System.out.println("domain: " + url.getHost());
-			System.out.println("port: " + url.getPort());
-			System.out.println("uri: " + url.getPath());
-
-			String[] data = url.getPath().split("/");
-			if(data.length > 3){
-				module = data[1];
-				functionalityType = data[2];
-				function = data[3].split("\\.")[0];
-
-				System.out.println(module + "|" + functionalityType + "|" + function);
-
-				List<RoleDefinition> roleMenu = fetchEmployeeRoleDef(role);
-				for (RoleDefinition roleDefinition : roleMenu) {
-					status = Boolean.FALSE;
-					if(roleDefinition.getModule() != null && module != null){
-						if(roleDefinition.getModule().equalsIgnoreCase(module)){
-							if(roleDefinition.getFunctionalityType() != null){
-								if(functionalityType != null && roleDefinition.getFunctionalityType().equalsIgnoreCase(functionalityType)){
-									if(roleDefinition.getFunctionality() != null){
-										if(function != null && roleDefinition.getFunctionality().equalsIgnoreCase(function)){
-											status = Boolean.TRUE;
-											break;
-										}
-									}else{
-										status = Boolean.TRUE;
-										break;
-									}
-								}
-							}else{
-								status = Boolean.TRUE;
-								break;
-							}
-						}
-					}
-				}
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			throw new GlobalException("validateEmployeeRoleDef fail ",e.getMessage());
-		}
-
-		return status;
-	}*/
+	/*
+	 * public boolean validateEmployeeRoleDef(String user,String role,String
+	 * urlPath){ boolean status = Boolean.FALSE;
+	 * 
+	 * // sample https://example.com:8080/Bank/Enquiry/District_Master.html URL url;
+	 * String module = null,functionalityType = null,function= null; try { url = new
+	 * URL(urlPath); System.out.println("protocol: " + url.getProtocol());
+	 * System.out.println("domain: " + url.getHost()); System.out.println("port: " +
+	 * url.getPort()); System.out.println("uri: " + url.getPath());
+	 * 
+	 * String[] data = url.getPath().split("/"); if(data.length > 3){ module =
+	 * data[1]; functionalityType = data[2]; function = data[3].split("\\.")[0];
+	 * 
+	 * System.out.println(module + "|" + functionalityType + "|" + function);
+	 * 
+	 * List<RoleDefinition> roleMenu = fetchEmployeeRoleDef(role); for
+	 * (RoleDefinition roleDefinition : roleMenu) { status = Boolean.FALSE;
+	 * if(roleDefinition.getModule() != null && module != null){
+	 * if(roleDefinition.getModule().equalsIgnoreCase(module)){
+	 * if(roleDefinition.getFunctionalityType() != null){ if(functionalityType !=
+	 * null &&
+	 * roleDefinition.getFunctionalityType().equalsIgnoreCase(functionalityType)){
+	 * if(roleDefinition.getFunctionality() != null){ if(function != null &&
+	 * roleDefinition.getFunctionality().equalsIgnoreCase(function)){ status =
+	 * Boolean.TRUE; break; } }else{ status = Boolean.TRUE; break; } } }else{ status
+	 * = Boolean.TRUE; break; } } } } } } catch (MalformedURLException e) {
+	 * e.printStackTrace(); throw new
+	 * GlobalException("validateEmployeeRoleDef fail ",e.getMessage()); }
+	 * 
+	 * return status; }
+	 */
 
 	// store enums
-	public ApiResponse saveEnums(){
+	public ApiResponse saveEnums() {
 		boolean savesStatus = Boolean.FALSE;
-		try{
+		try {
 			// fetch module enums
 			boolean modulestatus = saveModule();
-			System.out.println("Module : " +modulestatus);
+			System.out.println("Module : " + modulestatus);
 			boolean funcTypestatus = saveFunctionalityTypeMaster();
-			System.out.println("FunctionalityType : " +funcTypestatus);
+			System.out.println("FunctionalityType : " + funcTypestatus);
 			boolean permScope = savePermissionScopeMaster();
-			System.out.println("PermScope : " +permScope);
+			System.out.println("PermScope : " + permScope);
 			boolean perm = savePermission();
-			System.out.println("perm : " +perm);
+			System.out.println("perm : " + perm);
 
-			if(modulestatus || funcTypestatus || permScope || perm){
+			if (modulestatus || funcTypestatus || permScope || perm) {
 				savesStatus = Boolean.TRUE;
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveEnums fail ",e.getMessage());
+			throw new GlobalException("saveEnums fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
 	}
 
 	// save Modules
-	public boolean saveModule(){
+	public boolean saveModule() {
 
 		boolean savesStatus = Boolean.FALSE;
 		Set<String> moduleEnumData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> moduleDBData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		List<ModuleMaster> moduleStore = new ArrayList<ModuleMaster>();
 
-		try{
+		try {
 
 			Module[] moduledt = Module.values();
 
@@ -185,7 +163,7 @@ public class LoginService extends AbstractService {
 			// fetch all the data from module table
 			List<ModuleMaster> moduleDB = loginDao.fetchModule();
 
-			if(moduleDB != null && moduleDB.size() != 0){
+			if (moduleDB != null && moduleDB.size() != 0) {
 				for (ModuleMaster moduleMaster : moduleDB) {
 					moduleDBData.add(moduleMaster.getModuleEnum());
 				}
@@ -201,31 +179,31 @@ public class LoginService extends AbstractService {
 				module.setModuleEnum(moduleMaster);
 				module.setCreatedDate(new Date());
 				module.setIsactive("Y");
-				
+
 				moduleStore.add(module);
 			}
 
-			if(moduleStore != null && moduleStore.size() != 0){
+			if (moduleStore != null && moduleStore.size() != 0) {
 				loginDao.saveModuleData(moduleStore);
 				savesStatus = Boolean.TRUE;
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveModule fail ",e.getMessage());
+			throw new GlobalException("saveModule fail ", e.getMessage());
 		}
 
 		return savesStatus;
 	}
 
-	public boolean saveFunctionalityTypeMaster(){
+	public boolean saveFunctionalityTypeMaster() {
 
 		boolean savesStatus = Boolean.FALSE;
 		Set<String> funTypeEnumData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> funTypeDBData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		List<FunctionalityTypeMaster> funTypeStore = new ArrayList<FunctionalityTypeMaster>();
 
-		try{
+		try {
 			PermType[] permTypedt = PermType.values();
 
 			for (int i = 0; i < permTypedt.length; i++) {
@@ -236,7 +214,7 @@ public class LoginService extends AbstractService {
 			// fetch all the data from module table
 			List<FunctionalityTypeMaster> permTypeDB = loginDao.fetchFunctionalityTypeMaster();
 
-			if(permTypeDB != null && permTypeDB.size() != 0){
+			if (permTypeDB != null && permTypeDB.size() != 0) {
 				for (FunctionalityTypeMaster functionalityTypeMaster : permTypeDB) {
 					funTypeDBData.add(functionalityTypeMaster.getFunctionalityTypeEnum());
 				}
@@ -252,31 +230,31 @@ public class LoginService extends AbstractService {
 				funcTypeM.setFunctionalityTypeEnum(funTypeMaster);
 				funcTypeM.setCreatedDate(new Date());
 				funcTypeM.setIsactive("Y");
-				
+
 				funTypeStore.add(funcTypeM);
 			}
 
-			if(funTypeStore != null && funTypeStore.size() != 0){
+			if (funTypeStore != null && funTypeStore.size() != 0) {
 				loginDao.saveFunctionalityTypeMaster(funTypeStore);
 				savesStatus = Boolean.TRUE;
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveFunctionalityTypeMaster fail ",e.getMessage());
+			throw new GlobalException("saveFunctionalityTypeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
 	}
 
-	public boolean savePermissionScopeMaster(){
+	public boolean savePermissionScopeMaster() {
 
 		boolean savesStatus = Boolean.FALSE;
 		Set<String> permScopeEnumData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> permScopeDBData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		List<PermissionScopeMaster> permScopeStore = new ArrayList<PermissionScopeMaster>();
 
-		try{
+		try {
 
 			PermScope[] permScopedt = PermScope.values();
 
@@ -288,7 +266,7 @@ public class LoginService extends AbstractService {
 			// fetch all the data from module table
 			List<PermissionScopeMaster> permScopeDB = loginDao.fetchPermissionScopeMaster();
 
-			if(permScopeDB != null && permScopeDB.size() != 0){
+			if (permScopeDB != null && permScopeDB.size() != 0) {
 				for (PermissionScopeMaster permissionScopeMaster : permScopeDB) {
 					permScopeDBData.add(permissionScopeMaster.getScopeEnum());
 				}
@@ -304,17 +282,17 @@ public class LoginService extends AbstractService {
 				permScopeM.setScopeEnum(permScopeMaster);
 				permScopeM.setCreatedDate(new Date());
 				permScopeM.setIsactive("Y");
-				
+
 				permScopeStore.add(permScopeM);
 			}
 
-			if(permScopeStore != null && permScopeStore.size() != 0){
+			if (permScopeStore != null && permScopeStore.size() != 0) {
 				loginDao.savePermissionScopeMaster(permScopeStore);
 				savesStatus = Boolean.TRUE;
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("savePermissionScopeMaster fail ",e.getMessage());
+			throw new GlobalException("savePermissionScopeMaster fail ", e.getMessage());
 		}
 
 		return savesStatus;
@@ -330,7 +308,7 @@ public class LoginService extends AbstractService {
 	}
 
 	// save permission
-	public boolean savePermission(){
+	public boolean savePermission() {
 
 		boolean savesStatus = Boolean.FALSE;
 		HashMap<String, PermissionMaster> mapPerm = new HashMap<String, PermissionMaster>();
@@ -338,13 +316,14 @@ public class LoginService extends AbstractService {
 		Set<String> permDBData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		List<PermissionMaster> permStore = new ArrayList<PermissionMaster>();
 
-		try{
+		try {
 			Permission[] permdt = Permission.values();
 			mapPerm.clear();
 			for (int i = 0; i < permdt.length; i++) {
 				Permission perm = permdt[i];
-				String permId = nullCheck(permdt[i].getModule().name())+nullCheck(permdt[i].getPermType().name())+nullCheckWO(permdt[i].getPermission());
-				
+				String permId = nullCheck(permdt[i].getModule().name()) + nullCheck(permdt[i].getPermType().name())
+						+ nullCheckWO(permdt[i].getPermission());
+
 				BigDecimal moduleId = fetchModuleId(permdt[i].getModule().name());
 				BigDecimal functionalityTypeId = fetchFunctionalityTypeId(permdt[i].getPermType().name());
 				String functionality = permdt[i].getPermission();
@@ -357,97 +336,96 @@ public class LoginService extends AbstractService {
 				permMast.setPermissionId(permissionId);
 				permMast.setCreatedDate(new Date());
 				permMast.setIsactive("Y");
-				if(permissionId != null){
+				if (permissionId != null) {
 					permEnumData.add(permissionId.toString());
 				}
 				permStore.add(permMast);
-				//mapPerm.put(permId, permMast);
+				// mapPerm.put(permId, permMast);
 			}
 
 			// fetch all the data from module table
-			/*List<PermissionMaster> permDB = loginDao.fetchPermissionMaster();
+			/*
+			 * List<PermissionMaster> permDB = loginDao.fetchPermissionMaster();
+			 * 
+			 * if(permDB != null && permDB.size() != 0){ for (PermissionMaster
+			 * permissionMaster : permDB) { if(permissionMaster.getPermissionId() != null){
+			 * permDBData.add(permissionMaster.getPermissionId().toString()); } } }
+			 * 
+			 * permEnumData.removeAll(permDBData);
+			 * 
+			 * System.out.println("not available in db : " + permEnumData);
+			 * 
+			 * for (String permMaster : permEnumData) { PermissionMaster permM = new
+			 * PermissionMaster();
+			 * 
+			 * permM.setModuleId(mapPerm.get(permMaster).getModuleId());
+			 * permM.setFunctionalityTypeId(mapPerm.get(permMaster).getFunctionalityTypeId()
+			 * ); permM.setFunctionality(mapPerm.get(permMaster).getFunctionality());
+			 * permM.setPermissionEnum(mapPerm.get(permMaster).getPermissionEnum());
+			 * permStore.add(permM); }
+			 */
 
-			if(permDB != null && permDB.size() != 0){
-				for (PermissionMaster permissionMaster : permDB) {
-					if(permissionMaster.getPermissionId() != null){
-						permDBData.add(permissionMaster.getPermissionId().toString());
-					}
-				}
-			}
-
-			permEnumData.removeAll(permDBData);
-
-			System.out.println("not available in db : " + permEnumData);
-
-			for (String permMaster : permEnumData) {
-				PermissionMaster permM = new PermissionMaster();
-
-				permM.setModuleId(mapPerm.get(permMaster).getModuleId());
-				permM.setFunctionalityTypeId(mapPerm.get(permMaster).getFunctionalityTypeId());
-				permM.setFunctionality(mapPerm.get(permMaster).getFunctionality());
-				permM.setPermissionEnum(mapPerm.get(permMaster).getPermissionEnum());
-				permStore.add(permM);
-			}*/
-
-			if(permStore != null && permStore.size() != 0){
+			if (permStore != null && permStore.size() != 0) {
 				loginDao.savePermissionMaster(permStore);
 				savesStatus = Boolean.TRUE;
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("savePermission fail ",e.getMessage());
+			throw new GlobalException("savePermission fail ", e.getMessage());
 		}
 
 		return savesStatus;
 	}
-	
+
 	// fetch module id by name
-	public BigDecimal fetchModuleId(String module){
+	public BigDecimal fetchModuleId(String module) {
 		BigDecimal moduleId = null;
 		ModuleMaster moduleMaster = loginDao.fetchModuleId(module);
-		if(moduleMaster != null){
+		if (moduleMaster != null) {
 			moduleId = moduleMaster.getModuleId();
 		}
 		return moduleId;
 	}
-	
+
 	// fetch module id by name
-	public BigDecimal fetchFunctionalityTypeId(String functionalityType){
+	public BigDecimal fetchFunctionalityTypeId(String functionalityType) {
 		BigDecimal functionalityTypeId = null;
 		FunctionalityTypeMaster functionalityTypeMasterId = loginDao.fetchFunctionalityTypeMasterId(functionalityType);
-		if(functionalityTypeMasterId != null){
+		if (functionalityTypeMasterId != null) {
 			functionalityTypeId = functionalityTypeMasterId.getFunctionalityTypeId();
 		}
 		return functionalityTypeId;
 	}
-	
-	// fetch permission master 
-	public BigDecimal fetchPermissionMasterId(BigDecimal moduleId,BigDecimal functionalityTypeId,String functionality){
+
+	// fetch permission master
+	public BigDecimal fetchPermissionMasterId(BigDecimal moduleId, BigDecimal functionalityTypeId,
+			String functionality) {
 		BigDecimal permissionId = null;
-		PermissionMaster permissionMaster = loginDao.fetchPermissionMasterId(moduleId, functionalityTypeId, functionality);
-		if(permissionMaster != null){
+		PermissionMaster permissionMaster = loginDao.fetchPermissionMasterId(moduleId, functionalityTypeId,
+				functionality);
+		if (permissionMaster != null) {
 			permissionId = permissionMaster.getPermissionId();
 		}
 		return permissionId;
 	}
 
 	// save role
-	public ApiResponse saveRoleMaster(String roleTitle){
+	public ApiResponse saveRoleMaster(String roleTitle) {
 
 		boolean savesStatus = Boolean.FALSE;
 		Set<String> roleMasterData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		Set<String> roleMasterDBData = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
 		List<RoleMaster> roleMasterStore = new ArrayList<RoleMaster>();
 
-		try{
+		try {
 
 			roleMasterData.add(roleTitle);
 
 			// fetch all the data from module table
 			List<RoleMaster> roleMasterDB = loginDao.fetchRoleMaster();
 
-			if(roleMasterDB != null && roleMasterDB.size() != 0){
+			if (roleMasterDB != null && roleMasterDB.size() != 0) {
 				for (RoleMaster roleMaster : roleMasterDB) {
 					roleMasterDBData.add(roleMaster.getRoleCode());
 				}
@@ -460,97 +438,98 @@ public class LoginService extends AbstractService {
 			for (String roleMaster : roleMasterData) {
 				RoleMaster roleM = new RoleMaster();
 
-				//roleM.setRoleCode(roleCode);
+				// roleM.setRoleCode(roleCode);
 				roleM.setCreatedDate(new Date());
 				roleM.setIsactive("Y");
 				roleM.setRoleDescription(roleTitle);
 				roleMasterStore.add(roleM);
 			}
 
-			if(roleMasterStore != null && roleMasterStore.size() != 0){
+			if (roleMasterStore != null && roleMasterStore.size() != 0) {
 				loginDao.saveRoleMaster(roleMasterStore);
 				savesStatus = Boolean.TRUE;
 			}
 
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveRoleMaster fail ",e.getMessage());
+			throw new GlobalException("saveRoleMaster fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
 	}
 
-	public ApiResponse fetchUserMasterDetails(BigDecimal userId){
+	public ApiResponse fetchUserMasterDetails(BigDecimal userId) {
 		ApiResponse apiResponse = null;
 		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
-		
+
 		UserDetailsDTO userDetail = new UserDetailsDTO();
-		
+
 		apiResponse = getBlackApiResponse();
-		
+
 		jaxUtil.convert(user, userDetail);
-		
+
 		apiResponse.getData().getValues().add(userDetail);
 		apiResponse.getData().setType("user-detail");
-		
+
 		return apiResponse;
 	}
 
-	public ApiResponse saveAssignRoleToUser(BigDecimal roleId,BigDecimal userId){
+	public ApiResponse saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
 
 		boolean savesStatus = Boolean.FALSE;
 
-		try{
+		try {
 			ApiResponse userMaster = fetchUserMasterDetails(userId);
-			if(userMaster != null){
-				UserRoleMaster user =  (UserRoleMaster) userMaster.getData().getValues().get(0);
+			if (userMaster != null) {
+				UserRoleMaster user = (UserRoleMaster) userMaster.getData().getValues().get(0);
 
 				UserRoleMaster userM = new UserRoleMaster();
 
-				if(user != null){
+				if (user != null) {
 					userM.setCreatedDate(new Date());
 					userM.setIsactive("Y");
 					userM.setUserRoleId(user.getUserRoleId());
 					userM.setEmployeeId(user.getEmployeeId());
-					if(user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0){
+					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new GlobalException("saveAssignRoleToUser fail ",JaxError.ALREADY_EXIST);
-					}else{
+						throw new GlobalException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
+					} else {
 						userM.setRoleId(roleId);
 					}
-				}else{
+				} else {
 					userM.setEmployeeId(userId);
 					userM.setRoleId(roleId);
 				}
 
 				loginDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
-			}else{
-				throw new GlobalException("saveAssignRoleToUser fail ",JaxError.INVALID_USER_DETAILS);
+			} else {
+				throw new GlobalException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveAssignRoleToUser fail ",e.getMessage());
+			throw new GlobalException("saveAssignRoleToUser fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
 	}
-	
+
 	// fetch permission scope Id by permission description
-	public BigDecimal fetchPermissionScopeId(String permScope){
+	public BigDecimal fetchPermissionScopeId(String permScope) {
 		BigDecimal scopeId = null;
 		PermissionScopeMaster permissionScopeMaster = loginDao.fetchPermissionScopeMasterId(permScope);
-		if(permissionScopeMaster != null){
+		if (permissionScopeMaster != null) {
 			scopeId = permissionScopeMaster.getScopeId();
 		}
-		
+
 		return scopeId;
 	}
 
 	// save Permission and scope to a role
-	public ApiResponse saveAssignPermToRole(BigDecimal roleId,Permission permission,PermScope permScope,String admin){
+	public ApiResponse saveAssignPermToRole(BigDecimal roleId, Permission permission, PermScope permScope,
+			String admin) {
 		boolean savesStatus = Boolean.FALSE;
-		try{
+		try {
 			BigDecimal moduleId = fetchModuleId(permission.getModule().name());
 			BigDecimal functionalityTypeId = fetchFunctionalityTypeId(permission.getPermType().name());
 			String functionality = permission.getPermission();
@@ -558,11 +537,11 @@ public class LoginService extends AbstractService {
 			System.out.println("permission" + permissionId);
 			BigDecimal scopeId = fetchPermissionScopeId(permScope.name());
 
-			RoleDefinition roleDef = loginDao.fetchRoleDefinitionByRolePermScope(roleId,permissionId,scopeId);
+			RoleDefinition roleDef = loginDao.fetchRoleDefinitionByRolePermScope(roleId, permissionId, scopeId);
 			System.out.println(roleDef);
 
 			RoleDefinition roleDefinition = new RoleDefinition();
-			if(roleDef != null){
+			if (roleDef != null) {
 				roleDefinition.setRoleDefId(roleDef.getRoleDefId());
 				roleDefinition.setPermissionId(permissionId);
 				roleDefinition.setRoleId(roleId);
@@ -570,7 +549,7 @@ public class LoginService extends AbstractService {
 				roleDefinition.setCreatedDate(roleDef.getCreatedDate());
 				roleDefinition.setIsactive(roleDef.getIsactive());
 				roleDefinition.setAdmin(admin);
-			}else{
+			} else {
 				roleDefinition.setPermissionId(permissionId);
 				roleDefinition.setRoleId(roleId);
 				roleDefinition.setScopeId(scopeId);
@@ -581,9 +560,9 @@ public class LoginService extends AbstractService {
 
 			loginDao.saveRoleDefintionDetails(roleDefinition);
 			savesStatus = Boolean.TRUE;
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("saveAssignPermToRole fail ",e.getMessage());
+			throw new GlobalException("saveAssignPermToRole fail ", e.getMessage());
 		}
 
 		return getBooleanResponse(savesStatus);
@@ -595,8 +574,8 @@ public class LoginService extends AbstractService {
 	public ApiResponse sendOtp(Employee emp) {
 		ApiResponse apiResponse = null;
 
-		try{
-			BeanPropertyBindingResult errors = new BeanPropertyBindingResult(emp,"emp");
+		try {
+			BeanPropertyBindingResult errors = new BeanPropertyBindingResult(emp, "emp");
 			// initiate transaction
 			AuthLoginTrnxModel trnxModel = authLoginManager.init(emp);
 			apiResponse = getBlackApiResponse();
@@ -604,9 +583,9 @@ public class LoginService extends AbstractService {
 			authLoginOTPManager.sendOtpStaff();
 			apiResponse.getData().getValues().add(output);
 			apiResponse.getData().setType("send-otp-model");
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("sendOtp fail ",e.getMessage());
+			throw new GlobalException("sendOtp fail ", e.getMessage());
 		}
 
 		return apiResponse;
@@ -615,12 +594,12 @@ public class LoginService extends AbstractService {
 	/**
 	 * validates otp
 	 */
-	public ApiResponse validateOtp(Employee emp,String mOtp) {
-		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp,mOtp);
+	public ApiResponse validateOtp(Employee emp, String mOtp) {
+		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp, mOtp);
 		ApiResponse apiResponse = getBlackApiResponse();
-		
+
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
-		
+
 		empDetail.setCivilId(authLoginTrnxModel.getEmpDetails().getCivilId());
 		empDetail.setCountryId(authLoginTrnxModel.getEmpDetails().getCountryId());
 		empDetail.setDesignation(authLoginTrnxModel.getEmpDetails().getDesignation());
@@ -632,11 +611,11 @@ public class LoginService extends AbstractService {
 		empDetail.setTelephoneNumber(authLoginTrnxModel.getEmpDetails().getTelephoneNumber());
 		empDetail.setUserName(authLoginTrnxModel.getEmpDetails().getUserName());
 		empDetail.setRoleId(authLoginTrnxModel.getUserMaster().getRoleId());
-		
+
 		List<RoleDefinitionDataTable> lstRoleDF = new ArrayList<RoleDefinitionDataTable>();
 		for (RoleDefinition roleDef : authLoginTrnxModel.getRoleDefinition()) {
 			RoleDefinitionDataTable roleDefDT = new RoleDefinitionDataTable();
-			
+
 			roleDefDT.setModuleId(roleDef.getRoleId());
 			roleDefDT.setPermissionId(roleDef.getPermissionId());
 			roleDefDT.setPermScopeId(roleDef.getScopeId());
@@ -644,51 +623,51 @@ public class LoginService extends AbstractService {
 			lstRoleDF.add(roleDefDT);
 		}
 		empDetail.setRoleDef(lstRoleDF);
-		
+
 		apiResponse.getData().getValues().add(empDetail);
 		apiResponse.getData().setType("employee-detail");
 		return apiResponse;
 	}
 
 	// Validate the ec no and then civil id number and the generate OTP and send otp
-	public ApiResponse verifyUserDetails(String empCode,String identity,String ipaddress){
+	public ApiResponse verifyUserDetails(String empCode, String identity, String ipaddress) {
 		ApiResponse apiResponse = null;
-		try{
-			if(empCode != null && identity != null){
+		try {
+			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity);
-				if(emp != null){
+				if (emp != null) {
 					apiResponse = sendOtp(emp);
-				}else{
-					throw new GlobalException("Employee Details not available",JaxError.INVALID_EMPLOYEE_DETAILS);
+				} else {
+					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
-			}else{
-				throw new GlobalException("Employee Number and Civil Id Manadatory",JaxError.INVALID_DATA);
+			} else {
+				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("verifyUserDetails fail ",e.getMessage());
+			throw new GlobalException("verifyUserDetails fail ", e.getMessage());
 		}
 
 		return apiResponse;
 	}
 
 	// Validate the ec no and then civil id number and the generate OTP and send otp
-	public ApiResponse verifyUserOTPDetails(String empCode,String identity,String mOtp,String ipaddress){
+	public ApiResponse verifyUserOTPDetails(String empCode, String identity, String mOtp, String ipaddress) {
 		ApiResponse apiResponse = null;
-		try{
-			if(empCode != null && identity != null){
+		try {
+			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity);
-				if(emp != null){
-					apiResponse = validateOtp(emp,mOtp);
-				}else{
-					throw new GlobalException("Employee Details not available",JaxError.INVALID_EMPLOYEE_DETAILS);
+				if (emp != null) {
+					apiResponse = validateOtp(emp, mOtp);
+				} else {
+					throw new GlobalException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
 				}
-			}else{
-				throw new GlobalException("Employee Number and Civil Id Manadatory",JaxError.INVALID_DATA);
+			} else {
+				throw new GlobalException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw new GlobalException("verifyUserOTPDetails fail ",e.getMessage());
+			throw new GlobalException("verifyUserOTPDetails fail ", e.getMessage());
 		}
 
 		return apiResponse;
