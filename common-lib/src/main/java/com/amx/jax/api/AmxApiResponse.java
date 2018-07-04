@@ -91,7 +91,7 @@ public class AmxApiResponse<T, M> implements Serializable {
 	 *            the new status
 	 */
 	@JsonIgnore
-	public void setStatus(HttpStatus status) {
+	public void setHttpStatus(HttpStatus status) {
 		if (status.is5xxServerError() || status.is4xxClientError() || status.is3xxRedirection()) {
 			this.statusKey = status.series().name();
 		}

@@ -310,13 +310,15 @@ public class RemittanceTransactionManager {
 	}
 
 	private void setLoyalityPointIndicaters(RemittanceTransactionResponsetModel responseModel) {
-
-		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
-		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
-		if (loyalityPointsAvailable == null || (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
-			responseModel.setCanRedeemLoyalityPoints(false);
-		} else {
-			responseModel.setCanRedeemLoyalityPoints(true);
+		if (responseModel.getCanRedeemLoyalityPoints() == null) {
+			BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
+			BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
+			if (loyalityPointsAvailable == null
+					|| (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
+				responseModel.setCanRedeemLoyalityPoints(false);
+			} else {
+				responseModel.setCanRedeemLoyalityPoints(true);
+			}
 		}
 	}
 
