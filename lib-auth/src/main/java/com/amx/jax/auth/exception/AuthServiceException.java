@@ -15,7 +15,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.util.JaxUtil;
 
 public class AuthServiceException extends AmxApiException {
-	
+
 	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceException.class);
 
 	private static final long serialVersionUID = 1L;
@@ -66,5 +66,10 @@ public class AuthServiceException extends AmxApiException {
 	@Override
 	public IExceptionEnum getErrorIdEnum(String errorId) {
 		return AuthServiceError.valueOf(errorId);
+	}
+
+	@Override
+	public boolean isReportable() {
+		return false;
 	}
 }
