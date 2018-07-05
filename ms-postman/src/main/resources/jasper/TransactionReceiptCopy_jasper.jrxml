@@ -599,7 +599,7 @@
                                     <font fontName="Arial" size="8" isItalic="true"
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
-                                <text><![CDATA[Beneficiary Details]]></text>
+                                <text><![CDATA[Transaction No.]]></text>
                             </staticText>
 
                             <textField isStretchWithOverflow="true">

@@ -1,17 +1,15 @@
 package com.amx.jax.exception;
 
+import org.springframework.http.HttpStatus;
+
 public class AmxHttpExceptions {
 
 	public static class AmxHttpClientException extends AmxException {
 
 		private static final long serialVersionUID = 7427401687837732495L;
 
-		public AmxHttpClientException(String msg) {
-			super(msg);
-		}
-
-		public AmxHttpClientException(int value, String statusText) {
-			super(value, statusText);
+		public AmxHttpClientException(HttpStatus statusCode, AmxApiError apiError) {
+			super(apiError.getMessage());
 		}
 
 	}
@@ -19,16 +17,17 @@ public class AmxHttpExceptions {
 	public static class AmxHttpNotFoundException extends AmxException {
 		private static final long serialVersionUID = -2333301958163665424L;
 
-		public AmxHttpNotFoundException(int errorCode, String statusText) {
-			super(errorCode, statusText);
+		public AmxHttpNotFoundException(HttpStatus statusCode) {
+			super(String.format("[%s]", statusCode.value(), statusCode.getReasonPhrase()));
 		}
 	}
 
 	public static class AmxHttpServerException extends AmxException {
 		private static final long serialVersionUID = 3282368584279205762L;
 
-		public AmxHttpServerException(int errorCode, String statusText) {
-			super(errorCode, statusText);
+		public AmxHttpServerException(HttpStatus statusCode, AmxApiError apiError) {
+			super(apiError.getMessage());
 		}
+
 	}
 }

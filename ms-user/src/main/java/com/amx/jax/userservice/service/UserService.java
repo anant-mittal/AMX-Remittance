@@ -506,7 +506,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		userValidationService.validateBlackListedCustomer(customer);
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 		// afterLoginSteps(onlineCustomer);

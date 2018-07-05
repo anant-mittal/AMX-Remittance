@@ -8,8 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.IncorrectInputException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -20,6 +20,7 @@ import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -156,7 +157,7 @@ public class LoginService {
 			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
-		} catch (IncorrectInputException e) {
+		} catch (GlobalException e) {
 			customerModel = sessionService.getGuestSession().getCustomerModel();
 
 			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
@@ -176,6 +177,8 @@ public class LoginService {
 			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
 			auditService.log(
 					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));
+		} catch (Exception e) {
+			UIServerError.evaluate(e);
 		}
 		return wrapper;
 	}

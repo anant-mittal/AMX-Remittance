@@ -9,7 +9,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
-public abstract class AmxApiException extends RuntimeException {
+public abstract class AmxApiException extends AmxException {
 
 	private static final Logger LOGGER = LoggerService.getLogger(AmxApiException.class);
 
@@ -24,12 +24,11 @@ public abstract class AmxApiException extends RuntimeException {
 	protected HttpStatus httpStatus;
 
 	public AmxApiException() {
-		super();
-		this.httpStatus = HttpStatus.BAD_REQUEST;
+		super(null, null, true, false);
 	}
 
 	public AmxApiException(AmxApiError error) {
-		super();
+		this();
 		try {
 			this.error = getErrorIdEnum(error.getErrorId());
 		} catch (Exception e) {
@@ -39,26 +38,18 @@ public abstract class AmxApiException extends RuntimeException {
 	}
 
 	public AmxApiException(String errorMessage) {
-		super();
+		this();
 		this.errorMessage = errorMessage;
 	}
 
 	public AmxApiException(String errorMessage, String errorCode) {
-		super();
+		this();
 		this.errorMessage = errorMessage;
 		this.errorKey = errorCode;
 	}
 
 	public AmxApiException(Exception e) {
-		super(e);
-	}
-
-	public String getErrorMessage() {
-		return this.errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+		super(null, e, true, false);
 	}
 
 	public IExceptionEnum getError() {
@@ -79,6 +70,14 @@ public abstract class AmxApiException extends RuntimeException {
 
 	public void setErrorKey(String errorKey) {
 		this.errorKey = errorKey;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
 	}
 
 	public AmxApiError createAmxApiError() {
@@ -104,6 +103,8 @@ public abstract class AmxApiException extends RuntimeException {
 	}
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
+
+	public abstract boolean isReportable();
 
 	public HttpStatus getHttpStatus() {
 		return httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus;

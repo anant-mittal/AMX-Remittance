@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -88,7 +89,6 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
 		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
@@ -123,10 +123,6 @@ public class OmannetClient implements PayGClient {
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		/*gatewayResponse.setRef(request.getParameter("ref"));
-		gatewayResponse.setPostDate(request.getParameter("postdate"));
-		gatewayResponse.setTrackId(request.getParameter("trackid"));
-		gatewayResponse.setTranxId(request.getParameter("tranid"));*/
 		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
@@ -164,6 +160,8 @@ public class OmannetClient implements PayGClient {
 		if (tranData == null) {
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
+			
+			String resultReponse = pipe.getResult();
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -171,9 +169,21 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			gatewayResponse.setError(pipe.getResult());
-			gatewayResponse.setErrorText(pipe.getResult());
-			gatewayResponse.setUdf5(pipe.getResponseCode());
+			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
+				gatewayResponse.setError(pipe.getError());
+				gatewayResponse.setErrorText(pipe.getError_text());
+			}else {
+				gatewayResponse.setError(pipe.getResult());
+				gatewayResponse.setErrorText(pipe.getResult());
+			}
+	
+	    	for(ResponseCode res : ResponseCode.values()) {
+				if(resultReponse.contains(res.getResponseCode()))
+				{
+					gatewayResponse.setResult(res.toString());
+					break;
+				}
+			}
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
@@ -186,10 +196,9 @@ public class OmannetClient implements PayGClient {
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		}	
-//		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-//			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-//		} 
+		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+		} 
 		else {
 			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
