@@ -87,35 +87,35 @@
 
 		<!-- <dependency> <groupId>com.knet</groupId> <artifactId>knet</artifactId> 
 			<version>1.0</version> </dependency> -->
-			
-					<dependency>
+
+		<dependency>
 			<groupId>bouncycastle-1.20</groupId>
-							<artifactId>bouncycastle-1.20</artifactId>
-							<version>1.0</version>
+			<artifactId>bouncycastle-1.20</artifactId>
+			<version>1.0</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>bcprov-jdk15-145</groupId>
-							<artifactId>bcprov-jdk15-145</artifactId>
-							<version>1.0</version>
+			<artifactId>bcprov-jdk15-145</artifactId>
+			<version>1.0</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>com.e24Pipe</groupId>
-							<artifactId>e24Pipe</artifactId>
-							<version>1.0</version>
+			<artifactId>e24Pipe</artifactId>
+			<version>1.0</version>
 		</dependency>
-				
-				<dependency>
+
+		<dependency>
 			<groupId>ipayPipe</groupId>
-							<artifactId>ipayPipe</artifactId>
-							<version>1.0</version>
+			<artifactId>ipayPipe</artifactId>
+			<version>1.0</version>
 		</dependency>
-		
-						<dependency>
+
+		<dependency>
 			<groupId>cryptix32</groupId>
-							<artifactId>cryptix32</artifactId>
-							<version>1.0</version>
+			<artifactId>cryptix32</artifactId>
+			<version>1.0</version>
 		</dependency>
-		
+
 	</dependencies>
 
 	<profiles>

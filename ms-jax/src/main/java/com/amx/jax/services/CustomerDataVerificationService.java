@@ -31,6 +31,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -133,7 +134,7 @@ public class CustomerDataVerificationService extends AbstractService {
 	}
 
 	private void sendTpinTocustomer(CustomerVerification cv) {
-		String tpin = util.createRandomPassword(6);
+		String tpin = Random.randomNumeric(6);
 		logger.info("generated tpin/otp for customer data verification is: " + tpin);
 		PersonInfo pinfo = userService.getPersonInfo(metaData.getCustomerId());
 		CivilIdOtpModel model = new CivilIdOtpModel();

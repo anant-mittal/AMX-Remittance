@@ -89,7 +89,7 @@ public class CustomerRegistrationOtpManager {
 			logger.info("otp data not found in trnx, creating new one");
 			otpData = new OtpData();
 		}
-		String eOtp = util.createRandomPassword(6);
+		String eOtp = Random.randomNumeric(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
 		sendOtpModel.seteOtp(eOtp);
@@ -97,7 +97,7 @@ public class CustomerRegistrationOtpManager {
 		otpData.setHashedeOtp(hashedeOtp);
 		otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
 
-		String mOtp = util.createRandomPassword(6);
+		String mOtp = Random.randomNumeric(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
