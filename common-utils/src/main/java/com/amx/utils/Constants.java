@@ -6,12 +6,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+/**
+ * The Class Constants.
+ */
 public class Constants {
 
+	/**
+	 * Instantiates a new constants.
+	 */
 	protected Constants() {
 		// not allowed
 	}
 
+	/** The Constant BLANK. */
 	public static final String BLANK = "";
 
 	/** The Constant defaultBoolean. */
@@ -52,9 +60,12 @@ public class Constants {
 	/** The Constant CANCELLED_REQUEST. */
 	public static final String CANCELLED_REQUEST = "04.03";
 
+	/** The Constant CUSTOMERTYPE_INDU. */
 	public static final String CUSTOMERTYPE_INDU = "Individual";
 
+	/** The Constant CUST_ACTIVE_INDICATOR. */
 	public static final String CUST_ACTIVE_INDICATOR = "Y";
 
+	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_ID = "198";
 }

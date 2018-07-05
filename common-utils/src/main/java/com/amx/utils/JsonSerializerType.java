@@ -1,5 +1,6 @@
 package com.amx.utils;
 
+
 /**
  * The Interface JsonSerializerType.
  *

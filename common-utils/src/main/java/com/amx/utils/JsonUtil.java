@@ -18,11 +18,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+
 /**
- * The Class JsonUtil
+ * The Class JsonUtil.
  */
 public final class JsonUtil {
 
+	/** The Constant LOG. */
 	static final Logger LOG = Logger.getLogger(JsonUtil.class);
 
 	/**
@@ -138,6 +140,11 @@ public final class JsonUtil {
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
 	}
 	
+	/**
+	 * Gets the mapper.
+	 *
+	 * @return the mapper
+	 */
 	public static ObjectMapper getMapper() {
 		return instance.mapper;
 	}
@@ -263,11 +270,10 @@ public final class JsonUtil {
 	/**
 	 * Gets the generic object list from json string.
 	 *
-	 * @param jsonStr
-	 *            the json str
+	 * @param <T> the generic type
+	 * @param jsonStr            the json str
 	 * @return the generic object list from json string
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException             Signals that an I/O exception has occurred.
 	 */
 	public static <T> List<T>  getListFromJsonString(String jsonStr) throws IOException {
 		return instance.getMapper().readValue(jsonStr, new TypeReference<List<T>>(){});
