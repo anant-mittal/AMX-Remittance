@@ -400,14 +400,16 @@ public class BeneficiaryCheckService extends AbstractService {
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());
 
-		if (serviceAppList.isEmpty()) {
+		/*if (serviceAppList.isEmpty()) {
 			errorDesc = "Data not found";
 			beneDto.setUpdateNeeded(true);
 			errorStatusDto = this.setBeneError(JaxError.DATA_NOT_FOUND.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
 
 		} else {
-			if (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght())
+*/		
+		if (!serviceAppList.isEmpty()) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght())
 					&& (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMaxLenght()))) {
 				int minLength = serviceAppList.get(0).getMinLenght().intValue();
 				int maxLength = serviceAppList.get(0).getMaxLenght().intValue();
