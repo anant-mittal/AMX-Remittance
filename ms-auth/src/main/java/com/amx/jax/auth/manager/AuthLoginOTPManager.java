@@ -11,19 +11,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.SendOtpModel;
-import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.auth.dao.LoginDao;
 import com.amx.jax.auth.dbmodel.Employee;
 import com.amx.jax.auth.dbmodel.RoleDefinition;
 import com.amx.jax.auth.dbmodel.UserRoleMaster;
-import com.amx.jax.auth.error.JaxError;
+import com.amx.jax.auth.error.AuthServiceError;
 import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.models.EmployeeInfo;
 import com.amx.jax.auth.service.AuthNotificationService;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Random;
@@ -50,9 +48,6 @@ public class AuthLoginOTPManager {
 	CryptoUtil cryptoUtil;
 
 	@Autowired
-	OtpSettings otpSettings;
-
-	@Autowired
 	LoginDao loginDao;
 
 	// Initiate new OTP
@@ -66,12 +61,10 @@ public class AuthLoginOTPManager {
 	public void sendOtpStaff() {
 		AuthLoginTrnxModel model = authLoginManager.get();
 		Employee employeeDetail = model.getEmpDetails();
-		CivilIdOtpModel civilIdOtpModel = new CivilIdOtpModel();
 		OtpData otpData = model.getOtpData();
 		EmployeeInfo einfo = new EmployeeInfo();
 		jaxUtil.convert(employeeDetail, einfo);
-		jaxUtil.convert(otpData, civilIdOtpModel);
-		authNotificationService.sendOtpSms(einfo, civilIdOtpModel);
+		authNotificationService.sendOtpSms(einfo, otpData);
 	}
 
 	/**
@@ -105,18 +98,18 @@ public class AuthLoginOTPManager {
 		OtpData otpData = authLoginManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(mOtp)) {
-				throw new AuthServiceException("Otp field is required", JaxError.MISSING_OTP);
+				throw new AuthServiceException("Otp field is required", AuthServiceError.MISSING_OTP);
 			}
 			// call from parameter master
 			if (otpData.getValidateOtpAttempts() >= 3) {
 				throw new AuthServiceException(
 						"Sorry, you cannot proceed to login. Please contact head office to unlock account",
-						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+						AuthServiceError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.getmOtp().equals(mOtp)) {
 				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new AuthServiceException("Invalid otp", JaxError.INVALID_OTP);
+				throw new AuthServiceException("Invalid otp", AuthServiceError.INVALID_OTP);
 			}
 			otpData.setOtpValidated(true);
 			UserRoleMaster usermaster = loginDao.fetchUserMasterDetails(empDetails.getEmployeeId());
@@ -126,11 +119,11 @@ public class AuthLoginOTPManager {
 					authLoginTrnxModel = authLoginManager.fetchEmployeeDetails(empDetails, usermaster, roleDef);
 				} else {
 					throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-							JaxError.INVALID_ROLE_DEFINITION);
+							AuthServiceError.INVALID_ROLE_DEFINITION);
 				}
 			} else {
 				throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-						JaxError.INVALID_EMPLOYEE_DETAILS);
+						AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 			}
 		} finally {
 			authLoginManager.saveOtpData(otpData);

@@ -1,11 +1,17 @@
 package com.amx.jax.exception;
 
+import java.lang.reflect.Constructor;
+
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 public abstract class AmxApiException extends RuntimeException {
+
+	private static final Logger LOGGER = LoggerService.getLogger(AmxApiException.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -86,7 +92,16 @@ public abstract class AmxApiException extends RuntimeException {
 	 * 
 	 * @return
 	 */
-	public abstract AmxApiException getInstance(AmxApiError apiError);
+	public AmxApiException getInstance(AmxApiError apiError) {
+		try {
+			Constructor<? extends AmxApiException> constructor = this.getClass().getConstructor(AmxApiError.class);
+			return constructor.newInstance(apiError);
+
+		} catch (Exception e) {
+			LOGGER.error("error occured in getinstance method", e);
+		}
+		return null;
+	}
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 

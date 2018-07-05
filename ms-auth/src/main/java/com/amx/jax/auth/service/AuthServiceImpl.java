@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.AmxApiResponseM;
 import com.amx.jax.api.BoolRespModel;
@@ -30,7 +29,7 @@ import com.amx.jax.auth.dbmodel.UserRoleMaster;
 import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.dto.RoleDefinitionDataTable;
 import com.amx.jax.auth.dto.UserDetailsDTO;
-import com.amx.jax.auth.error.JaxError;
+import com.amx.jax.auth.error.AuthServiceError;
 import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.manager.AuthLoginManager;
 import com.amx.jax.auth.manager.AuthLoginOTPManager;
@@ -40,6 +39,7 @@ import com.amx.jax.auth.models.PermType;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.JsonUtil;
 
@@ -479,7 +479,7 @@ public class AuthServiceImpl implements AuthService {
 				userM.setEmployeeId(user.getEmployeeId());
 				if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 					// error already exist
-					throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
+					throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.ALREADY_EXIST);
 				} else {
 					userM.setRoleId(roleId);
 				}
@@ -611,10 +611,10 @@ public class AuthServiceImpl implements AuthService {
 				if (emp != null) {
 					return sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
@@ -631,10 +631,10 @@ public class AuthServiceImpl implements AuthService {
 				if (emp != null) {
 					return validateOtp(emp, mOtp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory", AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());

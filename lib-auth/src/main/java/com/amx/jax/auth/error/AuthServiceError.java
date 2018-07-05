@@ -2,7 +2,7 @@ package com.amx.jax.auth.error;
 
 import com.amx.jax.exception.IExceptionEnum;
 
-public enum JaxError implements IExceptionEnum {
+public enum AuthServiceError implements IExceptionEnum {
 
 	// RBAC error
 	ALREADY_EXIST,

@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -15,6 +14,7 @@ import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rest.RestService;
 
 @Component

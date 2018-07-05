@@ -3,12 +3,37 @@ package com.amx.jax.auth.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ResponseData;
-
 @SuppressWarnings("rawtypes")
 public abstract class AbstractService {
+
+	public static class ApiResponse {
+		// Dummy Classes
+		public ResponseData getData() {
+			return null;
+		}
+
+		public void setData(ResponseData data) {
+		}
+	}
+
+	public static class ResponseData {
+		// Dummy Classes
+		public List<Object> getValues() {
+			return null;
+		}
+
+		public void setType(String string) {
+		}
+
+		public void setValues(List<Object> values) {
+		}
+	}
+
+	public static class BooleanResponse {
+		public BooleanResponse(boolean status) {
+		}
+
+	}
 
 	protected ApiResponse getBlackApiResponse() {
 		ApiResponse response = new ApiResponse();
@@ -33,7 +58,7 @@ public abstract class AbstractService {
 		apiResponse.getData().setType("boolean_response");
 		return apiResponse;
 	}
-	
+
 	public ApiResponse getBooleanResponse(boolean status) {
 		ApiResponse apiResponse = getBlackApiResponse();
 		BooleanResponse output = new BooleanResponse(status);

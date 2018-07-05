@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.SendOtpModel;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.auth.dao.LoginDao;
 import com.amx.jax.auth.dbmodel.Employee;
 import com.amx.jax.auth.dbmodel.FunctionalityTypeMaster;
@@ -30,7 +28,7 @@ import com.amx.jax.auth.dbmodel.UserRoleMaster;
 import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.dto.RoleDefinitionDataTable;
 import com.amx.jax.auth.dto.UserDetailsDTO;
-import com.amx.jax.auth.error.JaxError;
+import com.amx.jax.auth.error.AuthServiceError;
 import com.amx.jax.auth.exception.AuthServiceException;
 import com.amx.jax.auth.manager.AuthLoginManager;
 import com.amx.jax.auth.manager.AuthLoginOTPManager;
@@ -39,6 +37,7 @@ import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.PermType;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.auth.trnx.AuthLoginTrnxModel;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.util.JaxUtil;
 
 @Service
@@ -492,7 +491,7 @@ public class LoginService extends AbstractService {
 					userM.setEmployeeId(user.getEmployeeId());
 					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.ALREADY_EXIST);
+						throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.ALREADY_EXIST);
 					} else {
 						userM.setRoleId(roleId);
 					}
@@ -504,7 +503,7 @@ public class LoginService extends AbstractService {
 				loginDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
 			} else {
-				throw new AuthServiceException("saveAssignRoleToUser fail ", JaxError.INVALID_USER_DETAILS);
+				throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.INVALID_USER_DETAILS);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -638,10 +637,12 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available",
+							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
+						AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -660,10 +661,12 @@ public class LoginService extends AbstractService {
 				if (emp != null) {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", JaxError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available",
+							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", JaxError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
+						AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
