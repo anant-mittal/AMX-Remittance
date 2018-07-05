@@ -18,7 +18,14 @@ import org.springframework.stereotype.Component;
 public class JaxUtil {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-	
+
+	/**
+	 * Use {@link com.amx.utils.Random#randomNumeric(int)}
+	 * 
+	 * @param length
+	 * @return
+	 */
+	@Deprecated
 	public String createRandomPassword(int length) {
 		String validChars = "1234567890";
 		String password = "";
@@ -27,7 +34,7 @@ public class JaxUtil {
 		}
 		return password;
 	}
-	
+
 	public String buildErrorExpressions(String respCode, List<String> values) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
@@ -41,7 +48,7 @@ public class JaxUtil {
 		}
 		return sbuf.toString();
 	}
-	
+
 	public String buildErrorExpression(String respCode, Object value) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
@@ -116,13 +123,13 @@ public class JaxUtil {
 		}
 		return monthMap;
 	}
-	
+
 	public String getShortMonth(int index) {
 
 		String[] monthCodes = new DateFormatSymbols().getShortMonths();
 		return monthCodes[index];
 	}
-	
+
 	public <T, E> void convert(T fromObject, E toObject) {
 		try {
 			BeanUtils.copyProperties(toObject, fromObject);
