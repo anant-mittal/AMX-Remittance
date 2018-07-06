@@ -41,11 +41,12 @@ public class JaxConfig {
 	}
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler) {
+	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler,
+			AppClientInterceptor appClientInterceptor) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
 		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+		restTemplate.setInterceptors(Collections.singletonList(appClientInterceptor));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}
