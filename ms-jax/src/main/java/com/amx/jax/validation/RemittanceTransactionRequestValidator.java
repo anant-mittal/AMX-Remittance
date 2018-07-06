@@ -53,7 +53,8 @@ public class RemittanceTransactionRequestValidator {
 
 		ExchangeRateBreakup oldExchangeRate = request.getExRateBreakup();
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
-		oldExchangeRate.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
+		oldExchangeRate
+				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
 		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
 		}
@@ -96,6 +97,8 @@ public class RemittanceTransactionRequestValidator {
 			field.setName(bankRule.getFlexField());
 			field.setLabel(bankRule.getFieldName());
 			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
+			field.setMinLength(BigDecimal.ONE);
+			field.setMaxLength(new BigDecimal(100));
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
