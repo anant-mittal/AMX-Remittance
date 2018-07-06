@@ -102,9 +102,8 @@ public class RemittanceTransactionRequestValidator {
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				Map<Object, Object> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
-						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
-						bankRule.getAdditionalBankRuleId());
+				List<Object> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
+						remittanceModeId, routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
 			}
 			dto.setField(field);
@@ -128,8 +127,8 @@ public class RemittanceTransactionRequestValidator {
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-		for (Map.Entry<Object, Object> entry : field.getPossibleValues().entrySet()) {
-			FlexFieldDto ffd = (FlexFieldDto) entry.getValue();
+		for (Object value : field.getPossibleValues()) {
+			FlexFieldDto ffd = (FlexFieldDto) value;
 			if (ffd.equals(flexFieldValue)) {
 				changedValue = false;
 			}
@@ -137,14 +136,14 @@ public class RemittanceTransactionRequestValidator {
 		return changedValue;
 	}
 
-	private Map<Object, Object> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
+	private List<Object> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
 			BigDecimal remittanceModeId, BigDecimal bankId, BigDecimal currencyId,
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao
 				.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
-		return addtionalBankDetails.stream().collect(Collectors.toMap(AdditionalBankDetailsViewx::getSrlId, x -> {
+		return addtionalBankDetails.stream().map(x -> {
 			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
 			return ffDto;
-		}));
+		}).collect(Collectors.toList());
 	}
 }

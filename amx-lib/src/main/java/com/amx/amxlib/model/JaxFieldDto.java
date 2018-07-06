@@ -2,7 +2,6 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 public class JaxFieldDto {
 
@@ -14,7 +13,7 @@ public class JaxFieldDto {
 	BigDecimal maxLength;
 	List<ValidationRegexDto> validationRegex;
 	String label;
-	Map<Object, Object> possibleValues;
+	List<Object> possibleValues;
 
 	public String getName() {
 		return name;
@@ -80,19 +79,19 @@ public class JaxFieldDto {
 		this.label = label;
 	}
 
-	public Map<Object, Object> getPossibleValues() {
-		return possibleValues;
-	}
-
-	public void setPossibleValues(Map<Object, Object> possibleValues) {
-		this.possibleValues = possibleValues;
-	}
-
 	@Override
 	public String toString() {
 		return "JaxFieldDto [name=" + name + ", required=" + required + ", type=" + type + ", defaultValue="
 				+ defaultValue + ", minLength=" + minLength + ", maxLength=" + maxLength + ", validationRegex="
 				+ validationRegex + ", label=" + label + ", possibleValues=" + possibleValues + "]";
+	}
+
+	public List<Object> getPossibleValues() {
+		return possibleValues;
+	}
+
+	public void setPossibleValues(List<Object> possibleValues) {
+		this.possibleValues = possibleValues;
 	}
 
 }
