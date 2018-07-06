@@ -24,11 +24,11 @@ import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
-public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> implements PayGClient {
+public class BenefitClient_Upgrade implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient_Upgrade.class);
 	
-	@Value("${benefit_upgrade.certificate.path}")
+/*	@Value("${benefit_upgrade.certificate.path}")
 	String benefitCertpath;
 
 	@Value("${benefit_upgrade.url}")
@@ -44,7 +44,7 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 	String benefitCurrency;
 
 	@Value("${benefit_upgrade.language.code}")
-	String benefitLanguageCode;
+	String benefitLanguageCode;*/
 	
 	@Autowired
 	PayGConfig payGConfig;
@@ -57,21 +57,21 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		
 	@Override
 	public PayGServiceCode getClientCode() {
-		return PayGServiceCode.BENEFIT;
+		return PayGServiceCode.BENEFIT_UPGRADE;
 	}
 
 	@Override
 	public void initialize(PayGParams payGParams) {
 		// Get and Store the quantity and price per unit and total price in session for the reciept page.
-			
+	/*		
 		UniversalPlugin CGPipe = new UniversalPlugin();
 		
 		String quantity = request.getParameter("quantity");
 		double pricePerUnit = 12.34;
 		double price = 5.1;
-		/*session.setAttribute("quantity", "" + quantity);
+		session.setAttribute("quantity", "" + quantity);
 		session.setAttribute("unitPrice", "" + pricePerUnit);
-		session.setAttribute("totalPrice", "" + price);*/
+		session.setAttribute("totalPrice", "" + price);
 
 	    // Turn off ssl for this test.
 		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
@@ -85,8 +85,8 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		CGPipe.set("UDF5", "UDF5 Test Value");
 
 	  
-		/*String webURL = request.getRequestURL().toString();
-		String fullContextPath = webURL.substring(0, (webURL.lastIndexOf("/") + 1));*/
+		String webURL = request.getRequestURL().toString();
+		String fullContextPath = webURL.substring(0, (webURL.lastIndexOf("/") + 1));
 
 		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/";
 		//String errorURL = response.encodeRedirectURL(fullContextPath+"UniversalPluginCheckoutFailure.jsp");
@@ -125,11 +125,11 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 	        LOGGER.info(url + "-" + paymentId);
 			
 			payGParams.setRedirectUrl(url + "?PaymentID=" + paymentId);
-	  }
+	  }*/
 		
 	}
 
-	@Override
+	/*@Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 	
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -179,15 +179,10 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		}
 		return gatewayResponse;
 	}
+*/
 
 	@Override
-	public PaymentResponseDto init() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PaymentResponseDto commit() {
+	public PayGResponse capture(PayGResponse payGResponse) {
 		// TODO Auto-generated method stub
 		return null;
 	}
