@@ -24,17 +24,17 @@ import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
 @Component
-public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> implements PayGClient {
+public class BenefitClient_Upgrade implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient_Upgrade.class);
 	
 	@Value("${benefit_upgrade.certificate.path}")
 	String benefitCertpath;
 
-	@Value("${benefit_upgrade.url}")
+	@Value("${benefit_upgrade.callback.url}")
 	String benefitCallbackUrl;
 
-	@Value("${benefit_upgrade.name}")
+	@Value("${benefit_upgrade.alias.name}")
 	String benefitAliasName;
 	
 	@Value("${benefit_upgrade.action}")
@@ -57,7 +57,7 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		
 	@Override
 	public PayGServiceCode getClientCode() {
-		return PayGServiceCode.BENEFIT;
+		return PayGServiceCode.BENEFIT_UPGRADE;
 	}
 
 	@Override
@@ -154,12 +154,12 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
-			PaymentResponseDto paymentCacheModel = get();
+			/*PaymentResponseDto paymentCacheModel = get();
 			LOGGER.info("Values ---> " + paymentCacheModel.toString());
-			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
+			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());*/
 			gatewayResponse.setResponseCode("NOT CAPTURED");
 			gatewayResponse.setResult("NOT CAPTURED");
-			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
+			/*gatewayResponse.setTrackId(paymentCacheModel.getTrackId());*/
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
@@ -180,15 +180,5 @@ public class BenefitClient_Upgrade extends TransactionModel<PaymentResponseDto> 
 		return gatewayResponse;
 	}
 
-	@Override
-	public PaymentResponseDto init() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	@Override
-	public PaymentResponseDto commit() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }
