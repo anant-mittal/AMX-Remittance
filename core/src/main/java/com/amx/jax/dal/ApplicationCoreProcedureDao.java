@@ -54,10 +54,10 @@ public class ApplicationCoreProcedureDao {
 					cs.setBigDecimal(2, documentCode);
 					cs.setBigDecimal(3, docFinYear);
 					cs.registerOutParameter(4, java.sql.Types.NUMERIC);
-					if (companyCode != null && companyCode.equals((new BigDecimal(20)))) {
-						cs.setBigDecimal(5, new BigDecimal(1));
-					} else if (companyCode != null && companyCode.equals((new BigDecimal(21)))) {
+					if (companyCode != null && companyCode.equals((new BigDecimal(21)))) {
 						cs.setBigDecimal(5, new BigDecimal(99));
+					} else {
+						cs.setBigDecimal(5, new BigDecimal(1));
 					}
 					cs.execute();
 					return cs;
