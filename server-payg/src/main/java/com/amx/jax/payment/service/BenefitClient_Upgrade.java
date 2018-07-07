@@ -64,12 +64,13 @@ public class BenefitClient_Upgrade implements PayGClient {
 		UniversalPlugin CGPipe = new UniversalPlugin();
 		
 		String price = payGParams.getAmount();
+		String trackId = payGParams.getTrackId();
 
 	    // Turn off ssl for this test.
 		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
 		CGPipe.set("amt", "" + price);
 		CGPipe.set("currencycode", benefitCurrency);
-		CGPipe.set("trackid", "123456");
+		CGPipe.set("trackid", trackId);
 		CGPipe.set("langid", benefitLanguageCode);
 		CGPipe.set("UDF2", "UDF2 Test Value");
 		CGPipe.set("UDF3", "UDF3 Test Value");
@@ -134,7 +135,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 		gatewayResponse.setError(request.getParameter("Error"));
 
-		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
+		LOGGER.info("Params captured from BENEFIT UPGRADE : " + JsonUtil.toJson(gatewayResponse));
 
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
