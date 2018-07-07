@@ -129,7 +129,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 */
 	public PMGaugeEvent(Type type, SMS sms) {
 		super(type);
-		this.fillDetail(type, sms);
+		this.fillDetail(type, sms, null);
 	}
 
 	/**
@@ -220,9 +220,10 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the sms
 	 * @return the PM gauge event
 	 */
-	public PMGaugeEvent fillDetail(Type type, SMS sms) {
+	public PMGaugeEvent fillDetail(Type type, SMS sms, String responseText) {
 		this.type = type;
 		this.template = sms.getTemplate();
+		this.message = sms.toText();
 		this.to = sms.getTo();
 		return this;
 	}
