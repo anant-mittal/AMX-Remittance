@@ -20,6 +20,10 @@ public class FlexFieldDto implements Serializable {
 		this.amieceDescription = amieceDescription;
 	}
 
+	public FlexFieldDto(String amieceDescription) {
+		this.amieceDescription = amieceDescription;
+	}
+
 	public BigDecimal getAdditionalBankRuleFiledId() {
 		return additionalBankRuleFiledId;
 	}
@@ -73,6 +77,11 @@ public class FlexFieldDto implements Serializable {
 		} else if (!srlId.equals(other.srlId))
 			return false;
 		return true;
+	}
+
+	public FlexFieldDto() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 }

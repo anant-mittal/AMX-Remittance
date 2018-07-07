@@ -4,7 +4,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -70,7 +73,7 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312610));
+		request.setBeneId(new BigDecimal(4312615));
 		request.setLocalAmount(new BigDecimal(10));
 		request.setAdditionalBankRuleFiledId(new BigDecimal(142));
 		request.setSrlId(new BigDecimal(673));
@@ -80,12 +83,26 @@ public class RemittanceClientTest {
 		try {
 			response = client.saveTransaction(request);
 		} catch (AdditionalFlexRequiredException exp) {
+			exp.deserializeMeta();
 			List<JaxConditionalFieldDto> list = exp.getConditionalFileds();
 			list.get(0);
+			response = resendRequestWithAddtionalFlexField(request, list);
 		}
+
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
+	}
+
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+		
+		Map<String, String> flexFields = new HashMap<>();
+		list.forEach(i -> {
+			flexFields.put(i.getField().getName(), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+		});
+		request.setFlexFields(flexFields);
+		return client.saveTransaction(request);
+		
 	}
 
 	// @Test
