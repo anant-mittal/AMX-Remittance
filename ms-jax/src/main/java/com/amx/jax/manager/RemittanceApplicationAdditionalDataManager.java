@@ -68,7 +68,7 @@ public class RemittanceApplicationAdditionalDataManager {
 						ConstantDocument.INDIC4),
 				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_5", "P_AMIEC_CODE_5", "P_FLEX_FIELD_VALUE_5",
 						ConstantDocument.INDIC5) };
-		Map<String, FlexFieldDto> flexFields = remittanceTransactionRequestModel.getFlexFields();
+		Map<String, FlexFieldDto> flexFields = remittanceTransactionRequestModel.getFlexFieldDtoMap();
 		flexFields.forEach((k, v) -> {
 			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");

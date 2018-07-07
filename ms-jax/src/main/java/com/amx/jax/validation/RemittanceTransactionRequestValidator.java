@@ -20,6 +20,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -62,11 +63,12 @@ public class RemittanceTransactionRequestValidator {
 
 	public void validateFlexFields(RemittanceTransactionRequestModel request,
 			Map<String, Object> remitApplParametersMap) {
+		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
-		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFields();
+		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFieldDtoMap();
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
-			request.setFlexFields(requestFlexFields);
+			request.setFlexFieldDtoMap(requestFlexFields);
 		}
 		requestFlexFields.put("INDIC1",
 				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
@@ -99,10 +101,11 @@ public class RemittanceTransactionRequestValidator {
 			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
 			field.setMinLength(BigDecimal.ONE);
 			field.setMaxLength(new BigDecimal(100));
+			field.setDtoPath("flexFields." + bankRule.getFlexField());
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<Object> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
 						remittanceModeId, routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
 			}
@@ -128,22 +131,26 @@ public class RemittanceTransactionRequestValidator {
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
 		for (Object value : field.getPossibleValues()) {
-			FlexFieldDto ffd = (FlexFieldDto) value;
-			if (ffd.equals(flexFieldValue)) {
+			JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+			if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
 				changedValue = false;
 			}
 		}
 		return changedValue;
 	}
 
-	private List<Object> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
+	private List<JaxFieldValueDto> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
 			BigDecimal remittanceModeId, BigDecimal bankId, BigDecimal currencyId,
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao
 				.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
 			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
-			return ffDto;
+			JaxFieldValueDto dto = new JaxFieldValueDto();
+			dto.setId(ffDto.getSrlId());
+			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setValue(ffDto);
+			return dto;
 		}).collect(Collectors.toList());
 	}
 }
