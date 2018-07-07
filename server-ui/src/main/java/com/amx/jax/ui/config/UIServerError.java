@@ -1,5 +1,6 @@
 package com.amx.jax.ui.config;
 
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
@@ -45,6 +46,8 @@ public class UIServerError extends AmxApiException {
 	public static void evaluate(Exception e) throws JaxSystemError {
 		if (e instanceof JaxSystemError) {
 			throw (JaxSystemError) e;
+		} else if (e instanceof AbstractJaxException) {
+			throw (AbstractJaxException) e;
 		} else {
 			throw new UIServerError(e);
 		}
