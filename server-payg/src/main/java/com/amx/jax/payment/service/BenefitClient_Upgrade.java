@@ -1,5 +1,4 @@
 package com.amx.jax.payment.service;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.aciworldwide.commerce.gateway.plugins.UniversalPlugin;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
