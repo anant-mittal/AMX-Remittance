@@ -76,8 +76,8 @@ public class PayGController {
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
         
-		if (tnt.equals(Tenant.BHR)) {
-			pg = "BENEFIT";
+		if (tnt.equals(Tenant.BRN)) {
+			pg = "BENEFIT_UPGRADE";
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;

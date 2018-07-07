@@ -1,4 +1,5 @@
 package com.amx.jax.payment.service;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.aciworldwide.commerce.gateway.plugins.UniversalPlugin;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
@@ -26,13 +28,13 @@ public class BenefitClient_Upgrade implements PayGClient {
 
 	private static final Logger LOGGER = Logger.getLogger(BenefitClient_Upgrade.class);
 	
-/*	@Value("${benefit_upgrade.certificate.path}")
+	@Value("${benefit_upgrade.certificate.path}")
 	String benefitCertpath;
 
-	@Value("${benefit_upgrade.url}")
+	@Value("${benefit_upgrade.callback.url}")
 	String benefitCallbackUrl;
 
-	@Value("${benefit_upgrade.name}")
+	@Value("${benefit_upgrade.alias.name}")
 	String benefitAliasName;
 	
 	@Value("${benefit_upgrade.action}")
@@ -42,7 +44,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 	String benefitCurrency;
 
 	@Value("${benefit_upgrade.language.code}")
-	String benefitLanguageCode;*/
+	String benefitLanguageCode;
 	
 	@Autowired
 	PayGConfig payGConfig;
@@ -61,15 +63,15 @@ public class BenefitClient_Upgrade implements PayGClient {
 	@Override
 	public void initialize(PayGParams payGParams) {
 		// Get and Store the quantity and price per unit and total price in session for the reciept page.
-	/*		
+		
 		UniversalPlugin CGPipe = new UniversalPlugin();
 		
 		String quantity = request.getParameter("quantity");
 		double pricePerUnit = 12.34;
-		double price = 5.1;
-		session.setAttribute("quantity", "" + quantity);
+		String price = payGParams.getAmount();
+		/*session.setAttribute("quantity", "" + quantity);
 		session.setAttribute("unitPrice", "" + pricePerUnit);
-		session.setAttribute("totalPrice", "" + price);
+		session.setAttribute("totalPrice", "" + price);*/
 
 	    // Turn off ssl for this test.
 		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
@@ -83,8 +85,8 @@ public class BenefitClient_Upgrade implements PayGClient {
 		CGPipe.set("UDF5", "UDF5 Test Value");
 
 	  
-		String webURL = request.getRequestURL().toString();
-		String fullContextPath = webURL.substring(0, (webURL.lastIndexOf("/") + 1));
+		/*String webURL = request.getRequestURL().toString();
+		String fullContextPath = webURL.substring(0, (webURL.lastIndexOf("/") + 1));*/
 
 		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/";
 		//String errorURL = response.encodeRedirectURL(fullContextPath+"UniversalPluginCheckoutFailure.jsp");
@@ -123,11 +125,11 @@ public class BenefitClient_Upgrade implements PayGClient {
 	        LOGGER.info(url + "-" + paymentId);
 			
 			payGParams.setRedirectUrl(url + "?PaymentID=" + paymentId);
-	  }*/
+	  }
 		
 	}
 
-	/*@Override
+	@Override
 	public PayGResponse capture(PayGResponse gatewayResponse) {
 	
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -152,12 +154,12 @@ public class BenefitClient_Upgrade implements PayGClient {
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
-			PaymentResponseDto paymentCacheModel = get();
+			/*PaymentResponseDto paymentCacheModel = get();
 			LOGGER.info("Values ---> " + paymentCacheModel.toString());
-			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());
+			gatewayResponse.setUdf3(paymentCacheModel.getUdf3());*/
 			gatewayResponse.setResponseCode("NOT CAPTURED");
 			gatewayResponse.setResult("NOT CAPTURED");
-			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
+			/*gatewayResponse.setTrackId(paymentCacheModel.getTrackId());*/
 		}
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
@@ -177,11 +179,6 @@ public class BenefitClient_Upgrade implements PayGClient {
 		}
 		return gatewayResponse;
 	}
-*/
 
-	@Override
-	public PayGResponse capture(PayGResponse payGResponse) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 }
