@@ -68,7 +68,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 		
 		String quantity = request.getParameter("quantity");
 		double pricePerUnit = 12.34;
-		double price = 5.1;
+		String price = payGParams.getAmount();
 		/*session.setAttribute("quantity", "" + quantity);
 		session.setAttribute("unitPrice", "" + pricePerUnit);
 		session.setAttribute("totalPrice", "" + price);*/
