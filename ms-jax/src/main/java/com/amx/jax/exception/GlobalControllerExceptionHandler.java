@@ -37,7 +37,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
 		error.setErrorClass(ex.getClass().getName());
-		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
+		logger.error("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		raiseAlert(ex);
 		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
@@ -60,11 +60,9 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		JaxFieldValidationException exception = new JaxFieldValidationException(
 				processFieldErrors(ex.getBindingResult()));
 		AmxApiError error = exception.createAmxApiError();
-		error.setErrorClass(ex.getClass().getName());
-		// JaxFieldError validationErrorField = new
-		// JaxFieldError(ex.getBindingResult().getFieldError().getField());
-		// errors.get(0).setValidationErrorField(validationErrorField);
-		// setErrorHeaders(error);
+		error.setErrorClass(exception.getClass().getName());
+		logger.info("Exception occured in controller " + exception.getClass().getName() + " error message: "
+				+ exception.getErrorMessage() + " error code: " + exception.getErrorKey(), ex);
 		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
 	}
 

@@ -172,6 +172,5 @@ public class RemittanceClientTest {
 			toDate);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
-	
 	}
 }

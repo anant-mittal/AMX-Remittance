@@ -6,30 +6,41 @@ import java.io.InputStreamReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppConfig;
+import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.utils.CryptoUtil;
 
+@Component
 public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppClientInterceptor.class);
+
+	@Autowired
+	AppConfig appConfig;
 
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 
 		AppContextUtil.exportAppContextTo(request.getHeaders());
+		request.getHeaders().add(AppConstants.AUTH_KEY_XKEY, CryptoUtil.generateHMAC(appConfig.getAppAuthKey()));
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));
-		
+
 		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {
 			LOGGER.info("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
 		}
+
 		ClientHttpResponse response = execution.execute(request, body);
 		AppContextUtil.importAppContextFrom(response.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(response, request));
