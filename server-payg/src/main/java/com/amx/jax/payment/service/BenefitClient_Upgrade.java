@@ -1,5 +1,4 @@
 package com.amx.jax.payment.service;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,11 +10,9 @@ import org.springframework.stereotype.Component;
 import com.aciworldwide.commerce.gateway.plugins.UniversalPlugin;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
-import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
-import com.amx.jax.payment.gateway.PayGClients;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
@@ -66,12 +63,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 			
 		UniversalPlugin CGPipe = new UniversalPlugin();
 		
-		String quantity = request.getParameter("quantity");
-		double pricePerUnit = 12.34;
 		String price = payGParams.getAmount();
-		/*session.setAttribute("quantity", "" + quantity);
-		session.setAttribute("unitPrice", "" + pricePerUnit);
-		session.setAttribute("totalPrice", "" + price);*/
 
 	    // Turn off ssl for this test.
 		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
@@ -84,12 +76,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 		CGPipe.set("UDF4", "UDF4 Test Value");
 		CGPipe.set("UDF5", "UDF5 Test Value");
 
-	  
-		/*String webURL = request.getRequestURL().toString();
-		String fullContextPath = webURL.substring(0, (webURL.lastIndexOf("/") + 1));*/
-
 		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/";
-		//String errorURL = response.encodeRedirectURL(fullContextPath+"UniversalPluginCheckoutFailure.jsp");
 		CGPipe.set("responseurl", responseURL);
 		CGPipe.set("errorurl", responseURL);
 
@@ -104,8 +91,6 @@ public class BenefitClient_Upgrade implements PayGClient {
 		LOGGER.info("Success : " + success);
 		
 		if (!success) {
-			String error = CGPipe.getErrorText();
-			//payGParams.setRedirectUrl(response.encodeURL(fullContextPath + "UniversalPluginCheckoutFailure.jsp?error=" + error));
 			payGParams.setRedirectUrl("thymeleaf/pg_error");
 			return;
 		}
