@@ -173,6 +173,8 @@ public class PayGController {
             ra.addAttribute("udf5", payGResponse.getUdf5());
             LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
             return "redirect:" + kioskOmnRedirectURL;
+        }else if(paygCode.toString().equals("BENEFIT_UPGRADE")) {
+        	return "redirect:" + redirectUrl;
         }else {
 		    return "thymeleaf/repback";  
 		}
