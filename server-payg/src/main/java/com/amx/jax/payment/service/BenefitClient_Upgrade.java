@@ -76,7 +76,7 @@ public class BenefitClient_Upgrade implements PayGClient {
 		CGPipe.set("UDF4", "UDF4 Test Value");
 		CGPipe.set("UDF5", "UDF5 Test Value");
 
-		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/";
+		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT_UPGRADE/" + payGParams.getTenant() + "/";
 		CGPipe.set("responseurl", responseURL);
 		CGPipe.set("errorurl", responseURL);
 
