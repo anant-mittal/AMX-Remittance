@@ -61,6 +61,7 @@ public class AppConfig {
 	private String appAuthKey;
 
 	@Value(APP_AUTH_ENABLED)
+	@AppParamKey(AppParam.APP_AUTH_ENABLED)
 	private boolean appAuthEnabled;
 
 	@Value(APP_CACHE)
