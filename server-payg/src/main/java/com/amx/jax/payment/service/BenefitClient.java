@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -82,7 +83,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
+				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -205,5 +206,14 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    /* (non-Javadoc)
+     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse, com.amx.jax.dict.Channel)
+     */
+    @Override
+    public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

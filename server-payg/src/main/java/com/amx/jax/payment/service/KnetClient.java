@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -75,7 +76,7 @@ public class KnetClient implements PayGClient {
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
 		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/");
+				payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 
@@ -182,4 +183,13 @@ public class KnetClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}
+
+    /* (non-Javadoc)
+     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse, com.amx.jax.dict.Channel)
+     */
+    @Override
+    public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
