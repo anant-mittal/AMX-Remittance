@@ -76,7 +76,7 @@ public class PayGController {
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
         
-		if (tnt.equals(Tenant.BRN)) {
+		if (tnt.equals(Tenant.BRN) || tnt.equals(Tenant.BHR)) {
 			pg = "BENEFIT_UPGRADE";
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
@@ -173,6 +173,8 @@ public class PayGController {
             ra.addAttribute("udf5", payGResponse.getUdf5());
             LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
             return "redirect:" + kioskOmnRedirectURL;
+        }else if(paygCode.toString().equals("BENEFIT_UPGRADE")) {
+        	return "redirect:" + redirectUrl;
         }else {
 		    return "thymeleaf/repback";  
 		}
