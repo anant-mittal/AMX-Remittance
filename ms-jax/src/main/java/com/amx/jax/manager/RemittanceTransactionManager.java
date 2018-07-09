@@ -170,6 +170,7 @@ public class RemittanceTransactionManager {
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
+		setLoyalityPointFlags(customer, responseModel);
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
@@ -233,16 +234,20 @@ public class RemittanceTransactionManager {
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
+		
+		addExchangeRateParameters(responseModel);
+		applyRoudingLogic(responseModel.getExRateBreakup());
+		return responseModel;
+
+	}
+
+	private void setLoyalityPointFlags(Customer customer, RemittanceTransactionResponsetModel responseModel) {
 		if (customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO) > 0) {
 			responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
 		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
-		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
-		addExchangeRateParameters(responseModel);
-		applyRoudingLogic(responseModel.getExRateBreakup());
-		return responseModel;
-
+		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());		
 	}
 
 	private void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
