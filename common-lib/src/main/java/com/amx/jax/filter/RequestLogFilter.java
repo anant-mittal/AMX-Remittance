@@ -51,8 +51,11 @@ public class RequestLogFilter implements Filter {
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
+		if (req.getRequestURI().contains(AppParamController.PARAM_URL)) {
+			return true;
+		}
 		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken,traceId) == false)) {
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
 			return false;
 		}
 		return true;
