@@ -1,5 +1,6 @@
 package com.amx.jax.payment.gateway;
 
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.Tenant;
 
 public class PayGParams {
@@ -10,6 +11,7 @@ public class PayGParams {
 	String redirectUrl = null;
 	Tenant tenant = null;
 	String payId = null;
+	Channel channel = null;
 
 	public String getRedirectUrl() {
 		return redirectUrl;
@@ -72,6 +74,20 @@ public class PayGParams {
 	public void setPayId(String payId) {
 		this.payId = payId;
 	}
+
+    /**
+     * @return the channel
+     */
+    public Channel getChannel() {
+        return channel;
+    }
+
+    /**
+     * @param channel the channel to set
+     */
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 
 
 
