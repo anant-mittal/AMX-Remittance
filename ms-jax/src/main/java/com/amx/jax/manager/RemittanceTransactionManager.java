@@ -207,7 +207,7 @@ public class RemittanceTransactionManager {
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -517,7 +517,7 @@ public class RemittanceTransactionManager {
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
-		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
+		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
