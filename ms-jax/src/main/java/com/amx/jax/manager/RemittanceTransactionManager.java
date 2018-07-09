@@ -201,6 +201,7 @@ public class RemittanceTransactionManager {
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
+		setLoyalityPointIndicaters(responseModel);
 		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
@@ -239,7 +240,6 @@ public class RemittanceTransactionManager {
 		}
 		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
 		addExchangeRateParameters(responseModel);
-		setLoyalityPointIndicaters(responseModel);
 		applyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
 
@@ -517,8 +517,7 @@ public class RemittanceTransactionManager {
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
-		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints() != null
-				&& responseModel.getCanRedeemLoyalityPoints()) {
+		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);
