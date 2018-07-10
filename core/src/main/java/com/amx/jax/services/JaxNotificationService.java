@@ -237,9 +237,9 @@ public class JaxNotificationService {
 		}
 	}
 
-	public void sendPartialRegistraionMail(Customer customerDetails) {
+	public void sendPartialRegistraionMail(PersonInfo personinfo) {
 
-		logger.info("Sending Email to Team Of The Customer : " + customerDetails.getFirstName());
+		logger.info("Sending Email to Team Of The Customer : " + personinfo.getFirstName());
 		try
 		{
 		Email email = new Email();
@@ -247,7 +247,7 @@ public class JaxNotificationService {
 		email.addTo("chetan.pawar@almullaexchange.com");
 		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
 		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, customerDetails);		
+		email.getModel().put(RESP_DATA_KEY, personinfo);		
 		sendEmail(email);
 		}
 		catch (Exception e) {
