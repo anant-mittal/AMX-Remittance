@@ -244,7 +244,7 @@ public class JaxNotificationService {
 		{
 		Email email = new Email();
 		email.setSubject("New Customer Registration");
-		email.addTo("chetan.pawar@almullaexchange.com");
+		email.addTo("EXCH-ONLINE1@almullaexchange.com");
 		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);		
