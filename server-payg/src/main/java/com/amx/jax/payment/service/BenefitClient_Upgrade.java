@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-//import com.aciworldwide.commerce.gateway.plugins.UniversalPlugin;
+import bhr.com.aciworldwide.commerce.gateway.plugins.UniversalPlugin;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Channel;
@@ -60,59 +60,59 @@ public class BenefitClient_Upgrade implements PayGClient {
 
 	@Override
 	public void initialize(PayGParams payGParams) {
-//		// Get and Store the quantity and price per unit and total price in session for the reciept page.
-//		
-//		UniversalPlugin CGPipe = new UniversalPlugin();
-//		
-//		String price = payGParams.getAmount();
-//		String trackId = payGParams.getTrackId();
-//
-//	    // Turn off ssl for this test.
-//		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
-//		CGPipe.set("amt", "" + price);
-//		CGPipe.set("currencycode", benefitCurrency);
-//		CGPipe.set("trackid", trackId);
-//		CGPipe.set("langid", benefitLanguageCode);
-//		CGPipe.set("UDF2", "UDF2 Test Value");
-//		CGPipe.set("UDF3", "UDF3 Test Value");
-//		CGPipe.set("UDF4", "UDF4 Test Value");
-//		CGPipe.set("UDF5", "UDF5 Test Value");
-//
-//		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT_UPGRADE/" + payGParams.getTenant() + "/";
-//		CGPipe.set("responseurl", responseURL);
-//		CGPipe.set("errorurl", responseURL);
-//
-//
-//	    CGPipe.setResourcePath(benefitCertpath);
-//		CGPipe.setTerminalAlias(benefitAliasName);
-//
-//		CGPipe.setTransactionType("PaymentInit");
-//		CGPipe.setVersion("1");
-//
-//		boolean success = CGPipe.performTransaction();
-//		LOGGER.info("Success : " + success);
-//		
-//		if (!success) {
-//			payGParams.setRedirectUrl("thymeleaf/pg_error");
-//			return;
-//		}
-//		
-//		String error = CGPipe.get("error_code_tag");
-//		String errorText = CGPipe.getErrorText();
-//		LOGGER.info("Error : " + errorText);
-//		
-//		if (error != null) {
-//		// response.sendRedirect(response.encodeURL(fullContextPath + "UniversalPluginCheckoutFailure.jsp?error=" + error));
-//			payGParams.setRedirectUrl("thymeleaf/pg_error");
-//			return ;
-//	    } else {
-//
-//	        String url = CGPipe.get("PAYMENTPAGE");
-//	        String paymentId = CGPipe.get("PAYMENTID");
-//	        LOGGER.info(url + "-" + paymentId);
-//			
-//			payGParams.setRedirectUrl(url + "?PaymentID=" + paymentId);
-//	  }
+		// Get and Store the quantity and price per unit and total price in session for the reciept page.
+		
+		UniversalPlugin CGPipe = new UniversalPlugin();
+		
+		String price = payGParams.getAmount();
+		String trackId = payGParams.getTrackId();
+
+	    // Turn off ssl for this test.
+		CGPipe.set("action", benefitAction);	// 1 - Purchase, 4 - Authorization
+		CGPipe.set("amt", "" + price);
+		CGPipe.set("currencycode", benefitCurrency);
+		CGPipe.set("trackid", trackId);
+		CGPipe.set("langid", benefitLanguageCode);
+		CGPipe.set("UDF2", "UDF2 Test Value");
+		CGPipe.set("UDF3", "UDF3 Test Value");
+		CGPipe.set("UDF4", "UDF4 Test Value");
+		CGPipe.set("UDF5", "UDF5 Test Value");
+
+		String responseURL = payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT_UPGRADE/" + payGParams.getTenant() + "/";
+		CGPipe.set("responseurl", responseURL);
+		CGPipe.set("errorurl", responseURL);
+
+
+	    CGPipe.setResourcePath(benefitCertpath);
+		CGPipe.setTerminalAlias(benefitAliasName);
+
+		CGPipe.setTransactionType("PaymentInit");
+		CGPipe.setVersion("1");
+
+		boolean success = CGPipe.performTransaction();
+		LOGGER.info("Success : " + success);
+		
+		if (!success) {
+			payGParams.setRedirectUrl("thymeleaf/pg_error");
+			return;
+		}
+		
+		String error = CGPipe.get("error_code_tag");
+		String errorText = CGPipe.getErrorText();
+		LOGGER.info("Error : " + errorText);
+		
+		if (error != null) {
+		// response.sendRedirect(response.encodeURL(fullContextPath + "UniversalPluginCheckoutFailure.jsp?error=" + error));
+			payGParams.setRedirectUrl("thymeleaf/pg_error");
+			return ;
+	    } else {
+
+	        String url = CGPipe.get("PAYMENTPAGE");
+	        String paymentId = CGPipe.get("PAYMENTID");
+	        LOGGER.info(url + "-" + paymentId);
+			
+			payGParams.setRedirectUrl(url + "?PaymentID=" + paymentId);
+	  }
 		
 	}
 
