@@ -37,7 +37,7 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 
 	@Test
 	public void testSendOtp() throws URISyntaxException, IOException {
-		setDefaults();	
+		setBahrainDefaults();	
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		ApiResponse<BooleanResponse> response = null;
 		String json = new String(
