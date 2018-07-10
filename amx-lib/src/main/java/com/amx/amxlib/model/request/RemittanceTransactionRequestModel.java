@@ -5,7 +5,7 @@ package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 /**
  * @author Prashant

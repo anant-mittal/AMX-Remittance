@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.amx.jax.model.AbstractModel;
+
 public class BeneAccountModel extends AbstractModel {
 
 	/**
