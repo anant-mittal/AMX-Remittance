@@ -167,14 +167,11 @@ public class BenefitClient_Upgrade implements PayGClient {
 		return gatewayResponse;
 	}
 
-    /* (non-Javadoc)
-     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse, com.amx.jax.dict.Channel)
-     */
-    @Override
-    public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 }
