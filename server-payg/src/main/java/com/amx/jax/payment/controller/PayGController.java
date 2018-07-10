@@ -101,8 +101,9 @@ public class PayGController {
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
 		payGParams.setTenant(tnt);
-		if (channel==null)
-		    channel = Channel.ONLINE;
+        if (channel==null)
+		    channel = Channel.ONLINE;		
+
 		payGParams.setChannel(channel);
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
