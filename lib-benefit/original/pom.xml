@@ -41,7 +41,7 @@
 							<artifactId>benefit</artifactId>
 							<version>1.0.original</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../../ext-jars/benefit.jar</file>
+							<file>${basedir}/../../ext-jars/benefit-v1.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
