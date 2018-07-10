@@ -114,29 +114,31 @@ public class BankMetaService extends AbstractService {
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
 		if (StringUtils.isNotBlank(ifsc)) {
-			ifsc =  "%" + ifsc + "%";
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
+			ifsc = "%" + ifsc + "%";
+			branchesList.addAll(
+					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
-			swift =  "%" + swift + "%";
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
+			swift = "%" + swift + "%";
+			branchesList.addAll(
+					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId,
-					branchName));
+			branchesList.addAll(vwBankBranchRepository
+					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName));
 			isparametersSet = true;
 		}
 		if (!isparametersSet) {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
 		}
-		
+
 		if (branchesList.isEmpty()) {
-		    throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
+			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
 		}
-		
+
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(convertBranchView(branchesList));
 		response.getData().setType("bank-branch-dto");
@@ -167,7 +169,7 @@ public class BankMetaService extends AbstractService {
 		}
 		return dto;
 	}
-	
+
 	public BankApplicability getBankApplicability(BigDecimal bankId) {
 		return bankApplicabilityRepository.findByBankMaster(new BankMasterModel(bankId));
 	}
