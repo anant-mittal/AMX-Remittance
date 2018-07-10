@@ -20,7 +20,7 @@ public interface ICustomerRepository extends JpaRepository<Customer, Serializabl
 	public List<Customer> getCustomerByCustomerId(BigDecimal countryId,BigDecimal companyId,BigDecimal customerId);
 
 
-	@Query("select c from Customer c where identityInt=?1 and isActive='Y'")	
+	@Query("select c from Customer c where identityInt=?1 and isActive='N'")	
 	public Customer getCustomerDetails(String loginId);
 	
 	
