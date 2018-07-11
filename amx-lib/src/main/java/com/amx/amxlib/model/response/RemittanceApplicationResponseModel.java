@@ -2,8 +2,8 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.model.AbstractModel;
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 

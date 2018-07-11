@@ -13,32 +13,4 @@ import com.amx.jax.scope.TenantValue;
 @Component
 public class AuthServiceConfig {
 
-	@TenantValue("${tenant}")
-	private String tenant;
-
-	@TenantValue("${tenant.lang}")
-	private Language tenantLang;
-
-	@TenantValue("${slack.exception.channel}")
-	private String exceptionChannelCode;
-
-	public String getTenant() {
-		return tenant;
-	}
-
-	public Language getTenantLang() {
-		return tenantLang;
-	}
-
-	public Locale getLocal(File file) {
-		if (file == null || file.getLang() == null) {
-			return new Locale(tenantLang.getCode());
-		}
-		return new Locale(file.getLang().getCode());
-	}
-
-	public String getExceptionChannelCode() {
-		return exceptionChannelCode;
-	}
-
 }
