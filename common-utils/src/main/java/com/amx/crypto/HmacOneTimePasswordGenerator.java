@@ -10,13 +10,22 @@ import javax.crypto.Mac;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
+/**
+ * The Class HmacOneTimePasswordGenerator.
+ */
 public class HmacOneTimePasswordGenerator {
 
+	/** The logger. */
 	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+	/** The algorithm. */
 	private final String algorithm;
+	
+	/** The password length. */
 	private final int passwordLength;
 
+	/** The mod divisor. */
 	private final int modDivisor;
 
 	/**

@@ -3,8 +3,19 @@ package com.amx.utils;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+
+/**
+ * The Class Urly.
+ */
 public class Urly {
 
+	/**
+	 * Gets the domain name.
+	 *
+	 * @param url the url
+	 * @return the domain name
+	 * @throws MalformedURLException the malformed URL exception
+	 */
 	public static String getDomainName(String url) throws MalformedURLException {
 		if (!url.startsWith("http") && !url.startsWith("https")) {
 			url = "http://" + url;
@@ -17,6 +28,13 @@ public class Urly {
 		return host;
 	}
 
+	/**
+	 * Gets the sub domain name.
+	 *
+	 * @param url the url
+	 * @return the sub domain name
+	 * @throws MalformedURLException the malformed URL exception
+	 */
 	public static String getSubDomainName(String url) throws MalformedURLException {
 		String[] names = url.split("\\.");
 		if (names.length < 3) {
@@ -26,10 +44,22 @@ public class Urly {
 		}
 	}
 
+	/**
+	 * Gets the builder.
+	 *
+	 * @return the builder
+	 */
 	public static URLBuilder getBuilder() {
 		return new URLBuilder();
 	}
 
+	/**
+	 * Parses the.
+	 *
+	 * @param urlString the url string
+	 * @return the URL builder
+	 * @throws MalformedURLException the malformed URL exception
+	 */
 	public static URLBuilder parse(String urlString) throws MalformedURLException {
 		URL url = new URL(urlString);
 		URLBuilder builder = new URLBuilder(url.getAuthority());

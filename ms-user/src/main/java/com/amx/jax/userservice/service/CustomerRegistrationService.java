@@ -2,6 +2,7 @@ package com.amx.jax.userservice.service;
 
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.manager.CustomerRegistrationOtpManager;
@@ -55,7 +60,11 @@ public class CustomerRegistrationService extends AbstractService {
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
 	@Autowired
-	CountryMetaValidation countryMetaValidation;
+	CountryMetaValidation countryMetaValidation;	
+	@Autowired
+	CustomerService customerService;
+	@Autowired
+	JaxNotificationService jaxNotificationService;
 
 	/**
 	 * Sends otp initiating trnx
@@ -125,6 +134,13 @@ public class CustomerRegistrationService extends AbstractService {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
 		customerRegistrationManager.commit();
+		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customerDetails);
+		} catch (Exception e) {
+		}
+		jaxNotificationService.sendPartialRegistraionMail(personinfo);
 		return getBooleanResponse();
 	}
 }

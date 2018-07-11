@@ -170,6 +170,7 @@ public class RemittanceTransactionManager {
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		validatedObjects.put("CUSTOMER", customer);
 		RemittanceTransactionResponsetModel responseModel = new RemittanceTransactionResponsetModel();
+		setLoyalityPointFlags(customer, responseModel);
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		remitApplParametersMap.put("P_BENEFICIARY_MASTER_ID", beneficiary.getBeneficaryMasterSeqId());
 		addBeneficiaryParameters(beneficiary);
@@ -201,12 +202,13 @@ public class RemittanceTransactionManager {
 		}
 		validateNumberOfTransactionLimits();
 		validateBeneficiaryTransactionLimit(beneficiary);
+		setLoyalityPointIndicaters(responseModel);
 		List<BankServiceRule> rules = bankServiceRuleDao.getBankServiceRule(routingBankId, rountingCountryId, currencyId, remittanceMode,deliveryMode);
 		BankServiceRule appliedRule = rules.get(0);
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
-		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
+		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -232,17 +234,20 @@ public class RemittanceTransactionManager {
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
+		
+		addExchangeRateParameters(responseModel);
+		applyRoudingLogic(responseModel.getExRateBreakup());
+		return responseModel;
+
+	}
+
+	private void setLoyalityPointFlags(Customer customer, RemittanceTransactionResponsetModel responseModel) {
 		if (customer.getLoyaltyPoints() != null && customer.getLoyaltyPoints().compareTo(BigDecimal.ZERO) > 0) {
 			responseModel.setTotalLoyalityPoints(customer.getLoyaltyPoints());
 		} else {
 			responseModel.setTotalLoyalityPoints(BigDecimal.ZERO);
 		}
-		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());
-		addExchangeRateParameters(responseModel);
-		setLoyalityPointIndicaters(responseModel);
-		applyRoudingLogic(responseModel.getExRateBreakup());
-		return responseModel;
-
+		responseModel.setMaxLoyalityPointsAvailableForTxn(loyalityPointService.getVwLoyalityEncash().getLoyalityPoint());		
 	}
 
 	private void applyRoudingLogic(ExchangeRateBreakup exRatebreakUp) {
@@ -312,13 +317,15 @@ public class RemittanceTransactionManager {
 	}
 
 	private void setLoyalityPointIndicaters(RemittanceTransactionResponsetModel responseModel) {
-
-		BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
-		BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
-		if (loyalityPointsAvailable == null || (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
-			responseModel.setCanRedeemLoyalityPoints(false);
-		} else {
-			responseModel.setCanRedeemLoyalityPoints(true);
+		if (responseModel.getCanRedeemLoyalityPoints() == null) {
+			BigDecimal maxLoyalityPointRedeem = responseModel.getMaxLoyalityPointsAvailableForTxn();
+			BigDecimal loyalityPointsAvailable = responseModel.getTotalLoyalityPoints();
+			if (loyalityPointsAvailable == null
+					|| (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
+				responseModel.setCanRedeemLoyalityPoints(false);
+			} else {
+				responseModel.setCanRedeemLoyalityPoints(true);
+			}
 		}
 	}
 
@@ -514,8 +521,7 @@ public class RemittanceTransactionManager {
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
 		}
-		if (model.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints() != null
-				&& responseModel.getCanRedeemLoyalityPoints()) {
+		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
 		} else {
 			breakup.setNetAmount(netAmount);

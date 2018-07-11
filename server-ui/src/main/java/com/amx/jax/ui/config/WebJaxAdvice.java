@@ -239,7 +239,7 @@ public class WebJaxAdvice {
 	@ExceptionHandler({ Exception.class })
 	public ResponseEntity<ResponseWrapper<Object>> handleAll(Exception ex, WebRequest request) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
-		wrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
 		postManService.notifyException(wrapper.getStatus(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);

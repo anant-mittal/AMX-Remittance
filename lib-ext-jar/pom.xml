@@ -285,6 +285,22 @@
 						</configuration>
 					</execution>
 					
+					<execution>
+						<id>universalplugin</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>universalplugin</groupId>
+							<artifactId>universalplugin</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/universalplugin.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					
 					
 				</executions>
 			</plugin>

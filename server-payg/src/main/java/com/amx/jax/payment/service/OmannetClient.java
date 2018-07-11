@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
@@ -72,8 +73,10 @@ public class OmannetClient implements PayGClient {
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
-		configMap.put("responseUrl",
-				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
+        configMap.put("responseUrl",
+	                  OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+//		configMap.put("responseUrl",
+//				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
@@ -118,7 +121,7 @@ public class OmannetClient implements PayGClient {
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse) {
+	public PayGResponse capture(PayGResponse gatewayResponse,Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -188,21 +191,31 @@ public class OmannetClient implements PayGClient {
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		if (channel.equals(Channel.ONLINE)) {
+	        PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+	        // Capturing JAX Response
+	        gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+	        gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+	        gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());  
+		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
 		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-		} 
-		else {
+		} else {
 			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
 		return gatewayResponse;
 	}
+
+    /* (non-Javadoc)
+     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse)
+     */
+    @Override
+    public PayGResponse capture(PayGResponse payGResponse) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 	
 }

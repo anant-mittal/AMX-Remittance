@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+
 /**
  * The Class FileUtil.
  */
@@ -30,7 +31,11 @@ public final class FileUtil {
 
 	/** The Constant FILE_PREFIX. */
 	public static final String FILE_PREFIX = "file://";
+	
+	/** The Constant FILE_PREFIX2. */
 	public static final String FILE_PREFIX2 = "file:/";
+	
+	/** The Constant CLASSPATH_PREFIX. */
 	public static final String CLASSPATH_PREFIX = "classpath:";
 
 	/**
@@ -138,12 +143,11 @@ public final class FileUtil {
 	}
 
 	/**
-	 * 
-	 * Can be used to load file inside classpath ie: src/resources
-	 * 
-	 * @param filePath
-	 * @param clazz
-	 * @return
+	 * Can be used to load file inside classpath ie: src/resources.
+	 *
+	 * @param filePath the file path
+	 * @param clazz the clazz
+	 * @return the resource
 	 */
 	public static URL getResource(String filePath, Class<?> clazz) {
 		boolean isClassPath = filePath.startsWith(CLASSPATH_PREFIX);
@@ -165,18 +169,43 @@ public final class FileUtil {
 		return u;
 	}
 
+	/**
+	 * Gets the resource.
+	 *
+	 * @param filePath the file path
+	 * @return the resource
+	 */
 	public static URL getResource(String filePath) {
 		return getResource(filePath, FileUtil.class);
 	}
 
+	/**
+	 * Gets the external file.
+	 *
+	 * @param filePath the file path
+	 * @return the external file
+	 */
 	public static File getExternalFile(String filePath) {
 		return getExternalFile(filePath, FileUtil.class);
 	}
 
+	/**
+	 * Gets the external resource.
+	 *
+	 * @param filePath the file path
+	 * @return the external resource
+	 */
 	public static URL getExternalResource(String filePath) {
 		return getExternalResource(filePath, FileUtil.class);
 	}
 
+	/**
+	 * Gets the external resource.
+	 *
+	 * @param filePath the file path
+	 * @param clazz the clazz
+	 * @return the external resource
+	 */
 	public static URL getExternalResource(String filePath, Class<?> clazz) {
 		if (clazz == null) {
 			return getExternalResource(filePath);
@@ -209,11 +238,11 @@ public final class FileUtil {
 	}
 
 	/**
-	 * Is used to load file relative to project or jar
-	 * 
-	 * @param filePath
-	 * @param clazz
-	 * @return
+	 * Is used to load file relative to project or jar.
+	 *
+	 * @param filePath the file path
+	 * @param clazz the clazz
+	 * @return the external file
 	 */
 	public static File getExternalFile(String filePath, Class<?> clazz) {
 
@@ -253,10 +282,25 @@ public final class FileUtil {
 		return new File(filePath);
 	}
 
+	/**
+	 * Gets the external resource as stream.
+	 *
+	 * @param filePath the file path
+	 * @return the external resource as stream
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static InputStream getExternalResourceAsStream(String filePath) throws IOException {
 		return getExternalResourceAsStream(filePath, FileUtil.class);
 	}
 
+	/**
+	 * Gets the external resource as stream.
+	 *
+	 * @param filePath the file path
+	 * @param clazz the clazz
+	 * @return the external resource as stream
+	 * @throws IOException Signals that an I/O exception has occurred.
+	 */
 	public static InputStream getExternalResourceAsStream(String filePath, Class<?> clazz) throws IOException {
 		if (clazz == null) {
 			return getExternalResourceAsStream(filePath);

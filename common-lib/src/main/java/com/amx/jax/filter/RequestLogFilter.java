@@ -15,11 +15,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
@@ -28,6 +30,7 @@ import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.amx.utils.CryptoUtil;
 import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
 
@@ -41,6 +44,18 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
+	}
+
+	@Autowired
+	AppConfig appConfig;
+
+	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp) {
+		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
+		if (StringUtils.isEmpty(authToken)
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken) == false)) {
+			return false;
+		}
+		return true;
 	}
 
 	@Override
@@ -115,7 +130,13 @@ public class RequestLogFilter implements Filter {
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
-			chain.doFilter(request, new AppResponseWrapper(resp));
+
+			if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp)) {
+				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			} else {
+				chain.doFilter(request, new AppResponseWrapper(resp));
+			}
+
 			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
 
 		} finally {
