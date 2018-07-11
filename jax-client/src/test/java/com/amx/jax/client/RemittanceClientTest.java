@@ -73,12 +73,12 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312615));
+		request.setBeneId(new BigDecimal(4312621));
 		request.setLocalAmount(new BigDecimal(10));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(142));
-		request.setSrlId(new BigDecimal(673));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(163));
+		request.setSrlId(new BigDecimal(697));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(266.6666666667));
+		exRateBreakup.setRate(new BigDecimal(162.7074520013));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);

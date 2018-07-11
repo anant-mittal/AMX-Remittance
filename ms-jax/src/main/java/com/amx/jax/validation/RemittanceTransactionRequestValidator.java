@@ -105,9 +105,12 @@ public class RemittanceTransactionRequestValidator {
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
-						remittanceModeId, routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
+						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
+						bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
+			} else {
+				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
 			}
 			dto.setField(field);
 			if (flexFieldValueInRequest == null) {
