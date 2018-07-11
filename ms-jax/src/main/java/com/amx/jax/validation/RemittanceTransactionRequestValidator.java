@@ -34,6 +34,7 @@ import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
+import com.amx.jax.services.JaxFieldService;
 
 @Component
 public class RemittanceTransactionRequestValidator {
@@ -48,6 +49,8 @@ public class RemittanceTransactionRequestValidator {
 	IAdditionalBankRuleMapDao additionalBankRuleMapDao;
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
+	@Autowired
+	JaxFieldService jaxFieldService ; 
 
 	public void validateExchangeRate(RemittanceTransactionRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -121,6 +124,10 @@ public class RemittanceTransactionRequestValidator {
 				}
 			}
 		}
+		// update jaxfield defination from db
+		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
+		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
+		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(

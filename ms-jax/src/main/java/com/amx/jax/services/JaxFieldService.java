@@ -125,12 +125,14 @@ public class JaxFieldService extends AbstractService {
 	 * 
 	 */
 	public void updateDtoFromDb(List<JaxFieldDto> jaxFieldDtos) {
-		List<String> names = jaxFieldDtos.stream().map(i -> i.getName()).collect(Collectors.toList());
+		List<String> names = jaxFieldDtos.stream().map(i -> i.getLabel()).collect(Collectors.toList());
 		List<JaxField> jaxFields = jaxFieldRepository.findByNameIn(names);
-		Map<String, JaxField> jaxFieldDbMap = jaxFields.stream().collect(Collectors.toMap(JaxField::getName, x -> x));
+		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream().collect(Collectors.toMap(JaxField::getName, x -> x));
 		jaxFieldDtos.forEach(i -> {
-			JaxField valueFromDB = jaxFieldDbMap.get(i.getName());
-			jaxUtil.convertNotNull(valueFromDB, i);
+			JaxField valueFromDB = jaxFieldDbMap.get(i.getLabel());
+			if(valueFromDB != null) {
+				jaxUtil.convertNotNull(valueFromDB, i);
+			}
 		});
 	}
 
