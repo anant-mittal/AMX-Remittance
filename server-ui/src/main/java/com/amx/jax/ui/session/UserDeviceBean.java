@@ -120,7 +120,9 @@ public class UserDeviceBean extends UserDevice {
 		String fingerprint = ArgUtil.parseAsString(httpService.getDeviceId(), Constants.BLANK);
 		UserAgent userAgent = httpService.getUserAgent();
 		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
-		if (!id.equals(this.id) || !fingerprint.equals(this.fingerprint) || !ip.equals(this.ip)) {
+		if (!id.equals(this.id)
+				// || !fingerprint.equals(this.fingerprint)
+				|| !ip.equals(this.ip)) {
 			return false;
 		}
 		return true;
