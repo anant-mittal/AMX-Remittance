@@ -1,5 +1,9 @@
 package com.amx.jax.payment.service;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +26,7 @@ import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
-//import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
+import bhr.com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
 
 /**
  * 
@@ -73,74 +77,74 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	@Override
 	public void initialize(PayGParams payGParams) {
 
-//		Map<String, Object> configMap = new HashMap<String, Object>();
-//
-//		configMap.put("action", benefitAction);
-//		configMap.put("currency", benefitCurrency);
-//		configMap.put("languageCode", benefitLanguageCode);
-//		configMap.put("responseUrl",
-//				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
-//		configMap.put("resourcePath", benefitCertpath);
-//		configMap.put("aliasName", benefitAliasName);
-//
-//		LOGGER.info("Baharain BENEFIT payment configuration : " + JsonUtil.toJson(configMap));
-//
-//		e24PaymentPipe pipe = new e24PaymentPipe();
-//		HashMap<String, String> responseMap = new HashMap<String, String>();
-//
-//		try {
-//
-//			pipe.setAction((String) configMap.get("action"));
-//			pipe.setCurrency((String) configMap.get("currency"));
-//			pipe.setLanguage((String) configMap.get("languageCode"));
-//			pipe.setResponseURL((String) configMap.get("responseUrl"));
-//			pipe.setErrorURL((String) configMap.get("responseUrl"));
-//			pipe.setResourcePath((String) configMap.get("resourcePath"));
-//			pipe.setAlias((String) configMap.get("aliasName"));
-//			pipe.setAmt((String) payGParams.getAmount());
-//			pipe.setTrackId((String) payGParams.getTrackId());
-//
-//			pipe.setUdf3(payGParams.getDocNo());
-//
-//			Short pipeValue = pipe.performPaymentInitialization();
-//			LOGGER.info("pipeValue : " + pipeValue);
-//
-//			if (pipeValue != e24PaymentPipe.SUCCESS) {
-//				responseMap.put("errorMsg", pipe.getErrorMsg());
-//				responseMap.put("debugMsg", pipe.getDebugMsg());
-//				LOGGER.error(pipe.getErrorMsg());
-//				LOGGER.debug(pipe.getDebugMsg());
-//				throw new RuntimeException("Problem while sending transaction to Benefit.");
-//			}
-//
-//			// get results
-//			String payID = pipe.getPaymentId();
-//			String payURL = pipe.getPaymentPage();
-//
-//			responseMap.put("payid", new String(payID));
-//			responseMap.put("payurl", new String(payURL));
-//
-//			PaymentResponseDto paymentDto = new PaymentResponseDto();
-//			paymentDto.setPaymentId(payID);
-//			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
-//			paymentDto.setUdf3(payGParams.getDocNo());
-//			paymentDto.setTrackId(payGParams.getTrackId());
-//
-//			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
-//			save(paymentDto);
-//
-//			String url = payURL + "?PaymentID=" + payID;
-//			LOGGER.info("Generated url is ---> " + url);
-//			payGParams.setRedirectUrl(url);
-//
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//			throw new RuntimeException(e);
-//		}
+		Map<String, Object> configMap = new HashMap<String, Object>();
+
+		configMap.put("action", benefitAction);
+		configMap.put("currency", benefitCurrency);
+		configMap.put("languageCode", benefitLanguageCode);
+		configMap.put("responseUrl",
+				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+		configMap.put("resourcePath", benefitCertpath);
+		configMap.put("aliasName", benefitAliasName);
+
+		LOGGER.info("Baharain BENEFIT payment configuration : " + JsonUtil.toJson(configMap));
+
+		e24PaymentPipe pipe = new e24PaymentPipe();
+		HashMap<String, String> responseMap = new HashMap<String, String>();
+
+		try {
+
+			pipe.setAction((String) configMap.get("action"));
+			pipe.setCurrency((String) configMap.get("currency"));
+			pipe.setLanguage((String) configMap.get("languageCode"));
+			pipe.setResponseURL((String) configMap.get("responseUrl"));
+			pipe.setErrorURL((String) configMap.get("responseUrl"));
+			pipe.setResourcePath((String) configMap.get("resourcePath"));
+			pipe.setAlias((String) configMap.get("aliasName"));
+			pipe.setAmt((String) payGParams.getAmount());
+			pipe.setTrackId((String) payGParams.getTrackId());
+
+			pipe.setUdf3(payGParams.getDocNo());
+
+			Short pipeValue = pipe.performPaymentInitialization();
+			LOGGER.info("pipeValue : " + pipeValue);
+
+			if (pipeValue != e24PaymentPipe.SUCCESS) {
+				responseMap.put("errorMsg", pipe.getErrorMsg());
+				responseMap.put("debugMsg", pipe.getDebugMsg());
+				LOGGER.error(pipe.getErrorMsg());
+				LOGGER.debug(pipe.getDebugMsg());
+				throw new RuntimeException("Problem while sending transaction to Benefit.");
+			}
+
+			// get results
+			String payID = pipe.getPaymentId();
+			String payURL = pipe.getPaymentPage();
+
+			responseMap.put("payid", new String(payID));
+			responseMap.put("payurl", new String(payURL));
+
+			PaymentResponseDto paymentDto = new PaymentResponseDto();
+			paymentDto.setPaymentId(payID);
+			paymentDto.setCustomerId(new BigDecimal(payGParams.getTrackId()));
+			paymentDto.setUdf3(payGParams.getDocNo());
+			paymentDto.setTrackId(payGParams.getTrackId());
+
+			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, payID);
+			save(paymentDto);
+
+			String url = payURL + "?PaymentID=" + payID;
+			LOGGER.info("Generated url is ---> " + url);
+			payGParams.setRedirectUrl(url);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -202,14 +206,5 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-    /* (non-Javadoc)
-     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse, com.amx.jax.dict.Channel)
-     */
-    @Override
-    public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }
