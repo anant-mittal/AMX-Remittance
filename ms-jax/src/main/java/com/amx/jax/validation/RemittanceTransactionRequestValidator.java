@@ -121,7 +121,7 @@ public class RemittanceTransactionRequestValidator {
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 					requiredFlexFields.add(dto);
 				}
 			}
@@ -168,14 +168,12 @@ public class RemittanceTransactionRequestValidator {
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-		if (field.getPossibleValues() != null) {
 			for (Object value : field.getPossibleValues()) {
 				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
 				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
 					changedValue = false;
 				}
 			}
-		}
 		return changedValue;
 	}
 
