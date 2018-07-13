@@ -34,7 +34,7 @@ public class CustomerHomeAddress implements Serializable {
 
 	/** country telephone prefix */
 	@NotNull
-	@Pattern(regexp = "[\\s]*[0-9]*[1-9]+",message="Invalid Tele Prefix")
+	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 
 	public BigDecimal getCountryId() {
