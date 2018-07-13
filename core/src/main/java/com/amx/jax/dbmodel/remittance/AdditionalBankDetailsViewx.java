@@ -39,8 +39,6 @@ public class AdditionalBankDetailsViewx implements Serializable {
 
 	  public AdditionalBankDetailsViewx() {
 		    super();
-		    logger.info("in AdditionalBankDetailsViewx");
-
 	  }
 
 	  public AdditionalBankDetailsViewx(BigDecimal srlId, String flexField, BigDecimal countryId, String amiecCode, String amieceDescription, BigDecimal bankId, String bankCode, String bankDescription, BigDecimal serviceApplicabilityRuleId, BigDecimal applicationCountryId, BigDecimal currencyId,

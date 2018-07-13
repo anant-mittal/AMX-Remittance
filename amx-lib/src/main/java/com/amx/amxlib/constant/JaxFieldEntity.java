@@ -2,5 +2,5 @@ package com.amx.amxlib.constant;
 
 public enum JaxFieldEntity {
 
-	BENEFICIARY;
+	BENEFICIARY, FLEX_FIELD;
 }

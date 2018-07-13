@@ -79,6 +79,7 @@ import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -149,6 +150,7 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private BeneficiaryCheckService beneCheckService;
+	@Autowired RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 	
@@ -175,8 +177,8 @@ public class RemittanceTransactionManager {
 		validateBlackListedBene(beneficiary);
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
 		remitApplParametersMap.putAll(beneBankDetails);
+		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -385,7 +387,8 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneId);
 		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
 		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
-
+		remitApplParametersMap.put("P_LOCAL_AMT", model.getLocalAmount());
+		remitApplParametersMap.put("P_FOREIGN_AMT", model.getForeignAmount());
 	}
 
 	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
@@ -615,6 +618,10 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+		
+		remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);
+		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
@@ -623,7 +630,7 @@ public class RemittanceTransactionManager {
 		validateAdditionalBeneDetails();
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model, validatedObjects, validationResults,remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
-		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication);
+		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication, model);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);

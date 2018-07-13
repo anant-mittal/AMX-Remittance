@@ -6,19 +6,16 @@ import java.util.List;
 public class JaxFieldDto {
 
 	String name;
-
 	Boolean required;
-
 	String type;
-
 	String defaultValue;
-
 	BigDecimal minLength;
-
 	BigDecimal maxLength;
-
 	List<ValidationRegexDto> validationRegex;
-	
+	String label;
+	List<JaxFieldValueDto> possibleValues;
+	String dtoPath;
+
 	public String getName() {
 		return name;
 	}
@@ -73,6 +70,37 @@ public class JaxFieldDto {
 
 	public void setRequired(Boolean required) {
 		this.required = required;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
+	@Override
+	public String toString() {
+		return "JaxFieldDto [name=" + name + ", required=" + required + ", type=" + type + ", defaultValue="
+				+ defaultValue + ", minLength=" + minLength + ", maxLength=" + maxLength + ", validationRegex="
+				+ validationRegex + ", label=" + label + ", possibleValues=" + possibleValues + "]";
+	}
+
+	public List<JaxFieldValueDto> getPossibleValues() {
+		return possibleValues;
+	}
+
+	public void setPossibleValues(List<JaxFieldValueDto> possibleValues) {
+		this.possibleValues = possibleValues;
+	}
+
+	public String getDtoPath() {
+		return dtoPath;
+	}
+
+	public void setDtoPath(String dtoPath) {
+		this.dtoPath = dtoPath;
 	}
 
 }

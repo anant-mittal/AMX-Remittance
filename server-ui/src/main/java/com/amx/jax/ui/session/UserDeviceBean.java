@@ -114,6 +114,7 @@ public class UserDeviceBean extends UserDevice {
 
 	public boolean validate() {
 		if (this.id == null || this.fingerprint == null) {
+			// this.resolve();
 			return true;
 		}
 		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);

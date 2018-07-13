@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.amx.amxlib.constant.RuleEnum;
+import com.amx.jax.model.AbstractModel;
 
 public class RateAlertDTO extends AbstractModel implements Cloneable {
 

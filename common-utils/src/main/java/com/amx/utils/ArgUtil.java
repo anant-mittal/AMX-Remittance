@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-
 /**
  * The Class ArgUtil.
  */
@@ -355,11 +353,16 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param <T> the generic type
-	 * @param value            the value
-	 * @param defaultValue            the default value
-	 * @param defaultListValue            the default list value
-	 * @param required            the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param defaultListValue
+	 *            the default list value
+	 * @param required
+	 *            the required
 	 * @return the list
 	 */
 	public static <T> List<T> parseAsListOfT(Object value, T defaultValue, List<T> defaultListValue, boolean required) {
@@ -548,8 +551,10 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value            the value
-	 * @param defaultValue the default value
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
 	 * @return : Long object if valid else null
 	 */
 	public static Long parseAsLong(Object value, Long defaultValue) {
@@ -576,7 +581,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as long.
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return the long
 	 */
 	public static Long parseAsLong(Object value) {
@@ -669,7 +675,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object            the object
+	 * @param object
+	 *            the object
 	 * @return the string
 	 */
 	public static String[] parseAsStringArray(Object object) {
@@ -749,11 +756,19 @@ public final class ArgUtil {
 	/**
 	 * Checks if is empty string.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return true, if is empty string
 	 */
 	public static boolean isEmptyString(String str) {
 		return (str == null || Constants.BLANK.equals(str));
+	}
+
+	public static boolean areEqual(Object a, Object b) {
+		if (a == null) {
+			return b == null;
+		}
+		return a.equals(b);
 	}
 
 }
