@@ -18,8 +18,10 @@ import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
@@ -65,6 +67,9 @@ public class CustomerRegistrationService extends AbstractService {
 	CustomerService customerService;
 	@Autowired
 	JaxNotificationService jaxNotificationService;
+	@Autowired
+	IApplicationCountryRepository applicationSetup;
+	
 
 	/**
 	 * Sends otp initiating trnx
@@ -135,12 +140,13 @@ public class CustomerRegistrationService extends AbstractService {
 		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
 		customerRegistrationManager.commit();
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
+		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
 		PersonInfo personinfo = new PersonInfo();
 		try {
 			BeanUtils.copyProperties(personinfo, customerDetails);
 		} catch (Exception e) {
 		}
-		jaxNotificationService.sendPartialRegistraionMail(personinfo);
+		jaxNotificationService.sendPartialRegistraionMail(personinfo,applicationSetupData);
 		return getBooleanResponse();
 	}
 }
