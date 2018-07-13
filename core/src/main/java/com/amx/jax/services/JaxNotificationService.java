@@ -22,6 +22,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
@@ -237,14 +238,14 @@ public class JaxNotificationService {
 		}
 	}
 
-	public void sendPartialRegistraionMail(PersonInfo personinfo) {
+	public void sendPartialRegistraionMail(PersonInfo personinfo, ApplicationSetup applicationSetup ) {
 
 		logger.info("Sending Email to Team Of The Customer : " + personinfo.getFirstName());
 		try
 		{
 		Email email = new Email();
 		email.setSubject("New Customer Registration");
-		email.addTo("EXCH-ONLINE1@almullaexchange.com");
+		email.addTo(applicationSetup.getEmailId());
 		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, personinfo);		
