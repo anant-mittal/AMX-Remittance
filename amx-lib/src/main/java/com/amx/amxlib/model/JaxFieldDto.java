@@ -1,7 +1,9 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JaxFieldDto {
 
@@ -15,6 +17,7 @@ public class JaxFieldDto {
 	String label;
 	List<JaxFieldValueDto> possibleValues;
 	String dtoPath;
+	Map<String, Object> additionalValidations = new HashMap<>();
 
 	public String getName() {
 		return name;
@@ -101,6 +104,14 @@ public class JaxFieldDto {
 
 	public void setDtoPath(String dtoPath) {
 		this.dtoPath = dtoPath;
+	}
+
+	public Map<String, Object> getAdditionalValidations() {
+		return additionalValidations;
+	}
+
+	public void setAdditionalValidations(Map<String, Object> additionalValidations) {
+		this.additionalValidations = additionalValidations;
 	}
 
 }

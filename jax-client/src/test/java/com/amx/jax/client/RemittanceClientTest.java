@@ -98,7 +98,13 @@ public class RemittanceClientTest {
 		
 		Map<String, String> flexFields = new HashMap<>();
 		list.forEach(i -> {
-			flexFields.put(i.getField().getName(), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			if(i.getField().getType().equals("select")) {
+				flexFields.put(i.getField().getName(), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			}else if(i.getField().getType().equals("date")) {
+				flexFields.put(i.getField().getName(), "20/07/2018");
+			}else {
+				flexFields.put(i.getField().getName(), "nnn");
+			}
 		});
 		request.setFlexFields(flexFields);
 		return client.saveTransaction(request);

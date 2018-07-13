@@ -127,6 +127,7 @@ public class RemittanceTransactionRequestValidator {
 		// update jaxfield defination from db
 		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
 		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
+		updateAdditionalValidations(jaxFieldDtos);
 		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
@@ -135,6 +136,24 @@ public class RemittanceTransactionRequestValidator {
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
+
+	}
+
+	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
+		jaxFieldDtos.forEach(i -> {
+			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("lteq", "${today}");
+				additionalValidations.put("format", "MM/DD/YYYY");
+				i.setAdditionalValidations(additionalValidations);
+			}
+			if ("TO DATE MM/DD/YYYY".equals(i.getName())) {
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
+				additionalValidations.put("format", "MM/DD/YYYY");
+				i.setAdditionalValidations(additionalValidations);
+			}
+		});
 
 	}
 
