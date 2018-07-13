@@ -2,6 +2,8 @@ package com.amx.jax.services;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,10 @@ import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.JaxFieldRepository;
 import com.amx.jax.util.JaxUtil;
 
+/**
+ * @author Prashant
+ *
+ */
 @Service
 public class JaxFieldService extends AbstractService {
 
@@ -109,6 +115,25 @@ public class JaxFieldService extends AbstractService {
 		}
 		dto.setValidationRegex(validationdtos);
 		return dto;
+	}
+
+	/**
+	 * updates dto from database using name
+	 * 
+	 * @param jaxFieldDto
+	 *            - input dto object
+	 * 
+	 */
+	public void updateDtoFromDb(List<JaxFieldDto> jaxFieldDtos) {
+		List<String> names = jaxFieldDtos.stream().map(i -> i.getLabel()).collect(Collectors.toList());
+		List<JaxField> jaxFields = jaxFieldRepository.findByNameIn(names);
+		final Map<String, JaxField> jaxFieldDbMap = jaxFields.stream().collect(Collectors.toMap(JaxField::getName, x -> x));
+		jaxFieldDtos.forEach(i -> {
+			JaxField valueFromDB = jaxFieldDbMap.get(i.getLabel());
+			if(valueFromDB != null) {
+				jaxUtil.convertNotNull(valueFromDB, i);
+			}
+		});
 	}
 
 }

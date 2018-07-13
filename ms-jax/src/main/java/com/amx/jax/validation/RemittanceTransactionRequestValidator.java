@@ -34,6 +34,7 @@ import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
+import com.amx.jax.services.JaxFieldService;
 
 @Component
 public class RemittanceTransactionRequestValidator {
@@ -48,6 +49,8 @@ public class RemittanceTransactionRequestValidator {
 	IAdditionalBankRuleMapDao additionalBankRuleMapDao;
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
+	@Autowired
+	JaxFieldService jaxFieldService ; 
 
 	public void validateExchangeRate(RemittanceTransactionRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -69,6 +72,8 @@ public class RemittanceTransactionRequestValidator {
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
 			request.setFlexFieldDtoMap(requestFlexFields);
+		} else {
+			validateFlexFieldValues(requestFlexFields);
 		}
 		requestFlexFields.put("INDIC1",
 				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
@@ -105,19 +110,27 @@ public class RemittanceTransactionRequestValidator {
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
-						remittanceModeId, routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
+						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
+						bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
+			} else {
+				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
 			}
 			dto.setField(field);
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 					requiredFlexFields.add(dto);
 				}
 			}
 		}
+		// update jaxfield defination from db
+		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
+		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
+		updateAdditionalValidations(jaxFieldDtos);
+		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
@@ -128,14 +141,39 @@ public class RemittanceTransactionRequestValidator {
 
 	}
 
+	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
+		requestFlexFields.forEach((k,v) -> {
+			
+		});
+		
+	}
+
+	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
+		jaxFieldDtos.forEach(i -> {
+			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("lteq", "${today}");
+				additionalValidations.put("format", "MM/DD/YYYY");
+				i.setAdditionalValidations(additionalValidations);
+			}
+			if ("TO DATE MM/DD/YYYY".equals(i.getName())) {
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
+				additionalValidations.put("format", "MM/DD/YYYY");
+				i.setAdditionalValidations(additionalValidations);
+			}
+		});
+
+	}
+
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-		for (Object value : field.getPossibleValues()) {
-			JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
-			if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
-				changedValue = false;
+			for (Object value : field.getPossibleValues()) {
+				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
+					changedValue = false;
+				}
 			}
-		}
 		return changedValue;
 	}
 

@@ -73,12 +73,12 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312615));
+		request.setBeneId(new BigDecimal(4312621));
 		request.setLocalAmount(new BigDecimal(10));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(142));
-		request.setSrlId(new BigDecimal(673));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(163));
+		request.setSrlId(new BigDecimal(697));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(266.6666666667));
+		exRateBreakup.setRate(new BigDecimal(162.7074520013));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);
@@ -98,7 +98,13 @@ public class RemittanceClientTest {
 		
 		Map<String, String> flexFields = new HashMap<>();
 		list.forEach(i -> {
-			flexFields.put(i.getField().getName(), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			if(i.getField().getType().equals("select")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			}else if(i.getField().getType().equals("date")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "20/07/2018");
+			}else {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
+			}
 		});
 		request.setFlexFields(flexFields);
 		return client.saveTransaction(request);
@@ -199,6 +205,5 @@ public class RemittanceClientTest {
 		response = client.getTransactionHistroy(docfyr, docNumber, fromDate, toDate);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
-
 	}
 }

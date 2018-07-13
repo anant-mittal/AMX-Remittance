@@ -74,9 +74,10 @@ public class RemittanceApplicationAdditionalDataManager {
 			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),
-					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
-			if (additionaBnankDetail != null) {
+			
+			if (v.getSrlId() != null) {
+				AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),
+						foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,
 						applicationCountryId, k, additionaBnankDetail.getAmiecCode(),
 						additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
@@ -118,9 +119,11 @@ public class RemittanceApplicationAdditionalDataManager {
 		countrymaster.setCountryId(applicationCountryId);
 		additionalInsData.setFsCountryMaster(countrymaster);
 
-		AdditionalBankRuleMap additionalBank = new AdditionalBankRuleMap();
-		additionalBank.setAdditionalBankRuleId(additionalBankRuleId);
-		additionalInsData.setAdditionalBankFieldsId(additionalBank);
+		if (additionalBankRuleId != null) {
+			AdditionalBankRuleMap additionalBank = new AdditionalBankRuleMap();
+			additionalBank.setAdditionalBankRuleId(additionalBankRuleId);
+			additionalInsData.setAdditionalBankFieldsId(additionalBank);
+		}
 		additionalInsData.setFlexField(indicatorCode);
 		additionalInsData.setFlexFieldValue(flexFieldValue);
 		if (amiecCode != null) {
