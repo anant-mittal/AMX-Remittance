@@ -72,6 +72,8 @@ public class RemittanceTransactionRequestValidator {
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
 			request.setFlexFieldDtoMap(requestFlexFields);
+		} else {
+			validateFlexFieldValues(requestFlexFields);
 		}
 		requestFlexFields.put("INDIC1",
 				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
@@ -139,6 +141,13 @@ public class RemittanceTransactionRequestValidator {
 
 	}
 
+	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
+		requestFlexFields.forEach((k,v) -> {
+			
+		});
+		
+	}
+
 	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
 		jaxFieldDtos.forEach(i -> {
 			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
@@ -159,10 +168,12 @@ public class RemittanceTransactionRequestValidator {
 
 	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
 		boolean changedValue = true;
-		for (Object value : field.getPossibleValues()) {
-			JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
-			if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
-				changedValue = false;
+		if (field.getPossibleValues() != null) {
+			for (Object value : field.getPossibleValues()) {
+				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
+					changedValue = false;
+				}
 			}
 		}
 		return changedValue;
