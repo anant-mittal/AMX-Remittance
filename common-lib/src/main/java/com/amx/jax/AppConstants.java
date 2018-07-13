@@ -15,6 +15,7 @@ public class AppConstants extends Constants {
 		public static final String EMAIL = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
 	}
 
+	public static final String AUTH_KEY_XKEY = "x-app-auth-key";
 	public static final String SESSION_ID_XKEY = "x-session-id";
 	public static final String TRACE_ID_XKEY = "x-trace-id";
 	public static final String TRACE_TIME_XKEY = "x-time-id";

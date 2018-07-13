@@ -39,7 +39,8 @@ public enum Templates {
 //	TEST("test"),
 //	BRANCH_FEEDBACK("BranchTemplate"),
 	CIVILID_EXPIRY("civilexpiry"),
-	CIVILID_EXPIRED("civilexpired");
+	CIVILID_EXPIRED("civilexpired"),
+	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail");
 	
 	String fileName;
 	PDFConverter converter;

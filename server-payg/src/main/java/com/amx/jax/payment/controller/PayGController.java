@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
@@ -71,7 +72,7 @@ public class PayGController {
 
 	public String handleUrlPaymentRemit(@RequestParam Tenant tnt, @RequestParam String pg, @RequestParam String amount,
 			@RequestParam String trckid, @RequestParam String docNo, @RequestParam(required = false) String docFy,
-			@RequestParam(required = false) String callbackd, Model model) {
+			@RequestParam(required = false) String callbackd, @RequestParam(required = false) Channel channel, Model model) {
 
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
@@ -81,11 +82,9 @@ public class PayGController {
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
-		}else if (tnt.equals(Tenant.OMN)&& pg.equals("KOMANNET")) {
-			appRedirectUrl = omnRedirectURL;
 		}else if(tnt.equals(Tenant.OMN)) {
-		    appRedirectUrl = omnRedirectURL;
 		    pg = "OMANNET";
+		    appRedirectUrl = omnRedirectURL;
 		}
 
 		if (callbackd != null) {
@@ -105,6 +104,9 @@ public class PayGController {
 		payGParams.setTrackId(trckid);
 		payGParams.setDocNo(docNo);
 		payGParams.setTenant(tnt);
+        if (channel==null)
+		    channel = Channel.ONLINE;		
+		payGParams.setChannel(channel);
 
 		auditService.log(new PayGEvent(PayGEvent.Type.PAYMENT_INIT, payGParams));
 
@@ -123,10 +125,12 @@ public class PayGController {
 		return null;
 	}
 
-	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
+	//@RequestMapping(value = { "/capture/{paygCode}/{tenant}/*", "/capture/{paygCode}/{tenant}/" })
+	@RequestMapping(value = { "/capture/{paygCode}/{tenant}/{channel}/*","/capture/{paygCode}/{tenant}/{channel}/" })
 	public String paymentCapture( Model model, 
 	                              @PathVariable("tenant") Tenant tnt,
 			                      @PathVariable("paygCode") PayGServiceCode paygCode,
+			                      @PathVariable("channel") Channel channel,
 			                      RedirectAttributes ra) {
 	    
 		TenantContextHolder.setCurrent(tnt);
@@ -135,7 +139,7 @@ public class PayGController {
 
 		PayGResponse payGResponse = new PayGResponse();
 		try {
-			payGResponse = payGClient.capture(new PayGResponse());
+			payGResponse = payGClient.capture(new PayGResponse(),channel);
 		} catch (Exception e) {
 			LOGGER.error("payment service error in capturePayment method : ", e);
 			payGResponse.setPayGStatus(PayGStatus.ERROR);
@@ -156,9 +160,11 @@ public class PayGController {
 		model.addAttribute("REDIRECT", redirectUrl);
 
 		//return "thymeleaf/repback";
-		if (paygCode.toString().equals("OMANNET")) {
+		//if (paygCode.toString().equals("OMANNET")) {
+		if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.ONLINE)) {    
 			return "redirect:" + redirectUrl;
-		}else if (paygCode.toString().equals("KOMANNET")) {
+		//}else if (paygCode.toString().equals("KOMANNET")) {
+		}else if (paygCode.toString().equals("OMANNET") && channel.equals(Channel.KIOSK)) {    
 		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
             ra.addAttribute("result", payGResponse.getResult());
             ra.addAttribute("auth",payGResponse.getAuth() );
@@ -179,3 +185,4 @@ public class PayGController {
 	}
 
 }
+
