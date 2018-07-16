@@ -13,9 +13,10 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppParam;
-import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestQuery;
 import com.amx.jax.rest.RestService;
@@ -118,6 +119,7 @@ public class SMService {
 	 */
 	public SMS sendSMS(SMS sms) {
 		String to = null;
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_SMS);
 		try {
 			LOGGER.info("Sending {} SMS to {}", sms.getTemplate(), Utils.commaConcat(sms.getTo()));
 
@@ -129,14 +131,17 @@ public class SMService {
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}
 
-			if (!ArgUtil.isEmpty(to)) {
-				this.doSendSMS(sms);
-			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
+			if (ArgUtil.isEmpty(to)) {
+				throw new PostManException(PostManException.ErrorCode.NO_RECIPIENT_DEFINED);
 			}
 
+			this.doSendSMS(sms);
+			auditService.gauge(pMGaugeEvent.set(sms));
+		} catch (PostManException e) {
+			auditService.gauge(pMGaugeEvent.set(sms).set(Result.FAIL));
+
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_ERROR, sms), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(sms), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return sms;
@@ -157,7 +162,6 @@ public class SMService {
 			LOGGER.info("{}:START", "sendSMS");
 		}
 
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
 		String phone = sms.getTo().get(0);
 
 		if (!appConfig.isProdMode() && (phone != null && phone.length() == 10)) {
@@ -167,8 +171,6 @@ public class SMService {
 			LOGGER.info("SMS Preparing   " + map);
 			String responseText = restService.ajax(remoteUrl).header("authkey", authKey)
 					.header("content-type", "application/json").post(JsonUtil.toJson(map)).asString();
-
-			auditService.gauge(pMGaugeEvent.fillDetail(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms, responseText));
 
 		} else if (phone != null) {
 
@@ -181,8 +183,6 @@ public class SMService {
 
 			String responseText = restService.ajax(this.smsReqUrl).build(smsReqType, smsReqQuery, smsReqFields, params)
 					.asString();
-
-			auditService.gauge(pMGaugeEvent.fillDetail(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms, responseText));
 
 			// Tenant tnt = TenantContextHolder.currentSite();
 			//
@@ -213,7 +213,7 @@ public class SMService {
 			// auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
 			// }
 		} else {
-			auditService.gauge(pMGaugeEvent.fillDetail(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms, null));
+			throw new PostManException(PostManException.ErrorCode.NO_TENANT_DEFINED);
 		}
 
 		return sms;
