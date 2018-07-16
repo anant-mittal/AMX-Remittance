@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.amx.jax.dbmodel.AccountTypeFromViewModel;
 
+
 public interface IAccountTypeFromViewDao extends JpaRepository<AccountTypeFromViewModel, Serializable>{
 	
 	@Query("select av from AccountTypeFromViewModel av where av.countryId=?1")

@@ -19,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
@@ -153,6 +154,7 @@ public class EmailService {
 	 */
 	public Email sendEmail(Email email) throws PostManException {
 
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
 		try {
 			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
@@ -182,11 +184,12 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
 			}
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return email;
@@ -203,14 +206,12 @@ public class EmailService {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public Email send(Email eParams) throws MessagingException, IOException {
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
+	private Email send(Email eParams) throws MessagingException, IOException {
 		if (eParams.isHtml()) {
 			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
-		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 

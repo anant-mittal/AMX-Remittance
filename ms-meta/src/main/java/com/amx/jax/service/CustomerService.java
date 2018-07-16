@@ -69,6 +69,13 @@ public class CustomerService extends AbstractService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+
+	public Customer getCustomerDetails(String loginId) {
+		
+		return customerRepository.getCustomerDetails(loginId);
+	}
 	
 	/*public void updateLoyaltyPoint(BigDecimal loyaltyPoint,BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {
 		customerRepository.updateLoyaltyPoints(loyaltyPoint, companyId, countryId, customerId);

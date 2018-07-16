@@ -61,7 +61,7 @@ public class CustomerRegistrationController {
 	 * save customer home addr
 	 */
 	@RequestMapping(value = "/save-home-addr/", method = RequestMethod.POST)
-	public ApiResponse saveCustomerHomeAddress(@RequestBody CustomerHomeAddress customerHomeAddress) {
+	public ApiResponse saveCustomerHomeAddress(@RequestBody @Valid CustomerHomeAddress customerHomeAddress) {
 		logger.info("in saveCustomerHomeAddress: {} ", customerHomeAddress);
 		ApiResponse response = customerRegistrationService.saveCustomerHomeAddress(customerHomeAddress);
 		return response;

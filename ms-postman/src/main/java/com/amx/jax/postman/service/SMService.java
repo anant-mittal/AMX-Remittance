@@ -13,6 +13,7 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppParam;
+import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.model.SMS;
