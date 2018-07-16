@@ -32,6 +32,11 @@ public abstract class AmxApiException extends AmxException {
 		this.errorMessage = errorMessage;
 	}
 
+	public AmxApiException(IExceptionEnum error) {
+		this();
+		this.error = error;
+	}
+
 	public AmxApiException(String errorMessage, String errorCode) {
 		this();
 		this.errorMessage = errorMessage;

@@ -86,12 +86,12 @@ public class FileService {
 			/**
 			 * From string to File type
 			 */
-			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent();
+			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.CREATE_PDF, file);
 			try {
 				pdfService.convert(file);
-				auditService.gauge(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_CREATED, file));
+				auditService.gauge(pmGaugeEvent);
 			} catch (JRException e) {
-				auditService.excep(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
+				auditService.excep(pmGaugeEvent, LOGGER, e);
 			}
 
 		}
