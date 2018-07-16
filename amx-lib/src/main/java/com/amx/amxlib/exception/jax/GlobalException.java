@@ -17,7 +17,7 @@ public class GlobalException extends AbstractJaxException {
 	private static final long serialVersionUID = 1L;
 
 	public GlobalException(String errorMessage) {
-		super(errorMessage);
+		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getCode());
 	}
 
 	public GlobalException(String errorMessage, String errorCode) {
