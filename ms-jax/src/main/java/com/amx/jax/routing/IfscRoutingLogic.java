@@ -107,7 +107,7 @@ public class IfscRoutingLogic implements IRoutingLogic {
 				List<BankServiceRule> eftServiceRule = bankDao.getBankServiceRule(rouringBankId, beneCountryId,
 						fcurrencyId, REMITTANCE_MODE_RTGS, DELIVERY_MODE_BANKING_CHANNEL);
 				if (CollectionUtils.isNotEmpty(eftServiceRule)) {
-					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_EFT);
+					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_RTGS);
 					output.put("P_DELIVERY_MODE_ID", DELIVERY_MODE_BANKING_CHANNEL);
 				}
 			}

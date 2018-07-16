@@ -114,8 +114,8 @@ public class RemittanceApplicationManager {
 		BigDecimal routingBankBranchId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
-		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal remittanceId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
