@@ -151,31 +151,36 @@ public class RemittanceTransactionRequestValidator {
 	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
 		if (requestFlexFields != null) {
 			LocalDate today = LocalDate.now();
-			LocalDateTime fromDate = null;
+			LocalDate fromDate = null;
+			LocalDate toDate = null;
 			for (Map.Entry<String, FlexFieldDto> entry : requestFlexFields.entrySet()) {
 				if ("INDIC4".equals(entry.getKey())) {
 					// from date
-					fromDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(), "MM/DD/YYYY");
+					fromDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
 					if (fromDate == null) {
 						throw new GlobalException("Invalid from date");
 					}
-					if (fromDate.toLocalDate().isAfter(today)) {
+					if (fromDate.isAfter(today)) {
 						throw new GlobalException("From date must be less than current date");
 					}
 
 				}
 				if ("INDIC5".equals(entry.getKey())) {
 					// to date
-					LocalDateTime toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(), "MM/DD/YYYY");
+					toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
 					if (toDate == null) {
 						throw new GlobalException("Invalid to date");
 					}
-					if (toDate.toLocalDate().isBefore(fromDate.toLocalDate())) {
-						throw new GlobalException("To date must be greater than from date");
-					}
 				}
 			}
-			;
+			if (toDate != null && fromDate == null) {
+				throw new GlobalException("From date is not present");
+			}
+			if (toDate != null && toDate.isBefore(fromDate)) {
+				throw new GlobalException("To date must be greater than from date");
+			}
 		}
 	}
 

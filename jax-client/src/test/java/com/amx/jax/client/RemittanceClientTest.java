@@ -101,7 +101,7 @@ public class RemittanceClientTest {
 			if(i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
 			}else if(i.getField().getType().equals("date")) {
-				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "20/07/2018");
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
 			}else {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
 			}
