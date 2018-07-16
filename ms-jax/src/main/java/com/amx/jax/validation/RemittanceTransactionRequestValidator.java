@@ -2,7 +2,11 @@ package com.amx.jax.validation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +39,7 @@ import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
 import com.amx.jax.services.JaxFieldService;
+import com.amx.jax.util.DateUtil;
 
 @Component
 public class RemittanceTransactionRequestValidator {
@@ -50,7 +55,9 @@ public class RemittanceTransactionRequestValidator {
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
 	@Autowired
-	JaxFieldService jaxFieldService ; 
+	JaxFieldService jaxFieldService ;
+	@Autowired
+	DateUtil dateUtil;
 
 	public void validateExchangeRate(RemittanceTransactionRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -142,10 +149,39 @@ public class RemittanceTransactionRequestValidator {
 	}
 
 	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
-		requestFlexFields.forEach((k,v) -> {
-			
-		});
-		
+		if (requestFlexFields != null) {
+			LocalDate today = LocalDate.now();
+			LocalDate fromDate = null;
+			LocalDate toDate = null;
+			for (Map.Entry<String, FlexFieldDto> entry : requestFlexFields.entrySet()) {
+				if ("INDIC4".equals(entry.getKey())) {
+					// from date
+					fromDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+					if (fromDate == null) {
+						throw new GlobalException("Invalid from date");
+					}
+					if (fromDate.isAfter(today)) {
+						throw new GlobalException("From date must be less than current date");
+					}
+
+				}
+				if ("INDIC5".equals(entry.getKey())) {
+					// to date
+					toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+					if (toDate == null) {
+						throw new GlobalException("Invalid to date");
+					}
+				}
+			}
+			if (toDate != null && fromDate == null) {
+				throw new GlobalException("From date is not present");
+			}
+			if (toDate != null && toDate.isBefore(fromDate)) {
+				throw new GlobalException("To date must be greater than from date");
+			}
+		}
 	}
 
 	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
