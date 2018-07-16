@@ -2,12 +2,15 @@ package com.amx.jax.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Component;
 
@@ -105,5 +108,23 @@ public class DateUtil {
 		date.set(Calendar.MILLISECOND, 0);
 
 		return date.getTime();
+	}
+	
+	/**
+	 * validates date string
+	 * 
+	 * @param strDate
+	 * @param format
+	 * @return if date string is valid Date object is returned otherwise null
+	 * 
+	 */
+	public LocalDateTime validateDate(String strDate, String format) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return LocalDateTime.parse(strDate, formatter);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 }
