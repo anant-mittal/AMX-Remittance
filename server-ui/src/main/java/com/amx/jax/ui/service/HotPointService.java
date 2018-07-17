@@ -33,12 +33,7 @@ public class HotPointService {
 	@JsonPropertyOrder({ "latitude", "longitude" })
 	public enum HotPoints {
 
-		/** The salmiya2. */
-		SALMIYA2(" 29.331993", "48.061422"),
-		/** The murgab3. */
-		MURGAB3("29.369429", "47.978551"),
-		/** The salmiya4. */
-		SALMIYA4(" 29.325602", "48.058039");
+		SALMIYA2(" 29.331993", "48.061422"), MURGAB3("29.369429", "47.978551"), SALMIYA4(" 29.325602", "48.058039");
 
 		/** The latitude. */
 		private String latitude;
