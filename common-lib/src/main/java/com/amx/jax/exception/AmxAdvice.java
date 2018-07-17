@@ -45,15 +45,16 @@ public abstract class AmxAdvice {
 	 *            the request
 	 * @return the response entity
 	 */
-	@ExceptionHandler({ Exception.class })
-	public ResponseEntity<AmxApiError> handleAll(Exception ex, WebRequest request) {
-		AmxApiError error = new AmxApiError();
-		error.setException(ex.getClass().getName());
-		error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
-		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-		wrapper.setException(ex.getClass().getName());
-		postManService.notifyException(wrapper.getStatus(), ex);
-		return new ResponseEntity<AmxApiError>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+	// @ExceptionHandler({ Exception.class })
+	// public ResponseEntity<AmxApiError> handleAll(Exception ex, WebRequest
+	// request) {
+	// AmxApiError error = new AmxApiError();
+	// error.setException(ex.getClass().getName());
+	// error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+	//
+	// wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+	// wrapper.setException(ex.getClass().getName());
+	// return new ResponseEntity<AmxApiError>(wrapper,
+	// HttpStatus.INTERNAL_SERVER_ERROR);
+	// }
 }
