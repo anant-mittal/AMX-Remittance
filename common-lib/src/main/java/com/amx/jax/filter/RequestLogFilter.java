@@ -46,11 +46,10 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
+		long startTime = System.currentTimeMillis();
+		HttpServletRequest req = ((HttpServletRequest) request);
+		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
-			long startTime = System.currentTimeMillis();
-			HttpServletRequest req = ((HttpServletRequest) request);
-			HttpServletResponse resp = ((HttpServletResponse) response);
-
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
 			if (StringUtils.isEmpty(siteId)) {
