@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AbstractEvent;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
@@ -207,6 +208,7 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse excepStatic(AuditEvent event) {
+		event.setResult(AuditEvent.Result.ERROR);
 		return logAuditEvent(excepmarker, event);
 	}
 

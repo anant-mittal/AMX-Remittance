@@ -208,14 +208,5 @@ public class OmannetClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}
-
-    /* (non-Javadoc)
-     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse)
-     */
-    @Override
-    public PayGResponse capture(PayGResponse payGResponse) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 	
 }

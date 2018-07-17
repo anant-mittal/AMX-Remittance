@@ -144,7 +144,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
@@ -206,14 +206,5 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-    /* (non-Javadoc)
-     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse, com.amx.jax.dict.Channel)
-     */
-    @Override
-    public PayGResponse capture(PayGResponse payGResponse, Channel channel) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 
 }
