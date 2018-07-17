@@ -27,6 +27,7 @@ public class AppConfig {
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
+	public static final String APP_AUTH_TOKEN = "${app.auth.token}";
 
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
@@ -67,6 +68,10 @@ public class AppConfig {
 	@Value(APP_CACHE)
 	@AppParamKey(AppParam.APP_CACHE)
 	private Boolean cache;
+	
+	@Value(APP_AUTH_TOKEN)
+	@AppParamKey(AppParam.APP_AUTH_TOKEN)
+	private String authToken;
 
 	@Value(JAX_CDN_URL)
 	@AppParamKey(AppParam.JAX_CDN_URL)

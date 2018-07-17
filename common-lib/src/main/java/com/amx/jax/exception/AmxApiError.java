@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiError {
 
-	private String errorClass;
-
 	private String errorId;
 
 	private String errorMessage;
@@ -16,12 +14,11 @@ public class AmxApiError {
 	private Object meta;
 
 	// Spring Norms
-
-	String status;
-	String error;
-	String exception;
-	String message;
-	String path;
+	String status; // 400
+	String error; // Bad Request
+	String exception; // org.springframework.http.converter.HttpMessageNotReadableException
+	String message;// JSON parse error
+	String path; // postman/email/send
 
 	public AmxApiError(String errorId, String errorMessage, String errorType) {
 		super();
@@ -66,49 +63,99 @@ public class AmxApiError {
 	}
 
 	public String getErrorClass() {
-		return errorClass;
+		return exception;
 	}
 
 	public void setErrorClass(String errorClass) {
-		this.errorClass = errorClass;
+		this.exception = errorClass;
 	}
 
+	/**
+	 * HTTP Status Code : 400
+	 * 
+	 * @return
+	 */
 	public String getStatus() {
 		return status;
 	}
 
+	/**
+	 * HTTP Status Code : 400
+	 * 
+	 * @param status
+	 */
 	public void setStatus(String status) {
 		this.status = status;
 	}
 
+	/**
+	 * Error Type
+	 * 
+	 * @return
+	 */
 	public String getError() {
 		return error;
 	}
 
+	/**
+	 * Error Type
+	 * 
+	 * @return
+	 */
 	public void setError(String error) {
 		this.error = error;
 	}
 
+	/**
+	 * Get Exception class of error (Spring Norms)
+	 * 
+	 * @return
+	 */
 	public String getException() {
 		return exception;
 	}
 
+	/**
+	 * Set Exception class of error (Spring Norms)
+	 * 
+	 * @return
+	 */
 	public void setException(String exception) {
 		this.exception = exception;
 	}
 
+	/**
+	 * Get Exception Message (Spring Norms)
+	 * 
+	 * @return
+	 */
 	public String getMessage() {
 		return message;
 	}
 
+	/**
+	 * Set Exception Message (Spring Norms)
+	 * 
+	 * @param message
+	 */
 	public void setMessage(String message) {
 		this.message = message;
 	}
 
+	/**
+	 * API url
+	 * 
+	 * @return
+	 */
 	public String getPath() {
 		return path;
 	}
 
+	/**
+	 * API url
+	 * 
+	 * @return
+	 */
 	public void setPath(String path) {
 		this.path = path;
 	}
