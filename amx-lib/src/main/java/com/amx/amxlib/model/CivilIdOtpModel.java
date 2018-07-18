@@ -152,4 +152,12 @@ public class CivilIdOtpModel extends AbstractModel {
 		this.middleName = middleName;
 	}
 
+	@Override
+	public String toString() {
+		return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="
+				+ eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
+				+ ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
+				+ ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
+	}
+
 }
