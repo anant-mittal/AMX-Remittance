@@ -57,7 +57,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	 @Test
 		public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 				RemittanceTransactionValidationException, LimitExeededException {
 			jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -68,7 +68,7 @@ public class RemittanceClientTest {
 			ApiResponse<RemittanceApplicationResponseModel> response = null;
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 			request.setBeneId(new BigDecimal(4312567));
-			request.setLocalAmount(new BigDecimal(500));
+			request.setLocalAmount(new BigDecimal(20000));
 			request.setAdditionalBankRuleFiledId(new BigDecimal(181));
 			request.setSrlId(new BigDecimal(2018));
 			response = client.saveTransaction(request);
@@ -116,7 +116,7 @@ public class RemittanceClientTest {
 			assertNotNull(response.getResult());
 			assertNotNull(response.getResult().getModelType());
 		}
-
+	
 	//@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
@@ -160,7 +160,7 @@ public class RemittanceClientTest {
 	}
 	
 	
-	@Test
+	//@Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;
