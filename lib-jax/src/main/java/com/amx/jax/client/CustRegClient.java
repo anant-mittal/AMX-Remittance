@@ -22,9 +22,10 @@ public class CustRegClient implements ICustRegService {
 	@Autowired
 	AppConfig appConfig;
 
-	public String syncPermsMeta() throws PostManException {
+	@Override
+	public String getIdDetailsFields() {
 		return restService.ajax(appConfig.getAuthURL()).path(JaxConstants.CustRegApiEndPoints.GET_ID_FIELDS).post()
 				.as(String.class);
-
 	}
+
 }

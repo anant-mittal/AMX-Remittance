@@ -24,6 +24,7 @@ public class CustRegController implements ICustRegService {
 	/**
 	 * @task Sync DB perms
 	 */
+	@Override
 	@ApiOperation("Sync Permissions")
 	@RequestMapping(value = JaxConstants.CustRegApiEndPoints.GET_ID_FIELDS, method = RequestMethod.POST)
 	public void getIdDetailsFields() {
