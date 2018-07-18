@@ -1,9 +1,13 @@
 package com.amx.jax.rest;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -58,7 +62,12 @@ public class RestService {
 		return new Ajax(getRestTemplate(), uri);
 	}
 
-	public class Ajax {
+	public static class Ajax {
+		public static final Pattern pattern = Pattern.compile("^\\{(.*)\\}$");
+
+		public static enum RestMethod {
+			POST, FORM, GET
+		}
 
 		private UriComponentsBuilder builder;
 		HttpEntity<?> requestEntity;
@@ -89,6 +98,16 @@ public class RestService {
 			return this;
 		}
 
+		public Ajax params(Map<String, String> params) {
+			uriParams.putAll(params);
+			return this;
+		}
+
+		public Ajax query(String query) {
+			builder.query(query);
+			return this;
+		}
+
 		public Ajax queryParam(String paramKey, Object paramValue) {
 			builder.queryParam(paramKey, paramValue);
 			return this;
@@ -96,6 +115,19 @@ public class RestService {
 
 		public Ajax field(String paramKey, String paramValue) {
 			parameters.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax field(RestQuery query, Map<String, String> params) throws UnsupportedEncodingException {
+			Map<String, String> s = query.toMap();
+			for (Entry<String, String> entry : s.entrySet()) {
+				String value = entry.getValue();
+				Matcher match = pattern.matcher(value);
+				if (match.find() && params.containsKey(match.group(1))) {
+					value = params.get(match.group(1));
+				}
+				this.field(entry.getKey(), entry.getValue());
+			}
 			return this;
 		}
 
@@ -166,6 +198,15 @@ public class RestService {
 			return this.get(new HttpEntity<Object>(null, headers));
 		}
 
+		public Ajax call(RestMethod method) {
+			if (method == RestMethod.FORM) {
+				return this.postForm();
+			} else if (method == RestMethod.POST) {
+				return this.post();
+			}
+			return this.get();
+		}
+
 		public <T> T as(Class<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
@@ -175,6 +216,7 @@ public class RestService {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
+
 
 		public <T> AmxApiResponse<T, Object> asResponseModel(Class<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
@@ -200,6 +242,25 @@ public class RestService {
 
 		public Object as() {
 			return this.asObject();
+		}
+
+		public Ajax build(RestMethod smsReqType, String smsReqQuery, RestQuery smsReqFields, Map<String, String> params)
+				throws UnsupportedEncodingException {
+			if (!ArgUtil.isEmpty(smsReqQuery)) {
+				this.query(smsReqQuery);
+			}
+			if (!ArgUtil.isEmpty(params)) {
+				this.params(params);
+			}
+
+			if (!ArgUtil.isEmpty(smsReqFields)) {
+				this.params(smsReqFields.toMap());
+			}
+
+			if (!ArgUtil.isEmpty(smsReqFields)) {
+				this.field(smsReqFields, params);
+			}
+			return this.call(smsReqType);
 		}
 
 	}

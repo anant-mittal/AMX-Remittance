@@ -1,5 +1,6 @@
 package com.amx.utils;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -717,6 +718,18 @@ public final class ArgUtil {
 				return defaultValue;
 			}
 		}
+	}
+
+	public static Enum parseAsEnum(Object value, Type type) {
+		String enumString = parseAsString(value);
+		if (enumString == null) {
+			return null;
+		}
+		Class clazz = (Class) type;
+		if (clazz.isEnum()) {
+			return Enum.valueOf(clazz, enumString);
+		}
+		return null;
 	}
 
 	/**
