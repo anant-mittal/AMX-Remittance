@@ -70,7 +70,7 @@
 		<module>lib-monitor</module>
 		<module>lib-auth</module>
 		<module>lib-sso</module>
-
+		<module>lib-jax</module>
 
 		<module>ms-logger</module>
 		<module>lib-postman</module>
@@ -81,6 +81,7 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
+		<module>ms-branch</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
 		<module>ms-auth</module>
@@ -91,7 +92,8 @@
 
 		<module>server-ui</module>
 		<module>server-stomp</module>
-
+		
+		<module>server-offsite</module>
 		<module>server-admin</module>
  		<module>server-sso</module>
 		<module>server-kiosk</module>
