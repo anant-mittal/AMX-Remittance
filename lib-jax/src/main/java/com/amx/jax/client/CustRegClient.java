@@ -23,7 +23,7 @@ public class CustRegClient implements ICustRegService {
 	AppConfig appConfig;
 
 	public String syncPermsMeta() throws PostManException {
-		return restService.ajax(appConfig.getAuthURL()).path(JaxConstants.ApiEndPoints.SYNC_PERMS).post()
+		return restService.ajax(appConfig.getAuthURL()).path(JaxConstants.CustRegApiEndPoints.GET_ID_FIELDS).post()
 				.as(String.class);
 
 	}
