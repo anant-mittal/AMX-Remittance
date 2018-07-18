@@ -10,7 +10,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,8 +60,6 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @Api(value = "Remote APIs")
 public class RemittController {
-	
-	private Logger LOGGER = Logger.getLogger(RemittController.class);
 
 	/** The response. */
 	@Autowired
@@ -373,9 +370,7 @@ public class RemittController {
 		try {
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
-			LOGGER.info("########################## ");
-			LOGGER.info(respTxMdl.toString());
-			LOGGER.info("########################## ");
+
 			wrapper.setData(respTxMdl);
 			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
 					"https://" + request.getServerName() + "/app/landing/remittance"));
