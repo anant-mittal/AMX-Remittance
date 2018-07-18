@@ -37,7 +37,8 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
 		error.setErrorClass(ex.getClass().getName());
-		logger.error("Exception occured in controller " + ex.getClass().getName() + " error message: "
+		error.setMeta(ex.getMeta());
+		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		raiseAlert(ex);
 		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());

@@ -55,5 +55,6 @@ public class ConstantDocument {
 	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
 
 	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
+	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
 
 }
