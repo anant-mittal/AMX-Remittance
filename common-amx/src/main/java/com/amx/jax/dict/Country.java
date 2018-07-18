@@ -1,4 +1,4 @@
-package com.amx.jax.constant;
+package com.amx.jax.dict;
 
 import java.util.HashMap;
 import java.util.Map;

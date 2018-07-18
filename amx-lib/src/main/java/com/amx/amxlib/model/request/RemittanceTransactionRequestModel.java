@@ -15,6 +15,7 @@ import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.utils.JsonUtil;
+import com.amx.jax.model.AbstractModel;
 
 /**
  * @author Prashant
