@@ -627,7 +627,7 @@ public class RemittanceTransactionManager {
             civilIdOtpModel= addOtpOnRemittance(model);
         }else {
            //this flow is for validate OTP
-           //userService.validateOtp(civilId, mOtp, eOtp)
+           userService.validateOtp(null, model.getmOtp(), null);
         }
         
         this.isSaveRemittanceFlow = true;
@@ -732,16 +732,13 @@ public class RemittanceTransactionManager {
     
     private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
         CivilIdOtpModel otpMmodel = null;
-        if (  meta.getChannel().equals(JaxChannel.ONLINE) && 
-                model.getLocalAmount().compareTo(new BigDecimal(10000))>0  ) {
+        if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
+                    model.getLocalAmount().compareTo(new BigDecimal(5000))>0) || 
+              (meta.getChannel().equals(JaxChannel.MOBILE) && 
+                    model.getLocalAmount().compareTo(new BigDecimal(3000))>0) ){
             otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null).getData().getValues().get(0);
-        }else if (  meta.getChannel().equals(JaxChannel.MOBILE) && 
-               model.getLocalAmount().compareTo(new BigDecimal(3000))>0  ) {
-            
         }
-
         return otpMmodel;
-        //applicationProcedureDao.getAdditionalCheckProcedure(remitApplParametersMap);
     }
 
 }
