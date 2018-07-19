@@ -36,6 +36,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private String mOtp;
+	private String eOtp;
 
 	/*
 	 * (non-Javadoc)
@@ -109,6 +111,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
+	
+   public String getmOtp() {
+        return mOtp;
+    }
+
+    public void setmOtp(String mOtp) {
+        this.mOtp = mOtp;
+    }
+
+    public String geteOtp() {
+        return eOtp;
+    }
+
+    public void seteOtp(String eOtp) {
+        this.eOtp = eOtp;
+    }
 
 	public ExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
