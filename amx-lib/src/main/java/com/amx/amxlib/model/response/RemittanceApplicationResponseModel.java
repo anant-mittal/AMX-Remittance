@@ -66,13 +66,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.merchantTrackId = merchantTrackId;
 	}
 
-	@Override
-	public String toString() {
-		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
-				+ documentIdForPayment + ", netPayableAmount=" + netPayableAmount + ", merchantTrackId="
-				+ merchantTrackId + "]";
-	}
-
 	public BigDecimal getDocumentFinancialYear() {
 		return documentFinancialYear;
 	}
@@ -87,6 +80,14 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
 		this.civilIdOtpModel = civilIdOtpModel;
+	}
+
+	@Override
+	public String toString() {
+		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+				+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
+				+ netPayableAmount + ", merchantTrackId=" + merchantTrackId+ ", pgCode=" + pgCode + ", civilIdOtpModel=" + civilIdOtpModel.toString()
+				+ "]";
 	}
 
 }
