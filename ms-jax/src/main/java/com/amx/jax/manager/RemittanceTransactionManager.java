@@ -59,6 +59,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -626,16 +627,6 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-
-        CivilIdOtpModel civilIdOtpModel = null;
-        if (model.getmOtp()==null) {
-            //this flow is for send OTP
-            civilIdOtpModel= addOtpOnRemittance(model);
-        }else {
-           //this flow is for validate OTP
-           userService.validateOtp(null, model.getmOtp(), null);
-        }
-        
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
@@ -658,7 +649,17 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		
+        CivilIdOtpModel civilIdOtpModel = null;
+        if (model.getmOtp()==null) {
+            //this flow is for send OTP
+            civilIdOtpModel= addOtpOnRemittance(model);
+        }else {
+           //this flow is for validate OTP
+           userService.validateOtp(null, model.getmOtp(), null);
+        }
+        remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+        
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
@@ -741,11 +742,26 @@ public class RemittanceTransactionManager {
 	}
 	
     private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    	
+    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
+
+    	BigDecimal onlineLimit = BigDecimal.ZERO;
+    	BigDecimal mobileLimit = BigDecimal.ZERO;
+    			
+    	for (TransactionLimitCheckView view:trnxLimitList) {
+    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+    			onlineLimit = view.getComplianceChkLimit();
+    		}
+    		if(JaxChannel.ANDROID.toString().equals(view.getChannel())) {
+    			mobileLimit = view.getComplianceChkLimit();
+    		}
+    	}
+    	
         CivilIdOtpModel otpMmodel = null;
         if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
-                    model.getLocalAmount().compareTo(new BigDecimal(5000))>0) || 
+                    model.getLocalAmount().compareTo(onlineLimit)>0) || 
               (meta.getChannel().equals(JaxChannel.MOBILE) && 
-                    model.getLocalAmount().compareTo(new BigDecimal(3000))>0) ){
+                    model.getLocalAmount().compareTo(mobileLimit)>0) ){
             otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null).getData().getValues().get(0);
         }
         return otpMmodel;
