@@ -17,9 +17,9 @@ public class CActivityEvent extends AuditEvent {
 		}
 	}
 
-	public enum Result {
+	/*public enum Result {
 		PASS, FAIL;
-	}
+	}*/
 
 	CActivityEvent(Type type, String fromValue, String toValue) {
 		super(type);
