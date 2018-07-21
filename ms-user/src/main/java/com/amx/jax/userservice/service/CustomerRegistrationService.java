@@ -17,7 +17,6 @@ import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;

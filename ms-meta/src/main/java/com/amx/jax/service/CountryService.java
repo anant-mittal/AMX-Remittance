@@ -36,7 +36,7 @@ public class CountryService extends AbstractService {
 	MetaData meta;
 	
 	
-	public ApiResponse getCountryListResponse(){
+	public ApiResponse<CountryMasterView> getCountryListResponse(){
 		List<CountryMasterView> countryList = countryRepository.findByLanguageId(meta.getLanguageId());
 		ApiResponse response = getBlackApiResponse();
 		if(countryList.isEmpty()) {
