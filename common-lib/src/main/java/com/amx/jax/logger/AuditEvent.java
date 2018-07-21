@@ -1,11 +1,14 @@
 package com.amx.jax.logger;
 
+import com.amx.jax.exception.IExceptionEnum;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
 public abstract class AuditEvent extends AbstractEvent {
 
 	private static final long serialVersionUID = -1539116953165424464L;
+	protected Result result;
+	protected IExceptionEnum errorCode;
 	protected long tranxTime;
 	protected long traceTime;
 	protected long eventTime;
@@ -16,23 +19,39 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String actorId;
 	protected Object data;
 
+	public enum Result {
+		DONE, FAIL, ERROR;
+	}
+
 	public AuditEvent() {
 		super();
+		this.result = Result.DONE;
 	}
 
 	public AuditEvent(EventType type) {
 		super(type);
+		this.result = Result.DONE;
 	}
 
 	public AuditEvent(EventType type, String description) {
 		this(type);
+		this.result = Result.DONE;
 		this.description = description;
 	}
 
 	public AuditEvent(EventType type, String description, String message) {
 		this(type);
+		this.result = Result.DONE;
 		this.description = description;
 		this.message = message;
+	}
+
+	public Result getResult() {
+		return result;
+	}
+
+	public void setResult(Result result) {
+		this.result = result;
 	}
 
 	public String getMessage() {
@@ -105,6 +124,14 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setData(Object data) {
 		this.data = data;
+	}
+
+	public IExceptionEnum getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(IExceptionEnum errorCode) {
+		this.errorCode = errorCode;
 	}
 
 }

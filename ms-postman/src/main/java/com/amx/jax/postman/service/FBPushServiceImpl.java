@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.FBPushService;
@@ -50,6 +51,9 @@ public class FBPushServiceImpl implements FBPushService {
 	/** The rest service. */
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	SlackService slackService;
 
 	/** The audit service client. */
 	@Autowired
@@ -131,7 +135,7 @@ public class FBPushServiceImpl implements FBPushService {
 	 */
 	@Async
 	private void send(PMGaugeEvent.Type type, String topic, PushMessage msg, String message) {
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(type);
 		try {
 			String response = null;
 			if (type == PMGaugeEvent.Type.NOTIFCATION_ANDROID) {
@@ -141,13 +145,13 @@ public class FBPushServiceImpl implements FBPushService {
 			} else if (type == PMGaugeEvent.Type.NOTIFCATION_WEB) {
 				response = this.sendWeb(topic, msg, message);
 			} else {
-				throw new PostManException("No Channel Specified");
+				throw new PostManException(PostManException.ErrorCode.NO_CHANNEL_DEFINED);
 			}
-			auditServiceClient.gauge(pMGaugeEvent.fillDetail(type, msg, message, response));
+			auditServiceClient.gauge(pMGaugeEvent.set(Result.DONE).set(msg, message, response));
 		} catch (PostManException e) {
-			auditServiceClient.gauge(pMGaugeEvent.fillDetail(type, msg, message, null));
+			auditServiceClient.gauge(pMGaugeEvent.set(Result.FAIL).set(msg, message, null));
 		} catch (Exception e) {
-			auditServiceClient.excep(pMGaugeEvent.fillDetail(type, msg, message, null));
+			auditServiceClient.excep(pMGaugeEvent.set(msg, message, null), LOGGER, e);
 		}
 
 	}
@@ -234,9 +238,18 @@ public class FBPushServiceImpl implements FBPushService {
 	 * java.lang.String)
 	 */
 	public void subscribe(String token, String topic) {
-		restService.ajax("https://iid.googleapis.com/iid/v1/" + token + "/rel/topics/" + topic)
-				.header("Authorization", "key=" + serverKey).header("Content-Type", "application/json").post()
-				.asString();
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
+		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
+		try {
+			String response = restService.ajax("https://iid.googleapis.com/iid/v1/" + token + "/rel/topics/" + topic)
+					.header("Authorization", "key=" + serverKey).header("Content-Type", "application/json").post()
+					.asString();
+			pMGaugeEvent.setResponseText(response);
+			auditServiceClient.gauge(pMGaugeEvent);
+		} catch (Exception e) {
+			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
+			slackService.sendException(topic, e);
+		}
 	}
 
 }
