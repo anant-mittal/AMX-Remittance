@@ -627,33 +627,29 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-		this.isSaveRemittanceFlow = true;
-		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
-		
-		//only for testing
-		if (meta.getCustomerId()!=new BigDecimal("184466")) {
-		    remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
-		}
-		
+//		this.isSaveRemittanceFlow = true;
+//		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+//		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+//	    remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
+
 		// validate routing bank requirements
-		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
-		BigDecimal netAmountPayable = breakup.getNetAmount();
+//		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+//		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-		deactivatePreviousApplications();
-		validateAdditionalCheck();
-		validateAdditionalBeneDetails();
-		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model, validatedObjects, validationResults,remitApplParametersMap);
-		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
-		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication, model);
-		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
-		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
-		remiteAppModel.setNetPayableAmount(netAmountPayable);
-		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
-		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
-		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
-		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-		
+//		deactivatePreviousApplications();
+//		validateAdditionalCheck();
+//		validateAdditionalBeneDetails();
+//		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model, validatedObjects, validationResults,remitApplParametersMap);
+//		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
+//		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication, model);
+//		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+//		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
+//		remiteAppModel.setNetPayableAmount(netAmountPayable);
+//		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
+//		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
+//		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
+//		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
+//		
         CivilIdOtpModel civilIdOtpModel = null;
         if (model.getmOtp()==null) {
             //this flow is for send OTP
@@ -755,20 +751,23 @@ public class RemittanceTransactionManager {
     	for (TransactionLimitCheckView view:trnxLimitList) {
     		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
     			onlineLimit = view.getComplianceChkLimit();
+    			logger.info("onlineLimit is -- "+onlineLimit);
     		}
     		if(JaxChannel.ANDROID.toString().equals(view.getChannel())) {
     			mobileLimit = view.getComplianceChkLimit();
+    			logger.info("mobileLimit is -- "+mobileLimit);
     		}
     	}
     	
-        CivilIdOtpModel otpMmodel = null;
+        CivilIdOtpModel otpModel = null;
         if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
                     model.getLocalAmount().compareTo(onlineLimit)>0) || 
               (meta.getChannel().equals(JaxChannel.MOBILE) && 
                     model.getLocalAmount().compareTo(mobileLimit)>0) ){
-            otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null).getData().getValues().get(0);
+            otpModel = (CivilIdOtpModel)userService.sendOtpForCivilId(null).getData().getValues().get(0);
         }
-        return otpMmodel;
+        logger.info("otp"+otpModel.toString());
+        return otpModel;
     }
 
 }
