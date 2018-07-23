@@ -627,6 +627,16 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
+        CivilIdOtpModel civilIdOtpModel = null;
+        if (model.getmOtp()==null) {
+            //this flow is for send OTP
+            civilIdOtpModel= addOtpOnRemittance(model);
+        }else {
+           //this flow is for validate OTP
+           userService.validateOtp(null, model.getmOtp(), null);
+        }
+        
+        
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
@@ -650,15 +660,7 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
 		
-        CivilIdOtpModel civilIdOtpModel = null;
-        if (model.getmOtp()==null) {
-            //this flow is for send OTP
-            civilIdOtpModel= addOtpOnRemittance(model);
-        }else {
-           //this flow is for validate OTP
-           userService.validateOtp(null, model.getmOtp(), null);
-        }
-        remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
         
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
