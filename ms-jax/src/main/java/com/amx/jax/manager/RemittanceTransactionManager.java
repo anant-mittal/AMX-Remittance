@@ -639,7 +639,7 @@ public class RemittanceTransactionManager {
         
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+		//remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 	    //remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
 
 		// validate routing bank requirements
