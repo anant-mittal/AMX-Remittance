@@ -7,66 +7,27 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.amx.utils.ArgUtil;
-import com.amx.utils.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AmxApiResponse<T, M> implements Serializable {
+public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	private static final long serialVersionUID = 2026047322050489651L;
 
-	protected Long timestamp;
-	protected String status = "200";
 	/** The status key. */
 	protected String statusKey = "SUCCESS";
-	protected String message = Constants.BLANK;
-	protected String path;
 
 	/** The data. */
-	protected T data;
+	protected T data = null;
 
 	/** The data. */
-	protected List<T> results;
-
-	/** The meta. */
-	protected M meta;
-
-	/** The errors. */
-	private List<AmxFieldError> errors = null;
+	protected List<T> results = null;
 
 	public AmxApiResponse() {
-		this.timestamp = System.currentTimeMillis();
+		super();
 		this.data = null;
 		this.results = new ArrayList<T>();
-		this.meta = null;
-	}
-
-	/**
-	 * Gets the timestamp.
-	 *
-	 * @return the timestamp
-	 */
-	public Long getTimestamp() {
-		return timestamp;
-	}
-
-	/**
-	 * Sets the timestamp.
-	 *
-	 * @param timestamp
-	 *            the new timestamp
-	 */
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
 	}
 
 	/**
@@ -101,41 +62,6 @@ public class AmxApiResponse<T, M> implements Serializable {
 		}
 		this.status = ArgUtil.parseAsString(status.value());
 		this.message = status.getReasonPhrase();
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	/**
-	 * Gets the meta.
-	 *
-	 * @return the meta
-	 */
-	public M getMeta() {
-		return meta;
-	}
-
-	/**
-	 * Sets the meta.
-	 *
-	 * @param meta
-	 *            the new meta
-	 */
-	public void setMeta(M meta) {
-		this.meta = meta;
 	}
 
 	/**
@@ -175,25 +101,6 @@ public class AmxApiResponse<T, M> implements Serializable {
 
 	public void addResult(T result) {
 		this.results.add(result);
-	}
-
-	/**
-	 * Gets the errors.
-	 *
-	 * @return the errors
-	 */
-	public List<AmxFieldError> getErrors() {
-		return errors;
-	}
-
-	/**
-	 * Sets the errors.
-	 *
-	 * @param errors
-	 *            the new errors
-	 */
-	public void setErrors(List<AmxFieldError> errors) {
-		this.errors = errors;
 	}
 
 	public static <TS> AmxApiResponse<TS, Object> build(TS result) {

@@ -1,40 +1,30 @@
 package com.amx.jax.exception;
 
+import com.amx.jax.api.AResponse;
+import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AmxApiError {
-
-	private String errorClass;
+public class AmxApiError extends AResponse<Object> {
 
 	private String errorId;
 
 	private String errorMessage;
 
-	private String errorType;
-	
-	private Object meta;
+	private String errorType; // IExceptionEnum
 
-	// Spring Norms
-
-	String status;
-	String error;
-	String exception;
-	String message;
-	String path;
-
-	public AmxApiError(String errorId, String errorMessage, String errorType) {
+	public AmxApiError(String errorId, String errorMessage, IExceptionEnum errorType) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
-		this.errorType = errorType;
+		this.errorType = ArgUtil.parseAsString(errorType);
 	}
 
 	public AmxApiError(String errorId, String errorMessage) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
-		this.errorType = "Error";
+		this.errorType = null;
 	}
 
 	public AmxApiError() {
@@ -66,58 +56,11 @@ public class AmxApiError {
 	}
 
 	public String getErrorClass() {
-		return errorClass;
+		return this.getException();
 	}
 
 	public void setErrorClass(String errorClass) {
-		this.errorClass = errorClass;
+		this.setException(errorClass);
 	}
 
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public String getError() {
-		return error;
-	}
-
-	public void setError(String error) {
-		this.error = error;
-	}
-
-	public String getException() {
-		return exception;
-	}
-
-	public void setException(String exception) {
-		this.exception = exception;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public String getPath() {
-		return path;
-	}
-
-	public void setPath(String path) {
-		this.path = path;
-	}
-
-	public Object getMeta() {
-		return meta;
-	}
-
-	public void setMeta(Object meta) {
-		this.meta = meta;
-	}
 }

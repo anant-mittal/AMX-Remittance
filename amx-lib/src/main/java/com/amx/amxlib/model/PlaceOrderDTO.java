@@ -2,6 +2,8 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import javax.validation.constraints.NotNull;
 import com.amx.jax.model.AbstractModel;
 import javax.validation.constraints.NotNull;
 
