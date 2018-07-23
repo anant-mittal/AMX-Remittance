@@ -383,7 +383,7 @@ public class RemittController {
 			wrapper.setData(respTxMdl);
 			if (respTxMdl.getCivilIdOtpModel() != null && respTxMdl.getCivilIdOtpModel().getmOtpPrefix() != null) {
 				wrapper.setMeta(new AuthData());
-				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtp());
+				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
 				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
 			} else {
 				wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
