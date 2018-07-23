@@ -627,29 +627,29 @@ public class RemittanceTransactionManager {
 	AuditService auditService;
 
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
-//		this.isSaveRemittanceFlow = true;
-//		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-//		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
-//	    remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
+		this.isSaveRemittanceFlow = true;
+		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+	    //remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
 
 		// validate routing bank requirements
-//		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
-//		BigDecimal netAmountPayable = breakup.getNetAmount();
+		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
+		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
-//		deactivatePreviousApplications();
-//		validateAdditionalCheck();
-//		validateAdditionalBeneDetails();
-//		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model, validatedObjects, validationResults,remitApplParametersMap);
-//		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
-//		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication, model);
-//		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
-//		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
-//		remiteAppModel.setNetPayableAmount(netAmountPayable);
-//		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
-//		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
-//		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
-//		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-//		
+		deactivatePreviousApplications();
+		validateAdditionalCheck();
+		validateAdditionalBeneDetails();
+		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model, validatedObjects, validationResults,remitApplParametersMap);
+		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager.createRemittanceAppBeneficiary(remittanceApplication);
+		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication, model);
+		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
+		remiteAppModel.setNetPayableAmount(netAmountPayable);
+		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
+		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
+		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
+		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
+		
         CivilIdOtpModel civilIdOtpModel = null;
         if (model.getmOtp()==null) {
             //this flow is for send OTP

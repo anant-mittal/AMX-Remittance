@@ -29,7 +29,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
-	@NotNull
+//	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
