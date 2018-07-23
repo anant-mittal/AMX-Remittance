@@ -48,6 +48,7 @@ public enum WebResponseStatus {
 	/** The dotp required. */
 	// Info Required
 	DOTP_REQUIRED("300"),
+	MOTP_REQUIRED("300"),
 
 	/** The unknown jax error. */
 	UNKNOWN_JAX_ERROR("500"),
