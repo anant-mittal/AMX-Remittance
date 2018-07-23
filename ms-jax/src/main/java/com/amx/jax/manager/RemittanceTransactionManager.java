@@ -631,7 +631,11 @@ public class RemittanceTransactionManager {
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 		
-		remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);
+		//only for testing
+		if (meta.getCustomerId()!=new BigDecimal("184466")) {
+		    remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);    
+		}
+		
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
