@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "V_EX_CHANNEL_TRNX_LIMIT")
+@Table(name = "VW_EX_CHANNEL_TRNX_LIMIT")
 public class TransactionLimitCheckView implements Serializable{
 
 	private static final long serialVersionUID = 1L;
@@ -17,6 +17,7 @@ public class TransactionLimitCheckView implements Serializable{
 	private BigDecimal complianceChkLimit;
 	private BigDecimal overallChkLimit;
 	
+	@Id
 	@Column(name = "CHANNEL")
 	public String getChannel() {
 		return channel;
