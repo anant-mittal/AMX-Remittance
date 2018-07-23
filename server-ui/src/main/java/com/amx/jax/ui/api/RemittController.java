@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,13 +43,17 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
+import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.ResponseWrapperM;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -362,18 +367,28 @@ public class RemittController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/tranx/pay", method = { RequestMethod.POST })
-	public ResponseWrapper<RemittanceApplicationResponseModel> createApplication(
+	public ResponseWrapperM<RemittanceApplicationResponseModel, AuthResponseOTPprefix> createApplication(
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestParam(required = false) String mOtp,
 			@RequestBody RemittanceTransactionRequestModel transactionRequestModel, HttpServletRequest request) {
-		ResponseWrapper<RemittanceApplicationResponseModel> wrapper = new ResponseWrapper<RemittanceApplicationResponseModel>();
+		ResponseWrapperM<RemittanceApplicationResponseModel, AuthResponseOTPprefix> wrapper = new ResponseWrapperM<RemittanceApplicationResponseModel, AuthResponseOTPprefix>();
 
 		// Noncompliant - exception is lost
 		try {
+			mOtp = ArgUtil.ifNotEmpty(mOtp, mOtpHeader);
+			transactionRequestModel.setmOtp(mOtp);
+
 			RemittanceApplicationResponseModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.saveTransaction(transactionRequestModel).getResult();
-
 			wrapper.setData(respTxMdl);
-			wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
-					"https://" + request.getServerName() + "/app/landing/remittance"));
+			if (respTxMdl.getCivilIdOtpModel() != null && respTxMdl.getCivilIdOtpModel().getmOtpPrefix() != null) {
+				wrapper.setMeta(new AuthData());
+				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtp());
+				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
+			} else {
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
+						"https://" + request.getServerName() + "/app/landing/remittance"));
+			}
 
 		} catch (RemittanceTransactionValidationException | LimitExeededException | MalformedURLException
 				| URISyntaxException e) {
