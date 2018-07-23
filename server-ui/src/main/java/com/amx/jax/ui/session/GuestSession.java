@@ -166,7 +166,7 @@ public class GuestSession implements Serializable {
 		state.cStep = step;
 		state.nStep = tenantContext.get().getNextAuthStep(state);
 		if (state.nStep == AuthStep.COMPLETED) {
-			auditService.log(new CAuthEvent(state, CAuthEvent.Result.PASS, TimeUtils.timeSince(state.timestamp)));
+			auditService.log(new CAuthEvent(state, CAuthEvent.Result.DONE, TimeUtils.timeSince(state.timestamp)));
 			state.flow = null;
 		}
 		return state;

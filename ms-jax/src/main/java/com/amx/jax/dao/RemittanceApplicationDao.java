@@ -14,6 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
+import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
@@ -23,6 +24,7 @@ import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.repository.IFlexFiledView;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -32,21 +34,18 @@ public class RemittanceApplicationDao {
 
 	@Autowired
 	RemittanceApplicationRepository appRepo;
-
 	@Autowired
 	RemittanceApplicationBeneRepository appBeneRepo;
-
 	@Autowired
 	AdditionalInstructionDataRepository addlInstDataRepo;
-
 	@Autowired
 	RemittanceApplicationManager remitApplManager;
-
 	@Autowired
 	FinancialService finanacialService;
-
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
+	@Autowired
+	IFlexFiledView IFlexFiledView;
 
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
@@ -75,5 +74,9 @@ public class RemittanceApplicationDao {
 				.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
 						applicationfinYear);
 		return remittanceTransactionView;
+	}
+	
+	public List<FlexFiledView> getFlexFields() {
+		return (List<FlexFiledView>) IFlexFiledView.findAll();
 	}
 }

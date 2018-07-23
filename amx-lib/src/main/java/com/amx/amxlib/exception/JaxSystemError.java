@@ -38,4 +38,12 @@ public class JaxSystemError extends AmxApiException {
 		return true;
 	}
 
+	public static <T> T evaluate(Exception e) {
+		if (e instanceof AbstractJaxException) {
+			throw (AbstractJaxException) e;
+		} else {
+			throw new JaxSystemError(e);
+		}
+	}
+
 }

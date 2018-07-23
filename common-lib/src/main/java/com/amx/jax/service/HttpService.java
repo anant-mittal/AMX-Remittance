@@ -72,13 +72,14 @@ public class HttpService {
 		}
 	}
 
-	public String getBrowserId(String browserIdNew) {
+	public String setBrowserId(String browserIdNew) {
 		String browserId = null;
 		if (request != null) {
-			Cookie cookie = WebUtils.getCookie(request, AppConstants.BROWSER_ID_KEY);
-			if (cookie != null) {
-				browserId = cookie.getValue();
-			} else if (response != null) {
+			// Cookie cookie = WebUtils.getCookie(request, AppConstants.BROWSER_ID_KEY);
+			// if (cookie != null) {
+			// browserId = cookie.getValue();
+			// } else
+			if (response != null && browserIdNew != null) {
 				browserId = browserIdNew;
 				Cookie kooky = new Cookie(AppConstants.BROWSER_ID_KEY, browserIdNew);
 				kooky.setMaxAge(31622400);

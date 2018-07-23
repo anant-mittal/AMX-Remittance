@@ -13,5 +13,8 @@ public interface IApplicationCountryRepository extends JpaRepository<Application
 	
 	@Query("Select a from ApplicationSetup a where  companyId=?1 or applicationCountryId=?2")
 	List<ApplicationSetup> findByCountryIdAndCompanyId(BigDecimal companyId,BigDecimal applicationCountryId);
+	
+	@Query("Select a from ApplicationSetup a")
+	ApplicationSetup getApplicationSetupDetails();
 
 }
