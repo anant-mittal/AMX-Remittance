@@ -38,6 +38,9 @@ public class PlaceOrder implements Serializable {
 	private String createdBy;
 	private Date updatedDate;
 	private String updatedBy;
+	private BigDecimal currencyId;
+	private BigDecimal bankId;
+	private BigDecimal countryId;
 
 	@Id
 	@GeneratedValue(generator = "jax_online_place_order_seq", strategy = GenerationType.SEQUENCE)
@@ -185,5 +188,34 @@ public class PlaceOrder implements Serializable {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
+    
+	@Column(name = "CURRENCY_ID")
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	@Column(name = "BANK_ID")
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+
+	@Column(name = "COUNTRY_ID")
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+	
+	
 
 }
