@@ -235,9 +235,7 @@ public class RemittanceTransactionManager {
         }
         routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
         breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
-        //for testring only
-        //validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
-        
+        validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
         
         // commission
         responseModel.setTxnFee(commission);
