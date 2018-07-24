@@ -11,8 +11,10 @@ import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
@@ -99,6 +101,7 @@ public class SMService {
 	 */
 	public SMS sendSMS(SMS sms) {
 		String to = null;
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_SMS);
 		try {
 			LOGGER.info("Sending {} SMS to {}", sms.getTemplate(), Utils.commaConcat(sms.getTo()));
 
@@ -110,14 +113,16 @@ public class SMService {
 				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
 			}
 
-			if (!ArgUtil.isEmpty(to)) {
-				this.doSendSMS(sms);
-			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
+			if (ArgUtil.isEmpty(to)) {
+				throw new PostManException(PostManException.ErrorCode.NO_RECIPIENT_DEFINED);
 			}
 
+			this.doSendSMS(sms);
+			auditService.gauge(pMGaugeEvent.set(sms));
+		} catch (PostManException e) {
+			auditService.gauge(pMGaugeEvent.set(sms).set(Result.FAIL));
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_ERROR, sms), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(sms), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return sms;
@@ -131,7 +136,7 @@ public class SMService {
 	 *            the sms
 	 * @return the sms
 	 */
-	public SMS doSendSMS(SMS sms) {
+	private SMS doSendSMS(SMS sms) {
 
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:START", "sendSMS");
@@ -147,8 +152,6 @@ public class SMService {
 			String response = restService.ajax(remoteUrl).header("authkey", authKey)
 					.header("content-type", "application/json").post(JsonUtil.toJson(map)).asString();
 
-			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
-
 		} else if (phone != null && phone.length() == 8) {
 			Tenant tnt = TenantContextHolder.currentSite();
 
@@ -159,21 +162,18 @@ public class SMService {
 						.queryParam("mobilenumber", "973" + phone).queryParam("message", sms.toText())
 						.queryParam("sid", secret).queryParam("mtype", "N").queryParam("DR", "Y").get().asString();
 
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
-
 			} else if (tnt == Tenant.KWT) {
 
 				String response = restService
 						.ajax("https://applications2.almullagroup.com/Login_Enhanced/LoginEnhancedServlet")
 						.field("destination_mobile", "965" + phone).field("message_to_send", sms.toText()).postForm()
 						.asString();
-
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_NOT, sms));
+				throw new PostManException(PostManException.ErrorCode.NO_TENANT_DEFINED);
 			}
+
 		} else {
-			auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.SMS_SENT_SUCCESS, sms));
+			throw new PostManException(PostManException.ErrorCode.NO_TENANT_DEFINED);
 		}
 
 		if (AppParam.DEBUG_INFO.isEnabled()) {
