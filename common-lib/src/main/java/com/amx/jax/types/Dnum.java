@@ -111,4 +111,10 @@ public class Dnum<E extends Dnum<E>> {
 
 		return typedValues;
 	}
+
+	@SuppressWarnings("unchecked")
+	public static <E> E fromString(Class<E> enumType, String name) {
+		return (E) elements.get(enumType).get(name);
+	}
+
 }

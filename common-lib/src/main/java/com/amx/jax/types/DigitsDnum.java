@@ -6,7 +6,7 @@ public class DigitsDnum extends Dnum<DigitsDnum> {
 	public final static DigitsDnum TWO = new DigitsDnum("TWO", 2);
 	public final static DigitsDnum THREE = new DigitsDnum("THREE", 3);
 
-	protected DigitsDnum(String name, int ordinal) {
+	public DigitsDnum(String name, int ordinal) {
 		super(name, ordinal);
 	}
 
