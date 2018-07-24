@@ -241,6 +241,7 @@ public class RemittanceTransactionManager {
         routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
         breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
         validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
+        
         // commission
         responseModel.setTxnFee(commission);
         // exrate
