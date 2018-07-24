@@ -144,16 +144,16 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 				sb.append("&").append("bankId=").append(bankId);
 			}
 			sb.append("&").append("derivedSellRate=").append(derivedSellRate);
-			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 			HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(getHeader());
-			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
-			return restService.ajax(getExchangeRateUrl).get(requestEntity)
+			log.info("calling getExchangeRate api: " + getPlaceOrderRateUrl);
+			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
-			log.error("exception in getExchangeRate : ", e);
+			log.error("exception in place Order details :", e);
 			throw new JaxSystemError();
 		} 
 	}

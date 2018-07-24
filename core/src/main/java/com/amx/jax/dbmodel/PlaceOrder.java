@@ -41,6 +41,7 @@ public class PlaceOrder implements Serializable {
 	private BigDecimal currencyId;
 	private BigDecimal bankId;
 	private BigDecimal countryId;
+	private Date notificationDate;
 
 	@Id
 	@GeneratedValue(generator = "jax_online_place_order_seq", strategy = GenerationType.SEQUENCE)
@@ -215,7 +216,14 @@ public class PlaceOrder implements Serializable {
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
-	
-	
+
+	@Column(name = "NOTIFICATION_DATE")
+	public Date  getNotificationDate() {
+		return notificationDate;
+	}
+
+	public void setNotificationDate(Date notificationDate) {
+		this.notificationDate = notificationDate;
+	}
 
 }

@@ -1,19 +1,21 @@
 package com.amx.jax.placeorder.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.placeorder.dao.PlaceOrderAlertDao;
 import com.amx.jax.placeorder.dao.PlaceOrderNotificationDTO;
 import com.amx.jax.placeorder.repository.IPlaceOrderCustomerDetails;
+import com.amx.jax.placeorder.repository.IPlaceoderAlertRate;
 import com.amx.jax.services.AbstractService;
 
 @Service
@@ -22,6 +24,9 @@ public class PlaceOrderRateAlertService extends AbstractService{
      
 	@Autowired
 	PlaceOrderAlertDao placeOrderAlertDao;
+	
+	@Autowired
+	IPlaceoderAlertRate iPlaceoderAlertRate;
 	
 	@Autowired
 	IPlaceOrderCustomerDetails placeOrderCustomerDetails;
@@ -36,12 +41,12 @@ public class PlaceOrderRateAlertService extends AbstractService{
 		List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
 				derivedSellRate);
 		if (placeOrderList != null && !placeOrderList.isEmpty()) {
-			  
 			  placeOrderDetailsAll(placeOrderList);
 			}
-		/*return placeOrderList;*/
-		
 		response.getData().getValues().addAll(placeOrderList);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType("place-order-dto");
+		
 		return response;
 		}
 
@@ -58,6 +63,8 @@ public class PlaceOrderRateAlertService extends AbstractService{
 	
 	private void placeOrderDetails(List<PlaceOrder> placeOrderList) {
 		for (PlaceOrder placeorder : placeOrderList) {
+			placeorder.setNotificationDate(new Date());
+			iPlaceoderAlertRate.save(placeorder);
 			Customer cusotmer= placeOrderCustomerDetails.getPlaceOrderCustomerDetails(placeorder.getCustomerId());
 		    LOGGER.info("customer ID:" + placeorder.getCustomerId());
 			PlaceOrderNotificationDTO placeorderDTO =new PlaceOrderNotificationDTO();

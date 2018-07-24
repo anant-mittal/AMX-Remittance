@@ -21,7 +21,6 @@ public class PlaceOrderAlertDao {
 	IPlaceoderAlertRate iPlaceoderAlertRate;
 
 	public List<PlaceOrder> getPlaceOrderAlertRate(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
-
 		return iPlaceoderAlertRate.getPlaceOrderAlertRate(countryId, currencyId, bankId ,derivedSellRate) ;
 
 	}
