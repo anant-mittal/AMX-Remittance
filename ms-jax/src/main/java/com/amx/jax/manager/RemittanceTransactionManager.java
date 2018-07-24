@@ -31,6 +31,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
+import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -329,6 +330,7 @@ public class RemittanceTransactionManager {
             if (loyalityPointsAvailable == null
                     || (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
                 responseModel.setCanRedeemLoyalityPoints(false);
+				responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
             } else {
                 responseModel.setCanRedeemLoyalityPoints(true);
             }
@@ -526,6 +528,7 @@ public class RemittanceTransactionManager {
 
         if (comission == null || comission.intValue() == 0) {
             responseModel.setCanRedeemLoyalityPoints(false);
+            responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
         }
         if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
             breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
