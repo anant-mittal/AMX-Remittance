@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
@@ -91,7 +92,7 @@ public class PlaceOrderClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	public void updatePlaceOrder() throws ParseException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -114,5 +115,21 @@ public class PlaceOrderClientTest {
 		
 		ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
 		assertNotNull("Response is null", response);
+	}
+	
+	@Test
+	public void rateAlertPlaceOrder() throws ParseException {
+	/*	ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
+		assertNotNull("Response is null", response);*/
+		
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<PlaceOrderDTO> response = null;
+		response = client.getPlaceOrderDetails(new BigDecimal(1), new BigDecimal(200), new BigDecimal(94), new BigDecimal(4), new BigDecimal(1256),new BigDecimal(300));
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
 	}
 }

@@ -88,7 +88,7 @@
 		<module>ms-scheduler</module>
 
 		<module>server-payg</module>
-
+	    <module>server-placeorder</module>
 		<module>server-ui</module>
 		<module>server-stomp</module>
 
