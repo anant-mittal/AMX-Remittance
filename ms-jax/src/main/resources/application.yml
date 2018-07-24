@@ -14,7 +14,7 @@ multitenancy:
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: KWT2
-        url: jdbc:oracle:thin:@192.170.161.98:1521:QEMOS
+        url: jdbc:oracle:thin:@192.170.161.99:1521:QEMOS
         username: QEMOS
         password: QEMOS
         driverClassName: oracle.jdbc.OracleDriver
