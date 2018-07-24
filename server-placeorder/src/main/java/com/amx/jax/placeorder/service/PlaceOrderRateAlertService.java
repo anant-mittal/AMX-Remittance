@@ -1,24 +1,24 @@
 package com.amx.jax.placeorder.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
-import com.amx.jax.placeorder.controller.PlaceOrderController;
 import com.amx.jax.placeorder.dao.PlaceOrderAlertDao;
-import com.amx.jax.placeorder.repository.IPlaceOrderBeneRelationDao;
+import com.amx.jax.placeorder.dao.PlaceOrderNotificationDTO;
 import com.amx.jax.placeorder.repository.IPlaceOrderCustomerDetails;
+import com.amx.jax.services.AbstractService;
 
 @Service
 @SuppressWarnings("rawtypes")
-public class PlaceOrderRateAlertService {
+public class PlaceOrderRateAlertService extends AbstractService{
      
 	@Autowired
 	PlaceOrderAlertDao placeOrderAlertDao;
@@ -29,45 +29,53 @@ public class PlaceOrderRateAlertService {
 	@Autowired
 	NotificationService notificationService;
 	
-/*	@Autowired
-	IPlaceOrderBeneRelationDao placeOrderBeneRelationDao;*/
-	
 	private static final Logger LOGGER = Logger.getLogger(PlaceOrderRateAlertService.class);
 	
-	public List<PlaceOrder> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
-  	
-		
-		/*List<BenificiaryListView> benificiaryList =placeOrderBeneRelationDao.getPlaceOrderBeneRelation(countryId, currencyId, bankId);
-		if(benificiaryList!=null && !benificiaryList.isEmpty()) {
-			for(BenificiaryListView view : benificiaryList) {
-				PlaceOrder placeOrder = new PlaceOrder();
-				
-			}
-		}*/
-		List customerIdList = new ArrayList();
+	public ApiResponse<PlaceOrder> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
+		ApiResponse<PlaceOrder> response = getBlackApiResponse();
 		List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
 				derivedSellRate);
 		if (placeOrderList != null && !placeOrderList.isEmpty()) {
-			for (PlaceOrder placeorder : placeOrderList) {
-				customerIdList.add(placeorder.getCustomerId());
-			    LOGGER.info("customer ID:" + placeorder.getCustomerId());
-				}
-			customerDetails(customerIdList);
+			  
+			  placeOrderDetailsAll(placeOrderList);
 			}
-		return placeOrderList;
+		/*return placeOrderList;*/
+		
+		response.getData().getValues().addAll(placeOrderList);
+		return response;
 		}
 
-	private void customerDetails(List customerIdList) {
+	private void placeOrderDetailsAll(List<PlaceOrder> placeOrderList) {
 		int batchSize = 100;
-		for (int i = 0; i < customerIdList.size(); i += batchSize) {
+		for (int i = 0; i < placeOrderList.size(); i += batchSize) {
 			int endIndex = (i + batchSize);
-			if (endIndex >= customerIdList.size()) {
-				endIndex = customerIdList.size() - 1;
+			if (endIndex >= placeOrderList.size()) {
+				endIndex = placeOrderList.size() - 1;
 			}
-			List<Customer> cu= placeOrderCustomerDetails.getPlaceOrderCustomerDetailsAll(customerIdList.subList(i, endIndex + 1));
-			notificationService.sendBatchNotification(cu);
-			LOGGER.info("customer det:" + cu.toString());
+			placeOrderDetails(placeOrderList.subList(i, endIndex + 1));
 		}
-    }
+	}
+	
+	private void placeOrderDetails(List<PlaceOrder> placeOrderList) {
+		for (PlaceOrder placeorder : placeOrderList) {
+			Customer cusotmer= placeOrderCustomerDetails.getPlaceOrderCustomerDetails(placeorder.getCustomerId());
+		    LOGGER.info("customer ID:" + placeorder.getCustomerId());
+			PlaceOrderNotificationDTO placeorderDTO =new PlaceOrderNotificationDTO();
+			placeorderDTO.setFirstName(cusotmer.getFirstName());
+			placeorderDTO.setMiddleName(cusotmer.getMiddleName());
+			placeorderDTO.setLastName(cusotmer.getLastName());
+			placeorderDTO.setEmail(cusotmer.getEmail());
+			placeorderDTO.setInputAmount(placeorder.getPayAmount());
+			placeorderDTO.setOutputAmount(placeorder.getReceiveAmount());
+			placeorderDTO.setRate(placeorder.getTargetExchangeRate());
+			notificationService.sendBatchNotification(placeorderDTO);
+			LOGGER.info("place Order:" + placeorderDTO.toString());
+		}
+	}
 
+	@Override
+	public String getModelType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

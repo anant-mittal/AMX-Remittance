@@ -12,5 +12,5 @@ import com.amx.jax.dbmodel.Customer;
 
 public interface IPlaceOrderCustomerDetails extends JpaRepository<Customer, Serializable> {
 	@Query("select c from  Customer c where c.customerId in (:customerId) ")
-	public List<Customer>  getPlaceOrderCustomerDetailsAll(@Param("customerId") List<BigDecimal> customerId);
+	public Customer getPlaceOrderCustomerDetails(@Param("customerId") BigDecimal customerId);
 }

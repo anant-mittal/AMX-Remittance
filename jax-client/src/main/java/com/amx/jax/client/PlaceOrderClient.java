@@ -2,8 +2,10 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.EXCHANGE_RATE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
+import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_RATEALERT;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import javax.validation.ValidationException;
 
@@ -21,6 +23,7 @@ import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.rest.RestService;
 
@@ -131,26 +134,26 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 	public ApiResponse<PlaceOrderDTO> getPlaceOrderDetails(BigDecimal fromAmount, BigDecimal toAmount,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal derivedSellRate) throws ResourceNotFoundException, InvalidInputException {
 		try {
-			String endpoint = "/rate-alert/placeorder";
+			String endpoint = PLACE_ORDER_RATEALERT+"/placeorder";
 			StringBuilder sb = new StringBuilder();
 			sb.append("?").append("fromAmount=").append(fromAmount);
 			sb.append("&").append("toAmount=").append(toAmount);
 			sb.append("&").append("countryId=").append(countryId);
 			sb.append("&").append("currencyId=").append(currencyId);
-			if (bankId != null) {
+			if(bankId != null) {
 				sb.append("&").append("bankId=").append(bankId);
 			}
 			sb.append("&").append("derivedSellRate=").append(derivedSellRate);
 			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
-			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
-			/*LOGGER.info("calling getExchangeRate api: " + getExchangeRateUrl)*/;
+			HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(getHeader());
+			log.info("calling getExchangeRate api: " + getExchangeRateUrl);
 			return restService.ajax(getExchangeRateUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
-			/*LOGGER.error("exception in getExchangeRate : ", e);*/
+			log.error("exception in getExchangeRate : ", e);
 			throw new JaxSystemError();
 		} 
 	}
