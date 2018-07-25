@@ -189,7 +189,7 @@ public class RemittanceTransactionRequestValidator {
 			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
 				String format = "MM/DD/YYYY";
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
-				additionalValidations.put("lteq", dateUtil.format(LocalDate.now(), format));
+				additionalValidations.put("lteq", dateUtil.format(LocalDate.now(), "MM/d/YYYY"));
 				additionalValidations.put("format", format);
 				i.setAdditionalValidations(additionalValidations);
 			}
