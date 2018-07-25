@@ -29,10 +29,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
+import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -56,6 +58,7 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
@@ -76,6 +79,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
@@ -149,6 +153,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private BeneficiaryCheckService beneCheckService;
+	
+    @Autowired
+    private UserService userService;
 	
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 	
@@ -631,6 +638,17 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
+		
+        CivilIdOtpModel civilIdOtpModel = null;
+        if (model.getmOtp()==null) {
+            //this flow is for send OTP
+            civilIdOtpModel= addOtpOnRemittance(model);
+        }else {
+           //this flow is for validate OTP
+           userService.validateOtp(null, model.getmOtp(), null);
+        }
+        remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
@@ -712,4 +730,30 @@ public class RemittanceTransactionManager {
 		return status;
 	}
 
+    private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    	
+    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
+
+    	BigDecimal onlineLimit = BigDecimal.ZERO;
+    	BigDecimal mobileLimit = BigDecimal.ZERO;
+    			
+    	for (TransactionLimitCheckView view:trnxLimitList) {
+    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+    			onlineLimit = view.getComplianceChkLimit();
+    		}
+    		if(JaxChannel.ANDROID.toString().equals(view.getChannel())) {
+    			mobileLimit = view.getComplianceChkLimit();
+    		}
+    	}
+    	
+        CivilIdOtpModel otpMmodel = null;
+        if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
+                    model.getLocalAmount().compareTo(onlineLimit)>0) || 
+              (meta.getChannel().equals(JaxChannel.MOBILE) && 
+                    model.getLocalAmount().compareTo(mobileLimit)>0) ){
+            otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null).getData().getValues().get(0);
+        }
+        return otpMmodel;
+    }
+	
 }

@@ -18,10 +18,12 @@ import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
+import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.AuthenticationLimitCheckDAO;
 import com.amx.jax.repository.AuthenticationViewRepository;
+import com.amx.jax.repository.TransactionLimitCheckDAO;
 import com.amx.jax.services.AbstractService;
 
 @Service
@@ -30,6 +32,9 @@ public class ParameterService extends AbstractService {
 	
 	@Autowired
 	AuthenticationLimitCheckDAO authentication;
+	
+	@Autowired
+	TransactionLimitCheckDAO transactionLimit;
 	
 	@Autowired
 	AuthenticationViewRepository authenticationViewRepository;
@@ -134,6 +139,11 @@ public class ParameterService extends AbstractService {
 		response.getData().setType("jaxmetaparameter");
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+	
+	public List<TransactionLimitCheckView>  getAllTxnLimits(){
+		List<TransactionLimitCheckView> trnxLimits =transactionLimit.findAll();
+		return trnxLimits;
 	}
 
 }

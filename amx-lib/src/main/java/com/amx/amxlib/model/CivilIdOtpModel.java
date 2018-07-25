@@ -35,6 +35,8 @@ public class CivilIdOtpModel extends AbstractModel {
 	
 	private String middleName;
 	
+	private String lastName;
+	
 	private BigDecimal customerId;
 
 	public String getFirstName() {
@@ -52,8 +54,6 @@ public class CivilIdOtpModel extends AbstractModel {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
-	private String lastName;
 
 	public String getmOtp() {
 		return mOtp;
@@ -153,5 +153,13 @@ public class CivilIdOtpModel extends AbstractModel {
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
+	
+    @Override
+    public String toString() {
+        return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="
+                + eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
+                + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
+                + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
+    }
 
 }
