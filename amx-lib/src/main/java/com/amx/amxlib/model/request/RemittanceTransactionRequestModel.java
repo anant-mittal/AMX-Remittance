@@ -92,22 +92,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
-	
-   public String getmOtp() {
-        return mOtp;
-    }
-
-    public void setmOtp(String mOtp) {
-        this.mOtp = mOtp;
-    }
-
-    public String geteOtp() {
-        return eOtp;
-    }
-
-    public void seteOtp(String eOtp) {
-        this.eOtp = eOtp;
-    }
 
 	public String getmOtp() {
 		return mOtp;
