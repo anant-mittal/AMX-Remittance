@@ -14,6 +14,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
+import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
@@ -38,12 +39,33 @@ public class CheckListManager {
 		checkListrepo.save(model);
 
 	}
+	
+	public void updateMobileAndEmailCheck(Employee employee, UserVerificationCheckListModel model) {
+
+		if (model == null) {
+			model = createNewCheckList(employee);
+		}
+		model.setEmailVerified("Y");
+		model.setMobileVerified("Y");
+		checkListrepo.save(model);
+
+	}
 
 	private UserVerificationCheckListModel createNewCheckList(CustomerOnlineRegistration onlineCust) {
 		UserVerificationCheckListModel model = new UserVerificationCheckListModel();
 		model.setCreatedBy(onlineCust.getUserName());
 		model.setUpdatedBy(onlineCust.getUserName());
 		model.setLoginId(onlineCust.getUserName());
+		model.setIsActive("N");
+		model.setCreatedDate(new Date());
+		return model;
+	}
+	
+	private UserVerificationCheckListModel createNewCheckList(Employee employee) {
+		UserVerificationCheckListModel model = new UserVerificationCheckListModel();
+		model.setCreatedBy(employee.getUserName());
+		model.setUpdatedBy(employee.getUserName());
+		model.setLoginId(employee.getUserName());
 		model.setIsActive("N");
 		model.setCreatedDate(new Date());
 		return model;

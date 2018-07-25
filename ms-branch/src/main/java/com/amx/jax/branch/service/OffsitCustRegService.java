@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -14,26 +15,36 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.exception.jax.InvalidCivilIdException;
+import com.amx.amxlib.exception.jax.InvalidJsonInputException;
+import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.ICustRegService;
+import com.amx.jax.api.ARespModel;
+import com.amx.jax.api.AResponse;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.service.AbstractUserService;
+import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class OffsitCustRegService extends AbstractUserService {
+public class OffsitCustRegService implements ICustRegService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 	
@@ -52,6 +63,9 @@ public class OffsitCustRegService extends AbstractUserService {
 	@Autowired
 	private EmployeeRepository repo;
 	
+	@Autowired
+	private CheckListManager checkListManager;
+	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
 		return null;
@@ -62,7 +76,7 @@ public class OffsitCustRegService extends AbstractUserService {
 		return null;
 	}*/
 
-	public ApiResponse validateEmployeeDetails(
+	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		if(offsiteCustRegModel.getCivilId() == null)
 			throw new GlobalException("Null civil id passed ", JaxError.BLANK_CIVIL_ID);
@@ -99,11 +113,7 @@ public class OffsitCustRegService extends AbstractUserService {
 		employeeDetails.setTokenSentCount(tokenSentCount);
 		repo.save(employeeDetails);		
 		
-		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().add(model);
-		response.getData().setType("otp");
-		response.setResponseStatus(ResponseStatus.OK);
-		return response;
+		return AmxApiResponse.build(model);		
 	}
 
 	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
@@ -124,21 +134,68 @@ public class OffsitCustRegService extends AbstractUserService {
 	}
 
 	@Override
-	public ApiResponse registerUser(AbstractUserModel userModel) {
+	public AmxApiResponse<BigDecimal, Object> getModes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AbstractUserDao getDao() {
+	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel modeId) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
-	public AbstractModel convert(Customer cust) {
-		// TODO Auto-generated method stub
-		return null;
-	}	
-
+	@SuppressWarnings("null")
+	public AmxApiResponse<String, Object> validateOTP(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		LOGGER.info("In validateopt of civilid: " + offsiteCustRegModel.getCivilId());
+		String civilId = offsiteCustRegModel.getCivilId();
+		String mOtp = offsiteCustRegModel.getmOtp();
+		String eOtp = offsiteCustRegModel.geteOtp();
+		Employee employee = null;
+		if (civilId != null) {
+			employee = employeeDao.getEmployeeByCivilId(civilId);
+		}
+		if (employee == null) {
+			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
+		}
+		if (offsiteCustRegModel.getmOtp() == null) {
+			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
+		}		 
+		employeeValidationService.validateEmployeeLockCount(employee);
+		employeeValidationService.validateTokenDate(employee);
+		String etokenHash = employee.getEmailToken();
+		String mtokenHash = employee.getSmsToken();
+		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
+		String eOtpHash = null;
+		if (StringUtils.isNotBlank(eOtp)) {
+			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
+		}
+		if (!mOtpHash.equals(mtokenHash)) {
+			employeeValidationService.incrementLockCount(employee);
+			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
+		}
+		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
+			employeeValidationService.incrementLockCount(employee);
+			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
+		}
+		checkListManager.updateMobileAndEmailCheck(employee, employeeDao.getCheckListForUserId(civilId));
+		this.unlockCustomer(employee);				
+		LOGGER.info("end of validateopt for civilid: " + civilId);
+		//repo.save(employee);			
+		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Employee Authentication Successfull");		
+		obj.setMessageKey("AUTH_SUCCESS");
+		return obj;
+	}
+	
+	/**
+	 * reset lock
+	 */
+	protected void unlockCustomer(Employee employee) {
+		if (employee.getLockCnt() != null || employee.getLockDt() != null) {
+			employee.setLockCnt(null);
+			employee.setLockDt(null);
+			repo.save(employee);
+		}
+		employee.setTokenSentCount(BigDecimal.ZERO);
+	}
 }
