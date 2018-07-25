@@ -6,8 +6,8 @@ public class OffsiteCustomerRegistrationRequest {
 	
 	BigDecimal ecNumber;
 	String civilId;
-	BigDecimal mOtp;
-	BigDecimal eOtp;
+	String mOtp;
+	String eOtp;
 	
 	public BigDecimal getEcNumber() {
 		return ecNumber;
@@ -21,16 +21,16 @@ public class OffsiteCustomerRegistrationRequest {
 	public void setCivilId(String civilId) {
 		this.civilId = civilId;
 	}
-	public BigDecimal getmOtp() {
+	public String getmOtp() {
 		return mOtp;
 	}
-	public void setmOtp(BigDecimal mOtp) {
+	public void setmOtp(String mOtp) {
 		this.mOtp = mOtp;
 	}
-	public BigDecimal geteOtp() {
+	public String geteOtp() {
 		return eOtp;
 	}
-	public void seteOtp(BigDecimal eOtp) {
+	public void seteOtp(String eOtp) {
 		this.eOtp = eOtp;
 	}
 	@Override
