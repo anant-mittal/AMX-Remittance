@@ -129,6 +129,7 @@ public class BeneController {
 		} else {
 			wrapper.setData(jaxService.setDefaults().getBeneClient()
 					.updateStatus(beneficaryMasterSeqId, remarks, status, mOtp, eOtp).getResult());
+			wrapper.setStatus(WebResponseStatus.VERIFY_SUCCESS);
 		}
 
 		return wrapper;
