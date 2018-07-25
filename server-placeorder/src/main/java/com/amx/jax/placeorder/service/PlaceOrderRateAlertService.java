@@ -1,6 +1,7 @@
 package com.amx.jax.placeorder.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -8,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
@@ -36,14 +38,35 @@ public class PlaceOrderRateAlertService extends AbstractService{
 	
 	private static final Logger LOGGER = Logger.getLogger(PlaceOrderRateAlertService.class);
 	
-	public ApiResponse<PlaceOrder> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
-		ApiResponse<PlaceOrder> response = getBlackApiResponse();
+	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
+		
+		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
 				derivedSellRate);
+		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
 		if (placeOrderList != null && !placeOrderList.isEmpty()) {
-			  placeOrderDetailsAll(placeOrderList);
-			}
-		response.getData().getValues().addAll(placeOrderList);
+			for(PlaceOrder rec : placeOrderList) {
+				PlaceOrderDTO placeDTO = new PlaceOrderDTO();
+				
+				placeDTO.setCustomerId(rec.getCustomerId());
+				placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
+				placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
+				placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
+				placeDTO.setSrlId(rec.getSrlId());
+				placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
+				placeDTO.setIsActive(rec.getIsActive());
+				placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
+				placeDTO.setCreatedDate(rec.getCreatedDate());
+				placeDTO.setValidFromDate(rec.getValidFromDate());
+				placeDTO.setValidToDate(rec.getValidToDate());
+				placeDTO.setPayAmount(rec.getPayAmount());
+				placeDTO.setReceiveAmount(rec.getReceiveAmount());
+				
+				dtoList.add(placeDTO);
+			} 
+			placeOrderDetailsAll(placeOrderList);
+		 }
+		response.getData().getValues().addAll(dtoList);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType("place-order-dto");
 		

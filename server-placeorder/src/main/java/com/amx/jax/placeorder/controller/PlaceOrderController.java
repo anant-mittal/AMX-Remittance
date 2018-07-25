@@ -28,9 +28,14 @@ private static final Logger LOGGER = Logger.getLogger(PlaceOrderController.class
 	@RequestMapping(value= "/rate-alert/placeorder",  method = RequestMethod.GET)
 	public ApiResponse rateAlertPlaceOrder(@RequestParam BigDecimal fromAmount,@RequestParam BigDecimal toAmount, @RequestParam BigDecimal countryId, @RequestParam BigDecimal currencyId,@RequestParam BigDecimal bankId,@RequestParam BigDecimal derivedSellRate) {
 		LOGGER.info(String.format(
-				"Inside rateAlertPlaceOrder Request with parameters --> Country: %s,Currency: %s, BankName: %s, ExchangeRate: %s",
-				fromAmount, toAmount, countryId, currencyId));
-				return (ApiResponse) rateAlertService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
+				"Inside rateAlertPlaceOrder Request with parameters --> CountryId: %s,CurrencyId: %s, BankId: %s, ExchangeRate: %s",
+				countryId, currencyId, bankId, derivedSellRate));
+				return  rateAlertService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
 	}
 	
+	@RequestMapping(value= "/exrate-placeorder" , method =RequestMethod.GET)
+    public ApiResponse setExchangeRate(@RequestParam BigDecimal currencyId)
+    {
+		return null;
+    }
 }

@@ -121,9 +121,6 @@ public class PlaceOrderClientTest {
 	
 	@Test
 	public void rateAlertPlaceOrder() throws ParseException {
-	/*	ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
-		assertNotNull("Response is null", response);*/
-		
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
@@ -132,6 +129,6 @@ public class PlaceOrderClientTest {
 		response = client.getPlaceOrderDetails(new BigDecimal(1), new BigDecimal(200), new BigDecimal(94), new BigDecimal(4), new BigDecimal(1256),new BigDecimal(300));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
-		/*assertNotNull(response.getResult().getModelType());*/
+		assertNotNull(response.getResult().getModelType());
 	}
 }
