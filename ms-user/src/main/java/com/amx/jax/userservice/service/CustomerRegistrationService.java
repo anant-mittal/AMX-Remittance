@@ -74,8 +74,7 @@ public class CustomerRegistrationService extends AbstractService {
 	 * Sends otp initiating trnx
 	 */
 	public ApiResponse sendOtp(CustomerPersonalDetail customerPersonalDetail) {
-		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
-				"customerPersonalDetail");
+		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
 		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager.init(customerPersonalDetail);
