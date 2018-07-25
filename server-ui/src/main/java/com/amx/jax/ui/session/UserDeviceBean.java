@@ -19,6 +19,7 @@ import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -59,13 +60,13 @@ public class UserDeviceBean extends UserDevice {
 		UserAgent userAgent = httpService.getUserAgent();
 
 		if (this.id == null) {
-			String idn = null;
-			if (this.fingerprint != null) {
-				idn = UUID.nameUUIDFromBytes(this.fingerprint.getBytes()).toString();
-			} else {
-				idn = UUID.randomUUID().toString();
-			}
-			this.id = httpService.getBrowserId(ArgUtil.parseAsString(idn));
+			String idn = ArgUtil.parseAsString(userAgent.getId());
+			// if (this.fingerprint != null) {
+			// idn = UUID.nameUUIDFromBytes(this.fingerprint.getBytes()).toString();
+			// } else {
+			// idn = UUID.randomUUID().toString();
+			// }
+			this.id = httpService.setBrowserId(ArgUtil.parseAsString(idn));
 		}
 		this.browser = userAgent.getBrowser();
 		this.browserVersion = userAgent.getBrowserVersion();
@@ -109,6 +110,22 @@ public class UserDeviceBean extends UserDevice {
 		}
 
 		return this;
+	}
+
+	public boolean validate() {
+		if (this.id == null || this.fingerprint == null) {
+			return true;
+		}
+		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);
+		String fingerprint = ArgUtil.parseAsString(httpService.getDeviceId(), Constants.BLANK);
+		UserAgent userAgent = httpService.getUserAgent();
+		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
+		if (!id.equals(this.id)
+				// || !fingerprint.equals(this.fingerprint)
+				|| !ip.equals(this.ip)) {
+			return false;
+		}
+		return true;
 	}
 
 	/*

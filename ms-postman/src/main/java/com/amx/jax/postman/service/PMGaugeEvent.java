@@ -73,8 +73,8 @@ public class PMGaugeEvent extends AuditEvent {
 	/** The to. */
 	private List<String> to = null;
 
-	/** The response. */
-	private Object response;
+	/** The responseText. */
+	private String responseText;
 
 	/**
 	 * Instantiates a new PM gauge event.
@@ -256,31 +256,20 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the response
 	 * @return the audit event
 	 */
-	public AuditEvent fillDetail(Type type, PushMessage msg, String message, Object response) {
+	public AuditEvent fillDetail(Type type, PushMessage msg, String message, String responseText) {
 		this.type = type;
 		this.to = msg.getTo();
 		this.message = message;
-		this.response = response;
+		this.responseText = responseText;
 		return this;
 	}
 
-	/**
-	 * Gets the response.
-	 *
-	 * @return the response
-	 */
-	public Object getResponse() {
-		return response;
+	public String getResponseText() {
+		return responseText;
 	}
 
-	/**
-	 * Sets the response.
-	 *
-	 * @param response
-	 *            the new response
-	 */
-	public void setResponse(Object response) {
-		this.response = response;
+	public void setResponseText(String responseText) {
+		this.responseText = responseText;
 	}
 
 }

@@ -76,14 +76,16 @@ public class PayGController {
 		TenantContextHolder.setCurrent(tnt);
         String appRedirectUrl=null;
         
-		if (tnt.equals(Tenant.BHR)) {
-			pg = "BENEFIT";
+		if (tnt.equals(Tenant.BRN)) {
+			pg = "BENEFIT_UPGRADE";
 			appRedirectUrl = bhrRedirectURL;
 		}else if (tnt.equals(Tenant.KWT)) {
 			appRedirectUrl = kwtRedirectURL;
-		}else if (tnt.equals(Tenant.OMN)) {
+		}else if (tnt.equals(Tenant.OMN)&& pg.equals("KOMANNET")) {
 			appRedirectUrl = omnRedirectURL;
-			pg = "OMANNET";
+		}else if(tnt.equals(Tenant.OMN)) {
+		    appRedirectUrl = omnRedirectURL;
+		    pg = "OMANNET";
 		}
 
 		if (callbackd != null) {
@@ -153,12 +155,25 @@ public class PayGController {
 
 		model.addAttribute("REDIRECT", redirectUrl);
 
-
 		//return "thymeleaf/repback";
 		if (paygCode.toString().equals("OMANNET")) {
-			LOGGER.info("REDIRECT --->"+ redirectUrl);
 			return "redirect:" + redirectUrl;
-		}else {
+		}else if (paygCode.toString().equals("KOMANNET")) {
+		    ra.addAttribute("paymentId",payGResponse.getPaymentId() );
+            ra.addAttribute("result", payGResponse.getResult());
+            ra.addAttribute("auth",payGResponse.getAuth() );
+            ra.addAttribute("referenceId",payGResponse.getRef() );
+            ra.addAttribute("postDate",payGResponse.getPostDate() );
+            ra.addAttribute("trackId", payGResponse.getTrackId());
+            ra.addAttribute("tranId", payGResponse.getTranxId());
+            ra.addAttribute("udf1", payGResponse.getUdf1());
+            ra.addAttribute("udf2", payGResponse.getUdf2());
+            ra.addAttribute("udf3", payGResponse.getUdf3());
+            ra.addAttribute("udf4", payGResponse.getUdf4());
+            ra.addAttribute("udf5", payGResponse.getUdf5());
+            LOGGER.info("PAYG Response is ----> "+payGResponse.toString());
+            return "redirect:" + kioskOmnRedirectURL;
+        }else {
 		    return "thymeleaf/repback";  
 		}
 	}

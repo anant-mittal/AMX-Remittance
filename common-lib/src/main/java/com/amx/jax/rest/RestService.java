@@ -29,6 +29,9 @@ public class RestService {
 	@Autowired(required = false)
 	RestTemplate restTemplate;
 
+	@Autowired
+	AppClientInterceptor appClientInterceptor;
+
 	public void setErrorHandler(ResponseErrorHandler errorHandler) {
 		Assert.notNull(errorHandler, "ResponseErrorHandler must not be null");
 		this.restTemplate.setErrorHandler(errorHandler);
@@ -37,7 +40,7 @@ public class RestService {
 	public RestTemplate getRestTemplate() {
 		if (staticRestTemplate == null) {
 			if (restTemplate != null) {
-				restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+				restTemplate.setInterceptors(Collections.singletonList(appClientInterceptor));
 				RestService.staticRestTemplate = restTemplate;
 			} else {
 				throw new RuntimeException("No RestTemplate bean found");
@@ -104,6 +107,7 @@ public class RestService {
 			headers.add("content-type", "application/json");
 			return this;
 		}
+
 		public Ajax acceptJson() {
 			headers.add("accept", "application/json");
 			return this;
