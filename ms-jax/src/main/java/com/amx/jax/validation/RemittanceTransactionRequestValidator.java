@@ -187,13 +187,14 @@ public class RemittanceTransactionRequestValidator {
 	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
 		jaxFieldDtos.forEach(i -> {
 			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
+				String format = "MM/DD/YYYY";
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
-				additionalValidations.put("lteq", "${today}");
-				additionalValidations.put("format", "MM/DD/YYYY");
+				additionalValidations.put("lteq", dateUtil.format(LocalDate.now(), format));
+				additionalValidations.put("format", format);
 				i.setAdditionalValidations(additionalValidations);
 			}
 
-			if ("PAYMENT PERIOD EXPIRY DATE".equals(i.getName())) {
+			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
 				additionalValidations.put("format", "MM/DD/YYYY");
