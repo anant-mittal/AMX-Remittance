@@ -1,6 +1,7 @@
 package com.amx.jax.branch.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,10 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.ValidationRegexDto;
+import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
@@ -30,11 +35,15 @@ import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.dbmodel.JaxConditionalFieldRule;
+import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
@@ -44,7 +53,7 @@ import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class OffsitCustRegService implements ICustRegService {
+public class OffsitCustRegService /*implements ICustRegService*/ {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 	
@@ -65,6 +74,12 @@ public class OffsitCustRegService implements ICustRegService {
 	
 	@Autowired
 	private CheckListManager checkListManager;
+
+	@Autowired
+	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
+	
+	@Autowired
+	JaxUtil jaxUtil;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -133,16 +148,22 @@ public class OffsitCustRegService implements ICustRegService {
 		LOGGER.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 
-	@Override
+	/*@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel modeId) {
-		// TODO Auto-generated method stub
-		return null;
+*/
+	
+	public AmxApiResponse<List<JaxConditionalFieldRule>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
+		List<JaxConditionalFieldRule> fieldList = null;
+		if (request.getEntity() == null)
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+			
+		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
+		if(fieldList.isEmpty())
+			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
+		return AmxApiResponse.build(fieldList);
 	}
 
 	@SuppressWarnings("null")
@@ -198,4 +219,37 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 		employee.setTokenSentCount(BigDecimal.ZERO);
 	}
+	
+	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
+		List<JaxConditionalFieldDto> list = new ArrayList<>();
+		fieldList.forEach(i -> {
+			list.add(convert(i));
+		});
+		return list;
+	}
+	
+	private JaxConditionalFieldDto convert(JaxConditionalFieldRule i) {
+		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
+		dto.setEntityName(i.getEntityName());
+		JaxFieldDto fieldDto = convert(i.getField());
+		dto.setField(fieldDto);
+		dto.setId(i.getId());
+		return dto;
+	}
+	
+	private JaxFieldDto convert(JaxField field) {
+		JaxFieldDto dto = new JaxFieldDto();
+		jaxUtil.convert(field, dto);
+		dto.setRequired(ConstantDocument.Yes.equals(field.getRequired()) ? true : false);
+		List<ValidationRegexDto> validationdtos = new ArrayList<>();
+		if (field.getValidationRegex() != null) {
+			field.getValidationRegex().forEach(validation -> {
+				ValidationRegexDto regexdto = new ValidationRegexDto();
+				jaxUtil.convert(validation, regexdto);
+				validationdtos.add(regexdto);
+			});
+		}
+		dto.setValidationRegex(validationdtos);
+		return dto;
+	}*/
 }
