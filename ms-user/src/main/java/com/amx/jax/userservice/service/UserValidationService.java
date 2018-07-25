@@ -573,7 +573,13 @@ public class UserValidationService {
 	 */
 	@SuppressWarnings("unused")
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+<<<<<<< HEAD
 		Customer customer = custDao.getCustomerByIdentityInt(identityInt);		
+=======
+		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
+		logger.info("MRU ----identityInt --->"+identityInt +"\t Customer status :" + customer==null ? "":customer.getIsActive());
+		
+>>>>>>> 65ecb90ff... partial registration duplicate customer check
 		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
 		}
