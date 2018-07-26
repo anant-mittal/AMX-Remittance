@@ -7,7 +7,7 @@
 	<url>http://maven.apache.org</url>
 	<groupId>com.amx.jax</groupId>
 	<artifactId>amxeco</artifactId>
-	<version>${jax.version}</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<parent>
@@ -45,6 +45,16 @@
 				<groupId>com.amx.jax</groupId>
 				<artifactId>common-utils</artifactId>
 				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-lib</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-amx</artifactId>
+				<version>${jax.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -123,7 +133,7 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-branch</module>
+		<!-- <module>ms-branch</module> -->
 		<module>ms-jax</module>
 		<module>jax-client</module>
 		<module>ms-auth</module>
@@ -135,7 +145,7 @@
 		<module>server-ui</module>
 		<module>server-stomp</module>
 
-		<module>server-offsite</module>
+		<!-- <module>server-offsite</module> -->
 		<module>server-admin</module>
 		<module>server-sso</module>
 		<module>server-kiosk</module>

@@ -6,13 +6,14 @@
 	<packaging>jar</packaging>
 	<name>common-utils</name>
 	<url>http://maven.apache.org</url>
-	<version>${amx.version}</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<description>Common utils library for boot projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
-		<version>${jax.version}</version>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
