@@ -17,8 +17,8 @@ public class TransactionLimitCheckView implements Serializable{
 	private BigDecimal complianceChkLimit;
 	private BigDecimal overallChkLimit;
 	
-	@Column(name = "CHANNEL")
 	@Id
+	@Column(name = "CHANNEL")
 	public String getChannel() {
 		return channel;
 	}
