@@ -19,10 +19,12 @@ import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
+import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.service.CountryService;
+import com.amx.jax.utils.JaxContextUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -55,11 +57,15 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	
 	@RequestMapping(value = "/send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		JaxContextUtil.setJaxEvent(JaxEvent.SEND_OTP);
+		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateEmployeeDetails(offsiteCustRegModel);
 	}	
 	
 	@RequestMapping(value = "/validate-otp", method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOTP(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
+		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateOTP(offsiteCustRegModel);
 	}	
 
