@@ -193,7 +193,7 @@ public class RemittanceTransactionRequestValidator {
 				additionalValidations.put("format", format);
 				i.setAdditionalValidations(additionalValidations);
 			}
-			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
+			if ("PAYMENT PERIOD EXPIRY DATE".equals(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
 				additionalValidations.put("format", "MM/DD/YYYY");
