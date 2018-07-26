@@ -38,6 +38,7 @@ public class PipsMaster implements Serializable {
 	private BigDecimal toAmount;
 	private String approvedBy;
 	private Date approvedDate;
+	private BigDecimal derivedSellRate;
 
 	//private String pipsTypeCode;
 
@@ -198,13 +199,13 @@ public class PipsMaster implements Serializable {
 		this.approvedDate = approvedDate;
 	}
 
-//	@Column(name = "PIPS_TYPE_CODE")
-//	public String getPipsTypeCode() {
-//		return pipsTypeCode;
-//	}
-//
-//	public void setPipsTypeCode(String pipsTypeCode) {
-//		this.pipsTypeCode = pipsTypeCode;
-//	}
+	@Column(name = "DERIVED_SELL_RATE")
+	public BigDecimal getDerivedSellRate() {
+		return derivedSellRate;
+	}
+
+	public void setDerivedSellRate(BigDecimal derivedSellRate) {
+		this.derivedSellRate = derivedSellRate;
+	}
 
 }
