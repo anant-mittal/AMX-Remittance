@@ -159,4 +159,5 @@ public class CivilIdOtpModel extends AbstractModel {
                 + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
                 + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
     }
+
 }

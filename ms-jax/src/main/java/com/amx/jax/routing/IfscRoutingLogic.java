@@ -71,7 +71,7 @@ public class IfscRoutingLogic implements IRoutingLogic {
 					new BankMasterModel(beneBankId), Yes, new CountryMaster(routingCountryId));
 
 			if (impsMasters != null && !impsMasters.isEmpty()) {
-				if (routingCountryId.intValue() == 94 && serviceMasterid.intValue() == 102) {
+				if (routingCountryId.intValue() == 94) {
 					BigDecimal toAmount = getToAmount(routingCountryId, fcurrencyId, rouringBankId);
 					if (toAmount == null) {
 						LOGGER.warn("IMPS SETUP  NOT DONE FOR ROUTING");
