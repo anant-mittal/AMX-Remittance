@@ -105,13 +105,13 @@
 					<executable>true</executable>
 				</configuration>
 			</plugin>
-			<plugin>
+<!-- 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
 					<attachClasses>true</attachClasses>
 					<classesClassifier>classes</classesClassifier>
 				</configuration>
-			</plugin>
+			</plugin> -->
 		</plugins>
 	</build>
 	
