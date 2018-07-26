@@ -6,12 +6,13 @@
 	<packaging>jar</packaging>
 	<name>common-utils</name>
 	<url>http://maven.apache.org</url>
+	<version>${amx.version}</version>
+	<description>Common utils library for boot projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+		<version>${jax.version}</version>
 	</parent>
 
 	<properties>
@@ -41,5 +42,21 @@
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 	</dependencies>
-	<description>Common utils library for boot projects</description>
+
+	<build>
+		<plugins>
+			<!-- Enable deploy for this submodule. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>
