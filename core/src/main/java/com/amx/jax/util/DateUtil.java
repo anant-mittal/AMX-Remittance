@@ -109,7 +109,7 @@ public class DateUtil {
 	}
 	
 	/**
-	 * validates date string
+	 * validates date string according to the format passed
 	 * 
 	 * @param strDate
 	 * @param format
@@ -125,4 +125,23 @@ public class DateUtil {
 			return null;
 		}
 	}
+	
+	/**
+	 * parses the date object
+	 * 
+	 * @param localDate
+	 * @param format
+	 * @return parsed date
+	 * 
+	 */
+	public String format(LocalDate localDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return localDate.format(formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 }

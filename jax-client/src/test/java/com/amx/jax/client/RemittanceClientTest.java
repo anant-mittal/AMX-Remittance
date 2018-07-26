@@ -151,7 +151,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	//@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -192,9 +192,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-	
-	@Test
+
+	// @Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;
@@ -205,5 +204,6 @@ public class RemittanceClientTest {
 		response = client.getTransactionHistroy(docfyr, docNumber, fromDate, toDate);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
+
 	}
 }

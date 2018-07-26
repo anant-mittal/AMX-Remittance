@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
@@ -29,12 +32,12 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
+	private String mOtp;
+	private String eOtp;
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
-	private String mOtp;
-	private String eOtp;
 
 	/*
 	 * (non-Javadoc)
@@ -86,6 +89,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
+	@Override
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
+				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+	}
+
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -101,30 +111,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
+	
+   public String getmOtp() {
+        return mOtp;
+    }
 
-	public String getmOtp() {
-		return mOtp;
-	}
+    public void setmOtp(String mOtp) {
+        this.mOtp = mOtp;
+    }
 
-	public void setmOtp(String mOtp) {
-		this.mOtp = mOtp;
-	}
+    public String geteOtp() {
+        return eOtp;
+    }
 
-	public String geteOtp() {
-		return eOtp;
-	}
-
-	public void seteOtp(String eOtp) {
-		this.eOtp = eOtp;
-	}
-
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
-				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
-				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
-	}
+    public void seteOtp(String eOtp) {
+        this.eOtp = eOtp;
+    }
 
 	public ExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
