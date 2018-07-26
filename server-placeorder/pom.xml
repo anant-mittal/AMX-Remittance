@@ -5,7 +5,6 @@
   <groupId>com.amx.jax.placeorder</groupId>
   <artifactId>server-placeorder</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
 
   <name>server-placeorder</name>
   <url>http://maven.apache.org</url>
@@ -40,11 +39,11 @@
 			<artifactId>lib-cache</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-        <dependency>
+<!--         <dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-ext-jar</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>core</artifactId>
@@ -97,8 +96,8 @@
 		</dependency>
 	</dependencies>
 	
-     <build>
-         <plugins>
+	<build>
+		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
