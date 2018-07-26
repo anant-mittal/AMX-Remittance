@@ -4,7 +4,7 @@
 package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
-
+import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.jax.model.AbstractModel;
 
 /**
@@ -18,6 +18,7 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 	private BigDecimal maxLoyalityPointsAvailableForTxn;
 	private ExchangeRateBreakup exRateBreakup;
 	private Boolean canRedeemLoyalityPoints;
+	private LoyalityPointState loyalityPointState;
 
 	/*
 	 * (non-Javadoc)
@@ -67,6 +68,14 @@ public class RemittanceTransactionResponsetModel extends AbstractModel {
 
 	public void setCanRedeemLoyalityPoints(Boolean canRedeemLoyalityPoints) {
 		this.canRedeemLoyalityPoints = canRedeemLoyalityPoints;
+	}
+
+	public LoyalityPointState getLoyalityPointState() {
+		return loyalityPointState;
+	}
+
+	public void setLoyalityPointState(LoyalityPointState loyalityPointState) {
+		this.loyalityPointState = loyalityPointState;
 	}
 
 }

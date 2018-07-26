@@ -777,4 +777,13 @@ public final class ArgUtil {
 		return (str == null || Constants.BLANK.equals(str));
 	}
 
+	public static <T> T ifNotEmpty(T... strs) {
+		for (T str : strs) {
+			if (!isEmpty(str)) {
+				return str;
+			}
+		}
+		return null;
+	}
+
 }

@@ -57,8 +57,6 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
-
-
 	<build>
 		<plugins>
 			<!-- Enable deploy for this submodule. -->
@@ -74,5 +72,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

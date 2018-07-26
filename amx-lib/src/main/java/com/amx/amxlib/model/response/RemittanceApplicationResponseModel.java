@@ -1,7 +1,7 @@
 package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
-
+import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
 
@@ -16,6 +16,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	private BigDecimal documentFinancialYear;
 	private BigDecimal netPayableAmount;
 	private BigDecimal merchantTrackId;
+	private CivilIdOtpModel civilIdOtpModel;
 
 	private PayGServiceCode pgCode = PayGServiceCode.DEFAULT;
 
@@ -64,19 +65,37 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.merchantTrackId = merchantTrackId;
 	}
 
-	@Override
-	public String toString() {
-		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
-				+ documentIdForPayment + ", netPayableAmount=" + netPayableAmount + ", merchantTrackId="
-				+ merchantTrackId + "]";
-	}
-
 	public BigDecimal getDocumentFinancialYear() {
 		return documentFinancialYear;
 	}
 
 	public void setDocumentFinancialYear(BigDecimal documentFinancialYear) {
 		this.documentFinancialYear = documentFinancialYear;
+	}
+
+	public CivilIdOtpModel getCivilIdOtpModel() {
+		return civilIdOtpModel;
+	}
+
+	public void setCivilIdOtpModel(CivilIdOtpModel civilIdOtpModel) {
+		this.civilIdOtpModel = civilIdOtpModel;
+	}
+
+	public String toString() {
+		String str = null;
+		if (civilIdOtpModel != null)
+			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
+					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
+					+ ", civilIdOtpModel=" + civilIdOtpModel.toString() + "]";
+		else {
+			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
+					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
+					+ ", civilIdOtpModel=null" + "]";
+		}
+
+		return str;
 	}
 
 }
