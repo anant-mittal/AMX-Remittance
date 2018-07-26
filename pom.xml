@@ -56,7 +56,7 @@
 		</dependency>
 	</dependencies>
 
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -67,23 +67,23 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-	
 
-		    	<!-- Don't deploy all artifacts. Overridden in submodules. -->         
-     			<plugin>
-         			<groupId>org.apache.maven.plugins</groupId>
-         			<artifactId>maven-deploy-plugin</artifactId>
-         			<executions> 
+
+			<!-- Don't deploy all artifacts. Overridden in submodules. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
 					<execution>
-						<id>default-deploy</id> 
+						<id>default-deploy</id>
 						<phase>none</phase>
 					</execution>
 				</executions>
 				<configuration>
-                    			<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
-                		</configuration>
-     			</plugin>
-			
+					<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
+				</configuration>
+			</plugin>
+
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
@@ -94,15 +94,15 @@
 			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
 			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
 		</repository>
-	</repositories>	
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sonatype-snapshots</id>
-			<name>Sonatype Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
+	</repositories>
+	
+	<pluginRepositories> 
+		<pluginRepository> 
+			<id>sonatype-snapshots</id> 
+			<name>Sonatype Snapshots</name> 
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
+		</pluginRepository> 
+	</pluginRepositories> 
 
 	<modules>
 		<module>common-utils</module>
@@ -140,7 +140,7 @@
 
 		<module>server-offsite</module>
 		<module>server-admin</module>
- 		<module>server-sso</module>
+		<module>server-sso</module>
 		<module>server-kiosk</module>
 		<module>server-sample</module>
 	</modules>
