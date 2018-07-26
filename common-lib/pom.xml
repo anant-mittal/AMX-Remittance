@@ -5,7 +5,9 @@
 	<artifactId>common-lib</artifactId>
 	<packaging>jar</packaging>
 	<name>common-lib</name>
+	<version>0.0.2-SNAPSHOT</version>
 	<url>http://maven.apache.org</url>
+	<description>Common utils library for boot projects</description>
 
 	<description>Common utils library for boot projects</description>
 
@@ -24,7 +26,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
