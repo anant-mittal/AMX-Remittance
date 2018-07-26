@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.AbstractModel;
 
 /**
  * @author Subodh Bhoir

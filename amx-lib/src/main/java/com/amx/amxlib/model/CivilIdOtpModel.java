@@ -2,11 +2,15 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.model.AbstractModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
 
-    private static final long serialVersionUID = -7991527354328804802L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7991527354328804802L;
 
 	private String mOtp;
 
@@ -52,6 +56,7 @@ public class CivilIdOtpModel extends AbstractModel {
 		this.lastName = lastName;
 	}
 
+	private String lastName;
 
 	public String getmOtp() {
 		return mOtp;
@@ -158,6 +163,6 @@ public class CivilIdOtpModel extends AbstractModel {
                 + eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
                 + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
                 + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
-    }
+	}
 
 }

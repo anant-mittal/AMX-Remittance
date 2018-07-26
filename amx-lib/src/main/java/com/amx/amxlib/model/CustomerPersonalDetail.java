@@ -8,6 +8,8 @@ import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Email;
 import org.springframework.format.annotation.NumberFormat;
 
+import com.amx.jax.model.AbstractModel;
+
 /**
  * Customer personal detail model
  *

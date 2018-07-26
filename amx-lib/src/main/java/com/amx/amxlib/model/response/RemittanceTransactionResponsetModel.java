@@ -5,6 +5,7 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.model.AbstractModel;
 import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.model.AbstractModel;
 

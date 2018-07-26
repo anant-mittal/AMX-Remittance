@@ -1,6 +1,7 @@
 package com.amx.jax.api;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -23,19 +24,22 @@ public class AmxApiResponse<T, M> implements Serializable {
 	protected String path;
 
 	/** The data. */
-	protected T data = null;
+	protected T data;
 
 	/** The data. */
-	protected List<T> results = null;
+	protected List<T> results;
 
 	/** The meta. */
-	protected M meta = null;
+	protected M meta;
 
 	/** The errors. */
 	private List<AmxFieldError> errors = null;
 
 	public AmxApiResponse() {
 		this.timestamp = System.currentTimeMillis();
+		this.data = null;
+		this.results = new ArrayList<T>();
+		this.meta = null;
 	}
 
 	/**
@@ -169,6 +173,10 @@ public class AmxApiResponse<T, M> implements Serializable {
 		return null;
 	}
 
+	public void addResult(T result) {
+		this.results.add(result);
+	}
+
 	/**
 	 * Gets the errors.
 	 *
@@ -187,4 +195,18 @@ public class AmxApiResponse<T, M> implements Serializable {
 	public void setErrors(List<AmxFieldError> errors) {
 		this.errors = errors;
 	}
+
+	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
+		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
+		resp.addResult(result);
+		return null;
+	}
+
+	public static <TS, MS> AmxApiResponse<TS, MS> build(TS result, MS meta) {
+		AmxApiResponse<TS, MS> resp = new AmxApiResponse<TS, MS>();
+		resp.addResult(result);
+		resp.setMeta(meta);
+		return resp;
+	}
+
 }
