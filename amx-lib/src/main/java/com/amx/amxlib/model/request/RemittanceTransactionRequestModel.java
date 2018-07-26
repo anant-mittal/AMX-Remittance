@@ -33,6 +33,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
+	private String mOtp;
+	private String eOtp;
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
@@ -86,13 +88,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 
 	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
 		this.availLoyalityPoints = availLoyalityPoints;
-	}
-
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
 	}
 
 	public BigDecimal getSrlId() {
@@ -151,6 +146,30 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 			};
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
+	}
+
+	public String getmOtp() {
+		return mOtp;
+	}
+
+	public void setmOtp(String mOtp) {
+		this.mOtp = mOtp;
+	}
+
+	public String geteOtp() {
+		return eOtp;
+	}
+
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
+
+	@Override
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
 	}
 
 }

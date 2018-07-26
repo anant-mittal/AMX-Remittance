@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -7991527354328804802L;
+    private static final long serialVersionUID = -7991527354328804802L;
 
 	private String mOtp;
 
@@ -35,6 +32,8 @@ public class CivilIdOtpModel extends AbstractModel {
 	
 	private String middleName;
 	
+	private String lastName;
+	
 	private BigDecimal customerId;
 
 	public String getFirstName() {
@@ -53,7 +52,6 @@ public class CivilIdOtpModel extends AbstractModel {
 		this.lastName = lastName;
 	}
 
-	private String lastName;
 
 	public String getmOtp() {
 		return mOtp;
@@ -153,5 +151,13 @@ public class CivilIdOtpModel extends AbstractModel {
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
+	
+    @Override
+    public String toString() {
+        return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="
+                + eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
+                + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
+                + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
+    }
 
 }
