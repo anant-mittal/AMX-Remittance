@@ -2,7 +2,6 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
@@ -65,13 +64,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	public void setMerchantTrackId(BigDecimal merchantTrackId) {
 		this.merchantTrackId = merchantTrackId;
-	}
-
-	@Override
-	public String toString() {
-		return "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
-				+ documentIdForPayment + ", netPayableAmount=" + netPayableAmount + ", merchantTrackId="
-				+ merchantTrackId + "]";
 	}
 
 	public BigDecimal getDocumentFinancialYear() {

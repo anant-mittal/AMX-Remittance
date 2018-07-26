@@ -33,11 +33,9 @@ public class CivilIdOtpModel extends AbstractModel {
 	private Boolean isActiveCustomer;
 
 	private String firstName;
-	
+
 	private String middleName;
-	
-	private String lastName;
-	
+
 	private BigDecimal customerId;
 
 	public String getFirstName() {
@@ -151,18 +149,19 @@ public class CivilIdOtpModel extends AbstractModel {
 	}
 
 	/**
-	 * @param middleName the middleName to set
+	 * @param middleName
+	 *            the middleName to set
 	 */
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;
 	}
-	
-    @Override
-    public String toString() {
-        return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="
-                + eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
-                + ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
-                + ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
+
+	@Override
+	public String toString() {
+		return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="
+				+ eHashedOtp + ", mOtpPrefix=" + mOtpPrefix + ", eOtpPrefix=" + eOtpPrefix + ", email=" + email
+				+ ", mobile=" + mobile + ", isActiveCustomer=" + isActiveCustomer + ", firstName=" + firstName
+				+ ", middleName=" + middleName + ", customerId=" + customerId + ", lastName=" + lastName + "]";
 	}
 
 }

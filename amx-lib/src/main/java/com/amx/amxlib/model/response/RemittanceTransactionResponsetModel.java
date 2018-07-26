@@ -5,9 +5,8 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
-import com.amx.jax.model.AbstractModel;
 import com.amx.amxlib.constant.LoyalityPointState;
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 /**
  * @author Prashant
@@ -15,6 +14,7 @@ import com.amx.amxlib.model.AbstractModel;
  */
 public class RemittanceTransactionResponsetModel extends AbstractModel {
 
+	private static final long serialVersionUID = -6674547178341594857L;
 	private BigDecimal txnFee;
 	private BigDecimal totalLoyalityPoints;
 	private BigDecimal maxLoyalityPointsAvailableForTxn;
