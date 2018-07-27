@@ -20,6 +20,7 @@ import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.model.AbstractUserModel;
+import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
@@ -226,9 +227,29 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		employee.setTokenSentCount(BigDecimal.ZERO);
 	}
 	
-	public AmxApiResponse<List<BizComponentDataDesc>, Object> sendIdTypes() {
+	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
 		List<BizComponentDataDesc> bizComponentDataDescs = bizcomponentDao.getBizComponentDataDescListByComponmentId();
-		return AmxApiResponse.build(bizComponentDataDescs);
+		if(bizComponentDataDescs.isEmpty())
+			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
+		List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);		
+		return AmxApiResponse.build(dtoList);
+	}
+
+	private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
+		List<BizComponentDataDescDto> output = new ArrayList<>();
+		bizComponentDataDescs.forEach(i -> {
+			output.add(convert(i));
+		});
+		return output;
+	}
+
+	private BizComponentDataDescDto convert(BizComponentDataDesc i) {
+		BizComponentDataDescDto dto =  new BizComponentDataDescDto();
+		dto.setComponentDataDescId(i.getComponentDataDescId());
+		dto.setDataDesc(i.getDataDesc());
+		dto.setFsBizComponentData(i.getFsBizComponentData().getComponentDataId());
+		dto.setFsLanguageType(i.getFsLanguageType().getLanguageId());
+		return dto;
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

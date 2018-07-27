@@ -125,7 +125,8 @@ public enum JaxError implements IExceptionEnum {
 	EMPLOYEE_EMAIL_ID_NOT_AVAILABLE,
 	EMPLOYEE_OTP_ATTEMPT_EXCEEDED,
 	EMPTY_FIELD_CONDITION,
-	WRONG_FIELD_CONDITION;
+	WRONG_FIELD_CONDITION,
+	EMPTY_ID_TYPE_LIST;
 
     public String getCode() {
         return this.toString();
