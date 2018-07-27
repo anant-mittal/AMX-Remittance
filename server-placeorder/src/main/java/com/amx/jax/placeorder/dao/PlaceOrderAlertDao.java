@@ -1,6 +1,7 @@
 package com.amx.jax.placeorder.dao;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class PlaceOrderAlertDao {
 	IPlaceoderAlertRate iPlaceoderAlertRate;
 
 	public List<PlaceOrder> getPlaceOrderAlertRate(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
+		derivedSellRate  = BigDecimal.ONE.divide(derivedSellRate, 5, RoundingMode.HALF_UP);
 		return iPlaceoderAlertRate.getPlaceOrderAlertRate(countryId, currencyId, bankId ,derivedSellRate) ;
-
 	}
 
 

@@ -1,6 +1,7 @@
 package com.amx.jax.placeorder.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
@@ -64,7 +66,7 @@ public class PlaceOrderRateAlertService extends AbstractService{
 				
 				dtoList.add(placeDTO);
 			} 
-			placeOrderDetailsAll(placeOrderList);
+			placeOrderDetailsAll(placeOrderList,derivedSellRate);
 		 }
 		response.getData().getValues().addAll(dtoList);
 		response.setResponseStatus(ResponseStatus.OK);
@@ -73,18 +75,19 @@ public class PlaceOrderRateAlertService extends AbstractService{
 		return response;
 		}
 
-	private void placeOrderDetailsAll(List<PlaceOrder> placeOrderList) {
+	private void placeOrderDetailsAll(List<PlaceOrder> placeOrderList, BigDecimal derivedSellRate) {
 		int batchSize = 100;
 		for (int i = 0; i < placeOrderList.size(); i += batchSize) {
 			int endIndex = (i + batchSize);
 			if (endIndex >= placeOrderList.size()) {
 				endIndex = placeOrderList.size() - 1;
 			}
-			placeOrderDetails(placeOrderList.subList(i, endIndex + 1));
+			placeOrderDetails(placeOrderList.subList(i, endIndex + 1), derivedSellRate);
 		}
 	}
 	
-	private void placeOrderDetails(List<PlaceOrder> placeOrderList) {
+	private void placeOrderDetails(List<PlaceOrder> placeOrderList,  BigDecimal derivedSellRate) {
+		derivedSellRate  = BigDecimal.ONE.divide(derivedSellRate, 3, RoundingMode.HALF_UP);
 		for (PlaceOrder placeorder : placeOrderList) {
 			placeorder.setNotificationDate(new Date());
 			iPlaceoderAlertRate.save(placeorder);
@@ -97,7 +100,8 @@ public class PlaceOrderRateAlertService extends AbstractService{
 			placeorderDTO.setEmail(cusotmer.getEmail());
 			placeorderDTO.setInputAmount(placeorder.getPayAmount());
 			placeorderDTO.setOutputAmount(placeorder.getReceiveAmount());
-			placeorderDTO.setRate(placeorder.getTargetExchangeRate());
+			placeorderDTO.setRate(derivedSellRate);
+			placeorderDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 			notificationService.sendBatchNotification(placeorderDTO);
 			LOGGER.info("place Order:" + placeorderDTO.toString());
 		}
@@ -108,4 +112,5 @@ public class PlaceOrderRateAlertService extends AbstractService{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 }
