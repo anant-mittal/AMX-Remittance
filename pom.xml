@@ -39,26 +39,6 @@
 		</dependency>
 	</dependencies>
 
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>common-utils</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>common-lib</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>common-amx</artifactId>
-				<version>${jax.version}</version>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 
 	<build>
 		<plugins>
@@ -112,6 +92,7 @@
 	-->
 
 	<modules>
+		<module>amx-boot</module>
 		<module>common-utils</module>
 		<module>common-lib</module>
 		<module>common-amx</module>
