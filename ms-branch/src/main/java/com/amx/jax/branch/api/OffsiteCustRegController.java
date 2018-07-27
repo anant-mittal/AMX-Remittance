@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
@@ -62,7 +63,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}
 	
 	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
-	public AmxApiResponse<List<BizComponentDataDesc>, Object> sendIdTypes() {
+	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
 		//JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		//JaxContextUtil.setRequestModel();
 		return  offsiteCustRegService.sendIdTypes();
