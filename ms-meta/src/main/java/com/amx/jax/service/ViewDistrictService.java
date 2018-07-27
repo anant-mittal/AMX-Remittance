@@ -41,12 +41,12 @@ public class ViewDistrictService extends AbstractService{
 	public ApiResponse getAllDistrict(BigDecimal stateId,BigDecimal languageId){
 		List<ViewDistrict> viewDistrict =viewDistrictDao.getAllDistrict(stateId,languageId);
 		ApiResponse response = getBlackApiResponse();
-		if(viewDistrict.isEmpty()) {
+		/*if(viewDistrict.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
+		}else {*/
 		response.getData().getValues().addAll(convert(viewDistrict));
 		response.setResponseStatus(ResponseStatus.OK);
-				}
+				/*}*/
 		
 		
 		response.getData().setType("district");
