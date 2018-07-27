@@ -143,6 +143,9 @@ public class CustomerDao {
 			}else {
 				cust.setMobile(model.getMobile());
 			}
+			if(cust.getUpdatedBy() == null)
+				cust.setUpdatedBy(cust.getCreatedBy());		
+
 			customerRepo.save(cust);
 		}
 		
