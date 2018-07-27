@@ -36,6 +36,9 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dbmodel.BizComponentData;
+import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
@@ -80,6 +83,9 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	JaxUtil jaxUtil;
+	
+	@Autowired
+	BizcomponentDao bizcomponentDao;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -218,6 +224,11 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			repo.save(employee);
 		}
 		employee.setTokenSentCount(BigDecimal.ZERO);
+	}
+	
+	public AmxApiResponse<List<BizComponentDataDesc>, Object> sendIdTypes() {
+		List<BizComponentDataDesc> bizComponentDataDescs = bizcomponentDao.getBizComponentDataDescListByComponmentId();
+		return AmxApiResponse.build(bizComponentDataDescs);
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
