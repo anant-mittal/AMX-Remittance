@@ -8,7 +8,7 @@ public class PlaceOrderNotificationDTO {
 	/**
 	 * 
 	 */
-
+    BigDecimal onlinePlaceOrderId;
 	BigDecimal rate;
 	String firstName;
 	String middleName;
@@ -20,6 +20,15 @@ public class PlaceOrderNotificationDTO {
 	BigDecimal outputAmount;
 	Date date;
 
+	
+
+	public BigDecimal getOnlinePlaceOrderId() {
+		return onlinePlaceOrderId;
+	}
+
+	public void setOnlinePlaceOrderId(BigDecimal onlinePlaceOrderId) {
+		this.onlinePlaceOrderId = onlinePlaceOrderId;
+	}
 
 	public BigDecimal getRate() {
 		return rate;
@@ -104,7 +113,9 @@ public class PlaceOrderNotificationDTO {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("PlaceOrderNotificationDTO [rate=");
+		builder.append("PlaceOrderNotificationDTO [onlinePlaceOrderId=");
+		builder.append(onlinePlaceOrderId);
+		builder.append(", rate=");
 		builder.append(rate);
 		builder.append(", firstName=");
 		builder.append(firstName);
