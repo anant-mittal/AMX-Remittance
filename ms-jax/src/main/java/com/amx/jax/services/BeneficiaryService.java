@@ -855,7 +855,7 @@ public class BeneficiaryService extends AbstractService {
             if (poResponse.getData() != null) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
             }else {
-                throw new GlobalException("PO not found for id : "+placeOrderId);
+                throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
             
             
@@ -866,7 +866,7 @@ public class BeneficiaryService extends AbstractService {
             } 
 
             if (poBene == null) {
-                throw new GlobalException("Not found");
+                throw new GlobalException("PO bene not found : ",JaxError.BENEFICIARY_LIST_NOT_FOUND);
             } else {
                 beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
                 
