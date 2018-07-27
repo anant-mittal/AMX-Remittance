@@ -67,4 +67,12 @@ public class BizcomponentDao {
 		return bizComDesc.get(0);
 
 	}
+	
+	
+	public List<BizComponentDataDesc> getBizComponentDataDescListByComponmentId() {
+				LanguageType langId = new LanguageType(metaData.getLanguageId());				
+				List<BizComponentDataDesc> bizComDesc = iBizDataDecReporsitory.findByFsBizComponentDataDesc(langId);
+		return bizComDesc;
+
+	}
 }

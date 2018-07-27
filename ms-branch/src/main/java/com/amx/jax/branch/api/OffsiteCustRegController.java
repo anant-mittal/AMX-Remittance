@@ -1,7 +1,6 @@
 package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
-import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,26 +10,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
-import com.amx.jax.ICustRegService;
-import com.amx.jax.api.ARespModel;
-import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.utils.JaxContextUtil;
 
-import io.swagger.annotations.ApiOperation;
-
 @RestController
 @RequestMapping(OFFSITE_CUSTOMER_REG)
-@SuppressWarnings("rawtypes")
 public class OffsiteCustRegController /*implements ICustRegService*/ {
 
 	@Autowired
@@ -67,6 +59,15 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateOTP(offsiteCustRegModel);
+	}
+	
+	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
+	public AmxApiResponse<List<BizComponentDataDesc>, Object> sendIdTypes() {
+		//JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
+		//JaxContextUtil.setRequestModel();
+		return  offsiteCustRegService.sendIdTypes();
 	}	
+	
+	
 
 }
