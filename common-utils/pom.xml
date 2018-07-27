@@ -5,8 +5,9 @@
 	<artifactId>common-utils</artifactId>
 	<packaging>jar</packaging>
 	<name>common-utils</name>
+	<version>0.0.1</version>
 	<url>http://maven.apache.org</url>
-	<description>Common utils library for boot projects</description>
+	<description>Common Utils for amx projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -58,5 +59,6 @@
 			</plugin>
 		</plugins>
 	</build>
+
 
 </project>
