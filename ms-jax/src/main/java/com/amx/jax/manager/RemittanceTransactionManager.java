@@ -42,6 +42,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -66,6 +67,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -165,6 +167,10 @@ public class RemittanceTransactionManager {
 	private JaxUtil jaxUtil;
 	@Autowired
 	RoutingService routingService;
+	@Autowired
+	JaxProperties jaxProperties;
+	@Autowired
+	NewExchangeRateService newExchangeRateService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -510,6 +516,11 @@ public class RemittanceTransactionManager {
 			BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
+		if (jaxProperties.getExrateBestRateLogicEnable()) {
+			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+			return newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount, routingBankId);
+		}
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();

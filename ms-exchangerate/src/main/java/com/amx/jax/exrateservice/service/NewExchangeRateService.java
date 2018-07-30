@@ -16,6 +16,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
@@ -66,17 +67,29 @@ public class NewExchangeRateService extends ExchangeRateService {
 			ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
-				pips = pipsDao.getPipsMaster(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
-				if (pips == null || pips.isEmpty()) {
-					throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
-				}
-				outputModel.setExRateBreakup(createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount));
+				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));
 			}
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
 		}
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	public ExchangeRateBreakup getExchangeRateBreakUp(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal fcAmount,
+			BigDecimal bankId) {
+		List<PipsMaster> pips = null;
+		if (lcAmount != null) {
+			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
+		}
+		if (fcAmount != null) {
+			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, fcAmount, meta.getCountryBranchId(), bankId);
+		}
+		if (pips == null || pips.isEmpty()) {
+			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+		}
+
+		return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
 	}
 
 	/**
