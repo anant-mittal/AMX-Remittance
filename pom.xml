@@ -135,8 +135,8 @@
 		<!-- <module>server-stomp</module> -->
 
 		<module>server-admin</module>
-		<!-- <module>server-sso</module> -->
+ 		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->
-		<module>server-sample</module>
+		<!-- <module>server-sample</module> -->
 	</modules>
 </project>
