@@ -2,6 +2,7 @@ package com.amx.jax.auditlogs;
 
 import java.math.BigDecimal;
 
+import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.logger.AuditEvent;
 
@@ -11,6 +12,8 @@ public class JaxAuditEvent extends AuditEvent {
 	//BigDecimal customerId;
 	
 	OffsiteCustomerRegistrationRequest model;
+	
+	CommonRequest dataModel;
 
 	Boolean success;
 
@@ -23,7 +26,7 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 	
 	public static enum Type implements EventType {
-		SEND_OTP,VALIDATE_OTP;
+		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST;
 
 		@Override
 		public EventMarker marker() {
@@ -55,6 +58,15 @@ public class JaxAuditEvent extends AuditEvent {
 		this.model = model;		
 			
 	}
+
+	public CommonRequest getDataModel() {
+		return dataModel;
+	}
+
+	public void setDataModel(CommonRequest dataModel) {
+		this.dataModel = dataModel;
+	}
+	
 	
 	
 }
