@@ -735,6 +735,8 @@ public class RemittanceTransactionManager {
 	}
 
     private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+        
+        logger.info("Application type is --- "+meta.getAppType());
     	
     	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
 
