@@ -19,7 +19,25 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
+		<amx.version>0.0.1</amx.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-utils</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-lib</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
+		</dependencies>
+
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -122,7 +140,7 @@
 
 		<module>server-ui</module>
 		<module>server-stomp</module>
-		
+
 		<module>server-offsite</module>
 		<module>server-admin</module>
  		<module>server-sso</module>

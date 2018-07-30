@@ -5,8 +5,6 @@ import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import com.amx.jax.model.AbstractModel;
-import javax.validation.constraints.NotNull;
-
 
 /**
  * @author Subodh Bhoir
