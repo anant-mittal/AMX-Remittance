@@ -6,7 +6,6 @@
 	<packaging>jar</packaging>
 	<name>common-utils</name>
 	<url>http://maven.apache.org</url>
-	<version>0.0.3-SNAPSHOT</version>
 	<description>Common utils library for boot projects</description>
 
 	<parent>
