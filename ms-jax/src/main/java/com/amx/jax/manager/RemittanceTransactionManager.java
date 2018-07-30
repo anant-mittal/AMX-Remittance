@@ -170,6 +170,8 @@ public class RemittanceTransactionManager {
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
+	private static final String IOS="IOS";
+	private static final String ANDROID="ANDROID";
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -737,22 +739,28 @@ public class RemittanceTransactionManager {
     	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
 
     	BigDecimal onlineLimit = BigDecimal.ZERO;
-    	BigDecimal mobileLimit = BigDecimal.ZERO;
+    	BigDecimal androidLimit = BigDecimal.ZERO;
+    	BigDecimal iosLimit = BigDecimal.ZERO;
     			
     	for (TransactionLimitCheckView view:trnxLimitList) {
     		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
     			onlineLimit = view.getComplianceChkLimit();
     		}
-    		if(JaxChannel.ANDROID.toString().equals(view.getChannel())) {
-    			mobileLimit = view.getComplianceChkLimit();
+    		if(ANDROID.equals(view.getChannel())) {
+    			androidLimit = view.getComplianceChkLimit();
+    		}
+    		if(IOS.equals(view.getChannel())) {
+    			iosLimit = view.getComplianceChkLimit();
     		}
     	}
     	
         CivilIdOtpModel otpMmodel = null;
         if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
                     model.getLocalAmount().compareTo(onlineLimit)>0) || 
-              (meta.getChannel().equals(JaxChannel.MOBILE) && 
-                    model.getLocalAmount().compareTo(mobileLimit)>0) ){
+              (meta.getAppType().equals(IOS) && 
+                    model.getLocalAmount().compareTo(iosLimit)>0) || 	
+              (meta.getAppType().equals(ANDROID) && 
+                      model.getLocalAmount().compareTo(androidLimit)>0)){
             List<CommunicationChannel> channel = new ArrayList<>();
             channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
             channel.add(CommunicationChannel.MOBILE);

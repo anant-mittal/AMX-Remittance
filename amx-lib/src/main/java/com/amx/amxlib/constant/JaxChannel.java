@@ -1,5 +1,5 @@
 package com.amx.amxlib.constant;
 
 public enum JaxChannel {
-    ONLINE, MOBILE, KIOSK, BRANCH, ANDROID;
+    ONLINE, MOBILE, KIOSK, BRANCH ;
 }
