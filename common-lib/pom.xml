@@ -60,6 +60,18 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Enable deploy for this submodule. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
