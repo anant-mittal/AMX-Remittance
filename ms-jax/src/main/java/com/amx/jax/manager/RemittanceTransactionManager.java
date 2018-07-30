@@ -172,6 +172,7 @@ public class RemittanceTransactionManager {
 	
 	private static final String IOS="IOS";
 	private static final String ANDROID="ANDROID";
+	private static final String WEB="WEB";
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -757,12 +758,16 @@ public class RemittanceTransactionManager {
     	}
     	
         CivilIdOtpModel otpMmodel = null;
-        if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
-                    model.getLocalAmount().compareTo(onlineLimit)>0) || 
+        if ( ((meta.getChannel().equals(JaxChannel.ONLINE)) && 
+              (meta.getAppType().equals(WEB)) &&
+              (model.getLocalAmount().compareTo(onlineLimit)>0) ) || 
+                
               (meta.getAppType().equals(IOS) && 
-                    model.getLocalAmount().compareTo(iosLimit)>0) || 	
+                    model.getLocalAmount().compareTo(iosLimit)>0) ||
+              
               (meta.getAppType().equals(ANDROID) && 
                       model.getLocalAmount().compareTo(androidLimit)>0)){
+            
             List<CommunicationChannel> channel = new ArrayList<>();
             channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
             channel.add(CommunicationChannel.MOBILE);
