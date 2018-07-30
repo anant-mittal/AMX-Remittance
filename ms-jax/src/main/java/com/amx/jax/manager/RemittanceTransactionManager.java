@@ -759,7 +759,7 @@ public class RemittanceTransactionManager {
     			iosLimit = view.getComplianceChkLimit();
     		}
     	}
-    	logger.info(String.format("Limits are : onlineLimit =%d,  androidLimit=%d, iosLimit=%d",onlineLimit,androidLimit,iosLimit));
+    	logger.info(String.format("Limits are : onlineLimit =%f,  androidLimit=%f, iosLimit=%f",onlineLimit,androidLimit,iosLimit));
         CivilIdOtpModel otpMmodel = null;
         if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
                     model.getLocalAmount().compareTo(onlineLimit)>0) || 
