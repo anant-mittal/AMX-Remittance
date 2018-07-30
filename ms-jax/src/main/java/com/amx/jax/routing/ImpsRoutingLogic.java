@@ -32,9 +32,9 @@ import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
 
 @Component
-public class IfscRoutingLogic implements IRoutingLogic {
+public class ImpsRoutingLogic implements IRoutingLogic {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IfscRoutingLogic.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ImpsRoutingLogic.class);
 
 	@Autowired
 	JdbcTemplate jdbcTemplate;
