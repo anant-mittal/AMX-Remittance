@@ -41,43 +41,43 @@ public class PlaceOrderRateAlertService extends AbstractService{
 	private static final Logger LOGGER = Logger.getLogger(PlaceOrderRateAlertService.class);
 	
 	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
-		
+
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
 		try {
-		List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
-				derivedSellRate);
-		if (placeOrderList != null && !placeOrderList.isEmpty()) {
-			for(PlaceOrder rec : placeOrderList) {
-				PlaceOrderDTO placeDTO = new PlaceOrderDTO();
-				
-				placeDTO.setCustomerId(rec.getCustomerId());
-				placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
-				placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
-				placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
-				placeDTO.setSrlId(rec.getSrlId());
-				placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
-				placeDTO.setIsActive(rec.getIsActive());
-				placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
-				placeDTO.setCreatedDate(rec.getCreatedDate());
-				placeDTO.setValidFromDate(rec.getValidFromDate());
-				placeDTO.setValidToDate(rec.getValidToDate());
-				placeDTO.setPayAmount(rec.getPayAmount());
-				placeDTO.setReceiveAmount(rec.getReceiveAmount());
-				
-				dtoList.add(placeDTO);
-			} 
-			placeOrderDetailsAll(placeOrderList,derivedSellRate);
-		 }
-		response.getData().getValues().addAll(dtoList);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType("place-order-dto");
-		
-        } catch (Exception e) {
-	    response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-	    LOGGER.error("Error while fetching Place Order List by Trigger Exchange Rate");
-	    e.printStackTrace();
-        } 
+			List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
+					derivedSellRate);
+			if (placeOrderList != null && !placeOrderList.isEmpty()) {
+				for (PlaceOrder rec : placeOrderList) {
+					PlaceOrderDTO placeDTO = new PlaceOrderDTO();
+
+					placeDTO.setCustomerId(rec.getCustomerId());
+					placeDTO.setPlaceOrderId(rec.getOnlinePlaceOrderId());
+					placeDTO.setBeneficiaryRelationshipSeqId(rec.getBeneficiaryRelationshipSeqId());
+					placeDTO.setTargetExchangeRate(rec.getTargetExchangeRate());
+					placeDTO.setSrlId(rec.getSrlId());
+					placeDTO.setSourceOfIncomeId(rec.getSourceOfIncomeId());
+					placeDTO.setIsActive(rec.getIsActive());
+					placeDTO.setBankRuleFieldId(rec.getBankRuleFieldId());
+					placeDTO.setCreatedDate(rec.getCreatedDate());
+					placeDTO.setValidFromDate(rec.getValidFromDate());
+					placeDTO.setValidToDate(rec.getValidToDate());
+					placeDTO.setPayAmount(rec.getPayAmount());
+					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+
+					dtoList.add(placeDTO);
+				}
+				placeOrderDetailsAll(placeOrderList, derivedSellRate);
+			}
+			response.getData().getValues().addAll(dtoList);
+			response.setResponseStatus(ResponseStatus.OK);
+			response.getData().setType("place-order-dto");
+
+		} catch (Exception e) {
+			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+			LOGGER.error("Error while fetching Place Order List by Trigger Exchange Rate");
+			e.printStackTrace();
+		}
 		return response;
 	}
 
