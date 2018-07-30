@@ -159,7 +159,7 @@ public class RemittanceTransactionManager {
 	private BeneficiaryCheckService beneCheckService;
 
 	@Autowired
-	RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 
 	@Autowired
 	private UserService userService;
@@ -430,8 +430,8 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneId);
 		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
 		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
-        remitApplParametersMap.put("P_LOCAL_AMT", model.getLocalAmount());
-        remitApplParametersMap.put("P_FOREIGN_AMT", model.getForeignAmount());
+		remitApplParametersMap.put("P_LOCAL_AMT", model.getLocalAmount());
+		remitApplParametersMap.put("P_FOREIGN_AMT", model.getForeignAmount());
 	}
 
 	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
@@ -571,7 +571,7 @@ public class RemittanceTransactionManager {
 
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
-            responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
+			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
@@ -674,8 +674,8 @@ public class RemittanceTransactionManager {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
-		
-		remittanceTransactionRequestValidator.validateFlexFields(model,  remitApplParametersMap);
+
+		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -688,7 +688,7 @@ public class RemittanceTransactionManager {
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
-				.createAdditionalInstnData(remittanceApplication);
+				.createAdditionalInstnData(remittanceApplication, model);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -743,7 +743,6 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
-		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		if (remittanceTransaction != null) {
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
 			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
