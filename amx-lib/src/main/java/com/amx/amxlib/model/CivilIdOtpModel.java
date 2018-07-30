@@ -30,11 +30,9 @@ public class CivilIdOtpModel extends AbstractModel {
 	private Boolean isActiveCustomer;
 
 	private String firstName;
-	
+
 	private String middleName;
-	
-	private String lastName;
-	
+
 	private BigDecimal customerId;
 
 	public String getFirstName() {
@@ -53,6 +51,7 @@ public class CivilIdOtpModel extends AbstractModel {
 		this.lastName = lastName;
 	}
 
+	private String lastName;
 
 	public String getmOtp() {
 		return mOtp;
@@ -147,7 +146,7 @@ public class CivilIdOtpModel extends AbstractModel {
 	}
 
 	/**
-	 * @param middleName the middleName to set
+     * @param middleName the middleName to set
 	 */
 	public void setMiddleName(String middleName) {
 		this.middleName = middleName;

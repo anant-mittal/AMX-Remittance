@@ -784,8 +784,6 @@ public final class ArgUtil {
 		return a.equals(b);
 	}
 
-
-
 	public static <T> T ifNotEmpty(T... strs) {
 		for (T str : strs) {
 			if (!isEmpty(str)) {

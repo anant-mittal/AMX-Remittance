@@ -31,12 +31,14 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.AuthType;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
+import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -85,19 +87,20 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemittanceTransactionManager {
 
-	@Autowired
-	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+    @Autowired
+    IBeneficiaryOnlineDao beneficiaryOnlineDao;
 
-	@Autowired
-	private BlackListDao blistDao;
+    @Autowired
+    private BlackListDao blistDao;
 
-	@Autowired
-	private MetaData meta;
+    @Autowired
+    private MetaData meta;
 
 	@Autowired
 	private BankDao bankServiceRuleDao;
@@ -155,6 +158,9 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private BeneficiaryCheckService beneCheckService;
+
+	@Autowired
+	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
 
 	@Autowired
 	private UserService userService;
@@ -350,6 +356,7 @@ public class RemittanceTransactionManager {
 			if (loyalityPointsAvailable == null
 					|| (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
 				responseModel.setCanRedeemLoyalityPoints(false);
+				responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 			} else {
 				responseModel.setCanRedeemLoyalityPoints(true);
 			}
@@ -424,7 +431,8 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneId);
 		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
 		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
-
+		remitApplParametersMap.put("P_LOCAL_AMT", model.getLocalAmount());
+		remitApplParametersMap.put("P_FOREIGN_AMT", model.getForeignAmount());
 	}
 
 	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
@@ -564,6 +572,7 @@ public class RemittanceTransactionManager {
 
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
+			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
@@ -665,6 +674,10 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+
+		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
@@ -676,7 +689,7 @@ public class RemittanceTransactionManager {
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
-				.createAdditionalInstnData(remittanceApplication,model);
+				.createAdditionalInstnData(remittanceApplication, model);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
