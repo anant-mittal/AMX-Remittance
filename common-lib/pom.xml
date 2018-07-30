@@ -22,7 +22,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
