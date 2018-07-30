@@ -12,6 +12,7 @@ public abstract class AResponse<T> {
 	protected String exception; // org.springframework.http.converter.HttpMessageNotReadableException
 	protected String message;// JSON parse error
 	protected String path; // postman/email/send
+	protected String messageKey;
 
 	// Amx Specs
 	protected T meta;
@@ -157,4 +158,14 @@ public abstract class AResponse<T> {
 	public void setErrors(List<AmxFieldError> errors) {
 		this.errors = errors;
 	}
+
+	public String getMessageKey() {
+		return messageKey;
+	}
+
+	public void setMessageKey(String messageKey) {
+		this.messageKey = messageKey;
+	}
+	
+	
 }

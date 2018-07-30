@@ -3,7 +3,7 @@ package com.amx.jax.auth.service;
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("rawtypes")
+//@SuppressWarnings("rawtypes")
 public abstract class AbstractService {
 
 	public static class ApiResponse {
