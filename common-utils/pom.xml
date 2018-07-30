@@ -9,10 +9,10 @@
 	<description>Common utils library for boot projects</description>
 
 	<parent>
-		<groupId>com.amx</groupId>
-		<artifactId>amx-boot</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>../amx-boot/pom.xml</relativePath>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>amxeco</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>

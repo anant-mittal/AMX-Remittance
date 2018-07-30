@@ -19,7 +19,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
-		<amx.version>0.0.2-SNAPSHOT</amx.version>
+		<amx.version>0.0.1-SNAPSHOT</amx.version>
 	</properties>
 
 	<dependencies>
