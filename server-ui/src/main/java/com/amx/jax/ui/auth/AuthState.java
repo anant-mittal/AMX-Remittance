@@ -79,6 +79,7 @@ public class AuthState implements Serializable {
 		UNAUTH,
 		/** The locked. */
 		LOCKED,
+		SHIJACK,
 
 		/** The completed. */
 		// DONE

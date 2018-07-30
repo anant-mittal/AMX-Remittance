@@ -18,7 +18,7 @@ public class MetricsConfig extends MetricsConfigurerAdapter {
 	public void configureReporters(MetricRegistry metricRegistry) {
 		// registerReporter allows the MetricsConfigurerAdapter to
 		// shut down the reporter when the Spring context is closed
-		registerReporter(AuditReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
+		registerReporter(AuditReporter.forRegistry(metricRegistry).build()).start(15, TimeUnit.MINUTES);
 	}
 
 	// @Bean
