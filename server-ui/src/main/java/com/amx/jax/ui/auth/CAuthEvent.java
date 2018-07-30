@@ -19,13 +19,6 @@ public class CAuthEvent extends AuditEvent {
 	/**
 	 * The Enum Result.
 	 */
-	public enum Result {
-		/** The pass. */
-		PASS,
-		/** The fail. */
-		FAIL;
-	}
-
 	/**
 	 * Instantiates a new c auth event.
 	 *
@@ -95,7 +88,7 @@ public class CAuthEvent extends AuditEvent {
 	 *            the state
 	 */
 	public CAuthEvent(AuthState state) {
-		this(state, Result.PASS, 0L);
+		this(state, Result.DONE, 0L);
 	}
 
 	AuthStep step = null;
@@ -133,28 +126,6 @@ public class CAuthEvent extends AuditEvent {
 	@Override
 	public String getDescription() {
 		return (this.type == null ? AuthFlow.DEFAULT : this.type) + ":" + this.step + ":" + this.result;
-	}
-
-	/** The result. */
-	Result result = Result.PASS;
-
-	/**
-	 * Gets the result.
-	 *
-	 * @return the result
-	 */
-	public Result getResult() {
-		return result;
-	}
-
-	/**
-	 * Sets the result.
-	 *
-	 * @param result
-	 *            the new result
-	 */
-	public void setResult(Result result) {
-		this.result = result;
 	}
 
 	/**

@@ -2,9 +2,9 @@ package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.model.AbstractModel;
 
 public class RemittanceApplicationResponseModel extends AbstractModel {
 
@@ -73,7 +73,7 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 	public void setDocumentFinancialYear(BigDecimal documentFinancialYear) {
 		this.documentFinancialYear = documentFinancialYear;
 	}
-	
+
 	public CivilIdOtpModel getCivilIdOtpModel() {
 		return civilIdOtpModel;
 	}
@@ -84,21 +84,20 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 
 	@Override
 	public String toString() {
-	    String str = null;
-	    if (civilIdOtpModel!=null)
-    		 str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
-    				+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
-    				+ netPayableAmount + ", merchantTrackId=" + merchantTrackId+ ", pgCode=" + pgCode + ", civilIdOtpModel=" + civilIdOtpModel.toString()
-    				+ "]";
-	    else {
-            str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
-                    + documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
-                    + netPayableAmount + ", merchantTrackId=" + merchantTrackId+ ", pgCode=" + pgCode + ", civilIdOtpModel=null"
-                    + "]";
-	    }
-	    
-	    return str;
-	}
+		String str = null;
+		if (civilIdOtpModel != null)
+			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
+					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
+					+ ", civilIdOtpModel=" + civilIdOtpModel.toString() + "]";
+		else {
+			str = "RemittanceApplicationResponseModel [remittanceAppId=" + remittanceAppId + ", documentIdForPayment="
+					+ documentIdForPayment + ", documentFinancialYear=" + documentFinancialYear + ", netPayableAmount="
+					+ netPayableAmount + ", merchantTrackId=" + merchantTrackId + ", pgCode=" + pgCode
+					+ ", civilIdOtpModel=null" + "]";
+		}
 
+		return str;
+	}
 
 }

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.JaxChannel;
-import com.amx.jax.constant.Country;
+import com.amx.jax.dict.Country;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.services.AbstractServiceFactory;
 

@@ -17,10 +17,6 @@ public class CActivityEvent extends AuditEvent {
 		}
 	}
 
-	public enum Result {
-		PASS, FAIL;
-	}
-
 	CActivityEvent(Type type, String fromValue, String toValue) {
 		super(type);
 		this.fromValue = fromValue;
@@ -40,7 +36,6 @@ public class CActivityEvent extends AuditEvent {
 	private String toValue = null;
 	private String actor = null;
 	private String customer = null;
-	private Result result = Result.PASS;
 
 	@Override
 	public String getDescription() {
@@ -69,14 +64,6 @@ public class CActivityEvent extends AuditEvent {
 
 	public void setActor(String actor) {
 		this.actor = actor;
-	}
-
-	public Result getResult() {
-		return result;
-	}
-
-	public void setResult(Result result) {
-		this.result = result;
 	}
 
 	public String getCustomer() {

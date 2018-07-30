@@ -211,7 +211,7 @@ public class TransactionHistroyService extends AbstractService {
 				if (beneMap.get(model.getBeneficiaryRelationSeqId()) != null && beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
 			      status = beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE;
 			    model.setBeneIsActive(status);
-			}
+			}			
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));

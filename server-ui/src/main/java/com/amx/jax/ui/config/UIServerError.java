@@ -43,7 +43,7 @@ public class UIServerError extends AmxApiException {
 		return UIServerCodes.UI_SERVER_ERROR;
 	}
 
-	public static void evaluate(Exception e) throws JaxSystemError {
+	public static <T> T evaluate(Exception e) {
 		if (e instanceof JaxSystemError) {
 			throw (JaxSystemError) e;
 		} else if (e instanceof AbstractJaxException) {
