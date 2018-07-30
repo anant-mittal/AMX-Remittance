@@ -5,10 +5,8 @@
 	<artifactId>common-lib</artifactId>
 	<packaging>jar</packaging>
 	<name>common-lib</name>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<url>http://maven.apache.org</url>
-	<description>Common utils library for boot projects</description>
-
 	<description>Common utils library for boot projects</description>
 
 	<parent>
@@ -62,6 +60,18 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 			<!-- Enable deploy for this submodule. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
