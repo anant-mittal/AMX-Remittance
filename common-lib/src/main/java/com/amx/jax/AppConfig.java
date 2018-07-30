@@ -131,7 +131,7 @@ public class AppConfig {
 	}
 
 	public Boolean isCache() {
-		return debug;
+		return cache;
 	}
 
 	public String getCdnURL() {
