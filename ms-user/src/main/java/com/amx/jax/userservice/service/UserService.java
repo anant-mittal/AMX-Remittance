@@ -403,8 +403,10 @@ public class UserService extends AbstractUserService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			jaxNotificationService.sendOtpEmail(personinfo, model);
+		if (channels != null && (channels.contains(CommunicationChannel.EMAIL) ||  
+		        channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
+			
+		    jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
 	}
