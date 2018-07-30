@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.def.ATransactionModel;
 import com.amx.jax.def.ICacheBox;
 
+
 public abstract class CustomerTransactionModel<T> extends ATransactionModel<T> {
 
 	@Component
