@@ -173,7 +173,8 @@ public class RemittanceTransactionManager {
     
 	private static final String IOS="IOS";
 	private static final String ANDROID="ANDROID";
-
+	private static final String WEB="WEB";
+	
     public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
         addRequestParameters(model);
@@ -759,9 +760,10 @@ public class RemittanceTransactionManager {
     			iosLimit = view.getComplianceChkLimit();
     		}
     	}
+    	
     	logger.info(String.format("Limits are : onlineLimit =%f,  androidLimit=%f, iosLimit=%f",onlineLimit,androidLimit,iosLimit));
         CivilIdOtpModel otpMmodel = null;
-        if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
+        if (  (meta.getChannel().equals(JaxChannel.ONLINE) && meta.getAppType().equals(WEB) &&
                     model.getLocalAmount().compareTo(onlineLimit)>0) || 
               (meta.getAppType().equals(IOS) && 
                     model.getLocalAmount().compareTo(iosLimit)>0) || 	
