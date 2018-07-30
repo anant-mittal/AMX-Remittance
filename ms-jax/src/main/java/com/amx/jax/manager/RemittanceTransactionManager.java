@@ -12,6 +12,7 @@ import static com.amx.amxlib.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.constant.LoyalityPointState;
@@ -93,14 +95,14 @@ import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class RemittanceTransactionManager {
 
-    @Autowired
-    IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
 
-    @Autowired
-    private BlackListDao blistDao;
+	@Autowired
+	private BlackListDao blistDao;
 
-    @Autowired
-    private MetaData meta;
+	@Autowired
+	private MetaData meta;
 
 	@Autowired
 	private BankDao bankServiceRuleDao;
@@ -179,6 +181,10 @@ public class RemittanceTransactionManager {
 	NewExchangeRateService newExchangeRateService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	private static final String IOS="IOS";
+	private static final String ANDROID="ANDROID";
+	private static final String WEB="WEB";
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -797,21 +803,36 @@ public class RemittanceTransactionManager {
 		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
 
 		BigDecimal onlineLimit = BigDecimal.ZERO;
-		BigDecimal mobileLimit = BigDecimal.ZERO;
+    	BigDecimal androidLimit = BigDecimal.ZERO;
+    	BigDecimal iosLimit = BigDecimal.ZERO;
 
 		for (TransactionLimitCheckView view : trnxLimitList) {
 			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
 				onlineLimit = view.getComplianceChkLimit();
 			}
-			if (JaxChannel.ANDROID.toString().equals(view.getChannel())) {
-				mobileLimit = view.getComplianceChkLimit();
+    		if(ANDROID.equals(view.getChannel())) {
+    			androidLimit = view.getComplianceChkLimit();
+    		}
+    		if(IOS.equals(view.getChannel())) {
+    			iosLimit = view.getComplianceChkLimit();
 			}
 		}
 
 		CivilIdOtpModel otpMmodel = null;
-		if ((meta.getChannel().equals(JaxChannel.ONLINE) && model.getLocalAmount().compareTo(onlineLimit) > 0)
-				|| (meta.getChannel().equals(JaxChannel.MOBILE) && model.getLocalAmount().compareTo(mobileLimit) > 0)) {
-			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null).getData().getValues().get(0);
+        if ( ((meta.getChannel().equals(JaxChannel.ONLINE)) && 
+              (meta.getAppType().equals(WEB)) &&
+              (model.getLocalAmount().compareTo(onlineLimit)>0) ) || 
+                
+              (meta.getAppType().equals(IOS) && 
+                    model.getLocalAmount().compareTo(iosLimit)>0) ||
+              
+              (meta.getAppType().equals(ANDROID) && 
+                      model.getLocalAmount().compareTo(androidLimit)>0)){
+            
+            List<CommunicationChannel> channel = new ArrayList<>();
+            channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
+            channel.add(CommunicationChannel.MOBILE);
+            otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null,channel,null,null).getData().getValues().get(0);
 		}
 		return otpMmodel;
 	}
