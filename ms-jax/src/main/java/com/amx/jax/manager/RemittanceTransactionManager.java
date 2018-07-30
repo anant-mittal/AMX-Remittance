@@ -749,7 +749,6 @@ public class RemittanceTransactionManager {
 				.getRemittanceTransaction(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(),
 				request.getDocumentFinancialYear());
-		RemittanceApplication application = remitAppDao.getApplication(request.getApplicationDocumentNumber(), request.getDocumentFinancialYear());
 		if (remittanceTransaction != null) {
 			BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
 			BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
