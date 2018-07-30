@@ -21,6 +21,9 @@ import com.amx.jax.auth.models.Permission;
 import com.amx.jax.auth.service.AuthServiceImpl;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.Templates;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -31,7 +34,7 @@ public class AuthServiceController implements AuthService {
 
 	@Autowired
 	AuthServiceImpl authService;
-
+	
 	/**
 	 * @task Sync DB perms
 	 */

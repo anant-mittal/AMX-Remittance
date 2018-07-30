@@ -81,16 +81,6 @@
 
 	<repositories>
 		<repository>
-			<id>itext</id>
-			<name>iText Repository - releases</name>
-			<url>https://repo.itextsupport.com/releases</url>
-		</repository>
-		<repository>
-			<id>Adobe</id>
-			<name>Adobe Repository - releases</name>
-			<url>https://repo.adobe.com/nexus/content/repositories/public/</url>
-		</repository>
-		<repository>
 			<id>jcenter</id>
 			<url>https://jcenter.bintray.com/</url>
 		</repository>
