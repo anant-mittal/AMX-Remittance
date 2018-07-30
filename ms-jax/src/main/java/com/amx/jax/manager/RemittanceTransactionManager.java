@@ -739,6 +739,7 @@ public class RemittanceTransactionManager {
     
     private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
     	
+        logger.info("Channel type is --- "+meta.getChannel());
         logger.info("Application type is --- "+meta.getAppType());
     	
     	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
@@ -758,7 +759,7 @@ public class RemittanceTransactionManager {
     			iosLimit = view.getComplianceChkLimit();
     		}
     	}
-    	
+    	logger.info(String.format("Limits are : onlineLimit =%d,  androidLimit=%d, iosLimit=%d",onlineLimit,androidLimit,iosLimit));
         CivilIdOtpModel otpMmodel = null;
         if (  (meta.getChannel().equals(JaxChannel.ONLINE) && 
                     model.getLocalAmount().compareTo(onlineLimit)>0) || 
