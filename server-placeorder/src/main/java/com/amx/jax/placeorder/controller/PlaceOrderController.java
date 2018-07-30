@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.client.ExchangeRateClient;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.placeorder.service.PlaceOrderRateAlertService;
@@ -21,7 +23,8 @@ import org.apache.log4j.Logger;
 public class PlaceOrderController {
 	
 @Autowired
-PlaceOrderRateAlertService rateAlertService;	
+PlaceOrderRateAlertService rateAlertService;
+
 
 private static final Logger LOGGER = Logger.getLogger(PlaceOrderController.class);
 
@@ -33,9 +36,10 @@ private static final Logger LOGGER = Logger.getLogger(PlaceOrderController.class
 				return  rateAlertService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
 	}
 	
+	
 	@RequestMapping(value= "/exrate-placeorder" , method =RequestMethod.GET)
-    public ApiResponse setExchangeRate(@RequestParam BigDecimal currencyId)
+    public String setExchangeRate()
     {
-		return null;
+		return  rateAlertService.setExchangeRate();
     }
 }

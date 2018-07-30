@@ -47,4 +47,11 @@ public class ExchangeRateController {
 		ApiResponse response = service.getMinMaxExrate();
 		return response;
 	}
+	
+	@RequestMapping(value = "/online/placeorder", method = RequestMethod.POST)
+	public ApiResponse setOnlineExchangeRatesPlaceorder(@RequestParam(required = true) String quoteName,@RequestParam BigDecimal bankId,
+			@RequestParam BigDecimal value) {
+		ApiResponse response = service.setOnlineExchangeRatesPlaceorder(quoteName, bankId, value);
+		return response;
+	}
 }

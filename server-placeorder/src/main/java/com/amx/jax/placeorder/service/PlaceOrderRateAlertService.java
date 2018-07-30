@@ -43,9 +43,10 @@ public class PlaceOrderRateAlertService extends AbstractService{
 	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
 		
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
+		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
+		try {
 		List<PlaceOrder> placeOrderList = placeOrderAlertDao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
 				derivedSellRate);
-		List<PlaceOrderDTO> dtoList = new ArrayList<PlaceOrderDTO>();
 		if (placeOrderList != null && !placeOrderList.isEmpty()) {
 			for(PlaceOrder rec : placeOrderList) {
 				PlaceOrderDTO placeDTO = new PlaceOrderDTO();
@@ -72,8 +73,13 @@ public class PlaceOrderRateAlertService extends AbstractService{
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType("place-order-dto");
 		
+        } catch (Exception e) {
+	    response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
+	    LOGGER.error("Error while fetching Place Order List by Trigger Exchange Rate");
+	    e.printStackTrace();
+        } 
 		return response;
-		}
+	}
 
 	private void placeOrderDetailsAll(List<PlaceOrder> placeOrderList, BigDecimal derivedSellRate) {
 		int batchSize = 100;
@@ -93,17 +99,17 @@ public class PlaceOrderRateAlertService extends AbstractService{
 			iPlaceoderAlertRate.save(placeorder);
 			Customer cusotmer= placeOrderCustomerDetails.getPlaceOrderCustomerDetails(placeorder.getCustomerId());
 		    LOGGER.info("customer ID:" + placeorder.getCustomerId());
-			PlaceOrderNotificationDTO placeorderDTO =new PlaceOrderNotificationDTO();
-			placeorderDTO.setFirstName(cusotmer.getFirstName());
-			placeorderDTO.setMiddleName(cusotmer.getMiddleName());
-			placeorderDTO.setLastName(cusotmer.getLastName());
-			placeorderDTO.setEmail(cusotmer.getEmail());
-			placeorderDTO.setInputAmount(placeorder.getPayAmount());
-			placeorderDTO.setOutputAmount(placeorder.getReceiveAmount());
-			placeorderDTO.setRate(derivedSellRate);
-			placeorderDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
-			notificationService.sendBatchNotification(placeorderDTO);
-			LOGGER.info("place Order:" + placeorderDTO.toString());
+			PlaceOrderNotificationDTO placeorderNotDTO =new PlaceOrderNotificationDTO();
+			placeorderNotDTO.setFirstName(cusotmer.getFirstName());
+			placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
+			placeorderNotDTO.setLastName(cusotmer.getLastName());
+			placeorderNotDTO.setEmail(cusotmer.getEmail());
+			placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
+			placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
+			placeorderNotDTO.setRate(derivedSellRate);
+			placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
+			notificationService.sendBatchNotification(placeorderNotDTO);
+			LOGGER.info("place Order:" + placeorderNotDTO.toString());
 		}
 	}
 
@@ -113,4 +119,8 @@ public class PlaceOrderRateAlertService extends AbstractService{
 		return null;
 	}
 	
+	public String setExchangeRate()
+	{
+		return "******------- Service is up ------*******";
+	}
 }
