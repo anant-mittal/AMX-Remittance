@@ -146,7 +146,6 @@
 		<module>common-lib</module>
 		<module>common-amx</module>
 		<module>lib-ext-jar</module>
-		<module>lib-swagger</module>
 		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
@@ -177,7 +176,7 @@
 
 		<!-- <module>server-offsite</module> -->
 		<module>server-admin</module>
-		<!-- <module>server-sso</module> -->
+ 		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
