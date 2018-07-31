@@ -112,13 +112,14 @@
 		</plugins>
 	</build>
 
+<!--   
 	<repositories>
 		<repository>
 			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
 			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
 		</repository>
 	</repositories>	
-
+-->
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -132,7 +133,6 @@
 		<module>common-lib</module>
 		<module>common-amx</module>
 		<module>lib-ext-jar</module>
-		<module>lib-swagger</module>
 		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
