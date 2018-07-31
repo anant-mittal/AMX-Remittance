@@ -7,7 +7,7 @@ import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.trnx.model.OtpData;
+import com.amx.jax.model.OtpData;
 
 public class CustomerRegistrationTrnxModel implements Serializable {
 

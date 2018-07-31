@@ -2,7 +2,7 @@ package com.amx.amxlib.meta.model;
 
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 public class QuestModelDTO extends AbstractModel {
 

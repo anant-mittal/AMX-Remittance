@@ -2,6 +2,8 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.model.AbstractModel;
+
 public class OnlineConfigurationDto extends AbstractModel{
 
 	/**
