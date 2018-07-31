@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +129,7 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
-	public ApiResponse saveApplication(@RequestBody RemittanceTransactionRequestModel model) {
+	public ApiResponse saveApplication(@RequestBody @Valid RemittanceTransactionRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());

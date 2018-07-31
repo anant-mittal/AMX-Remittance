@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 	<name>ms-auth</name>
 	<url>http://maven.apache.org</url>
-	<description>Common Notificationa nd Templating Service</description>
+	<description>Auth and RBAC service</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -28,35 +28,24 @@
 
 	<dependencies>
 
-		<!-- Swagger infos -->
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-amx</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-auth</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -80,16 +69,6 @@
 	</build>
 
 	<repositories>
-		<repository>
-			<id>itext</id>
-			<name>iText Repository - releases</name>
-			<url>https://repo.itextsupport.com/releases</url>
-		</repository>
-		<repository>
-			<id>Adobe</id>
-			<name>Adobe Repository - releases</name>
-			<url>https://repo.adobe.com/nexus/content/repositories/public/</url>
-		</repository>
 		<repository>
 			<id>jcenter</id>
 			<url>https://jcenter.bintray.com/</url>

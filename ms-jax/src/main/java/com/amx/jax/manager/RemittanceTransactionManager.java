@@ -12,6 +12,7 @@ import static com.amx.amxlib.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -29,8 +30,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
+import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
+import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -42,6 +45,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -66,6 +70,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -83,6 +88,7 @@ import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.util.RoundUtil;
+import com.amx.jax.validation.RemittanceTransactionRequestValidator;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -155,6 +161,9 @@ public class RemittanceTransactionManager {
 	private BeneficiaryCheckService beneCheckService;
 
 	@Autowired
+	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
+
+	@Autowired
 	private UserService userService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
@@ -165,8 +174,16 @@ public class RemittanceTransactionManager {
 	private JaxUtil jaxUtil;
 	@Autowired
 	RoutingService routingService;
+	@Autowired
+	JaxProperties jaxProperties;
+	@Autowired
+	NewExchangeRateService newExchangeRateService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
+	
+	private static final String IOS="IOS";
+	private static final String ANDROID="ANDROID";
+	private static final String WEB="WEB";
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -344,6 +361,7 @@ public class RemittanceTransactionManager {
 			if (loyalityPointsAvailable == null
 					|| (loyalityPointsAvailable.longValue() < maxLoyalityPointRedeem.longValue())) {
 				responseModel.setCanRedeemLoyalityPoints(false);
+				responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 			} else {
 				responseModel.setCanRedeemLoyalityPoints(true);
 			}
@@ -418,7 +436,8 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("P_BENEFICIARY_RELASHIONSHIP_ID", beneId);
 		remitApplParametersMap.put("P_BRANCH_ID", meta.getCountryBranchId());
 		remitApplParametersMap.put("P_SOURCE_OF_INCOME_ID", model.getSourceOfFund());
-
+		remitApplParametersMap.put("P_LOCAL_AMT", model.getLocalAmount());
+		remitApplParametersMap.put("P_FOREIGN_AMT", model.getForeignAmount());
 	}
 
 	private void addBeneficiaryParameters(BenificiaryListView beneficiary) {
@@ -510,6 +529,11 @@ public class RemittanceTransactionManager {
 			BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
+		if (jaxProperties.getExrateBestRateLogicEnable()) {
+			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
+			return newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount, routingBankId);
+		}
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
@@ -553,6 +577,7 @@ public class RemittanceTransactionManager {
 
 		if (comission == null || comission.intValue() == 0) {
 			responseModel.setCanRedeemLoyalityPoints(false);
+			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
 		}
 		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
 			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
@@ -654,6 +679,10 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
+		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+
+		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
@@ -665,7 +694,7 @@ public class RemittanceTransactionManager {
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
 		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
-				.createAdditionalInstnData(remittanceApplication);
+				.createAdditionalInstnData(remittanceApplication, model);
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
@@ -768,28 +797,43 @@ public class RemittanceTransactionManager {
 		return status;
 	}
 
-	private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    	
+    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
 
-		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
-
-		BigDecimal onlineLimit = BigDecimal.ZERO;
-		BigDecimal mobileLimit = BigDecimal.ZERO;
-
-		for (TransactionLimitCheckView view : trnxLimitList) {
-			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-				onlineLimit = view.getComplianceChkLimit();
-			}
-			if (JaxChannel.ANDROID.toString().equals(view.getChannel())) {
-				mobileLimit = view.getComplianceChkLimit();
-			}
-		}
-
-		CivilIdOtpModel otpMmodel = null;
-		if ((meta.getChannel().equals(JaxChannel.ONLINE) && model.getLocalAmount().compareTo(onlineLimit) > 0)
-				|| (meta.getChannel().equals(JaxChannel.MOBILE) && model.getLocalAmount().compareTo(mobileLimit) > 0)) {
-			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null).getData().getValues().get(0);
-		}
-		return otpMmodel;
-	}
-
+    	BigDecimal onlineLimit = BigDecimal.ZERO;
+    	BigDecimal androidLimit = BigDecimal.ZERO;
+    	BigDecimal iosLimit = BigDecimal.ZERO;
+    			
+    	for (TransactionLimitCheckView view:trnxLimitList) {
+    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+    			onlineLimit = view.getComplianceChkLimit();
+    		}
+    		if(ANDROID.equals(view.getChannel())) {
+    			androidLimit = view.getComplianceChkLimit();
+    		}
+    		if(IOS.equals(view.getChannel())) {
+    			iosLimit = view.getComplianceChkLimit();
+    		}
+    	}
+    	
+        CivilIdOtpModel otpMmodel = null;
+        if ( ((meta.getChannel().equals(JaxChannel.ONLINE)) && 
+              (meta.getAppType().equals(WEB)) &&
+              (model.getLocalAmount().compareTo(onlineLimit)>0) ) || 
+                
+              (meta.getAppType().equals(IOS) && 
+                    model.getLocalAmount().compareTo(iosLimit)>0) ||
+              
+              (meta.getAppType().equals(ANDROID) && 
+                      model.getLocalAmount().compareTo(androidLimit)>0)){
+            
+            List<CommunicationChannel> channel = new ArrayList<>();
+            channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
+            channel.add(CommunicationChannel.MOBILE);
+            otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null,channel,null,null).getData().getValues().get(0);
+        }
+        return otpMmodel;
+    }
+	
 }

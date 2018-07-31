@@ -15,7 +15,6 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auth.AuthService;
 import com.amx.jax.auth.AuthServiceClient;
-import com.amx.jax.auth.AuthService.ApiEndPoints;
 import com.amx.jax.auth.dto.EmployeeDetailsDTO;
 import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.models.PermScope;
