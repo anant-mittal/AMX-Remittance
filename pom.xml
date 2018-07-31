@@ -107,7 +107,6 @@
 		<module>common-utils</module>
 		<module>common-lib</module>
 		<module>lib-ext-jar</module>
-		<module>lib-swagger</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
 		<module>lib-auth</module>
