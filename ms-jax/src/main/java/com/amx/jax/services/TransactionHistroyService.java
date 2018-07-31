@@ -151,6 +151,7 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 	            model.setTransactionReference(getTransactionReferece(hist));
+	            model.setCompanyId(metaData.getCompanyId());
 	            
 	            BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
