@@ -29,12 +29,12 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
+	private String mOtp;
+	private String eOtp;
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
-	private String mOtp;
-	private String eOtp;
 
 	/*
 	 * (non-Javadoc)
@@ -143,6 +143,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
+	
 	public String getmOtp() {
 		return mOtp;
 	}
