@@ -19,7 +19,49 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
+		<amx.version>0.0.1-SNAPSHOT</amx.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-utils</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-lib</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-swagger</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-mcq</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-amx</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-auth</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-postman</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -110,12 +152,14 @@
 		<module>server-payg</module>
 
 		<module>server-ui</module>
+
 		<module>server-stomp</module>
 		
 		<module>server-offsite</module>
+
 		<module>server-admin</module>
- 		<module>server-sso</module>
-		<module>server-kiosk</module>
-		<module>server-sample</module>
+ 		<!-- <module>server-sso</module> -->
+		<!-- <module>server-kiosk</module> -->
+		<!-- <module>server-sample</module> -->
 	</modules>
 </project>

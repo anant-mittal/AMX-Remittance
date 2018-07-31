@@ -42,7 +42,6 @@
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<!-- Enable deploy for this submodule. -->
@@ -58,5 +57,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
