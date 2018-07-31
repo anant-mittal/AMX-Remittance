@@ -142,8 +142,7 @@ public class PubController {
 		wrapper.getData().setScheme(request.getScheme());
 		wrapper.getData().setDevice(userDevice.toMap());
 		wrapper.getData().message = calcLibs.get().getRSName();
-		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
-				appConfig.isDebug());
+		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
 		return wrapper;
 	}
 
