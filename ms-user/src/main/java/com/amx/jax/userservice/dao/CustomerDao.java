@@ -66,7 +66,9 @@ public class CustomerDao {
 	
 	/*public Customer getCustomerByIdentityInt(String identityInt) {
 		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
-	}*/
+		}
+  */
+
 	
 	@Transactional
 	public Customer getCustomerByIdentityInt(String identityInt) {
