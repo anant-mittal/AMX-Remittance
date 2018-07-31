@@ -64,8 +64,15 @@ public class CustomerDao {
 		return cust;
 	}
 	
-	public Customer getCustomerByIdentityInt(String identityInt) {
+	/*public Customer getCustomerByIdentityInt(String identityInt) {
 		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
+		}
+  */
+
+	
+	@Transactional
+	public Customer getCustomerByIdentityInt(String identityInt) {
+		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
 	}
 
 	@Transactional
@@ -144,7 +151,7 @@ public class CustomerDao {
 				cust.setMobile(model.getMobile());
 			}
 			if(cust.getUpdatedBy() == null)
-				cust.setUpdatedBy(cust.getCreatedBy());		
+				cust.setUpdatedBy(cust.getCreatedBy());			
 
 			customerRepo.save(cust);
 		}
