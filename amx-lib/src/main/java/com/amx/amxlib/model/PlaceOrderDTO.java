@@ -6,6 +6,7 @@ import java.util.Date;
 import javax.validation.constraints.NotNull;
 import com.amx.jax.model.AbstractModel;
 
+
 /**
  * @author Subodh Bhoir
  *

@@ -171,12 +171,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveSecurityQuestions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		} catch (Exception ae) {
+			return JaxSystemError.evaluate(ae);
+		}
 
 	}
 

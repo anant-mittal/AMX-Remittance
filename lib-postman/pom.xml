@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 	<name>lib-postman</name>
 	<url>http://maven.apache.org</url>
-	<description>Common utils library for boot projects</description>
+	<description>Client for postman service</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -36,5 +36,4 @@
 		</dependency>
 
 	</dependencies>
-	
 </project>

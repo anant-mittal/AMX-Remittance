@@ -2,6 +2,7 @@ package com.bootloaderjs;
 
 import java.util.regex.Pattern;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
 
 public class App { // Noncompliant
@@ -15,12 +16,12 @@ public class App { // Noncompliant
 	 */
 	public static void main(String[] args) {
 		System.out.println();
-		generate();
-
+		// generate();
+		System.out.println(ArgUtil.areEqual(" ", " "));
 	}
 
 	public static void generate() {
-		System.out.println(CryptoUtil.generateHMAC("appd-kwt.amxremit.com"));
+		System.out.println(CryptoUtil.generateHMAC("appd-kwt.amxremit.com", "traceId"));
 	}
 
 }
