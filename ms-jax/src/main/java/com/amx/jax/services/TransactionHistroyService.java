@@ -206,7 +206,7 @@ public class TransactionHistroyService extends AbstractService {
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 			model.setTransactionReference(getTransactionReferece(hist));
-
+			model.setCompanyId(metaData.getCompanyId());
 			if (!beneMap.isEmpty() && beneMap != null && model.getBeneficiaryRelationSeqId()!=null) {
 				Boolean status = Boolean.FALSE;
 				if (beneMap.get(model.getBeneficiaryRelationSeqId()) != null && beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
