@@ -8,10 +8,10 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @SpringBootApplication
 @ComponentScan(basePackages = { "com.amx.jax" })
 @EnableAsync(proxyTargetClass = true)
-public class AuthServiceApplication {
+public class RbaacServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AuthServiceApplication.class, args);
+		SpringApplication.run(RbaacServiceApplication.class, args);
 	}
 
 }
