@@ -6,6 +6,6 @@ import com.amx.jax.scope.TenantScoped;
 
 @TenantScoped
 @Component
-public class AuthServiceConfig {
+public class RbaacServiceConfig {
 
 }
