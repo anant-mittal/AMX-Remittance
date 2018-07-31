@@ -12,6 +12,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
@@ -19,6 +21,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -47,6 +50,9 @@ public class RemittanceApplicationDao {
 
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
+	
+    @Autowired
+    IPlaceOrderDao placeOrderdao;
 
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
@@ -76,4 +82,23 @@ public class RemittanceApplicationDao {
 						applicationfinYear);
 		return remittanceTransactionView;
 	}
+	
+    public void updatePlaceOrder(RemittanceTransactionRequestModel model,RemittanceApplication remittanceApplication) {
+
+        //to update place order status we update applicaiton id in placeorder table
+        if (model.getPlaceOrderId() != null) {
+        List<PlaceOrder> poList = placeOrderdao.getPlaceOrderForId(model.getPlaceOrderId());
+        PlaceOrder po =null;
+            if (poList!=null && poList.size()!=0) {
+                po=poList.get(0);
+                po.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+                placeOrderdao.save(po);
+            }else {
+                logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
+            }
+            logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
+        }
+        
+       
+    }
 }

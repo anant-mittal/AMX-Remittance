@@ -24,7 +24,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private boolean availLoyalityPoints;
 	private BigDecimal additionalBankRuleFiledId;
 	private BigDecimal srlId;
-
+	private BigDecimal placeOrderId;
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -75,13 +76,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
-	}
-
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -97,5 +91,21 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
+
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
+    @Override
+    public String toString() {
+        return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+                + ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+                + availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+                + ", placeOrderId=" + placeOrderId + "]";
+    }
 
 }
