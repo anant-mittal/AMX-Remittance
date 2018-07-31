@@ -5,7 +5,10 @@ package com.amx.jax.payment.controller;
 
 import static com.amx.jax.payment.PaymentConstant.PAYMENT_API_ENDPOINT;
 
+import java.text.SimpleDateFormat;
 import java.util.Base64;
+import java.util.Calendar;
+import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +116,13 @@ public class PayGController {
 		try {
 			payGClient.initialize(payGParams);
 		} catch (RuntimeException e) {
+			 SimpleDateFormat df = new SimpleDateFormat("HH:mm");
+			 Calendar cal = Calendar.getInstance();
+			 cal.setTime(new Date());
+			 cal.add(Calendar.MINUTE, 15);
+			 String returnTime = df.format(cal.getTime());
 			model.addAttribute("REDIRECTURL", appRedirectUrl);
+			model.addAttribute("RETURN_TIME", returnTime);
 			return "thymeleaf/pg_error";
 		}
 
