@@ -149,12 +149,8 @@ public class CustomerDao {
 				cust.setMobile(model.getMobile());
 			}
 			if(cust.getUpdatedBy() == null)
-<<<<<<<<< Temporary merge branch 1
-				cust.setUpdatedBy(cust.getCreatedBy());
-=========
-				cust.setUpdatedBy(cust.getCreatedBy());		
+				cust.setUpdatedBy(cust.getCreatedBy());			
 
->>>>>>>>> Temporary merge branch 2
 			customerRepo.save(cust);
 		}
 		
