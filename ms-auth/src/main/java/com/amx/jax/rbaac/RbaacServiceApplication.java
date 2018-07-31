@@ -1,4 +1,4 @@
-package com.amx.jax.auth;
+package com.amx.jax.rbaac;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
