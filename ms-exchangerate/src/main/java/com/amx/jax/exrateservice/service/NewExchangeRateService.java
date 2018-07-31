@@ -1,6 +1,7 @@
 package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -103,16 +104,16 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId) {
-		Set<BankMasterDTO> bankMasterDtoSet = new HashSet<>();
+		List<BankMasterDTO> bankMasterDto = new ArrayList<>();
 
 		List<PipsMaster> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId);
 		pips.forEach(i -> {
 			BankMasterDTO dto = bankMasterService.convert(i.getBankMaster());
-			bankMasterDtoSet.add(dto);
+			bankMasterDto.add(dto);
 			dto.setExRateBreakup(createBreakUp(i.getDerivedSellRate(), lcAmount));
 
 		});
-		return bankMasterDtoSet.stream().collect(Collectors.toList());
+		return bankMasterDto;
 	}
 
 }

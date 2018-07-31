@@ -14,6 +14,7 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.PipsMaster;
 
+
 @Transactional
 public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDecimal> {
 

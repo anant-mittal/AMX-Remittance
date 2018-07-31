@@ -157,7 +157,7 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private CurrencyMasterService currencyMasterService;
-
+	
 	@Autowired
 	private BeneficiaryCheckService beneCheckService;
 
@@ -168,9 +168,9 @@ public class RemittanceTransactionManager {
 	private UserService userService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
-
+	
 	private boolean isSaveRemittanceFlow;
-
+	
 	@Autowired
 	private JaxUtil jaxUtil;
 	@Autowired
@@ -179,7 +179,7 @@ public class RemittanceTransactionManager {
 	JaxProperties jaxProperties;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
-
+	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	private static final String IOS="IOS";
@@ -242,7 +242,7 @@ public class RemittanceTransactionManager {
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
-
+		
 		logger.info("newCommission: " + newCommission);
 
 		if (newCommission != null) {
@@ -255,13 +255,13 @@ public class RemittanceTransactionManager {
 			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
 		}
 		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
-		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
+		breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
 		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
 		responseModel.setExRateBreakup(breakup);
-
+		
 		addExchangeRateParameters(responseModel);
 		applyRoudingLogic(responseModel.getExRateBreakup());
 		return responseModel;
@@ -311,22 +311,22 @@ public class RemittanceTransactionManager {
 		logger.info("newCommission: " + comission);
 		return comission;
 	}
-
-	private Map<String, Object> getCommissionRange(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
-
+	
+	private Map<String,Object> getCommissionRange(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+		
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
-		Map<String, Object> comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
-		if (comissionRangeMap.get("FROM_AMOUNT") == null || comissionRangeMap.get("TO_AMOUNT") == null) {
+		Map<String,Object> comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
+		if (comissionRangeMap.get("FROM_AMOUNT")==null || comissionRangeMap.get("TO_AMOUNT")==null) {
 			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
 			comissionRangeMap = exchangeRateProcedureDao.getCommissionRange(remitApplParametersMap);
 		}
 		logger.info("comissionRangeMap: " + comissionRangeMap.toString());
 		return comissionRangeMap;
-
+		
 	}
-
+	
 	private void recalculateDeliveryAndRemittanceModeId(Map<String, Object> routingDetails,
 			ExchangeRateBreakup breakup) {
 		if (breakup.getConvertedFCAmount() != null) {
@@ -371,12 +371,12 @@ public class RemittanceTransactionManager {
 
 	private void validateBeneficiaryTransactionLimit(BenificiaryListView beneficiary) {
 		AuthenticationLimitCheckView beneficiaryPerDayLimit = parameterService.getPerCustomerPerBeneTrnxLimit();
-
+		
 		Customer customer = custDao.getCustById(meta.getCustomerId());
 		logger.info("customer Id :" + customer.getCustomerReference() + "\t  beneficiary.getBankCode() :"
 				+ beneficiary.getBankCode() + "\t Acc No :" + beneficiary.getBankAccountNumber() + "\t Bene Name :"
 				+ beneficiary.getBenificaryName());
-
+		
 		List<ViewTransfer> transfers = transferRepo.todayTransactionCheck(customer.getCustomerReference(),
 				beneficiary.getBankCode(),
 				beneficiary.getBankAccountNumber() == null ? "" : beneficiary.getBankAccountNumber(),
@@ -453,7 +453,7 @@ public class RemittanceTransactionManager {
 
 	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
 			Map<String, Object> routingDetails) {
-		if (!isSaveRemittanceFlow) {
+		if(!isSaveRemittanceFlow) {
 			return;
 		}
 		String appCurrencyQuote = currencyMasterService.getApplicationCountryCurrencyQuote();
@@ -486,7 +486,7 @@ public class RemittanceTransactionManager {
 							+ currencyQuoteName + " " + toAmount + ".";
 				}
 			}
-
+			
 			if (!StringUtils.isBlank(msg)) {
 				throw new GlobalException(msg, REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 			}
@@ -511,13 +511,13 @@ public class RemittanceTransactionManager {
 	private void validateNumberOfTransactionLimits() {
 		Map<String, Integer> customerTxnAmounts = getCustomerTransactionCounts();
 		List<AuthenticationLimitCheckView> txnLimits = parameterService.getAllNumberOfTxnLimits();
-
+		
 		for (AuthenticationLimitCheckView limitView : txnLimits) {
-
+			
 			logger.info(" limitView.getAuthorizationType() :" + limitView.getAuthorizationType() + "\t Auth Limit :"
 					+ limitView.getAuthLimit());
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
-			logger.info("Trnx Count for Limit Check :" + txnCount);
+			logger.info("Trnx Count for Limit Check :"+txnCount);
 			if (txnCount >= limitView.getAuthLimit().intValue()) {
 				throw new GlobalException(limitView.getAuthMessage(), NO_OF_TRANSACTION_LIMIT_EXCEEDED);
 			}
@@ -539,22 +539,22 @@ public class RemittanceTransactionManager {
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
 		breakup.setInverseRate(inverseExchangeRate);
-
+		
 		breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
+		
+		if (fcAmount != null &&  fcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
 			breakup.setConvertedFCAmount(fcAmount);
 		}
-		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
 		List<PipsMaster> pips = null;
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
-			pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
-		} else {
+		
+		if(fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO)>0){
+		pips = pipsDao.getPipsMasterForBranch(exchangeRate, fcAmount);
+		}else{
 			pips = pipsDao.getPipsMasterForBranch(exchangeRate, breakup.getConvertedFCAmount());
 		}
 		// apply discounts
@@ -564,12 +564,12 @@ public class RemittanceTransactionManager {
 			breakup.setInverseRate(inverseExchangeRate);
 			breakup.setRate(new BigDecimal(1).divide(inverseExchangeRate, 10, RoundingMode.HALF_UP));
 		}
-
-		if (fcAmount != null && fcAmount.compareTo(BigDecimal.ZERO) > 0) {
+		
+		if (fcAmount != null &&  fcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedLCAmount(breakup.getInverseRate().multiply(fcAmount));
 			breakup.setConvertedFCAmount(fcAmount);
 		}
-		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO) > 0) {
+		if (lcAmount != null && lcAmount.compareTo(BigDecimal.ZERO)>0) {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
@@ -620,7 +620,7 @@ public class RemittanceTransactionManager {
 		beneBankDetails.put("P_SERVICE_GROUP_CODE", beneficiary.getServiceGroupCode());
 		beneBankDetails.put("P_CURRENCY_ID", beneficiary.getCurrencyId());
 		beneBankDetails.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
-
+		
 		return beneBankDetails;
 	}
 
@@ -673,7 +673,7 @@ public class RemittanceTransactionManager {
 		output.put("11", weeklyCount);
 		return output;
 	}
-
+	
 	@Autowired
 	AuditService auditService;
 
@@ -703,19 +703,19 @@ public class RemittanceTransactionManager {
 		remiteAppModel.setDocumentFinancialYear(remittanceApplication.getDocumentFinancialyear());
 		remiteAppModel.setMerchantTrackId(meta.getCustomerId());
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getDocumentNo().toString());
-
-		CivilIdOtpModel civilIdOtpModel = null;
-		if (model.getmOtp() == null) {
-			// this flow is for send OTP
-			civilIdOtpModel = addOtpOnRemittance(model);
-		} else {
-			// this flow is for validate OTP
-			userService.validateOtp(null, model.getmOtp(), null);
-		}
-		remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
-
+		
+        CivilIdOtpModel civilIdOtpModel = null;
+        if (model.getmOtp()==null) {
+            //this flow is for send OTP
+            civilIdOtpModel= addOtpOnRemittance(model);
+        }else {
+           //this flow is for validate OTP
+           userService.validateOtp(null, model.getmOtp(), null);
+        }
+        remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
+		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		auditService.log(createTransactionEvent(remiteAppModel, JaxTransactionStatus.APPLICATION_CREATED));
+		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
 		return remiteAppModel;
 
 	}
@@ -798,27 +798,27 @@ public class RemittanceTransactionManager {
 		return status;
 	}
 
-	private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
+    	
+    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
 
-		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
-
-		BigDecimal onlineLimit = BigDecimal.ZERO;
+    	BigDecimal onlineLimit = BigDecimal.ZERO;
     	BigDecimal androidLimit = BigDecimal.ZERO;
     	BigDecimal iosLimit = BigDecimal.ZERO;
-
-		for (TransactionLimitCheckView view : trnxLimitList) {
-			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-				onlineLimit = view.getComplianceChkLimit();
-			}
+    			
+    	for (TransactionLimitCheckView view:trnxLimitList) {
+    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+    			onlineLimit = view.getComplianceChkLimit();
+    		}
     		if(ANDROID.equals(view.getChannel())) {
     			androidLimit = view.getComplianceChkLimit();
     		}
     		if(IOS.equals(view.getChannel())) {
     			iosLimit = view.getComplianceChkLimit();
-			}
-		}
-
-		CivilIdOtpModel otpMmodel = null;
+    		}
+    	}
+    	
+        CivilIdOtpModel otpMmodel = null;
         if ( ((meta.getChannel().equals(JaxChannel.ONLINE)) && 
               (meta.getAppType().equals(WEB)) &&
               (model.getLocalAmount().compareTo(onlineLimit)>0) ) || 
@@ -833,8 +833,8 @@ public class RemittanceTransactionManager {
             channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
             channel.add(CommunicationChannel.MOBILE);
             otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null,channel,null,null).getData().getValues().get(0);
-		}
-		return otpMmodel;
-	}
-
+        }
+        return otpMmodel;
+    }
+	
 }

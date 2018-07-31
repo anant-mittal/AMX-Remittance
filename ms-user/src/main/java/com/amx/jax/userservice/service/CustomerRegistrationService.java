@@ -62,7 +62,7 @@ public class CustomerRegistrationService extends AbstractService {
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
 	@Autowired
-	CountryMetaValidation countryMetaValidation;
+	CountryMetaValidation countryMetaValidation;	
 	@Autowired
 	CustomerService customerService;
 	@Autowired
