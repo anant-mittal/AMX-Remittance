@@ -31,7 +31,7 @@ public class AuthServiceClient implements AuthService {
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveEnums() {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.SYNC_PERMS).post()
-				.asResponseModel(BoolRespModel.class);
+				.asApiResponse(BoolRespModel.class);
 	}
 
 	/**
@@ -41,7 +41,7 @@ public class AuthServiceClient implements AuthService {
 	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(String empCode, String identity, String ipaddress) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.USER_VALID).queryParam("empCode", empCode)
 				.queryParam("identity", identity).queryParam("ipaddress", ipaddress).get()
-				.asResponseModel(SendOtpModel.class);
+				.asApiResponse(SendOtpModel.class);
 	}
 
 	@Override
@@ -49,13 +49,13 @@ public class AuthServiceClient implements AuthService {
 			String ipaddress) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.USER_AUTH).queryParam("empCode", empCode)
 				.queryParam("identity", identity).queryParam("mOtp", mOtp).queryParam("ipaddress", ipaddress).get()
-				.asResponseModel(EmployeeDetailsDTO.class);
+				.asApiResponse(EmployeeDetailsDTO.class);
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveRoleMaster(String roleTitle) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLE).queryParam("roleTitle", roleTitle)
-				.post().asResponseModel(BoolRespModel.class);
+				.post().asApiResponse(BoolRespModel.class);
 	}
 
 	@Override
@@ -63,19 +63,19 @@ public class AuthServiceClient implements AuthService {
 			PermScope permScope, String admin) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLE_PERM).queryParam("roleId", roleId)
 				.queryParam("permission", permission).queryParam("permScope", permScope).queryParam("admin", admin)
-				.post().asResponseModel(BoolRespModel.class);
+				.post().asApiResponse(BoolRespModel.class);
 	}
 
 	@Override
 	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.USER_ROLE).queryParam("roleId", roleId)
-				.queryParam("userId", userId).post().asResponseModel(BoolRespModel.class);
+				.queryParam("userId", userId).post().asApiResponse(BoolRespModel.class);
 	}
 
 	@Override
 	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(BigDecimal userId) {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.USER_PERMS).queryParam("userId", userId)
-				.post().asResponseModel(UserDetailsDTO.class);
+				.post().asApiResponse(UserDetailsDTO.class);
 	}
 
 }

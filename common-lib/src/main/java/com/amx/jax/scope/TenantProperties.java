@@ -2,11 +2,13 @@ package com.amx.jax.scope;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.List;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -98,6 +100,13 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, Tenant.DEFAULT));
 						} else if ("java.lang.String[]".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsStringArray(propertyValue));
+						} else if (type instanceof Class && ((Class<?>) type).isArray()
+								&& ((Class<?>) type).getComponentType().isEnum()) {
+							Class<?> componentType = ((Class<?>) type).getComponentType();
+							field.set(object, ArgUtil.parseAsEnumArray(propertyValue, componentType));
+							// LOGGER.warn("********** LUIST ***** " + c.getComponentType());
+							// field.set(object, ArgUtil.parseAsListOfT(propertyValue, defaultValue,
+							// defaultListValue, false);
 						} else if (type instanceof Class && ((Class<?>) type).isEnum()) {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, type));
 						} else if (type instanceof Stringable) {
@@ -107,7 +116,7 @@ public class TenantProperties {
 							o.fromString(ArgUtil.parseAsString(propertyValue));
 							field.set(object, o);
 						} else {
-							LOGGER.warn("Property Type Undefined " + typeName);
+							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
 						}
 					}
 				}

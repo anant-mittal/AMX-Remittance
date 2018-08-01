@@ -1,5 +1,6 @@
 package com.amx.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,6 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class ArgUtil.
@@ -20,6 +24,8 @@ import java.util.Set;
  * 
  */
 public final class ArgUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArgUtil.class);
 
 	/**
 	 * Instantiates a new arg util.
@@ -721,15 +727,29 @@ public final class ArgUtil {
 	}
 
 	public static Enum parseAsEnum(Object value, Type type) {
-		String enumString = parseAsString(value);
-		if (enumString == null) {
-			return null;
-		}
-		Class clazz = (Class) type;
-		if (clazz.isEnum()) {
-			return Enum.valueOf(clazz, enumString);
+		try {
+			String enumString = parseAsString(value);
+			if (enumString == null) {
+				return null;
+			}
+			Class clazz = (Class) type;
+			if (clazz.isEnum()) {
+				return Enum.valueOf(clazz, enumString);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Enum Cast Exception", e);
 		}
 		return null;
+	}
+
+	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {
+		Class<T> type = (Class<T>) componentType;
+		String[] str = ArgUtil.parseAsStringArray(value);
+		Object o = Array.newInstance(type, str.length);
+		for (int i = 0; i < str.length; i++) {
+			Array.set(o, i, ArgUtil.parseAsEnum(str[i], componentType));
+		}
+		return (T[]) o;
 	}
 
 	/**

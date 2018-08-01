@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
-import com.amx.jax.postman.PostManService;
+import com.amx.jax.rest.RestService;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
@@ -73,7 +73,7 @@ public class HomeController {
 
 	/** The post man service. */
 	@Autowired
-	private PostManService postManService;
+	private RestService restService;
 
 	/** The clean CDN url. */
 	@Value("${jax.cdn.url}")
@@ -92,7 +92,8 @@ public class HomeController {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
 			try {
-				Map<String, Object> map = postManService.getMap(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew);
+				Map<String, Object> map = restService.ajax(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew).get()
+						.asMap();
 				if (map.containsKey("version")) {
 					versionNew = ArgUtil.parseAsString(map.get("version"));
 				}
