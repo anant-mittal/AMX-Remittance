@@ -6,6 +6,8 @@ import com.amx.amxlib.constant.JaxTransactionStatus;
 
 public class JaxTransactionEvent extends JaxAuditEvent {
 
+	private static final long serialVersionUID = 1L;
+
 	JaxTransactionStatus transactionStatus;
 
 	String applicationDocumentNo;

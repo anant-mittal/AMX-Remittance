@@ -1,7 +1,6 @@
 package com.amx.jax.payment.gateway;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class PayGEvent extends AuditEvent {
 

@@ -24,7 +24,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -57,19 +56,4 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<!-- Enable deploy for this submodule. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-deploy</id>
-						<phase>deploy</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

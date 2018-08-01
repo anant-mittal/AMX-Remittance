@@ -20,9 +20,9 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.service.CustomerService;
-import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
@@ -62,7 +62,7 @@ public class CustomerRegistrationService extends AbstractService {
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
 	@Autowired
-	CountryMetaValidation countryMetaValidation;
+	CountryMetaValidation countryMetaValidation;	
 	@Autowired
 	CustomerService customerService;
 	@Autowired

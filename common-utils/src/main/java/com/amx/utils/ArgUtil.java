@@ -777,6 +777,13 @@ public final class ArgUtil {
 		return (str == null || Constants.BLANK.equals(str));
 	}
 
+	public static boolean areEqual(Object a, Object b) {
+		if (a == null) {
+			return b == null;
+		}
+		return a.equals(b);
+	}
+
 	public static <T> T ifNotEmpty(T... strs) {
 		for (T str : strs) {
 			if (!isEmpty(str)) {

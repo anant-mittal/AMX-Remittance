@@ -3,10 +3,7 @@ package com.amx.jax.validation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +190,8 @@ public class RemittanceTransactionRequestValidator {
 				additionalValidations.put("format", format);
 				i.setAdditionalValidations(additionalValidations);
 			}
-			if ("PAYMENT PERIOD EXPIRY DATE".equals(i.getName())) {
+
+			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
 				additionalValidations.put("format", "MM/DD/YYYY");

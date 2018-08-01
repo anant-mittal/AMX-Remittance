@@ -217,6 +217,7 @@ public class RestService {
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
+
 		public <T> AmxApiResponse<T, Object> asResponseModel(Class<T> responseType) {
 			URI uri = builder.buildAndExpand(uriParams).toUri();
 			return restTemplate
