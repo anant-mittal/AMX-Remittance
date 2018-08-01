@@ -2,7 +2,6 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.EXCHANGE_RATE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_RATEALERT;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +21,7 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -131,10 +131,10 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
-	public ApiResponse<PlaceOrderDTO> getPlaceOrderDetails(BigDecimal fromAmount, BigDecimal toAmount,
+	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal fromAmount, BigDecimal toAmount,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal derivedSellRate) throws ResourceNotFoundException, InvalidInputException {
 		try {
-			String endpoint = PLACE_ORDER_RATEALERT+"/placeorder";
+			String endpoint = PLACE_ORDER_ENDPOINT+"/get/placeorder/ontrigger";
 			StringBuilder sb = new StringBuilder();
 			sb.append("?").append("fromAmount=").append(fromAmount);
 			sb.append("&").append("toAmount=").append(toAmount);
@@ -145,10 +145,10 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 			}
 			sb.append("&").append("derivedSellRate=").append(derivedSellRate);
 			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
-			HttpEntity<PlaceOrderDTO> requestEntity = new HttpEntity<PlaceOrderDTO>(getHeader());
+			HttpEntity<PlaceOrderNotificationDTO> requestEntity = new HttpEntity<PlaceOrderNotificationDTO>(getHeader());
 			log.info("calling getExchangeRate api: " + getPlaceOrderRateUrl);
 			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderDTO>>() {
+					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderNotificationDTO>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;

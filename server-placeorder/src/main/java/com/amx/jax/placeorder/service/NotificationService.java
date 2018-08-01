@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.jax.placeorder.dao.PlaceOrderNotificationDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -24,20 +24,20 @@ public class NotificationService {
 	@Autowired
 	private PostManService postManService;
 	
-	public void sendBatchNotification(PlaceOrderNotificationDTO placeorderDTO) {
-			logger.info("Sending rate alert to " + placeorderDTO.getEmail());
+	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
+		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
+			logger.info("Sending rate alert to " + placeorderNot.getEmail());
 			Email email = new Email();
 			email.setSubject("AMX Rate Alert");
-			email.addTo(placeorderDTO.getEmail());
+			email.addTo(placeorderNot.getEmail());
 			email.setTemplate(Templates.RATE_ALERT);
 			email.setHtml(true);
-			email.getModel().put(RESP_DATA_KEY, placeorderDTO);
+			email.getModel().put(RESP_DATA_KEY, placeorderNot);
 			try {
 				postManService.sendEmailAsync(email);
 			} catch (PostManException e) {
 				logger.error("error in sendBatchNotification", e);
 			}
-
+		}
 	}
-
 }

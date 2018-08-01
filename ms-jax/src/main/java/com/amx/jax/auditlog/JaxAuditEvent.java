@@ -11,8 +11,19 @@ public class JaxAuditEvent extends AuditEvent {
 	private static final long serialVersionUID = 7451732272992078549L;
 	BigDecimal customerId;
 	
+	Boolean success;
+
+	public Boolean getSuccess() {
+		return success;
+	}
+
+	public void setSuccess(Boolean success) {
+		this.success = success;
+	}
+	
+	
 	public static enum Type implements EventType {
-		APPLICATION_CREATED;
+		APPLICATION_CREATED,PLACE_ORDER_TRIGGER;
 
 		@Override
 		public EventMarker marker() {

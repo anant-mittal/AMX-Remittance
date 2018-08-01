@@ -46,6 +46,4 @@ public class ApiEndpoint {
     
     public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
     
-    public static final String PLACE_ORDER_RATEALERT = "/rate-alert";
-
 }

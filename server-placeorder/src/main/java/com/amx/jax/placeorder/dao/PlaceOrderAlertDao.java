@@ -12,19 +12,18 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.PlaceOrder;
-import com.amx.jax.placeorder.repository.IPlaceoderAlertRate;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PlaceOrderAlertDao {
 	
-	@Autowired
+/*	@Autowired
 	IPlaceoderAlertRate iPlaceoderAlertRate;
 
 	public List<PlaceOrder> getPlaceOrderAlertRate(BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
 		derivedSellRate  = BigDecimal.ONE.divide(derivedSellRate, 5, RoundingMode.HALF_UP);
 		return iPlaceoderAlertRate.getPlaceOrderAlertRate(countryId, currencyId, bankId ,derivedSellRate) ;
 	}
-
+*/
 
 }

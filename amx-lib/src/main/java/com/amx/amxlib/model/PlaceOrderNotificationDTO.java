@@ -1,12 +1,12 @@
-package com.amx.jax.placeorder.dao;
+package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class PlaceOrderNotificationDTO {
+public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneable{
 
 	/**
-	 * Shivaraj
+	 * 
 	 */
     BigDecimal onlinePlaceOrderId;
 	BigDecimal rate;
@@ -108,6 +108,11 @@ public class PlaceOrderNotificationDTO {
 
 	public void setOutputAmount(BigDecimal outputAmount) {
 		this.outputAmount = outputAmount;
+	}
+
+	@Override
+	public String getModelType() {
+		return "place-order-not-dto";
 	}
 
 	@Override
