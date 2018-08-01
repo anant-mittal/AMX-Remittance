@@ -112,7 +112,7 @@ public class UserDeviceBean extends UserDevice {
 	}
 
 	public boolean isDifferent() {
-		if (this.id == null || this.fingerprint == null) {
+		if (this.id == null || this.fingerprint == null || httpService == null) {
 			// this.resolve();
 			return true;
 		}
