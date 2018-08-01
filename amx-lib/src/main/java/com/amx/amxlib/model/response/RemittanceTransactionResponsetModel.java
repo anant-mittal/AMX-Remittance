@@ -4,10 +4,6 @@
 package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
-<<<<<<< HEAD
-=======
-
->>>>>>> staging_patch
 import com.amx.amxlib.constant.LoyalityPointState;
 import com.amx.jax.model.AbstractModel;
 
