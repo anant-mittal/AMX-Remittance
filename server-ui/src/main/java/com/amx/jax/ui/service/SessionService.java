@@ -244,8 +244,11 @@ public class SessionService {
 	}
 
 	public boolean isRequestAuthorized() {
-		if (!WebSecurityConfig.isPublicUrl(request.getRequestURI()) && !this.getAppDevice().isDifferent()) {
-			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.SHIJACK));
+		if (WebSecurityConfig.isPublicUrl(request.getRequestURI())) {
+			return true;
+		}
+		if (!this.getAppDevice().isAuthorized()) {
+			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.UNAUTH_DEVICE));
 			this.unauthorize();
 			return false;
 		}
