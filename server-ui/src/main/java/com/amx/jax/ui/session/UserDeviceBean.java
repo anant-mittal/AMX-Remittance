@@ -111,9 +111,8 @@ public class UserDeviceBean extends UserDevice {
 		return this;
 	}
 
-	public boolean isDifferent() {
-		if (this.id == null || this.fingerprint == null) {
-			// this.resolve();
+	public boolean isAuthorized() {
+		if (this.id == null || this.fingerprint == null || httpService == null) {
 			return true;
 		}
 		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);
