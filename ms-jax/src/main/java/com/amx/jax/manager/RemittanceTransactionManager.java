@@ -501,7 +501,7 @@ public class RemittanceTransactionManager {
 		BigDecimal netAmount = breakup.getNetAmount();
 		BenificiaryListView benificiary = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		boolean isNewBene = DateUtil.isToday(benificiary.getCreatedDate());
-		if (isNewBene && authLimit != null && netAmount.intValue() > authLimit.getAuthLimit().intValue()) {
+		if (isNewBene && authLimit != null && netAmount.doubleValue() > authLimit.getAuthLimit().doubleValue()) {
 			String errorExpr = jaxUtil.buildErrorExpression(TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE.toString(),
 					authLimit.getAuthLimit());
 			throw new GlobalException("New beneficiary max allowed limit exceeds", errorExpr);
