@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -21,6 +20,7 @@ import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
+import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CountryService;
@@ -50,7 +50,9 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}*/
 	
 	@RequestMapping(value ="/get-field-list" , method = RequestMethod.POST)
-	public AmxApiResponse<List<JaxConditionalFieldRule>, Object> getIdDetailsFields(@RequestBody GetJaxFieldRequest model) {
+	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(@RequestBody GetJaxFieldRequest model) {
+		JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
+		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIdDetailsFields(model);
 	}
 	

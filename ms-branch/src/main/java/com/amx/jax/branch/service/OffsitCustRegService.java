@@ -44,10 +44,12 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
+import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
+import com.amx.jax.service.PrefixService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
@@ -87,6 +89,9 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	BizcomponentDao bizcomponentDao;
+	
+	@Autowired
+	PrefixService prefixService;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -162,7 +167,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	}
 */
 	
-	public AmxApiResponse<List<JaxConditionalFieldRule>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
+	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
@@ -170,7 +175,30 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
 		if(fieldList.isEmpty())
 			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
-		return AmxApiResponse.build(fieldList);
+		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
+		return AmxApiResponse.build(dtoList);
+	}
+
+	private List<JaxConditionalFieldRuleDto> convertData(List<JaxConditionalFieldRule> fieldList) {
+		List<JaxConditionalFieldRuleDto> output = new ArrayList<>();
+		fieldList.forEach(i-> {
+			output.add(convertInDto(i));
+		});
+		return output;
+	}
+	
+
+	private JaxConditionalFieldRuleDto convertInDto(JaxConditionalFieldRule i) {
+		JaxConditionalFieldRuleDto dto = new JaxConditionalFieldRuleDto();
+		dto.setConditionKey(i.getConditionKey());
+		dto.setConditionValue(i.getConditionValue());
+		dto.setEntityName(i.getEntityName());
+		dto.setField(i.getField());
+		if(i.getField().getName().equalsIgnoreCase("OFFSITE_CUST_FIRST_NAME_PREFIX"))
+		{
+			dto.setPossibleValues(prefixService.getPrefixListOffsite());			
+		}		
+		return dto;
 	}
 
 	@SuppressWarnings("null")

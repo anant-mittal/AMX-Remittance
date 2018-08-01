@@ -66,7 +66,7 @@ public class RemittanceTransactionRequestValidator {
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
 		oldExchangeRate
 				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
-		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
+		if (oldExchangeRate.compareTo(oldExchangeRate) != 0) {
 			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
 		}
 	}
