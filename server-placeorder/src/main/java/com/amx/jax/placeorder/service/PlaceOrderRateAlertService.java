@@ -11,7 +11,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
-import com.amx.jax.services.AbstractService;
 
 @Service
 @SuppressWarnings("rawtypes")
