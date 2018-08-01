@@ -244,13 +244,13 @@ public class SessionService {
 	}
 
 	public boolean isRequestAuthorized() {
-		if (!this.validateSessionUnique()) {
-			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
+		if (!WebSecurityConfig.isPublicUrl(request.getRequestURI()) && !this.getAppDevice().isDifferent()) {
+			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.SHIJACK));
 			this.unauthorize();
 			return false;
 		}
-		if (!WebSecurityConfig.isPublicUrl(request.getRequestURI()) && !this.getAppDevice().isDifferent()) {
-			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.SHIJACK));
+		if (!this.validateSessionUnique()) {
+			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
 			this.unauthorize();
 			return false;
 		}
