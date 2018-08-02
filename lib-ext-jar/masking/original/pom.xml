@@ -9,8 +9,8 @@
 	<url>http://maven.apache.org</url>
 
 	<parent>
-		<groupId>com.amx.benefit</groupId>
-		<artifactId>lib-benefit</artifactId>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>masking</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -41,7 +41,7 @@
 							<artifactId>benefit</artifactId>
 							<version>1.0.original</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../../ext-jars/benefit.jar</file>
+							<file>${basedir}/../../lib/benefit.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>

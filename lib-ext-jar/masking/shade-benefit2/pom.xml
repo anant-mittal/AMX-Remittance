@@ -2,15 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>shaded</artifactId>
+	<artifactId>shade-benefit2</artifactId>
 	<packaging>jar</packaging>
-	<name>shaded</name>
+	<name>shade-benefit2</name>
 	<description>benefit shaded</description>
 	<url>http://maven.apache.org</url>
 
 	<parent>
-		<groupId>com.amx.benefit</groupId>
-		<artifactId>lib-benefit</artifactId>
+		<groupId>com.amx.jax</groupId>
+		<artifactId>masking</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
@@ -21,7 +21,7 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.amx.benefit</groupId>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>original</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -45,8 +45,8 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<finalName>bhr-benefit</finalName>
-							<outputDirectory>${basedir}/../../ext-jars/</outputDirectory>
+							<finalName>bhr-benefit2</finalName>
+							<outputDirectory>${basedir}/../../lib/</outputDirectory>
 							<relocations>
 								<relocation>
 									<pattern>com.aciworldwide.commerce.gateway.plugins</pattern>
