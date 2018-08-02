@@ -3,6 +3,8 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * @author Subodh Bhoir
  *
@@ -10,22 +12,49 @@ import java.util.Date;
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private BigDecimal placeOrderId;
+	
 	private BigDecimal customerId;
+	
+	@NotNull
 	private BigDecimal beneficiaryRelationshipSeqId;
+	
+	@NotNull
 	private BigDecimal targetExchangeRate;
+	
+	@NotNull
 	private BigDecimal bankRuleFieldId;
+	
+	@NotNull
 	private BigDecimal srlId;
+	
+	@NotNull
 	private BigDecimal sourceOfIncomeId;
+	
+	@NotNull
 	private String isActive;
+	
 	private Date createdDate;
+	
+	@NotNull
 	private Date validToDate;
+	
+	@NotNull
 	private Date validFromDate;
+	
+	@NotNull
 	private BigDecimal payAmount;
+	
+	@NotNull
 	private BigDecimal receiveAmount;
+	
 	private BigDecimal baseCurrencyId;
+	
 	private String baseCurrencyQuote;
+	
 	private BigDecimal foreignCurrencyId;
+	
 	private String foreignCurrencyQuote;
 
 	public BigDecimal getPlaceOrderId() {

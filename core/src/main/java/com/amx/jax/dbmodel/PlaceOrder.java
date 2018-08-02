@@ -45,6 +45,12 @@ public class PlaceOrder implements Serializable {
 	private BigDecimal bankId;
 	private BigDecimal countryId;
 	private Date notificationDate;
+	private BigDecimal baseCurrencyId;
+	private String baseCurrencyQuote;
+	private BigDecimal foreignCurrencyId;
+	private String foreignCurrencyQuote;
+	
+	
 
 	@Id
 	@GeneratedValue(generator = "jax_online_place_order_seq", strategy = GenerationType.SEQUENCE)
@@ -255,5 +261,42 @@ public class PlaceOrder implements Serializable {
     public void setNotificationDate(Date notificationDate) {
         this.notificationDate = notificationDate;
     }
+
+    @Column(name = "BASE_CURRENCY_ID")
+	public BigDecimal getBaseCurrencyId() {
+		return baseCurrencyId;
+	}
+
+	public void setBaseCurrencyId(BigDecimal baseCurrencyId) {
+		this.baseCurrencyId = baseCurrencyId;
+	}
+
+	@Column(name = "BASE_CURRENCY_CODE")
+	public String getBaseCurrencyQuote() {
+		return baseCurrencyQuote;
+	}
+
+	public void setBaseCurrencyQuote(String baseCurrencyQuote) {
+		this.baseCurrencyQuote = baseCurrencyQuote;
+	}
+
+	@Column(name = "FOREIGN_CURRENCY_ID")
+	public BigDecimal getForeignCurrencyId() {
+		return foreignCurrencyId;
+	}
+
+	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
+		this.foreignCurrencyId = foreignCurrencyId;
+	}
+
+	@Column(name = "FOREIGN_CURRENCY_CODE")
+	public String getForeignCurrencyQuote() {
+		return foreignCurrencyQuote;
+	}
+
+	
+	public void setForeignCurrencyQuote(String foreignCurrencyQuote) {
+		this.foreignCurrencyQuote = foreignCurrencyQuote;
+	}
 
 }

@@ -46,7 +46,7 @@ public class PlaceOrderService extends AbstractService {
 	public ApiResponse savePlaceOrder(PlaceOrderDTO dto) {
 		ApiResponse response = getBlackApiResponse();
 		PlaceOrder placeOrderModel = PlaceOrderUtil.getPlaceOrderModel(dto);
-		
+		//dto.getBeneficiaryRelationshipSeqId();
 		try {
 			placeOrderModel.setCreatedDate(new Date());
 			placeOrderModel.setIsActive("Y");
