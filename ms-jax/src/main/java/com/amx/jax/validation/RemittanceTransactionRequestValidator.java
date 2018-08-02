@@ -63,7 +63,7 @@ public class RemittanceTransactionRequestValidator {
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
 		oldExchangeRate
 				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
-		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
+		if (oldExchangeRate.compareTo(oldExchangeRate) != 0) {
 			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
 		}
 	}
@@ -190,8 +190,7 @@ public class RemittanceTransactionRequestValidator {
 				additionalValidations.put("format", format);
 				i.setAdditionalValidations(additionalValidations);
 			}
-
-			if ("PAYMENT PERIOD EXPIRY DATE".equals(i.getName())) {
+			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
 				additionalValidations.put("format", "MM/DD/YYYY");

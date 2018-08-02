@@ -110,7 +110,7 @@ public class ReportManagerService extends AbstractService{
 		BigDecimal financeYear = transactionHistroyDTO.getCollectionDocumentFinYear();
 		BigDecimal collectionDocumentCode = transactionHistroyDTO.getCollectionDocumentCode();
 		customerRefernce =transactionHistroyDTO.getCustomerReference(); 
-		logger.info("companyId : "+companyId+ " languageId : "+languageId);
+		
 		 if (customerId == null) {
 				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 			}
@@ -402,7 +402,7 @@ public class ReportManagerService extends AbstractService{
 				if(view.getCustomerSignatureClob()!=null) {
 					obj.setSignature(view.getCustomerSignatureClob());
 				}
-				logger.info("companyId : "+companyId+ " languageId : "+languageId);
+				
 					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
 			
 					StringBuffer engCompanyInfo = null;

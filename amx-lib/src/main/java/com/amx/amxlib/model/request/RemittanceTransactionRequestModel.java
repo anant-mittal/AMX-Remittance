@@ -89,13 +89,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
-	}
-
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -168,6 +161,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 			};
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
+	}
+
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
 	}
 
 }

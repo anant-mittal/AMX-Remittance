@@ -7,7 +7,7 @@
 	<name>lib-db</name>
 	<url>http://maven.apache.org</url>
 
-	<description>Common DB libs for amx modules</description>
+	<description>Common utils library for boot projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -25,6 +25,7 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -39,5 +40,4 @@
 		</dependency>
 
 	</dependencies>
-
 </project>

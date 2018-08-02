@@ -163,7 +163,7 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
-
+	
 	@Autowired
 	private UserService userService;
 
@@ -175,6 +175,7 @@ public class RemittanceTransactionManager {
 	private JaxUtil jaxUtil;
 	@Autowired
 	RoutingService routingService;
+
 	@Autowired
 	JaxProperties jaxProperties;
 	@Autowired
@@ -185,6 +186,7 @@ public class RemittanceTransactionManager {
 	private static final String IOS="IOS";
 	private static final String ANDROID="ANDROID";
 	private static final String WEB="WEB";
+
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -513,7 +515,6 @@ public class RemittanceTransactionManager {
 		List<AuthenticationLimitCheckView> txnLimits = parameterService.getAllNumberOfTxnLimits();
 		
 		for (AuthenticationLimitCheckView limitView : txnLimits) {
-			
 			logger.info(" limitView.getAuthorizationType() :" + limitView.getAuthorizationType() + "\t Auth Limit :"
 					+ limitView.getAuthLimit());
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
@@ -530,11 +531,6 @@ public class RemittanceTransactionManager {
 			BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
-		if (jaxProperties.getExrateBestRateLogicEnable()) {
-			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			return newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount, routingBankId);
-		}
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
@@ -791,7 +787,7 @@ public class RemittanceTransactionManager {
 		if ("NOT CAPTURED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_FAIL;
 		}
-		if ("CANCELED".equalsIgnoreCase(resultCode) || "CANCELLED".equalsIgnoreCase(resultCode)) {
+		if ("CANCELED".equalsIgnoreCase(resultCode)) {
 			status = JaxTransactionStatus.PAYMENT_CANCELED_BY_USER;
 		}
 
@@ -836,5 +832,4 @@ public class RemittanceTransactionManager {
         }
         return otpMmodel;
     }
-	
 }

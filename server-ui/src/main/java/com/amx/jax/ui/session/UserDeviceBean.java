@@ -2,6 +2,7 @@ package com.amx.jax.ui.session;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,7 +122,7 @@ public class UserDeviceBean extends UserDevice {
 		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
 		if (!id.equals(this.id)
 				// || !fingerprint.equals(this.fingerprint)
-				|| !ip.equals(this.ip) || !(this.browser == null || this.browser.equals(userAgent.getBrowser()))) {
+				|| !ip.equals(this.ip)) {
 			return false;
 		}
 		return true;

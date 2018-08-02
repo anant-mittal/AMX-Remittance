@@ -26,4 +26,16 @@ public class PostManApplication {
 		SpringApplication.run(PostManApplication.class, args);
 	}
 
+	/**
+	 * Rest template.
+	 *
+	 * @param builder
+	 *            the builder
+	 * @return the rest template
+	 */
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder) {
+		RestTemplate restTemplate = builder.build();
+		return restTemplate;
+	}
 }

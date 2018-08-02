@@ -1,8 +1,5 @@
 package com.amx.jax.ui.config;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,8 +23,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	/** The login url entry. */
 	@Autowired
 	WebLoginUrlEntry loginUrlEntry;
-
-	public static final Pattern pattern = Pattern.compile("^\\/(register|home|login|pub).*$");
 
 	/*
 	 * (non-Javadoc)
@@ -61,11 +56,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.disable().headers().disable();
 
 		http.exceptionHandling().authenticationEntryPoint(loginUrlEntry);
-	}
-
-	public static boolean isPublicUrl(String url) {
-		Matcher matcher = pattern.matcher(url);
-		return matcher.find();
 	}
 
 	/**

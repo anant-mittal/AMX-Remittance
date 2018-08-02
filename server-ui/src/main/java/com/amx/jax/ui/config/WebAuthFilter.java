@@ -48,7 +48,7 @@ public class WebAuthFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (!sessionService.isRequestAuthorized()) {
+		if (!sessionService.validateSessionUnique() || !sessionService.getAppDevice().validate()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
