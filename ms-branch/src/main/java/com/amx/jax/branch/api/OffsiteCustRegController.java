@@ -69,14 +69,14 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return countryService.getCountryListOffsite();
 	}	
 	
-	@RequestMapping(value = "/validate-employee-send-otp", method = RequestMethod.POST)
+	@RequestMapping(value = "/employee-send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.SEND_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateEmployeeDetails(offsiteCustRegModel);
 	}	
 	
-	@RequestMapping(value = "/validate-otp", method = RequestMethod.POST)
+	@RequestMapping(value = "/employee-validate-otp", method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOTP(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
@@ -97,12 +97,20 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return  stateService.getStateListOffsite(model.getCoutnryId(), metaData.getLanguageId());
 	}	
 	
-	@RequestMapping(value = "/validate-mobile-email-send-otp", method = RequestMethod.POST)
-	public AmxApiResponse<List, Object> sendOtpForResetEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	@RequestMapping(value = "/customer-mobile-email-send-otp", method = RequestMethod.POST)
+	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);	
 		LOGGER.info("send otp request: " + customerPersonalDetail);
 		return  AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+	}	
+	
+	@RequestMapping(value = "/customer-mobile-email-validate-otp", method = RequestMethod.POST)
+	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		//JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
+		//JaxContextUtil.setRequestModel(customerPersonalDetail);	
+		//LOGGER.info("send otp request: " + customerPersonalDetail);
+		return  offsiteCustRegService.validateOtp(offsiteCustRegModel);
 	}	
 
 }

@@ -31,6 +31,7 @@ import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.ICustRegService;
+import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
@@ -48,12 +49,15 @@ import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
+import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Random;
 
@@ -92,6 +96,15 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	PrefixService prefixService;
+	
+	@Autowired
+	CustomerRegistrationManager customerRegistrationManager;
+	
+	@Autowired
+	OtpSettings otpSettings;
+	
+	@Autowired
+	DateUtil dateUtil;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -278,6 +291,51 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		dto.setFsBizComponentData(i.getFsBizComponentData().getComponentDataId());
 		dto.setFsLanguageType(i.getFsLanguageType().getLanguageId());
 		return dto;
+	}
+
+	public AmxApiResponse<String, Object> validateOtp(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		
+		OtpData otpData = customerRegistrationManager.get().getOtpData();
+		try {
+			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp()) || StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
+				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
+			}
+			resetAttempts(otpData);
+			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+				throw new GlobalException(
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
+						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+			}
+			// actual validation logic
+			if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp()) || !otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
+				otpMismatch(otpData);
+			}
+			otpData.setOtpValidated(true);
+			otpData.resetCounts();
+		} finally {
+			customerRegistrationManager.saveOtpData(otpData);
+		}
+		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfull");		
+		obj.setMessageKey("AUTH_SUCCESS");
+		return obj;
+	
+	}
+	
+	private void resetAttempts(OtpData otpData) {
+		Date midnightToday = dateUtil.getMidnightToday();
+
+		if (otpData.getLockDate() != null && midnightToday.compareTo(otpData.getLockDate()) > 0) {
+			otpData.resetCounts();
+		}
+	}
+	
+	private void otpMismatch(OtpData otpData) {
+		otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
+		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
