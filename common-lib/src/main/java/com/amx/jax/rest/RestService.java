@@ -217,27 +217,32 @@ public class RestService {
 			return restTemplate.exchange(uri, method, requestEntity, responseType).getBody();
 		}
 
-
-		public <T> AmxApiResponse<T, Object> asResponseModel(Class<T> responseType) {
-			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return restTemplate
-					.exchange(uri, method, requestEntity, new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
-					}).getBody();
-		}
-
-		public <T, M> AmxApiResponse<T, M> asResponseModel(Class<T> responseType, Class<M> modelType) {
-			URI uri = builder.buildAndExpand(uriParams).toUri();
-			return restTemplate
-					.exchange(uri, method, requestEntity, new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
-					}).getBody();
-		}
-
 		public String asString() {
 			return this.as(String.class);
 		}
 
 		public Object asObject() {
 			return this.as(Object.class);
+		}
+
+		public Map<String, Object> asMap() {
+			return this.as(new ParameterizedTypeReference<Map<String, Object>>() {
+			});
+		}
+
+		public <T> Map<String, T> asMap(Class<T> valueType) {
+			return this.as(new ParameterizedTypeReference<Map<String, T>>() {
+			});
+		}
+
+		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
+			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
+			});
+		}
+
+		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> responseType, Class<M> modelType) {
+			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
+			});
 		}
 
 		public Object as() {

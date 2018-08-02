@@ -112,7 +112,6 @@ public class UserController {
 		wrapper.getData().setTenantCode(AppContextUtil.getTenant().getCode());
 		wrapper.getData().setLang(httpService.getLanguage());
 		wrapper.getData().setCdnUrl(appConfig.getCdnURL());
-		wrapper.getData().setFeatures(webAppConfig.getElementToSearch());
 		wrapper.getData().setFeatures(webAppConfig.getFeatures());
 
 		wrapper.getData().setDevice(sessionService.getAppDevice().toUserDevice());
