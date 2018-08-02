@@ -618,7 +618,6 @@ public class AuthServiceImpl implements AuthService {
 	// Validate the ec no and then civil id number and the generate OTP and send otp
 	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(String empCode, String identity, String mOtp,
 			String ipAddress) {
-		try {
 			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
 				if (emp != null) {
@@ -631,10 +630,7 @@ public class AuthServiceImpl implements AuthService {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
 						AuthServiceError.INVALID_DATA);
 			}
-		} catch (Exception e) {
-			LOGGER.info(e.getMessage());
-			throw new AuthServiceException("verifyUserOTPDetails fail ", e.getMessage());
-		}
+		
 	}
 
 }
