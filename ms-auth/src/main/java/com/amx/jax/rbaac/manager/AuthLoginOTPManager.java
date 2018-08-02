@@ -79,13 +79,15 @@ public class AuthLoginOTPManager {
 		}
 
 		String mOtp = util.createRandomPassword(6);
-		String hashedmOtp = cryptoUtil.getHash(ecno, mOtp);
+
 		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
+		String hashedmOtp = cryptoUtil.getHash(ecno, sendOtpModel.getmOtpPrefix() + mOtp);
 		otpData.setmOtp(mOtp);
 		otpData.setHashedmOtp(hashedmOtp);
 		otpData.setmOtpPrefix(sendOtpModel.getmOtpPrefix());
-		logger.info("generated new otps : {}", otpData.toString());
+
+		// Save OTP to Cache
 		authLoginManager.saveOtpData(otpData);
 		return sendOtpModel;
 	}

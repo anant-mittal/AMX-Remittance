@@ -18,7 +18,6 @@ import com.amx.jax.api.AmxApiResponseM;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auth.AuthService;
 import com.amx.jax.auth.dto.EmployeeDetailsDTO;
-import com.amx.jax.auth.dto.RoleDefinitionDataTable;
 import com.amx.jax.auth.dto.UserDetailsDTO;
 import com.amx.jax.auth.error.AuthServiceError;
 import com.amx.jax.auth.exception.AuthServiceException;
@@ -40,6 +39,7 @@ import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.manager.AuthLoginManager;
 import com.amx.jax.rbaac.manager.AuthLoginOTPManager;
 import com.amx.jax.rbaac.trnx.AuthLoginTrnxModel;
+import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.JsonUtil;
 
@@ -60,6 +60,9 @@ public class AuthServiceImpl implements AuthService {
 	@Autowired
 	JaxUtil jaxUtil;
 
+	@Autowired
+	UserOtpData userOtpData;
+
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
 		Employee emp = loginDao.validateEmpDetails(empcode, identity, ipAddress);
 		return emp;
@@ -79,38 +82,6 @@ public class AuthServiceImpl implements AuthService {
 		List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(role);
 		return roleDef;
 	}
-
-	/*
-	 * public boolean validateEmployeeRoleDef(String user,String role,String
-	 * urlPath){ boolean status = Boolean.FALSE;
-	 * 
-	 * // sample https://example.com:8080/Bank/Enquiry/District_Master.html URL url;
-	 * String module = null,functionalityType = null,function= null; try { url = new
-	 * URL(urlPath); LOGGER.info("protocol: " + url.getProtocol());
-	 * LOGGER.info("domain: " + url.getHost()); LOGGER.info("port: " +
-	 * url.getPort()); LOGGER.info("uri: " + url.getPath());
-	 * 
-	 * String[] data = url.getPath().split("/"); if(data.length > 3){ module =
-	 * data[1]; functionalityType = data[2]; function = data[3].split("\\.")[0];
-	 * 
-	 * LOGGER.info(module + "|" + functionalityType + "|" + function);
-	 * 
-	 * List<RoleDefinition> roleMenu = fetchEmployeeRoleDef(role); for
-	 * (RoleDefinition roleDefinition : roleMenu) { status = Boolean.FALSE;
-	 * if(roleDefinition.getModule() != null && module != null){
-	 * if(roleDefinition.getModule().equalsIgnoreCase(module)){
-	 * if(roleDefinition.getFunctionalityType() != null){ if(functionalityType !=
-	 * null &&
-	 * roleDefinition.getFunctionalityType().equalsIgnoreCase(functionalityType)){
-	 * if(roleDefinition.getFunctionality() != null){ if(function != null &&
-	 * roleDefinition.getFunctionality().equalsIgnoreCase(function)){ status =
-	 * Boolean.TRUE; break; } }else{ status = Boolean.TRUE; break; } } }else{ status
-	 * = Boolean.TRUE; break; } } } } } } catch (MalformedURLException e) {
-	 * e.printStackTrace(); throw new
-	 * AuthServiceException("validateEmployeeRoleDef fail ",e.getMessage()); }
-	 * 
-	 * return status; }
-	 */
 
 	// store enums
 	public AmxApiResponse<BoolRespModel, Object> saveEnums() {
@@ -560,9 +531,19 @@ public class AuthServiceImpl implements AuthService {
 			BeanPropertyBindingResult errors = new BeanPropertyBindingResult(emp, "emp");
 			// initiate transaction
 			AuthLoginTrnxModel trnxModel = authLoginManager.init(emp);
+
+			/**
+			 * Save OTP to cache As Well
+			 */
+
 			SendOtpModel output = authLoginOTPManager.generateOtpTokensStaff(emp.getEmployeeNumber());
+
+			userOtpData.fastPut(emp.getEmployeeNumber(), output.getmOtpPrefix() + "-" + output.getmOtp());
+
 			authLoginOTPManager.sendOtpStaff();
-			return AmxApiResponse.build(output);
+			AmxApiResponse<SendOtpModel, Object> amxResp = AmxApiResponse.build(output);
+
+			return amxResp;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
 			throw new AuthServiceException("sendOtp fail ", e.getMessage());
@@ -573,32 +554,41 @@ public class AuthServiceImpl implements AuthService {
 	 * validates otp
 	 */
 	public AmxApiResponse<EmployeeDetailsDTO, Object> validateOtp(Employee emp, String mOtp) {
-		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp, mOtp);
+		// AuthLoginTrnxModel authLoginTrnxModel =
+		// authLoginOTPManager.validateOtpStaff(emp, mOtp);
+
+		String origOtp = userOtpData.remove(emp.getEmployeeNumber());
+
+		if (null == origOtp || !origOtp.equalsIgnoreCase(mOtp)) {
+			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
+		}
+
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
-		empDetail.setCivilId(authLoginTrnxModel.getEmpDetails().getCivilId());
-		empDetail.setCountryId(authLoginTrnxModel.getEmpDetails().getCountryId());
-		empDetail.setDesignation(authLoginTrnxModel.getEmpDetails().getDesignation());
-		empDetail.setEmail(authLoginTrnxModel.getEmpDetails().getEmail());
-		empDetail.setEmployeeId(authLoginTrnxModel.getEmpDetails().getEmployeeId());
-		empDetail.setEmployeeName(authLoginTrnxModel.getEmpDetails().getEmployeeName());
-		empDetail.setEmployeeNumber(authLoginTrnxModel.getEmpDetails().getEmployeeNumber());
-		empDetail.setLocation(authLoginTrnxModel.getEmpDetails().getLocation());
-		empDetail.setTelephoneNumber(authLoginTrnxModel.getEmpDetails().getTelephoneNumber());
-		empDetail.setUserName(authLoginTrnxModel.getEmpDetails().getUserName());
-		empDetail.setRoleId(authLoginTrnxModel.getUserMaster().getRoleId());
+		empDetail.setCivilId(emp.getCivilId());
+		empDetail.setCountryId(emp.getCountryId());
+		empDetail.setDesignation(emp.getDesignation());
+		empDetail.setEmail(emp.getEmail());
+		empDetail.setEmployeeId(emp.getEmployeeId());
+		empDetail.setEmployeeName(emp.getEmployeeName());
+		empDetail.setEmployeeNumber(emp.getEmployeeNumber());
+		empDetail.setLocation(emp.getLocation());
+		empDetail.setTelephoneNumber(emp.getTelephoneNumber());
+		empDetail.setUserName(emp.getUserName());
+		empDetail.setRoleId(new BigDecimal("1"));
 
-		List<RoleDefinitionDataTable> lstRoleDF = new ArrayList<RoleDefinitionDataTable>();
-		for (RoleDefinition roleDef : authLoginTrnxModel.getRoleDefinition()) {
-			RoleDefinitionDataTable roleDefDT = new RoleDefinitionDataTable();
-
-			roleDefDT.setModuleId(roleDef.getRoleId());
-			roleDefDT.setPermissionId(roleDef.getPermissionId());
-			roleDefDT.setPermScopeId(roleDef.getScopeId());
-			roleDefDT.setAdmin(roleDef.getAdmin());
-			lstRoleDF.add(roleDefDT);
-		}
-		empDetail.setRoleDef(lstRoleDF);
+		/*
+		 * List<RoleDefinitionDataTable> lstRoleDF = new
+		 * ArrayList<RoleDefinitionDataTable>(); for (RoleDefinition roleDef :
+		 * authLoginTrnxModel.getRoleDefinition()) { RoleDefinitionDataTable roleDefDT =
+		 * new RoleDefinitionDataTable();
+		 * 
+		 * roleDefDT.setModuleId(roleDef.getRoleId());
+		 * roleDefDT.setPermissionId(roleDef.getPermissionId());
+		 * roleDefDT.setPermScopeId(roleDef.getScopeId());
+		 * roleDefDT.setAdmin(roleDef.getAdmin()); lstRoleDF.add(roleDefDT); }
+		 * empDetail.setRoleDef(lstRoleDF);
+		 */
 
 		return AmxApiResponse.build(empDetail);
 	}
@@ -609,16 +599,18 @@ public class AuthServiceImpl implements AuthService {
 			if (empCode != null && identity != null) {
 				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
 				if (emp != null) {
+
 					return sendOtp(emp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available",
+							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", AuthServiceError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
+						AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
-			e.printStackTrace();
 			throw new AuthServiceException("verifyUserDetails fail ", e.getMessage());
 		}
 	}
@@ -632,10 +624,12 @@ public class AuthServiceImpl implements AuthService {
 				if (emp != null) {
 					return validateOtp(emp, mOtp);
 				} else {
-					throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+					throw new AuthServiceException("Employee Details not available",
+							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 				}
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory", AuthServiceError.INVALID_DATA);
+				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
+						AuthServiceError.INVALID_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());

@@ -31,7 +31,7 @@ public class AuthServiceControllerTest implements AuthService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceControllerTest.class);
 
 	@Autowired
-	AuthServiceClient authService;
+	AuthServiceClient authServiceClient;
 
 	/**
 	 * @task Sync DB perms
@@ -43,19 +43,19 @@ public class AuthServiceControllerTest implements AuthService {
 		// permissions enums
 		// perm scope enums
 		// perm type enums
-		return authService.saveEnums();
+		return authServiceClient.saveEnums();
 
 	}
 
 	@ApiOperation("User Auth")
-	@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.GET)
+	@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(@RequestParam String empCode,
-			@RequestParam String identity, @RequestParam(required = false) String ipaddress) {
+			@RequestParam String identity, @RequestParam String ipaddress) {
 		// point 1 : need to fetch employee details based on empCode
 		// point 2 : need to check identity by empCode data
 		// point 3 : once success, sending OTP to staff
 		// point 4 : finally success or fail need to json object
-		return authService.verifyUserDetails(empCode, identity, ipaddress);
+		return authServiceClient.verifyUserDetails(empCode, identity, ipaddress);
 
 	}
 
@@ -85,7 +85,7 @@ public class AuthServiceControllerTest implements AuthService {
 		// point 3 : once success of checking data OTP verification need to check
 		// point 4 : finally success or fail need to json object
 
-		return authService.verifyUserOTPDetails(empCode, identity, mOtp, ipaddress);
+		return authServiceClient.verifyUserOTPDetails(empCode, identity, mOtp, ipaddress);
 
 	}
 
@@ -97,7 +97,7 @@ public class AuthServiceControllerTest implements AuthService {
 	@ApiOperation("Create Role")
 	@RequestMapping(value = ApiEndPoints.ROLE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveRoleMaster(@RequestParam String roleTitle) {
-		return authService.saveRoleMaster(roleTitle);
+		return authServiceClient.saveRoleMaster(roleTitle);
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class AuthServiceControllerTest implements AuthService {
 	public AmxApiResponse<BoolRespModel, Object> saveAssignPermToRole(@RequestParam BigDecimal roleId,
 			@RequestParam Permission permission, @RequestParam(required = false) PermScope permScope,
 			@RequestParam(required = false) String admin) {
-		return authService.saveAssignPermToRole(roleId, permission, permScope, admin);
+		return authServiceClient.saveAssignPermToRole(roleId, permission, permScope, admin);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class AuthServiceControllerTest implements AuthService {
 	@RequestMapping(value = ApiEndPoints.USER_ROLE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(@RequestParam BigDecimal roleId,
 			@RequestParam BigDecimal userId) {
-		return authService.saveAssignRoleToUser(roleId, userId);
+		return authServiceClient.saveAssignRoleToUser(roleId, userId);
 	}
 
 	/**
@@ -137,7 +137,7 @@ public class AuthServiceControllerTest implements AuthService {
 	@ApiOperation("Fetch User permissions")
 	@RequestMapping(value = ApiEndPoints.USER_PERMS, method = RequestMethod.GET)
 	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(@RequestParam BigDecimal userId) {
-		return authService.fetchUserMasterDetails(userId);
+		return authServiceClient.fetchUserMasterDetails(userId);
 	}
 
 }

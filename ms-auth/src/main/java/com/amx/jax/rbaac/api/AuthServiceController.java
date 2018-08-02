@@ -3,14 +3,19 @@ package com.amx.jax.rbaac.api;
 import java.io.IOException;
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.auth.AuthService;
@@ -20,9 +25,6 @@ import com.amx.jax.auth.models.PermScope;
 import com.amx.jax.auth.models.Permission;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
 import com.amx.jax.rbaac.service.AuthServiceImpl;
 
 import io.swagger.annotations.ApiOperation;
@@ -34,7 +36,7 @@ public class AuthServiceController implements AuthService {
 
 	@Autowired
 	AuthServiceImpl authService;
-	
+
 	/**
 	 * @task Sync DB perms
 	 */
@@ -50,7 +52,7 @@ public class AuthServiceController implements AuthService {
 	}
 
 	@ApiOperation("User Auth")
-	@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.GET)
+	@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(@RequestParam String empCode,
 			@RequestParam String identity, @RequestParam String ipAddress) {
 		// point 1 : need to fetch employee details based on empCode
