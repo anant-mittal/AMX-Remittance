@@ -747,7 +747,7 @@ public final class ArgUtil {
 		String[] str = ArgUtil.parseAsStringArray(value);
 		Object o = Array.newInstance(type, str.length);
 		for (int i = 0; i < str.length; i++) {
-			Array.set(o, i, ArgUtil.parseAsEnum(str[i], componentType));
+			Array.set(o, i, ArgUtil.parseAsEnum(str[i].toUpperCase(), componentType));
 		}
 		return (T[]) o;
 	}
