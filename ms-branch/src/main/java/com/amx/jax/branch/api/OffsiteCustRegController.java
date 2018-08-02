@@ -3,6 +3,7 @@ package com.amx.jax.branch.api;
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 import java.util.List;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,25 +12,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
-import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
-import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.ViewStateService;
+import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.utils.JaxContextUtil;
 
 @RestController
 @RequestMapping(OFFSITE_CUSTOMER_REG)
 public class OffsiteCustRegController /*implements ICustRegService*/ {
+	
+	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 
 	@Autowired
 	OffsitCustRegService offsiteCustRegService;
@@ -42,6 +45,9 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	
 	@Autowired
 	ViewStateService stateService;
+	
+	@Autowired
+	private CustomerRegistrationService customerRegistrationService;
 
 	/*@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_MODES, method = RequestMethod.GET)
@@ -63,7 +69,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return countryService.getCountryListOffsite();
 	}	
 	
-	@RequestMapping(value = "/send-otp", method = RequestMethod.POST)
+	@RequestMapping(value = "/validate-employee-send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.SEND_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
@@ -91,6 +97,12 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return  stateService.getStateListOffsite(model.getCoutnryId(), metaData.getLanguageId());
 	}	
 	
-	
+	@RequestMapping(value = "/validate-mobile-email-send-otp", method = RequestMethod.POST)
+	public AmxApiResponse<List, Object> sendOtpForResetEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
+		JaxContextUtil.setRequestModel(customerPersonalDetail);	
+		LOGGER.info("send otp request: " + customerPersonalDetail);
+		return  AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+	}	
 
 }

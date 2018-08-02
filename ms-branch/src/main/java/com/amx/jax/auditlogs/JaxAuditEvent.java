@@ -2,6 +2,7 @@ package com.amx.jax.auditlogs;
 
 import java.math.BigDecimal;
 
+import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
@@ -19,6 +20,8 @@ public class JaxAuditEvent extends AuditEvent {
 	GetJaxFieldRequest detJaxFieldModel;
 
 	Boolean success;
+	
+	CustomerPersonalDetail customerPersonalDetails;
 
 	public Boolean getSuccess() {
 		return success;
@@ -29,7 +32,7 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 	
 	public static enum Type implements EventType {
-		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST;
+		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP;
 
 		@Override
 		public EventMarker marker() {
@@ -76,6 +79,14 @@ public class JaxAuditEvent extends AuditEvent {
 
 	public void setDetJaxFieldModel(GetJaxFieldRequest detJaxFieldModel) {
 		this.detJaxFieldModel = detJaxFieldModel;
+	}
+
+	public CustomerPersonalDetail getCustomerPersonalDetails() {
+		return customerPersonalDetails;
+	}
+
+	public void setCustomerPersonalDetails(CustomerPersonalDetail customerPersonalDetails) {
+		this.customerPersonalDetails = customerPersonalDetails;
 	}
 	
 	
