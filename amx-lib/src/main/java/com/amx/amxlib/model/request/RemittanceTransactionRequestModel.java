@@ -38,6 +38,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private BigDecimal placeOrderId;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -163,11 +165,20 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		}
 	}
 
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
-				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
-				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
-	}
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
+    @Override
+    public String toString() {
+        return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+                + ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+                + availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+                + ", placeOrderId=" + placeOrderId + "]";
+    }
 
 }
