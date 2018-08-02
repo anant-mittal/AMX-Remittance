@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.jax.payment.gateway.PayGSession;
-import com.amx.utils.Constants;
 
 /**
  * @author Viki Sangani 13-Dec-2017 Appcontroller.java

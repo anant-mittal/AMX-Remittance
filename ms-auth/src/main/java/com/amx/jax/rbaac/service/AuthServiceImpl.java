@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.BeanPropertyBindingResult;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.api.AmxApiResponseM;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.dto.SendOtpModel;
@@ -105,7 +104,7 @@ public class AuthServiceImpl implements AuthService {
 			LOGGER.info(e.getMessage());
 			throw new AuthServiceException("saveEnums fail ", e.getMessage());
 		}
-		return AmxApiResponseM.build(new BoolRespModel(savesStatus));
+		return AmxApiResponse.build(new BoolRespModel(savesStatus));
 	}
 
 	// save Modules

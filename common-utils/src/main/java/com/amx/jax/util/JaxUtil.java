@@ -207,4 +207,22 @@ public class JaxUtil {
 			logger.error("error in convert", e);
 		}
 	}
+	
+	/**
+	 * Converts only non null properties of bean
+	 *
+	 * @param <T> the generic type
+	 * @param <E> the element type
+	 * @param fromObject the from object
+	 * @param toObject the to object
+	 */
+	public <T, E> void convertNotNull(T fromObject, E toObject) {
+		try {
+			NullAwareBeanUtilsBean.getInstance().copyProperties(toObject, fromObject);
+		} catch (Exception e) {
+			logger.error("error in convert", e);
+		}
+	}
+	
+	
 }

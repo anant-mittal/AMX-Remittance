@@ -1,6 +1,7 @@
 package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
@@ -66,17 +68,29 @@ public class NewExchangeRateService extends ExchangeRateService {
 			ExchangeRateResponseModel outputModel = new ExchangeRateResponseModel();
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
-				pips = pipsDao.getPipsMaster(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
-				if (pips == null || pips.isEmpty()) {
-					throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
-				}
-				outputModel.setExRateBreakup(createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount));
+				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));
 			}
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
 		}
 		response.setResponseStatus(ResponseStatus.OK);
 		return response;
+	}
+
+	public ExchangeRateBreakup getExchangeRateBreakUp(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal fcAmount,
+			BigDecimal bankId) {
+		List<PipsMaster> pips = null;
+		if (lcAmount != null) {
+			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
+		}
+		if (fcAmount != null) {
+			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, fcAmount, meta.getCountryBranchId(), bankId);
+		}
+		if (pips == null || pips.isEmpty()) {
+			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
+		}
+
+		return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
 	}
 
 	/**
@@ -90,16 +104,16 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 */
 	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal countryBranchId) {
-		Set<BankMasterDTO> bankMasterDtoSet = new HashSet<>();
+		List<BankMasterDTO> bankMasterDto = new ArrayList<>();
 
 		List<PipsMaster> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId);
 		pips.forEach(i -> {
 			BankMasterDTO dto = bankMasterService.convert(i.getBankMaster());
-			bankMasterDtoSet.add(dto);
+			bankMasterDto.add(dto);
 			dto.setExRateBreakup(createBreakUp(i.getDerivedSellRate(), lcAmount));
 
 		});
-		return bankMasterDtoSet.stream().collect(Collectors.toList());
+		return bankMasterDto;
 	}
 
 }

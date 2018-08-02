@@ -2,7 +2,10 @@ package com.amx.jax.scope;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.Properties;
 
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
+import com.amx.model.Stringable;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.FileUtil;
 
@@ -68,7 +72,7 @@ public class TenantProperties {
 		}
 		return tenantProperties;
 	}
-	
+
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
 		try {
@@ -79,7 +83,8 @@ public class TenantProperties {
 					Object propertyValue = tenantProperties.getProperty(propertyName);
 					if (propertyValue != null) {
 						// ArgUtil.parseAsT(propertyValue, defaultValue, required)
-						String typeName = field.getGenericType().getTypeName();
+						Type type = field.getGenericType();
+						String typeName = type.getTypeName();
 						field.setAccessible(true);
 						if ("java.lang.String".equals(typeName)) {
 							field.set(object, propertyValue);
@@ -93,11 +98,26 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, Tenant.DEFAULT));
 						} else if ("java.lang.String[]".equals(typeName)) {
 							field.set(object, ArgUtil.parseAsStringArray(propertyValue));
+						} else if (type instanceof Class && ((Class<?>) type).isArray()
+								&& ((Class<?>) type).getComponentType().isEnum()) {
+							Class<?> componentType = ((Class<?>) type).getComponentType();
+							field.set(object, ArgUtil.parseAsEnumArray(propertyValue, componentType));
+						} else if (type instanceof Class && ((Class<?>) type).isEnum()) {
+							field.set(object, ArgUtil.parseAsEnum(propertyValue, type));
+						} else if (type instanceof Stringable) {
+							Class<?> cl = Class.forName(typeName);
+							Constructor<?> cons = cl.getConstructor();
+							Stringable o = (Stringable) cons.newInstance();
+							o.fromString(ArgUtil.parseAsString(propertyValue));
+							field.set(object, o);
+						} else {
+							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
 						}
 					}
 				}
 			}
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException | IllegalAccessException | ClassCastException | ClassNotFoundException
+				| NoSuchMethodException | SecurityException | InstantiationException | InvocationTargetException e) {
 			LOGGER.error("readPropertyException", e);
 		}
 		return object;

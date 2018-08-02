@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.jax.ui.UIConstants.Features;
 
 /**
  * The Class WebAppConfig.
@@ -15,7 +16,7 @@ public class WebAppConfig {
 
 	/** The features. */
 	@TenantValue("${ui.features}")
-	private String[] features;
+	private Features[] features;
 
 	/** The app title. */
 	@TenantValue("${application.title}")
@@ -42,7 +43,7 @@ public class WebAppConfig {
 	 *
 	 * @return the features
 	 */
-	public String[] getFeatures() {
+	public Features[] getFeatures() {
 		return features;
 	}
 
@@ -62,15 +63,6 @@ public class WebAppConfig {
 	 */
 	public String getNotificationGap() {
 		return notificationGap;
-	}
-
-	/**
-	 * Gets the element to search.
-	 *
-	 * @return the element to search
-	 */
-	public String[] getElementToSearch() {
-		return elementToSearch;
 	}
 
 	/**

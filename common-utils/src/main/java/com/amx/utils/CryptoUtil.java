@@ -13,6 +13,7 @@ public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
 	private final static int interval = 30;
+	private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -29,11 +30,11 @@ public final class CryptoUtil {
 	/** The Constant SHA2. */
 	private static final String SHA2 = "SHA-256";
 
-	public static String generateHMAC(String publicKey, long currentTime) {
+	public static String generateHMAC(String publicKey, String message, long currentTime) {
 		try {
 			Long epoch = Math.round(currentTime / 1000.0);
 			String elapsed = Long.toString(epoch / interval);
-			String password = String.join(PASS_DELIMITER, elapsed, publicKey);
+			String password = String.join(PASS_DELIMITER, elapsed, publicKey, message);
 			MessageDigest md = MessageDigest.getInstance(SHA1);
 			ByteArrayOutputStream pwsalt = new ByteArrayOutputStream();
 			pwsalt.write(password.getBytes(DEFAULT_ENCODING));
@@ -46,16 +47,16 @@ public final class CryptoUtil {
 		return null;
 	}
 
-	public static String generateHMAC(String publicKey) {
-		return generateHMAC(publicKey, System.currentTimeMillis());
+	public static String generateHMAC(String publicKey, String message) {
+		return generateHMAC(publicKey, message, System.currentTimeMillis());
 	}
 
-	public static boolean validateHMAC(String publicKey, String message) {
-		if (generateHMAC(publicKey).equals(message)) {
+	public static boolean validateHMAC(String publicKey, String publicToken, String message) {
+		if (generateHMAC(publicKey, message).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, System.currentTimeMillis() - interval).equals(message)) {
+		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() - interval).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, System.currentTimeMillis() + interval).equals(message)) {
+		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() + interval).equals(publicToken)) {
 			return true;
 		}
 		return false;

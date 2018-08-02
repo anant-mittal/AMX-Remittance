@@ -62,14 +62,13 @@ public class CustomerRegistrationService extends AbstractService {
 	@Autowired
 	CustomerCredentialValidator customerCredentialValidator;
 	@Autowired
-	CountryMetaValidation countryMetaValidation;
+	CountryMetaValidation countryMetaValidation;	
 	@Autowired
 	CustomerService customerService;
 	@Autowired
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	IApplicationCountryRepository applicationSetup;
-	
 
 	/**
 	 * Sends otp initiating trnx
@@ -132,7 +131,7 @@ public class CustomerRegistrationService extends AbstractService {
 	 * @param -
 	 *            customerCredential user id and password of cusotmer
 	 *            <p>
-	 * 			commit trnx
+	 *            commit trnx
 	 *            </p>
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
@@ -146,7 +145,7 @@ public class CustomerRegistrationService extends AbstractService {
 			BeanUtils.copyProperties(personinfo, customerDetails);
 		} catch (Exception e) {
 		}
-		jaxNotificationService.sendPartialRegistraionMail(personinfo,applicationSetupData);
+		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
 		return getBooleanResponse();
 	}
 }

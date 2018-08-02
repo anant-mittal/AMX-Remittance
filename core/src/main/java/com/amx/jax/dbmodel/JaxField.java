@@ -45,6 +45,9 @@ public class JaxField implements Serializable {
 	@JoinTable(name = "JAX_FIELD_REGEX_MAPPING", joinColumns = {
 			@JoinColumn(name = "FIELD_NAME") }, inverseJoinColumns = { @JoinColumn(name = "REGEX_KEY") })
 	List<ValidationRegex> validationRegex;
+	
+	@Column(name = "LABEL")
+	String label;
 
 	public String getName() {
 		return name;
@@ -100,6 +103,14 @@ public class JaxField implements Serializable {
 
 	public void setValidationRegex(List<ValidationRegex> validationRegex) {
 		this.validationRegex = validationRegex;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 }

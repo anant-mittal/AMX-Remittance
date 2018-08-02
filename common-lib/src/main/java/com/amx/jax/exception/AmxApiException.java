@@ -21,20 +21,21 @@ public abstract class AmxApiException extends AmxException {
 
 	protected IExceptionEnum error;
 
-	protected HttpStatus httpStatus;
+	private Object meta;
 
 	public AmxApiException() {
 		super(null, null, true, false);
 	}
 
-	public AmxApiException(AmxApiError error) {
+	public AmxApiException(AmxApiError amxApiError) {
 		this();
+		this.meta = amxApiError.getMeta();
 		try {
-			this.error = getErrorIdEnum(error.getErrorId());
+			this.error = getErrorIdEnum(amxApiError.getErrorId());
 		} catch (Exception e) {
 		}
-		this.errorKey = error.getErrorId();
-		this.errorMessage = error.getErrorMessage();
+		this.errorKey = amxApiError.getErrorId();
+		this.errorMessage = amxApiError.getErrorMessage();
 	}
 
 	public AmxApiException(String errorMessage) {
@@ -108,6 +109,14 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
+
+	public Object getMeta() {
+		return meta;
+	}
+
+	public void setMeta(Object meta) {
+		this.meta = meta;
+	}
 
 	public abstract boolean isReportable();
 
