@@ -25,7 +25,6 @@
 	<modules>
 		<module>original</module>
 		<module>shade-benefit</module>
-		<module>shade-benefit2</module>
 		<module>shade-all</module>
 	</modules>
 
