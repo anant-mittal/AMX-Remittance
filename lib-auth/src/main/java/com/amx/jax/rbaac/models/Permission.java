@@ -1,4 +1,4 @@
-package com.amx.jax.auth.models;
+package com.amx.jax.rbaac.models;
 
 public enum Permission {
 

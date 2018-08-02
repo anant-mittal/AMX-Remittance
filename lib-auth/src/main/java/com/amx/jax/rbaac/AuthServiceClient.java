@@ -1,4 +1,4 @@
-package com.amx.jax.auth;
+package com.amx.jax.rbaac;
 
 import java.math.BigDecimal;
 
@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.auth.dto.EmployeeDetailsDTO;
-import com.amx.jax.auth.dto.UserDetailsDTO;
-import com.amx.jax.auth.models.PermScope;
-import com.amx.jax.auth.models.Permission;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.UserDetailsDTO;
+import com.amx.jax.rbaac.models.PermScope;
+import com.amx.jax.rbaac.models.Permission;
 import com.amx.jax.rest.RestService;
 
 @Component

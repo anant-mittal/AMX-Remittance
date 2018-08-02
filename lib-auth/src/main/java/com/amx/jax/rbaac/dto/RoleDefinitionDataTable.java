@@ -1,4 +1,4 @@
-package com.amx.jax.auth.dto;
+package com.amx.jax.rbaac.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

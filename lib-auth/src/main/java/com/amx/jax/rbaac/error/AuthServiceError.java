@@ -1,4 +1,4 @@
-package com.amx.jax.auth.error;
+package com.amx.jax.rbaac.error;
 
 import com.amx.jax.exception.IExceptionEnum;
 

@@ -13,14 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
-import com.amx.jax.auth.AuthService;
-import com.amx.jax.auth.AuthServiceClient;
-import com.amx.jax.auth.dto.EmployeeDetailsDTO;
-import com.amx.jax.auth.dto.UserDetailsDTO;
-import com.amx.jax.auth.models.PermScope;
-import com.amx.jax.auth.models.Permission;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.rbaac.AuthService;
+import com.amx.jax.rbaac.AuthServiceClient;
+import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.UserDetailsDTO;
+import com.amx.jax.rbaac.models.PermScope;
+import com.amx.jax.rbaac.models.Permission;
 
 import io.swagger.annotations.ApiOperation;
 

@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.auth.models.EmployeeInfo;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.rbaac.models.EmployeeInfo;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 

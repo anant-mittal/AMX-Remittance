@@ -1,4 +1,4 @@
-package com.amx.jax.auth.exception;
+package com.amx.jax.rbaac.exception;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 
-import com.amx.jax.auth.error.AuthServiceError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.rbaac.error.AuthServiceError;
 import com.amx.jax.util.JaxUtil;
 
 public class AuthServiceException extends AmxApiException {
