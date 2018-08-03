@@ -778,10 +778,12 @@ public final class ArgUtil {
 	}
 
 	public static boolean areEqual(Object a, Object b) {
-		if (a == null) {
-			return b == null;
+		if (a == null || b == null) {
+			return (a == null && b == null);
 		}
-		return a.equals(b);
+		String strA = parseAsString(a, Constants.BLANK);
+		String strB = parseAsString(b, Constants.BLANK);
+		return strA.equals(strB);
 	}
 
 	public static <T> T ifNotEmpty(T... strs) {
