@@ -16,7 +16,6 @@ import com.amx.jax.rbaac.RbaacService;
 import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.service.UserAuthService;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class RbaacServiceApiController.
  *
