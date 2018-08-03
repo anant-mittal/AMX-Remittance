@@ -12,35 +12,47 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rbaac.RbaacService;
-import com.amx.jax.rbaac.service.AuthServiceImpl;
+import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.service.UserAuthService;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author abhijeet
+ * The Class RbaacServiceApiController.
  *
+ * @author abhijeet
  */
 @RestController
 public class RbaacServiceApiController implements RbaacService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceController.class);
+	/** The Constant LOGGER. */
+	private static final Logger LOGGER = LoggerFactory.getLogger(RbaacServiceApiController.class);
 
+	/** The user auth service. */
 	@Autowired
-	AuthServiceImpl authService;
-	
+	UserAuthService userAuthService;
+
 	/**
-	 * 
+	 * Init User Authentication.
+	 *
+	 * @param employeeNo
+	 *            the employee no
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
+	 * @return the amx api response
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.INIT_AUTH, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> initAuthForEmployee(@RequestParam String empCode, 
+	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(@RequestParam String employeeNo,
 			@RequestParam String identity, @RequestParam String ipAddress) {
-		
-		
-		
-		LOGGER.info("Begin Init Auth for Employee: " + empCode);
-		return authService.verifyUserDetails(empCode, identity, ipAddress);
+
+		LOGGER.info("Begin Init Auth for User: " + employeeNo);
+		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(employeeNo, identity,
+				ipAddress);
+
+		return AmxApiResponse.build(userAuthInitResponseDTO);
 	}
 
-	
 }

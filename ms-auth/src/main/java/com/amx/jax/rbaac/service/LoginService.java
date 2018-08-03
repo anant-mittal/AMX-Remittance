@@ -40,82 +40,101 @@ import com.amx.jax.rbaac.models.Permission;
 import com.amx.jax.rbaac.trnx.AuthLoginTrnxModel;
 import com.amx.jax.util.JaxUtil;
 
+/**
+ * The Class LoginService.
+ */
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-@SuppressWarnings("rawtypes")
 public class LoginService extends AbstractService {
 
+	/** The logger. */
 	Logger logger = Logger.getLogger(LoginService.class);
 
+	/** The login dao. */
 	@Autowired
 	LoginDao loginDao;
 
+	/** The auth login manager. */
 	@Autowired
 	AuthLoginManager authLoginManager;
 
+	/** The auth login OTP manager. */
 	@Autowired
 	AuthLoginOTPManager authLoginOTPManager;
 
+	/** The jax util. */
 	@Autowired
 	JaxUtil jaxUtil;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.service.AbstractService#getModelType()
+	 */
 	@Override
 	public String getModelType() {
 		return null;
 	}
 
+	/**
+	 * Validate employee data.
+	 *
+	 * @param empcode
+	 *            the empcode
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
+	 * @return the employee
+	 */
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
 		Employee emp = loginDao.validateEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 
+	/**
+	 * Fetch employee details.
+	 *
+	 * @param user
+	 *            the user
+	 * @param pass
+	 *            the pass
+	 * @return the employee
+	 */
 	public Employee fetchEmployeeDetails(String user, String pass) {
 		Employee emp = loginDao.fetchEmpDetails(user, pass);
 		return emp;
 	}
 
+	/**
+	 * Fetch employee details by ECNO.
+	 *
+	 * @param empNo
+	 *            the emp no
+	 * @return the employee
+	 */
 	public Employee fetchEmployeeDetailsByECNO(String empNo) {
 		Employee emp = loginDao.fetchEmpDetailsByECNO(empNo);
 		return emp;
 	}
 
+	/**
+	 * Fetch employee role def.
+	 *
+	 * @param role
+	 *            the role
+	 * @return the list
+	 */
 	public List<RoleDefinition> fetchEmployeeRoleDef(BigDecimal role) {
 		List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(role);
 		return roleDef;
 	}
 
-	/*
-	 * public boolean validateEmployeeRoleDef(String user,String role,String
-	 * urlPath){ boolean status = Boolean.FALSE;
-	 * 
-	 * // sample https://example.com:8080/Bank/Enquiry/District_Master.html URL url;
-	 * String module = null,functionalityType = null,function= null; try { url = new
-	 * URL(urlPath); System.out.println("protocol: " + url.getProtocol());
-	 * System.out.println("domain: " + url.getHost()); System.out.println("port: " +
-	 * url.getPort()); System.out.println("uri: " + url.getPath());
-	 * 
-	 * String[] data = url.getPath().split("/"); if(data.length > 3){ module =
-	 * data[1]; functionalityType = data[2]; function = data[3].split("\\.")[0];
-	 * 
-	 * System.out.println(module + "|" + functionalityType + "|" + function);
-	 * 
-	 * List<RoleDefinition> roleMenu = fetchEmployeeRoleDef(role); for
-	 * (RoleDefinition roleDefinition : roleMenu) { status = Boolean.FALSE;
-	 * if(roleDefinition.getModule() != null && module != null){
-	 * if(roleDefinition.getModule().equalsIgnoreCase(module)){
-	 * if(roleDefinition.getFunctionalityType() != null){ if(functionalityType !=
-	 * null &&
-	 * roleDefinition.getFunctionalityType().equalsIgnoreCase(functionalityType)){
-	 * if(roleDefinition.getFunctionality() != null){ if(function != null &&
-	 * roleDefinition.getFunctionality().equalsIgnoreCase(function)){ status =
-	 * Boolean.TRUE; break; } }else{ status = Boolean.TRUE; break; } } }else{ status
-	 * = Boolean.TRUE; break; } } } } } } catch (MalformedURLException e) {
-	 * e.printStackTrace(); throw new
-	 * AuthServiceException("validateEmployeeRoleDef fail ",e.getMessage()); }
-	 * 
-	 * return status; }
+	/**
+	 * Save enums.
+	 *
+	 * @return the api response
 	 */
-
 	// store enums
 	public ApiResponse saveEnums() {
 		boolean savesStatus = Boolean.FALSE;
@@ -142,6 +161,11 @@ public class LoginService extends AbstractService {
 		return getBooleanResponse(savesStatus);
 	}
 
+	/**
+	 * Save module.
+	 *
+	 * @return true, if successful
+	 */
 	// save Modules
 	public boolean saveModule() {
 
@@ -195,6 +219,11 @@ public class LoginService extends AbstractService {
 		return savesStatus;
 	}
 
+	/**
+	 * Save functionality type master.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean saveFunctionalityTypeMaster() {
 
 		boolean savesStatus = Boolean.FALSE;
@@ -246,6 +275,11 @@ public class LoginService extends AbstractService {
 		return savesStatus;
 	}
 
+	/**
+	 * Save permission scope master.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean savePermissionScopeMaster() {
 
 		boolean savesStatus = Boolean.FALSE;
@@ -297,15 +331,34 @@ public class LoginService extends AbstractService {
 		return savesStatus;
 	}
 
+	/**
+	 * Null check.
+	 *
+	 * @param value
+	 *            the value
+	 * @return the string
+	 */
 	// to check null
 	private String nullCheck(String value) {
 		return value == null ? "" : value.trim().concat("|");
 	}
 
+	/**
+	 * Null check WO.
+	 *
+	 * @param value
+	 *            the value
+	 * @return the string
+	 */
 	private String nullCheckWO(String value) {
 		return value == null ? "" : value.trim();
 	}
 
+	/**
+	 * Save permission.
+	 *
+	 * @return true, if successful
+	 */
 	// save permission
 	public boolean savePermission() {
 
@@ -377,6 +430,13 @@ public class LoginService extends AbstractService {
 		return savesStatus;
 	}
 
+	/**
+	 * Fetch module id.
+	 *
+	 * @param module
+	 *            the module
+	 * @return the big decimal
+	 */
 	// fetch module id by name
 	public BigDecimal fetchModuleId(String module) {
 		BigDecimal moduleId = null;
@@ -387,6 +447,13 @@ public class LoginService extends AbstractService {
 		return moduleId;
 	}
 
+	/**
+	 * Fetch functionality type id.
+	 *
+	 * @param functionalityType
+	 *            the functionality type
+	 * @return the big decimal
+	 */
 	// fetch module id by name
 	public BigDecimal fetchFunctionalityTypeId(String functionalityType) {
 		BigDecimal functionalityTypeId = null;
@@ -397,6 +464,17 @@ public class LoginService extends AbstractService {
 		return functionalityTypeId;
 	}
 
+	/**
+	 * Fetch permission master id.
+	 *
+	 * @param moduleId
+	 *            the module id
+	 * @param functionalityTypeId
+	 *            the functionality type id
+	 * @param functionality
+	 *            the functionality
+	 * @return the big decimal
+	 */
 	// fetch permission master
 	public BigDecimal fetchPermissionMasterId(BigDecimal moduleId, BigDecimal functionalityTypeId,
 			String functionality) {
@@ -409,6 +487,13 @@ public class LoginService extends AbstractService {
 		return permissionId;
 	}
 
+	/**
+	 * Save role master.
+	 *
+	 * @param roleTitle
+	 *            the role title
+	 * @return the api response
+	 */
 	// save role
 	public ApiResponse saveRoleMaster(String roleTitle) {
 
@@ -457,6 +542,13 @@ public class LoginService extends AbstractService {
 		return getBooleanResponse(savesStatus);
 	}
 
+	/**
+	 * Fetch user master details.
+	 *
+	 * @param userId
+	 *            the user id
+	 * @return the api response
+	 */
 	public ApiResponse fetchUserMasterDetails(BigDecimal userId) {
 		ApiResponse apiResponse = null;
 		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
@@ -473,6 +565,15 @@ public class LoginService extends AbstractService {
 		return apiResponse;
 	}
 
+	/**
+	 * Save assign role to user.
+	 *
+	 * @param roleId
+	 *            the role id
+	 * @param userId
+	 *            the user id
+	 * @return the api response
+	 */
 	public ApiResponse saveAssignRoleToUser(BigDecimal roleId, BigDecimal userId) {
 
 		boolean savesStatus = Boolean.FALSE;
@@ -513,6 +614,13 @@ public class LoginService extends AbstractService {
 		return getBooleanResponse(savesStatus);
 	}
 
+	/**
+	 * Fetch permission scope id.
+	 *
+	 * @param permScope
+	 *            the perm scope
+	 * @return the big decimal
+	 */
 	// fetch permission scope Id by permission description
 	public BigDecimal fetchPermissionScopeId(String permScope) {
 		BigDecimal scopeId = null;
@@ -524,6 +632,19 @@ public class LoginService extends AbstractService {
 		return scopeId;
 	}
 
+	/**
+	 * Save assign perm to role.
+	 *
+	 * @param roleId
+	 *            the role id
+	 * @param permission
+	 *            the permission
+	 * @param permScope
+	 *            the perm scope
+	 * @param admin
+	 *            the admin
+	 * @return the api response
+	 */
 	// save Permission and scope to a role
 	public ApiResponse saveAssignPermToRole(BigDecimal roleId, Permission permission, PermScope permScope,
 			String admin) {
@@ -568,7 +689,11 @@ public class LoginService extends AbstractService {
 	}
 
 	/**
-	 * Sends otp initiating trnx
+	 * Sends otp initiating trnx.
+	 *
+	 * @param emp
+	 *            the emp
+	 * @return the api response
 	 */
 	public ApiResponse sendOtp(Employee emp) {
 		ApiResponse apiResponse = null;
@@ -591,7 +716,13 @@ public class LoginService extends AbstractService {
 	}
 
 	/**
-	 * validates otp
+	 * validates otp.
+	 *
+	 * @param emp
+	 *            the emp
+	 * @param mOtp
+	 *            the m otp
+	 * @return the api response
 	 */
 	public ApiResponse validateOtp(Employee emp, String mOtp) {
 		AuthLoginTrnxModel authLoginTrnxModel = authLoginOTPManager.validateOtpStaff(emp, mOtp);
@@ -628,6 +759,19 @@ public class LoginService extends AbstractService {
 		return apiResponse;
 	}
 
+	/**
+	 * Verify user details.
+	 *
+	 * @param empCode
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param ipaddress
+	 *            the ipaddress
+	 * @param ipAddress
+	 *            the ip address
+	 * @return the api response
+	 */
 	// Validate the ec no and then civil id number and the generate OTP and send otp
 	public ApiResponse verifyUserDetails(String empCode, String identity, String ipaddress, String ipAddress) {
 		ApiResponse apiResponse = null;
@@ -642,7 +786,7 @@ public class LoginService extends AbstractService {
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_DATA);
+						AuthServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -652,6 +796,19 @@ public class LoginService extends AbstractService {
 		return apiResponse;
 	}
 
+	/**
+	 * Verify user OTP details.
+	 *
+	 * @param empCode
+	 *            the emp code
+	 * @param identity
+	 *            the identity
+	 * @param mOtp
+	 *            the m otp
+	 * @param ipAddress
+	 *            the ip address
+	 * @return the api response
+	 */
 	// Validate the ec no and then civil id number and the generate OTP and send otp
 	public ApiResponse verifyUserOTPDetails(String empCode, String identity, String mOtp, String ipAddress) {
 		ApiResponse apiResponse = null;
@@ -666,7 +823,7 @@ public class LoginService extends AbstractService {
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_DATA);
+						AuthServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

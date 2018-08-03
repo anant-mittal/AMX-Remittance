@@ -13,7 +13,6 @@ public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
 	private final static int interval = 30;
-	private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();

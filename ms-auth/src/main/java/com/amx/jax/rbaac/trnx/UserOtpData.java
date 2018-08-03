@@ -11,7 +11,7 @@ import com.amx.jax.cache.CacheBox;
 public class UserOtpData extends CacheBox<String> {
 
 	/**
-	 * Instantiates a new logged in users.
+	 * Instantiates a Cache for User OTP data.
 	 */
 	public UserOtpData() {
 		super("Rbaac-UserOtpData");

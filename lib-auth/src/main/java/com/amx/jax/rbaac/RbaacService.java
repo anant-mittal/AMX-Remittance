@@ -1,38 +1,60 @@
 package com.amx.jax.rbaac;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
 
+// TODO: Auto-generated Javadoc
 /**
- * @author abhijeet
+ * The Interface RbaacService.
  *
+ * @author abhijeet
  */
 public interface RbaacService {
 
-	public static class ApiEndPoints {
-		
-		public static final String INIT_AUTH = "/v1/auth/init_auth/";
-		public static final String AUTHORISE = "/v1/auth/authorise/";
-		
-		public static final String ROLES_GET = "/v1/roles/get/";
-		public static final String ROLES_SAVE = "/v1/roles/save/";
-		
-		public static final String ROLES_ALLOCATE = "/v1/roles/access/allocate/";
-		public static final String ROLES_UPDATE = "/v1/roles/access/update/";
-		public static final String ROLES_REVOKE = "/v1/roles/access/revoke/";
-		
-		public static final String UAC_UPDATE = "/v1/user/account/update/";
-		
-	}
-	
-	
 	/**
-	 * Begins process of user Authentication with employee details - empCode, CivilId and Access Terminal IP 
-	 * @param empCode
-	 * @param identity
-	 * @param ipaddress
-	 * @return
+	 * The Class ApiEndPoints.
 	 */
-	public AmxApiResponse<SendOtpModel, Object> initAuthForEmployee(String empCode, String identity, String ipAddress);
-	
+	public static class ApiEndPoints {
+
+		/** The Constant INIT_AUTH. */
+		public static final String INIT_AUTH = "/v1/auth/init-auth/";
+
+		/** The Constant AUTHORISE. */
+		public static final String AUTHORISE = "/v1/auth/authorise/";
+
+		/** The Constant ROLES_GET. */
+		public static final String ROLES_GET = "/v1/roles/get/";
+
+		/** The Constant ROLES_SAVE. */
+		public static final String ROLES_SAVE = "/v1/roles/save/";
+
+		/** The Constant ROLES_ALLOCATE. */
+		public static final String ROLES_ALLOCATE = "/v1/roles/access/allocate/";
+
+		/** The Constant ROLES_UPDATE. */
+		public static final String ROLES_UPDATE = "/v1/roles/access/update/";
+
+		/** The Constant ROLES_REVOKE. */
+		public static final String ROLES_REVOKE = "/v1/roles/access/revoke/";
+
+		/** The Constant UAC_UPDATE. */
+		public static final String UAC_UPDATE = "/v1/user/account/update/";
+
+	}
+
+	/**
+	 * Begins process of user Authentication with employee details - empCode,
+	 * CivilId and Access Terminal IP .
+	 *
+	 * @param employeeNo
+	 *            the employee no
+	 * @param identity
+	 *            the identity
+	 * @param ipAddress
+	 *            the ip address
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(String employeeNo, String identity,
+			String ipAddress);
+
 }

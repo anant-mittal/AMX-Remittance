@@ -540,6 +540,7 @@ public class AuthServiceImpl implements AuthService {
 			userOtpData.fastPut(emp.getEmployeeNumber(), output.getmOtpPrefix() + "-" + output.getmOtp());
 
 			authLoginOTPManager.sendOtpStaff();
+
 			AmxApiResponse<SendOtpModel, Object> amxResp = AmxApiResponse.build(output);
 
 			return amxResp;
@@ -606,7 +607,7 @@ public class AuthServiceImpl implements AuthService {
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_DATA);
+						AuthServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
@@ -617,19 +618,19 @@ public class AuthServiceImpl implements AuthService {
 	// Validate the ec no and then civil id number and the generate OTP and send otp
 	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(String empCode, String identity, String mOtp,
 			String ipAddress) {
-			if (empCode != null && identity != null) {
-				Employee emp = validateEmployeeData(empCode, identity, ipAddress);
-				if (emp != null) {
-					return validateOtp(emp, mOtp);
-				} else {
-					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
-				}
+		if (empCode != null && identity != null) {
+			Employee emp = validateEmployeeData(empCode, identity, ipAddress);
+			if (emp != null) {
+				return validateOtp(emp, mOtp);
 			} else {
-				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_DATA);
+				throw new AuthServiceException("Employee Details not available",
+						AuthServiceError.INVALID_EMPLOYEE_DETAILS);
 			}
-		
+		} else {
+			throw new AuthServiceException("Employee Number and Civil Id Manadatory",
+					AuthServiceError.INVALID_OR_MISSING_DATA);
+		}
+
 	}
 
 }
