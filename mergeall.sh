@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git co staging
+git checkout staging
 git up
 
 branches=()
@@ -10,7 +10,7 @@ for branch in "${branches[@]}"
 do
    branchc=${branch:11}
    echo $branchc
-   git co $branchc
+   git checkout $branchc
    git up
    git merge staging
    git mergetool
