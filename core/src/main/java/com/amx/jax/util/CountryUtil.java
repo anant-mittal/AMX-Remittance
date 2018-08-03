@@ -3,7 +3,7 @@ package com.amx.jax.util;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.amx.jax.constant.Country;
+import com.amx.jax.dict.Country;
 
 @Component
 public class CountryUtil {

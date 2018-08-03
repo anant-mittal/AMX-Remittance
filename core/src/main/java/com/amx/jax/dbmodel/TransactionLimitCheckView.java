@@ -19,7 +19,6 @@ public class TransactionLimitCheckView implements Serializable{
 	
 	@Id
 	@Column(name = "CHANNEL")
-	@Id
 	public String getChannel() {
 		return channel;
 	}

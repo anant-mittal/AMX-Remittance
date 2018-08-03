@@ -4,8 +4,16 @@
 package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import com.amx.amxlib.model.AbstractModel;
+import javax.validation.constraints.NotNull;
+
+import com.amx.amxlib.model.FlexFieldDto;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.AbstractModel;
+import com.amx.utils.JsonUtil;
 
 /**
  * @author Prashant
@@ -26,6 +34,10 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal srlId;
 	private String mOtp;
 	private String eOtp;
+	@NotNull
+	private ExchangeRateBreakup exRateBreakup;
+	private Map<String, String> flexFields;
+	private Map<String, FlexFieldDto> flexFieldDtoMap;
 
 	/*
 	 * (non-Javadoc)
@@ -115,5 +127,47 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
     public void seteOtp(String eOtp) {
         this.eOtp = eOtp;
     }
+
+	public ExchangeRateBreakup getExRateBreakup() {
+		return exRateBreakup;
+	}
+
+	public void setExRateBreakup(ExchangeRateBreakup exRateBreakup) {
+		this.exRateBreakup = exRateBreakup;
+	}
+
+	public Map<String, String> getFlexFields() {
+		return flexFields;
+	}
+
+	public void setFlexFields(Map<String, String> flexFields) {
+		this.flexFields = flexFields;
+	}
+
+	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
+		return flexFieldDtoMap;
+	}
+
+	public void setFlexFieldDtoMap(Map<String, FlexFieldDto> flexFieldDtoMap) {
+		this.flexFieldDtoMap = flexFieldDtoMap;
+	}
+	
+	public void populateFlexFieldDtoMap() {
+		if (this.flexFields != null) {
+			Function<Map.Entry<String, String>, FlexFieldDto> valueMapper = (entryObject) -> {
+				String value = entryObject.getValue().toString();
+				FlexFieldDto flexFieldDto = null;
+				try {
+					flexFieldDto = JsonUtil.fromJson(value, FlexFieldDto.class);
+				} catch (Exception e) {
+				}
+				if (flexFieldDto == null) {
+					flexFieldDto = new FlexFieldDto(value);
+				}
+				return flexFieldDto;
+			};
+			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+		}
+	}
 
 }

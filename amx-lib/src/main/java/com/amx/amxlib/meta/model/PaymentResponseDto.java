@@ -3,7 +3,7 @@ package com.amx.amxlib.meta.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 public class PaymentResponseDto extends AbstractModel implements Serializable{
 	

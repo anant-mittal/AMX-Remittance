@@ -34,14 +34,14 @@ public class ExchangeRateTest {
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
 
-	//@Test
+	@Test
 	public void testGetExchangeRate() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<ExchangeRateResponseModel> response = null;
-		response = client.getExchangeRate(new BigDecimal(1), new BigDecimal(9), new BigDecimal(1), null);
+		response = client.getExchangeRate(new BigDecimal(1), new BigDecimal(4), new BigDecimal(1), null);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
@@ -58,7 +58,7 @@ public class ExchangeRateTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testMinMaxExchangeRate() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));

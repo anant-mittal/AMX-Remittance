@@ -3,8 +3,6 @@ package com.amx.jax.auditlog;
 import java.math.BigDecimal;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.jax.logger.AbstractEvent.EventMarker;
-import com.amx.jax.logger.AbstractEvent.EventType;
 
 public class JaxAuditEvent extends AuditEvent {
 

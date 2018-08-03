@@ -25,8 +25,8 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
@@ -74,18 +74,19 @@ public class WebJaxAdvice {
 	 *            the response
 	 * @return the response entity
 	 */
-	@ExceptionHandler(AbstractJaxException.class)
-	public ResponseEntity<ResponseWrapper<Object>> handle(AbstractJaxException exc, HttpServletRequest request,
+	@ExceptionHandler(AmxApiException.class)
+	public ResponseEntity<ResponseWrapper<Object>> handle(AmxApiException exc, HttpServletRequest request,
 			HttpServletResponse response) {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
+
 		wrapper.setMessage(WebResponseStatus.UNKNOWN_JAX_ERROR, exc);
+
 		String errorKey = ArgUtil.parseAsString(exc.getErrorKey(), WebResponseStatus.UNKNOWN_JAX_ERROR.toString());
-		if (exc.getErrorKey() == null || exc.getError() == JaxError.UNKNOWN_JAX_ERROR
-				|| exc.getError() == JaxError.JAX_SYSTEM_ERROR) {
+		if (exc.isReportable()) {
 			LOG.error(errorKey, exc);
 			postManService.notifyException(errorKey, exc);
 		} else {
-			LOG.error(ArgUtil.parseAsString(errorKey, WebResponseStatus.UNKNOWN_JAX_ERROR.toString()));
+			LOG.error(ArgUtil.parseAsString(errorKey, exc.getErrorMessage()));
 		}
 
 		AuthState state = guestSession.getState();
@@ -95,7 +96,9 @@ public class WebJaxAdvice {
 		if (exc.getError() == JaxError.USER_LOGIN_ATTEMPT_EXCEEDED) {
 			sessionService.unIndexUser();
 		}
+
 		wrapper.setException(exc.getClass().getName());
+
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.OK);
 	}
 
@@ -239,7 +242,7 @@ public class WebJaxAdvice {
 		wrapper.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 		wrapper.setException(ex.getClass().getName());
 		postManService.notifyException(wrapper.getStatus(), ex);
-		LOG.error("INTERNAL_SERVER_ERROR", ex);
+		LOG.error(HttpStatus.INTERNAL_SERVER_ERROR.name(), ex);
 		return new ResponseEntity<ResponseWrapper<Object>>(wrapper, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 

@@ -1,5 +1,7 @@
 package com.amx.utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -8,6 +10,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class ArgUtil.
@@ -19,6 +24,8 @@ import java.util.Set;
  * 
  */
 public final class ArgUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArgUtil.class);
 
 	/**
 	 * Instantiates a new arg util.
@@ -719,6 +726,32 @@ public final class ArgUtil {
 		}
 	}
 
+	public static Enum parseAsEnum(Object value, Type type) {
+		try {
+			String enumString = parseAsString(value);
+			if (enumString == null) {
+				return null;
+			}
+			Class clazz = (Class) type;
+			if (clazz.isEnum()) {
+				return Enum.valueOf(clazz, enumString);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Enum Cast Exception", e);
+		}
+		return null;
+	}
+
+	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {
+		Class<T> type = (Class<T>) componentType;
+		String[] str = ArgUtil.parseAsStringArray(value);
+		Object o = Array.newInstance(type, str.length);
+		for (int i = 0; i < str.length; i++) {
+			Array.set(o, i, ArgUtil.parseAsEnum(str[i].toUpperCase(), componentType));
+		}
+		return (T[]) o;
+	}
+
 	/**
 	 * Checks if is object empty.
 	 *
@@ -762,6 +795,13 @@ public final class ArgUtil {
 	 */
 	public static boolean isEmptyString(String str) {
 		return (str == null || Constants.BLANK.equals(str));
+	}
+
+	public static boolean areEqual(Object a, Object b) {
+		if (a == null) {
+			return b == null;
+		}
+		return a.equals(b);
 	}
 
 	public static <T> T ifNotEmpty(T... strs) {

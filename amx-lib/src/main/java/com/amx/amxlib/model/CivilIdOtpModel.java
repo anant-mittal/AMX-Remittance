@@ -2,11 +2,12 @@ package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
 
+import com.amx.jax.model.AbstractModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class CivilIdOtpModel extends AbstractModel {
 
-    private static final long serialVersionUID = -7991527354328804802L;
+	private static final long serialVersionUID = -7991527354328804802L;
 
     private String mOtp;
 

@@ -39,7 +39,7 @@ public class RoutingService {
 	@Autowired
 	JaxProperties jaxProperties;
 
-	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
+	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 		Map<String, Object> output;
 		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
 		BigDecimal beneAccountSeqId = (BigDecimal) inputValue.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
@@ -73,7 +73,7 @@ public class RoutingService {
 		return output;
 	}
 
-	private void checkRemittanceAndDeliveryMode(HashMap<String, Object> inputValue) {
+	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
 		if (inputValue.get("P_REMITTANCE_MODE_ID") == null) {
 			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
 		}
