@@ -18,7 +18,7 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 	String outputCur;
 	BigDecimal inputAmount;
 	BigDecimal outputAmount;
-	Date date;
+	String date;
 
 	
 
@@ -86,12 +86,12 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		this.outputCur = outputCur;
 	}
 
-	public Date getDate() {
+	public String getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setDate(String date2) {
+		this.date = date2;
 	}
 
 	public BigDecimal getInputAmount() {

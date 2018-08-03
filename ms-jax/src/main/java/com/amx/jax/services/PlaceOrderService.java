@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -274,6 +275,9 @@ public class PlaceOrderService extends AbstractService {
 			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
 					derivedSellRate);
 
+				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+				String date = simpleDateFormat.format(new Date());
+
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
 				
@@ -288,6 +292,7 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
 					placeorderNotDTO.setRate(derivedSellRate);
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
+					placeorderNotDTO.setDate(date);
 					logger.info("place Order for Notfication:" + placeorderNotDTO.toString());
 					
 					dtoList.add(placeorderNotDTO);
