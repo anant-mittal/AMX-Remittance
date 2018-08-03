@@ -8,7 +8,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.auditlog.JaxAuditEvent;
 import com.amx.jax.auditlog.PlaceOrderTriggerAuditEvent;
 
-import com.amx.jax.auditlog.PurposeTranxAuditEvent;
 import com.amx.jax.util.JaxContextUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
