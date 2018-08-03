@@ -6,7 +6,7 @@
 	<packaging>jar</packaging>
 	<name>common-utils</name>
 	<url>http://maven.apache.org</url>
-	<description>Common utils library for boot projects</description>
+	<description>Common Utils for amx projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -42,6 +42,7 @@
 			<artifactId>commons-beanutils</artifactId>
 		</dependency>
 	</dependencies>
+
 	<build>
 		<plugins>
 			<!-- Enable deploy for this submodule. -->
@@ -57,4 +58,5 @@
 			</plugin>
 		</plugins>
 	</build>
+
 </project>

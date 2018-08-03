@@ -19,7 +19,7 @@ import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 
 @Component
-@TenantSpecific(value = { Tenant.BHR, Tenant.BRN, Tenant.BRNDEV })
+@TenantSpecific(value = { Tenant.BHR, Tenant.BRN, Tenant.BRNDEV, Tenant.OMN, Tenant.OMNDEV })
 public class UserValidationBhr implements CustomerValidation {
 
 	@Autowired
