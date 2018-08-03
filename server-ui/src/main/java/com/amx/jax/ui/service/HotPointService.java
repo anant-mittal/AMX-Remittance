@@ -150,12 +150,12 @@ public class HotPointService {
 		data.put("hotpoint", hotpoint);
 		data.put("messages", messages);
 		event.setData(data);
-		auditService.log(event);
+		//auditService.log(event);
 
 		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
-		fBPushService.sendDirect(pushMessage);
+		//fBPushService.sendDirect(pushMessage);
 		return messages;
 	}
 
