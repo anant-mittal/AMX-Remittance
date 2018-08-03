@@ -8,14 +8,26 @@ import java.util.Map;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
+/**
+ * The Class EmailTemplate.
+ */
 public class EmailTemplate {
 
+	/** The template id. */
 	private String templateId;
 
+	/** The template. */
 	private String template;
 
+	/** The replacement params. */
 	private Map<String, String> replacementParams;
 
+	/**
+	 * Instantiates a new email template.
+	 *
+	 * @param templateId
+	 *            the template id
+	 */
 	public EmailTemplate(String templateId) {
 		this.templateId = templateId;
 		try {
@@ -25,6 +37,15 @@ public class EmailTemplate {
 		}
 	}
 
+	/**
+	 * Load template.
+	 *
+	 * @param templateId
+	 *            the template id
+	 * @return the string
+	 * @throws Exception
+	 *             the exception
+	 */
 	private String loadTemplate(String templateId) throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
 		File file = new File(classLoader.getResource("templates/" + templateId).getFile());
@@ -37,6 +58,13 @@ public class EmailTemplate {
 		return content;
 	}
 
+	/**
+	 * Gets the template.
+	 *
+	 * @param replacements
+	 *            the replacements
+	 * @return the template
+	 */
 	public String getTemplate(Map<String, String> replacements) {
 		String cTemplate = this.getTemplate();
 
@@ -50,6 +78,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Gets the template id.
+	 *
 	 * @return the templateId
 	 */
 	public String getTemplateId() {
@@ -57,6 +87,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Sets the template id.
+	 *
 	 * @param templateId
 	 *            the templateId to set
 	 */
@@ -65,6 +97,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Gets the template.
+	 *
 	 * @return the template
 	 */
 	public String getTemplate() {
@@ -72,6 +106,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Sets the template.
+	 *
 	 * @param template
 	 *            the template to set
 	 */
@@ -80,6 +116,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Gets the replacement params.
+	 *
 	 * @return the replacementParams
 	 */
 	public Map<String, String> getReplacementParams() {
@@ -87,6 +125,8 @@ public class EmailTemplate {
 	}
 
 	/**
+	 * Sets the replacement params.
+	 *
 	 * @param replacementParams
 	 *            the replacementParams to set
 	 */

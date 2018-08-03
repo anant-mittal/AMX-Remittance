@@ -68,6 +68,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
@@ -76,7 +81,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -88,25 +92,11 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-cache</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-session</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>lib-mcq</artifactId>
 		</dependency>
 
 		<dependency>

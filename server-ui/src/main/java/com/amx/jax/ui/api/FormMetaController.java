@@ -17,19 +17,37 @@ import com.amx.jax.ui.service.JaxService;
 
 import io.swagger.annotations.Api;
 
+/**
+ * The Class FormMetaController.
+ */
 @RestController
 @Api(value = "Form Meta APIs : List of fields")
 public class FormMetaController {
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/**
+	 * Gets the list of countries.
+	 *
+	 * @param req
+	 *            the req
+	 * @return the list of countries
+	 */
 	@RequestMapping(value = "/api/form/fields/entity", method = { RequestMethod.POST })
 	public ResponseWrapper<List<JaxConditionalFieldDto>> getListOfCountries(@RequestBody GetJaxFieldRequest req) {
 		return new ResponseWrapper<List<JaxConditionalFieldDto>>(
 				jaxService.setDefaults().getJaxFieldClient().getJaxFieldsForEntity(req).getResults());
 	}
 
+	/**
+	 * Gets the list of states for country.
+	 *
+	 * @param countryId
+	 *            the country id
+	 * @return the list of states for country
+	 */
 	@RequestMapping(value = "/api/form/fields/bnfcry", method = { RequestMethod.GET })
 	public ResponseWrapper<List<JaxConditionalFieldDto>> getListOfStatesForCountry(@RequestParam BigDecimal countryId) {
 		return new ResponseWrapper<List<JaxConditionalFieldDto>>(

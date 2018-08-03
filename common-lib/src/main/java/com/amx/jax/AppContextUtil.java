@@ -24,7 +24,7 @@ public class AppContextUtil {
 	}
 
 	public static Long getTraceTime() {
-		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY));
+		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
 	}
 
 	public static String getActorId() {
@@ -114,7 +114,7 @@ public class AppContextUtil {
 	 * 
 	 * @param httpHeaders
 	 */
-	public static void importHeadersTo(HttpHeaders httpHeaders) {
+	public static void exportAppContextTo(HttpHeaders httpHeaders) {
 
 		String traceId = getTraceId();
 		String tranxId = getTranxId();
@@ -131,7 +131,7 @@ public class AppContextUtil {
 		}
 	}
 
-	public static void exportHeadersFrom(HttpHeaders httpHeaders) {
+	public static void importAppContextFrom(HttpHeaders httpHeaders) {
 		if (httpHeaders.containsKey(AppConstants.TRANX_ID_XKEY)) {
 			List<String> tranxids = httpHeaders.get(AppConstants.TRANX_ID_XKEY);
 			if (tranxids.size() >= 0) {

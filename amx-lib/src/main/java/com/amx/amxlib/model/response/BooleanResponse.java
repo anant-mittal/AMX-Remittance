@@ -1,6 +1,6 @@
 package com.amx.amxlib.model.response;
 
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 public class BooleanResponse extends AbstractModel {
 

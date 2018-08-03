@@ -12,7 +12,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.client.JaxClientErrorHanlder;
+import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.jax.rest.RestService;
 
@@ -35,21 +35,22 @@ public class JaxConfig {
 	}
 
 	@Bean
-	public RestService jaxRestService(RestService restService, JaxClientErrorHanlder errorHandler) {
+	public RestService jaxRestService(RestService restService, AppClientErrorHanlder errorHandler) {
 		restService.setErrorHandler(errorHandler);
 		return restService;
 	}
-	
+
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder, JaxClientErrorHanlder errorHandler) {
+	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler,
+			AppClientInterceptor appClientInterceptor) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
 		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+		restTemplate.setInterceptors(Collections.singletonList(appClientInterceptor));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}
-	
+
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {

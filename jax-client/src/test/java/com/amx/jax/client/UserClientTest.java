@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
@@ -49,7 +49,7 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setCustomerId(new BigDecimal(123123123));
 		ApiResponse<CustomerDto> response = null;
 		response = client.getMyProfileInfo();
 		assertNotNull("Response is null", response);
@@ -116,7 +116,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	 @Test
 	public void testLoginSuccess() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -125,8 +125,8 @@ public class UserClientTest extends AbstractTestClient {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5128));
 		ApiResponse<CustomerModel> response = null;
 		try {
-			response = client.login("289053104436", "Amx@123456");
-		} catch (AbstractException e) {
+			response = client.login("2810502076280", "Amx@12345");
+		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
 		assertNotNull("Response is null", response);
@@ -160,7 +160,7 @@ public class UserClientTest extends AbstractTestClient {
 		ApiResponse<QuestModelDTO> response = null;
 		try {
 			response = client.getDataVerificationQuestions();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			e.printStackTrace();
 		}
 		assertNotNull("Response is null", response);
@@ -182,7 +182,7 @@ public class UserClientTest extends AbstractTestClient {
 			response = client.validateOtp(mOtp, eOtp);
 		} catch (JaxSystemError je) {
 			je.printStackTrace();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			LOGGER.info("Error key is ---> " + e.getErrorKey());
 			LOGGER.info("Error message is ---> " + e.getErrorMessage());
 		}
@@ -203,7 +203,7 @@ public class UserClientTest extends AbstractTestClient {
 			response = client.customerLoggedIn(new UserDevice());
 		} catch (JaxSystemError je) {
 			je.printStackTrace();
-		} catch (AbstractException e) {
+		} catch (AbstractJaxException e) {
 			LOGGER.info("Error key is ---> " + e.getErrorKey());
 			LOGGER.info("Error message is ---> " + e.getErrorMessage());
 		}
@@ -224,7 +224,7 @@ public class UserClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult());
 	}
 
-	 @Test
+	// @Test
 	public void testInitReg() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		setDefaults();

@@ -16,6 +16,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
@@ -33,10 +34,9 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.OtpData;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
-import com.amx.jax.trnx.model.OtpData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
@@ -178,6 +178,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
+		customer.setLoyaltyPoints(BigDecimal.ZERO);
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);

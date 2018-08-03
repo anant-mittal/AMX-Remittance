@@ -12,12 +12,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 
 @Service

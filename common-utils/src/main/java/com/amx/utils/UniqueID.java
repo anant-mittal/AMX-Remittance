@@ -2,6 +2,7 @@ package com.amx.utils;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+
 //TODO: Auto-generated Javadoc
 /**
  * The Class UniqueID.
@@ -11,6 +12,7 @@ public final class UniqueID {
 	/** The Constant INT_22. */
 	private static final int INT_22 = 22;
 
+	/** The Constant PREF. */
 	public static final String PREF = Random.randomAlpha(3);
 
 	/** The atom. */
@@ -44,6 +46,7 @@ public final class UniqueID {
 	/**
 	 * Generate string.
 	 *
+	 * @param midfix the midfix
 	 * @return : Unique String ID
 	 */
 	public static String generateSystemString(String midfix) {

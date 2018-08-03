@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +12,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
-import com.amx.jax.exception.GlobalException;
+import com.amx.jax.routing.IRoutingLogic;
 import com.amx.jax.service.MetaService;
 
 @Component
@@ -31,8 +34,12 @@ public class RoutingService {
 	BeneficiaryService beneficiaryService;
 	@Autowired
 	RoutingProcedureDao routingProcedureDao;
+	@Autowired
+	List<IRoutingLogic> routingLogics;
+	@Autowired
+	JaxProperties jaxProperties;
 
-	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
+	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 		Map<String, Object> output;
 		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
 		BigDecimal beneAccountSeqId = (BigDecimal) inputValue.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
@@ -54,14 +61,19 @@ public class RoutingService {
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
 		} else {
 			// banking
-			output = applicationProcedureDao.getRoutingDetails(inputValue);
+			if (jaxProperties.getRoutingProcOthDisable()) {
+				output = applicationProcedureDao.getRoutingDetails(inputValue);
+			} else {
+				output = applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
+			}
+			inputValue.putAll(output);
 		}
 		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
 		return output;
 	}
 
-	private void checkRemittanceAndDeliveryMode(HashMap<String, Object> inputValue) {
+	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
 		if (inputValue.get("P_REMITTANCE_MODE_ID") == null) {
 			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
 		}
@@ -70,4 +82,17 @@ public class RoutingService {
 		}
 	}
 
+	public void recalculateRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
+		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
+		if (!ConstantDocument.SERVICE_GROUP_CODE_CASH.equals(serviceGroupCode)) {
+
+			routingLogics.forEach(i -> {
+				if (i.isApplicable()) {
+					Map<String, Object> output = new HashMap<>();
+					i.apply(inputValue, output);
+					inputValue.putAll(output);
+				}
+			});
+		}
+	}
 }

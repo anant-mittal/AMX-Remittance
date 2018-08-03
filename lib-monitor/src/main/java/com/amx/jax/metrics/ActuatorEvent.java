@@ -4,14 +4,14 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.amx.jax.logger.AbstractAuditEvent;
+import com.amx.jax.logger.AbstractEvent;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.Timer;
 
-public class ActuatorEvent extends AbstractAuditEvent {
+public class ActuatorEvent extends AbstractEvent {
 
 	private SortedMap<String, Gauge> gauges;
 	private SortedMap<String, Counter> counters;

@@ -6,35 +6,29 @@ import com.amx.amxlib.constant.JaxTransactionStatus;
 
 public class JaxTransactionEvent extends JaxAuditEvent {
 
+	private static final long serialVersionUID = 1L;
+
 	JaxTransactionStatus transactionStatus;
 
 	String applicationDocumentNo;
 
 	BigDecimal applicationDocumentFinYear;
-	
-	
 
 	public JaxTransactionEvent(JaxTransactionStatus transactionStatus, String applicationDocumentNo,
 			BigDecimal applicationDocumentFinYear) {
-		super();
+		super(Type.APPLICATION_CREATED);
 		this.transactionStatus = transactionStatus;
 		this.applicationDocumentNo = applicationDocumentNo;
 		this.applicationDocumentFinYear = applicationDocumentFinYear;
 	}
 
-	
-
 	public String getApplicationDocumentNo() {
 		return applicationDocumentNo;
 	}
 
-
-
 	public void setApplicationDocumentNo(String applicationDocumentNo) {
 		this.applicationDocumentNo = applicationDocumentNo;
 	}
-
-
 
 	public BigDecimal getApplicationDocumentFinYear() {
 		return applicationDocumentFinYear;

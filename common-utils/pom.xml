@@ -6,6 +6,7 @@
 	<packaging>jar</packaging>
 	<name>common-utils</name>
 	<url>http://maven.apache.org</url>
+	<description>Common utils library for boot projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -36,6 +37,26 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>commons-beanutils</groupId>
+			<artifactId>commons-beanutils</artifactId>
+		</dependency>
 	</dependencies>
-	<description>Common utils library for boot projects</description>
+
+	<build>
+		<plugins>
+			<!-- Enable deploy for this submodule. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

@@ -15,19 +15,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Urly;
 
+/**
+ * The Class WebTenantFilter.
+ */
 @Component
 public class WebTenantFilter implements Filter {
 
+	/** The logger. */
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#init(javax.servlet.FilterConfig)
+	 */
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// empty
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+	 * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+	 */
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
@@ -41,7 +57,7 @@ public class WebTenantFilter implements Filter {
 		 * attribute;
 		 */
 		if (siteId == null) {
-			siteId = (String) request.getSession().getAttribute(TenantContextHolder.TENANT);
+			siteId = ArgUtil.parseAsString(request.getSession().getAttribute(TenantContextHolder.TENANT));
 		}
 
 		if (siteId != null && !Constants.BLANK.equals(siteId)) {
@@ -53,6 +69,11 @@ public class WebTenantFilter implements Filter {
 		chain.doFilter(req, resp);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javax.servlet.Filter#destroy()
+	 */
 	@Override
 	public void destroy() {
 		// empty

@@ -1,16 +1,18 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.model.response.ApiError;
+import java.util.List;
 
-public class RemittanceTransactionValidationException extends AbstractException {
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.jax.exception.AmxApiError;
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
+public class RemittanceTransactionValidationException extends AbstractJaxException {
 
-    public RemittanceTransactionValidationException(ApiError error) {
-        super(error);
-    }
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
+	public RemittanceTransactionValidationException(AmxApiError error) {
+		super(error);
+	}
 }

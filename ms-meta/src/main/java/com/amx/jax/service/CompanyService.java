@@ -10,11 +10,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.services.AbstractService;
@@ -56,17 +56,6 @@ public class CompanyService extends AbstractService {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetailsByCompanyId(metaData.getLanguageId(),
 				metaData.getCompanyId());
 		return companyDetails.get(0);
-	}
-
-	public  static ViewCompanyDetails getCompanyDetailsFromInMemory(BigDecimal languageId) {
-		ViewCompanyDetails companyDetails=null;
-		for (ViewCompanyDetails vcd : DEFAULT_COMPANY_DETALIS) {
-			
-			if (vcd.getLanguageId().compareTo(languageId)==0) {
-				companyDetails = vcd;
-			}
-		}
-		return companyDetails;
 	}
 
 	public List<ViewCompanyDetailDTO> convert(List<ViewCompanyDetails> companyDetails) {

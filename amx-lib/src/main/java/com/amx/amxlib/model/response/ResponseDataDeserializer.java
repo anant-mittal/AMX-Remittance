@@ -38,11 +38,12 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.RateAlertDTO;
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -232,6 +233,9 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
 			});
 			break;
+		case "place-order-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>(){});
+			break;	
 		case "min-max-exrate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});

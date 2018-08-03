@@ -19,7 +19,49 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
+		<amx.version>0.0.1-SNAPSHOT</amx.version>
 	</properties>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-utils</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-lib</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-swagger</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-mcq</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>common-amx</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-auth</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-postman</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -48,11 +90,50 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+	
+
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		    	<!-- Don't deploy all artifacts. Overridden in submodules. -->         
+     			<plugin>
+         			<groupId>org.apache.maven.plugins</groupId>
+         			<artifactId>maven-deploy-plugin</artifactId>
+         			<executions> 
+					<execution>
+						<id>default-deploy</id> 
+						<phase>none</phase>
+					</execution>
+				</executions>
+				<configuration>
+                    			<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
+                		</configuration>
+     			</plugin>
+			
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
 	</build>
 
+<!--   
+	<repositories>
+		<repository>
+			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
+			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
+		</repository>
+	</repositories>	
+-->
+	
+	<!-- 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -60,20 +141,22 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	-->
 
 	<modules>
 		<module>common-utils</module>
 		<module>common-lib</module>
+		<module>common-amx</module>
 		<module>lib-ext-jar</module>
 		<module>lib-swagger</module>
-		<module>lib-cache</module>
- 		<module>lib-tunnel</module>
-		<module>lib-session</module>
+		<module>lib-db</module>
+		<module>lib-mcq</module>
 		<module>lib-monitor</module>
+		<module>lib-auth</module>
 		<module>lib-sso</module>
+		<module>lib-jax</module>
 
-		<!-- <module>ms-logger</module> -->
-
+		<module>ms-logger</module>
 		<module>lib-postman</module>
 		<module>ms-postman</module>
 
@@ -82,19 +165,22 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
+		<!-- <module>ms-branch</module> -->
 		<module>ms-jax</module>
 		<module>jax-client</module>
+		<module>ms-auth</module>
 
 		<module>ms-scheduler</module>
 
 		<module>server-payg</module>
 
 		<module>server-ui</module>
-		<module>server-stomp</module>
+		<!-- <module>server-stomp</module> -->
 
+		<!-- <module>server-offsite</module> -->
 		<module>server-admin</module>
- 		<module>server-sso</module>
-		<module>server-kiosk</module>
-		<module>server-sample</module>
+		<!-- <module>server-sso</module> -->
+		<!-- <module>server-kiosk</module> -->
+		<!-- <module>server-sample</module> -->
 	</modules>
 </project>

@@ -12,15 +12,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.PersonInfo;
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.exception.GlobalException;
+import com.amx.jax.model.OtpData;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
-import com.amx.jax.trnx.model.OtpData;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
 import com.amx.jax.util.CryptoUtil;
@@ -72,7 +72,11 @@ public class CustomerRegistrationOtpManager {
 		jaxUtil.convert(otpData, civilIdOtpModel);
 		jaxNotificationService.sendOtpEmail(pinfo, civilIdOtpModel);
 		jaxNotificationService.sendOtpSms(pinfo, civilIdOtpModel);
-
+		otpData.incrementSentCount();
+		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		customerRegistrationManager.saveOtpData(otpData);
 	}
 
 	/**
@@ -85,7 +89,7 @@ public class CustomerRegistrationOtpManager {
 			logger.info("otp data not found in trnx, creating new one");
 			otpData = new OtpData();
 		}
-		String eOtp = util.createRandomPassword(6);
+		String eOtp = Random.randomNumeric(6);
 		String hashedeOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.seteOtpPrefix(Random.randomAlpha(3));
 		sendOtpModel.seteOtp(eOtp);
@@ -93,7 +97,7 @@ public class CustomerRegistrationOtpManager {
 		otpData.setHashedeOtp(hashedeOtp);
 		otpData.seteOtpPrefix(sendOtpModel.geteOtpPrefix());
 
-		String mOtp = util.createRandomPassword(6);
+		String mOtp = Random.randomNumeric(6);
 		String hashedmOtp = cryptoUtil.getHash(userId, eOtp);
 		sendOtpModel.setmOtp(mOtp);
 		sendOtpModel.setmOtpPrefix(Random.randomAlpha(3));
@@ -117,18 +121,34 @@ public class CustomerRegistrationOtpManager {
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12",
+				throw new GlobalException(
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.geteOtp().equals(eOtp) || !otpData.getmOtp().equals(mOtp)) {
-				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+				otpMismatch(otpData);
 			}
 			otpData.setOtpValidated(true);
+			otpData.resetCounts();
 		} finally {
 			customerRegistrationManager.saveOtpData(otpData);
 		}
+	}
+
+	/**
+	 * called when otp is not matching
+	 * 
+	 * @param otpData
+	 * 
+	 */
+	private void otpMismatch(OtpData otpData) {
+		otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
+		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+
 	}
 
 	/** resets attempts of otp */
@@ -136,8 +156,7 @@ public class CustomerRegistrationOtpManager {
 		Date midnightToday = dateUtil.getMidnightToday();
 
 		if (otpData.getLockDate() != null && midnightToday.compareTo(otpData.getLockDate()) > 0) {
-			otpData.setLockDate(null);
-			otpData.setValidateOtpAttempts(0);
+			otpData.resetCounts();
 		}
 	}
 

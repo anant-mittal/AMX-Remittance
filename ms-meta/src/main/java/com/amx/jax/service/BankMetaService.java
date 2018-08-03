@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
@@ -26,10 +27,11 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
-import com.amx.jax.exception.GlobalException;
+import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
+import com.amx.jax.repository.meta.BankApplicabilityRepository;
 import com.amx.jax.services.AbstractService;
 
 @Component
@@ -41,12 +43,12 @@ public class BankMetaService extends AbstractService {
 
 	@Autowired
 	private BankMasterRepository repo;
-
 	@Autowired
 	private CountryBranchRepository countryBranchRepository;
-
 	@Autowired
 	private VwBankBranchRepository vwBankBranchRepository;
+	@Autowired
+	BankApplicabilityRepository bankApplicabilityRepository;
 
 	public List<BankMasterModel> getBanksByCountryId(BigDecimal countryId) {
 		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
@@ -112,27 +114,31 @@ public class BankMetaService extends AbstractService {
 		Set<BankBranchView> branchesList = new HashSet<>();
 		boolean isparametersSet = false;
 		if (StringUtils.isNotBlank(ifsc)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCase(countryId, bankId, ifsc));
+			ifsc = "%" + ifsc + "%";
+			branchesList.addAll(
+					vwBankBranchRepository.findByCountryIdAndBankIdAndIfscCodeIgnoreCaseLike(countryId, bankId, ifsc));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(swift)) {
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCase(countryId, bankId, swift));
+			swift = "%" + swift + "%";
+			branchesList.addAll(
+					vwBankBranchRepository.findByCountryIdAndBankIdAndSwiftIgnoreCaseLike(countryId, bankId, swift));
 			isparametersSet = true;
 		}
 		if (StringUtils.isNotBlank(branchName)) {
 			branchName = "%" + branchName + "%";
-			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId,
-					branchName));
+			branchesList.addAll(vwBankBranchRepository
+					.findByCountryIdAndBankIdAndBranchFullNameIgnoreCaseLike(countryId, bankId, branchName));
 			isparametersSet = true;
 		}
 		if (!isparametersSet) {
 			branchesList.addAll(vwBankBranchRepository.findByCountryIdAndBankId(countryId, bankId));
 		}
-		
+
 		if (branchesList.isEmpty()) {
-		    throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
+			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
 		}
-		
+
 		ApiResponse response = getBlackApiResponse();
 		response.getData().getValues().addAll(convertBranchView(branchesList));
 		response.getData().setType("bank-branch-dto");
@@ -162,6 +168,10 @@ public class BankMetaService extends AbstractService {
 			logger.info("error in copy properties", e);
 		}
 		return dto;
+	}
+
+	public BankApplicability getBankApplicability(BigDecimal bankId) {
+		return bankApplicabilityRepository.findByBankMaster(new BankMasterModel(bankId));
 	}
 
 	@Override

@@ -1,16 +1,20 @@
 package com.amx.jax.logger.events;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class CActivityEvent extends AuditEvent {
 
-	public static enum Type implements EnumType {
-		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE;
-	}
+	private static final long serialVersionUID = -3189696554945071766L;
 
-	public enum Result {
-		PASS, FAIL;
+	public static enum Type implements EventType {
+		PASSOWRD_UPDATE, EMAIL_UPDATE, PHONE_UPDATE, SECQUES_UPDATE, PHISHIN_UPDATE,
+
+		GEO_LOCATION;
+
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 	}
 
 	CActivityEvent(Type type, String fromValue, String toValue) {
@@ -24,10 +28,14 @@ public class CActivityEvent extends AuditEvent {
 		this.result = result;
 	}
 
+	public CActivityEvent(Type type) {
+		super(type);
+	}
+
 	private String fromValue = null;
 	private String toValue = null;
 	private String actor = null;
-	private Result result = Result.PASS;
+	private String customer = null;
 
 	@Override
 	public String getDescription() {
@@ -58,12 +66,12 @@ public class CActivityEvent extends AuditEvent {
 		this.actor = actor;
 	}
 
-	public Result getResult() {
-		return result;
+	public String getCustomer() {
+		return customer;
 	}
 
-	public void setResult(Result result) {
-		this.result = result;
+	public void setCustomer(String customer) {
+		this.customer = customer;
 	}
 
 }

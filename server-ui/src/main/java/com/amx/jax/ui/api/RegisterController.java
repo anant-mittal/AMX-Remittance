@@ -25,24 +25,28 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * Controller responsible for providing online registration of offline user
- * 
- * @author lalittanwar
+ * Controller responsible for providing online registration of offline user.
  *
+ * @author lalittanwar
  */
 @RestController
 @Api(value = "Registration APIs")
 public class RegisterController {
 
+	/** The registration service. */
 	@Autowired
 	private RegistrationService registrationService;
 
+	/** The transactions. */
 	@Autowired
 	Transactions transactions;
 
 	/**
+	 * Verify ID.
+	 *
 	 * @param civilid
-	 * @return
+	 *            the civilid
+	 * @return the response wrapper
 	 */
 	@ApiOperation(value = "Verify KYC and sneds OTP to registered Mobile")
 	@RequestMapping(value = "/pub/register/verifyid", method = { RequestMethod.POST })
@@ -50,6 +54,13 @@ public class RegisterController {
 		return registrationService.validateCustomer(civilid);
 	}
 
+	/**
+	 * Verify customer.
+	 *
+	 * @param authData
+	 *            the auth data
+	 * @return the response wrapper
+	 */
 	@ApiOperation(value = "Customer Activation", notes = "${RegisterController.verifyCustomer}")
 	@RequestMapping(value = "/pub/register/verifycustomer", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> verifyCustomer(@RequestBody AuthData authData) {
@@ -57,12 +68,13 @@ public class RegisterController {
 	}
 
 	/**
-	 * Verifies OTP for civilID
-	 * 
+	 * Verifies OTP for civilID.
+	 *
 	 * @param civilid
-	 * @param otp
-	 * @param request
-	 * @return
+	 *            the civilid
+	 * @param mOtp
+	 *            the m otp
+	 * @return the response wrapper
 	 */
 	@Deprecated
 	@RequestMapping(value = "/pub/register/verifycuser", method = { RequestMethod.POST })
@@ -70,14 +82,24 @@ public class RegisterController {
 		return registrationService.loginWithOtp(civilid, mOtp);
 	}
 
+	/**
+	 * Gets the sec ques.
+	 *
+	 * @param request
+	 *            the request
+	 * @return the sec ques
+	 */
 	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.GET })
 	public ResponseWrapper<UserUpdateData> getSecQues(HttpServletRequest request) {
 		return registrationService.getSecQues(true);
 	}
 
 	/**
-	 * @param securityquestions
-	 * @return
+	 * Reg sec ques.
+	 *
+	 * @param userUpdateData
+	 *            the user update data
+	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/secques", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regSecQues(@RequestBody UserUpdateData userUpdateData) {
@@ -86,11 +108,17 @@ public class RegisterController {
 	}
 
 	/**
+	 * Reg phising.
+	 *
 	 * @param imageUrl
+	 *            the image url
 	 * @param caption
+	 *            the caption
 	 * @param mOtp
+	 *            the m otp
 	 * @param eOtp
-	 * @return
+	 *            the e otp
+	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regPhising(@RequestParam String imageUrl, @RequestParam String caption,
@@ -99,11 +127,19 @@ public class RegisterController {
 	}
 
 	/**
+	 * Reg login id and password.
+	 *
 	 * @param loginId
+	 *            the login id
 	 * @param password
+	 *            the password
 	 * @param mOtp
+	 *            the m otp
 	 * @param eOtp
-	 * @return
+	 *            the e otp
+	 * @param email
+	 *            the email
+	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/register/creds", method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -114,44 +150,98 @@ public class RegisterController {
 		return registrationService.setCredentials(loginId, password, mOtp, eOtp, email, true);
 	}
 
+	/**
+	 * Reg login id and password JSON.
+	 *
+	 * @param customerCredential
+	 *            the customer credential
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/creds/**", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regLoginIdAndPasswordJSON(@RequestBody ICustomerModel customerCredential) {
 		return registrationService.setCredentials(customerCredential.getLoginId(), customerCredential.getPassword(),
 				customerCredential.getMotp(), customerCredential.getEotp(), customerCredential.getEmail(), true);
 	}
 
+	/** The partial reg service. */
 	@Autowired
 	private PartialRegService partialRegService;
 
+	/**
+	 * Partial reg.
+	 *
+	 * @param personalDetail
+	 *            the personal detail
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/init", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> partialReg(@RequestBody CustomerPersonalDetail personalDetail) {
 		return transactions.start(partialRegService.newUserRegisterInit(personalDetail));
 	}
 
+	/**
+	 * Partial reg.
+	 *
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/verify", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> partialReg(@RequestParam String mOtp, @RequestParam String eOtp) {
 		transactions.track();
 		return partialRegService.newUserRegisterValidate(mOtp, eOtp);
 	}
 
+	/**
+	 * Save home address.
+	 *
+	 * @param customerHomeAddress
+	 *            the customer home address
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/address", method = { RequestMethod.POST })
 	public ResponseWrapper<AuthData> saveHomeAddress(@RequestBody CustomerHomeAddress customerHomeAddress) {
 		transactions.track();
 		return partialRegService.saveHomeAddress(customerHomeAddress);
 	}
 
+	/**
+	 * Reg new sec ques.
+	 *
+	 * @param userUpdateData
+	 *            the user update data
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/secques", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regNewSecQues(@RequestBody UserUpdateData userUpdateData) {
 		transactions.track();
 		return partialRegService.updateSecQues(userUpdateData.getSecQuesAns());
 	}
 
+	/**
+	 * Reg new phising.
+	 *
+	 * @param imageUrl
+	 *            the image url
+	 * @param caption
+	 *            the caption
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regNewPhising(@RequestParam String imageUrl, @RequestParam String caption) {
 		transactions.track();
 		return partialRegService.updatePhising(imageUrl, caption);
 	}
 
+	/**
+	 * Reg new login id and password.
+	 *
+	 * @param customerCredential
+	 *            the customer credential
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST, })
 	public ResponseWrapper<UserUpdateData> regNewLoginIdAndPassword(
 			@RequestBody CustomerCredential customerCredential) {

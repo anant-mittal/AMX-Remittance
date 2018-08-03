@@ -113,8 +113,7 @@ public class Email extends Message {
 	}
 
 	private String[] splitByComma(String toMultiple) {
-		String[] toSplit = toMultiple.split(",");
-		return toSplit;
+		return toMultiple.split(",");
 	}
 
 	public void addAllTo(String toMultiple) {

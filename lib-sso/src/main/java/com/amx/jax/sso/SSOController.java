@@ -31,6 +31,7 @@ import com.amx.utils.URLBuilder;
 public class SSOController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SSOController.class);
+	private static final String REDIRECT = "redirect:";
 
 	@Autowired
 	HttpService httpService;
@@ -62,6 +63,8 @@ public class SSOController {
 
 		if (auth == SSOAuth.DONE && sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
 
+			LOGGER.debug("auth == SSOAuth.DONE");
+
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(tranxId, sotp);
 			token.setDetails(new WebAuthenticationDetails(request));
 
@@ -72,23 +75,25 @@ public class SSOController {
 		}
 
 		if (!ssoUser.isAuthDone()) {
+			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.setLandingUrl(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
-			return "redirect:" + builder.getURL();
+			return REDIRECT + builder.getURL();
 		}
-		return "redirect:" + sSOTranx.get().getReturnUrl();
+		return REDIRECT + sSOTranx.get().getReturnUrl();
 	}
 
 	@RequestMapping(value = SSOUtils.LOGGEDIN_URL, method = { RequestMethod.GET })
 	public String loggedinJPage(Model model, @RequestParam boolean done)
 			throws MalformedURLException, URISyntaxException {
 		if (!ssoUser.isAuthDone()) {
+			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.init();
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY,
 					AppContextUtil.getTranxId());
-			return "redirect:" + builder.getURL();
+			return REDIRECT + builder.getURL();
 		}
 		return "home";
 	}

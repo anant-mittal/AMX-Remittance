@@ -3,7 +3,6 @@ package com.amx.jax.metrics;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 
 import com.codahale.metrics.MetricRegistry;
@@ -19,7 +18,7 @@ public class MetricsConfig extends MetricsConfigurerAdapter {
 	public void configureReporters(MetricRegistry metricRegistry) {
 		// registerReporter allows the MetricsConfigurerAdapter to
 		// shut down the reporter when the Spring context is closed
-		registerReporter(AuditReporter.forRegistry(metricRegistry).build()).start(1, TimeUnit.MINUTES);
+		registerReporter(AuditReporter.forRegistry(metricRegistry).build()).start(15, TimeUnit.MINUTES);
 	}
 
 	// @Bean

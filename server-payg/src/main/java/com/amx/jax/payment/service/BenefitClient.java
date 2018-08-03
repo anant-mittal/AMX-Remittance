@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
@@ -82,7 +83,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
 		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/");
+				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -143,7 +144,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	}
 
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse) {
+	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));

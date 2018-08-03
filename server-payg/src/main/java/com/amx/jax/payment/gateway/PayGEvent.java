@@ -1,12 +1,17 @@
 package com.amx.jax.payment.gateway;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.utils.EnumType;
 
 public class PayGEvent extends AuditEvent {
 
-	public enum Type implements EnumType {
-		PAYMENT_INIT, PAYMENT_CAPTURED
+	public enum Type implements EventType {
+		PAYMENT_INIT, PAYMENT_CAPTURED;
+
+		@Override
+		public EventMarker marker() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	public PayGEvent(Type type, PayGParams params) {

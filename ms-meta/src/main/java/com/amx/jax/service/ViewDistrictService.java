@@ -7,11 +7,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.ViewDistrict;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.IViewDistrictDAO;
 import com.amx.jax.services.AbstractService;
 
@@ -41,12 +41,12 @@ public class ViewDistrictService extends AbstractService{
 	public ApiResponse getAllDistrict(BigDecimal stateId,BigDecimal languageId){
 		List<ViewDistrict> viewDistrict =viewDistrictDao.getAllDistrict(stateId,languageId);
 		ApiResponse response = getBlackApiResponse();
-		if(viewDistrict.isEmpty()) {
+		/*if(viewDistrict.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
+		}else {*/
 		response.getData().getValues().addAll(convert(viewDistrict));
 		response.setResponseStatus(ResponseStatus.OK);
-				}
+				/*}*/
 		
 		
 		response.getData().setType("district");

@@ -25,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.util.DBUtil;
 
@@ -36,7 +36,7 @@ import com.amx.jax.util.DBUtil;
 public class ApplicationProcedureDao {
 
 	private static Logger LOGGER = Logger.getLogger(ApplicationProcedureDao.class);
-	
+
 	private static String P_BENEFICIARY_MASTER_ID = "P_BENEFICIARY_MASTER_ID";
 	private static String P_BENEFICIARY_BANK_ID = "P_BENEFICIARY_BANK_ID";
 	private static String P_ROUTING_COUNTRY_ID = "P_ROUTING_COUNTRY_ID";
@@ -94,8 +94,7 @@ public class ApplicationProcedureDao {
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
-					new SqlParameter(Types.BIGINT), 
+					new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT), new SqlParameter(Types.BIGINT),
 					new SqlOutParameter("P_BENEFICIARY_BANK_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_BRANCH_NAME", Types.VARCHAR),
 					new SqlOutParameter("P_BENEFICIARY_STATE_ID", Types.NUMERIC),
@@ -148,7 +147,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_GET_ADDL_BENE_DETAILS Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.error("error shile getting additional beneficiary details : ",e);
+			LOGGER.error("error shile getting additional beneficiary details : ", e);
 			e.printStackTrace();
 		}
 		if (output.get("P_ERROR_MESSAGE") != null) {
@@ -300,8 +299,6 @@ public class ApplicationProcedureDao {
 
 		return addtionalProcValues;
 	}
-
-	
 
 	/**
 	 * 
@@ -456,7 +453,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_APPL_ADDL_CHECKS Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.error(OUT_PARAMETERS,e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -595,7 +592,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_P_CHECK_SWIFT_BANK Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.error(OUT_PARAMETERS,e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -663,7 +660,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_INSERT_REMITTANCE_ONLINE Out put Parameters :" + output.toString());
 
 		} catch (Exception e) {
-			LOGGER.error(OUT_PARAMETERS,e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -714,7 +711,7 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_INSERT_EMOS_TRANSFER_LIVE Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-				LOGGER.error(OUT_PARAMETERS,e);
+			LOGGER.error(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -838,35 +835,21 @@ public class ApplicationProcedureDao {
 			LOGGER.info("EX_REMIT_ADDL_INFO Out put Parameters :" + output.toString());
 
 		} catch (DataAccessException e) {
-			LOGGER.info(OUT_PARAMETERS,e);
+			LOGGER.info(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
 
-	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
+	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 
 		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
-
-		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
-				new SqlParameter(Types.NUMERIC), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC),
-				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC));
-		List<SqlParameter> ouptutParams = new ArrayList<>();
-		ouptutParams.addAll(declareInAndOutputParameters);
-		String[] outParams = { "P_SERVICE_MASTER_ID", P_ROUTING_COUNTRY_ID, "P_ROUTING_BANK_ID",
-				"P_ROUTING_BANK_BRANCH_ID", "P_REMITTANCE_MODE_ID", "P_DELIVERY_MODE_ID", "P_SWIFT",
-				"P_ERROR_MESSAGE" };
-		for (int i = 1; i <= 8; i++) {
-			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.NUMERIC));
-		}
 
 		Connection connection = null;
 		CallableStatement cs = null;
 		Map<String, Object> output = new HashMap<>();
 		try {
 			connection = connectionProvider.getDataSource().getConnection();
-
-			String proc = " { call EX_GET_ROUTING_SETUP_ONLINE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+			String proc = " { call EX_GET_ROUTING_SETUP_ONLINE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
 			cs = connection.prepareCall(proc);
 			// In Parameters
 			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
@@ -874,32 +857,30 @@ public class ApplicationProcedureDao {
 			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
 			cs.setBigDecimal(4, (BigDecimal) inputValue.get(P_BENEFICIARY_BANK_ID));
 			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
-			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			/*cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
-					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
-			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
-			*/cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
-			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
-			// Parameters
-			cs.registerOutParameter(8, java.sql.Types.NUMERIC);
-			cs.registerOutParameter(9, java.sql.Types.NUMERIC);
+			cs.setString(6, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CURRENCY_ID"));
+			cs.setBigDecimal(8, (BigDecimal) inputValue.get("P_LOCAL_AMT"));
+			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_FOREIGN_AMT"));
+			// Out Parameters
 			cs.registerOutParameter(10, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(11, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(13, java.sql.Types.NUMERIC);
-			cs.registerOutParameter(14, java.sql.Types.VARCHAR);
-			cs.registerOutParameter(15, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(14, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(16, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(17, java.sql.Types.VARCHAR);
 			cs.execute();
-			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(8));
-			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(9));
-			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(10));
-			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(11));
-			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(12));
-			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(13));
-			output.put("P_SWIFT", cs.getString(14));
-			output.put("P_ERROR_MESSAGE", cs.getString(15));
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(10));
+			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(11));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(12));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(13));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(14));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(15));
+			output.put("P_SWIFT", cs.getString(16));
+			output.put("P_ERROR_MESSAGE", cs.getString(17));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.error("error in generate docNo", e);
+			LOGGER.error("error in getRoutingDetails", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -950,7 +931,7 @@ public class ApplicationProcedureDao {
 			}, declareInAndOutputParameters);
 			LOGGER.info("EX_P_BANNED_BANK_CHECK Out put Parameters :" + output.toString());
 		} catch (DataAccessException e) {
-			LOGGER.info(OUT_PARAMETERS,e);
+			LOGGER.info(OUT_PARAMETERS, e);
 		}
 		return output;
 	}
@@ -993,4 +974,72 @@ public class ApplicationProcedureDao {
 		}
 		return output;
 	}
+
+	public Map<String, Object> getRoutingDetailFromOthProcedure(Map<String, Object> inputValue) {
+
+		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+
+		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.NUMERIC), new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC),
+				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC));
+		List<SqlParameter> ouptutParams = new ArrayList<>();
+		ouptutParams.addAll(declareInAndOutputParameters);
+		String[] outParams = { "P_SERVICE_MASTER_ID", P_ROUTING_COUNTRY_ID, "P_ROUTING_BANK_ID",
+				"P_ROUTING_BANK_BRANCH_ID", "P_REMITTANCE_MODE_ID", "P_DELIVERY_MODE_ID", "P_SWIFT",
+				"P_ERROR_MESSAGE" };
+		for (int i = 1; i <= 8; i++) {
+			ouptutParams.add(new SqlOutParameter(outParams[i - 1], Types.NUMERIC));
+		}
+
+		Connection connection = null;
+		CallableStatement cs = null;
+		Map<String, Object> output = new HashMap<>();
+		try {
+			connection = connectionProvider.getDataSource().getConnection();
+
+			String proc = " { call EX_GET_ROUTING_SET_UP_OTH (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+			cs = connection.prepareCall(proc);
+			// In Parameters
+			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
+			cs.setString(2, inputValue.get("P_USER_TYPE").toString());
+			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
+			cs.setBigDecimal(4, (BigDecimal) inputValue.get(P_BENEFICIARY_BANK_ID));
+			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
+			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
+					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
+			cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID")); // Out
+			// Parameters
+			cs.registerOutParameter(10, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(11, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(13, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(14, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(16, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(17, java.sql.Types.VARCHAR);
+			cs.execute();
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(10));
+			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(11));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(12));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(13));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(14));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(15));
+			output.put("P_SWIFT", cs.getString(16));
+			output.put("P_ERROR_MESSAGE", cs.getString(17));
+		} catch (DataAccessException | SQLException e) {
+			LOGGER.error("error in generate docNo", e);
+			LOGGER.info(OUT_PARAMETERS + e.getMessage());
+		} finally {
+			DBUtil.closeResources(cs, connection);
+		}
+
+		LOGGER.info(OUT_PARAMETERS + output.toString());
+
+		return output;
+	}
+
 }

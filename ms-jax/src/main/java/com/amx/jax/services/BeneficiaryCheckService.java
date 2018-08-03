@@ -19,6 +19,7 @@ import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BanksView;
 import com.amx.jax.dbmodel.BlackListModel;
@@ -39,7 +40,6 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
-import com.amx.jax.repository.IBlackMasterRepository;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
@@ -78,7 +78,7 @@ public class BeneficiaryCheckService extends AbstractService {
 	IBeneficiaryRelationshipDao beneficiaryRelationshipDao;
 
 	@Autowired
-	IBlackMasterRepository blackListDao;
+	BlackListDao blackListDao;
 
 	@Autowired
 	IBeneBankBlackCheckDao beneBankWorldDao;
@@ -129,7 +129,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		}
 		if (!StringUtils.isBlank(beneDto.getArbenificaryName())) {
-			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
 				errorDesc = "Arabic name Of beneficary matching with black listed customer";
@@ -399,13 +399,16 @@ public class BeneficiaryCheckService extends AbstractService {
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());
 
-		if (serviceAppList.isEmpty()) {
+		/*if (serviceAppList.isEmpty()) {
 			errorDesc = "Data not found";
+			beneDto.setUpdateNeeded(true);
 			errorStatusDto = this.setBeneError(JaxError.DATA_NOT_FOUND.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
 
 		} else {
-			if (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght())
+*/		
+		if (!serviceAppList.isEmpty()) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMinLenght())
 					&& (JaxUtil.isNullZeroBigDecimalCheck(serviceAppList.get(0).getMaxLenght()))) {
 				int minLength = serviceAppList.get(0).getMinLenght().intValue();
 				int maxLength = serviceAppList.get(0).getMaxLenght().intValue();

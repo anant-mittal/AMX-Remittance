@@ -19,13 +19,23 @@ import com.maxmind.geoip2.DatabaseReader;
 import com.maxmind.geoip2.exception.GeoIp2Exception;
 import com.maxmind.geoip2.model.CityResponse;
 
+/**
+ * The Class GeoLocationServiceImpl.
+ */
 @Component
 public class GeoLocationServiceImpl implements GeoLocationService {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeoLocationServiceImpl.class);
 
+	/** The db reader. */
 	private DatabaseReader dbReader = null;
 
+	/**
+	 * Gets the db.
+	 *
+	 * @return the db
+	 */
 	public DatabaseReader getDb() {
 		if (dbReader == null) {
 			File database = FileUtil.getExternalFile("ext-resources/GeoLite2-City.mmdb");
@@ -38,13 +48,22 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 		return dbReader;
 	}
 
+	/**
+	 * Instantiates a new geo location service impl.
+	 */
 	public GeoLocationServiceImpl() {
 		this.getDb();
 	}
 
+	/** The default tennat id. */
 	@Value("${default.tenant}")
 	String defaultTennatId;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.postman.GeoLocationService#getLocation(java.lang.String)
+	 */
 	@Override
 	public GeoLocation getLocation(String ip) throws PostManException {
 
@@ -66,6 +85,17 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 		return loc;// new GeoLocation(ip);
 	}
 
+	/**
+	 * Gets the city.
+	 *
+	 * @param ip
+	 *            the ip
+	 * @return the city
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 * @throws GeoIp2Exception
+	 *             the geo ip 2 exception
+	 */
 	public CityResponse getCity(String ip) throws IOException, GeoIp2Exception {
 		this.getDb();
 		InetAddress ipAddress = InetAddress.getByName(ip);

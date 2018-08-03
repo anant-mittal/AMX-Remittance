@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.crypto.Mac;
 
+
 /**
  * <p>
  * Generates time-based one-time passwords (TOTP) as specified in
@@ -22,6 +23,8 @@ import javax.crypto.Mac;
  * @author <a href="https://github.com/jchambers">Jon Chambers</a>
  */
 public class TimeBasedOneTimePasswordGenerator extends HmacOneTimePasswordGenerator {
+	
+	/** The time step millis. */
 	private final long timeStepMillis;
 
 	/**

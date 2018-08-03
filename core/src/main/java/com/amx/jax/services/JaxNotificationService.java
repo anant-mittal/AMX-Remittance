@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.NotificationConstants.BRANCH_SEARCH;
 import static com.amx.amxlib.constant.NotificationConstants.REG_SUC;
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +19,10 @@ import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
+import com.amx.jax.dbmodel.ApplicationSetup;
+import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -211,5 +216,43 @@ public class JaxNotificationService {
 
 		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
 		sendEmail(email);
+	}	
+	
+	public void sendErrorEmail(RemittanceTransactionFailureAlertModel model, List<ExEmailNotification> emailNotification) {
+	  try {
+			for(ExEmailNotification emailNot : emailNotification )
+			{
+		    String emailid =emailNot.getEmailId();
+			Email email = new Email();
+			email.setSubject(BRANCH_SEARCH);
+			email.addTo(emailid);
+			email.setTemplate(Templates.BRANCH_SEARCH_EMPTY);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, model);
+			sendEmail(email);
+			}
+		} catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+	}
+
+	public void sendPartialRegistraionMail(PersonInfo personinfo, ApplicationSetup applicationSetup ) {
+
+		logger.info("Sending Email to Team Of The Customer : " + personinfo.getFirstName());
+		try
+		{
+		Email email = new Email();
+		email.setSubject("New Customer Registration");
+		email.addTo(applicationSetup.getEmailId());
+		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);		
+		sendEmail(email);
+		}
+		catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+		
+
 	}
 }

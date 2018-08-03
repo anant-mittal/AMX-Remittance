@@ -59,9 +59,16 @@ public class File {
 
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
-	@Null
-	@JsonIgnore
-	private String object;
+
+	public File() {
+	}
+
+	@SuppressWarnings("unchecked")
+	public File(Templates template, Object data, Type fileType) {
+		this.setTemplate(template);
+		this.setType(fileType);
+		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
+	}
 
 	public Map<String, Object> getModel() {
 		return model;
@@ -128,7 +135,6 @@ public class File {
 			response.addHeader("Content-Disposition", "attachment; filename=" + getName());
 		}
 		try {
-			// final File outputFile = File.createTempFile(fileName, ".pdf");
 			if (body != null) {
 				outputStream = response.getOutputStream();
 				outputStream.write(this.body);

@@ -31,15 +31,29 @@ import com.itextpdf.text.pdf.BaseFont;
 import gui.ava.html.Html2Image;
 import net.sf.jasperreports.engine.JRException;
 
+/**
+ * The Class ConverterAmxFlyingSaucer.
+ */
 @Component
 public class ConverterAmxFlyingSaucer implements FileConverter {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConverterAmxFlyingSaucer.class);
 
+	/**
+	 * Instantiates a new converter amx flying saucer.
+	 */
 	public ConverterAmxFlyingSaucer() {
 		// com.itextpdf.licensekey.LicenseKey.loadLicenseFile(getClass().getResourceAsStream("/license/itextkey1520345049511_0.xml"));
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.postman.converter.FileConverter#toPDF(com.amx.jax.postman.model.
+	 * File)
+	 */
 	@Override
 	public File toPDF(File file) throws JRException {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

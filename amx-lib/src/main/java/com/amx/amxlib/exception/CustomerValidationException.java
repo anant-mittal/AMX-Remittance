@@ -1,8 +1,8 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.model.response.ApiError;
+import com.amx.jax.exception.AmxApiError;
 
-public class CustomerValidationException extends AbstractException {
+public class CustomerValidationException extends AbstractJaxException {
 
 	/**
 	 * 
@@ -13,7 +13,7 @@ public class CustomerValidationException extends AbstractException {
 		super(errorMessage, errorCode);
 	}
 
-	public CustomerValidationException(ApiError error) {
+	public CustomerValidationException(AmxApiError error) {
 		super(error);
 	}
 

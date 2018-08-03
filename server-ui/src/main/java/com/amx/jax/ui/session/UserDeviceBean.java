@@ -1,9 +1,7 @@
 package com.amx.jax.ui.session;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +18,32 @@ import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import eu.bitwalker.useragentutils.Version;
 
+/**
+ * The Class UserDeviceBean.
+ */
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserDeviceBean extends UserDevice implements Serializable {
+public class UserDeviceBean extends UserDevice {
 
 	private static final long serialVersionUID = -6869375666742059912L;
-	Logger LOGGER = LoggerService.getLogger(UserDeviceBean.class);
+
+	private transient Logger logger = LoggerService.getLogger(getClass());
 
 	@Autowired
-	private HttpService httpService;
+	private transient HttpService httpService;
 
+	/**
+	 * Resolve.
+	 *
+	 * @return the user device
+	 */
 	public UserDevice resolve() {
 		Device currentDevice = httpService.getCurrentDevice();
 		this.ip = httpService.getIPAddress();
@@ -44,20 +52,20 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 					: (currentDevice.isTablet() ? DeviceType.TABLET : DeviceType.NORMAL));
 			this.platform = currentDevice.getDevicePlatform();
 		} else {
-			LOGGER.warn("DeviceUtils by Springframework is not able to determin UserDevice");
+			logger.warn("DeviceUtils by Springframework is not able to determin UserDevice");
 		}
 
 		this.fingerprint = httpService.getDeviceId();
 		UserAgent userAgent = httpService.getUserAgent();
-		
+
 		if (this.id == null) {
-			String idn = null;
-			if (this.fingerprint != null) {
-				idn = UUID.nameUUIDFromBytes(this.fingerprint.getBytes()).toString();
-			} else {
-				idn = UUID.randomUUID().toString();
-			}
-			this.id = httpService.getBrowserId(ArgUtil.parseAsString(idn));
+			String idn = ArgUtil.parseAsString(userAgent.getId());
+			// if (this.fingerprint != null) {
+			// idn = UUID.nameUUIDFromBytes(this.fingerprint.getBytes()).toString();
+			// } else {
+			// idn = UUID.randomUUID().toString();
+			// }
+			this.id = httpService.setBrowserId(ArgUtil.parseAsString(idn));
 		}
 		this.browser = userAgent.getBrowser();
 		this.browserVersion = userAgent.getBrowserVersion();
@@ -103,6 +111,27 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return this;
 	}
 
+	public boolean isAuthorized() {
+		if (this.id == null || this.fingerprint == null || httpService == null) {
+			return true;
+		}
+		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);
+		String fingerprint = ArgUtil.parseAsString(httpService.getDeviceId(), Constants.BLANK);
+		UserAgent userAgent = httpService.getUserAgent();
+		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
+		if (!id.equals(this.id)
+				// || !fingerprint.equals(this.fingerprint)
+				|| !ip.equals(this.ip) || !(this.browser == null || this.browser.equals(userAgent.getBrowser()))) {
+			return false;
+		}
+		return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getFingerprint()
+	 */
 	@Override
 	public String getFingerprint() {
 		if (type == null) {
@@ -111,6 +140,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return fingerprint;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getId()
+	 */
 	@Override
 	public String getId() {
 		if (type == null) {
@@ -119,6 +153,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return id;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getAppVersion()
+	 */
 	@Override
 	public String getAppVersion() {
 		if (type == null) {
@@ -127,6 +166,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return appVersion;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getIp()
+	 */
 	@Override
 	public String getIp() {
 		if (type == null) {
@@ -135,6 +179,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return ip;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getType()
+	 */
 	@Override
 	public DeviceType getType() {
 		if (type == null) {
@@ -143,6 +192,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return type;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getPlatform()
+	 */
 	@Override
 	public DevicePlatform getPlatform() {
 		if (type == null) {
@@ -151,6 +205,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return platform;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getOperatingSystem()
+	 */
 	@Override
 	public OperatingSystem getOperatingSystem() {
 		if (type == null) {
@@ -159,6 +218,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return operatingSystem;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getBrowser()
+	 */
 	@Override
 	public Browser getBrowser() {
 		if (type == null) {
@@ -167,6 +231,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return browser;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.user.UserDevice#getBrowserVersion()
+	 */
 	@Override
 	public Version getBrowserVersion() {
 		if (type == null) {
@@ -175,8 +244,13 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return browserVersion;
 	}
 
+	/**
+	 * To map.
+	 *
+	 * @return the map
+	 */
 	public Map<String, Object> toMap() {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<>();
 		map.put("id", getId());
 		map.put("fingerprint", fingerprint);
 		map.put("platform", platform);
@@ -190,6 +264,11 @@ public class UserDeviceBean extends UserDevice implements Serializable {
 		return map;
 	}
 
+	/**
+	 * To user device.
+	 *
+	 * @return the user device
+	 */
 	public UserDevice toUserDevice() {
 		UserDeviceBean device = new UserDeviceBean();
 		device.setId(getId());

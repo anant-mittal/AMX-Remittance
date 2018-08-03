@@ -3,6 +3,7 @@ package com.amx.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+
 /**
  * The Class ContextUtil.
  */
@@ -108,8 +109,8 @@ public final class ContextUtil {
 	/**
 	 * Gets the trace id.
 	 *
-	 * @param generate
-	 *            the generate
+	 * @param generate            the generate
+	 * @param midfix the midfix
 	 * @return the trace id
 	 */
 	public static String getTraceId(boolean generate, String midfix) {

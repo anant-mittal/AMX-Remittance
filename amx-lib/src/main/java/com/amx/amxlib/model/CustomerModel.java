@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
+import com.amx.jax.model.AbstractModel;
 
 public class CustomerModel extends AbstractModel implements ICustomerModel {
 

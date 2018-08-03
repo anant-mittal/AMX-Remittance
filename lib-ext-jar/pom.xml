@@ -252,6 +252,39 @@
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
+					
+					<execution>
+						<id>ipayPipe</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>ipayPipe</groupId>
+							<artifactId>ipayPipe</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/ipayPipe.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>cryptix32</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>cryptix32</groupId>
+							<artifactId>cryptix32</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/../ext-jars/cryptix32.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+					
 				</executions>
 			</plugin>
 		</plugins>

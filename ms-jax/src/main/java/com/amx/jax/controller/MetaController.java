@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -40,6 +41,7 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
+import com.amx.jax.util.JaxContextUtil;
 import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 
 /**
@@ -316,9 +318,10 @@ public class MetaController {
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
 	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request,BindingResult bindingResult){
 		LOGGER.info("in getbankBranches" + request.toString());
-		//bankBranchSearchRequestlValidator.validate(request, bindingResult);
+		JaxContextUtil.setJaxEvent(JaxEvent.BANK_BRANCH_SEARCH);
+		JaxContextUtil.setRequestModel(request);
+		bankBranchSearchRequestlValidator.validate(request, bindingResult);
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
-		jaxNotificationManager.sendBranchSearchNotificationToSOA(apiResponse, request);
 		return apiResponse;
 	}
 	

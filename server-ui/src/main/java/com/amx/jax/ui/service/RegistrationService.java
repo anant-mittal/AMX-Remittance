@@ -21,20 +21,34 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 
+/**
+ * The Class RegistrationService.
+ */
 @Service
 public class RegistrationService {
 
+	/** The log. */
 	private Logger LOG = Logger.getLogger(UserService.class);
 
+	/** The user session info. */
 	@Autowired
 	private UserSession userSessionInfo;
 
+	/** The session service. */
 	@Autowired
 	SessionService sessionService;
 
+	/** The jax client. */
 	@Autowired
 	private JaxService jaxClient;
 
+	/**
+	 * Validate customer.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> validateCustomer(String identity) {
 
 		/**
@@ -65,6 +79,15 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Login with otp.
+	 *
+	 * @param idnetity
+	 *            the idnetity
+	 * @param mOtp
+	 *            the m otp
+	 * @return the response wrapper
+	 */
 	@Deprecated
 	public ResponseWrapper<UserUpdateData> loginWithOtp(String idnetity, String mOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
@@ -78,6 +101,15 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Validate customer.
+	 *
+	 * @param idnetity
+	 *            the idnetity
+	 * @param mOtp
+	 *            the m otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp) {
 		if (mOtp == null) {
 			return validateCustomer(idnetity);
@@ -108,6 +140,17 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Validate customer.
+	 *
+	 * @param idnetity
+	 *            the idnetity
+	 * @param mOtp
+	 *            the m otp
+	 * @param answer
+	 *            the answer
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthData> validateCustomer(String idnetity, String mOtp, SecurityQuestionModel answer) {
 		if (answer == null) {
 			return validateCustomer(idnetity, mOtp);
@@ -126,6 +169,12 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Inits the activation.
+	 *
+	 * @param wrapper
+	 *            the wrapper
+	 */
 	private void initActivation(ResponseWrapper<UserUpdateData> wrapper) {
 		List<QuestModelDTO> questModel = jaxClient.setDefaults().getMetaClient().getSequrityQuestion().getResults();
 		wrapper.getData().setSecQuesMeta(questModel);
@@ -136,6 +185,13 @@ public class RegistrationService {
 		}
 	}
 
+	/**
+	 * Gets the sec ques.
+	 *
+	 * @param validate
+	 *            the validate
+	 * @return the sec ques
+	 */
 	public ResponseWrapper<UserUpdateData> getSecQues(boolean validate) {
 		if (validate) {
 			sessionService.getGuestSession().initStep(AuthStep.SECQ_SET);
@@ -145,6 +201,17 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Update sec ques.
+	 *
+	 * @param securityquestions
+	 *            the securityquestions
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> updateSecQues(List<SecurityQuestionModel> securityquestions, String mOtp,
 			String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.SECQ_SET);
@@ -160,6 +227,19 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Update phising.
+	 *
+	 * @param imageUrl
+	 *            the image url
+	 * @param caption
+	 *            the caption
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> updatePhising(String imageUrl, String caption, String mOtp, String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.CAPTION_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
@@ -172,6 +252,23 @@ public class RegistrationService {
 		return wrapper;
 	}
 
+	/**
+	 * Sets the credentials.
+	 *
+	 * @param loginId
+	 *            the login id
+	 * @param password
+	 *            the password
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @param email
+	 *            the email
+	 * @param doLogin
+	 *            the do login
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> setCredentials(String loginId, String password, String mOtp, String eOtp,
 			String email, boolean doLogin) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);

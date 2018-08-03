@@ -20,6 +20,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.exception.jax.InvalidCivilIdException;
+import com.amx.amxlib.exception.jax.InvalidOtpException;
+import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -37,10 +41,6 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
-import com.amx.jax.exception.GlobalException;
-import com.amx.jax.exception.InvalidCivilIdException;
-import com.amx.jax.exception.InvalidOtpException;
-import com.amx.jax.exception.UserNotFoundException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -242,8 +242,7 @@ public class UserValidationService {
 		ViewOnlineCustomerCheck onlineCustView = custDao.getOnlineCustomerview(customer.getCustomerId());
 		if (onlineCustView != null && onlineCustView.getIdExpirtyDate() == null) {
 			throw new GlobalException("ID is expired", JaxError.ID_PROOF_EXPIRED);
-		}
-		validateBlackListedCustomer(customer);
+		}		
 		validateOldEmosData(customer);
 
 	}
@@ -289,8 +288,8 @@ public class UserValidationService {
 			throw new GlobalException("No local details found", JaxError.MISSING_LOCAL_CONTACT_DETAILS);
 		}
 	}
-
-	private void validateBlackListedCustomer(Customer customer) {
+	
+	void validateBlackListedCustomerForLogin(Customer customer) {
 
 		StringBuffer engNamesbuf = new StringBuffer();
 		if (StringUtils.isNotBlank(customer.getFirstName())) {
@@ -314,13 +313,15 @@ public class UserValidationService {
 		}
 		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer name found matching with black list ",
-					JaxError.BLACK_LISTED_CUSTOMER.getCode());
-		}
-		blist = blistDao.getBlackByName(localNamesbuf.toString());
-		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer local name found matching with black list ",
-					JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
+					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
+		}		
+		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
+			blist = blistDao.getBlackByName(localNamesbuf.toString());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
+						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
+			}
 		}
 	}
 

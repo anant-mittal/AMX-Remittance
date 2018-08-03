@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -32,13 +33,12 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.BankBranch;
 import com.amx.jax.dbmodel.remittance.DeliveryMode;
 import com.amx.jax.dbmodel.remittance.Document;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceModeMaster;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IDocumentDao;
@@ -103,7 +103,6 @@ public class RemittanceApplicationManager {
 	public RemittanceApplication createRemittanceApplication(RemittanceTransactionRequestModel requestModel,
 			Map<String, Object> validatedObjects, RemittanceTransactionResponsetModel validationResults,
 			Map<String, Object> remitApplParametersMap) {
-
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
@@ -115,8 +114,8 @@ public class RemittanceApplicationManager {
 		BigDecimal routingBankBranchId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
-		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal remittanceId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
@@ -142,7 +141,8 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(
+				loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -278,7 +278,7 @@ public class RemittanceApplicationManager {
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
 			logger.info("bankId: " + bankId + "remittanceModeId: " + remittanceModeId + "deliveryModeId "
 					+ deliveryModeId + " foreignCurrencyId: " + foreignCurrencyId);
-			AdditionalBankDetailsView additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
+			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(srlId,
 					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 			if (additionaBnankDetail != null) {
 				logger.info("additionaBnankDetail getServiceApplicabilityRuleId: "
@@ -312,7 +312,7 @@ public class RemittanceApplicationManager {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-		if (requestModel.isAvailLoyalityPoints() && validationResults.getCanRedeemLoyalityPoints()) {
+		if (loyalityPointsAvailed(requestModel, validationResults)) {
 			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
@@ -324,5 +324,21 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 
+	}
+	
+	/**
+	 * whether customer has availed loyality points or not
+	 * 
+	 * @param requestModel
+	 * @param responseModel
+	 * @return
+	 * 
+	 */
+	public Boolean loyalityPointsAvailed(RemittanceTransactionRequestModel requestModel,
+			RemittanceTransactionResponsetModel responseModel) {
+		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
+			return true;
+		}
+		return false;
 	}
 }

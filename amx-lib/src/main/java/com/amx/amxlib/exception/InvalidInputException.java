@@ -1,15 +1,15 @@
 package com.amx.amxlib.exception;
 
-import com.amx.amxlib.model.response.ApiError;
+import com.amx.jax.exception.AmxApiError;
 
-public class InvalidInputException extends AbstractException {
+public class InvalidInputException extends AbstractJaxException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public InvalidInputException(ApiError error) {
+	public InvalidInputException(AmxApiError error) {
 		super(error);
 	}
 

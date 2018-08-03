@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.amx.amxlib.exception.AbstractException;
+import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
@@ -69,7 +69,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getApplicationCountry : ", e);
@@ -92,7 +92,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<ApplicationSetupDTO>>() {
 					});
 
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ", e);
@@ -100,10 +100,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	// CountryMasterDTO
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		return beneClient.getBeneficiaryCountryList();
+		try {
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 	@Deprecated
@@ -117,7 +127,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
@@ -137,7 +147,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllCountryByLanguageId : ", e);
@@ -156,7 +166,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBusinessCountry : ", e);
@@ -181,7 +191,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getSequrityQuestion : ", e);
@@ -207,7 +217,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					.as(new ParameterizedTypeReference<ApiResponse<QuestModelDTO>>() {
 					});
 
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getSequrityQuestionById : ", e);
@@ -233,7 +243,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getTermsAndCondition : ", e);
@@ -255,7 +265,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<TermsAndConditionDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getTermsAndConditionAsPerCountry : ", e);
@@ -278,7 +288,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<WhyDoAskInformationDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getWhyAskInfo : ", e);
@@ -295,7 +305,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<UserFinancialYearDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getFinancialYear : ", e);
@@ -312,7 +322,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getContactUsTime : ", e);
@@ -329,7 +339,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getHelpDeskNo : ", e);
@@ -346,7 +356,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<MultiCountryDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getMultiCountryList : ", e);
@@ -371,11 +381,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @return CurrencyMasterDTO
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
-			BigDecimal serviceGroupId, BigDecimal routingBankId) {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {	
+	  ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
+
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
 					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
 					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);
@@ -384,7 +395,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 					new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
 
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBeneficiaryCurrency : ", e);
@@ -401,7 +412,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllOnlineCurrency : ", e);
@@ -419,7 +430,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllExchangeRateCurrencyList : ", e);
@@ -436,7 +447,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CurrencyMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getCurrencyByCountryId : ", e);
@@ -461,7 +472,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getDistricDesc : ", e);
@@ -489,7 +500,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BankMasterDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBankListForCountry : ", e);
@@ -509,7 +520,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewDistrictDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getDistrictList : ", e);
@@ -530,7 +541,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getStateList : ", e);
@@ -556,7 +567,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewStateDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getStateDesc : ", e);
@@ -580,7 +591,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getCitytList : ", e);
@@ -606,7 +617,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ViewCityDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getCitytDesc : ", e);
@@ -624,7 +635,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<OnlineConfigurationDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getOnlineConfig : ", e);
@@ -651,7 +662,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BankBranchDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getBankBranchList : ", e);
@@ -675,7 +686,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<ServiceGroupMasterDescDto>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getServiceGroupList : ", e);
@@ -698,7 +709,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<JaxMetaParameter>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getJaxMetaParameter : ", e);
@@ -716,7 +727,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(this.getBaseUrl() + META_API_ENDPOINT + "/prefix/").header(getHeader()).get()
 					.as(new ParameterizedTypeReference<ApiResponse<PrefixDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			throw new JaxSystemError(e);
@@ -738,7 +749,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BranchDetailDTO>>() {
 					});
-		} catch (AbstractException ae) {
+		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllBranchDetail : ", e);

@@ -3,36 +3,23 @@ package com.amx.amxlib.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.jax.model.AbstractModel;
+
 /**
  * @author Subodh Bhoir
  *
  */
 public class MinMaxExRateDTO extends AbstractModel implements Serializable {
 
-	private BigDecimal fromCurrencyId;
-	private BigDecimal toCurrencyId;
+	private CurrencyMasterDTO fromCurrency;
+	private CurrencyMasterDTO toCurrency;
 	private BigDecimal minExrate;
 	private BigDecimal maxExrate;
 
 	@Override
 	public String getModelType() {
 		return "min-max-exrate";
-	}
-	
-	public BigDecimal getFromCurrencyId() {
-		return fromCurrencyId;
-	}
-
-	public void setFromCurrencyId(BigDecimal fromCurrencyId) {
-		this.fromCurrencyId = fromCurrencyId;
-	}
-
-	public BigDecimal getToCurrencyId() {
-		return toCurrencyId;
-	}
-
-	public void setToCurrencyId(BigDecimal toCurrencyId) {
-		this.toCurrencyId = toCurrencyId;
 	}
 
 	public BigDecimal getMinExrate() {
@@ -50,10 +37,25 @@ public class MinMaxExRateDTO extends AbstractModel implements Serializable {
 	public void setMaxExrate(BigDecimal maxExrate) {
 		this.maxExrate = maxExrate;
 	}
+	public CurrencyMasterDTO getFromCurrency() {
+		return fromCurrency;
+	}
+
+	public void setFromCurrency(CurrencyMasterDTO fromCurrency) {
+		this.fromCurrency = fromCurrency;
+	}
+
+	public CurrencyMasterDTO getToCurrency() {
+		return toCurrency;
+	}
+
+	public void setToCurrency(CurrencyMasterDTO toCurrency) {
+		this.toCurrency = toCurrency;
+	}
 
 	@Override
 	public String toString() {
-		return "MinMaxCurrencyDTO [fromCurrencyId=" + fromCurrencyId + ", toCurrencyId=" + toCurrencyId + ", minExrate="
+		return "MinMaxCurrencyDTO [fromCurrency=" + fromCurrency.getCurrencyId() + ", toCurrency=" + toCurrency.getCurrencyId() + ", minExrate="
 				+ minExrate + ", maxExrate=" + maxExrate + "]";
 	}
 

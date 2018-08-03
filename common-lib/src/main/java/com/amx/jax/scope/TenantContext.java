@@ -7,6 +7,8 @@ import com.amx.jax.dict.Tenant;
 
 public class TenantContext<T> extends ScopedBeanFactory<Tenant, T> {
 
+	private static final long serialVersionUID = 4007091611441725719L;
+
 	public TenantContext(List<T> libs) {
 		super(libs);
 	}

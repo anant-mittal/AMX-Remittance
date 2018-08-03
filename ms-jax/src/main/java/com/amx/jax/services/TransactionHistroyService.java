@@ -3,7 +3,6 @@ package com.amx.jax.services;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -26,7 +26,6 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
@@ -52,16 +51,19 @@ public class TransactionHistroyService extends AbstractService {
 	MetaData metaData;
 
 	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
-		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao.getTransactionHistroy(cutomerReference);
+		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
+				.getTransactionHistroy(cutomerReference);
 		ApiResponse response = getBlackApiResponse();
 		if (trnxHisList.isEmpty()) {
 			throw new GlobalException("Transaction histroy not found",JaxError.TRANSACTION_HISTORY_NOT_FOUND);
 		} else {
 		    
-		    Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId()).collect(Collectors.toSet());
-		    List<BenificiaryListView> beneList=beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(metaData.getCustomerId(),new ArrayList<BigDecimal>(beneRelSeqSet));
-		    Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream().collect(
-	                Collectors.toMap(BenificiaryListView::getBeneficiaryRelationShipSeqId, x -> x));
+			Set<BigDecimal> beneRelSeqSet = trnxHisList.stream().map(emp -> emp.getBeneficiaryRelationSeqId())
+					.collect(Collectors.toSet());
+			List<BenificiaryListView> beneList = beneficiaryOnlineDao.getBeneficiaryRelationShipSeqIds(
+					metaData.getCustomerId(), new ArrayList<BigDecimal>(beneRelSeqSet));
+			Map<BigDecimal, BenificiaryListView> beneMap = beneList.stream()
+					.collect(Collectors.toMap(BenificiaryListView::getBeneficiaryRelationShipSeqId, x -> x));
 		    
 		    response.getData().getValues().addAll(convert(trnxHisList,beneMap));
 			response.setResponseStatus(ResponseStatus.OK);
@@ -152,8 +154,11 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 	            model.setTransactionReference(getTransactionReferece(hist));
+	            model.setCompanyId(metaData.getCompanyId());
+	            model.setLanguageId(metaData.getLanguageId());
 	            
-	            BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
+			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
+					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
 	            if(beneViewModel!=null){
 	                 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
 	            }
@@ -170,7 +175,8 @@ public class TransactionHistroyService extends AbstractService {
 	        return list;
 	    }
 
-	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist,Map<BigDecimal, BenificiaryListView> beneMap) {
+	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist,
+			Map<BigDecimal, BenificiaryListView> beneMap) {
 		System.out.println("Application country Id :"+metaData.getCountryId());
 		List<TransactionHistroyDTO> list = new ArrayList<>();
 		for (CustomerRemittanceTransactionView hist : trnxHist) {
@@ -206,13 +212,15 @@ public class TransactionHistroyService extends AbstractService {
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 			model.setTransactionReference(getTransactionReferece(hist));
-			
-			if (beneMap!=null && model.getBeneficiaryRelationSeqId()!=null) {
+			model.setCompanyId(metaData.getCompanyId());
+			model.setLanguageId(metaData.getLanguageId());
+			if (!beneMap.isEmpty() && beneMap != null && model.getBeneficiaryRelationSeqId()!=null) {
 				Boolean status = Boolean.FALSE;
-				if (beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
+				if (beneMap.get(model.getBeneficiaryRelationSeqId()) != null && beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
 			      status = beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE;
 			    model.setBeneIsActive(status);
 			}			
+			
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){
 				 beneDtoCheck=beneCheckService.beneCheck(convertBeneModelToDto(beneViewModel));
@@ -253,10 +261,6 @@ public class TransactionHistroyService extends AbstractService {
 		}
 		return output;
 	}
-	
-	
-	
-	
 
 	@Override
 	public String getModelType() {
