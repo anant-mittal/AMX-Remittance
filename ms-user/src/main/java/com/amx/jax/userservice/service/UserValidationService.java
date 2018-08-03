@@ -574,7 +574,7 @@ public class UserValidationService {
 	@SuppressWarnings("unused")
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
 		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
-		logger.info("MRU ----identityInt --->"+identityInt +"\t Customer status :" + customer==null ? "":customer.getIsActive());
+		//logger.info("MRU ----identityInt --->"+identityInt +"\t Customer status :" + customer==null ? "":customer.getIsActive());
 		
 		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
