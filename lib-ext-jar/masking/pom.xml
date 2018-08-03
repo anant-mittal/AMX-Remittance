@@ -2,26 +2,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.amx.benefit</groupId>
-	<artifactId>lib-benefit</artifactId>
+	<groupId>com.amx.jax</groupId>
+	<artifactId>masking</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>lib-benefit</name>
+	<name>masking</name>
 	<description>benefit patch shading</description>
 	<url>http://maven.apache.org</url>
+
+	<!-- <parent> <groupId>com.amx.jax</groupId> <artifactId>lib-ext-jar</artifactId> 
+		<version>0.0.1-SNAPSHOT</version> <relativePath>../pom.xml</relativePath> 
+		</parent> -->
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<dependencies>
-
 	</dependencies>
 
 	<modules>
 		<module>original</module>
-		<module>shaded</module>
+		<module>shade-benefit</module>
+		<module>shade-all</module>
 	</modules>
 
 </project>
