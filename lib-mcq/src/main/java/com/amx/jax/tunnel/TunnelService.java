@@ -15,9 +15,9 @@ public class TunnelService implements ITunnelService {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
-	public <T> void send(String topic, T messagePayload) {
+	public <T> long send(String topic, T messagePayload) {
 		RTopic<T> topicQueue = redisson.getTopic(topic);
-		topicQueue.publish(messagePayload);
+		return topicQueue.publish(messagePayload);
 	}
 
 	public void sayHello() {

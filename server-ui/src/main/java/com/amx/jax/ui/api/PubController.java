@@ -17,6 +17,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.GoogleService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
@@ -52,6 +53,9 @@ public class PubController {
 	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
+
+	@Autowired
+	private GoogleService googleService;
 
 	/** The geo location service. */
 	@Autowired
@@ -195,7 +199,7 @@ public class PubController {
 			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<>();
 		try {
-			if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
+			if (googleService.verifyCaptcha(verify, httpService.getIPAddress())) {
 				SupportEmail email = new SupportEmail();
 				email.setCaptchaCode(verify);
 				email.setVisitorName(name);
