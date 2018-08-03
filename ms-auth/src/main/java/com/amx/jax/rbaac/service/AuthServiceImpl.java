@@ -38,6 +38,7 @@ import com.amx.jax.rbaac.models.PermScope;
 import com.amx.jax.rbaac.models.PermType;
 import com.amx.jax.rbaac.models.Permission;
 import com.amx.jax.rbaac.trnx.AuthLoginTrnxModel;
+import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.JsonUtil;
@@ -60,7 +61,7 @@ public class AuthServiceImpl implements AuthService {
 	JaxUtil jaxUtil;
 
 	@Autowired
-	UserOtpData userOtpData;
+	UserOtpCache userOtpCache;
 
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
 		Employee emp = loginDao.validateEmpDetails(empcode, identity, ipAddress);
@@ -537,7 +538,12 @@ public class AuthServiceImpl implements AuthService {
 
 			SendOtpModel output = authLoginOTPManager.generateOtpTokensStaff(emp.getEmployeeNumber());
 
-			userOtpData.fastPut(emp.getEmployeeNumber(), output.getmOtpPrefix() + "-" + output.getmOtp());
+			UserOtpData userOtpData = new UserOtpData();
+
+			userOtpData.setEmployee(emp);
+			userOtpData.setOtpData(null);
+
+			userOtpCache.fastPut(emp.getEmployeeNumber(), userOtpData);
 
 			authLoginOTPManager.sendOtpStaff();
 
@@ -557,10 +563,19 @@ public class AuthServiceImpl implements AuthService {
 		// AuthLoginTrnxModel authLoginTrnxModel =
 		// authLoginOTPManager.validateOtpStaff(emp, mOtp);
 
-		String origOtp = userOtpData.remove(emp.getEmployeeNumber());
+		UserOtpData otpData = userOtpCache.get(emp.getEmployeeNumber());
 
-		if (null == origOtp || !origOtp.equalsIgnoreCase(mOtp)) {
+		if (null == otpData || !otpData.getOtpData().getmOtp().equalsIgnoreCase(mOtp)) {
+
+			otpData.incrementOtpAttemptCount();
 			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
+		}
+
+		userOtpCache.remove(emp.getEmployeeNumber());
+
+		if (otpData.getOtpAttemptCount() >= 3) {
+
+			throw new AuthServiceException("Otp Count Exceeded", AuthServiceError.OTP_LIMIT_EXCEEDED);
 		}
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
@@ -623,8 +638,7 @@ public class AuthServiceImpl implements AuthService {
 			if (emp != null) {
 				return validateOtp(emp, mOtp);
 			} else {
-				throw new AuthServiceException("Employee Details not available",
-						AuthServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_USER_DETAILS);
 			}
 		} else {
 			throw new AuthServiceException("Employee Number and Civil Id Manadatory",

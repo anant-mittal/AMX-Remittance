@@ -18,6 +18,7 @@ import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.AuthServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
+import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.utils.Random;
 
@@ -38,7 +39,7 @@ public class UserAuthService {
 
 	/** The user otp data. */
 	@Autowired
-	UserOtpData userOtpData;
+	UserOtpCache userOtpCache;
 
 	/** The user otp manager. */
 	@Autowired
@@ -118,11 +119,22 @@ public class UserAuthService {
 
 		userOtpManager.sendOtpSms(emp, otpData);
 
-		userOtpData.fastPut(emp.getEmployeeNumber(), otpData.getmOtp());
+		String transactionId = Random.randomAlphaNumeric(24);
+
+		UserOtpData userOtpData = new UserOtpData();
+
+		userOtpData.setEmployee(emp);
+		userOtpData.setOtpData(otpData);
+		userOtpData.setAuthTransactionId(transactionId);
+
+		// Set OTP Attempt
+		userOtpData.setOtpAttemptCount(0);
+
+		userOtpCache.fastPut(emp.getEmployeeNumber(), userOtpData);
 
 		UserAuthInitResponseDTO dto = new UserAuthInitResponseDTO();
 
-		dto.setAuthTransactionId(Random.randomAlphaNumeric(10));
+		dto.setAuthTransactionId(transactionId);
 		dto.setmOtpPrefix(otpData.getmOtpPrefix());
 		dto.setInitOtpTime(String.valueOf(otpData.getInitTime()));
 		dto.setTtlOtp(String.valueOf(otpData.getTtl()));

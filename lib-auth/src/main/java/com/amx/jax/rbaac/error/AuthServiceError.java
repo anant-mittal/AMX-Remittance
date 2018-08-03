@@ -20,6 +20,9 @@ public enum AuthServiceError implements IExceptionEnum {
 	/** The invalid otp. */
 	INVALID_OTP,
 
+	/** The otp limit exceeded. */
+	OTP_LIMIT_EXCEEDED,
+
 	/** The invalid or missing data. */
 	INVALID_OR_MISSING_DATA,
 

@@ -5,16 +5,16 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.cache.CacheBox;
 
 /**
- * The Class UserOtpData.
+ * The Class UserOtpCache.
  */
 @Component
-public class UserOtpData extends CacheBox<String> {
+public class UserOtpCache extends CacheBox<UserOtpData> {
 
 	/**
 	 * Instantiates a Cache for User OTP data.
 	 */
-	public UserOtpData() {
-		super("Rbaac-UserOtpData");
+	public UserOtpCache() {
+		super("Rbaac-UserOtpCache");
 	}
 
 }
