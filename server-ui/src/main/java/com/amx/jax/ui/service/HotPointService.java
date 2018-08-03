@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
@@ -119,16 +120,29 @@ public class HotPointService {
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
 				.getResults();
+		List<BeneficiaryListDTO> benes = jaxService.setDefaults(customerId).getBeneClient()
+				.getBeneficiaryList(new BigDecimal(0)).getResults();
 
 		PushMessage pushMessage = new PushMessage();
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
-			messages.add(String.format(
-					"Get more %s for your %s at %s. %s-%s Special rate in the "
-							+ "range of %.4f – %.4f for %s online and App users.",
-					minMaxExRateDTO.getToCurrency().getCurrencyName(),
-					minMaxExRateDTO.getFromCurrency().getCurrencyName(), webAppConfig.getAppTitle(),
-					minMaxExRateDTO.getFromCurrency().getQuoteName(), minMaxExRateDTO.getToCurrency().getQuoteName(),
-					minMaxExRateDTO.getMinExrate(), minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
+			boolean toAdd = false;
+			for (BeneficiaryListDTO beneficiaryListDTO : benes) {
+				if (minMaxExRateDTO.getToCurrency().getCurrencyId()
+						.compareTo(beneficiaryListDTO.getCurrencyId()) == 0) {
+					toAdd = true;
+					continue;
+				}
+			}
+			if (toAdd) {
+				messages.add(String.format(
+						"Get more %s for your %s at %s. %s-%s Special rate in the "
+								+ "range of %.4f – %.4f for %s online and App users.",
+						minMaxExRateDTO.getToCurrency().getCurrencyName(),
+						minMaxExRateDTO.getFromCurrency().getCurrencyName(), webAppConfig.getAppTitle(),
+						minMaxExRateDTO.getFromCurrency().getQuoteName(),
+						minMaxExRateDTO.getToCurrency().getQuoteName(), minMaxExRateDTO.getMinExrate(),
+						minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
+			}
 		}
 		CActivityEvent event = new CActivityEvent(CActivityEvent.Type.GEO_LOCATION);
 		event.setCustomer(ArgUtil.parseAsString(customerId));

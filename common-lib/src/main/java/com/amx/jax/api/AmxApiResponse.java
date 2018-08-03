@@ -1,6 +1,7 @@
 package com.amx.jax.api;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,8 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	public AmxApiResponse() {
 		super();
+		this.data = null;
+		this.results = new ArrayList<T>();
 	}
 
 	/**
@@ -94,6 +97,23 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 			return results.get(0);
 		}
 		return null;
+	}
+
+	public void addResult(T result) {
+		this.results.add(result);
+	}
+
+	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
+		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
+		resp.addResult(result);
+		return null;
+	}
+
+	public static <TS, MS> AmxApiResponse<TS, MS> build(TS result, MS meta) {
+		AmxApiResponse<TS, MS> resp = new AmxApiResponse<TS, MS>();
+		resp.addResult(result);
+		resp.setMeta(meta);
+		return resp;
 	}
 
 }

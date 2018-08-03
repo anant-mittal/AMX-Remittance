@@ -49,10 +49,10 @@ public class RequestLogFilter implements Filter {
 	@Autowired
 	AppConfig appConfig;
 
-	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp) {
+	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
 		if (StringUtils.isEmpty(authToken)
-				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken) == false)) {
+				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
 			return false;
 		}
 		return true;
@@ -130,13 +130,16 @@ public class RequestLogFilter implements Filter {
 			AppContextUtil.setTraceTime(startTime);
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 
-			if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp)) {
-				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			} else {
-				chain.doFilter(request, new AppResponseWrapper(resp));
+			try {
+				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				} else {
+					chain.doFilter(request, new AppResponseWrapper(resp));
+				}
+			} finally {
+				AuditServiceClient
+						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
 			}
-
-			AuditServiceClient.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
 
 		} finally {
 			// Tear down MDC data:

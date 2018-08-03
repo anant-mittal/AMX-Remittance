@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Message implements Serializable {
 
 	private static final long serialVersionUID = 1363933600245334964L;
+	private static final String DATA_KEY = "data";
 
 	protected Language lang = null;
 	protected String subject;
@@ -36,6 +37,11 @@ public class Message implements Serializable {
 	@JsonIgnore
 	public void setObject(Object object) {
 		this.model = JsonUtil.fromJson(JsonUtil.toJson(object), Map.class);
+	}
+
+	@JsonIgnore
+	public void setModelData(Object object) {
+		this.getModel().put(DATA_KEY, object);
 	}
 
 	/**

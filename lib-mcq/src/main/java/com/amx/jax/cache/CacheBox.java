@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.def.ICacheBox;
 
+
 public class CacheBox<T> implements ICacheBox<T> {
 
 	LocalCachedMapOptions<String, T> localCacheOptions = LocalCachedMapOptions.<String, T>defaults()

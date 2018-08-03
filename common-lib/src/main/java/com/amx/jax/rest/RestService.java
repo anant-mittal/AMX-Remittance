@@ -22,6 +22,7 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
 
@@ -218,6 +219,34 @@ public class RestService {
 
 		public String asString() {
 			return this.as(String.class);
+		}
+
+		public Object asObject() {
+			return this.as(Object.class);
+		}
+
+		public Map<String, Object> asMap() {
+			return this.as(new ParameterizedTypeReference<Map<String, Object>>() {
+			});
+		}
+
+		public <T> Map<String, T> asMap(Class<T> valueType) {
+			return this.as(new ParameterizedTypeReference<Map<String, T>>() {
+			});
+		}
+
+		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
+			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
+			});
+		}
+
+		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> responseType, Class<M> modelType) {
+			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
+			});
+		}
+
+		public Object as() {
+			return this.asObject();
 		}
 
 		public Ajax build(RestMethod smsReqType, String smsReqQuery, RestQuery smsReqFields, Map<String, String> params)

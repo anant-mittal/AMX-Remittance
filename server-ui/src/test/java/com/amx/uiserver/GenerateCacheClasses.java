@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import com.amx.jax.ui.config.WebSecurityConfig;
 import com.amx.utils.FileUtil;
 //import com.sun.codemodel.JClassAlreadyExistsException;
 //import com.sun.codemodel.JCodeModel;

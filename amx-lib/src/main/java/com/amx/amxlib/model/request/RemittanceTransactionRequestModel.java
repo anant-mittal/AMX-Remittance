@@ -10,10 +10,9 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.FlexFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.jax.model.AbstractModel;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -90,6 +89,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
+	@Override
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
+				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+	}
+
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -105,6 +111,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
+	
+   public String getmOtp() {
+        return mOtp;
+    }
+
+    public void setmOtp(String mOtp) {
+        this.mOtp = mOtp;
+    }
+
+    public String geteOtp() {
+        return eOtp;
+    }
+
+    public void seteOtp(String eOtp) {
+        this.eOtp = eOtp;
+    }
 
 	public ExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
@@ -146,30 +168,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 			};
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
-	}
-
-	public String getmOtp() {
-		return mOtp;
-	}
-
-	public void setmOtp(String mOtp) {
-		this.mOtp = mOtp;
-	}
-
-	public String geteOtp() {
-		return eOtp;
-	}
-
-	public void seteOtp(String eOtp) {
-		this.eOtp = eOtp;
-	}
-
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
-				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
-				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
 	}
 
 }

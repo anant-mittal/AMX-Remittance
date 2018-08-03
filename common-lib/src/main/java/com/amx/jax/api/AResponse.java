@@ -15,10 +15,11 @@ public abstract class AResponse<T> {
 
 	// Amx Specs
 	protected T meta;
-	private List<AmxFieldError> errors = null;
+	protected List<AmxFieldError> errors = null;
 
 	public AResponse() {
 		this.timestamp = System.currentTimeMillis();
+		this.meta = null;
 	}
 
 	/**
