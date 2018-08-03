@@ -55,12 +55,4 @@ public class AmxApiError extends AResponse<Object> {
 		this.errorType = errorType;
 	}
 
-	public String getErrorClass() {
-		return this.getException();
-	}
-
-	public void setErrorClass(String errorClass) {
-		this.setException(errorClass);
-	}
-
 }
