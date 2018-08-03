@@ -109,9 +109,8 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	
 	@RequestMapping(value = "/customer-mobile-email-validate-otp", method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		//JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
-		//JaxContextUtil.setRequestModel(customerPersonalDetail);	
-		//LOGGER.info("send otp request: " + customerPersonalDetail);
+		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
+		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateOtp(offsiteCustRegModel);
 	}	
 }

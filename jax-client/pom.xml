@@ -37,12 +37,7 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
-		</dependency>
-	<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>core</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency>	
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-jax</artifactId>
