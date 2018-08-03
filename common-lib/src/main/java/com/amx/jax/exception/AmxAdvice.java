@@ -19,7 +19,10 @@ public abstract class AmxAdvice {
 	public ResponseEntity<AmxApiError> handle(AmxApiException ex, HttpServletRequest request,
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
-		error.setErrorClass(ex.getClass().getName());
+		error.setException(ex.getClass().getName());
+		error.setMeta(ex.getMeta());
+		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
+				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		alert(ex);
 		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
 	}
@@ -29,7 +32,7 @@ public abstract class AmxAdvice {
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 	}
 
-	private void alert(Exception ex) {
+	public void alert(Exception ex) {
 		logger.error("Exception occured in controller {} error message: {}", ex.getClass().getName(), ex.getMessage(),
 				ex);
 	}
