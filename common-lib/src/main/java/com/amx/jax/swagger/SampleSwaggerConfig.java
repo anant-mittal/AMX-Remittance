@@ -74,7 +74,7 @@ public class SampleSwaggerConfig {
 
 	private ApiInfo metaData() {
 		return new ApiInfo("AMX UI Server Rest API", "Spring Boot REST API for Online Store", "1.0", "Terms of service",
-				new Contact("Lalit Tanwar", "https://springframework.guru/about/", "lalit.tanwar@almullagroup.com"),
+				new Contact("Lalit Tanwar", "https://springframework.guru/about/", "lalit.tanwar@almullaexchange.com"),
 				"Apache License Version 2.0", "https://www.apache.org/licenses/LICENSE-2.0");
 	}
 }
