@@ -122,7 +122,7 @@ public class UserDeviceBean extends UserDevice {
 		String id = ArgUtil.parseAsString(userAgent.getId(), Constants.BLANK);
 		if (!id.equals(this.id)
 				// || !fingerprint.equals(this.fingerprint)
-				|| !ip.equals(this.ip)) {
+				|| !ip.equals(this.ip) || !(this.browser == null || this.browser.equals(userAgent.getBrowser()))) {
 			return false;
 		}
 		return true;

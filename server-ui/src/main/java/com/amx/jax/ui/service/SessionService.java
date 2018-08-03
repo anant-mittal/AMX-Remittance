@@ -25,6 +25,7 @@ import com.amx.jax.ui.auth.AuthState.AuthFlow;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.CustomerAuthProvider;
+import com.amx.jax.ui.config.WebSecurityConfig;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.LoggedInUsers;
 import com.amx.jax.ui.session.UserDeviceBean;
@@ -268,8 +269,6 @@ public class SessionService {
 	 */
 	public boolean validateSessionUnique() {
 		if (this.validatedUser() && !this.indexedUser()) {
-			auditService.log(new CAuthEvent(AuthFlow.LOGOUT, AuthStep.MISSING));
-			this.unauthorize();
 			return false;
 		}
 		return true;
