@@ -23,14 +23,20 @@ public enum AuthServiceError implements IExceptionEnum {
 	/** The invalid or missing data. */
 	INVALID_OR_MISSING_DATA,
 
-	/** The invalid employee details. */
-	INVALID_EMPLOYEE_DETAILS,
-
 	/** The invalid role definition. */
 	INVALID_ROLE_DEFINITION,
 
 	/** The invalid user details. */
 	INVALID_USER_DETAILS,
+
+	/** The Multiple users. */
+	MULTIPLE_USERS,
+
+	/** The User Not Active. */
+	USER_NOT_ACTIVE_OR_DELETED,
+
+	/** The user account locked. */
+	USER_ACCOUNT_LOCKED,
 
 	/** The unknown exception. */
 	// MISC

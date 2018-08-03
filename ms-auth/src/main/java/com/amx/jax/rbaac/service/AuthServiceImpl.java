@@ -603,7 +603,7 @@ public class AuthServiceImpl implements AuthService {
 					return sendOtp(emp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+							AuthServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
@@ -624,7 +624,7 @@ public class AuthServiceImpl implements AuthService {
 				return validateOtp(emp, mOtp);
 			} else {
 				throw new AuthServiceException("Employee Details not available",
-						AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+						AuthServiceError.INVALID_USER_DETAILS);
 			}
 		} else {
 			throw new AuthServiceException("Employee Number and Civil Id Manadatory",

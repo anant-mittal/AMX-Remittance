@@ -64,6 +64,11 @@ public class LoginDao {
 		return null;
 	}
 
+	public List<Employee> getEmployees(String empcode, String identity, String ipAddress) {
+		return loginRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity, ipAddress);
+
+	}
+
 	public Employee fetchEmpDetails(String user, String pass) {
 		return loginRepository.findByUserNameAndPassword(user, pass);
 	}

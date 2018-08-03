@@ -782,7 +782,7 @@ public class LoginService extends AbstractService {
 					apiResponse = sendOtp(emp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+							AuthServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
@@ -819,7 +819,7 @@ public class LoginService extends AbstractService {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+							AuthServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",

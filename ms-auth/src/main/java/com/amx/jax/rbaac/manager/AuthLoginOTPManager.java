@@ -125,7 +125,7 @@ public class AuthLoginOTPManager {
 				}
 			} else {
 				throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-						AuthServiceError.INVALID_EMPLOYEE_DETAILS);
+						AuthServiceError.INVALID_USER_DETAILS);
 			}
 		} finally {
 			authLoginManager.saveOtpData(otpData);

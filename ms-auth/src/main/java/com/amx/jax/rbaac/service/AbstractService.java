@@ -3,7 +3,6 @@ package com.amx.jax.rbaac.service;
 import java.util.ArrayList;
 import java.util.List;
 
-//@SuppressWarnings("rawtypes")
 public abstract class AbstractService {
 
 	public static class ApiResponse {

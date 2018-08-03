@@ -2,6 +2,7 @@ package com.amx.jax.rbaac.dbmodel;
 
 import java.math.BigDecimal;
 import java.sql.Clob;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,13 +14,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-
 @Entity
-@Table(name = "FS_EMPLOYEE" )
+@Table(name = "FS_EMPLOYEE")
 public class Employee implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private BigDecimal employeeId;
 	private String employeeNumber;
 	private String employeeName;
@@ -46,13 +46,17 @@ public class Employee implements java.io.Serializable {
 	private String deletedUser;
 	private String civilId;
 
+	private BigDecimal lockCount;
+	private Date lockDate;
+
 	@Id
-	@GeneratedValue(generator="fs_employee_seq",strategy=GenerationType.SEQUENCE)
-	@SequenceGenerator(name="fs_employee_seq",sequenceName="FS_EMPLOYEE_SEQ",allocationSize=1)
+	@GeneratedValue(generator = "fs_employee_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "fs_employee_seq", sequenceName = "FS_EMPLOYEE_SEQ", allocationSize = 1)
 	@Column(name = "EMPLOYEE_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getEmployeeId() {
 		return this.employeeId;
 	}
+
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
 	}
@@ -61,14 +65,16 @@ public class Employee implements java.io.Serializable {
 	public String getEmployeeName() {
 		return this.employeeName;
 	}
+
 	public void setEmployeeName(String employeeName) {
 		this.employeeName = employeeName;
 	}
-	
-	@Column(name = "USER_NAME", length = 20,unique = true)
+
+	@Column(name = "USER_NAME", length = 20, unique = true)
 	public String getUserName() {
 		return this.userName;
 	}
+
 	public void setUserName(String userName) {
 		this.userName = userName;
 	}
@@ -77,6 +83,7 @@ public class Employee implements java.io.Serializable {
 	public String getPassword() {
 		return this.password;
 	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -85,22 +92,25 @@ public class Employee implements java.io.Serializable {
 	public String getLocation() {
 		return location;
 	}
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
-	
+
 	@Column(name = "TELEPHONE")
 	public String getTelephoneNumber() {
 		return telephoneNumber;
 	}
+
 	public void setTelephoneNumber(String telephoneNumber) {
 		this.telephoneNumber = telephoneNumber;
 	}
-	
-	@Column(name="COUNTRY_ID")
+
+	@Column(name = "COUNTRY_ID")
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
+
 	public void setCountryId(BigDecimal countryId) {
 		this.countryId = countryId;
 	}
@@ -109,6 +119,7 @@ public class Employee implements java.io.Serializable {
 	public BigDecimal getFsRoleMaster() {
 		return fsRoleMaster;
 	}
+
 	public void setFsRoleMaster(BigDecimal fsRoleMaster) {
 		this.fsRoleMaster = fsRoleMaster;
 	}
@@ -117,22 +128,25 @@ public class Employee implements java.io.Serializable {
 	public BigDecimal getFsCountryBranch() {
 		return fsCountryBranch;
 	}
+
 	public void setFsCountryBranch(BigDecimal fsCountryBranch) {
 		this.fsCountryBranch = fsCountryBranch;
 	}
-	
-	@Column(name="Employee_Number")
+
+	@Column(name = "Employee_Number")
 	public String getEmployeeNumber() {
 		return employeeNumber;
 	}
+
 	public void setEmployeeNumber(String employeeNumber) {
 		this.employeeNumber = employeeNumber;
 	}
 
-	@Column(name="SESSION_STATUS")
+	@Column(name = "SESSION_STATUS")
 	public String getSesionStatus() {
 		return sesionStatus;
 	}
+
 	public void setSesionStatus(String sesionStatus) {
 		this.sesionStatus = sesionStatus;
 	}
@@ -141,14 +155,16 @@ public class Employee implements java.io.Serializable {
 	public BigDecimal getFsCompanyMaster() {
 		return fsCompanyMaster;
 	}
+
 	public void setFsCompanyMaster(BigDecimal fsCompanyMaster) {
 		this.fsCompanyMaster = fsCompanyMaster;
 	}
-	
-	@Column(name="EMAIL")
+
+	@Column(name = "EMAIL")
 	public String getEmail() {
 		return email;
 	}
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
@@ -157,90 +173,117 @@ public class Employee implements java.io.Serializable {
 	public Clob getSignatureSpecimenClob() {
 		return signatureSpecimenClob;
 	}
+
 	public void setSignatureSpecimenClob(Clob signatureSpecimenClob) {
 		this.signatureSpecimenClob = signatureSpecimenClob;
 	}
 
-	@Column(name="ALLOW_FC_TRNX")
+	@Column(name = "ALLOW_FC_TRNX")
 	public String getAllowFcTransaction() {
 		return allowFcTransaction;
 	}
+
 	public void setAllowFcTransaction(String allowFcTransaction) {
 		this.allowFcTransaction = allowFcTransaction;
 	}
 
-	@Column(name="IP_ADDRESS")
+	@Column(name = "IP_ADDRESS")
 	public String getIpAddress() {
 		return ipAddress;
 	}
+
 	public void setIpAddress(String ipAddress) {
 		this.ipAddress = ipAddress;
 	}
 
-	@Column(name="CASHIER_OPTN")
+	@Column(name = "CASHIER_OPTN")
 	public String getCashierOpt() {
 		return cashierOpt;
 	}
+
 	public void setCashierOpt(String cashierOpt) {
 		this.cashierOpt = cashierOpt;
 	}
 
-	@Column(name="WU_USERNAME")
+	@Column(name = "WU_USERNAME")
 	public BigDecimal getWuUsername() {
 		return wuUsername;
 	}
+
 	public void setWuUsername(BigDecimal wuUsername) {
 		this.wuUsername = wuUsername;
 	}
 
-	@Column(name="WU_PASSWORD")
+	@Column(name = "WU_PASSWORD")
 	public String getWuPassword() {
 		return wuPassword;
 	}
+
 	public void setWuPassword(String wuPassword) {
 		this.wuPassword = wuPassword;
 	}
 
-	@Column(name="USER_TYPE")
+	@Column(name = "USER_TYPE")
 	public String getUserType() {
 		return userType;
 	}
+
 	public void setUserType(String userType) {
 		this.userType = userType;
 	}
 
-	@Column(name="DESIGNATION")
+	@Column(name = "DESIGNATION")
 	public String getDesignation() {
 		return designation;
 	}
+
 	public void setDesignation(String designation) {
 		this.designation = designation;
 	}
 
-	@Column(name="ISACTIVE")
+	@Column(name = "ISACTIVE")
 	public String getIsActive() {
 		return isActive;
 	}
+
 	public void setIsActive(String isActive) {
 		this.isActive = isActive;
 	}
-	
-	@Column(name="DELETED_USER")
+
+	@Column(name = "DELETED_USER")
 	public String getDeletedUser() {
 		return deletedUser;
 	}
+
 	public void setDeletedUser(String deletedUser) {
 		this.deletedUser = deletedUser;
 	}
-	
-	@Column(name="CIVIL_ID")
+
+	@Column(name = "CIVIL_ID")
 	public String getCivilId() {
 		return civilId;
 	}
+
 	public void setCivilId(String civilId) {
 		this.civilId = civilId;
 	}
-	
-	
+
+	@Column(name = "LOCK_CNT")
+	public BigDecimal getLockCount() {
+		return lockCount;
+	}
+
+	public void setLockCount(BigDecimal lockCount) {
+		this.lockCount = lockCount;
+	}
+
+	@Column(name = "LOCK_DATE")
+	public Date getLockDate() {
+		return lockDate;
+	}
+
+	public void setLockDate(Date lockDate) {
+		this.lockDate = lockDate;
+	}
 
 }

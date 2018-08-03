@@ -64,8 +64,10 @@ public class UserOtpManager {
 			otpData.setHashedmOtp(null);
 		}
 
-		otpData.setInitTime(System.currentTimeMillis());
-		otpData.setTtl(otpTTL);
+		long initTime = System.currentTimeMillis();
+
+		otpData.setInitTime(initTime);
+		otpData.setTtl(initTime + otpTTL);
 
 		return otpData;
 	}
