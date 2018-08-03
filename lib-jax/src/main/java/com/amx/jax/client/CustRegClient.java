@@ -23,13 +23,13 @@ public class CustRegClient implements ICustRegService {
 	@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
 		return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).get()
-				.asResponseModel(BigDecimal.class);
+				.asApiResponse(BigDecimal.class);
 	}
 
 	@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
 		return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).post(regModeModel)
-				.asResponseModel(ARespModel.class);
+				.asApiResponse(ARespModel.class);
 	}
 
 }
