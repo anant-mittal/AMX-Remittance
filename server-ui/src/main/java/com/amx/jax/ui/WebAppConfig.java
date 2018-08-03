@@ -22,10 +22,6 @@ public class WebAppConfig {
 	@TenantValue("${application.title}")
 	private String appTitle;
 
-	/** The element to search. */
-	@Value("${ui.features}")
-	private String[] elementToSearch;
-
 	/** The notification gap. */
 	@Value("${notification.sleep.gap}")
 	private String notificationGap;
@@ -37,6 +33,9 @@ public class WebAppConfig {
 	/** The notify range short. */
 	@Value("${notification.range.short}")
 	private String notifyRangeShort;
+
+	@Value("${notification.geo.enabled}")
+	private boolean notifyGeoEnabled;
 
 	/**
 	 * Gets the features.
@@ -81,6 +80,10 @@ public class WebAppConfig {
 	 */
 	public String getNotifyRangeShort() {
 		return notifyRangeShort;
+	}
+
+	public boolean isNotifyGeoEnabled() {
+		return notifyGeoEnabled;
 	}
 
 }

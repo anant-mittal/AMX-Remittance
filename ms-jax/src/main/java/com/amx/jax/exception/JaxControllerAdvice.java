@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -14,8 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.jax.JaxFieldValidationException;
@@ -25,9 +23,9 @@ import com.amx.jax.util.JaxContextUtil;
 
 @ControllerAdvice
 @SuppressWarnings(value = { "unchecked", "rawtypes" })
-public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHandler {
+public class JaxControllerAdvice extends AmxAdvice {
 
-	private Logger logger = Logger.getLogger(GlobalControllerExceptionHandler.class);
+	private Logger logger = Logger.getLogger(JaxControllerAdvice.class);
 	@Autowired
 	private ApplicationContext appContext;
 
@@ -36,7 +34,7 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
-		error.setErrorClass(ex.getClass().getName());
+		error.setException(ex.getClass().getName());
 		error.setMeta(ex.getMeta());
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
@@ -54,17 +52,18 @@ public class GlobalControllerExceptionHandler extends ResponseEntityExceptionHan
 		}
 	}
 
-	@Override
-	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-			HttpHeaders headers, HttpStatus status, WebRequest request) {
-
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	@ResponseBody
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	protected ResponseEntity<AmxApiError> handle(MethodArgumentNotValidException ex, HttpServletRequest request,
+			HttpServletResponse response) {
 		JaxFieldValidationException exception = new JaxFieldValidationException(
 				processFieldErrors(ex.getBindingResult()));
 		AmxApiError error = exception.createAmxApiError();
-		error.setErrorClass(exception.getClass().getName());
+		error.setException(exception.getClass().getName());
 		logger.info("Exception occured in controller " + exception.getClass().getName() + " error message: "
 				+ exception.getErrorMessage() + " error code: " + exception.getErrorKey(), ex);
-		return new ResponseEntity(error, HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<AmxApiError>(error, HttpStatus.BAD_REQUEST);
 	}
 
 	private String processFieldErrors(BindingResult bindingResult) {
