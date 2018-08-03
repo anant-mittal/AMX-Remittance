@@ -155,7 +155,7 @@ public class HotPointService {
 		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
-		fBPushService.sendDirect(pushMessage);
+		//fBPushService.sendDirect(pushMessage);
 		return messages;
 	}
 
