@@ -243,7 +243,6 @@ public class SessionService {
 		return Boolean.FALSE;
 	}
 
-
 	public boolean isRequestAuthorized() {
 		
 		if (WebSecurityConfig.isPublicUrl(request.getRequestURI())) {
