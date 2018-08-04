@@ -1,6 +1,7 @@
 package com.amx.jax.rbaac.repository;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,5 +17,7 @@ public interface ILoginRepository extends JpaRepository<Employee, Serializable> 
 	public Employee findByUserNameAndPassword(String user, String pass);
 
 	public Employee findByEmployeeNumber(String empNo);
+
+	public Employee findByEmployeeId(BigDecimal employeeId);
 
 }

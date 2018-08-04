@@ -77,6 +77,14 @@ public class LoginDao {
 		return loginRepository.findByEmployeeNumber(empNo);
 	}
 
+	public Employee fetchEmpByEmpId(BigDecimal empId) {
+		return loginRepository.findByEmployeeId(empId);
+	}
+
+	public Employee saveEmployee(Employee employee) {
+		return loginRepository.save(employee);
+	}
+
 	public List<RoleDefinition> fetchEmpRoleMenu(BigDecimal roleId) {
 		return roleDefinitionRepository.findByRoleId(roleId);
 	}

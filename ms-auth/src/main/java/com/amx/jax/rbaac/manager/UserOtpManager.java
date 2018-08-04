@@ -130,11 +130,5 @@ public class UserOtpManager {
 		}
 	}
 
-	/**
-	 * Lock user Account
-	 */
-	public void lockUserAccount() {
-
-	}
 
 }

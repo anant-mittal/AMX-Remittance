@@ -4,6 +4,7 @@
 package com.amx.jax.rbaac.service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -167,6 +168,8 @@ public class UserAuthService {
 					AuthServiceError.INVALID_OTP);
 		}
 
+		Employee employee = userOtpData.getEmployee();
+
 		// Validate User OTP hash
 		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {
 
@@ -176,7 +179,7 @@ public class UserAuthService {
 			if (userOtpData.getOtpAttemptCount() >= 2) {
 
 				// Implement Lock user Account
-				userOtpManager.lockUserAccount();
+				this.lockUserAccount(employee);
 
 				// Clear OTP Cache
 				userOtpCache.remove(employeeNo);
@@ -187,14 +190,14 @@ public class UserAuthService {
 
 			// Normal Incorrect Attempt: Increment Count
 			userOtpData.incrementOtpAttemptCount();
+			
+			userOtpCache.fastPut(employeeNo, userOtpData);
 
 			throw new AuthServiceException("Invalid OTP: OTP is Entered is Incorrect", AuthServiceError.INVALID_OTP);
 		}
 
 		// OTP is validated
 		userOtpCache.remove(employeeNo);
-
-		Employee employee = userOtpData.getEmployee();
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
 
@@ -210,9 +213,24 @@ public class UserAuthService {
 		empDetail.setUserName(employee.getUserName());
 		empDetail.setRoleId(new BigDecimal("1"));
 
-		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress);
+		LOGGER.info(
+				"Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress);
 
 		return empDetail;
+	}
+
+	/**
+	 * Lock user Account
+	 */
+	private boolean lockUserAccount(Employee srcEmp) {
+
+		Employee destEmp = loginDao.fetchEmpByEmpId(srcEmp.getEmployeeId());
+		destEmp.setLockCount(new BigDecimal(3));
+		destEmp.setLockDate(new Date());
+
+		loginDao.saveEmployee(destEmp);
+
+		return true;
 	}
 
 }
