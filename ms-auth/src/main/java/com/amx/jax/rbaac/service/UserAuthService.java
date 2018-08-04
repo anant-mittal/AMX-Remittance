@@ -3,6 +3,7 @@
  */
 package com.amx.jax.rbaac.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +15,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.dao.LoginDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.AuthServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -51,7 +53,7 @@ public class UserAuthService {
 	/**
 	 * Verify user details.
 	 * 
-	 * @param empCode
+	 * @param employeeNo
 	 *            the emp code
 	 * @param identity
 	 *            the identity
@@ -59,23 +61,22 @@ public class UserAuthService {
 	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
-	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
-	 *        valid -> Error ||->-> Employee Not Active or Deleted -> Error ||->->
-	 *        Employee A/C Locked -> Error
+	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not valid -> Error ||->-> Employee Not
+	 *        Active or Deleted -> Error ||->-> Employee A/C Locked -> Error
 	 * 
 	 *        ||->->-> Proceed For OTP - Init Auth
 	 */
-	public UserAuthInitResponseDTO verifyUserDetails(String empCode, String identity, String ipAddress) {
+	public UserAuthInitResponseDTO verifyUserDetails(String employeeNo, String identity, String ipAddress) {
 
 		/**
 		 * Input -> Invalid
 		 */
-		if (StringUtils.isBlank(empCode) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)) {
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)) {
 			throw new AuthServiceException("Employee Number, Civil Id & IP Address are Manadatory",
 					AuthServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		List<Employee> employees = loginDao.getEmployees(empCode, identity, ipAddress);
+		List<Employee> employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
 
 		/**
 		 * Invalid Employee Details
@@ -143,6 +144,75 @@ public class UserAuthService {
 
 		return dto;
 
+	}
+
+	public EmployeeDetailsDTO authoriseUser(String employeeNo, String mOtpHash, String eOtpHash, String ipAddress) {
+
+		/**
+		 * Input -> Invalid
+		 */
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtpHash) || StringUtils.isBlank(ipAddress)) {
+			throw new AuthServiceException("Employee Number, Otp Hash & IP Address are Manadatory",
+					AuthServiceError.INVALID_OR_MISSING_DATA);
+		}
+
+		// Get Cached OTP data for the user.
+		UserOtpData userOtpData = userOtpCache.get(employeeNo);
+
+		// NO OTP data for user.
+		// handle Time out Here.
+		// eOtp is not checked
+		if (userOtpData == null || StringUtils.isBlank(userOtpData.getOtpData().getHashedmOtp())) {
+			throw new AuthServiceException("Invalid OTP: OTP is not generated for the user or timedOut",
+					AuthServiceError.INVALID_OTP);
+		}
+
+		// Validate User OTP hash
+		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {
+
+			/**
+			 * Crossed three Incorrect OTP counts --> Lock Accounnt. --> Clear Otp Cache
+			 */
+			if (userOtpData.getOtpAttemptCount() >= 2) {
+
+				// Implement Lock user Account
+				userOtpManager.lockUserAccount();
+
+				// Clear OTP Cache
+				userOtpCache.remove(employeeNo);
+
+				throw new AuthServiceException("Invalid OTP : Max OTP Attempts are Exeeded : User Account is LOCKED ",
+						AuthServiceError.USER_ACCOUNT_LOCKED);
+			}
+
+			// Normal Incorrect Attempt: Increment Count
+			userOtpData.incrementOtpAttemptCount();
+
+			throw new AuthServiceException("Invalid OTP: OTP is Entered is Incorrect", AuthServiceError.INVALID_OTP);
+		}
+
+		// OTP is validated
+		userOtpCache.remove(employeeNo);
+
+		Employee employee = userOtpData.getEmployee();
+
+		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
+
+		empDetail.setCivilId(employee.getCivilId());
+		empDetail.setCountryId(employee.getCountryId());
+		empDetail.setDesignation(employee.getDesignation());
+		empDetail.setEmail(employee.getEmail());
+		empDetail.setEmployeeId(employee.getEmployeeId());
+		empDetail.setEmployeeName(employee.getEmployeeName());
+		empDetail.setEmployeeNumber(employee.getEmployeeNumber());
+		empDetail.setLocation(employee.getLocation());
+		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
+		empDetail.setUserName(employee.getUserName());
+		empDetail.setRoleId(new BigDecimal("1"));
+
+		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress);
+
+		return empDetail;
 	}
 
 }

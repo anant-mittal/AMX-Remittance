@@ -11,9 +11,6 @@ public enum AuthServiceError implements IExceptionEnum {
 	// RBAC error
 	ALREADY_EXIST,
 
-	/** The validate otp limit exceeded. */
-	VALIDATE_OTP_LIMIT_EXCEEDED,
-
 	/** The missing otp. */
 	MISSING_OTP,
 

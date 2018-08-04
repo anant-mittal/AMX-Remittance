@@ -3,13 +3,16 @@
  */
 package com.amx.jax.rbaac.dto;
 
-// TODO: Auto-generated Javadoc
+import java.io.Serializable;
+
 /**
  * The Class UserAuthInitResponseDTO.
  *
  * @author abhijeet
  */
-public final class UserAuthInitResponseDTO {
+public final class UserAuthInitResponseDTO implements Serializable {
+
+	private static final long serialVersionUID = 3674143419419981482L;
 
 	/** The auth transaction id. */
 	private String authTransactionId;

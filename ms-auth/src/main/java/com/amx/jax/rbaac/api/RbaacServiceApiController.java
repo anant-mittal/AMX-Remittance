@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.RbaacService;
+import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.service.UserAuthService;
 
@@ -48,11 +49,25 @@ public class RbaacServiceApiController implements RbaacService {
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(@RequestParam String employeeNo,
 			@RequestParam String identity, @RequestParam String ipAddress) {
 
-		LOGGER.info("Begin Init Auth for User: " + employeeNo);
+		LOGGER.info("Begin Init Auth for User: " + employeeNo + " from Ip Address: " + ipAddress);
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(employeeNo, identity,
 				ipAddress);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestParam String employeeNo,
+			@RequestParam String mOtpHash, @RequestParam(required = false) String eOtpHash,
+			@RequestParam String ipAddress) {
+
+		LOGGER.info("Received request for authorising User Access : " + employeeNo + " from Ip Address: " + ipAddress);
+
+		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(employeeNo, mOtpHash, eOtpHash,
+				ipAddress);
+
+		return AmxApiResponse.build(employeeDetailsDTO);
 	}
 
 }

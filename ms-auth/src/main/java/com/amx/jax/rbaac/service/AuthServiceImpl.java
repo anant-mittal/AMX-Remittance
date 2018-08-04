@@ -565,8 +565,11 @@ public class AuthServiceImpl implements AuthService {
 
 		UserOtpData otpData = userOtpCache.get(emp.getEmployeeNumber());
 
-		if (null == otpData || !otpData.getOtpData().getmOtp().equalsIgnoreCase(mOtp)) {
-
+		if(null == otpData) {
+			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
+		}
+		
+		if (!otpData.getOtpData().getmOtp().equalsIgnoreCase(mOtp)) {
 			otpData.incrementOtpAttemptCount();
 			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
 		}

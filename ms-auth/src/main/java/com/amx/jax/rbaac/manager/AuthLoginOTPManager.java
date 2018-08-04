@@ -106,7 +106,7 @@ public class AuthLoginOTPManager {
 			if (otpData.getValidateOtpAttempts() >= 3) {
 				throw new AuthServiceException(
 						"Sorry, you cannot proceed to login. Please contact head office to unlock account",
-						AuthServiceError.VALIDATE_OTP_LIMIT_EXCEEDED);
+						AuthServiceError.OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.getmOtp().equals(mOtp)) {
