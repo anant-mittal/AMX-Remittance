@@ -121,12 +121,20 @@ public class UserOtpManager {
 
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+				sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
 			}
 
 		} catch (PostManException e) {
 			LOGGER.error("error in sendOtpSms", e);
 			throw new AuthServiceException(e);
 		}
+	}
+
+	/**
+	 * Lock user Account
+	 */
+	public void lockUserAccount() {
+
 	}
 
 }
