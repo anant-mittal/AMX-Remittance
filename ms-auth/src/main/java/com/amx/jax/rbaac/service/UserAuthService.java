@@ -193,7 +193,7 @@ public class UserAuthService {
 			
 			userOtpCache.fastPut(employeeNo, userOtpData);
 
-			throw new AuthServiceException("Invalid OTP: OTP is Entered is Incorrect", AuthServiceError.INVALID_OTP);
+			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", AuthServiceError.INVALID_OTP);
 		}
 
 		// OTP is validated
