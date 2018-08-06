@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -24,8 +23,8 @@ import com.amx.jax.rbaac.models.Permission;
 
 import io.swagger.annotations.ApiOperation;
 
-@RestController
-@RequestMapping("test/")
+//@RestController
+//@RequestMapping("test/")
 public class AuthServiceControllerTest implements AuthService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceControllerTest.class);
