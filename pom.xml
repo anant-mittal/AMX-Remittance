@@ -36,11 +36,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-swagger</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>

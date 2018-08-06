@@ -759,7 +759,11 @@ public class RemittanceTransactionManager {
 			model.setTransactionHistroyDTO(transactionHistoryDto);
 		}
 		model.setTransactionReference(getTransactionReference(application));
-		model.setNetAmount(application.getLocalNetTranxAmount());
+		if ("Y".equals(application.getLoyaltyPointInd())) {
+			model.setNetAmount(application.getLocalTranxAmount());			
+		}else {
+			model.setNetAmount(application.getLocalNetTranxAmount());			
+		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
 		model.setErrorMessage(application.getErrorMessage());
