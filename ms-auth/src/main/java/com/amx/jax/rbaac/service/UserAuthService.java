@@ -62,8 +62,9 @@ public class UserAuthService {
 	 *            the ip address
 	 * @return the user auth init response DTO
 	 * 
-	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not valid -> Error ||->-> Employee Not
-	 *        Active or Deleted -> Error ||->-> Employee A/C Locked -> Error
+	 * @flow: -> Get Employee ||->-> Multiple Employees -> Error ||->-> Employee Not
+	 *        valid -> Error ||->-> Employee Not Active or Deleted -> Error ||->->
+	 *        Employee A/C Locked -> Error
 	 * 
 	 *        ||->->-> Proceed For OTP - Init Auth
 	 */
@@ -147,6 +148,18 @@ public class UserAuthService {
 
 	}
 
+	/**
+	 * 
+	 * @param employeeNo
+	 * @param mOtpHash
+	 * @param eOtpHash
+	 * @param ipAddress
+	 * @return Employees Details with Roles
+	 * 
+	 * @Flow : Validate if init auth session exists || Check for OTP attempts ||
+	 *       Check if OTP is valid || grant access || clear Cache.
+	 * 
+	 */
 	public EmployeeDetailsDTO authoriseUser(String employeeNo, String mOtpHash, String eOtpHash, String ipAddress) {
 
 		/**
@@ -190,7 +203,7 @@ public class UserAuthService {
 
 			// Normal Incorrect Attempt: Increment Count
 			userOtpData.incrementOtpAttemptCount();
-			
+
 			userOtpCache.fastPut(employeeNo, userOtpData);
 
 			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", AuthServiceError.INVALID_OTP);
