@@ -137,7 +137,13 @@ function init(){
 					}
 				});
 				
-				$('.country-select').select2({data: countryOpts}).val("ALL").trigger("change");
+				$('.country-select').select2({data: countryOpts}).val("ALL")
+				.on('change', function(country){
+					var dir = country.currentTarget.value === "EGYPT" ? "rtl" : "ltr"
+					$("textarea.notif-msg").attr("dir", dir);
+					$("input.notif-title").attr("dir", dir);
+				})
+				.trigger("change");
 			})
 		})
 		
