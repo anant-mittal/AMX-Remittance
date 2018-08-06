@@ -244,6 +244,7 @@ public class SessionService {
 	}
 
 	public boolean isRequestAuthorized() {
+		
 		if (WebSecurityConfig.isPublicUrl(request.getRequestURI())) {
 			return true;
 		}

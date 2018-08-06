@@ -106,7 +106,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
 		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
 		resp.addResult(result);
-		return null;
+		return resp;
 	}
 
 	public static <TS, MS> AmxApiResponse<TS, MS> build(TS result, MS meta) {

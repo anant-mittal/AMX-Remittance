@@ -36,11 +36,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-swagger</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
@@ -80,6 +75,7 @@
 		</dependency>
 	</dependencies>
 
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -132,7 +128,7 @@
 		</repository>
 	</repositories>	
 -->
-	
+
 	<!-- 
 	<pluginRepositories>
 		<pluginRepository>
@@ -148,7 +144,6 @@
 		<module>common-lib</module>
 		<module>common-amx</module>
 		<module>lib-ext-jar</module>
-		<module>lib-swagger</module>
 		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
