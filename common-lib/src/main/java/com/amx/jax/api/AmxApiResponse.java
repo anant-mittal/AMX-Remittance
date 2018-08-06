@@ -15,9 +15,6 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	private static final long serialVersionUID = 2026047322050489651L;
 
-	/** The status key. */
-	protected String statusKey = "SUCCESS";
-
 	/** The data. */
 	protected T data = null;
 
@@ -28,40 +25,6 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		super();
 		this.data = null;
 		this.results = new ArrayList<T>();
-	}
-
-	/**
-	 * Gets the status key.
-	 *
-	 * @return the status key
-	 */
-	public String getStatusKey() {
-		return statusKey;
-	}
-
-	/**
-	 * Sets the status key.
-	 *
-	 * @param statusKey
-	 *            the new status key
-	 */
-	public void setStatusKey(String statusKey) {
-		this.statusKey = statusKey;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param status
-	 *            the new status
-	 */
-	@JsonIgnore
-	public void setHttpStatus(HttpStatus status) {
-		if (status.is5xxServerError() || status.is4xxClientError() || status.is3xxRedirection()) {
-			this.statusKey = status.series().name();
-		}
-		this.status = ArgUtil.parseAsString(status.value());
-		this.message = status.getReasonPhrase();
 	}
 
 	/**
