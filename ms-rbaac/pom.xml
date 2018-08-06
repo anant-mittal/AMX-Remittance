@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>ms-auth</artifactId>
+	<artifactId>ms-rbaac</artifactId>
 	<packaging>jar</packaging>
-	<name>ms-auth</name>
+	<name>ms-rbaac</name>
 	<url>http://maven.apache.org</url>
-	<description>Auth and RBAC service</description>
+	<description>Role Based - Auth and Access Control Services</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -76,3 +76,4 @@
 	</repositories>
 
 </project>
+
