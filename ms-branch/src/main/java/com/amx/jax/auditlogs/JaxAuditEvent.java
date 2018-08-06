@@ -32,7 +32,7 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 	
 	public static enum Type implements EventType {
-		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP;
+		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP,DISTRICT_LIST,CITY_LIST;
 
 		@Override
 		public EventMarker marker() {
