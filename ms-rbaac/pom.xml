@@ -40,7 +40,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-auth</artifactId>
+			<artifactId>lib-rbaac</artifactId>
 		</dependency>
 
 		<dependency>
