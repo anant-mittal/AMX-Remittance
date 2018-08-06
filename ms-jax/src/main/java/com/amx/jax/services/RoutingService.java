@@ -61,16 +61,20 @@ public class RoutingService {
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
 		} else {
 			// banking
-			if (jaxProperties.getRoutingProcOthDisable()) {
-				output = applicationProcedureDao.getRoutingDetails(inputValue);
-			} else {
-				output = applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
-			}
+			output = getRoutingDetail(inputValue);
 			inputValue.putAll(output);
 		}
 		inputValue.putAll(output);
 		checkRemittanceAndDeliveryMode(inputValue);
 		return output;
+	}
+
+	public Map<String, Object> getRoutingDetail(Map<String, Object> inputValue) {
+		if (jaxProperties.getRoutingProcOthDisable()) {
+			return applicationProcedureDao.getRoutingDetails(inputValue);
+		} else {
+			return applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
+		}
 	}
 
 	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
