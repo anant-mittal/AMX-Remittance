@@ -36,7 +36,7 @@ public class AuthServiceController implements AuthService {
 	 * @task Sync DB perms
 	 */
 	@ApiOperation("Sync Permissions")
-	@RequestMapping(value = ApiEndPoints.SYNC_PERMS, method = RequestMethod.POST)
+	//@RequestMapping(value = ApiEndPoints.SYNC_PERMS, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveEnums() {
 		// modules enums
 		// permissions enums
@@ -47,7 +47,7 @@ public class AuthServiceController implements AuthService {
 	}
 
 	@ApiOperation("User Auth")
-	@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.POST)
+	//@RequestMapping(value = ApiEndPoints.USER_VALID, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> verifyUserDetails(@RequestParam String empCode,
 			@RequestParam String identity, @RequestParam String ipAddress) {
 		// point 1 : need to fetch employee details based on empCode
@@ -71,7 +71,7 @@ public class AuthServiceController implements AuthService {
 	 * @throws IOException
 	 */
 	@ApiOperation("User Auth")
-	@RequestMapping(value = ApiEndPoints.USER_AUTH, method = RequestMethod.GET)
+	//@RequestMapping(value = ApiEndPoints.USER_AUTH, method = RequestMethod.GET)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> verifyUserOTPDetails(@RequestParam String empCode,
 			@RequestParam String identity, @RequestParam(required = false) String mOtp,
 			@RequestParam(required = false) String ipaddress) {
@@ -94,7 +94,7 @@ public class AuthServiceController implements AuthService {
 	 * @param roleTitle
 	 */
 	@ApiOperation("Create Role")
-	@RequestMapping(value = ApiEndPoints.ROLE, method = RequestMethod.POST)
+	//@RequestMapping(value = ApiEndPoints.ROLE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveRoleMaster(@RequestParam String roleTitle) {
 		return authService.saveRoleMaster(roleTitle);
 	}
@@ -107,7 +107,7 @@ public class AuthServiceController implements AuthService {
 	 * @param permScope
 	 */
 	@ApiOperation("Assign perms to Role")
-	@RequestMapping(value = ApiEndPoints.ROLE_PERM, method = RequestMethod.POST)
+	//@RequestMapping(value = ApiEndPoints.ROLE_PERM, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveAssignPermToRole(@RequestParam BigDecimal roleId,
 			@RequestParam Permission permission, @RequestParam(required = false) PermScope permScope,
 			@RequestParam(required = false) String admin) {
@@ -121,7 +121,7 @@ public class AuthServiceController implements AuthService {
 	 * @param userId
 	 */
 	@ApiOperation("Assign Role to user")
-	@RequestMapping(value = ApiEndPoints.USER_ROLE, method = RequestMethod.POST)
+	//@RequestMapping(value = ApiEndPoints.USER_ROLE, method = RequestMethod.POST)
 	public AmxApiResponse<BoolRespModel, Object> saveAssignRoleToUser(@RequestParam BigDecimal roleId,
 			@RequestParam BigDecimal userId) {
 		return authService.saveAssignRoleToUser(roleId, userId);
@@ -134,7 +134,7 @@ public class AuthServiceController implements AuthService {
 	 * @param userId
 	 */
 	@ApiOperation("Fetch User permissions")
-	@RequestMapping(value = ApiEndPoints.USER_PERMS, method = RequestMethod.GET)
+	//@RequestMapping(value = ApiEndPoints.USER_PERMS, method = RequestMethod.GET)
 	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(@RequestParam BigDecimal userId) {
 		return authService.fetchUserMasterDetails(userId);
 	}
