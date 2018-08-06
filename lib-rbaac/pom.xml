@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>lib-auth</artifactId>
+	<artifactId>lib-rbaac</artifactId>
 	<packaging>jar</packaging>
-	<name>lib-auth</name>
+	<name>lib-rbaac</name>
 	<url>http://maven.apache.org</url>
-	<description>Common Notificationa nd Templating Service</description>
+	<description>RBAAC - Common Notificationa nd Templating Service</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
