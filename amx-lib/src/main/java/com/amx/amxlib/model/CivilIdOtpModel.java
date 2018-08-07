@@ -144,7 +144,7 @@ public class CivilIdOtpModel extends AbstractModel {
 	public String getMiddleName() {
 		return middleName;
 	}
-
+	
 	/**
      * @param middleName the middleName to set
 	 */

@@ -108,7 +108,7 @@ public class TemplateService {
 
 	/**
 	 * Parses file.template and creates content;
-	 *
+	 * 
 	 * @param file
 	 *            the file
 	 * @return the file

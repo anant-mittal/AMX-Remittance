@@ -207,27 +207,6 @@ public class PostManServiceImpl implements PostManService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.postman.PostManService#verifyCaptcha(java.lang.String,
-	 * java.lang.String)
-	 */
-	@Override
-	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException {
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.amx.jax.postman.PostManService#getMap(java.lang.String)
-	 */
-	@Override
-	public Map<String, Object> getMap(String url) throws PostManException {
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
 	 * @see
 	 * com.amx.jax.postman.PostManService#sendEmailToSupprt(com.amx.jax.postman.
 	 * model.SupportEmail)

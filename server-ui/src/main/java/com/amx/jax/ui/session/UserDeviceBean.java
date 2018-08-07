@@ -2,6 +2,7 @@ package com.amx.jax.ui.session;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,9 +112,8 @@ public class UserDeviceBean extends UserDevice {
 		return this;
 	}
 
-	public boolean isDifferent() {
-		if (this.id == null || this.fingerprint == null) {
-			// this.resolve();
+	public boolean isAuthorized() {
+		if (this.id == null || this.fingerprint == null || httpService == null) {
 			return true;
 		}
 		String ip = ArgUtil.parseAsString(httpService.getIPAddress(), Constants.BLANK);

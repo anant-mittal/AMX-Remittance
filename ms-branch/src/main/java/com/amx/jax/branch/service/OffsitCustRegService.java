@@ -19,21 +19,45 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
+import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.ValidationRegexDto;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.ICustRegService;
+import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.api.ARespModel;
+import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
+import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
+import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
+import com.amx.jax.service.PrefixService;
+import com.amx.jax.userservice.dao.AbstractUserDao;
+import com.amx.jax.userservice.manager.CustomerRegistrationManager;
+import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Random;
 
@@ -69,6 +93,18 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	BizcomponentDao bizcomponentDao;
+
+	@Autowired
+	PrefixService prefixService;
+	
+	@Autowired
+	CustomerRegistrationManager customerRegistrationManager;
+	
+	@Autowired
+	OtpSettings otpSettings;
+	
+	@Autowired
+	DateUtil dateUtil;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -144,7 +180,8 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	}
 */
 	
-	public AmxApiResponse<List<JaxConditionalFieldRule>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
+
+	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
@@ -152,7 +189,31 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
 		if(fieldList.isEmpty())
 			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
-		return AmxApiResponse.build(fieldList);
+
+		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
+		return AmxApiResponse.build(dtoList);
+	}
+
+	private List<JaxConditionalFieldRuleDto> convertData(List<JaxConditionalFieldRule> fieldList) {
+		List<JaxConditionalFieldRuleDto> output = new ArrayList<>();
+		fieldList.forEach(i-> {
+			output.add(convertInDto(i));
+		});
+		return output;
+	}
+	
+
+	private JaxConditionalFieldRuleDto convertInDto(JaxConditionalFieldRule i) {
+		JaxConditionalFieldRuleDto dto = new JaxConditionalFieldRuleDto();
+		dto.setConditionKey(i.getConditionKey());
+		dto.setConditionValue(i.getConditionValue());
+		dto.setEntityName(i.getEntityName());
+		dto.setField(i.getField());
+		if(i.getField().getName().equalsIgnoreCase("OFFSITE_CUST_FIRST_NAME_PREFIX"))
+		{
+			dto.setPossibleValues(prefixService.getPrefixListOffsite());			
+		}		
+		return dto;
 	}
 
 	@SuppressWarnings("null")
@@ -232,6 +293,51 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		dto.setFsBizComponentData(i.getFsBizComponentData().getComponentDataId());
 		dto.setFsLanguageType(i.getFsLanguageType().getLanguageId());
 		return dto;
+	}
+
+	public AmxApiResponse<String, Object> validateOtp(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		
+		OtpData otpData = customerRegistrationManager.get().getOtpData();
+		try {
+			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp()) || StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
+				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
+			}
+			resetAttempts(otpData);
+			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+				throw new GlobalException(
+						"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
+						JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
+			}
+			// actual validation logic
+			if (!otpData.geteOtp().equals(offsiteCustRegModel.geteOtp()) || !otpData.getmOtp().equals(offsiteCustRegModel.getmOtp())) {
+				otpMismatch(otpData);
+			}
+			otpData.setOtpValidated(true);
+			otpData.resetCounts();
+		} finally {
+			customerRegistrationManager.saveOtpData(otpData);
+		}
+		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfull");		
+		obj.setMessageKey("AUTH_SUCCESS");
+		return obj;
+	
+	}
+	
+	private void resetAttempts(OtpData otpData) {
+		Date midnightToday = dateUtil.getMidnightToday();
+
+		if (otpData.getLockDate() != null && midnightToday.compareTo(otpData.getLockDate()) > 0) {
+			otpData.resetCounts();
+		}
+	}
+	
+	private void otpMismatch(OtpData otpData) {
+		otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
+		if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
+			otpData.setLockDate(new Date());
+		}
+		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

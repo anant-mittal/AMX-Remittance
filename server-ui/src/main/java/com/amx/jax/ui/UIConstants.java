@@ -2,6 +2,7 @@ package com.amx.jax.ui;
 
 import com.amx.utils.Constants;
 import com.amx.utils.Random;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * The Class UIConstants.
@@ -28,5 +29,15 @@ public final class UIConstants extends Constants {
 
 	/** The Constant CACHE_TIME. */
 	public static final int CACHE_TIME = 31556926;
+
+	public static enum Features {
+		BENEFICIARY, RATE_ALERT, REMIT;
+
+		@JsonValue
+		@Override
+		public String toString() {
+			return this.name().toLowerCase();
+		}
+	}
 
 }

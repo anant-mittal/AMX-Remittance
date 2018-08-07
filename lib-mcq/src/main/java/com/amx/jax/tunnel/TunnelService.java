@@ -15,9 +15,13 @@ public class TunnelService implements ITunnelService {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
-	public <T> void send(String topic, T messagePayload) {
+	public <T> long send(String topic, T messagePayload) {
+		if(redisson==null) {
+			LOGGER.error("No Redissson Client Instance Available");
+			return 0L;
+		}
 		RTopic<T> topicQueue = redisson.getTopic(topic);
-		topicQueue.publish(messagePayload);
+		return topicQueue.publish(messagePayload);
 	}
 
 	public void sayHello() {

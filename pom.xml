@@ -36,11 +36,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-swagger</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
@@ -52,7 +47,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-auth</artifactId>
+				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
 			<dependency>
@@ -90,7 +85,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-	
+
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
@@ -99,7 +94,7 @@
 						<id>attach-sources</id>
 						<phase>deploy</phase>
 						<goals>
-						    <goal>jar</goal>
+							<goal>jar-no-fork</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -110,29 +105,30 @@
          			<artifactId>maven-deploy-plugin</artifactId>
          			<executions> 
 					<execution>
-						<id>default-deploy</id> 
+						<id>default-deploy</id>
 						<phase>none</phase>
 					</execution>
 				</executions>
 				<configuration>
-                    			<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
-                		</configuration>
-     			</plugin>
-			
+					<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
+				</configuration>
+			</plugin>
+
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
 	</build>
 
-	<!--
+<!--   
 	<repositories>
 		<repository>
 			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
-			<url>https://gitlab.com/almullagroup/maven/amx-maven/raw/master/</url>
+			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
 		</repository>
 	</repositories>	
-	-->
-
+-->
+	
+	<!-- 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -140,6 +136,7 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
+	-->
 
 	<modules>
 		<module>common-utils</module>
@@ -149,7 +146,7 @@
 		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
-		<module>lib-auth</module>
+		<module>lib-rbaac</module>
 		<module>lib-sso</module>
 		<module>lib-jax</module>
 
@@ -162,10 +159,10 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-branch</module>
+		<!-- <module>ms-branch</module> -->
 		<module>ms-jax</module>
 		<module>jax-client</module>
-		<module>ms-auth</module>
+		<module>ms-rbaac</module>
 
 		<module>ms-scheduler</module>
 
@@ -176,7 +173,7 @@
 
 		<!-- <module>server-offsite</module> -->
 		<module>server-admin</module>
- 		<!-- <module>server-sso</module> -->
+		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
