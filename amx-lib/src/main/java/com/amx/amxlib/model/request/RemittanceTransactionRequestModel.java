@@ -34,7 +34,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal srlId;
 	private String mOtp;
 	private String eOtp;
-	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;

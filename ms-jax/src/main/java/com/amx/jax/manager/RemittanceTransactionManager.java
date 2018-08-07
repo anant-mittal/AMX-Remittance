@@ -141,6 +141,9 @@ public class RemittanceTransactionManager {
 	private RemittanceApplicationAdditionalDataManager remittanceAppAddlDataManager;
 
 	@Autowired
+	private OldRemittanceApplicationAdditionalDataManager oldRemittanceApplicationAdditionalDataManager;
+
+	@Autowired
 	private RemittanceApplicationDao remitAppDao;
 
 	@Autowired
@@ -185,10 +188,10 @@ public class RemittanceTransactionManager {
 	NewExchangeRateService newExchangeRateService;
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-	private static final String IOS="IOS";
-	private static final String ANDROID="ANDROID";
-	private static final String WEB="WEB";
+
+	private static final String IOS = "IOS";
+	private static final String ANDROID = "ANDROID";
+	private static final String WEB = "WEB";
 
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
@@ -680,8 +683,9 @@ public class RemittanceTransactionManager {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
-
-		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		if (jaxProperties.getFlexFieldEnabled()) {
+			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+		}
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 		BigDecimal netAmountPayable = breakup.getNetAmount();
@@ -693,8 +697,13 @@ public class RemittanceTransactionManager {
 				validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
 				.createRemittanceAppBeneficiary(remittanceApplication);
-		List<AdditionalInstructionData> additionalInstrumentData = remittanceAppAddlDataManager
-				.createAdditionalInstnData(remittanceApplication, model);
+		List<AdditionalInstructionData> additionalInstrumentData;
+		if (jaxProperties.getFlexFieldEnabled()) {
+			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
+					model);
+		} else {
+			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
+		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remitAppDao.updatePlaceOrder(model,remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
@@ -760,9 +769,9 @@ public class RemittanceTransactionManager {
 		}
 		model.setTransactionReference(getTransactionReference(application));
 		if ("Y".equals(application.getLoyaltyPointInd())) {
-			model.setNetAmount(application.getLocalTranxAmount());			
-		}else {
-			model.setNetAmount(application.getLocalNetTranxAmount());			
+			model.setNetAmount(application.getLocalTranxAmount());
+		} else {
+			model.setNetAmount(application.getLocalNetTranxAmount());
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
@@ -802,42 +811,41 @@ public class RemittanceTransactionManager {
 		return status;
 	}
 
-    private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
-    	
-    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
+	private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
 
-    	BigDecimal onlineLimit = BigDecimal.ZERO;
-    	BigDecimal androidLimit = BigDecimal.ZERO;
-    	BigDecimal iosLimit = BigDecimal.ZERO;
-    			
-    	for (TransactionLimitCheckView view:trnxLimitList) {
-    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-    			onlineLimit = view.getComplianceChkLimit();
-    		}
-    		if(ANDROID.equals(view.getChannel())) {
-    			androidLimit = view.getComplianceChkLimit();
-    		}
-    		if(IOS.equals(view.getChannel())) {
-    			iosLimit = view.getComplianceChkLimit();
-    		}
-    	}
-    	
-        CivilIdOtpModel otpMmodel = null;
-        if ( ((meta.getChannel().equals(JaxChannel.ONLINE)) && 
-              (meta.getAppType().equals(WEB)) &&
-              (model.getLocalAmount().compareTo(onlineLimit)>0) ) || 
-                
-              (meta.getAppType().equals(IOS) && 
-                    model.getLocalAmount().compareTo(iosLimit)>0) ||
-              
-              (meta.getAppType().equals(ANDROID) && 
-                      model.getLocalAmount().compareTo(androidLimit)>0)){
-            
-            List<CommunicationChannel> channel = new ArrayList<>();
-            channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
-            channel.add(CommunicationChannel.MOBILE);
-            otpMmodel = (CivilIdOtpModel)userService.sendOtpForCivilId(null,channel,null,null).getData().getValues().get(0);
-        }
-        return otpMmodel;
-    }
+		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
+
+		BigDecimal onlineLimit = BigDecimal.ZERO;
+		BigDecimal androidLimit = BigDecimal.ZERO;
+		BigDecimal iosLimit = BigDecimal.ZERO;
+
+		for (TransactionLimitCheckView view : trnxLimitList) {
+			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+				onlineLimit = view.getComplianceChkLimit();
+			}
+			if (ANDROID.equals(view.getChannel())) {
+				androidLimit = view.getComplianceChkLimit();
+			}
+			if (IOS.equals(view.getChannel())) {
+				iosLimit = view.getComplianceChkLimit();
+			}
+		}
+
+		CivilIdOtpModel otpMmodel = null;
+		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (meta.getAppType().equals(WEB))
+				&& (model.getLocalAmount().compareTo(onlineLimit) > 0)) ||
+
+				(meta.getAppType().equals(IOS) && model.getLocalAmount().compareTo(iosLimit) > 0) ||
+
+				(meta.getAppType().equals(ANDROID) && model.getLocalAmount().compareTo(androidLimit) > 0)) {
+
+			List<CommunicationChannel> channel = new ArrayList<>();
+			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
+			channel.add(CommunicationChannel.MOBILE);
+			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
+					.get(0);
+		}
+		return otpMmodel;
+	}
+
 }
