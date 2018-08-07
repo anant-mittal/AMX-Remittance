@@ -217,14 +217,17 @@ public class RemittanceTransactionManager {
 		/** End here **/
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
-		BigDecimal serviceMasterId = new BigDecimal(routingDetails.get("P_SERVICE_MASTER_ID").toString());
-		BigDecimal routingBankId = new BigDecimal(routingDetails.get("P_ROUTING_BANK_ID").toString());
-		BigDecimal rountingCountryId = new BigDecimal(routingDetails.get("P_ROUTING_COUNTRY_ID").toString());
-		BigDecimal remittanceMode = new BigDecimal(routingDetails.get("P_REMITTANCE_MODE_ID").toString());
-		BigDecimal deliveryMode = new BigDecimal(routingDetails.get("P_DELIVERY_MODE_ID").toString());
+		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
+		BigDecimal serviceMasterId = new BigDecimal(remitApplParametersMap.get("P_SERVICE_MASTER_ID").toString());
+		BigDecimal routingBankId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_BANK_ID").toString());
+		BigDecimal rountingCountryId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID").toString());
+		BigDecimal remittanceMode = new BigDecimal(remitApplParametersMap.get("P_REMITTANCE_MODE_ID").toString());
+		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
+		
+		
 		logger.info("currencyId :" + currencyId + "\t rountingCountryId :" + rountingCountryId + "\t routingBankId :"
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
@@ -243,28 +246,29 @@ public class RemittanceTransactionManager {
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+		
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
 		}
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
-		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
-		
-		logger.info("newCommission: " + newCommission);
+		BigDecimal newCommission = reCalculateComission(breakup);
 
-		if (newCommission != null) {
-			commission = newCommission;
-		}
-		applyRoudingLogic(breakup);
+		logger.info("newCommission: " + newCommission);
 		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)
 				&& newCommission == null) {
 			logger.info("recalculating del mode for TT and routing countyr india");
-			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
+			recalculateDeliveryAndRemittanceModeId();
 		}
-		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
-		breakup = getExchangeRateBreakup(exchangeRates, model,responseModel, commission);
-		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
+		if (newCommission != null) {
+			commission = newCommission;
+		}
+		
+		applyRoudingLogic(breakup);
+		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
+		validateTransactionAmount(breakup, newCommission, currencyId);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
@@ -305,7 +309,7 @@ public class RemittanceTransactionManager {
 				exRatebreakUp.getLcDecimalNumber().intValue()));
 	}
 
-	private BigDecimal reCalculateComission(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+	private BigDecimal reCalculateComission(ExchangeRateBreakup breakup) {
 		logger.info("recalculating comission ");
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
@@ -319,9 +323,7 @@ public class RemittanceTransactionManager {
 		logger.info("newCommission: " + comission);
 		return comission;
 	}
-	
-	private Map<String,Object> getCommissionRange(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
-		
+	private Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
@@ -334,11 +336,9 @@ public class RemittanceTransactionManager {
 		return comissionRangeMap;
 		
 	}
-	
-	private void recalculateDeliveryAndRemittanceModeId(Map<String, Object> routingDetails,
-			ExchangeRateBreakup breakup) {
-		if (breakup.getConvertedFCAmount() != null) {
-			remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+	private void recalculateDeliveryAndRemittanceModeId() {
+		
+		if (remitApplParametersMap.get("P_CALCULATED_FC_AMOUNT") != null) {
 			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 			Map<String, Object> outputMap = exchangeRateProcedureDao
@@ -355,10 +355,9 @@ public class RemittanceTransactionManager {
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
-				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
+				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
 						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
-			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
 		}
 	}
@@ -459,9 +458,8 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
-			Map<String, Object> routingDetails) {
-		if(!isSaveRemittanceFlow) {
+	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId ) {
+		if (!isSaveRemittanceFlow) {
 			return;
 		}
 		String appCurrencyQuote = currencyMasterService.getApplicationCountryCurrencyQuote();
@@ -477,7 +475,7 @@ public class RemittanceTransactionManager {
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 		String currencyQuoteName = beneCurrencyMaster.getQuoteName();
 		if (newCommission == null) {
-			Map<String, Object> commissionRangeMap = getCommissionRange(routingDetails, breakup);
+			Map<String, Object> commissionRangeMap = getCommissionRange(breakup);
 			String msg = "";
 			BigDecimal fromAmount = BigDecimal.ZERO;
 			BigDecimal toAmount = BigDecimal.ZERO;
