@@ -682,8 +682,8 @@ public class RemittanceTransactionManager {
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
-		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 		if (jaxProperties.getFlexFieldEnabled()) {
+			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
 		// validate routing bank requirements
