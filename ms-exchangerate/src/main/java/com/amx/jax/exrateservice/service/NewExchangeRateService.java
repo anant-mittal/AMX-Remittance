@@ -41,14 +41,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 * getExchangeRatesForOnline(java.math.BigDecimal, java.math.BigDecimal,
 	 * java.math.BigDecimal, java.math.BigDecimal)
 	 */
-	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
+	public ApiResponse<ExchangeRateResponseModel> getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal bankId) {
 		if (!jaxProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
 				+ lcAmount);
-		ApiResponse response = getBlackApiResponse();
+		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
@@ -114,6 +114,13 @@ public class NewExchangeRateService extends ExchangeRateService {
 
 		});
 		return bankMasterDto;
+	}
+	
+	public ExchangeRateBreakup getExchangeRateBreakup(BigDecimal toCurrencyId, BigDecimal localAmount,
+			BigDecimal routingBankId) {
+		ApiResponse<ExchangeRateResponseModel> apiResponse = getExchangeRatesForOnline(meta.getDefaultCurrencyId(),
+				toCurrencyId, localAmount, routingBankId);
+		return apiResponse.getResult().getExRateBreakup();
 	}
 
 }
