@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.model.AuthState;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import io.swagger.annotations.ApiModelProperty;

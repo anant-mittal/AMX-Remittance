@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.client.AuditFilter;
-import com.amx.jax.ui.auth.CAuthEvent;
+import com.amx.jax.logger.events.CAuthEvent;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;

@@ -1,11 +1,12 @@
-package com.amx.jax.ui.auth;
+package com.amx.jax.logger.events;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.amx.jax.logger.AuditEvent;
-import com.amx.jax.ui.auth.AuthState.AuthFlow;
-import com.amx.jax.ui.auth.AuthState.AuthStep;
+import com.amx.jax.model.AuthState;
+import com.amx.jax.model.AuthState.AuthFlow;
+import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.utils.ArgUtil;
 
 /**

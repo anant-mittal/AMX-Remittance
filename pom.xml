@@ -170,6 +170,7 @@
 		<module>server-payg</module>
 
 		<module>server-ui</module>
+		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
 
 		<!-- <module>server-offsite</module> -->
