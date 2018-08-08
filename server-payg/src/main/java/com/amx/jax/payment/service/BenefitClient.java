@@ -177,15 +177,18 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
+		String responseCode =request.getParameter("responsecode");
 		
-		if(resultResponse == null)	{
-			resultResponse = request.getParameter("responsecode");
+		if(!"CAPTURED".equals(resultResponse)) {
+		if(resultResponse == null ) {
+			resultResponse =responseCode;
 		}
 		LOGGER.info("resultResponse ---> " +resultResponse);
         gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
         LOGGER.info("Result from response Values ---> " +gatewayResponse.getResult());
         gatewayResponse.setError(resultResponse);
-
+		}
+		
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
