@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +31,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
+import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
@@ -59,7 +62,9 @@ public class PurposeOfTransactionService extends AbstractService {
 	@Autowired
 	private IBeneficiaryOnlineDao beneficiaryOnlineDao;
 	@Autowired
-	RoutingService routingService ;
+	RemittanceTransactionManager remittanceTxnManger;
+	@Resource
+	public Map<String, Object> remitApplParametersMap;
 	
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
@@ -267,7 +272,8 @@ public class PurposeOfTransactionService extends AbstractService {
 		ApiResponse response = getBlackApiResponse();
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
+		remittanceTxnManger.validateTransactionData(model);
+		Map<String, Object> routingDetails = remitApplParametersMap;
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal rountingCountry = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");
