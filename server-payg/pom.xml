@@ -119,7 +119,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.knet.test</groupId>
-					<artifactId>knet.test</artifactId>
+					<artifactId>knet_test</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>

@@ -98,17 +98,17 @@
 					</execution>
 
 					<execution>
-						<id>knet.test</id>
+						<id>knet_test</id>
 						<phase>package</phase>
 						<goals>
 							<goal>install-file</goal>
 						</goals>
 						<configuration>
 							<groupId>com.knet.test</groupId>
-							<artifactId>knet.test</artifactId>
+							<artifactId>knet_test</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/lib/knet.test.jar</file>
+							<file>${basedir}/lib/knet_test.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
