@@ -17,13 +17,13 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.events.CAuthEvent;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthFlow;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.service.HttpService;
+import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.CustomerAuthProvider;
 import com.amx.jax.ui.config.WebSecurityConfig;
 import com.amx.jax.ui.session.GuestSession;

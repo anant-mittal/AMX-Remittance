@@ -1,4 +1,4 @@
-package com.amx.jax.logger.events;
+package com.amx.jax.ui.audit;
 
 import java.util.HashMap;
 import java.util.Map;

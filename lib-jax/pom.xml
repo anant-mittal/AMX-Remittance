@@ -31,12 +31,6 @@
 			<artifactId>lib-mcq</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
 	</dependencies>
 
 </project>

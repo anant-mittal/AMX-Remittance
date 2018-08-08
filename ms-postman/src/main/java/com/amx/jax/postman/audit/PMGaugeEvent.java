@@ -1,4 +1,4 @@
-package com.amx.jax.postman.service;
+package com.amx.jax.postman.audit;
 
 import java.util.List;
 
