@@ -179,7 +179,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		}
 		String responseCode =request.getParameter("responsecode");
 		
-		if(!"CAPTURED".equals(resultResponse)) {
+		if(!"CAPTURED".equals(request.getParameter("result"))) {
 		if(resultResponse == null ) {
 			resultResponse =responseCode;
 		}
