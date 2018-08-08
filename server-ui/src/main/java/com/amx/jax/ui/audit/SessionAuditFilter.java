@@ -1,4 +1,4 @@
-package com.amx.jax.ui.config;
+package com.amx.jax.ui.audit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
