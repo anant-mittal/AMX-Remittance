@@ -181,6 +181,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		if(resultResponse == null)	{
 			resultResponse = request.getParameter("responsecode");
 		}
+		LOGGER.info("resultResponse ---> " +resultResponse);
         gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
         LOGGER.info("Result from response Values ---> " +gatewayResponse.getResult());
         gatewayResponse.setError(resultResponse);
