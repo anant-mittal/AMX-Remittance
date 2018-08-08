@@ -834,12 +834,12 @@ public class RemittanceTransactionManager {
 		}
 
 		CivilIdOtpModel otpMmodel = null;
-		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (meta.getAppType().equals(WEB))
+		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
 				&& (model.getLocalAmount().compareTo(onlineLimit) > 0)) ||
 
-				(meta.getAppType().equals(IOS) && model.getLocalAmount().compareTo(iosLimit) > 0) ||
+				(IOS.equals(meta.getAppType()) && model.getLocalAmount().compareTo(iosLimit) > 0) ||
 
-				(meta.getAppType().equals(ANDROID) && model.getLocalAmount().compareTo(androidLimit) > 0)) {
+				(ANDROID.equals(meta.getAppType()) && model.getLocalAmount().compareTo(androidLimit) > 0)) {
 
 			List<CommunicationChannel> channel = new ArrayList<>();
 			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
