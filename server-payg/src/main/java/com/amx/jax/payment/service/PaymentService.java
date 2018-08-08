@@ -1,15 +1,23 @@
 package com.amx.jax.payment.service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.model.PaygErrorMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
+import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.scope.TenantContextHolder;
 
@@ -27,6 +35,12 @@ public class PaymentService {
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
+	
+	@Autowired
+	MetaClient metaClient;
+	
+	@Autowired
+	PayGConfig payGConfig;
 
 	/**
 	 * Captures the payment in jax service
@@ -89,6 +103,37 @@ public class PaymentService {
 		paymentResponseDto.setErrorText(payGServiceResponse.getErrorText());
 		paymentResponseDto.setError(payGServiceResponse.getError());
 		return paymentResponseDto;
+	}
+	
+	public String getPaygErrorCategory(String resultReponse) {
+		String errorCategory = null;
+		Map<String, PaygErrorMasterDTO> errorMap = payGConfig.getErrorCodeMap();
+
+		if (errorMap == null || errorMap.size() == 0) {
+
+			List<PaygErrorMasterDTO> paygErrorList = metaClient.getPaygErrorList().getResults();
+
+			if (paygErrorList != null && paygErrorList.size() != 0) {
+				errorMap = new HashMap<String, PaygErrorMasterDTO>();
+				for (PaygErrorMasterDTO paygErrorDto : paygErrorList) {
+					errorMap.put(paygErrorDto.getErrorCode(), paygErrorDto);
+				}
+				payGConfig.setErrorCodeMap(errorMap);
+				LOGGER.info("Error List size is ---------- " + paygErrorList.size());
+			}
+		}
+
+		Iterator<Entry<String, PaygErrorMasterDTO>> it = errorMap.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, PaygErrorMasterDTO> pair = (Map.Entry<String, PaygErrorMasterDTO>) it.next();
+			if (pair.getValue().getErrorCode().contains(resultReponse)) {
+				resultReponse = pair.getValue().getErrorCode();
+				LOGGER.info("resultReponse in map = " + resultReponse);
+				break;
+			}
+		}
+		errorCategory = ((PaygErrorMasterDTO) errorMap.get(resultReponse)).getErrorCategory();
+		return errorCategory;
 	}
 
 }

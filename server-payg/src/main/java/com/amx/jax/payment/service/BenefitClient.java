@@ -147,6 +147,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
+		String resultResponse = request.getParameter("Error");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
@@ -176,6 +177,13 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
+		
+		if(resultResponse == null)	{
+			resultResponse = request.getParameter("responsecode");
+		}
+        gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
+        LOGGER.info("Result from response Values ---> " +gatewayResponse.getResult());
+        gatewayResponse.setError(resultResponse);
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
