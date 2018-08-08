@@ -270,8 +270,10 @@ public class PurposeOfTransactionService extends AbstractService {
 	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
 		logger.info("in getPurposeOfTransaction with params: "+ model.toString());
 		ApiResponse response = getBlackApiResponse();
+		if (model.getLocalAmount() == null) {
+			model.setLocalAmount(BigDecimal.ONE);
+		}
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
-		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
 		remittanceTxnManger.validateTransactionData(model);
 		Map<String, Object> routingDetails = remitApplParametersMap;
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
