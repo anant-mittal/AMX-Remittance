@@ -98,7 +98,7 @@
 					</execution>
 
 					<execution>
-						<id>knet_test</id>
+						<id>knet.test</id>
 						<phase>package</phase>
 						<goals>
 							<goal>install-file</goal>
@@ -108,7 +108,7 @@
 							<artifactId>knet.test</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/lib/knet_test.jar</file>
+							<file>${basedir}/lib/knet.test.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
