@@ -19,7 +19,7 @@ import com.amx.utils.JsonUtil;
  * @author Prashant
  *
  */
-public class RemittanceTransactionRequestModel extends AbstractModel {
+public class RemittanceTransactionRequestModel extends AbstractModel implements IRemitTransReqPurpose {
 
 	/**
 	 * 
@@ -50,10 +50,12 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		return "remittance_transaction";
 	}
 
+	@Override
 	public BigDecimal getBeneId() {
 		return beneId;
 	}
 
+	@Override
 	public void setBeneId(BigDecimal beneId) {
 		this.beneId = beneId;
 	}
@@ -66,18 +68,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.sourceOfFund = sourceOfFund;
 	}
 
+	@Override
 	public BigDecimal getLocalAmount() {
 		return localAmount;
 	}
 
+	@Override
 	public void setLocalAmount(BigDecimal localAmount) {
 		this.localAmount = localAmount;
 	}
 
+	@Override
 	public BigDecimal getForeignAmount() {
 		return foreignAmount;
 	}
 
+	@Override
 	public void setForeignAmount(BigDecimal foreignAmount) {
 		this.foreignAmount = foreignAmount;
 	}
