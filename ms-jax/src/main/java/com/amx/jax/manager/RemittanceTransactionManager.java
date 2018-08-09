@@ -172,6 +172,9 @@ public class RemittanceTransactionManager {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	AuditService auditService;
 
 	protected Map<String, Object> validatedObjects = new HashMap<>();
 	
@@ -675,9 +678,6 @@ public class RemittanceTransactionManager {
 		return output;
 	}
 	
-	@Autowired
-	AuditService auditService;
-
 	public RemittanceApplicationResponseModel saveApplication(RemittanceTransactionRequestModel model) {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
@@ -723,7 +723,11 @@ public class RemittanceTransactionManager {
         remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
+		logger.info("############ START ##################");
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
+		logger.info("***************************************************************************************");
+		auditService.gauge(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
+		logger.info("############ END ##################");
 		return remiteAppModel;
 
 	}
