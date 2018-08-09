@@ -126,7 +126,7 @@ public class PaymentService {
 		Iterator<Entry<String, PaygErrorMasterDTO>> it = errorMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, PaygErrorMasterDTO> pair = (Map.Entry<String, PaygErrorMasterDTO>) it.next();
-			if (pair.getValue().getErrorCode().contains(resultReponse)) {
+			if (resultReponse.contains(pair.getValue().getErrorCode())) {
 				resultReponse = pair.getValue().getErrorCode();
 				LOGGER.info("resultReponse in map = " + resultReponse);
 				break;
