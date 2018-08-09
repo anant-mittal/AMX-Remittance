@@ -44,8 +44,8 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -331,11 +331,9 @@ public class RemittController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(
-			@RequestBody IRemitTransReqPurpose remitTransReqPurpose) {
+	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(@RequestParam BigDecimal beneId) {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
-		wrapper.setData(
-				jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(remitTransReqPurpose).getResults());
+		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
 		return wrapper;
 	}
 
@@ -354,6 +352,7 @@ public class RemittController {
 			RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.validateTransaction(request).getResult();
 			wrapper.setData(respTxMdl);
+			wrapper.setMeta(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(request).getResults());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(WebResponseStatus.ERROR, e);
 		}
