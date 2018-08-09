@@ -123,6 +123,8 @@ public class PaymentService {
 			}
 		}
 
+		if(!"CAPTURED".equalsIgnoreCase(resultReponse) && !"NOT CAPTURED".equalsIgnoreCase(resultReponse))
+		{
 		Iterator<Entry<String, PaygErrorMasterDTO>> it = errorMap.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, PaygErrorMasterDTO> pair = (Map.Entry<String, PaygErrorMasterDTO>) it.next();
@@ -132,7 +134,7 @@ public class PaymentService {
 				break;
 			}
 		}
-		
+		}
 		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
 		if (dto!=null) {
 			errorCategory = dto.getErrorCategory();	
