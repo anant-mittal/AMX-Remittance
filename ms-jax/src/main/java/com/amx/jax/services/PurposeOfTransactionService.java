@@ -22,6 +22,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
@@ -267,10 +268,11 @@ public class PurposeOfTransactionService extends AbstractService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
-		logger.info("in getPurposeOfTransaction with params: "+ model.toString());
+	public ApiResponse getPurposeOfTransaction(IRemitTransReqPurpose request) {
+		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) request;
+		logger.info("in getPurposeOfTransaction with params: " + model.toString());
 		ApiResponse response = getBlackApiResponse();
-		if (model.getLocalAmount() == null) {
+		if (model.getLocalAmount() == null && model.getForeignAmount() == null) {
 			model.setLocalAmount(BigDecimal.ONE);
 		}
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
