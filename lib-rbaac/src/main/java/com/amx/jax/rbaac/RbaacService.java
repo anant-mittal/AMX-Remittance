@@ -1,8 +1,10 @@
 package com.amx.jax.rbaac;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
 /**
  * The Interface RbaacService.
@@ -57,8 +59,7 @@ public interface RbaacService {
 	 *            the ip address
 	 * @return the amx api response
 	 */
-	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(String employeeNo, String identity,
-			String ipAddress);
+	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
 	 * Authorise user.
@@ -73,7 +74,6 @@ public interface RbaacService {
 	 *            the ip address
 	 * @return the amx api response
 	 */
-	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(String employeeNo, String mOtpHash, String eOtpHash,
-			String ipAddress);
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 }

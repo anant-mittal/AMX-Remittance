@@ -48,6 +48,8 @@ public class Employee implements java.io.Serializable {
 
 	private BigDecimal lockCount;
 	private Date lockDate;
+	
+	private String deviceId;
 
 	@Id
 	@GeneratedValue(generator = "fs_employee_seq", strategy = GenerationType.SEQUENCE)
@@ -284,6 +286,15 @@ public class Employee implements java.io.Serializable {
 
 	public void setLockDate(Date lockDate) {
 		this.lockDate = lockDate;
+	}
+
+	@Column(name = "DEVICE_ID")
+	public String getDeviceId() {
+		return deviceId;
+	}
+
+	public void setDeviceId(String deviceId) {
+		this.deviceId = deviceId;
 	}
 
 }

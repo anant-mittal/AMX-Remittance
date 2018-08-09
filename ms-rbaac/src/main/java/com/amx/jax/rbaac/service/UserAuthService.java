@@ -14,16 +14,19 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
 import com.amx.jax.rbaac.dao.LoginDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.AuthServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
-import com.amx.utils.Random;
+import com.amx.utils.ContextUtil;
 
 /**
  * The Class UserAuthService.
@@ -68,17 +71,35 @@ public class UserAuthService {
 	 * 
 	 *        ||->->-> Proceed For OTP - Init Auth
 	 */
-	public UserAuthInitResponseDTO verifyUserDetails(String employeeNo, String identity, String ipAddress) {
+	public UserAuthInitResponseDTO verifyUserDetails(UserAuthInitReqDTO userAuthInitReqDTO) {
+
+		String employeeNo = userAuthInitReqDTO.getEmployeeNo();
+		String identity = userAuthInitReqDTO.getIdentity();
+		String ipAddress = userAuthInitReqDTO.getIpAddress();
+		String deviceId = userAuthInitReqDTO.getDeviceId();
+		DEVICE_TYPE deviceType = userAuthInitReqDTO.getDeviceType();
 
 		/**
 		 * Input -> Invalid
 		 */
-		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)) {
-			throw new AuthServiceException("Employee Number, Civil Id & IP Address are Manadatory",
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)
+				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
+			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
 					AuthServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		List<Employee> employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
+		if (DEVICE_TYPE.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
+			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
+					AuthServiceError.INVALID_OR_MISSING_DATA);
+		}
+
+		List<Employee> employees;
+
+		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
+			employees = loginDao.getEmployeesByDeviceId(employeeNo, identity, ipAddress);
+		} else {
+			employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
+		}
 
 		/**
 		 * Invalid Employee Details
@@ -122,7 +143,7 @@ public class UserAuthService {
 
 		userOtpManager.sendOtpSms(emp, otpData);
 
-		String transactionId = Random.randomAlphaNumeric(24);
+		String transactionId = ContextUtil.getTraceId();
 
 		UserOtpData userOtpData = new UserOtpData();
 
@@ -160,7 +181,14 @@ public class UserAuthService {
 	 *       Check if OTP is valid || grant access || clear Cache.
 	 * 
 	 */
-	public EmployeeDetailsDTO authoriseUser(String employeeNo, String mOtpHash, String eOtpHash, String ipAddress) {
+	public EmployeeDetailsDTO authoriseUser(UserAuthorisationReqDTO reqDto) {
+
+		String employeeNo = reqDto.getEmployeeNo();
+		String mOtpHash = reqDto.getmOtpHash();
+		//String eOtpHash = reqDto.geteOtpHash();
+		String ipAddress = reqDto.getIpAddress();
+		//String transactionId = reqDto.getTransactionId();
+		String deviceId = reqDto.getDeviceId();
 
 		/**
 		 * Input -> Invalid
@@ -226,8 +254,8 @@ public class UserAuthService {
 		empDetail.setUserName(employee.getUserName());
 		empDetail.setRoleId(new BigDecimal("1"));
 
-		LOGGER.info(
-				"Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress);
+		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
+				+ " from Device id : " + deviceId);
 
 		return empDetail;
 	}

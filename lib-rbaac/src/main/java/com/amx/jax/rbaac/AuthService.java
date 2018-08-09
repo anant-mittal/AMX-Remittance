@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.dto.SendOtpModel;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.UserDetailsDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.models.PermScope;
 import com.amx.jax.rbaac.models.Permission;
 
