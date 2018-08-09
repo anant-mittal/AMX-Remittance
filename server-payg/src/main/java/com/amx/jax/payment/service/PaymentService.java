@@ -132,8 +132,15 @@ public class PaymentService {
 				break;
 			}
 		}
-		errorCategory = ((PaygErrorMasterDTO) errorMap.get(resultReponse)).getErrorCategory();
+		
+		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
+		if (dto!=null) {
+			errorCategory = dto.getErrorCategory();	
+		}else {
+			LOGGER.info("Default Error Message");
+			errorCategory="TXN_AUTH_PIN";
+		}
+		
 		return errorCategory;
 	}
-
 }
