@@ -723,11 +723,7 @@ public class RemittanceTransactionManager {
         remiteAppModel.setCivilIdOtpModel(civilIdOtpModel);
 		
 		logger.info("Application saved successfully, response: " + remiteAppModel.toString());
-		logger.info("############ START ##################");
 		auditService.log(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
-		logger.info("***************************************************************************************");
-		auditService.gauge(createTransactionEvent(remiteAppModel,JaxTransactionStatus.APPLICATION_CREATED));
-		logger.info("############ END ##################");
 		return remiteAppModel;
 
 	}
