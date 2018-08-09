@@ -28,6 +28,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
@@ -330,9 +331,11 @@ public class RemittController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/api/remitt/purpose/list", method = { RequestMethod.POST })
-	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(@RequestParam BigDecimal beneId) {
+	public ResponseWrapper<List<PurposeOfTransactionModel>> bnfcryCheck(
+			@RequestBody IRemitTransReqPurpose remitTransReqPurpose) {
 		ResponseWrapper<List<PurposeOfTransactionModel>> wrapper = new ResponseWrapper<List<PurposeOfTransactionModel>>();
-		wrapper.setData(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(beneId).getResults());
+		wrapper.setData(
+				jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(remitTransReqPurpose).getResults());
 		return wrapper;
 	}
 
