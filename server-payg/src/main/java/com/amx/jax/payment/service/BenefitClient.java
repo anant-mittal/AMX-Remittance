@@ -148,8 +148,10 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("Error");
+		String responseCode = request.getParameter("responsecode");
+		String resultCode = request.getParameter("result");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-		gatewayResponse.setResult(request.getParameter("result"));
+		gatewayResponse.setResult(resultCode);
 		gatewayResponse.setAuth(request.getParameter("auth"));
 		gatewayResponse.setRef(request.getParameter("ref"));
 		gatewayResponse.setPostDate(request.getParameter("postdate"));
@@ -178,17 +180,18 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
 		
-		String responseCode = request.getParameter("responsecode");
-		if (!"CAPTURED".equals(request.getParameter("result"))) {
-			if (resultResponse == null) {
-				resultResponse = responseCode;
-			}
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultCode));
+		} else if (resultResponse == null) {
+			gatewayResponse.setResult(paymentService.getPaygErrorCategory(responseCode));
+			gatewayResponse.setError(responseCode);
+		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getResult());
 			gatewayResponse.setError(resultResponse);
 		}
-
+		
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {

@@ -123,23 +123,22 @@ public class PaymentService {
 			}
 		}
 
-		if(!"CAPTURED".equalsIgnoreCase(resultReponse) && !"NOT CAPTURED".equalsIgnoreCase(resultReponse))
-		{
-		Iterator<Entry<String, PaygErrorMasterDTO>> it = errorMap.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<String, PaygErrorMasterDTO> pair = (Map.Entry<String, PaygErrorMasterDTO>) it.next();
-			if (resultReponse.contains(pair.getValue().getErrorCode())) {
-				resultReponse = pair.getValue().getErrorCode();
-				LOGGER.info("resultReponse in map = " + resultReponse);
-				break;
+		if (!"CAPTURED".equalsIgnoreCase(resultReponse) && !"NOT CAPTURED".equalsIgnoreCase(resultReponse)) {
+			Iterator<Entry<String, PaygErrorMasterDTO>> it = errorMap.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, PaygErrorMasterDTO> pair = (Map.Entry<String, PaygErrorMasterDTO>) it.next();
+				if (resultReponse.contains(pair.getValue().getErrorCode())) {
+					resultReponse = pair.getValue().getErrorCode();
+					LOGGER.info("resultReponse in map = " + resultReponse);
+					break;
+				}
 			}
-		}
 		}
 		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
 		if (dto!=null) {
 			errorCategory = dto.getErrorCategory();	
 		}else {
-			LOGGER.info("Default Error Message");
+			LOGGER.info("Default ErrorResponse Message");
 			errorCategory="TXN_AUTH_PIN";
 		}
 		

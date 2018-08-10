@@ -180,14 +180,6 @@ public class OmannetClient implements PayGClient {
 				gatewayResponse.setErrorText(pipe.getResult());
 			}
 	
-	    	/*for(ResponseCode res : ResponseCode.values()) {
-				if(resultReponse.contains(res.getResponseCode()))
-				{
-					gatewayResponse.setResult(res.toString());
-					break;
-				}
-			}*/
-			
 			LOGGER.info("resultResponse ---> " + resultResponse);
 			gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getResult());
