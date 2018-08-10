@@ -30,6 +30,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.ValidationRegexDto;
+import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -44,11 +45,13 @@ import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
+import com.amx.jax.dal.FieldListDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.JaxField;
@@ -117,6 +120,9 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	ArticleDao articleDao;
+	
+	@Autowired
+	FieldListDao fieldListDao;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -435,6 +441,18 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		dto.setIncomeRangeId(new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString():""));
 		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString():""));
 		return dto;
+	}
+
+	public AmxApiResponse<List<FieldList>, Object> getFieldList(CommonRequest model) {
+		List<FieldList> fieldList = null;
+		if(model.getNationality()==null || model.getNationality().isEmpty())
+			fieldList = fieldListDao.getFieldListWithoutNationality(model.getTenant());
+		else
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality());
+		if(fieldList == null)
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		
+		return AmxApiResponse.build(fieldList);
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
