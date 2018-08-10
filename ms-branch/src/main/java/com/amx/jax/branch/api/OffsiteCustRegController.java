@@ -28,6 +28,7 @@ import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.dbmodel.ArticleMasterDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
+import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -164,5 +165,12 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
+	}
+	
+	@RequestMapping(value ="/new-field-list" , method = RequestMethod.POST)
+	public AmxApiResponse<List<FieldList>, Object> getFieldList(@RequestBody CommonRequest model) {
+		//JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
+		//JaxContextUtil.setRequestModel(model);
+		return offsiteCustRegService.getFieldList(model);
 	}
 }

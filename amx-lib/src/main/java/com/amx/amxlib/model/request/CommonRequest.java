@@ -9,6 +9,8 @@ BigDecimal districtId;
 BigDecimal cityId;
 BigDecimal articleId;
 BigDecimal articleDetailsId;
+String tenant;
+String nationality;
 
 public BigDecimal getCountryId() {
 	return countryId;
@@ -46,10 +48,25 @@ public BigDecimal getArticleDetailsId() {
 public void setArticleDetailsId(BigDecimal articleDetailsId) {
 	this.articleDetailsId = articleDetailsId;
 }
+public String getTenant() {
+	return tenant;
+}
+public void setTenant(String tenant) {
+	this.tenant = tenant;
+}
+public String getNationality() {
+	return nationality;
+}
+public void setNationality(String nationality) {
+	this.nationality = nationality;
+}
 @Override
 public String toString() {
 	return "CommonRequest [countryId=" + countryId + ", stateId=" + stateId + ", districtId=" + districtId + ", cityId="
-			+ cityId + ", articleId=" + articleId + ", articleDetailsId=" + articleDetailsId + "]";
+			+ cityId + ", articleId=" + articleId + ", articleDetailsId=" + articleDetailsId + ", tenant=" + tenant
+			+ ", nationality=" + nationality + "]";
 }
+
+
 
 }
