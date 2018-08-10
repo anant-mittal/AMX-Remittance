@@ -126,7 +126,10 @@ public enum JaxError implements IExceptionEnum {
 	EMPLOYEE_OTP_ATTEMPT_EXCEEDED,
 	EMPTY_FIELD_CONDITION,
 	WRONG_FIELD_CONDITION,
-	EMPTY_ID_TYPE_LIST;
+	EMPTY_ID_TYPE_LIST,
+	EMPTY_ARTICLE_LIST,
+	EMPTY_DESIGNATION_LIST,
+	EMPTY_INCOME_RANGE;
 
     public String getCode() {
         return this.toString();

@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
+import com.amx.amxlib.meta.model.ArticleMasterDescDto;
+import com.amx.amxlib.meta.model.IncomeRangeDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
@@ -23,6 +26,7 @@ import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.dbmodel.ArticleMasterDesc;
 import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.logger.LoggerService;
@@ -106,7 +110,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	public AmxApiResponse<List<ViewStateDto>, Object> getStateList(@RequestBody CommonRequest model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.STATE_LIST);
 		JaxContextUtil.setRequestModel(model);
-		return  stateService.getStateListOffsite(model.getCoutnryId(), metaData.getLanguageId());
+		return  stateService.getStateListOffsite(model.getCountryId(), metaData.getLanguageId());
 	}	
 	
 	@SuppressWarnings("rawtypes")
@@ -139,6 +143,26 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
 		JaxContextUtil.setRequestModel(model);
 		return AmxApiResponse.build(metaService.getDistrictCity(model.getDistrictId(),metaData.getLanguageId()).getResults());
+	}	
+	
+	@RequestMapping(value = "/articleList", method = RequestMethod.POST)
+	public AmxApiResponse<List<ArticleMasterDescDto>, Object> getArticleListResponse(@RequestBody CommonRequest model){	
+		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
+		//JaxContextUtil.setRequestModel(model);
+		return offsiteCustRegService.getArticleListResponse(model.getCountryId(),metaData.getLanguageId());
 	}
 	
+	@RequestMapping(value = "/designationList", method = RequestMethod.POST)
+	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(@RequestBody CommonRequest model){	
+		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
+		//JaxContextUtil.setRequestModel(model);
+		return offsiteCustRegService.getDesignationListResponse(model.getArticleId(),metaData.getLanguageId());
+	}
+	
+	@RequestMapping(value = "/incomeRangeList", method = RequestMethod.POST)
+	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(@RequestBody CommonRequest model){	
+		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
+		//JaxContextUtil.setRequestModel(model);
+		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
+	}
 }

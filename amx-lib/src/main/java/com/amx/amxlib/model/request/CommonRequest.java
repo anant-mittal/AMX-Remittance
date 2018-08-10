@@ -3,15 +3,18 @@ package com.amx.amxlib.model.request;
 import java.math.BigDecimal;
 
 public class CommonRequest {
-BigDecimal coutnryId;
+BigDecimal countryId;
 BigDecimal stateId;
 BigDecimal districtId;
 BigDecimal cityId;
-public BigDecimal getCoutnryId() {
-	return coutnryId;
+BigDecimal articleId;
+BigDecimal articleDetailsId;
+
+public BigDecimal getCountryId() {
+	return countryId;
 }
-public void setCoutnryId(BigDecimal coutnryId) {
-	this.coutnryId = coutnryId;
+public void setCountryId(BigDecimal countryId) {
+	this.countryId = countryId;
 }
 public BigDecimal getStateId() {
 	return stateId;
@@ -31,11 +34,22 @@ public BigDecimal getCityId() {
 public void setCityId(BigDecimal cityId) {
 	this.cityId = cityId;
 }
+public BigDecimal getArticleId() {
+	return articleId;
+}
+public void setArticleId(BigDecimal articleId) {
+	this.articleId = articleId;
+}
+public BigDecimal getArticleDetailsId() {
+	return articleDetailsId;
+}
+public void setArticleDetailsId(BigDecimal articleDetailsId) {
+	this.articleDetailsId = articleDetailsId;
+}
 @Override
 public String toString() {
-	return "CommonRequest [coutnryId=" + coutnryId + ", stateId=" + stateId + ", districtId=" + districtId + ", cityId="
-			+ cityId + "]";
+	return "CommonRequest [countryId=" + countryId + ", stateId=" + stateId + ", districtId=" + districtId + ", cityId="
+			+ cityId + ", articleId=" + articleId + ", articleDetailsId=" + articleDetailsId + "]";
 }
-
 
 }
