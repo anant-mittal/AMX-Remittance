@@ -1,8 +1,10 @@
-package com.amx.jax.rbaac.dto;
+package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+
+import com.amx.jax.rbaac.dto.RoleDefinitionDataTable;
 
 public class EmployeeDetailsDTO implements Serializable {
 

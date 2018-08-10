@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.amx.jax.rbaac.dto;
+package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 
