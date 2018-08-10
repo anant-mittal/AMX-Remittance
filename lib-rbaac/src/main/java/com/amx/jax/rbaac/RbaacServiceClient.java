@@ -41,11 +41,6 @@ public class RbaacServiceClient implements RbaacService {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
 				.asApiResponse(UserAuthInitResponseDTO.class);
 
-		// return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH)
-		// .queryParam("employeeNo", employeeNo).queryParam("identity", identity)
-		// .queryParam("ipAddress",
-		// ipAddress).get().asApiResponse(UserAuthInitResponseDTO.class);
-
 	}
 
 	@Override
@@ -56,13 +51,6 @@ public class RbaacServiceClient implements RbaacService {
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE).post(reqDTO)
 				.asApiResponse(EmployeeDetailsDTO.class);
-
-		/*
-		 * return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE)
-		 * .queryParam("employeeNo", employeeNo).queryParam("mOtpHash",
-		 * mOtpHash).queryParam("eOtpHash", eOtpHash) .queryParam("ipAddress",
-		 * ipAddress).get().asApiResponse(EmployeeDetailsDTO.class);
-		 */
 
 	}
 

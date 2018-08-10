@@ -96,7 +96,7 @@ public class UserAuthService {
 		List<Employee> employees;
 
 		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
-			employees = loginDao.getEmployeesByDeviceId(employeeNo, identity, ipAddress);
+			employees = loginDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
 			employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
 		}
