@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -19,6 +20,9 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
+import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
+import com.amx.amxlib.meta.model.ArticleMasterDescDto;
+import com.amx.amxlib.meta.model.IncomeRangeDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -38,6 +42,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
@@ -48,6 +53,7 @@ import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
@@ -105,6 +111,12 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	DateUtil dateUtil;
+	
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	ArticleDao articleDao;
 	
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
@@ -271,6 +283,8 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	}
 	
 	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
+		//Map<BigDecimal, String> map = bizcomponentDao.getAllComponentComboDataForCustomer(metaData.getLanguageId(),"I","Identiy Type");
+		//LOGGER.info("map : "+map);
 		List<BizComponentDataDesc> bizComponentDataDescs = bizcomponentDao.getBizComponentDataDescListByComponmentId();
 		if(bizComponentDataDescs.isEmpty())
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
@@ -337,7 +351,90 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			otpData.setLockDate(new Date());
 		}
 		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+	}
 
+	public AmxApiResponse<List<ArticleMasterDescDto>, Object> getArticleListResponse(BigDecimal countryId,
+			BigDecimal languageId) {
+		List<Map<String, Object>> articleList = articleDao.getArtilces(countryId, languageId);
+		if(articleList == null || articleList.isEmpty())
+		{
+			throw new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST);
+		}
+		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);
+		return AmxApiResponse.build(articleDtoList);
+	}
+
+	private List<ArticleMasterDescDto> convertArticle(List<Map<String, Object>> articleList) {
+		List<ArticleMasterDescDto> output = new ArrayList<>();
+		articleList.forEach(i -> {
+			output.add(convert(i));
+		});
+		return output;		
+	}
+
+	private ArticleMasterDescDto convert(Map<String, Object> i) {
+		ArticleMasterDescDto dto = new ArticleMasterDescDto();
+		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID").toString()));
+		dto.setArticleDescription(i.get("ARTICLE_DESC").toString());
+		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID").toString()));
+		dto.setLanguageType(new BigDecimal(i.get("LANGUAGE_ID").toString()));
+		return dto;
+	}
+
+	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(BigDecimal articleId,
+			BigDecimal languageId) {
+		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, languageId);
+		if(designationList == null || designationList.isEmpty())
+		{
+			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
+		}
+		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
+		return AmxApiResponse.build(designationDataList);
+	}
+
+	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
+		List<ArticleDetailsDescDto> output = new ArrayList<>();
+		designationList.forEach(i -> {
+			output.add(convertDesignation(i));
+		});
+		return output;
+	}
+
+	private ArticleDetailsDescDto convertDesignation(Map<String, Object> i) {
+		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
+		dto.setArticleDetailsDesc(i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString():"");
+		dto.setArticleDetailsDescId(new BigDecimal(i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString():""));
+		dto.setArticleDetailsId(new BigDecimal(i.get("ARTICLE_DETAILS_ID")!= null ? i.get("ARTICLE_DETAILS_ID").toString():""));
+		dto.setLanguageId(new BigDecimal(i.get("LANGUAGE_ID") != null ? i.get("LANGUAGE_ID").toString():""));
+		return dto;
+	}
+
+	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(BigDecimal countryId,
+			BigDecimal articleDetailsId) {
+		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
+		if(incomeRangeList == null || incomeRangeList.isEmpty())
+		{
+			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
+		}
+		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
+		return AmxApiResponse.build(incomeRangeDataList);
+	}
+
+	private List<IncomeRangeDto> convertIncomeRange(List<Map<String, Object>> incomeRangeList) {
+		List<IncomeRangeDto> output = new ArrayList<>();
+		incomeRangeList.forEach(i-> {
+			output.add(convertIncomeRange(i));
+		});
+		return output;
+	}
+
+	private IncomeRangeDto convertIncomeRange(Map<String, Object> i) {
+		IncomeRangeDto dto = new IncomeRangeDto();
+		dto.setArticleDetailsId(new BigDecimal(i.get("ARTICLE_DETAIL_ID") != null ? i.get("ARTICLE_DETAIL_ID").toString():""));
+		dto.setIncomeFrom(new BigDecimal(i.get("INCOME_FROM") != null ? i.get("INCOME_FROM").toString():""));
+		dto.setIncomeRangeId(new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString():""));
+		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString():""));
+		return dto;
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

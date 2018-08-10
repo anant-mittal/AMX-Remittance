@@ -68,4 +68,6 @@ public class Constants {
 
 	/** The Constant IDENTITY_TYPE_ID. */
 	public static final String IDENTITY_TYPE_ID = "198";
+	
+	public static final String COMPNY_TYPE = "Corporate";
 }
