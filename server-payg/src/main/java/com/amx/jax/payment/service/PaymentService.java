@@ -102,6 +102,7 @@ public class PaymentService {
 		paymentResponseDto.setPaymentId(payGServiceResponse.getPaymentId());
 		paymentResponseDto.setErrorText(payGServiceResponse.getErrorText());
 		paymentResponseDto.setError(payGServiceResponse.getError());
+		paymentResponseDto.setErrorCategory(payGServiceResponse.getErrorCategory());
 		return paymentResponseDto;
 	}
 

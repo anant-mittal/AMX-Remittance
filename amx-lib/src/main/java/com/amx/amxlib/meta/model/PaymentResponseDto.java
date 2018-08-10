@@ -174,9 +174,6 @@ public class PaymentResponseDto extends AbstractModel implements Serializable{
 		public void setErrorCategory(String errorCategory) {
 			this.errorCategory = errorCategory;
 		}
-		/* (non-Javadoc)
-		 * @see java.lang.Object#toString()
-		 */
 		@Override
 		public String toString() {
 			return "PaymentResponseDto [paymentId=" + paymentId + ", errorText=" + errorText + ", udf1=" + udf1
@@ -186,7 +183,8 @@ public class PaymentResponseDto extends AbstractModel implements Serializable{
 					+ tranData + ", customerId=" + customerId + ", applicationCountryId=" + applicationCountryId
 					+ ", companyId=" + companyId + ", userName=" + userName + ", collectionFinanceYear="
 					+ collectionFinanceYear + ", collectionDocumentNumber=" + collectionDocumentNumber
-					+ ", collectionDocumentCode=" + collectionDocumentCode + "]";
+					+ ", collectionDocumentCode=" + collectionDocumentCode + ", error=" + error + ", errorCategory="
+					+ errorCategory + "]";
 		}
 	    
 	    
