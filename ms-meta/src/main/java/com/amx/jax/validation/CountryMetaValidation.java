@@ -60,5 +60,12 @@ public class CountryMetaValidation {
 				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
 			}
 		}
+		
+		if(countryAlpha2Code.toString().equals("OM")) {
+			final Pattern pattern = Pattern.compile("^[79]\\d+$");
+			if (!pattern.matcher(mobile).matches()) {
+				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+			}
+		}
 	}
 }

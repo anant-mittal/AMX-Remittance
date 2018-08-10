@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;
@@ -30,6 +31,7 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.ImpsMaster;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.dbmodel.treasury.BankIndicator;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
 import com.amx.jax.services.RoutingService;
@@ -51,6 +53,8 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 	BankDao bankDao;
 	@Autowired
 	RoutingService routingService;
+	@Autowired
+	NewExchangeRateService newExchangeRateService;
 
 	@Override
 	public void apply(Map<String, Object> input, Map<String, Object> output) {
@@ -63,7 +67,8 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 			BigDecimal beneCountryId = (BigDecimal) inputTemp.get("P_BENEFICIARY_COUNTRY_ID");
 			BigDecimal beneBankId = (BigDecimal) inputTemp.get("P_BENEFICIARY_BANK_ID");
 			BigDecimal fcurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
-			BigDecimal fcAmount = (BigDecimal) inputTemp.get("P_CALCULATED_FC_AMOUNT");
+			BigDecimal fcAmount = getForeignAmount(inputTemp);
+			inputTemp.put("P_FOREIGN_AMT", fcAmount);
 			findRoutingBankAndBranchId(inputTemp);
 			BigDecimal rouringBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
 			List<ImpsMaster> impsMasters = impsMasterService.getImpsMaster(new BankMasterModel(rouringBankId),
@@ -94,6 +99,20 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		} catch (Exception e) {
 			LOGGER.warn("error occured in ifsc routing logic", e.getMessage());
 		}
+	}
+
+	private BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
+
+		if (inputTemp.get("P_FOREIGN_AMT") != null) {
+			return (BigDecimal) inputTemp.get("P_FOREIGN_AMT");
+		}
+		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
+		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
+				routingBankId);
+		return exRateBreakup.getConvertedFCAmount();
+
 	}
 
 	private void findRoutingBankAndBranchId(Map<String, Object> inputTemp) {
@@ -176,7 +195,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		args.add(input.get("P_FOREIGN_CURRENCY_ID"));
 		args.add(input.get("P_SERVICE_MASTER_ID"));
 		args.add(bizcomponentDao.findCustomerTypeId("I")); // Individual
-		args.add(input.get("P_CALCULATED_FC_AMOUNT"));
+		args.add(input.get("P_FOREIGN_AMT"));
 
 		String sqlQuery = " SELECT DISTINCT A.REMITTANCE_MODE_ID as P_REMITTANCE_MODE_ID ,A.DELIVERY_MODE_ID as P_DELIVERY_MODE_ID"
 				+ "  FROM   V_EX_ROUTING_DETAILS_IMPS A , EX_BANK_SERVICE_RULE B,EX_BANK_CHARGES C"
