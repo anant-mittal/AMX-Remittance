@@ -31,6 +31,7 @@ import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.ValidationRegexDto;
 import com.amx.amxlib.model.request.CommonRequest;
+import com.amx.amxlib.model.request.DynamicFieldRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -442,12 +443,12 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<FieldList>, Object> getFieldList(CommonRequest model) {
+	public AmxApiResponse<List<FieldList>, Object> getFieldList(DynamicFieldRequest model) {
 		List<FieldList> fieldList = null;
 		if(model.getNationality()==null || model.getNationality().isEmpty())
-			fieldList = fieldListDao.getFieldListWithoutNationality(model.getTenant());
+			fieldList = fieldListDao.getFieldListWithoutNationality(model.getTenant(),model.getComponent());
 		else
-			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality());
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
 		if(fieldList == null)
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
 		

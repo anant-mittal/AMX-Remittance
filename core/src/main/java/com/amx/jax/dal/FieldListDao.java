@@ -18,13 +18,13 @@ public class FieldListDao {
 	@Autowired
 	IFieldListRepository iFielListRepository;
 
-	public List<FieldList> getFieldList(String tenant, String nationality) {
+	public List<FieldList> getFieldList(String tenant, String nationality, String component) {
 		
-		return iFielListRepository.getFieldList(tenant,nationality);
+		return iFielListRepository.getFieldListByTenantAndNationalityAndComponent(tenant,nationality,component);
 	}
 
-	public List<FieldList> getFieldListWithoutNationality(String tenant) {		
-		return iFielListRepository.getFieldListWithoutNationality(tenant);
+	public List<FieldList> getFieldListWithoutNationality(String tenant, String component) {		
+		return iFielListRepository.getFieldListByTenantAndComponent(tenant,component);
 	}
 	
 	
