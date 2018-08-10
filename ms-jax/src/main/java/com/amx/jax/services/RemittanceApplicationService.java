@@ -57,6 +57,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgAuthCode(paymentResponse.getAuth_appNo());
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);

@@ -33,6 +33,7 @@ public class PaymentResponseDto extends AbstractModel implements Serializable{
 	    BigDecimal collectionDocumentNumber;
 	    BigDecimal collectionDocumentCode;
 	    String error = null;
+	    String errorCategory = null;
 	    
 		public String getPaymentId() {
 			return paymentId;
@@ -166,6 +167,12 @@ public class PaymentResponseDto extends AbstractModel implements Serializable{
 		}
 		public void setError(String error) {
 			this.error = error;
+		}
+		public String getErrorCategory() {
+			return errorCategory;
+		}
+		public void setErrorCategory(String errorCategory) {
+			this.errorCategory = errorCategory;
 		}
 		/* (non-Javadoc)
 		 * @see java.lang.Object#toString()

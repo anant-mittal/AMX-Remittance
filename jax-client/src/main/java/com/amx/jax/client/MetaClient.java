@@ -25,6 +25,7 @@ import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
+import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
@@ -753,6 +754,23 @@ public class MetaClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getAllBranchDetail : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
+	public ApiResponse<PaygErrorMasterDTO> getPaygErrorList() {
+		try {
+			LOGGER.info("Get all the PayG error List");
+
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/payg-error/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PaygErrorMasterDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getPaygErrorList : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
 	}

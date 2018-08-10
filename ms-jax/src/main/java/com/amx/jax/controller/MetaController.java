@@ -34,6 +34,7 @@ import com.amx.jax.service.FinancialService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.MultiCountryService;
 import com.amx.jax.service.ParameterService;
+import com.amx.jax.service.PayGErrorService;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.service.PurposeOfRemittanceService;
 import com.amx.jax.service.QuestionAnswerService;
@@ -132,7 +133,9 @@ public class MetaController {
 	@Autowired
 	BranchDetailService branchDetailService;
 	
-
+	@Autowired
+	PayGErrorService payGErrorService;
+	
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
 	public ApiResponse getCountryListResponse() {
 		return countryService.getCountryListResponse();
@@ -358,5 +361,10 @@ public class MetaController {
 	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
 	public ApiResponse getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();
+	}
+	
+	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
+	public ApiResponse getPaygErrorList() {
+		return payGErrorService.getPaygErrorResponse();
 	}
 }

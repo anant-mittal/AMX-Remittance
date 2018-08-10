@@ -777,6 +777,7 @@ public class RemittanceTransactionManager {
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
+		model.setErrorCategory(application.getErrorCategory());
 		model.setErrorMessage(application.getErrorMessage());
 		return model;
 	}
