@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -123,4 +124,16 @@ public class NewExchangeRateService extends ExchangeRateService {
 		return apiResponse.getResult().getExRateBreakup();
 	}
 
+	public BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
+
+		if (inputTemp.get("P_CALCULATED_FC_AMOUNT") != null) {
+			return (BigDecimal) inputTemp.get("P_CALCULATED_FC_AMOUNT");
+		}
+		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
+		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		ExchangeRateBreakup exRateBreakup = getExchangeRateBreakup(toCurrencyId, localAmount, routingBankId);
+		return exRateBreakup.getConvertedFCAmount();
+
+	}
 }
