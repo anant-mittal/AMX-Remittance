@@ -20,8 +20,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
-		<maven.compiler.target>1.8</maven.compiler.target>
-		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 
 	<dependencyManagement>
@@ -125,21 +123,14 @@
 	<!-- <repositories> <repository> <id>gitlab.com.almullagroup.maven.mvn-amx</id> 
 		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
 		</repositories> -->
-
-
-	<!-- 
 	
-		<pluginRepositories>
+	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
 			<name>Sonatype Snapshots</name>
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
-	
-	 -->
-
-
 
 	<modules>
 		<module>common-utils</module>
