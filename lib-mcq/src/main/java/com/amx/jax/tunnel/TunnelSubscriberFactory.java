@@ -71,14 +71,19 @@ public class TunnelSubscriberFactory {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
 				RMap<String, String> map = redisson.getMap(channel);
-				String prevObject = map.put(appConfig.getAppClass() + "#" + msg.getId(), msg.getId());
-				if (prevObject == null) {
-					LOGGER.info("Previous Value was null");
-					this.subscriber.onMessage(channel, msg.getData());
+				if (this.queued) {
+					String prevObject = map.put(
+							appConfig.getAppClass() + "#" + listener.getClass().getName() + "#" + msg.getId(),
+							msg.getId());
+					if (prevObject == null || this.queued == false) {
+						LOGGER.info("Previous Value was null");
+						this.subscriber.onMessage(channel, msg.getData());
+					} else {
+						LOGGER.info("Message ignored");
+					}
 				} else {
-					LOGGER.info("Message ignored");
+					this.subscriber.onMessage(channel, msg.getData());
 				}
-
 			}
 		});
 	}
