@@ -164,6 +164,7 @@
 		<module>ms-jax</module>
 		<module>jax-client</module>
 		<module>ms-auth</module>
+		<module>ms-broker</module>
 
 		<module>ms-scheduler</module>
 
