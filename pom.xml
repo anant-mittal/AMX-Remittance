@@ -20,6 +20,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jax.version>0.0.1-SNAPSHOT</jax.version>
 		<amx.version>0.0.1-SNAPSHOT</amx.version>
+		<maven.compiler.target>1.8</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
 
 	<dependencyManagement>
@@ -75,7 +77,7 @@
 		</dependency>
 	</dependencies>
 
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -86,7 +88,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-	
+
 
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
@@ -100,36 +102,31 @@
 					</execution>
 				</executions>
 			</plugin>
-		    	<!-- Don't deploy all artifacts. Overridden in submodules. -->         
-     			<plugin>
-         			<groupId>org.apache.maven.plugins</groupId>
-         			<artifactId>maven-deploy-plugin</artifactId>
-         			<executions> 
+			<!-- Don't deploy all artifacts. Overridden in submodules. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
 					<execution>
-						<id>default-deploy</id> 
+						<id>default-deploy</id>
 						<phase>none</phase>
 					</execution>
 				</executions>
 				<configuration>
-                    			<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
-                		</configuration>
-     			</plugin>
-			
+					<altDeploymentRepository>internal.repo::default::file://${project.basedir}/../../amx-maven</altDeploymentRepository>
+				</configuration>
+			</plugin>
+
 			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
 				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
 	</build>
 
-<!--   
-	<repositories>
-		<repository>
-			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
-			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
-		</repository>
-	</repositories>	
--->
+	<!-- <repositories> <repository> <id>gitlab.com.almullagroup.maven.mvn-amx</id> 
+		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
+		</repositories> -->
 
-	<!-- 
+
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -137,7 +134,7 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
-	-->
+
 
 	<modules>
 		<module>common-utils</module>
