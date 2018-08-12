@@ -27,6 +27,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.mobile</groupId>
 			<artifactId>spring-mobile-device</artifactId>
 		</dependency>
@@ -56,4 +62,5 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
+
 </project>

@@ -44,8 +44,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<version>${project.version}</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 		<dependency>

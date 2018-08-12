@@ -9,4 +9,6 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TunnelEvent {
 	String topic() default "topic";
+
+	boolean queued() default false;
 }

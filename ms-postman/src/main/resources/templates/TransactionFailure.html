@@ -133,6 +133,8 @@ a {
 	color: #348eda;
 	text-decoration: underline;
 }
+.table{border:0 none;  border-collapse: collapse;}
+.table td{ border: 1px solid #e6e6e6; }
 
 .btn-primary {
 	text-decoration: none;
@@ -273,38 +275,61 @@ a {
 							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" /></td>
 						</tr>
 						<tr>
+							<td align="center"><h2 style='color:#000; margin-top:15px'>Transaction Failure</h2></td>
+						</tr>
+						<tr>
 							<td class="content-wrap">
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
-										<td class="content-block">Below branch details needs to be updated in <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> records -</td>
+										<td class="content-block">Dear All,</td>
 									</tr>
 									<tr>
-										<td class="content-block">Customer Name : <span th:text="${data.customerName}"></span></td>
+										<td class="content-block">Please note, a customer faced an exception while doing a transaction online.</td>
 									</tr>
+								
 									<tr>
-										<td class="content-block">Civil ID  : <span th:text="${data.identityId}"></span></td>
+										<td class="content-block" align="center">
+										<table class="table" width="100%" border="1" cellpadding="5" cellspacing="0">
+											<tr>
+												<td>Customer Reference</td>
+												<td th:text="${data.customerReference}"></td>
+											</tr>
+											<tr>
+												<td>Customer Name</td>
+												<td th:text="${data.customerName}"></td>
+											</tr>
+											<tr>
+												<td>Customer Contact</td>
+												<td th:text="${data.customerContact}"></td>
+											</tr>
+											<tr>
+												<td>Beneficiary Name</td>
+												<td th:text="${data.beneficiaryName}"></td>
+											</tr>
+											<tr>
+												<td>Transaction Amount</td>
+												<td th:text="${data.transactionAmount}"></td>
+											</tr>
+											<tr>
+												<td>Beneficiary Bank</td>
+												<td th:text="${data.beneficiaryBank}"></td>
+											</tr>
+											<tr>
+												<td>Beneficiary Branch</td>
+												<td th:text="${data.beneficiaryBranch}"></td>
+											</tr>
+											<tr>
+												<td>Beneficiary Account No.</td>
+												<td th:text="${data.beneficiaryAccountNo}"></td>
+											</tr>
+											<tr>
+												<td>Product / Service</td>
+												<td th:text="${data.service}"></td>
+											</tr>
+										</table>	
+										</td>
 									</tr>
-									<tr>
-										<td class="content-block">Bank Name : <span th:text="${data.bankFullName}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">Branch Name : <span th:text="${data.customerQuery.branchName}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">IFSC Code : <span th:text="${data.customerQuery.ifscCode}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">SWIFT Code : <span th:text="${data.customerQuery.swift}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">Country ID : <span th:text="${data.customerQuery.countryId}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">SWIFT Code : <span th:text="${data.customerQuery.bankId}"></span></td>
-									</tr>
-									<tr>
-										<td class="content-block">&nbsp;</td>
-									</tr>
+								
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
 											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
@@ -317,7 +342,6 @@ a {
 						</tr>
 					</table>
 					<div class="footer">
-						
 					</div>
 				</div>
 			</td>

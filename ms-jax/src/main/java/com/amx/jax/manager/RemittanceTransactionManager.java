@@ -220,6 +220,8 @@ public class RemittanceTransactionManager {
 		/** End here **/
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT",
+				newExchangeRateService.getForeignAmount(remitApplParametersMap));
 		BigDecimal newCommission = reCalculateComission();
 
 		logger.info("newCommission: " + newCommission);
@@ -845,22 +847,5 @@ public class RemittanceTransactionManager {
 					.get(0);
 		}
 		return otpMmodel;
-	}
-
-	private BigDecimal reCalculateForeignAmount() {
-
-		if (remitApplParametersMap.get("P_FOREIGN_AMT") != null) {
-			return (BigDecimal) remitApplParametersMap.get("P_FOREIGN_AMT");
-		}
-		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_LOCAL_AMT");
-		BigDecimal toCurrencyId = (BigDecimal) remitApplParametersMap.get("P_CURRENCY_ID");
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
-				routingBankId);
-		remitApplParametersMap.put("P_FOREIGN_AMT", exRateBreakup.getConvertedFCAmount());
-		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", exRateBreakup.getConvertedFCAmount());
-		
-		return exRateBreakup.getConvertedFCAmount();
-
 	}
 }

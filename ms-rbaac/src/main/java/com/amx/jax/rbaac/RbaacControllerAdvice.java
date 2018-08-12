@@ -6,5 +6,6 @@ import com.amx.jax.exception.AmxAdvice;
 
 @ControllerAdvice
 public class RbaacControllerAdvice extends AmxAdvice {
+	
 
 }
