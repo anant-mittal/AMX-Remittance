@@ -1,12 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>lib-postman</artifactId>
+	<artifactId>ms-broker</artifactId>
 	<packaging>jar</packaging>
-	<name>lib-postman</name>
+	<name>ms-broker</name>
 	<url>http://maven.apache.org</url>
-	<description>Client for postman service</description>
+	<description>Broker Service for Events in AMX EcoSystem</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -17,8 +18,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<thymeleaf.version>3.0.2.RELEASE</thymeleaf.version>
-		<thymeleaf-layout-dialect.version>2.1.1</thymeleaf-layout-dialect.version>
 	</properties>
 
 	<dependencies>
@@ -30,8 +29,29 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-db</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<executable>true</executable>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+
 </project>
+
