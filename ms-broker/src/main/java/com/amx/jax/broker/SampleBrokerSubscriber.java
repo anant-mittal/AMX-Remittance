@@ -8,7 +8,7 @@ import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.utils.JsonUtil;
 
 @TunnelEvent(topic = "DB_EVENT")
-public class SampleTunnelSubscriber2 implements ITunnelSubscriber<Object> {
+public class SampleBrokerSubscriber implements ITunnelSubscriber<Object> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
