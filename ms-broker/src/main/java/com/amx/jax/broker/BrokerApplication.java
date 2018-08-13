@@ -8,8 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import com.amx.jax.service.BrokerService;
-
 /**
  * The Class RbaacServiceApplication.
  */
@@ -28,11 +26,6 @@ public class BrokerApplication {
 	 */
 	public static void main(String[] args) {
 		SpringApplication.run(BrokerApplication.class, args);
-
-//		BrokerService broker_service = new BrokerService();
-//		
-//		broker_service.pushNewEventNotifications();
-
 	}
 
 }
