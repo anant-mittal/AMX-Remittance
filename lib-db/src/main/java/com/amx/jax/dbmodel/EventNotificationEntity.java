@@ -11,18 +11,29 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "EX_EVENT_NOTIFICATION")
-public class EventNotification implements Serializable {
+public class EventNotificationEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
+
+	/*
+	 * This table is created to hold notification records to any system component.
+	 * 
+	 * Table will be feeded by different system components (Oracle procedures, Java
+	 * service, etc.) Table will be consume by scheduled service that will push the
+	 * records into a Message Queue and delete it at later stage
+	 * 
+	 * 12th August 2018 Salman and Lalit
+	 */
 
 	@Id
 	@Column(name = "EVENT_NOTIFICATION_ID")
 	private BigDecimal event_notification_id;
 
 	@Column(name = "EVENT_MASTER_ID")
-	private BigDecimal event_master_id;
+	private BigDecimal event_master_id; // Foreign key from the table EX_EVENT_MASTER
 
 	@Column(name = "EVENT_DATA")
-	private String event_data;
+	private String event_data; // Data should strictly follow the format below
+								// Key1:value1;Key2:value2;Key3:value3
 
 	@Column(name = "STATUS")
 	private BigDecimal status;
@@ -81,7 +92,10 @@ public class EventNotification implements Serializable {
 		this.created_by = created_by;
 	}
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	@Override
+	public String toString() {
+		return "EventNotificationEntity [event_notification_id=" + event_notification_id + ", event_master_id="
+				+ event_master_id + ", event_data=" + event_data + ", status=" + status + ", create_date=" + create_date
+				+ ", created_by=" + created_by + "]";
 	}
 }
