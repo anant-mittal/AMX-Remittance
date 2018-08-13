@@ -70,6 +70,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
 				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));
+			} else {
+				outputModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
 			}
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
