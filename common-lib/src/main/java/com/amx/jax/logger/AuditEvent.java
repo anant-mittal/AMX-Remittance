@@ -37,19 +37,6 @@ public abstract class AuditEvent extends AbstractEvent {
 		this(type, Result.DONE);
 	}
 
-	public AuditEvent(EventType type, String description) {
-		this(type);
-		this.result = Result.DONE;
-		this.description = description;
-	}
-
-	public AuditEvent(EventType type, String description, String message) {
-		this(type);
-		this.result = Result.DONE;
-		this.description = description;
-		this.message = message;
-	}
-
 	public Result getResult() {
 		return result;
 	}
@@ -67,6 +54,9 @@ public abstract class AuditEvent extends AbstractEvent {
 	}
 
 	public String getDescription() {
+		if (this.description == null) {
+			return String.format("%s_%s", this.type, this.result);
+		}
 		return this.description;
 	}
 
