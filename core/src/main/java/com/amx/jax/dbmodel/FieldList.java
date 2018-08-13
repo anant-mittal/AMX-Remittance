@@ -11,7 +11,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="FS_FIELD_LIST")
+@Table(name = "FS_FIELD_LIST")
 public class FieldList {
 
 	private BigDecimal fieldId;
@@ -20,14 +20,15 @@ public class FieldList {
 	private String remitCountry;
 	private String key;
 	private String value;
-	private String details;	
-	
+	private String details;
+	private String component;
+
 	public FieldList() {
 		super();
 	}
 
 	public FieldList(BigDecimal fieldId, String tenant, String nationality, String remitCountry, String key,
-			String value, String details) {
+			String value, String details, String component) {
 		super();
 		this.fieldId = fieldId;
 		this.tenant = tenant;
@@ -36,11 +37,12 @@ public class FieldList {
 		this.key = key;
 		this.value = value;
 		this.details = details;
+		this.component = component;
 	}
 
 	@Id
-	@GeneratedValue(generator="fs_field_list_seq",strategy=GenerationType.SEQUENCE)
-	@SequenceGenerator(name="fs_field_list_seq",sequenceName="FS_FIELD_LIST_SEQ",allocationSize=1)
+	@GeneratedValue(generator = "fs_field_list_seq", strategy = GenerationType.SEQUENCE)
+	@SequenceGenerator(name = "fs_field_list_seq", sequenceName = "FS_FIELD_LIST_SEQ", allocationSize = 1)
 	@Column(name = "FIELD_ID", unique = true, nullable = false, precision = 22, scale = 0)
 	public BigDecimal getFieldId() {
 		return fieldId;
@@ -103,8 +105,21 @@ public class FieldList {
 	public void setDetails(String details) {
 		this.details = details;
 	}
-	
-	
-	
-	
+
+	@Column(name = "COMPONENT")
+	public String getComponent() {
+		return component;
+	}
+
+	public void setComponent(String component) {
+		this.component = component;
+	}
+
+	@Override
+	public String toString() {
+		return "FieldList [fieldId=" + fieldId + ", tenant=" + tenant + ", nationality=" + nationality
+				+ ", remitCountry=" + remitCountry + ", key=" + key + ", value=" + value + ", details=" + details
+				+ ", component=" + component + "]";
+	}
+
 }

@@ -20,6 +20,8 @@ import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
+import com.amx.amxlib.model.request.DynamicFieldRequest;
+import com.amx.amxlib.model.request.EmploymentDetailsRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.api.AmxApiResponse;
@@ -153,21 +155,21 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}
 	
 	@RequestMapping(value = "/designationList", method = RequestMethod.POST)
-	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(@RequestBody CommonRequest model){	
+	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(@RequestBody EmploymentDetailsRequest model){	
 		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getDesignationListResponse(model.getArticleId(),metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/incomeRangeList", method = RequestMethod.POST)
-	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(@RequestBody CommonRequest model){	
+	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model){	
 		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
 	}
 	
 	@RequestMapping(value ="/new-field-list" , method = RequestMethod.POST)
-	public AmxApiResponse<List<FieldList>, Object> getFieldList(@RequestBody CommonRequest model) {
+	public AmxApiResponse<List<FieldList>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		//JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getFieldList(model);
