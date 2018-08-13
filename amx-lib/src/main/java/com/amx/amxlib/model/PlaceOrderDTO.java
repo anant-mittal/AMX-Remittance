@@ -14,7 +14,7 @@ import com.amx.jax.model.AbstractModel;
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
-	@NotNull
+
 	private BigDecimal placeOrderId;
 	
 	private BigDecimal customerId;
