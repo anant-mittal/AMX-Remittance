@@ -1,6 +1,6 @@
 package com.amx.jax.service.dao;
 
-import java.util.Date;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -8,43 +8,53 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.dbmodel.EventNotification;
-import com.amx.jax.service.repository.EventNotificationRepository;
+import com.amx.jax.dbmodel.EventNotificationEntity;
+import com.amx.jax.dbmodel.EventNotificationView;
+import com.amx.jax.service.repository.EventNotificationEntityRepository;
+import com.amx.jax.service.repository.EventNotificationViewRepository;
 
 @Component
 public class EventNotificationDao {
 	
 	@Autowired
-	private EventNotificationRepository eventNotificationRepository;
+	private EventNotificationEntityRepository eventNotificationEntityRepository;
+	
+	@Autowired
+	private EventNotificationViewRepository eventNotificationViewRepository;
 	
 	@Transactional
-	public List<EventNotification> getNewlyInserted_EventNotificationRecords(Date last_run_time)
+	public List<EventNotificationView> getNewlyInserted_EventNotificationRecords()
 	{
-		return eventNotificationRepository.getNewlyInserted_EventNotificationRecords(last_run_time);
+		return eventNotificationViewRepository.getNewlyInserted_EventNotificationRecords();
 	}
 	
 	@Transactional
-	public List<EventNotification> getNewlyInserted_EventNotificationRecords()
+	public List<EventNotificationEntity> getEventNotificationRecordsToDelete()
 	{
-		return eventNotificationRepository.getNewlyInserted_EventNotificationRecords();
+		return eventNotificationEntityRepository.getEventNotificationRecordsToDelete();
 	}
 	
 	@Transactional
-	public List<EventNotification> getEventNotificationRecordsToDelete()
+	public EventNotificationEntity getEventNotificationRecordById(BigDecimal event_notification_id)
 	{
-		return eventNotificationRepository.getEventNotificationRecordsToDelete();
+		return eventNotificationEntityRepository.findOne(event_notification_id);
 	}
 	
 	@Transactional
-	public void saveEventNotificationRecordUpdates(EventNotification event_record)
+	public void saveEventNotificationRecordUpdates(EventNotificationEntity event_record)
 	{
-		eventNotificationRepository.save(event_record);
+		eventNotificationEntityRepository.save(event_record);
 	}
 	
 	@Transactional
-	public void deleteEventNotificationRecord(EventNotification event_record)
+	public void deleteEventNotificationRecord(EventNotificationEntity event_record)
 	{
-		eventNotificationRepository.delete(event_record.getEvent_notification_id());
+		eventNotificationEntityRepository.delete(event_record.getEvent_notification_id());
 	}
-
+	
+	@Transactional
+	public void deleteEventNotificationRecordList(List<EventNotificationEntity> event_record_list)
+	{
+		eventNotificationEntityRepository.delete(event_record_list);
+	}
 }
