@@ -72,6 +72,8 @@ public class RoutingService {
 	public Map<String, Object> getRoutingDetail(Map<String, Object> inputValue) {
 		if (jaxProperties.getRoutingProcOthDisable()) {
 			return applicationProcedureDao.getRoutingDetails(inputValue);
+		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+			return applicationProcedureDao.getRoutingDetailFromOthRateProcedure(inputValue);
 		} else {
 			return applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
 		}
