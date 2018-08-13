@@ -1078,16 +1078,18 @@ public class ApplicationProcedureDao {
 			cs.registerOutParameter(16, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(17, java.sql.Types.NUMERIC);
 			cs.registerOutParameter(18, java.sql.Types.VARCHAR);
-			cs.registerOutParameter(19, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(19, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(20, java.sql.Types.VARCHAR);
 			cs.execute();
-			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(10));
-			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(11));
-			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(12));
-			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(13));
-			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(14));
-			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(15));
-			output.put("P_SWIFT", cs.getString(16));
-			output.put("P_ERROR_MESSAGE", cs.getString(17));
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(12));
+			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(13));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(14));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(15));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(16));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(17));
+			output.put("P_SWIFT", cs.getString(18));
+			output.put("P_DERIVED_SELL_RATE", cs.getBigDecimal(19));
+			output.put("P_ERROR_MESSAGE", cs.getString(20));
 		} catch (DataAccessException | SQLException e) {
 			LOGGER.error("error in generate docNo", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());

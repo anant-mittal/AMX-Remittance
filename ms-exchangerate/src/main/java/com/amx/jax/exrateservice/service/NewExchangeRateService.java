@@ -126,9 +126,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 
 	public BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
 
+		if (inputTemp.get("P_FOREIGN_AMT") != null) {
+			return (BigDecimal) inputTemp.get("P_FOREIGN_AMT");
+		}
+
 		if (inputTemp.get("P_CALCULATED_FC_AMOUNT") != null) {
 			return (BigDecimal) inputTemp.get("P_CALCULATED_FC_AMOUNT");
 		}
+
 		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
 		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
 		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
