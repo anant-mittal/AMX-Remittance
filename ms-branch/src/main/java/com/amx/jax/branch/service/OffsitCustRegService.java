@@ -3,8 +3,12 @@ package com.amx.jax.branch.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -69,6 +73,7 @@ import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.Random;
 
 @Service
@@ -443,16 +448,30 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<FieldList>, Object> getFieldList(DynamicFieldRequest model) {
+	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(DynamicFieldRequest model) {
 		List<FieldList> fieldList = null;
-		if(model.getNationality()==null || model.getNationality().isEmpty())
-			fieldList = fieldListDao.getFieldListWithoutNationality(model.getTenant(),model.getComponent());
-		else
-			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
-		if(fieldList == null)
-			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		fieldList = fieldListDao.getFieldList(model.getTenant(),Constants.COMMON_NATIONALITY,model.getComponent());
+		Map<String,FieldList> map = new HashMap<>();
+		if(fieldList != null)
+		{
+			map = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));	
+		}
 		
-		return AmxApiResponse.build(fieldList);
+		if(model.getNationality()!= null && !model.getNationality().equalsIgnoreCase("ALL"))
+		{
+			//fieldList = null;
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
+			if(fieldList != null)
+			{				
+				Map<String,FieldList> map1 = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));
+				map.putAll(map1);
+			}
+		}	
+		if(map == null || map.isEmpty())
+		{
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		}		
+		return AmxApiResponse.build(map);
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

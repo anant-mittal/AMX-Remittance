@@ -3,6 +3,7 @@ package com.amx.jax.branch.api;
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,27 +151,27 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	
 	@RequestMapping(value = "/articleList", method = RequestMethod.POST)
 	public AmxApiResponse<List<ArticleMasterDescDto>, Object> getArticleListResponse(@RequestBody CommonRequest model){	
-		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
-		//JaxContextUtil.setRequestModel(model);
+		JaxContextUtil.setJaxEvent(JaxEvent.ARTICLE_LIST);
+		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getArticleListResponse(model.getCountryId(),metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/designationList", method = RequestMethod.POST)
 	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(@RequestBody EmploymentDetailsRequest model){	
-		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
-		//JaxContextUtil.setRequestModel(model);
+		JaxContextUtil.setJaxEvent(JaxEvent.DESIGNATION_LIST);
+		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getDesignationListResponse(model.getArticleId(),metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/incomeRangeList", method = RequestMethod.POST)
 	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model){	
-		//JaxContextUtil.setJaxEvent(JaxEvent.CITY_LIST);
-		//JaxContextUtil.setRequestModel(model);
+		JaxContextUtil.setJaxEvent(JaxEvent.INCOME_RANGE);
+		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
 	}
 	
 	@RequestMapping(value ="/new-field-list" , method = RequestMethod.POST)
-	public AmxApiResponse<List<FieldList>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		//JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getFieldList(model);
