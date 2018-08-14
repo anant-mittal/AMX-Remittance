@@ -30,6 +30,7 @@ import com.amx.amxlib.meta.model.IncomeRangeDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
@@ -292,23 +293,33 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		employee.setTokenSentCount(BigDecimal.ZERO);
 	}
 	
-	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
-		//Map<BigDecimal, String> map = bizcomponentDao.getAllComponentComboDataForCustomer(metaData.getLanguageId(),"I","Identiy Type");
-		//LOGGER.info("map : "+map);
-		List<BizComponentDataDesc> bizComponentDataDescs = bizcomponentDao.getBizComponentDataDescListByComponmentId();
-		if(bizComponentDataDescs.isEmpty())
+	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
+		List<Map<String, Object>> tempList = bizcomponentDao
+				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
+		List<ComponentDataDto> list = new ArrayList<>();
+		for (Map row : tempList) {
+			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
+			if (idType.equalsIgnoreCase("I")) {
+				list.add(
+						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC")));
+			}
+		}
+
+		// List<BizComponentDataDesc> bizComponentDataDescs =
+		// bizcomponentDao.getBizComponentDataDescListByComponmentId();
+		if (tempList.isEmpty())
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
-		List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);		
-		return AmxApiResponse.build(dtoList);
+		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
+		return AmxApiResponse.build(list);
 	}
 
-	private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
+	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
 		List<BizComponentDataDescDto> output = new ArrayList<>();
 		bizComponentDataDescs.forEach(i -> {
 			output.add(convert(i));
 		});
 		return output;
-	}
+	}*/
 
 	private BizComponentDataDescDto convert(BizComponentDataDesc i) {
 		BizComponentDataDescDto dto =  new BizComponentDataDescDto();

@@ -32,6 +32,7 @@ import com.amx.jax.dbmodel.BizComponentDataRef;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
+import com.amx.utils.Constants;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -90,65 +91,25 @@ public class BizcomponentDao {
 
 	}
 	
-	/*@SuppressWarnings("unchecked")
-	public Map<BigDecimal, String> getAllComponentComboDataForCustomer(
-			BigDecimal languageId,
-			String CustomerType,String identitiyType) {
-			SessionFactory factory = new Configuration().configure().buildSessionFactory();; 
-			Session session = factory.openSession();
-			Map<BigDecimal, String> mapComponentComboData = new LinkedHashMap<BigDecimal, String>();
-			DetachedCriteria criteria = DetachedCriteria.forClass(BizComponentDataDesc.class, "bizComponentDataDesc");
-			criteria.setFetchMode("bizComponentDataDesc.fsBizComponentData", FetchMode.JOIN);
-			criteria.createAlias("bizComponentDataDesc.fsBizComponentData", "fsBizComponentData", JoinType.INNER_JOIN);
-			criteria.add(Restrictions.eq("fsBizComponentData.active", "Y"));			 
-			criteria.setFetchMode("bizComponentDataDesc.fsBizComponentData.fsBusinessComponent", FetchMode.JOIN);
-			criteria.createAlias("bizComponentDataDesc.fsBizComponentData.fsBusinessComponent", "fsBusinessComponent", JoinType.INNER_JOIN);
-			criteria.add(Restrictions.eq("fsBusinessComponent.componentName", identitiyType));			 
-			criteria.setFetchMode("bizComponentDataDesc.fsLanguageType", FetchMode.JOIN);
-			criteria.createAlias("bizComponentDataDesc.fsLanguageType", "fsLanguageType", JoinType.INNER_JOIN);
-			criteria.add(Restrictions.eq("fsLanguageType.languageId", languageId));
-			DetachedCriteria subCriteria = DetachedCriteria.forClass(BizComponentDataRef.class, "bizComponentDataRef");
-			subCriteria.setFetchMode("bizComponentDataRef.fsBusinessComponentConf", FetchMode.JOIN);
-			subCriteria.createAlias("bizComponentDataRef.fsBusinessComponentConf", "fsBusinessComponentConf", JoinType.INNER_JOIN);
-			subCriteria.add(Restrictions.eq("bizComponentDataRef.active", "Y"));
-			//subCriteria.add(Restrictions.eq("fsBusinessComponentConf.componentConfId", componentConfId));
-			subCriteria.setFetchMode("bizComponentDataRef.fsBizComponentData", FetchMode.JOIN);
-			subCriteria.createAlias("bizComponentDataRef.fsBizComponentData", "bizComponentData", JoinType.INNER_JOIN);
-			subCriteria.add(Restrictions.eqProperty("bizComponentData.componentDataId", "fsBizComponentData.componentDataId"));
-			subCriteria.setProjection(Projections.distinct(Projections.property("bizComponentData.componentDataId")));
-			criteria.add(Subqueries.propertyIn("fsBizComponentData.componentDataId", subCriteria));
-			ProjectionList projectionList = Projections.projectionList();
-			projectionList.add(Projections.property("fsBizComponentData.componentDataId"));
-			projectionList.add(Projections.property("bizComponentDataDesc.dataDesc"));
-			projectionList.add(Projections.property("fsBusinessComponent.componentId"));
-			criteria.setProjection(projectionList);
-			criteria.addOrder(Order.asc("bizComponentDataDesc.dataDesc"));
+	public List<Map<String,Object>> getAllComponentComboDataForCustomer(BigDecimal languageId) {
+		
+			String s= "select B.COMPONENT_DATA_ID,A.DATA_DESC,C.COMPONENT_ID from "
+					+ "FS_BIZ_COMPONENT_DATA_DESC A,FS_BIZ_COMPONENT_DATA B,FS_BUSINESS_COMPONENT C,FS_LANGUAGE_TYPE D "
+					+ "where A.COMPONENT_DATA_ID = B.COMPONENT_DATA_ID and B.COMPONENT_ID = C.COMPONENT_ID "
+					+ "and A.LANGUAGE_ID = D.LANGUAGE_ID and B.ACTIVE='Y' and C.COMPONENT_NAME= ? "
+					+ "and D.LANGUAGE_ID=? and B.COMPONENT_DATA_ID in (select distinct F.COMPONENT_DATA_ID "
+					+ "from FS_BIZ_COMPONENT_DATA_REF E,FS_BIZ_COMPONENT_DATA F,FS_BUSINESS_COMPONENT_CONF G "
+					+ "where E.COMPONENT_DATA_ID = F.COMPONENT_DATA_ID and E.COMPONENT_CONF_ID = G.COMPONENT_CONF_ID "
+					+ "and E.ACTIVE = 'Y' and F.COMPONENT_DATA_ID = E.COMPONENT_DATA_ID) order by A.DATA_DESC asc ";	
+			List<Map<String,Object>> tempList= jdbcTemplate.queryForList(s, new Object[] {Constants.COMPONENT_NAME,languageId});			
 			
-			String s= "SELECT * FROM FS_BIZ_COMPONENT_DATA_DESC FB INNER_JOIN FS_BIZ_COMPONENT_DATA F ON F.COMPONENT_DATA_ID = FB.COMPONENT_DATA_ID"
-					+ " INNER JOIN FS_BUSINESS_COMPONENT FBC ON F.COMPONENT_ID = FBC.COMPONENT_ID INNER JOIN FS_LANGUAGE_TYPE FLT ON FLT.LANGUAGE_ID = FB.LANGUAGE_ID"
-					+ " INNER JOIN FS_BIZ_COMPONENT_DATA_REF FBR on "
-					+ "WHERE F.ISACTIVE = 'Y' AND FBC.COMPONENT_NAME ='Identiy Type' ";			
-			
-			List<Object[]> tempList = criteria.getExecutableCriteria(session).list();
-					//(List<Object[]>) criteria;			
-			 
-			for (Object[] row : tempList) {
-			 
-			String idType=getIdentityTypeMaster((BigDecimal) row[0]);
-			if(idType.equalsIgnoreCase(CustomerType))
-			{
-			mapComponentComboData.put((BigDecimal) row[0], (String) row[1]);
-			}
-			 
-			 
-			}
-			return mapComponentComboData;
+			return tempList;
 			}
 	
 	public String getIdentityTypeMaster(BigDecimal componentId) {
 		 
-		String sql = "SELECT CUSTOMER_TYPE FROM FS_IDENTITY_TYPE_MASTER A INNER JOIN FS_BUSINESS_COMPONENT B "
-				+ "WHERE A.BUSINESS_COMPONENT_ID = ? ";
+		String sql = "SELECT CUSTOMER_TYPE FROM FS_IDENTITY_TYPE_MASTER A INNER JOIN FS_BUSINESS_COMPONENT B  " + 
+				"ON A.BUSINESS_COMPONENT_ID = B.COMPONENT_ID WHERE A.BUSINESS_COMPONENT_ID = ?";
 		
 		List<String> lstIdentity = jdbcTemplate.queryForList(sql, new Object[] { componentId }, String.class);		
 		 
@@ -159,5 +120,5 @@ public class BizcomponentDao {
 		}
 		 
 		return rtnIdentity;
-		}*/
+		}
 }

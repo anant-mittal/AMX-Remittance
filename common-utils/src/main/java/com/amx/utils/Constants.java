@@ -72,4 +72,6 @@ public class Constants {
 	public static final String COMPNY_TYPE = "Corporate";
 	
 	public static final String COMMON_NATIONALITY = "ALL";
+	
+	public static final String COMPONENT_NAME = "Identity Type";
 }

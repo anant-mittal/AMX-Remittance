@@ -20,6 +20,7 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
+import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.DynamicFieldRequest;
@@ -104,7 +105,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}
 	
 	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
-	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
+	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
 		JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
 		//JaxContextUtil.setRequestModel();
 		return  offsiteCustRegService.sendIdTypes();
