@@ -215,16 +215,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT",
 				newExchangeRateService.getForeignAmount(remitApplParametersMap));
-		BigDecimal newCommission = reCalculateComission();
 
-		logger.info("newCommission: " + newCommission);
-		if (new BigDecimal(94).equals(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"))
-				&& new BigDecimal(102).equals(remitApplParametersMap.get("P_SERVICE_MASTER_ID"))
-				&& newCommission == null) {
-			logger.info("recalculating del mode for TT and routing countyr india");
-			recalculateDeliveryAndRemittanceModeId();
-		}
-		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
 		BigDecimal serviceMasterId = new BigDecimal(remitApplParametersMap.get("P_SERVICE_MASTER_ID").toString());
 		BigDecimal routingBankId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_BANK_ID").toString());
 		BigDecimal rountingCountryId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID").toString());
