@@ -3,8 +3,11 @@ package com.amx.jax.branch.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -23,52 +26,35 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
 import com.amx.amxlib.meta.model.ArticleMasterDescDto;
 import com.amx.amxlib.meta.model.IncomeRangeDto;
-import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.ValidationRegexDto;
-import com.amx.amxlib.model.request.CommonRequest;
+import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.request.DynamicFieldRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.api.ARespModel;
-import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
-import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
-import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.service.PrefixService;
-import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
-import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.Random;
 
 @Service
@@ -103,7 +89,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	BizcomponentDao bizcomponentDao;
-
+	
 	@Autowired
 	PrefixService prefixService;
 	
@@ -199,7 +185,6 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	}
 */
 	
-
 	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
@@ -208,7 +193,6 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
 		if(fieldList.isEmpty())
 			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
-
 		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
 		return AmxApiResponse.build(dtoList);
 	}
@@ -289,23 +273,33 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		employee.setTokenSentCount(BigDecimal.ZERO);
 	}
 	
-	public AmxApiResponse<List<BizComponentDataDescDto>, Object> sendIdTypes() {
-		//Map<BigDecimal, String> map = bizcomponentDao.getAllComponentComboDataForCustomer(metaData.getLanguageId(),"I","Identiy Type");
-		//LOGGER.info("map : "+map);
-		List<BizComponentDataDesc> bizComponentDataDescs = bizcomponentDao.getBizComponentDataDescListByComponmentId();
-		if(bizComponentDataDescs.isEmpty())
+	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
+		List<Map<String, Object>> tempList = bizcomponentDao
+				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
+		List<ComponentDataDto> list = new ArrayList<>();
+		for (Map row : tempList) {
+			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
+			if (idType.equalsIgnoreCase("I")) {
+				list.add(
+						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC")));
+			}
+		}
+
+		// List<BizComponentDataDesc> bizComponentDataDescs =
+		// bizcomponentDao.getBizComponentDataDescListByComponmentId();
+		if (tempList.isEmpty())
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
-		List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);		
-		return AmxApiResponse.build(dtoList);
+		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
+		return AmxApiResponse.build(list);
 	}
 
-	private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
+	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
 		List<BizComponentDataDescDto> output = new ArrayList<>();
 		bizComponentDataDescs.forEach(i -> {
 			output.add(convert(i));
 		});
 		return output;
-	}
+	}*/
 
 	private BizComponentDataDescDto convert(BizComponentDataDesc i) {
 		BizComponentDataDescDto dto =  new BizComponentDataDescDto();
@@ -358,9 +352,10 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			otpData.setLockDate(new Date());
 		}
 		throw new GlobalException("Invalid otp", JaxError.INVALID_OTP);
+
 	}
 
-	public AmxApiResponse<List<ArticleMasterDescDto>, Object> getArticleListResponse(BigDecimal countryId,
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(BigDecimal countryId,
 			BigDecimal languageId) {
 		List<Map<String, Object>> articleList = articleDao.getArtilces(countryId, languageId);
 		if(articleList == null || articleList.isEmpty())
@@ -368,7 +363,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST);
 		}
 		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);
-		return AmxApiResponse.build(articleDtoList);
+		return AmxApiResponse.buildList(articleDtoList);
 	}
 
 	private List<ArticleMasterDescDto> convertArticle(List<Map<String, Object>> articleList) {
@@ -388,7 +383,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(BigDecimal articleId,
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(BigDecimal articleId,
 			BigDecimal languageId) {
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, languageId);
 		if(designationList == null || designationList.isEmpty())
@@ -396,7 +391,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		return AmxApiResponse.build(designationDataList);
+		return AmxApiResponse.buildList(designationDataList);
 	}
 
 	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
@@ -416,7 +411,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(BigDecimal countryId,
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(BigDecimal countryId,
 			BigDecimal articleDetailsId) {
 		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
 		if(incomeRangeList == null || incomeRangeList.isEmpty())
@@ -424,7 +419,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
-		return AmxApiResponse.build(incomeRangeDataList);
+		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
 
 	private List<IncomeRangeDto> convertIncomeRange(List<Map<String, Object>> incomeRangeList) {
@@ -444,16 +439,30 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<FieldList>, Object> getFieldList(DynamicFieldRequest model) {
+	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(DynamicFieldRequest model) {
 		List<FieldList> fieldList = null;
-		if(model.getNationality()==null || model.getNationality().isEmpty())
-			fieldList = fieldListDao.getFieldListWithoutNationality(model.getTenant(),model.getComponent());
-		else
-			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
-		if(fieldList == null)
-			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		fieldList = fieldListDao.getFieldList(model.getTenant(),Constants.COMMON_NATIONALITY,model.getComponent());
+		Map<String,FieldList> map = new HashMap<>();
+		if(fieldList != null)
+		{
+			map = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));	
+		}
 		
-		return AmxApiResponse.build(fieldList);
+		if(model.getNationality()!= null && !model.getNationality().equalsIgnoreCase("ALL"))
+		{
+			//fieldList = null;
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
+			if(fieldList != null)
+			{				
+				Map<String,FieldList> map1 = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));
+				map.putAll(map1);
+			}
+		}	
+		if(map == null || map.isEmpty())
+		{
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		}		
+		return AmxApiResponse.build(map);
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

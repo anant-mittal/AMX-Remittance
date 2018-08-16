@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.repository.ICustomerEmailMobileCheck;
 import com.amx.jax.services.AbstractService;
@@ -24,7 +24,7 @@ public class EmailMobileCheckService extends AbstractService{
 	ICustomerEmailMobileCheck customerEmailMobileCheck;
 	
 	
-	public ApiResponse checkEmail(BigDecimal languageId,BigDecimal countryId,String email){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkEmail(BigDecimal languageId,BigDecimal countryId,String email){
 		List<ViewOnlineEmailMobileCheck> emailCheck = customerEmailMobileCheck.getEmailCheck(languageId, countryId, email);
 	
 		ApiResponse response = getBlackApiResponse();
@@ -38,11 +38,11 @@ public class EmailMobileCheckService extends AbstractService{
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
 		response.getData().setType("email");
-		return response;
+		return AmxApiResponse.buildList(emailCheck);
 	}
 	
 	
-	public ApiResponse checkMobile(BigDecimal languageId,BigDecimal countryId,String mobile){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkMobile(BigDecimal languageId,BigDecimal countryId,String mobile){
 		List<ViewOnlineEmailMobileCheck> mobileCheck = customerEmailMobileCheck.getMobileCheck(languageId, countryId, mobile);
 	
 		ApiResponse response = getBlackApiResponse();
@@ -56,7 +56,7 @@ public class EmailMobileCheckService extends AbstractService{
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
 		response.getData().setType("mobile");
-		return response;
+		return AmxApiResponse.buildList(mobileCheck);
 	}
 	
 	

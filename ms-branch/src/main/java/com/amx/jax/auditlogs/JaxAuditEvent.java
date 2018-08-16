@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
+import com.amx.amxlib.model.request.EmploymentDetailsRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.logger.AuditEvent;
@@ -23,6 +24,8 @@ public class JaxAuditEvent extends AuditEvent {
 	
 	CustomerPersonalDetail customerPersonalDetails;
 
+	EmploymentDetailsRequest employeeDetailsRequest;
+
 	public Boolean getSuccess() {
 		return success;
 	}
@@ -32,7 +35,7 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 	
 	public static enum Type implements EventType {
-		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP,DISTRICT_LIST,CITY_LIST;
+		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP,DISTRICT_LIST,CITY_LIST,ARTICLE_LIST,DESIGNATION_LIST,INCOME_RANGE;
 
 		@Override
 		public EventMarker marker() {
@@ -88,6 +91,15 @@ public class JaxAuditEvent extends AuditEvent {
 	public void setCustomerPersonalDetails(CustomerPersonalDetail customerPersonalDetails) {
 		this.customerPersonalDetails = customerPersonalDetails;
 	}
+
+	public EmploymentDetailsRequest getEmployeeDetailsRequest() {
+		return employeeDetailsRequest;
+	}
+
+	public void setEmployeeDetailsRequest(EmploymentDetailsRequest employeeDetailsRequest) {
+		this.employeeDetailsRequest = employeeDetailsRequest;
+	}
+	
 	
 	
 }

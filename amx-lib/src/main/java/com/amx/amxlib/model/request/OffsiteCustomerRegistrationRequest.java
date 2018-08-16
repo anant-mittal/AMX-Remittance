@@ -2,6 +2,8 @@ package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.NotNull;
+
 public class OffsiteCustomerRegistrationRequest {
 	
 	BigDecimal ecNumber;
@@ -9,7 +11,11 @@ public class OffsiteCustomerRegistrationRequest {
 	String mOtp;
 	String eOtp;
 	String email;
-	String mobile;	
+	String mobile;
+	@NotNull
+	private BigDecimal countryId;
+	@NotNull
+	private BigDecimal nationalityId;	
 	
 	public BigDecimal getEcNumber() {
 		return ecNumber;
@@ -47,10 +53,22 @@ public class OffsiteCustomerRegistrationRequest {
 	}
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
+	}	
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+	public BigDecimal getNationalityId() {
+		return nationalityId;
+	}
+	public void setNationalityId(BigDecimal nationalityId) {
+		this.nationalityId = nationalityId;
 	}
 	@Override
 	public String toString() {
 		return "OffsiteCustomerRegistrationRequest [ecNumber=" + ecNumber + ", civilId=" + civilId + ", mOtp=" + mOtp
 				+ ", eOtp=" + eOtp + ", email=" + email + ", mobile=" + mobile + "]";
-	}	
+	}
 }

@@ -17,6 +17,7 @@ import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
@@ -45,7 +46,7 @@ public class ParameterService extends AbstractService {
 	@Autowired
 	private MetaData metaData;
 	
-	public ApiResponse  getContactUsTime(){
+	public AmxApiResponse<AuthenticationLimitCheckDTO, Object>  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
 		ApiResponse response = getBlackApiResponse();
 		if(contactUsList.isEmpty()) {
@@ -55,12 +56,12 @@ public class ParameterService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("parameter");
-		return response;
+		return AmxApiResponse.buildList(convert(contactUsList));
 	}
 	
 	
 	
-	public ApiResponse  getContactPhoneNo(){
+	public AmxApiResponse<AuthenticationLimitCheckDTO, Object>  getContactPhoneNo(){
 		List<AuthenticationLimitCheckView> phoneNoList =authentication.getContactUsPhoneNo();
 		ApiResponse response = getBlackApiResponse();
 		if(phoneNoList.isEmpty()) {
@@ -70,7 +71,7 @@ public class ParameterService extends AbstractService {
 		response.setResponseStatus(ResponseStatus.OK);
 		}
 		response.getData().setType("parameter");
-		return response;
+		return AmxApiResponse.buildList(convert(phoneNoList));
 	}
 	
 	
@@ -124,7 +125,7 @@ public class ParameterService extends AbstractService {
 		return authLimits;
 	}
 
-	public ApiResponse getJaxMetaParameter() {
+	public AmxApiResponse<JaxMetaParameter, Object> getJaxMetaParameter() {
 		List<AuthenticationLimitCheckView> allAuthLimits = authentication.findAll();
 		Map<String, BigDecimal> authMap = allAuthLimits.stream()
 				.filter(x -> (x.getAuthorizationType() != null && x.getAuthLimit() != null))
@@ -138,7 +139,7 @@ public class ParameterService extends AbstractService {
 		response.getData().getValues().add(metaParams);
 		response.getData().setType("jaxmetaparameter");
 		response.setResponseStatus(ResponseStatus.OK);
-		return response;
+		return AmxApiResponse.build(metaParams);
 	}
 	
 	public List<TransactionLimitCheckView>  getAllTxnLimits(){
