@@ -25,14 +25,9 @@ public class CollectionPaymentDetailsViewService extends AbstractService {
 			BigDecimal documentFinancialYear, BigDecimal documentCode){
 		List<CollectionPaymentDetailsViewModel> listPaymentDetails = collectionPaymentDetailsViewDao.getCollectedPaymentDetails(companyId, documentNo, documentFinancialYear, documentCode);
 
-		ApiResponse response = getBlackApiResponse();
 		if(listPaymentDetails.isEmpty()) {
 				throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-			} else {
-				response.getData().getValues().addAll(listPaymentDetails);
-				response.setResponseStatus(ResponseStatus.OK);
-			}
-			response.getData().setType("collectionPaymentDetailView");
+			} 
 			return AmxApiResponse.buildList(listPaymentDetails);	
 	}
 	

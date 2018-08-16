@@ -25,15 +25,9 @@ public class QuestionAnswerService extends AbstractService {
 
 	public AmxApiResponse<QuestModelDTO, Object> findAllQuestion(BigDecimal languageId, BigDecimal countryId) {
 		List<OnlineQuestModel> questList = questionAnswerRepository.findAllQuestion(languageId, countryId);
-		ApiResponse response = getBlackApiResponse();
 		if (questList.isEmpty()) {
 			throw new GlobalException("Question not found");
-		} else {
-			response.getData().getValues().addAll(convert(questList));
-			response.setResponseStatus(ResponseStatus.OK);
-
-		}
-		response.getData().setType("quest");
+		} 		
 		return AmxApiResponse.buildList(convert(questList));
 
 	}
@@ -42,15 +36,9 @@ public class QuestionAnswerService extends AbstractService {
 	public AmxApiResponse<QuestModelDTO, Object> getQuestionDescription(BigDecimal languageId, BigDecimal countryId, BigDecimal questId) {
 		List<OnlineQuestModel> questList = questionAnswerRepository.getQuestionDescription(languageId, countryId,
 				questId);
-		ApiResponse response = getBlackApiResponse();
 		if (questList.isEmpty()) {
 			throw new GlobalException("Question not found");
-		} else {
-			response.getData().getValues().addAll(convert(questList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-
-		response.getData().setType("quest");
+		} 
 		return AmxApiResponse.buildList(convert(questList));
 	}
 

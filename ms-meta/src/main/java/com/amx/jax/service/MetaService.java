@@ -92,27 +92,17 @@ public class MetaService extends AbstractService {
 
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
-		} else {
-			response.getData().getValues().addAll(convertCityDto(cityList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("city");
+		} 
 		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
 	public AmxApiResponse<ViewCityDto, Object> getCityDescription(BigDecimal districtId, BigDecimal languageId, BigDecimal cityId) {
 		List<ViewCity> cityList = cityDao.getCityDescription(districtId, cityId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
-		} else {
-			response.getData().getValues().addAll(convertCityDto(cityList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("city");
+		} 
 		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
@@ -132,25 +122,22 @@ public class MetaService extends AbstractService {
 		return dto;
 	}
 
-	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String applInd) {
-		ApiResponse response = getBlackApiResponse();
+	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String applInd) {		
 		List<OnlineConfiguration> output = onlineConfigurationRepository.findByappInd(applInd);
 		OnlineConfigurationDto dto = new OnlineConfigurationDto();
 		try {
 			BeanUtils.copyProperties(dto, output.get(0));
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			logger.error("unable to convert OnlineConfigurationDto", e);
-		}
-		response.getData().setType("online-config");
-		response.getData().getValues().add(dto);
+		}		
 		return AmxApiResponse.build(dto);
 	}
 	
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
-		ApiResponse response = getBlackApiResponse();
-		response.getData().setType("service-group-model");
+		/*ApiResponse response = getBlackApiResponse();
+		response.getData().setType("service-group-model");*/
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-		response.getData().getValues().addAll(outputDto);
+		/*response.getData().getValues().addAll(outputDto);*/
 		return AmxApiResponse.buildList(outputDto);
 	}
 

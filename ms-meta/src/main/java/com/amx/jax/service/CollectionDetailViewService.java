@@ -27,14 +27,9 @@ public class CollectionDetailViewService extends AbstractService {
 		List<CollectionDetailViewModel> collectionDetailView = collectionDetailViewDao
 				.getCollectionDetailView(companyId, documentNo, documentFinancialYear, documentCode);
 
-		ApiResponse response = getBlackApiResponse();
 		if (collectionDetailView.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		} else {
-			response.getData().getValues().addAll(collectionDetailView);
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("collectionDetailView");
+		} 
 		return AmxApiResponse.buildList(collectionDetailView);	
 	}
 

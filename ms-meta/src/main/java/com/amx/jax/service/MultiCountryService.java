@@ -26,15 +26,9 @@ public class MultiCountryService extends AbstractService {
 	
 	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountryList() {
 		List<JAXDbCredentailsModel> multiContryList = multiCounryRepository.getMultiCountryList();		
-		ApiResponse response = getBlackApiResponse();
-		
 		if(multiContryList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(multiContryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("multicountry");
 		return AmxApiResponse.buildList(convert(multiContryList));
 		
 	}
