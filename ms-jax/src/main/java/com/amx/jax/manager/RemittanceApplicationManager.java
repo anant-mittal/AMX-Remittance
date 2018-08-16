@@ -106,12 +106,10 @@ public class RemittanceApplicationManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> routingDetails = (Map<String, Object>) validatedObjects.get("ROUTINGDETAILS");
-		BigDecimal routingCountryId = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		Customer customer = (Customer) validatedObjects.get("CUSTOMER");
-		BigDecimal routingBankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
-		BigDecimal routingBankBranchId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_BRANCH_ID");
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
 		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");

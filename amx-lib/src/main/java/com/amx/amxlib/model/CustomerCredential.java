@@ -14,7 +14,7 @@ public class CustomerCredential implements Serializable, ICustomerCredential {
 
 	@NotNull
 	@Size(min=6, max=12)
-	@Pattern(regexp = "^\\S+")
+	@Pattern(regexp = "^\\S+", message="The User ID you have entered is not valid. Please enter the User ID with minimum 6 alphanumeric characters.")
 	String loginId;
 
 	@NotNull

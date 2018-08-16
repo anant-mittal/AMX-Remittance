@@ -28,13 +28,6 @@
 
 	<dependencies>
 
-		<!-- Swagger infos -->
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>

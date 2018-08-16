@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,14 +42,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 * getExchangeRatesForOnline(java.math.BigDecimal, java.math.BigDecimal,
 	 * java.math.BigDecimal, java.math.BigDecimal)
 	 */
-	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
+	public ApiResponse<ExchangeRateResponseModel> getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
 			BigDecimal bankId) {
 		if (!jaxProperties.getExrateBestRateLogicEnable()) {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
 				+ lcAmount);
-		ApiResponse response = getBlackApiResponse();
+		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
 			if (pips == null || pips.isEmpty()) {
@@ -69,6 +70,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
 				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));
+			} else {
+				outputModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
 			}
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
@@ -115,5 +118,29 @@ public class NewExchangeRateService extends ExchangeRateService {
 		});
 		return bankMasterDto;
 	}
+	
+	public ExchangeRateBreakup getExchangeRateBreakup(BigDecimal toCurrencyId, BigDecimal localAmount,
+			BigDecimal routingBankId) {
+		ApiResponse<ExchangeRateResponseModel> apiResponse = getExchangeRatesForOnline(meta.getDefaultCurrencyId(),
+				toCurrencyId, localAmount, routingBankId);
+		return apiResponse.getResult().getExRateBreakup();
+	}
 
+	public BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
+
+		if (inputTemp.get("P_FOREIGN_AMT") != null) {
+			return (BigDecimal) inputTemp.get("P_FOREIGN_AMT");
+		}
+
+		if (inputTemp.get("P_CALCULATED_FC_AMOUNT") != null) {
+			return (BigDecimal) inputTemp.get("P_CALCULATED_FC_AMOUNT");
+		}
+
+		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
+		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		ExchangeRateBreakup exRateBreakup = getExchangeRateBreakup(toCurrencyId, localAmount, routingBankId);
+		return exRateBreakup.getConvertedFCAmount();
+
+	}
 }
