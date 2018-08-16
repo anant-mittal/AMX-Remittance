@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -56,7 +58,6 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  */
 @RestController
 @RequestMapping(META_API_ENDPOINT)
-@SuppressWarnings("rawtypes")
 public class MetaController {
 
 
@@ -134,7 +135,7 @@ public class MetaController {
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
-	public ApiResponse getCountryListResponse() {
+	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
 		return countryService.getCountryListResponse();
 	}	
 	

@@ -375,7 +375,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 
 	}
 
-	public AmxApiResponse<List<ArticleMasterDescDto>, Object> getArticleListResponse(BigDecimal countryId,
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(BigDecimal countryId,
 			BigDecimal languageId) {
 		List<Map<String, Object>> articleList = articleDao.getArtilces(countryId, languageId);
 		if(articleList == null || articleList.isEmpty())
@@ -383,7 +383,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST);
 		}
 		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);
-		return AmxApiResponse.build(articleDtoList);
+		return AmxApiResponse.buildList(articleDtoList);
 	}
 
 	private List<ArticleMasterDescDto> convertArticle(List<Map<String, Object>> articleList) {
@@ -403,7 +403,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<ArticleDetailsDescDto>, Object> getDesignationListResponse(BigDecimal articleId,
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(BigDecimal articleId,
 			BigDecimal languageId) {
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, languageId);
 		if(designationList == null || designationList.isEmpty())
@@ -411,7 +411,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		return AmxApiResponse.build(designationDataList);
+		return AmxApiResponse.buildList(designationDataList);
 	}
 
 	private List<ArticleDetailsDescDto> convertDesignation(List<Map<String, Object>> designationList) {
@@ -431,7 +431,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<List<IncomeRangeDto>, Object> getIncomeRangeResponse(BigDecimal countryId,
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(BigDecimal countryId,
 			BigDecimal articleDetailsId) {
 		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
 		if(incomeRangeList == null || incomeRangeList.isEmpty())
@@ -439,7 +439,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
-		return AmxApiResponse.build(incomeRangeDataList);
+		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
 
 	private List<IncomeRangeDto> convertIncomeRange(List<Map<String, Object>> incomeRangeList) {
