@@ -1,4 +1,4 @@
-package com.amx.jax.ui.auth;
+package com.amx.jax.model;
 
 import java.io.Serializable;
 

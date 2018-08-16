@@ -10,8 +10,8 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
+import com.amx.jax.model.AuthState;
 import com.amx.jax.ui.UIConstants.Features;
-import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.user.UserDevice;
 

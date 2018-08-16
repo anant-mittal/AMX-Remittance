@@ -22,7 +22,7 @@ public class CustRegClient implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
-		return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).get()
+		return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_MODES).get()
 				.asApiResponse(BigDecimal.class);
 	}
 
