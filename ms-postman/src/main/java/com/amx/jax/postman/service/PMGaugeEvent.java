@@ -84,32 +84,6 @@ public class PMGaugeEvent extends AuditEvent {
 	 *
 	 * @param type
 	 *            the type
-	 * @param description
-	 *            the description
-	 * @param message
-	 *            the message
-	 */
-	public PMGaugeEvent(Type type, String description, String message) {
-		super(type, description, message);
-	}
-
-	/**
-	 * Instantiates a new PM gauge event.
-	 *
-	 * @param type
-	 *            the type
-	 * @param description
-	 *            the description
-	 */
-	public PMGaugeEvent(Type type, String description) {
-		super(type, description);
-	}
-
-	/**
-	 * Instantiates a new PM gauge event.
-	 *
-	 * @param type
-	 *            the type
 	 * @param sms
 	 *            the sms
 	 */

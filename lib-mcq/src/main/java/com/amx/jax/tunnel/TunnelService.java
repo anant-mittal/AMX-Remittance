@@ -16,8 +16,13 @@ public class TunnelService implements ITunnelService {
 	RedissonClient redisson;
 
 	public <T> long send(String topic, T messagePayload) {
-		RTopic<T> topicQueue = redisson.getTopic(topic);
-		return topicQueue.publish(messagePayload);
+		if (redisson == null) {
+			LOGGER.error("No Redissson Client Instance Available");
+			return 0L;
+		}
+		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(topic);
+		LOGGER.info("TOPICS===|{}", topicQueue.getChannelNames().toString());
+		return topicQueue.publish(new TunnelMessage<T>(messagePayload));
 	}
 
 	public void sayHello() {

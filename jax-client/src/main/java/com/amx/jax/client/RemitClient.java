@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -130,6 +131,24 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(
+			IRemitTransReqPurpose remittanceTransactionRequestModel) {
+		try {
+			HttpEntity<IRemitTransReqPurpose> requestEntity = new HttpEntity<IRemitTransReqPurpose>(
+					remittanceTransactionRequestModel, getHeader());
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/purpose-of-txn/list/";
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PurposeOfTransactionModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getPurposeOfTransactions : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+	
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
 		try {
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();

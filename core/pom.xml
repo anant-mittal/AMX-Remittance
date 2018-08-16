@@ -45,7 +45,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-amx</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -60,7 +59,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<!-- querydsl -->
 		<dependency>
@@ -92,7 +90,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>
