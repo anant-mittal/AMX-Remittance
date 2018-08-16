@@ -77,6 +77,11 @@
 		<!-- jasper reports -->
 
 		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
 			<version>6.5.1</version>
