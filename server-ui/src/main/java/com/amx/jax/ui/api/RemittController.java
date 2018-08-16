@@ -304,10 +304,18 @@ public class RemittController {
 	 */
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
-			@RequestParam(required = false) BigDecimal transactionId) {
+			@RequestParam(required = false) BigDecimal transactionId,
+			@RequestParam(required = false) BigDecimal placeorderId) {
+
 		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
-		RemittancePageDto remittancePageDto = jaxService.setDefaults().getBeneClient()
-				.defaultBeneficiary(beneId, transactionId).getResult();
+
+		RemittancePageDto remittancePageDto = null;
+		if (placeorderId == null) {
+			remittancePageDto = jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId)
+					.getResult();
+		} else {
+			remittancePageDto = jaxService.setDefaults().getBeneClient().poBeneficiary(placeorderId).getResult();
+		}
 
 		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
 

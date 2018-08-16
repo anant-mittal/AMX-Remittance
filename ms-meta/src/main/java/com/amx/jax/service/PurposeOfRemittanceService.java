@@ -27,16 +27,9 @@ public class PurposeOfRemittanceService extends AbstractService{
 	public AmxApiResponse<PurposeOfRemittanceViewModel, Object>  getPurposeOfRemittance(BigDecimal documentNumber,BigDecimal documentFinancialYear) {
 		
 		List<PurposeOfRemittanceViewModel> purposeOfRemittanceList = purposeOfRemittance.getPurposeOfRemittance(documentNumber, documentFinancialYear);
-		ApiResponse response = getBlackApiResponse();
-		
 		if(purposeOfRemittanceList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} else {
-			response.getData().getValues().addAll(purposeOfRemittanceList);
-			response.setResponseStatus(ResponseStatus.OK);
 		}
-
-		response.getData().setType("purposeOfRemittance");
 		return AmxApiResponse.buildList(purposeOfRemittanceList);	
 	}
 	

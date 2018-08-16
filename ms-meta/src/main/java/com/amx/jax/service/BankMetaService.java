@@ -57,15 +57,9 @@ public class BankMetaService extends AbstractService {
 
 	public AmxApiResponse<BankMasterDTO, Object> getBanksApiResponseByCountryId(BigDecimal countryId) {
 		List<BankMasterModel> banks = this.getBanksByCountryId(countryId);
-		ApiResponse response = getBlackApiResponse();
 		if (banks.isEmpty()) {
 			throw new GlobalException("banks details not avaliable");
-		} else {
-			response.getData().getValues().addAll(convert(banks));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-
-		response.getData().setType("bankmaster");
+		} 
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
@@ -138,12 +132,7 @@ public class BankMetaService extends AbstractService {
 
 		if (branchesList.isEmpty()) {
 			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
-		}
-
-		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().addAll(convertBranchView(branchesList));
-		response.getData().setType("bank-branch-dto");
-		response.setResponseStatus(ResponseStatus.OK);
+		}		
 		return AmxApiResponse.buildList(convertBranchView(branchesList));
 	}
 

@@ -53,29 +53,20 @@ public class CountryService extends AbstractService {
 	
 	@Deprecated
 	public AmxApiResponse<CountryMasterView, Object> getCountryListByLanguageIdResponse(BigDecimal languageId){
-		List<CountryMasterView> countryList = countryRepository.findByLanguageId(languageId);
-		ApiResponse response = getBlackApiResponse();
+		List<CountryMasterView> countryList = countryRepository.findByLanguageId(languageId);		
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Country list is not abaliable");
-		}else {
-		response.getData().getValues().addAll(convert(countryList));
-		response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("country");
+		}	
 		return AmxApiResponse.buildList(countryList);
 	}
 	
 	
 	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse(BigDecimal languageId,BigDecimal countryId){
 		List<CountryMasterView> countryList = countryRepository.findByLanguageIdAndCountryId(languageId,countryId);
-		ApiResponse response = getBlackApiResponse();
+		
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Country is not abaliable");
-		}else {
-		response.getData().getValues().addAll(convert(countryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("country");
 		return AmxApiResponse.buildList(countryList);
 	}
 	
@@ -83,14 +74,9 @@ public class CountryService extends AbstractService {
 	
 	public AmxApiResponse<CountryMasterView, Object> getBusinessCountryResponse(BigDecimal languageId){
 		List<CountryMasterView> countryList = countryRepository.getBusinessCountry(languageId);
-		ApiResponse response = getBlackApiResponse();
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Business country is not abaliable");
-		}else {
-		response.getData().getValues().addAll(convert(countryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("country");
 		return AmxApiResponse.buildList(countryList);
 	}
 	

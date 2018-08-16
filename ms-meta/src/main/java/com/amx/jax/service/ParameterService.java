@@ -48,14 +48,9 @@ public class ParameterService extends AbstractService {
 	
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object>  getContactUsTime(){
 		List<AuthenticationLimitCheckView> contactUsList =authentication.getContactUsTime();
-		ApiResponse response = getBlackApiResponse();
 		if(contactUsList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(contactUsList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("parameter");
 		return AmxApiResponse.buildList(convert(contactUsList));
 	}
 	
@@ -63,14 +58,9 @@ public class ParameterService extends AbstractService {
 	
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object>  getContactPhoneNo(){
 		List<AuthenticationLimitCheckView> phoneNoList =authentication.getContactUsPhoneNo();
-		ApiResponse response = getBlackApiResponse();
 		if(phoneNoList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(phoneNoList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("parameter");
 		return AmxApiResponse.buildList(convert(phoneNoList));
 	}
 	
@@ -135,10 +125,6 @@ public class ParameterService extends AbstractService {
 		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));
 		ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
 		metaParams.setApplicationCountryId(company.getApplicationCountryId());
-		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().add(metaParams);
-		response.getData().setType("jaxmetaparameter");
-		response.setResponseStatus(ResponseStatus.OK);
 		return AmxApiResponse.build(metaParams);
 	}
 	
