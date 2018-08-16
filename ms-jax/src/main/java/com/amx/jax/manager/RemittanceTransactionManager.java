@@ -183,10 +183,10 @@ public class RemittanceTransactionManager {
 	NewExchangeRateService newExchangeRateService;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-	private static final String IOS="IOS";
-	private static final String ANDROID="ANDROID";
-	private static final String WEB="WEB";
+
+	private static final String IOS = "IOS";
+	private static final String ANDROID = "ANDROID";
+	private static final String WEB = "WEB";
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -213,16 +213,7 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT",
 				newExchangeRateService.getForeignAmount(remitApplParametersMap));
-		BigDecimal newCommission = reCalculateComission();
 
-		logger.info("newCommission: " + newCommission);
-		if (new BigDecimal(94).equals(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"))
-				&& new BigDecimal(102).equals(remitApplParametersMap.get("P_SERVICE_MASTER_ID"))
-				&& newCommission == null) {
-			logger.info("recalculating del mode for TT and routing countyr india");
-			recalculateDeliveryAndRemittanceModeId();
-		}
-		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
 		BigDecimal serviceMasterId = new BigDecimal(remitApplParametersMap.get("P_SERVICE_MASTER_ID").toString());
 		BigDecimal routingBankId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_BANK_ID").toString());
 		BigDecimal rountingCountryId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID").toString());
@@ -250,7 +241,6 @@ public class RemittanceTransactionManager {
 		BigDecimal commission = bankCharge.getChargeAmount();
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
-		
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -485,7 +475,8 @@ public class RemittanceTransactionManager {
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 		String currencyQuoteName = beneCurrencyMaster.getQuoteName();
 		if (newCommission == null) {
-			Map<String, Object> commissionRangeMap = getCommissionRange(breakup);
+			//TODO:- after merge there is issue
+			Map<String, Object> commissionRangeMap = getCommissionRange(null, breakup);
 			String msg = "";
 			BigDecimal fromAmount = BigDecimal.ZERO;
 			BigDecimal toAmount = BigDecimal.ZERO;
@@ -697,9 +688,9 @@ public class RemittanceTransactionManager {
 		this.isSaveRemittanceFlow = true;
 		RemittanceTransactionResponsetModel validationResults = this.validateTransactionData(model);
 		if (jaxProperties.getFlexFieldEnabled()) {
-		remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
+			remittanceTransactionRequestValidator.validateExchangeRate(model, validationResults);
 
-		remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
+			remittanceTransactionRequestValidator.validateFlexFields(model, remitApplParametersMap);
 		}
 		// validate routing bank requirements
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
@@ -717,7 +708,8 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
 					model);
 		} else {
-			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
+			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager
+					.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
@@ -785,7 +777,7 @@ public class RemittanceTransactionManager {
 		if ("Y".equals(application.getLoyaltyPointInd())) {
 			model.setNetAmount(application.getLocalTranxAmount());
 		} else {
-		model.setNetAmount(application.getLocalNetTranxAmount());
+			model.setNetAmount(application.getLocalNetTranxAmount());
 		}
 		JaxTransactionStatus status = getJaxTransactionStatus(application);
 		model.setStatus(status);
@@ -825,41 +817,41 @@ public class RemittanceTransactionManager {
 		return status;
 	}
 
-    private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
-    	
-    	List<TransactionLimitCheckView> trnxLimitList= parameterService.getAllTxnLimits();
+	private CivilIdOtpModel addOtpOnRemittance(RemittanceTransactionRequestModel model) {
 
-    	BigDecimal onlineLimit = BigDecimal.ZERO;
-    	BigDecimal androidLimit = BigDecimal.ZERO;
-    	BigDecimal iosLimit = BigDecimal.ZERO;
-    			
-    	for (TransactionLimitCheckView view:trnxLimitList) {
-    		if(JaxChannel.ONLINE.toString().equals(view.getChannel())) {
-    			onlineLimit = view.getComplianceChkLimit();
-    		}
-    		if(ANDROID.equals(view.getChannel())) {
-    			androidLimit = view.getComplianceChkLimit();
-    		}
-    		if(IOS.equals(view.getChannel())) {
-    			iosLimit = view.getComplianceChkLimit();
-    		}
-    	}
-    	
-        CivilIdOtpModel otpMmodel = null;
+		List<TransactionLimitCheckView> trnxLimitList = parameterService.getAllTxnLimits();
+
+		BigDecimal onlineLimit = BigDecimal.ZERO;
+		BigDecimal androidLimit = BigDecimal.ZERO;
+		BigDecimal iosLimit = BigDecimal.ZERO;
+
+		for (TransactionLimitCheckView view : trnxLimitList) {
+			if (JaxChannel.ONLINE.toString().equals(view.getChannel())) {
+				onlineLimit = view.getComplianceChkLimit();
+			}
+			if (ANDROID.equals(view.getChannel())) {
+				androidLimit = view.getComplianceChkLimit();
+			}
+			if (IOS.equals(view.getChannel())) {
+				iosLimit = view.getComplianceChkLimit();
+			}
+		}
+
+		CivilIdOtpModel otpMmodel = null;
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
 				&& (model.getLocalAmount().compareTo(onlineLimit) >= 0)) ||
-                
+
 				(IOS.equals(meta.getAppType()) && model.getLocalAmount().compareTo(iosLimit) >= 0) ||
-              
+
 				(ANDROID.equals(meta.getAppType()) && model.getLocalAmount().compareTo(androidLimit) >= 0)) {
-            
-            List<CommunicationChannel> channel = new ArrayList<>();
-            channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
-            channel.add(CommunicationChannel.MOBILE);
+
+			List<CommunicationChannel> channel = new ArrayList<>();
+			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
+			channel.add(CommunicationChannel.MOBILE);
 			otpMmodel = (CivilIdOtpModel) userService.sendOtpForCivilId(null, channel, null, null).getData().getValues()
 					.get(0);
-        }
-        return otpMmodel;
-    }
-	
+		}
+		return otpMmodel;
+	}
+
 }
