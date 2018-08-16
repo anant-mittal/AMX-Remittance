@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.repository.IPurposeOfRemittance;
 import com.amx.jax.services.AbstractService;
@@ -23,7 +24,7 @@ public class PurposeOfRemittanceService extends AbstractService{
 	
 	
 	
-	public ApiResponse getPurposeOfRemittance(BigDecimal documentNumber,BigDecimal documentFinancialYear) {
+	public AmxApiResponse<PurposeOfRemittanceViewModel, Object>  getPurposeOfRemittance(BigDecimal documentNumber,BigDecimal documentFinancialYear) {
 		
 		List<PurposeOfRemittanceViewModel> purposeOfRemittanceList = purposeOfRemittance.getPurposeOfRemittance(documentNumber, documentFinancialYear);
 		ApiResponse response = getBlackApiResponse();
@@ -36,9 +37,7 @@ public class PurposeOfRemittanceService extends AbstractService{
 		}
 
 		response.getData().setType("purposeOfRemittance");
-		return response;
-
-	
+		return AmxApiResponse.buildList(purposeOfRemittanceList);	
 	}
 	
 	@Override
