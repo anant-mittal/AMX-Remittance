@@ -60,13 +60,13 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 		RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
 
-		remittanceTransactionFailure.setBeneName(benificiaryListView.getBenificaryName());
-		remittanceTransactionFailure.setBeneAccountNumber(benificiaryListView.getBankAccountNumber());
-		remittanceTransactionFailure.setBeneBankName(benificiaryListView.getBankName());
-		remittanceTransactionFailure.setBeneBankBranchName(benificiaryListView.getBankBranchName());
+		remittanceTransactionFailure.setBeneficiaryName(benificiaryListView.getBenificaryName());
+		remittanceTransactionFailure.setBeneficiaryAccountNo(benificiaryListView.getBankAccountNumber());
+		remittanceTransactionFailure.setBeneficiaryBank(benificiaryListView.getBankName());
+		remittanceTransactionFailure.setBeneficiaryBranch(benificiaryListView.getBankBranchName());
 		remittanceTransactionFailure.setCustomerReference(customer.getCustomerReference().toString());
 		remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
-		remittanceTransactionFailure.setSelectedProduct(ex.getErrorMessage());
+		remittanceTransactionFailure.setService(ex.getErrorMessage());
 		remittanceTransactionFailure.setCustomerContact(customer.getMobile());
 		remittanceTransactionFailure.setCustomerName(
 				customer.getFirstName() + " " + customer.getMiddleName() + " " + customer.getLastName());
