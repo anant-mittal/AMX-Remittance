@@ -39,6 +39,11 @@
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
+			<dependency>
+                                <groupId>com.amx.jax</groupId>
+                                <artifactId>lib-ext-jar</artifactId>
+                                <version>${amx.version}</version>
+                        </dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
