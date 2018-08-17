@@ -315,7 +315,7 @@ public class BeneficiaryController {
 
 	}
 	
-   @RequestMapping(value = "/pobene/", method = RequestMethod.POST)
+   @RequestMapping(value = "/pobene/", method = RequestMethod.GET)
     public ApiResponse poBeneficiary(@RequestParam(required=false,value="placeOrderId") BigDecimal placeOrderId) {
         ApiResponse response=null;
         try {
