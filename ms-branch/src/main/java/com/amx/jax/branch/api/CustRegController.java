@@ -16,12 +16,12 @@ import com.amx.jax.branch.service.CustRegService;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-public class CustRegController implements ICustRegService {
+public class CustRegController /*implements ICustRegService */{
 
 	@Autowired
 	CustRegService custRegService;
 
-	@Override
+	/*@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_MODES, method = RequestMethod.GET)
 	public AmxApiResponse<BigDecimal, Object> getModes() {
 		return custRegService.getModes();
@@ -32,6 +32,6 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_FIELDS, method = RequestMethod.POST)
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(@RequestBody RegModeModel regModeModel) {
 		return custRegService.getIdDetailsFields(regModeModel);
-	}
+	}*/
 
 }

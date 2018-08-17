@@ -1,7 +1,6 @@
 package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
-
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;
@@ -82,7 +81,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.civilIdOtpModel = civilIdOtpModel;
 	}
 
-	@Override
 	public String toString() {
 		String str = null;
 		if (civilIdOtpModel != null)

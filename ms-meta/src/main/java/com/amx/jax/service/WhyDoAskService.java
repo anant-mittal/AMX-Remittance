@@ -11,6 +11,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.WhyDoAskInformation;
 import com.amx.jax.repository.IWhyDoAskInformationRepository;
 import com.amx.jax.services.AbstractService;
@@ -26,17 +27,12 @@ public class WhyDoAskService extends AbstractService{
 	@Autowired
 	IWhyDoAskInformationRepository whyDoAskInformationRepository;
 	
-	public ApiResponse getWhyDoAskInformation(BigDecimal languageId,BigDecimal countryId){
+	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyDoAskInformation(BigDecimal languageId,BigDecimal countryId){
 		List<WhyDoAskInformation> whyInfo = whyDoAskInformationRepository.getwhyDoAskInformation(languageId,countryId);
-		ApiResponse response = getBlackApiResponse();
 		if(whyInfo.isEmpty()) {
 			throw new GlobalException("Info not avaliable");
-		}else {
-		response.getData().getValues().addAll(convert(whyInfo));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("why");
-		return response;
+		return AmxApiResponse.buildList(convert(whyInfo));
 	}
 	
 	

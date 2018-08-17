@@ -7,7 +7,7 @@ import javax.validation.constraints.Pattern;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
-import com.amx.jax.ui.auth.AuthState;
+import com.amx.jax.model.AuthState;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 
