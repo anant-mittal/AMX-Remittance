@@ -1,5 +1,8 @@
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.postman.GeoLocationService;
@@ -31,6 +35,7 @@ import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
+import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
@@ -157,6 +162,15 @@ public class PubController {
 		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
 
 		return wrapper;
+	}
+
+	@Autowired
+	private JaxService jaxService;
+
+	@RequestMapping(value = "/pub/rates", method = { RequestMethod.GET })
+	public ResponseWrapper<List<MinMaxExRateDTO>> rates() {
+		return new ResponseWrapper<List<MinMaxExRateDTO>>(
+				jaxService.setDefaults(new BigDecimal(0)).getxRateClient().getMinMaxExchangeRate().getResults());
 	}
 
 	/**
