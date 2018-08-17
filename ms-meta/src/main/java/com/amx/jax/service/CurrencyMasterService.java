@@ -107,6 +107,7 @@ public class CurrencyMasterService extends AbstractService {
 				.findAll(new Sort("quoteName"));
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
+		}
 		return AmxApiResponse.buildList(convert(currencyList));
 	}
 	
