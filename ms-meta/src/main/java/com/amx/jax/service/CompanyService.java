@@ -12,8 +12,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
@@ -31,17 +31,12 @@ public class CompanyService extends AbstractService {
 
 	public static List<ViewCompanyDetails> DEFAULT_COMPANY_DETALIS;
 
-	public ApiResponse getCompanyDetails(BigDecimal languageId) {
+	public AmxApiResponse<ViewCompanyDetailDTO, Object> getCompanyDetails(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
-		ApiResponse response = getBlackApiResponse();
 		if (companyDetails.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		} else {
-			response.getData().getValues().addAll(convert(companyDetails));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("company");
-		return response;
+		} 
+		return AmxApiResponse.buildList(convert(companyDetails));
 	}
 	
 	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {

@@ -1031,7 +1031,7 @@ public class ApplicationProcedureDao {
 			output.put("P_SWIFT", cs.getString(16));
 			output.put("P_ERROR_MESSAGE", cs.getString(17));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.error("error in generate docNo", e);
+			LOGGER.error("error in getRoutingDetailFromOthProcedure", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -1067,8 +1067,8 @@ public class ApplicationProcedureDao {
 			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
 			cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
 			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID"));
-			cs.setBigDecimal(10, (BigDecimal) inputValue.get("P_LOCAL_AMT"));
-			cs.setBigDecimal(11, (BigDecimal) inputValue.get("P_FOREIGN_AMT"));
+			cs.setBigDecimal(10, (BigDecimal) inputValue.get("P_FOREIGN_AMT"));
+			cs.setBigDecimal(11, (BigDecimal) inputValue.get("P_LOCAL_AMT"));
 			// Out
 			// Parameters
 			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
@@ -1091,7 +1091,7 @@ public class ApplicationProcedureDao {
 			output.put("P_DERIVED_SELL_RATE", cs.getBigDecimal(19));
 			output.put("P_ERROR_MESSAGE", cs.getString(20));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.error("error in generate docNo", e);
+			LOGGER.error("error in getRoutingDetailFromOthRateProcedure", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);

@@ -38,6 +38,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
+import com.amx.amxlib.model.PaygErrorMasterDTO;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
@@ -240,6 +241,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});
 			break;	
+		case "payg-error":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PaygErrorMasterDTO>>() {
+			});
+			break;		
 	}
 		responseData.setValues(models);
 		return responseData;

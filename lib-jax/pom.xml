@@ -23,13 +23,14 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
 		</dependency>
+
 	</dependencies>
 
 </project>

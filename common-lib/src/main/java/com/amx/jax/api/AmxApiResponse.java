@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-
-import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -69,6 +66,12 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
 		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
 		resp.addResult(result);
+		return resp;
+	}
+
+	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> results) {
+		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
+		resp.setResults(results);
 		return resp;
 	}
 
