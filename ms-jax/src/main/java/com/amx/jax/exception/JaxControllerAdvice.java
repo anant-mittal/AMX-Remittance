@@ -68,7 +68,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 
 	private String processFieldErrors(BindingResult bindingResult) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(bindingResult.getFieldError().getField()).append(" ");
+		//sb.append(bindingResult.getFieldError().getField()).append(" ");
 		sb.append(bindingResult.getFieldError().getDefaultMessage());
 		return sb.toString();
 	}

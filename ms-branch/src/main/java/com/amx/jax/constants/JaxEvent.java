@@ -1,5 +1,6 @@
 package com.amx.jax.constants;
 
+
 import com.amx.jax.auditlog.handlers.AbstractAuditHanlder;
 import com.amx.jax.auditlog.handlers.ArticleListAuditHandler;
 import com.amx.jax.auditlog.handlers.CityListAuditHandler;
@@ -20,6 +21,7 @@ import com.amx.jax.auditlog.handlers.ValidateOTPAuditHandler;
  */
 public enum JaxEvent {
 
+
 	SEND_OTP(SendOtpAuditHandler.class),VALIDATE_OTP(ValidateOTPAuditHandler.class),
 	ID_TYPE(IdTypeAuditHandler.class),COUNTRY_LIST(CountryListAuditHandler.class),
 	STATE_LIST(StateListAuditHandler.class),FIELD_LIST(FieldListAuditHandler.class),
@@ -27,8 +29,7 @@ public enum JaxEvent {
 	CITY_LIST(CityListAuditHandler.class),ARTICLE_LIST(ArticleListAuditHandler.class),
 	DESIGNATION_LIST(DesignationListAuditHandler.class),INCOME_RANGE(IncomeRangeAuditHandler.class);
 	
-	Class<? extends AbstractAuditHanlder> auditHanlder;	
-	
+	Class<? extends AbstractAuditHanlder> auditHanlder;
 
 	private JaxEvent(Class<? extends AbstractAuditHanlder> auditHanlder) {
 		this.auditHanlder = auditHanlder;

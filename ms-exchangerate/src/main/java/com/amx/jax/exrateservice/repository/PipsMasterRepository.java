@@ -14,6 +14,7 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.PipsMaster;
 
+
 @Transactional
 public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDecimal> {
 
@@ -37,17 +38,17 @@ public interface PipsMasterRepository extends CrudRepository<PipsMaster, BigDeci
 			BigDecimal fcAmount);
 	
 	@Query(value = "select * from EX_PIPS_MASTER where CURRENCY_ID=?1 and COUNTRY_BRANCH_ID=?2 and ISACTIVE='Y'"
-			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT order by DERIVED_SELL_RATE asc", nativeQuery = true)
+			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT order by DERIVED_SELL_RATE desc", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForOnline(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal lcAmount);
 	
 	@Query(value = "select * from EX_PIPS_MASTER where CURRENCY_ID=?1 and COUNTRY_BRANCH_ID=?2 and ISACTIVE='Y'"
-			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT and BANK_ID=?4 order by DERIVED_SELL_RATE asc", nativeQuery = true)
+			+ " and ?3/DERIVED_SELL_RATE >= FROM_AMOUNT and ?3/DERIVED_SELL_RATE  <= TO_AMOUNT and BANK_ID=?4 order by DERIVED_SELL_RATE desc", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal lcAmount, BigDecimal bankId);
 	
 	@Query(value = "select * from EX_PIPS_MASTER where CURRENCY_ID=?1 and COUNTRY_BRANCH_ID=?2 and ISACTIVE='Y'"
-			+ " and ?3 >= FROM_AMOUNT and ?3  <= TO_AMOUNT and BANK_ID=?4 order by DERIVED_SELL_RATE asc", nativeQuery = true)
+			+ " and ?3 >= FROM_AMOUNT and ?3  <= TO_AMOUNT and BANK_ID=?4 order by DERIVED_SELL_RATE desc", nativeQuery = true)
 	public List<PipsMaster> getPipsMasterForForeignAmount(BigDecimal toCurrency, BigDecimal countryBranchId,
 			BigDecimal fcAmount, BigDecimal bankId);
 }

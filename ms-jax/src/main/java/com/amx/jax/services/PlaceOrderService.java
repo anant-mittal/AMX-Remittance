@@ -46,7 +46,7 @@ public class PlaceOrderService extends AbstractService {
 	public ApiResponse savePlaceOrder(PlaceOrderDTO dto) {
 		ApiResponse response = getBlackApiResponse();
 		PlaceOrder placeOrderModel = PlaceOrderUtil.getPlaceOrderModel(dto);
-		
+		//dto.getBeneficiaryRelationshipSeqId();
 		try {
 			placeOrderModel.setCreatedDate(new Date());
 			placeOrderModel.setIsActive("Y");
@@ -95,6 +95,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setValidToDate(rec.getValidToDate());
 					placeDTO.setPayAmount(rec.getPayAmount());
 					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+					placeDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+					placeDTO.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
+					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 					
 					dtoList.add(placeDTO);
 				}
@@ -142,6 +146,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setValidToDate(rec.getValidToDate());
 					placeDTO.setPayAmount(rec.getPayAmount());
 					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+					placeDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+					placeDTO.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
+					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 					
 					dtoList.add(placeDTO);
 				}
@@ -208,6 +216,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setValidToDate(rec.getValidToDate());
 					placeDTO.setPayAmount(rec.getPayAmount());
 					placeDTO.setReceiveAmount(rec.getReceiveAmount());
+					placeDTO.setBaseCurrencyId(rec.getBaseCurrencyId());
+					placeDTO.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
+					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
+					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 					
 					dtoList.add(placeDTO);
 				}
@@ -246,6 +258,10 @@ public class PlaceOrderService extends AbstractService {
 				rec.setPayAmount(dto.getPayAmount());
 				rec.setReceiveAmount(dto.getReceiveAmount());
 				rec.setCreatedDate(dto.getCreatedDate());
+				rec.setBaseCurrencyId(rec.getBaseCurrencyId());
+				rec.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
+				rec.setForeignCurrencyId(rec.getForeignCurrencyId());
+				rec.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 				
 				placeOrderdao.save(rec);
 				

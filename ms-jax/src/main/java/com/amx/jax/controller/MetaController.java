@@ -66,6 +66,7 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
+import com.amx.jax.services.PayGErrorService;
 import com.amx.jax.util.JaxContextUtil;
 import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 
@@ -155,6 +156,9 @@ public class MetaController {
 	
 	@Autowired
 	BranchDetailService branchDetailService;
+	
+	@Autowired
+	PayGErrorService payGErrorService;
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
@@ -382,5 +386,10 @@ public class MetaController {
 	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
 	public AmxApiResponse<BranchDetailModel, Object> getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();
+	}
+	
+	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
+	public ApiResponse getPaygErrorList() {
+		return payGErrorService.getPaygErrorResponse();
 	}
 }

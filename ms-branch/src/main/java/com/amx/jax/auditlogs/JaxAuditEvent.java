@@ -1,5 +1,7 @@
 package com.amx.jax.auditlogs;
 
+import java.math.BigDecimal;
+
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.EmploymentDetailsRequest;
@@ -21,7 +23,7 @@ public class JaxAuditEvent extends AuditEvent {
 	Boolean success;
 	
 	CustomerPersonalDetail customerPersonalDetails;
-	
+
 	EmploymentDetailsRequest employeeDetailsRequest;
 
 	public Boolean getSuccess() {

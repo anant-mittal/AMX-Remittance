@@ -65,7 +65,7 @@ public class CustomerDao {
 	}
 	
 	public Customer getCustomerByIdentityInt(String identityInt) {
-		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
+		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
 	}
 
 	@Transactional
@@ -145,8 +145,10 @@ public class CustomerDao {
 			}
 			if(cust.getUpdatedBy() == null)
 				cust.setUpdatedBy(cust.getCreatedBy());		
+
 			customerRepo.save(cust);
 		}
+		
 		return onlineCust;
 	}
 

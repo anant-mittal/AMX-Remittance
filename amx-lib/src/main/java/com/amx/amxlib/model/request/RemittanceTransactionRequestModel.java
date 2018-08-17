@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
@@ -36,6 +38,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private BigDecimal placeOrderId;
+	
 
 	/*
 	 * (non-Javadoc)
@@ -167,11 +171,20 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		}
 	}
 
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
+    @Override
 	public String toString() {
 		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
 				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
 				+ availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
-				+ ", mOtp=" + mOtp + ", eOtp=" + eOtp + "]";
+                + ", placeOrderId=" + placeOrderId + "]";
 	}
 
 }
