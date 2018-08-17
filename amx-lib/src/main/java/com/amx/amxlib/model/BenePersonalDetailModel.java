@@ -14,35 +14,35 @@ public class BenePersonalDetailModel extends AbstractModel {
 	 */
 	private static final long serialVersionUID = 1L;
 	// bene master
-	@NotNull
+	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 	private BigDecimal cityId;
-	@NotNull
+	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
-	@NotNull
+	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
-	@NotNull
-	@Size(min=1, max=50)
+	@NotNull(message="First Name may not be null")
+	@Size(min=1, max=50, message="firstName should be between 1 and 50 characters")
 	private String firstName;
 	@NotNull
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="secondName should be between 1 and 50 characters")
 	private String secondName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="thirdName should be between 1 and 50 characters")
 	private String thirdName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="fourthName should be between 1 and 50 characters")
 	private String fourthName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="fifthName should be between 1 and 50 characters")
 	private String fifthName;
 	private String nationality;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="localFirstName should be between 1 and 50 characters")
 	private String localFirstName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="localSecondName should be between 1 and 50 characters")
 	private String localSecondName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="localThirdName should be between 1 and 50 characters")
 	private String localThirdName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="localFourthName should be between 1 and 50 characters")
 	private String localFourthName;
-	@Size(min=1, max=50)
+	@Size(min=1, max=50, message="localFifthName should be between 1 and 50 characters")
 	private String localFifthName;
 	// bene contact
 	private String telephoneNumber;
