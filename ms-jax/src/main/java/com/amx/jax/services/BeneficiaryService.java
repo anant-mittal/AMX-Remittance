@@ -855,6 +855,7 @@ public class BeneficiaryService extends AbstractService {
             if (poResponse.getData() != null) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
+                remitPageDto.setPlaceOrderDTO(poDto);
             }else {
                 throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }

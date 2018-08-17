@@ -1,6 +1,7 @@
 package com.amx.amxlib.meta.model;
 
 import com.amx.amxlib.model.AbstractModel;
+import com.amx.amxlib.model.PlaceOrderDTO;
 
 public class RemittancePageDto extends AbstractModel {
 
@@ -13,6 +14,7 @@ public class RemittancePageDto extends AbstractModel {
 	private TransactionHistroyDTO trnxHistDto;
 
 	CurrencyMasterDTO forCur = null;
+	private PlaceOrderDTO placeOrderDTO=null;
 
 	public CurrencyMasterDTO getForCur() {
 		return forCur;
@@ -51,6 +53,14 @@ public class RemittancePageDto extends AbstractModel {
 	@Override
 	public String getModelType() {
 		return "remittance-page-dto";
+	}
+	
+	public PlaceOrderDTO getPlaceOrderDTO() {
+		return placeOrderDTO;
+	}
+
+	public void setPlaceOrderDTO(PlaceOrderDTO placeOrderDTO) {
+		this.placeOrderDTO = placeOrderDTO;
 	}
 
 }
