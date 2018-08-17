@@ -10,7 +10,7 @@ import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 
 public interface AuthenticationLimitCheckDAO extends JpaRepository<AuthenticationLimitCheckView, Serializable> {
 
-	@Query(value = "select cts from AuthenticationLimitCheckView cts where authorizationType='27'")
+	@Query(value = "select cts from AuthenticationLimitCheckView cts where authorizationType in ('27','35','36')")
 	public List<AuthenticationLimitCheckView> getContactUsTime();
 
 	@Query("select cts from AuthenticationLimitCheckView cts where authorizationType='28'")
