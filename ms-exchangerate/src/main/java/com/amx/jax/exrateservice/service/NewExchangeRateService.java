@@ -93,7 +93,11 @@ public class NewExchangeRateService extends ExchangeRateService {
 			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 		}
 
-		return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
+		if (fcAmount != null) {
+			return createBreakUpFromForeignCurrency(pips.get(0).getDerivedSellRate(), fcAmount);
+		} else {
+			return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
+		}
 	}
 
 	/**
