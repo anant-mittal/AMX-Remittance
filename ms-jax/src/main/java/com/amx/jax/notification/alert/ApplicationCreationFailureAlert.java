@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -38,6 +40,8 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public List<String> getAlertContacts(CommunicationChannel notificationType) {
@@ -47,9 +51,9 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
-
 		// TODO fetch bene and customer details
-		// TODO fill data in RemittanceTransactionFailureAlertModel
+		// TODO fill data in RemittanceTransactionFailureAlertModel'		
+		logger.info("Inside Application Creation Failure --->"+ex);
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
 		BenificiaryListView benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
 
