@@ -141,7 +141,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return null;
 	}*/
 
-	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
+	/*public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		if(offsiteCustRegModel.getCivilId() == null)
 			throw new GlobalException("Null civil id passed ", JaxError.BLANK_CIVIL_ID);
@@ -196,7 +196,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			LOGGER.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
 		LOGGER.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
-	}
+	}*/
 
 	/*@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
@@ -239,7 +239,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	@SuppressWarnings("null")
+	/*@SuppressWarnings("null")
 	public AmxApiResponse<String, Object> validateOTP(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		LOGGER.info("In validateopt of civilid: " + offsiteCustRegModel.getCivilId());
 		String civilId = offsiteCustRegModel.getCivilId();
@@ -279,21 +279,21 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Employee Authentication Successfull");		
 		obj.setMessageKey("AUTH_SUCCESS");
 		return obj;
-	}
+	}*/
 	
 	/**
 	 * reset lock
 	 */
-	protected void unlockCustomer(Employee employee) {
+	/*protected void unlockCustomer(Employee employee) {
 		if (employee.getLockCnt() != null || employee.getLockDt() != null) {
 			employee.setLockCnt(null);
 			employee.setLockDt(null);
 			repo.save(employee);
 		}
 		employee.setTokenSentCount(BigDecimal.ZERO);
-	}
+	}*/
 	
-	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
+	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
 		List<ComponentDataDto> list = new ArrayList<>();
@@ -310,7 +310,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		if (tempList.isEmpty())
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
 		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
-		return AmxApiResponse.build(list);
+		return AmxApiResponse.buildList(list);
 	}
 
 	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {

@@ -88,7 +88,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return countryService.getCountryListOffsite();
 	}*/	
 	
-	@RequestMapping(value = "/employee-send-otp", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/employee-send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.SEND_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
@@ -100,7 +100,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateOTP(offsiteCustRegModel);
-	}
+	}*/
 	
 	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
 	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
