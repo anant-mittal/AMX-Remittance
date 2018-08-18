@@ -12,7 +12,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
+import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -71,8 +73,10 @@ public class OmannetClient implements PayGClient {
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
-		configMap.put("responseUrl",
-				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
+        configMap.put("responseUrl",
+	                  OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+//		configMap.put("responseUrl",
+//				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
 		configMap.put("keystorePath", OmemnetCertpath);
 		configMap.put("aliasName", OmemnetAliasName);
@@ -88,7 +92,6 @@ public class OmannetClient implements PayGClient {
 			pipe.setCurrency((String) configMap.get("currency"));
 			pipe.setLanguage((String) configMap.get("languageCode"));
 			pipe.setResponseURL((String) configMap.get("responseUrl"));
-		    //pipe.setErrorURL("https://paygd-omn.modernexchange.com");
 		    pipe.setErrorURL((String) configMap.get("responseUrl"));
 			pipe.setResourcePath((String) configMap.get("resourcePath"));
 			pipe.setKeystorePath((String) configMap.get("keystorePath"));
@@ -118,15 +121,11 @@ public class OmannetClient implements PayGClient {
 
 	@SuppressWarnings("finally")
 	@Override
-	public PayGResponse capture(PayGResponse gatewayResponse) {
+	public PayGResponse capture(PayGResponse gatewayResponse,Channel channel) {
 
 		// Capturing GateWay Response
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
-		/*gatewayResponse.setRef(request.getParameter("ref"));
-		gatewayResponse.setPostDate(request.getParameter("postdate"));
-		gatewayResponse.setTrackId(request.getParameter("trackid"));
-		gatewayResponse.setTranxId(request.getParameter("tranid"));*/
 		gatewayResponse.setResponseCode(request.getParameter("responseData"));
 		gatewayResponse.setUdf1(request.getParameter("udf1"));
 		gatewayResponse.setUdf2(request.getParameter("udf2"));
@@ -164,6 +163,8 @@ public class OmannetClient implements PayGClient {
 		if (tranData == null) {
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
+			
+			String resultReponse = pipe.getResult();
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -171,26 +172,38 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			gatewayResponse.setError(pipe.getResult());
-			gatewayResponse.setErrorText(pipe.getResult());
-			gatewayResponse.setUdf5(pipe.getResponseCode());
+			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
+				gatewayResponse.setError(pipe.getError());
+				gatewayResponse.setErrorText(pipe.getError_text());
+			}else {
+				gatewayResponse.setError(pipe.getResult());
+				gatewayResponse.setErrorText(pipe.getResult());
+			}
+	
+	    	for(ResponseCode res : ResponseCode.values()) {
+				if(resultReponse.contains(res.getResponseCode()))
+				{
+					gatewayResponse.setResult(res.toString());
+					break;
+				}
+			}
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
 
-		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
-		// Capturing JAX Response
-		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
-		gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
-		gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());
+		if (channel.equals(Channel.ONLINE)) {
+	        PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
+	        // Capturing JAX Response
+	        gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());
+	        gatewayResponse.setCollectionDocCode(resdto.getCollectionDocumentCode().toString());
+	        gatewayResponse.setCollectionDocNumber(resdto.getCollectionDocumentNumber().toString());  
+		}
 
 		if ("CAPTURED".equalsIgnoreCase(gatewayResponse.getResult())) {
 			gatewayResponse.setPayGStatus(PayGStatus.CAPTURED);
-		}	
-//		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
-//			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
-//		} 
-		else {
+		} else if ("CANCELED".equalsIgnoreCase(gatewayResponse.getResult())) {
+			gatewayResponse.setPayGStatus(PayGStatus.CANCELLED);
+		} else {
 			gatewayResponse.setPayGStatus(PayGStatus.NOT_CAPTURED);
 		}
 		return gatewayResponse;

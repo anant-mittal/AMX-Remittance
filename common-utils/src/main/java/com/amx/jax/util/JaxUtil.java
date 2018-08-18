@@ -14,11 +14,22 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.stereotype.Component;
 
+/**
+ * The Class JaxUtil.
+ */
 @Component
 public class JaxUtil {
 
+	/** The logger. */
 	Logger logger = LoggerFactory.getLogger(getClass());
-	
+
+	/**
+	 * Use {@link com.amx.utils.Random#randomNumeric(int)}
+	 *
+	 * @param length the length
+	 * @return the string
+	 */
+	@Deprecated
 	public String createRandomPassword(int length) {
 		String validChars = "1234567890";
 		String password = "";
@@ -27,7 +38,14 @@ public class JaxUtil {
 		}
 		return password;
 	}
-	
+
+	/**
+	 * Builds the error expressions.
+	 *
+	 * @param respCode the resp code
+	 * @param values the values
+	 * @return the string
+	 */
 	public String buildErrorExpressions(String respCode, List<String> values) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
@@ -41,7 +59,14 @@ public class JaxUtil {
 		}
 		return sbuf.toString();
 	}
-	
+
+	/**
+	 * Builds the error expression.
+	 *
+	 * @param respCode the resp code
+	 * @param value the value
+	 * @return the string
+	 */
 	public String buildErrorExpression(String respCode, Object value) {
 		final String DELIM = ":";
 		StringBuffer sbuf = new StringBuffer();
@@ -50,6 +75,13 @@ public class JaxUtil {
 		return sbuf.toString();
 	}
 
+	/**
+	 * Gets the random integers from list.
+	 *
+	 * @param input the input
+	 * @param size the size
+	 * @return the random integers from list
+	 */
 	public List<Integer> getRandomIntegersFromList(List<Integer> input, int size) {
 		int totalSize = input.size();
 		List<Integer> output = new ArrayList<>();
@@ -64,6 +96,11 @@ public class JaxUtil {
 		return output;
 	}
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		JaxUtil util = new JaxUtil();
 		List<Integer> input = new ArrayList<>();
@@ -76,6 +113,13 @@ public class JaxUtil {
 		util.getRandomIntegersFromList(input, size);
 	}
 
+	/**
+	 * Gets the random integers from list.
+	 *
+	 * @param questions the questions
+	 * @param size the size
+	 * @return the random integers from list
+	 */
 	public List<BigDecimal> getRandomIntegersFromList(List<BigDecimal> questions, Integer size) {
 		List<Integer> questionsInt = new ArrayList<>();
 		List<BigDecimal> result = new ArrayList<>();
@@ -85,6 +129,12 @@ public class JaxUtil {
 		return result;
 	}
 
+	/**
+	 * Checks if is null zero big decimal check.
+	 *
+	 * @param value the value
+	 * @return true, if is null zero big decimal check
+	 */
 	public static boolean isNullZeroBigDecimalCheck(BigDecimal value) {
 		if (value != null && value.compareTo(BigDecimal.ZERO) != 0) {
 			return true;
@@ -93,6 +143,14 @@ public class JaxUtil {
 		}
 	}
 
+	/**
+	 * Find element.
+	 *
+	 * @param <T> the generic type
+	 * @param set the set
+	 * @param element the element
+	 * @return the t
+	 */
 	public <T> T findElement(Set<T> set, T element) {
 		T output = null;
 		if (set.contains(element)) {
@@ -106,6 +164,11 @@ public class JaxUtil {
 		return output;
 	}
 
+	/**
+	 * Gets the months list.
+	 *
+	 * @return the months list
+	 */
 	public Map<String, String> getMonthsList() {
 
 		String[] monthsDesc = new DateFormatSymbols().getMonths();
@@ -116,13 +179,27 @@ public class JaxUtil {
 		}
 		return monthMap;
 	}
-	
+
+	/**
+	 * Gets the short month.
+	 *
+	 * @param index the index
+	 * @return the short month
+	 */
 	public String getShortMonth(int index) {
 
 		String[] monthCodes = new DateFormatSymbols().getShortMonths();
 		return monthCodes[index];
 	}
-	
+
+	/**
+	 * Convert.
+	 *
+	 * @param <T> the generic type
+	 * @param <E> the element type
+	 * @param fromObject the from object
+	 * @param toObject the to object
+	 */
 	public <T, E> void convert(T fromObject, E toObject) {
 		try {
 			BeanUtils.copyProperties(toObject, fromObject);
@@ -130,4 +207,22 @@ public class JaxUtil {
 			logger.error("error in convert", e);
 		}
 	}
+	
+	/**
+	 * Converts only non null properties of bean
+	 *
+	 * @param <T> the generic type
+	 * @param <E> the element type
+	 * @param fromObject the from object
+	 * @param toObject the to object
+	 */
+	public <T, E> void convertNotNull(T fromObject, E toObject) {
+		try {
+			NullAwareBeanUtilsBean.getInstance().copyProperties(toObject, fromObject);
+		} catch (Exception e) {
+			logger.error("error in convert", e);
+		}
+	}
+	
+	
 }

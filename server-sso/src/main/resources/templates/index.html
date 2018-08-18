@@ -429,7 +429,7 @@
 			</div>
 			<div class="form-row">
 				<div class="form-col">
-					<label>Prefix - OTP</label>
+					<label>Prefix - <span class="prefix">---</span></label>
 					<div class="input-wrapper">
 						<input type="text" name="motp" class="invalid" />
 						<div class="error-wrapper"><div class="error-message">asdsad</div></div>
@@ -474,7 +474,7 @@
 		<div class="form">
 			<form class="login-form" action="/sso/auth/login" method="post">
 				<input type="text" placeholder="Username" name="username"/>
-				<input type="password"
+				<input type="hidden" th:value="${x_tranx_id}" name="x-tranx-id" /><input type="password"
 					placeholder="password" name="password" />
 				<button type="submit">Login</button>
 				<p class="message" hidden="hidden">
@@ -503,7 +503,7 @@
 				type : "post",
 				contentType :"application/json",
 				dataType : "json", 
-				url : SSO_LOGIN_URL,
+				url : SSO_LOGIN_URL + "?x-tranx-id="+$("[name= x-tranx-id]").val(),
 				data : JSON.stringify({
 					action : $(e.target).attr("on-click"),
 					ecnumber : $("[name=ecnumber]").val(),
@@ -512,7 +512,13 @@
 					"x-tranx-id" : $("[name= x-tranx-id]").val()
 				})
 			}).done(function(resp) {
-				console.log(reso);
+				console.log(resp);
+				if(resp.redirect){
+					window.location = resp.redirect;
+				}
+				if(resp.motpPrefix){
+					$(".prefix").text(resp.motpPrefix);
+				}
 			});
 		})
 

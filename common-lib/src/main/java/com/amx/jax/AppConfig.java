@@ -28,6 +28,9 @@ public class AppConfig {
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
 
+	public static final String APP_AUTH_KEY = "${app.auth.key}";
+	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
+
 	public static final String JAX_CDN_URL = "${jax.cdn.url}";
 	public static final String JAX_APP_URL = "${jax.app.url}";
 	public static final String JAX_SERVICE_URL = "${jax.service.url}";
@@ -36,6 +39,7 @@ public class AppConfig {
 	public static final String JAX_PAYMENT_URL = "${jax.payment.url}";
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
+	public static final String JAX_AUTH_URL = "${jax.auth.url}";
 
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
@@ -52,6 +56,13 @@ public class AppConfig {
 	@Value(APP_DEBUG)
 	@AppParamKey(AppParam.APP_DEBUG)
 	private Boolean debug;
+
+	@Value(APP_AUTH_KEY)
+	private String appAuthKey;
+
+	@Value(APP_AUTH_ENABLED)
+	@AppParamKey(AppParam.APP_AUTH_ENABLED)
+	private boolean appAuthEnabled;
 
 	@Value(APP_CACHE)
 	@AppParamKey(AppParam.APP_CACHE)
@@ -85,6 +96,10 @@ public class AppConfig {
 	@AppParamKey(AppParam.JAX_SSO_URL)
 	private String ssoURL;
 
+	@Value(JAX_AUTH_URL)
+	@AppParamKey(AppParam.JAX_AUTH_URL)
+	private String authURL;
+
 	@Value("${server.session.cookie.http-only}")
 	private boolean cookieHttpOnly;
 
@@ -116,7 +131,7 @@ public class AppConfig {
 	}
 
 	public Boolean isCache() {
-		return debug;
+		return cache;
 	}
 
 	public String getCdnURL() {
@@ -177,17 +192,34 @@ public class AppConfig {
 	}
 
 	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler) {
+	public RestTemplate restTemplate(RestTemplateBuilder builder, AppClientErrorHanlder errorHandler,
+			AppClientInterceptor appClientInterceptor) {
 		builder.rootUri("https://localhost.com");
 		RestTemplate restTemplate = builder.build();
 		restTemplate.setRequestFactory(new SimpleClientHttpRequestFactory());
-		restTemplate.setInterceptors(Collections.singletonList(new AppClientInterceptor()));
+		restTemplate.setInterceptors(Collections.singletonList(appClientInterceptor));
 		restTemplate.setErrorHandler(errorHandler);
 		return restTemplate;
 	}
 
 	public String getSsoURL() {
 		return ssoURL;
+	}
+
+	public String getAuthURL() {
+		return authURL;
+	}
+
+	public void setAuthURL(String authURL) {
+		this.authURL = authURL;
+	}
+
+	public String getAppAuthKey() {
+		return appAuthKey;
+	}
+
+	public boolean isAppAuthEnabled() {
+		return appAuthEnabled;
 	}
 
 }

@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.amx.jax.model.AbstractModel;
+
 public class BenePersonalDetailModel extends AbstractModel {
 
 	/**

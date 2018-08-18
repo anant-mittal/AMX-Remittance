@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
+import com.amx.jax.ui.UIConstants.Features;
 
 /**
  * The Class WebAppConfig.
@@ -15,15 +16,11 @@ public class WebAppConfig {
 
 	/** The features. */
 	@TenantValue("${ui.features}")
-	private String[] features;
+	private Features[] features;
 
 	/** The app title. */
 	@TenantValue("${application.title}")
 	private String appTitle;
-
-	/** The element to search. */
-	@Value("${ui.features}")
-	private String[] elementToSearch;
 
 	/** The notification gap. */
 	@Value("${notification.sleep.gap}")
@@ -37,12 +34,15 @@ public class WebAppConfig {
 	@Value("${notification.range.short}")
 	private String notifyRangeShort;
 
+	@Value("${notification.geo.enabled}")
+	private boolean notifyGeoEnabled;
+
 	/**
 	 * Gets the features.
 	 *
 	 * @return the features
 	 */
-	public String[] getFeatures() {
+	public Features[] getFeatures() {
 		return features;
 	}
 
@@ -65,15 +65,6 @@ public class WebAppConfig {
 	}
 
 	/**
-	 * Gets the element to search.
-	 *
-	 * @return the element to search
-	 */
-	public String[] getElementToSearch() {
-		return elementToSearch;
-	}
-
-	/**
 	 * Gets the notify range long.
 	 *
 	 * @return the notify range long
@@ -89,6 +80,10 @@ public class WebAppConfig {
 	 */
 	public String getNotifyRangeShort() {
 		return notifyRangeShort;
+	}
+
+	public boolean isNotifyGeoEnabled() {
+		return notifyGeoEnabled;
 	}
 
 }

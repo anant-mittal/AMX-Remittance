@@ -1,11 +1,17 @@
 package com.amx.jax.exception;
 
+import java.lang.reflect.Constructor;
+
+import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
-public abstract class AmxApiException extends RuntimeException {
+public abstract class AmxApiException extends AmxException {
+
+	private static final Logger LOGGER = LoggerService.getLogger(AmxApiException.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -15,44 +21,41 @@ public abstract class AmxApiException extends RuntimeException {
 
 	protected IExceptionEnum error;
 
-	protected HttpStatus httpStatus;
+	private Object meta;
 
 	public AmxApiException() {
-		super();
-		this.httpStatus = HttpStatus.BAD_REQUEST;
+		super(null, null, true, false);
 	}
 
-	public AmxApiException(AmxApiError error) {
-		super();
+	public AmxApiException(AmxApiError amxApiError) {
+		this();
+		this.meta = amxApiError.getMeta();
 		try {
-			this.error = getErrorIdEnum(error.getErrorId());
+			this.error = getErrorIdEnum(amxApiError.getErrorId());
 		} catch (Exception e) {
 		}
-		this.errorKey = error.getErrorId();
-		this.errorMessage = error.getErrorMessage();
+		this.errorKey = amxApiError.getErrorId();
+		this.errorMessage = amxApiError.getErrorMessage();
 	}
 
 	public AmxApiException(String errorMessage) {
-		super();
+		this();
 		this.errorMessage = errorMessage;
 	}
 
+	public AmxApiException(IExceptionEnum error) {
+		this();
+		this.error = error;
+	}
+
 	public AmxApiException(String errorMessage, String errorCode) {
-		super();
+		this();
 		this.errorMessage = errorMessage;
 		this.errorKey = errorCode;
 	}
 
 	public AmxApiException(Exception e) {
-		super(e);
-	}
-
-	public String getErrorMessage() {
-		return this.errorMessage;
-	}
-
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+		super(null, e, true, false);
 	}
 
 	public IExceptionEnum getError() {
@@ -75,8 +78,18 @@ public abstract class AmxApiException extends RuntimeException {
 		this.errorKey = errorKey;
 	}
 
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
 	public AmxApiError createAmxApiError() {
-		return new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		AmxApiError error = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		error.setException(this.getClass().getName());
+		return error;
 	}
 
 	/**
@@ -86,9 +99,28 @@ public abstract class AmxApiException extends RuntimeException {
 	 * 
 	 * @return
 	 */
-	public abstract AmxApiException getInstance(AmxApiError apiError);
+	public AmxApiException getInstance(AmxApiError apiError) {
+		try {
+			Constructor<? extends AmxApiException> constructor = this.getClass().getConstructor(AmxApiError.class);
+			return constructor.newInstance(apiError);
+
+		} catch (Exception e) {
+			LOGGER.error("error occured in getinstance method", e);
+		}
+		return null;
+	}
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
+
+	public Object getMeta() {
+		return meta;
+	}
+
+	public void setMeta(Object meta) {
+		this.meta = meta;
+	}
+
+	public abstract boolean isReportable();
 
 	public HttpStatus getHttpStatus() {
 		return httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus;

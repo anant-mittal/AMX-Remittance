@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -172,12 +171,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveSecurityQuestions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		} catch (Exception ae) {
+			return JaxSystemError.evaluate(ae);
+		}
 
 	}
 
@@ -357,7 +353,9 @@ public class UserClient extends AbstractJaxServiceClient {
 		try {
 			LOGGER.info("Bene Clinet to get bene list Input String :");
 			String url = this.getBaseUrl() + USER_API_ENDPOINT + "/myprofile-info/";
+			// new HttpHeaders()
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			// HttpEntity<Object> requestEntity = new HttpEntity<Object>(new HttpHeaders());
 			return restService.ajax(url).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerDto>>() {
 					});
@@ -365,7 +363,7 @@ public class UserClient extends AbstractJaxServiceClient {
 			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in getMyProfileInfo : ", e);
-			throw new JaxSystemError();
+			throw new JaxSystemError(e);
 		} // end of try-catch
 
 	}

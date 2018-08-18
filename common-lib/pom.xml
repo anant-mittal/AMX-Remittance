@@ -6,6 +6,7 @@
 	<packaging>jar</packaging>
 	<name>common-lib</name>
 	<url>http://maven.apache.org</url>
+	<description>Common Spring boot lib  for amx projects</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -22,7 +23,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -48,6 +48,18 @@
 			<version>1.5.10</version>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+			<version>2.6.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger-ui</artifactId>
+			<version>2.6.1</version>
+			<scope>compile</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>commons-lang</groupId>
@@ -55,5 +67,34 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
-	<description>Common utils library for boot projects</description>
+
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Enable deploy for this submodule. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
 </project>

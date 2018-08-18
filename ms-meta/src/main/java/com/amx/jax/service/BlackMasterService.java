@@ -10,7 +10,6 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
-import com.amx.jax.repository.IBlackMasterRepository;
 import com.amx.jax.services.AbstractService;
 
 @Service

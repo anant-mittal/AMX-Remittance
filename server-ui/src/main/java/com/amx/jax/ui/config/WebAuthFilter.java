@@ -48,7 +48,7 @@ public class WebAuthFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (!sessionService.validateSessionUnique()) {
+		if (!sessionService.isRequestAuthorized()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
@@ -57,8 +57,10 @@ public class WebAuthFilter implements Filter {
 			if (referrer != null) {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
-			AppContextUtil.setActorId(
-					new AuditActor(AuditActor.ActorType.CUSTOMER, sessionService.getUserSession().getUserid()));
+
+			AppContextUtil
+					.setActorId(new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+							: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
 			chain.doFilter(req, resp);
 		}
 

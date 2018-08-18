@@ -1,7 +1,5 @@
 package com.amx.jax.postman;
 
-import java.util.Map;
-
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
@@ -31,9 +29,5 @@ public interface PostManService {
 	public SMS sendSMSAsync(SMS sms) throws PostManException;
 
 	public File processTemplate(File file) throws PostManException;
-
-	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException;
-
-	public Map<String, Object> getMap(String url) throws PostManException;
 
 }

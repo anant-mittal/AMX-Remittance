@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
@@ -39,6 +41,8 @@ public class EmailService {
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
+	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
+
 	/** The template utils. */
 	@Autowired
 	private TemplateUtils templateUtils;
@@ -50,6 +54,9 @@ public class EmailService {
 	/** The mail from. */
 	@TenantValue("${spring.mail.from}")
 	private String mailFrom;
+
+	@TenantValue("${spring.mail.from.title}")
+	private String mailFromTitle;
 
 	/** The mail host. */
 	@TenantValue("${spring.mail.host}")
@@ -147,6 +154,7 @@ public class EmailService {
 	 */
 	public Email sendEmail(Email email) throws PostManException {
 
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
 		try {
 			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
@@ -176,11 +184,12 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
 			}
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return email;
@@ -197,14 +206,12 @@ public class EmailService {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public Email send(Email eParams) throws MessagingException, IOException {
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
+	private Email send(Email eParams) throws MessagingException, IOException {
 		if (eParams.isHtml()) {
 			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
-		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 
@@ -231,11 +238,23 @@ public class EmailService {
 			eParams.setFrom(mailFrom);
 		}
 
+		String fromEmail = null;
+		String fromTitle = null;
+
+		Matcher matcher = pattern.matcher(eParams.getFrom());
+		if (matcher.find()) {
+			fromEmail = matcher.group(2);
+			fromTitle = matcher.group(1);
+		} else {
+			fromEmail = eParams.getFrom();
+			fromTitle = eParams.getFrom();
+		}
+
 		if (eParams.getReplyTo() == null || Constants.DEFAULT_STRING.equals(eParams.getReplyTo())) {
 			eParams.setReplyTo(eParams.getFrom());
 		}
 
-		helper.setFrom(eParams.getFrom());
+		helper.setFrom(new InternetAddress(fromEmail, fromTitle));
 		helper.setReplyTo(eParams.getReplyTo());
 
 		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();

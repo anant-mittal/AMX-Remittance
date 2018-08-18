@@ -1,14 +1,9 @@
 package com.amx.jax.ui.response;
 
-import java.io.Serializable;
-import java.util.List;
-
-import org.springframework.http.HttpStatus;
-
 import com.amx.amxlib.error.JaxError;
-import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.ui.UIConstants;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
 /**
@@ -19,22 +14,10 @@ import com.amx.utils.ContextUtil;
  * @param <M>
  *            the generic type
  */
-public class ResponseWrapperM<T, M> implements Serializable {
+public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 7545829974699803746L;
-
-	/** The timestamp. */
-	private Long timestamp = null;
-
-	/** The status. */
-	private String status = "200";
-
-	/** The status key. */
-	private WebResponseStatus statusKey = WebResponseStatus.SUCCESS;
-
-	/** The message. */
-	private String message = UIConstants.EMPTY;
 
 	/** The message key. */
 	private String messageKey = UIConstants.EMPTY;
@@ -42,24 +25,11 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	/** The redirect url. */
 	private String redirectUrl = null;
 
-	/** The exception. */
-	private String exception = null;
-
-	/** The data. */
-	private T data = null;
-
-	/** The meta. */
-	private M meta = null;
-
-	/** The errors. */
-	private List<ResponseError> errors = null;
-
 	/**
 	 * Instantiates a new response wrapper M.
 	 */
 	public ResponseWrapperM() {
 		super();
-		this.timestamp = System.currentTimeMillis();
 		this.traceId = ContextUtil.getTraceId();
 	}
 
@@ -110,25 +80,6 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	}
 
 	/**
-	 * Gets the errors.
-	 *
-	 * @return the errors
-	 */
-	public List<ResponseError> getErrors() {
-		return errors;
-	}
-
-	/**
-	 * Sets the errors.
-	 *
-	 * @param errors
-	 *            the new errors
-	 */
-	public void setErrors(List<ResponseError> errors) {
-		this.errors = errors;
-	}
-
-	/**
 	 * Gets the redirect url.
 	 *
 	 * @return the redirect url
@@ -167,25 +118,6 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	}
 
 	/**
-	 * Gets the data.
-	 *
-	 * @return the data
-	 */
-	public T getData() {
-		return data;
-	}
-
-	/**
-	 * Sets the data.
-	 *
-	 * @param data
-	 *            the new data
-	 */
-	public void setData(T data) {
-		this.data = data;
-	}
-
-	/**
 	 * Update data.
 	 *
 	 * @param data
@@ -210,108 +142,18 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	}
 
 	/**
-	 * Gets the timestamp.
-	 *
-	 * @return the timestamp
-	 */
-	public Long getTimestamp() {
-		return timestamp;
-	}
-
-	/**
-	 * Sets the timestamp.
-	 *
-	 * @param timestamp
-	 *            the new timestamp
-	 */
-	public void setTimestamp(Long timestamp) {
-		this.timestamp = timestamp;
-	}
-
-	/**
-	 * Gets the status key.
-	 *
-	 * @return the status key
-	 */
-	public WebResponseStatus getStatusKey() {
-		return statusKey;
-	}
-
-	/**
-	 * Sets the status key.
-	 *
-	 * @param statusKey
-	 *            the new status key
-	 */
-	public void setStatusKey(WebResponseStatus statusKey) {
-		this.statusKey = statusKey;
-	}
-
-	/**
-	 * Gets the status.
-	 *
-	 * @return the status
-	 */
-	public String getStatus() {
-		return status;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param status
-	 *            the new status
-	 */
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	/**
-	 * Sets the status.
-	 *
-	 * @param status
-	 *            the new status
-	 */
-	public void setStatus(HttpStatus status) {
-		if (status.is5xxServerError()) {
-			this.statusKey = WebResponseStatus.SERVER_ERROR;
-		} else if (status.is4xxClientError()) {
-			this.statusKey = WebResponseStatus.CLIENT_ERROR;
-		} else if (status.is3xxRedirection()) {
-			this.statusKey = WebResponseStatus.REDIRECTION;
-		}
-		this.status = ArgUtil.parseAsString(status.value());
-		this.message = status.getReasonPhrase();
-	}
-
-	/**
 	 * Sets the status.
 	 *
 	 * @param status
 	 *            the new status
 	 */
 	public void setStatus(WebResponseStatus status) {
-		this.statusKey = status;
+		this.statusKey = status.name();
 		this.status = status.getCode();
 	}
 
-	/**
-	 * Gets the message.
-	 *
-	 * @return the message
-	 */
-	public String getMessage() {
-		return message;
-	}
-
-	/**
-	 * Sets the message.
-	 *
-	 * @param message
-	 *            the new message
-	 */
-	public void setMessage(String message) {
-		this.message = message;
+	public void setStatusKey(WebResponseStatus error) {
+		this.statusKey = error.name();
 	}
 
 	/**
@@ -391,8 +233,10 @@ public class ResponseWrapperM<T, M> implements Serializable {
 	 * @param jaxExcep
 	 *            the jax excep
 	 */
-	public void setMessage(WebResponseStatus status, AbstractJaxException jaxExcep) {
+	@SuppressWarnings("unchecked")
+	public void setMessage(WebResponseStatus status, AmxApiException jaxExcep) {
 		this.setMessage(status, jaxExcep.getErrorKey(), jaxExcep.getErrorMessage());
+		this.updateMeta((M) jaxExcep.getMeta());
 	}
 
 	/**
@@ -407,44 +251,6 @@ public class ResponseWrapperM<T, M> implements Serializable {
 		this.setStatus(status);
 		this.message = excep.getMessage();
 		this.exception = excep.getClass().getName();
-	}
-
-	/**
-	 * Gets the meta.
-	 *
-	 * @return the meta
-	 */
-	public M getMeta() {
-		return meta;
-	}
-
-	/**
-	 * Sets the meta.
-	 *
-	 * @param meta
-	 *            the new meta
-	 */
-	public void setMeta(M meta) {
-		this.meta = meta;
-	}
-
-	/**
-	 * Gets the exception.
-	 *
-	 * @return the exception
-	 */
-	public String getException() {
-		return exception;
-	}
-
-	/**
-	 * Sets the exception.
-	 *
-	 * @param exception
-	 *            the new exception
-	 */
-	public void setException(String exception) {
-		this.exception = exception;
 	}
 
 }

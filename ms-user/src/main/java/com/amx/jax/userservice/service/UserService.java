@@ -28,7 +28,6 @@ import com.amx.amxlib.exception.jax.UserNotFoundException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.AbstractModel;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -55,6 +54,7 @@ import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.AbstractModel;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IContactDetailDao;
@@ -403,8 +403,10 @@ public class UserService extends AbstractUserService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			jaxNotificationService.sendOtpEmail(personinfo, model);
+		if (channels != null && (channels.contains(CommunicationChannel.EMAIL) ||  
+		        channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
+			
+		    jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
 	}
@@ -424,6 +426,15 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(Random.randomAlpha(3));
 			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
+		
+		//set e-otp same as m-otp
+        if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
+            model.setHashedeOtp(hashedmOtp);
+            model.seteOtp(randmOtp);
+            model.seteOtpPrefix(model.getmOtpPrefix());
+            logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
+        }
+	      
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 
@@ -506,7 +517,7 @@ public class UserService extends AbstractUserService {
 		userValidationService.validatePassword(onlineCustomer, password);
 		userValidationService.validateCustIdProofs(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerData(onlineCustomer, customer);
-		userValidationService.validateBlackListedCustomer(customer);
+		userValidationService.validateBlackListedCustomerForLogin(customer);
 		ApiResponse response = getBlackApiResponse();
 		CustomerModel customerModel = convert(onlineCustomer);
 		// afterLoginSteps(onlineCustomer);
