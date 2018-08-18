@@ -74,12 +74,12 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return offsiteCustRegService.getModes();
 	}*/
 	
-	@RequestMapping(value ="/get-field-list" , method = RequestMethod.POST)
+	/*@RequestMapping(value ="/get-field-list" , method = RequestMethod.POST)
 	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(@RequestBody GetJaxFieldRequest model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIdDetailsFields(model);
-	}
+	}*/
 	
 	/*@RequestMapping(value = "/country", method = RequestMethod.GET)
 	public AmxApiResponse<List<CountryMasterView>,Object> getCountryListResponse() {
@@ -88,7 +88,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return countryService.getCountryListOffsite();
 	}*/	
 	
-	@RequestMapping(value = "/employee-send-otp", method = RequestMethod.POST)
+	/*@RequestMapping(value = "/employee-send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		JaxContextUtil.setJaxEvent(JaxEvent.SEND_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
@@ -100,7 +100,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		JaxContextUtil.setRequestModel(offsiteCustRegModel);
 		return  offsiteCustRegService.validateOTP(offsiteCustRegModel);
-	}
+	}*/
 	
 	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
 	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
@@ -150,22 +150,22 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	
 	@RequestMapping(value = "/articleList", method = RequestMethod.POST)
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(@RequestBody CommonRequest model){	
-		JaxContextUtil.setJaxEvent(JaxEvent.ARTICLE_LIST);
-		JaxContextUtil.setRequestModel(model);
-		return offsiteCustRegService.getArticleListResponse(model.getCountryId(),metaData.getLanguageId());
+		/*JaxContextUtil.setJaxEvent(JaxEvent.ARTICLE_LIST);
+		JaxContextUtil.setRequestModel(model);*/
+		return offsiteCustRegService.getArticleListResponse(model);
 	}
 	
 	@RequestMapping(value = "/designationList", method = RequestMethod.POST)
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(@RequestBody EmploymentDetailsRequest model){	
-		JaxContextUtil.setJaxEvent(JaxEvent.DESIGNATION_LIST);
-		JaxContextUtil.setRequestModel(model);
+		/*JaxContextUtil.setJaxEvent(JaxEvent.DESIGNATION_LIST);
+		JaxContextUtil.setRequestModel(model);*/
 		return offsiteCustRegService.getDesignationListResponse(model.getArticleId(),metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/incomeRangeList", method = RequestMethod.POST)
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model){	
-		JaxContextUtil.setJaxEvent(JaxEvent.INCOME_RANGE);
-		JaxContextUtil.setRequestModel(model);
+		/*JaxContextUtil.setJaxEvent(JaxEvent.INCOME_RANGE);
+		JaxContextUtil.setRequestModel(model);*/
 		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
 	}
 	
