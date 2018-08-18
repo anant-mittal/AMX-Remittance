@@ -24,7 +24,7 @@ public class CollectionPaymentDetailsViewService extends AbstractService {
 	public AmxApiResponse<CollectionPaymentDetailsViewModel, Object> getCollectionPaymentDetailsFromView(BigDecimal companyId, BigDecimal documentNo,
 			BigDecimal documentFinancialYear, BigDecimal documentCode){
 		List<CollectionPaymentDetailsViewModel> listPaymentDetails = collectionPaymentDetailsViewDao.getCollectedPaymentDetails(companyId, documentNo, documentFinancialYear, documentCode);
-
+		
 		if(listPaymentDetails.isEmpty()) {
 				throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 			} 

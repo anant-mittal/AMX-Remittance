@@ -67,12 +67,18 @@ public class CurrencyMasterService extends AbstractService {
 	
 	private Logger logger = Logger.getLogger(CurrencyMasterService.class);
 
-	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyDetails(BigDecimal currencyId) {
+	public ApiResponse getCurrencyDetails(BigDecimal currencyId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
+		} else {
+			response.getData().getValues().addAll(currencyList);
+			response.setResponseStatus(ResponseStatus.OK);
 		}
-		return AmxApiResponse.buildList(currencyList);
+
+		response.getData().setType("currencyMaster");
+		return response;
 
 	}
 
@@ -105,6 +111,7 @@ public class CurrencyMasterService extends AbstractService {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllOnlineCurrencyDetails() {
 		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
 				.findAll(new Sort("quoteName"));
+		
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		return AmxApiResponse.buildList(convert(currencyList));
@@ -123,9 +130,10 @@ public class CurrencyMasterService extends AbstractService {
 				}
 			}
 		}
+		
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		}
+		} 
 		return AmxApiResponse.buildList(convert(currencyList));
 	}
 

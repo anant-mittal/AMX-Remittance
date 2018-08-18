@@ -11,7 +11,6 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dao.BranchDetailDao;
 import com.amx.jax.dbmodel.BranchDetailModel;
 import com.amx.jax.meta.MetaData;
@@ -37,6 +36,7 @@ public class BranchDetailService extends AbstractService {
 	public AmxApiResponse<BranchDetailModel, Object> getBracnchDetailResponse() {
 		
 		List<BranchDetailModel> branchDetailList = branchDetailDao.getBranchDetailList(meta.getCountryId());
+		
 		if (branchDetailList.isEmpty()) {
 			throw new GlobalException("Branch Details are not available");
 		} 

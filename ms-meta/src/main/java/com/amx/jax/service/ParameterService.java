@@ -115,7 +115,7 @@ public class ParameterService extends AbstractService {
 		return authLimits;
 	}
 
-	public AmxApiResponse<JaxMetaParameter, Object> getJaxMetaParameter() {
+	public ApiResponse getJaxMetaParameter() {
 		List<AuthenticationLimitCheckView> allAuthLimits = authentication.findAll();
 		Map<String, BigDecimal> authMap = allAuthLimits.stream()
 				.filter(x -> (x.getAuthorizationType() != null && x.getAuthLimit() != null))
@@ -125,7 +125,11 @@ public class ParameterService extends AbstractService {
 		metaParams.setMaxDomAmountLimit((authMap.get(MAX_DOM_AMOUNT_LIMIT.getAuthType())));
 		ViewCompanyDetails company = companyService.getCompanyDetail(metaData.getLanguageId());
 		metaParams.setApplicationCountryId(company.getApplicationCountryId());
-		return AmxApiResponse.build(metaParams);
+		ApiResponse response = getBlackApiResponse();
+		response.getData().getValues().add(metaParams);
+		response.getData().setType("jaxmetaparameter");
+		response.setResponseStatus(ResponseStatus.OK);
+		return response;
 	}
 	
 	public List<TransactionLimitCheckView>  getAllTxnLimits(){

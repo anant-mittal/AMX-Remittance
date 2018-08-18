@@ -74,6 +74,7 @@ public class CountryService extends AbstractService {
 	
 	public AmxApiResponse<CountryMasterView, Object> getBusinessCountryResponse(BigDecimal languageId){
 		List<CountryMasterView> countryList = countryRepository.getBusinessCountry(languageId);
+		ApiResponse response = getBlackApiResponse();
 		if(countryList.isEmpty()) {
 			throw new GlobalException("Business country is not abaliable");
 		}

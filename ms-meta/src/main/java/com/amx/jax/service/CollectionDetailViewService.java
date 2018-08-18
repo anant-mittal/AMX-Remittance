@@ -26,7 +26,6 @@ public class CollectionDetailViewService extends AbstractService {
 
 		List<CollectionDetailViewModel> collectionDetailView = collectionDetailViewDao
 				.getCollectionDetailView(companyId, documentNo, documentFinancialYear, documentCode);
-
 		if (collectionDetailView.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
 		} 

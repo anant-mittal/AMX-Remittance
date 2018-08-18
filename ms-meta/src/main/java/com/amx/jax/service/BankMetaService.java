@@ -57,9 +57,15 @@ public class BankMetaService extends AbstractService {
 
 	public AmxApiResponse<BankMasterDTO, Object> getBanksApiResponseByCountryId(BigDecimal countryId) {
 		List<BankMasterModel> banks = this.getBanksByCountryId(countryId);
+		ApiResponse response = getBlackApiResponse();
 		if (banks.isEmpty()) {
 			throw new GlobalException("banks details not avaliable");
-		} 
+		} else {
+			response.getData().getValues().addAll(convert(banks));
+			response.setResponseStatus(ResponseStatus.OK);
+		}
+
+		response.getData().setType("bankmaster");
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
