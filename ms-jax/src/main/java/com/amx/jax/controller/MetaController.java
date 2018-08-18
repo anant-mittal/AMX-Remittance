@@ -14,36 +14,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.ApplicationSetupDTO;
-import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
-import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.amxlib.meta.model.JaxMetaParameter;
-import com.amx.amxlib.meta.model.MultiCountryDTO;
-import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
-import com.amx.amxlib.meta.model.TermsAndConditionDTO;
-import com.amx.amxlib.meta.model.ViewCityDto;
-import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
-import com.amx.amxlib.meta.model.ViewDistrictDto;
-import com.amx.amxlib.meta.model.ViewStateDto;
-import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
-import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
-import com.amx.jax.dbmodel.BranchDetailModel;
-import com.amx.jax.dbmodel.CollectionDetailViewModel;
-import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.CurrencyMasterModel;
-import com.amx.jax.dbmodel.PrefixModel;
-import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
-import com.amx.jax.dbmodel.UserFinancialYear;
-import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -81,6 +58,7 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  */
 @RestController
 @RequestMapping(META_API_ENDPOINT)
+@SuppressWarnings("rawtypes")
 public class MetaController {
 
 
