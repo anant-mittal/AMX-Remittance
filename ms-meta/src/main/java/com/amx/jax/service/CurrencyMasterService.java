@@ -69,15 +69,9 @@ public class CurrencyMasterService extends AbstractService {
 
 	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyDetails(BigDecimal currencyId) {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
-		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} else {
-			response.getData().getValues().addAll(currencyList);
-			response.setResponseStatus(ResponseStatus.OK);
 		}
-
-		response.getData().setType("currencyMaster");
 		return AmxApiResponse.buildList(currencyList);
 
 	}
@@ -111,18 +105,9 @@ public class CurrencyMasterService extends AbstractService {
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllOnlineCurrencyDetails() {
 		List<ViewOnlineCurrency> currencyList = (List<ViewOnlineCurrency>) viewOnlineCurrencyRepo
 				.findAll(new Sort("quoteName"));
-		ApiResponse response = getBlackApiResponse();
-		List<CurrencyMasterDTO> list = null;
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} else {
-			list = convert(currencyList);
-			response.getData().getValues().addAll(list);
-			response.getData().setType(list.get(0).getModelType());
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-
-		return AmxApiResponse.buildList(list);
+		return AmxApiResponse.buildList(convert(currencyList));
 	}
 	
 	// added by chetan 30/04/2018 list the country for currency.
@@ -138,29 +123,17 @@ public class CurrencyMasterService extends AbstractService {
 				}
 			}
 		}
-		ApiResponse response = getBlackApiResponse();
-		List<CurrencyMasterDTO> list = null;
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} else {
-			 list= convert(currencyList);
-			response.getData().getValues().addAll(list);
-			response.getData().setType(list.get(0).getModelType());
-			response.setResponseStatus(ResponseStatus.OK);
 		}
-		return AmxApiResponse.buildList(list);
+		return AmxApiResponse.buildList(convert(currencyList));
 	}
 
 	public AmxApiResponse<CurrencyMasterDTO, Object> getCurrencyByCountryId(BigDecimal countryId) {
 		List<CurrencyMasterModel> currencyList = getCurrencyMasterByCountryId(countryId);
-		ApiResponse response = getBlackApiResponse();
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} else {
-			response.getData().getValues().addAll(convertToModelDto(currencyList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("currencyMaster");
+		} 
 		return AmxApiResponse.buildList(convertToModelDto(currencyList));
 	}
 	
@@ -256,11 +229,7 @@ public class CurrencyMasterService extends AbstractService {
 				return;
 			}
 			currencyListDto.add(convertModel(currencyMaster));
-		});
-		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().addAll(currencyListDto);
-		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType("currencyMaster");
+		});		
 		return AmxApiResponse.buildList(currencyListDto);
 	}
 

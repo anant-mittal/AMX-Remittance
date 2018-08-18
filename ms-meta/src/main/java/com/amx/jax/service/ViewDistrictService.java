@@ -24,16 +24,9 @@ public class ViewDistrictService extends AbstractService{
 	
 	public AmxApiResponse<ViewDistrictDto, Object> getDistrict(BigDecimal stateId, BigDecimal districtId, BigDecimal languageId){
 		List<ViewDistrict> viewDistrict =viewDistrictDao.getDistrict(stateId, districtId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if(viewDistrict.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(viewDistrict));
-		response.setResponseStatus(ResponseStatus.OK);
-				}
-		
-		
-		response.getData().setType("district");
+		}
 		return AmxApiResponse.buildList(convert(viewDistrict));
 	}
 	
@@ -41,16 +34,9 @@ public class ViewDistrictService extends AbstractService{
 	
 	public AmxApiResponse<ViewDistrictDto, Object> getAllDistrict(BigDecimal stateId,BigDecimal languageId){
 		List<ViewDistrict> viewDistrict =viewDistrictDao.getAllDistrict(stateId,languageId);
-		ApiResponse response = getBlackApiResponse();
-		/*if(viewDistrict.isEmpty()) {
+		if(viewDistrict.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {*/
-		response.getData().getValues().addAll(convert(viewDistrict));
-		response.setResponseStatus(ResponseStatus.OK);
-				/*}*/
-		
-		
-		response.getData().setType("district");
+		}
 		return AmxApiResponse.buildList(convert(viewDistrict));
 	}
 

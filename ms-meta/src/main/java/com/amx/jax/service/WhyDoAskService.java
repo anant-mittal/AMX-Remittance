@@ -29,14 +29,9 @@ public class WhyDoAskService extends AbstractService{
 	
 	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyDoAskInformation(BigDecimal languageId,BigDecimal countryId){
 		List<WhyDoAskInformation> whyInfo = whyDoAskInformationRepository.getwhyDoAskInformation(languageId,countryId);
-		ApiResponse response = getBlackApiResponse();
 		if(whyInfo.isEmpty()) {
 			throw new GlobalException("Info not avaliable");
-		}else {
-		response.getData().getValues().addAll(convert(whyInfo));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("why");
 		return AmxApiResponse.buildList(convert(whyInfo));
 	}
 	

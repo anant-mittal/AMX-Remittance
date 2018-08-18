@@ -27,7 +27,7 @@ public class EmailMobileCheckService extends AbstractService{
 	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkEmail(BigDecimal languageId,BigDecimal countryId,String email){
 		List<ViewOnlineEmailMobileCheck> emailCheck = customerEmailMobileCheck.getEmailCheck(languageId, countryId, email);
 	
-		ApiResponse response = getBlackApiResponse();
+		/*ApiResponse response = getBlackApiResponse();
 		if(emailCheck.isEmpty()) {
 			response.setResponseStatus(ResponseStatus.OK);
 		}else if(emailCheck.size()==1){
@@ -37,7 +37,7 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(emailCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
-		response.getData().setType("email");
+		response.getData().setType("email");*/		
 		return AmxApiResponse.buildList(emailCheck);
 	}
 	
@@ -45,7 +45,7 @@ public class EmailMobileCheckService extends AbstractService{
 	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkMobile(BigDecimal languageId,BigDecimal countryId,String mobile){
 		List<ViewOnlineEmailMobileCheck> mobileCheck = customerEmailMobileCheck.getMobileCheck(languageId, countryId, mobile);
 	
-		ApiResponse response = getBlackApiResponse();
+		/*ApiResponse response = getBlackApiResponse();
 		if(mobileCheck.isEmpty()) {
 			response.setResponseStatus(ResponseStatus.OK);
 		}else if(mobileCheck.size()==1){
@@ -55,7 +55,7 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(mobileCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
-		response.getData().setType("mobile");
+		response.getData().setType("mobile");*/
 		return AmxApiResponse.buildList(mobileCheck);
 	}
 	

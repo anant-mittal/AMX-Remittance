@@ -27,15 +27,9 @@ public class ApplicationCountryService  extends AbstractService{
 	
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryListResponse(){
 		List<ApplicationSetup> appCountryList = applicationCountryRepository.findAll();
-		ApiResponse response = getBlackApiResponse();
 		if(appCountryList.isEmpty()) {
 			throw new GlobalException("Application country is not set");
-		}else {
-		response.getData().getValues().addAll(convert(appCountryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		
-		response.getData().setType("appl_country");
 		return AmxApiResponse.buildList(convert(appCountryList));
 		
 	}
@@ -46,14 +40,9 @@ public class ApplicationCountryService  extends AbstractService{
 	
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse(BigDecimal companyId,BigDecimal countryId){
 		List<ApplicationSetup> appCountryList = applicationCountryRepository.findByCountryIdAndCompanyId(companyId,countryId);
-		ApiResponse response = getBlackApiResponse();
 		if(appCountryList.isEmpty()) {
 			throw new GlobalException("Application list is not abaliable");
-		}else {
-		response.getData().getValues().addAll(convert(appCountryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("appl_country");
 		return AmxApiResponse.buildList(convert(appCountryList));
 	}
 	

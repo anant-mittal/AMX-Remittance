@@ -24,15 +24,9 @@ public class ViewStateService extends AbstractService{
 	IViewStateDao viewStateDao;
 	public AmxApiResponse<ViewStateDto, Object> getState(BigDecimal countryId, BigDecimal stateId, BigDecimal languageId){
 		List<ViewState> viewState =viewStateDao.getState(countryId, stateId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if(viewState.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(viewState));
-		response.setResponseStatus(ResponseStatus.OK);
-		
-		}
-		response.getData().setType("state");
+		}		
 		return AmxApiResponse.buildList(convert(viewState));
 	}
 	
@@ -41,15 +35,9 @@ public class ViewStateService extends AbstractService{
 	
 	public AmxApiResponse<ViewStateDto, Object> getStateAll(BigDecimal countryId,BigDecimal languageId){
 		List<ViewState> viewState =viewStateDao.getStateForCountry(countryId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if(viewState.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(viewState));
-		response.setResponseStatus(ResponseStatus.OK);
-		
 		}
-		response.getData().setType("state");
 		return AmxApiResponse.buildList(convert(viewState));
 	}
 	
