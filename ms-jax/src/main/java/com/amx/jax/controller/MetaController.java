@@ -58,7 +58,6 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  */
 @RestController
 @RequestMapping(META_API_ENDPOINT)
-@SuppressWarnings("rawtypes")
 public class MetaController {
 
 
