@@ -75,7 +75,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}*/
 	
 	@RequestMapping(value ="/get-field-list" , method = RequestMethod.POST)
-	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(@RequestBody GetJaxFieldRequest model) {
+	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(@RequestBody GetJaxFieldRequest model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getIdDetailsFields(model);
@@ -103,7 +103,7 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 	}*/
 	
 	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
-	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
+	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
 		//JaxContextUtil.setRequestModel();
 		return  offsiteCustRegService.sendIdTypes();

@@ -205,7 +205,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	}
 */
 	
-	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
+	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
@@ -214,7 +214,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		if(fieldList.isEmpty())
 			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
 		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
-		return AmxApiResponse.build(dtoList);
+		return AmxApiResponse.buildList(dtoList);
 	}
 
 	private List<JaxConditionalFieldRuleDto> convertData(List<JaxConditionalFieldRule> fieldList) {
