@@ -6,15 +6,17 @@ package com.amx.jax.rbaac.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.RbaacService;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.service.UserAuthService;
 
 /**
@@ -46,26 +48,24 @@ public class RbaacServiceApiController implements RbaacService {
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.INIT_AUTH, method = RequestMethod.POST)
-	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(@RequestParam String employeeNo,
-			@RequestParam String identity, @RequestParam String ipAddress) {
+	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(
+			@RequestBody UserAuthInitReqDTO userAuthInitReqDTO) {
 
-		LOGGER.info("Begin Init Auth for User: " + employeeNo + " from Ip Address: " + ipAddress);
-		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(employeeNo, identity,
-				ipAddress);
+		LOGGER.info("Begin Init Auth for User: " + userAuthInitReqDTO.getEmployeeNo() + " from Ip Address: "
+				+ userAuthInitReqDTO.getIpAddress());
+		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
 	}
 
 	@Override
 	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
-	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestParam String employeeNo,
-			@RequestParam String mOtpHash, @RequestParam(required = false) String eOtpHash,
-			@RequestParam String ipAddress) {
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestBody UserAuthorisationReqDTO reqDto) {
 
-		LOGGER.info("Received request for authorising User Access : " + employeeNo + " from Ip Address: " + ipAddress);
+		LOGGER.info("Received request for authorising User Access : " + reqDto.getEmployeeNo() + " from Ip Address: "
+				+ reqDto.getIpAddress() + " from device Id: " + reqDto.getDeviceId());
 
-		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(employeeNo, mOtpHash, eOtpHash,
-				ipAddress);
+		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(reqDto);
 
 		return AmxApiResponse.build(employeeDetailsDTO);
 	}

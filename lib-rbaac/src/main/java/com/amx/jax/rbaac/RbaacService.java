@@ -1,8 +1,10 @@
 package com.amx.jax.rbaac;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
 /**
  * The Interface RbaacService.
@@ -16,29 +18,32 @@ public interface RbaacService {
 	 */
 	public static class ApiEndPoints {
 
+		private static final String SERVICE_PREFIX = "/rbaac";
+		private static final String API_VERSION_V1 = "/v1";
+
 		/** The Constant INIT_AUTH. */
-		public static final String INIT_AUTH = "/v1/auth/init-auth";
+		public static final String INIT_AUTH = SERVICE_PREFIX + API_VERSION_V1 + "/auth/init-auth";
 
 		/** The Constant AUTHORISE. */
-		public static final String AUTHORISE = "/v1/auth/authorise";
+		public static final String AUTHORISE = SERVICE_PREFIX + API_VERSION_V1 + "/auth/authorise";
 
 		/** The Constant ROLES_GET. */
-		public static final String ROLES_GET = "/v1/roles/get";
+		public static final String ROLES_GET = SERVICE_PREFIX + API_VERSION_V1 + "/roles/get";
 
 		/** The Constant ROLES_SAVE. */
-		public static final String ROLES_SAVE = "/v1/roles/save";
+		public static final String ROLES_SAVE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/save";
 
 		/** The Constant ROLES_ALLOCATE. */
-		public static final String ROLES_ALLOCATE = "/v1/roles/access/allocate";
+		public static final String ROLES_ALLOCATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/allocate";
 
 		/** The Constant ROLES_UPDATE. */
-		public static final String ROLES_UPDATE = "/v1/roles/access/update";
+		public static final String ROLES_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/update";
 
 		/** The Constant ROLES_REVOKE. */
-		public static final String ROLES_REVOKE = "/v1/roles/access/revoke";
+		public static final String ROLES_REVOKE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/revoke";
 
 		/** The Constant UAC_UPDATE. */
-		public static final String UAC_UPDATE = "/v1/user/account/update";
+		public static final String UAC_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/user/account/update";
 
 	}
 
@@ -54,19 +59,21 @@ public interface RbaacService {
 	 *            the ip address
 	 * @return the amx api response
 	 */
-	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(String employeeNo, String identity,
-			String ipAddress);
+	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
 	 * Authorise user.
 	 *
-	 * @param employeeNo the employee no	
-	 * @param mOtpHash the m otp hash
-	 * @param eOtpHash the e otp hash
-	 * @param ipAddress the ip address
+	 * @param employeeNo
+	 *            the employee no
+	 * @param mOtpHash
+	 *            the m otp hash
+	 * @param eOtpHash
+	 *            the e otp hash
+	 * @param ipAddress
+	 *            the ip address
 	 * @return the amx api response
 	 */
-	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(String employeeNo, String mOtpHash, String eOtpHash,
-			String ipAddress);
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 }

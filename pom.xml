@@ -47,7 +47,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-auth</artifactId>
+				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
 			<dependency>
@@ -147,7 +147,7 @@
 		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
-		<module>lib-auth</module>
+		<module>lib-rbaac</module>
 		<module>lib-sso</module>
 		<module>lib-jax</module>
 
@@ -163,7 +163,7 @@
 		<!-- <module>ms-branch</module> -->
 		<module>ms-jax</module>
 		<module>jax-client</module>
-		<module>ms-auth</module>
+		<module>ms-rbaac</module>
 
 		<module>ms-scheduler</module>
 

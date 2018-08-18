@@ -14,6 +14,8 @@ public interface ILoginRepository extends JpaRepository<Employee, Serializable> 
 
 	public List<Employee> findByEmployeeNumberAndCivilIdAndIpAddress(String empcode, String identity, String ipAddress);
 
+	public List<Employee> findByEmployeeNumberAndCivilIdAndDeviceId(String empcode, String identity, String deviceId);
+	
 	public Employee findByUserNameAndPassword(String user, String pass);
 
 	public Employee findByEmployeeNumber(String empNo);

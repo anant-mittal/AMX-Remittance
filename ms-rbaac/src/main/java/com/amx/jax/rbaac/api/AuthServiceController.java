@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,8 +14,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.rbaac.AuthService;
-import com.amx.jax.rbaac.dto.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.UserDetailsDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.models.PermScope;
 import com.amx.jax.rbaac.models.Permission;
 import com.amx.jax.rbaac.service.AuthServiceImpl;

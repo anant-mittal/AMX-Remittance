@@ -57,13 +57,28 @@ public class RemittanceClientTest {
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(1424));
+		request.setLocalAmount(new BigDecimal(10));
+		response = client.getPurposeOfTransactions(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+	
+	@Test
+	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setTenant(Tenant.KWT2);
+		ApiResponse<PurposeOfTransactionModel> response = null;
 		response = client.getPurposeOfTransactions(new BigDecimal(1424));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
