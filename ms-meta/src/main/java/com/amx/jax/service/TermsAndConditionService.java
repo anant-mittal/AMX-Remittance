@@ -11,6 +11,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.TermsAndCondition;
 import com.amx.jax.repository.ITermsAndConditionRepository;
 import com.amx.jax.services.AbstractService;
@@ -27,7 +28,7 @@ public class TermsAndConditionService extends AbstractService{
 	@Autowired
 	ITermsAndConditionRepository termsAndCondition;
 	
-	public ApiResponse getTermsAndCondition(BigDecimal languageId) {
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndCondition(BigDecimal languageId) {
 		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndCondition(languageId);
 		ApiResponse response = getBlackApiResponse();
 		if(termsConditionList.isEmpty()) {
@@ -38,11 +39,11 @@ public class TermsAndConditionService extends AbstractService{
 		}
 		
 		response.getData().setType("terms");
-		return response;
+		return AmxApiResponse.buildList(convert(termsConditionList));
 	}
 	
 	
-	public ApiResponse getTermsAndConditionAsPerCountry(BigDecimal languageId,BigDecimal countryId) {
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountry(BigDecimal languageId,BigDecimal countryId) {
 		List<TermsAndCondition> termsConditionList = termsAndCondition.getTermsAndConditionBasedOnCountry(languageId, countryId);
 		ApiResponse response = getBlackApiResponse();
 		if(termsConditionList.isEmpty()) {
@@ -53,7 +54,7 @@ public class TermsAndConditionService extends AbstractService{
 		}
 		
 		response.getData().setType("terms");
-		return response;
+		return AmxApiResponse.buildList(convert(termsConditionList));
 	}
 	
 	
