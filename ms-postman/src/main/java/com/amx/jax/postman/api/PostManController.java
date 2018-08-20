@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
+import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -28,7 +29,6 @@ import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.postman.service.FBPushService;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;

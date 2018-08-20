@@ -1,6 +1,10 @@
 package com.amx.jax.client;
 
+import static com.amx.amxlib.constant.ApiEndpoint.EXCHANGE_RATE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 import javax.validation.ValidationException;
 
@@ -10,11 +14,17 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -119,5 +129,32 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 			}
 		}
 		return response.getBody();
+	}
+	
+	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal fromAmount, BigDecimal toAmount,
+			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal derivedSellRate) throws ResourceNotFoundException, InvalidInputException {
+		try {
+			String endpoint = PLACE_ORDER_ENDPOINT+"/get/placeorder/ontrigger";
+			StringBuilder sb = new StringBuilder();
+			sb.append("?").append("fromAmount=").append(fromAmount);
+			sb.append("&").append("toAmount=").append(toAmount);
+			sb.append("&").append("countryId=").append(countryId);
+			sb.append("&").append("currencyId=").append(currencyId);
+			if(bankId != null) {
+				sb.append("&").append("bankId=").append(bankId);
+			}
+			sb.append("&").append("derivedSellRate=").append(derivedSellRate);
+			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			HttpEntity<PlaceOrderNotificationDTO> requestEntity = new HttpEntity<PlaceOrderNotificationDTO>(getHeader());
+			log.info("calling getExchangeRate api: " + getPlaceOrderRateUrl);
+			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderNotificationDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			log.error("exception in place Order details :", e);
+			throw new JaxSystemError();
+		} 
 	}
 }
