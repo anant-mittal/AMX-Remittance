@@ -235,11 +235,24 @@ public class ExchangeRateService extends AbstractService {
 		return createBreakUp(exrate, lcAmount);
 	}
 
-	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
+	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal lcAmount) {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConvertedFCAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setInverseRate(exrate);
+			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
+		return breakup;
+	}
+	
+	ExchangeRateBreakup createBreakUpFromForeignCurrency(BigDecimal exrate, BigDecimal fcAmount) {
+		ExchangeRateBreakup breakup = null;
+		if (exrate != null) {
+			breakup = new ExchangeRateBreakup();
+			breakup.setConvertedLCAmount(fcAmount.multiply(exrate));
+			breakup.setConvertedFCAmount(fcAmount);
 			breakup.setInverseRate(exrate);
 			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
 		}
