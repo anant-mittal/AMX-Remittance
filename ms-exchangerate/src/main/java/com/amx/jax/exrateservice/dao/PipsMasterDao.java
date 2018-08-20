@@ -50,13 +50,20 @@ public class PipsMasterDao {
 		BankMasterModel bankMaster = exchangeRate.getBankMaster();
 		List<PipsMaster> list = repo.getPipsMasterForBranch(countryBranch, countryMaster, bankMaster, currencyMaster,
 				fcAmount);
-		// discount without bank and countrybranch
-		if (list == null || list.isEmpty()) {
-			list = repo.getPipsMasterForBranch(countryBranch, countryMaster, currencyMaster, fcAmount);
-		}
-		if (list == null || list.isEmpty()) {
-			list = repo.getPipsMasterForBranch(countryMaster, currencyMaster, fcAmount);
-		}
 		return list;
+	}
+	
+
+	public List<PipsMaster> getPipsMaster(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId) {
+		return repo.getPipsMasterForOnline(toCurrency, countryBranchId, lcAmount);
+	}
+	
+	public List<PipsMaster> getPipsMasterForLocalAmount(BigDecimal toCurrency, BigDecimal lcAmount, BigDecimal countryBranchId, BigDecimal bankId) {
+		return repo.getPipsMasterForLocalAmount(toCurrency, countryBranchId, lcAmount, bankId);
+	}
+	
+	public List<PipsMaster> getPipsMasterForForeignAmount(BigDecimal toCurrency, BigDecimal fcAmount,
+			BigDecimal countryBranchId, BigDecimal bankId) {
+		return repo.getPipsMasterForForeignAmount(toCurrency, countryBranchId, fcAmount, bankId);
 	}
 }

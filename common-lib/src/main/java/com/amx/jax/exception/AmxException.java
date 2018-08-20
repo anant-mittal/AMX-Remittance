@@ -1,12 +1,12 @@
 package com.amx.jax.exception;
 
-public class AmxException extends Exception {
+import org.springframework.http.HttpStatus;
+
+public class AmxException extends RuntimeException {
 
 	private static final long serialVersionUID = 7427401687837732495L;
 
-	protected String errorMessage;
-
-	protected String errorCode;
+	protected HttpStatus httpStatus;
 
 	public AmxException(Exception e) {
 		super(e);
@@ -16,19 +16,15 @@ public class AmxException extends Exception {
 		super(msg);
 	}
 
-	public String getErrorMessage() {
-		return errorMessage;
+	public AmxException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
 	}
 
-	public void setErrorMessage(String errorMessage) {
-		this.errorMessage = errorMessage;
+	public HttpStatus getHttpStatus() {
+		return httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus;
 	}
 
-	public String getErrorCode() {
-		return errorCode;
-	}
-
-	public void setErrorCode(String errorCode) {
-		this.errorCode = errorCode;
+	public void setHttpStatus(HttpStatus httpStatus) {
+		this.httpStatus = httpStatus;
 	}
 }

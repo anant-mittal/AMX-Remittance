@@ -1,5 +1,7 @@
 package com.amx.amxlib.model;
 
+import com.amx.jax.model.AbstractModel;
+
 public class UserVerificationCheckListDTO extends AbstractModel {
 
 	private String loginId;

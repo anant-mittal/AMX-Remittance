@@ -14,20 +14,33 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.UniqueID;
 
+/**
+ * The listener interface for receiving webSession events. The class that is
+ * interested in processing a webSession event implements this interface, and
+ * the object created with that class is registered with a component using the
+ * component's <code>addWebSessionListener<code> method. When the webSession
+ * event occurs, that object's appropriate method is invoked.
+ *
+ * @see WebSessionEvent
+ */
 @Component
 public class WebSessionListener implements HttpSessionListener {
 
-	@Autowired(required = false)
-	UserDevice userDevice;
-
+	/** The app config. */
 	@Autowired
 	private AppConfig appConfig;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpSessionListener#sessionCreated(javax.servlet.http.
+	 * HttpSessionEvent)
+	 */
 	@Override
 	public void sessionCreated(HttpSessionEvent se) {
 		SessionEvent evt = new SessionEvent();
@@ -37,6 +50,13 @@ public class WebSessionListener implements HttpSessionListener {
 		AuditServiceClient.logStatic(evt);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * javax.servlet.http.HttpSessionListener#sessionDestroyed(javax.servlet.http.
+	 * HttpSessionEvent)
+	 */
 	@Override
 	public void sessionDestroyed(HttpSessionEvent se) {
 		SessionEvent evt = new SessionEvent();
@@ -48,12 +68,12 @@ public class WebSessionListener implements HttpSessionListener {
 			String sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 					UniqueID.generateString());
 			evt.setSessionId(sessionID);
+			AppContextUtil.setSessionId(sessionID);
 			String traceId = ContextUtil.getTraceId(true, sessionID);
 			MDC.put(ContextUtil.TRACE_ID, traceId);
 			MDC.put(TenantContextHolder.TENANT, AppContextUtil.getTenant());
 
 		}
-
 		AuditServiceClient.logStatic(evt);
 	}
 

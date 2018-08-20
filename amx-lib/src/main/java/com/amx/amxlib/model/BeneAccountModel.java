@@ -4,21 +4,23 @@ import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
 
+import com.amx.jax.model.AbstractModel;
+
 public class BeneAccountModel extends AbstractModel {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@NotNull
+	@NotNull(message="Beneficary Country Id may not be null")
 	private BigDecimal beneficaryCountryId;
-	@NotNull
+	@NotNull(message="Bank Id may not be null")
 	private BigDecimal bankId; //agent master
 	private BigDecimal bankBranchId;
 	private String bankAccountNumber;
-	@NotNull
+	@NotNull(message="Currency Id may not be null")
 	private BigDecimal currencyId;
-	@NotNull
+	@NotNull(message="Service Group Id may not be null")
 	private BigDecimal serviceGroupId;// cash or bank
 	private BigDecimal serviceProviderId; // service provider
 	private BigDecimal serviceProviderBranchId; // agent branch

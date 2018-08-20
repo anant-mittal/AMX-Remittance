@@ -1,5 +1,7 @@
 package com.amx.utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -9,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: Auto-generated Javadoc
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * The Class ArgUtil.
  */
@@ -20,6 +24,8 @@ import java.util.Set;
  * 
  */
 public final class ArgUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArgUtil.class);
 
 	/**
 	 * Instantiates a new arg util.
@@ -64,7 +70,7 @@ public final class ArgUtil {
 			return "integer";
 		} else if (object instanceof Boolean) {
 			return "boolean";
-		} else if (object == Constants.emptyMap) {
+		} else if (object == Constants.EMPTY_MAP) {
 			return "object";
 		}
 		return "unknown";
@@ -99,7 +105,7 @@ public final class ArgUtil {
 		public static final String CODE = "code";
 
 		/** The Constant DATA. */
-		public static final String DATA = "data";
+		public static final String DATA_KEY = "data";
 
 		/** The warn local. */
 		private static ThreadLocal<Set<String>> warnLocal = new ThreadLocal<Set<String>>() {
@@ -177,7 +183,7 @@ public final class ArgUtil {
 		public Map<String, Object> errors() {
 			Map<String, Object> innerMap = new LinkedHashMap<String, Object>();
 			innerMap.put(CODE, this.errorCode);
-			innerMap.put(DATA, this.data);
+			innerMap.put(DATA_KEY, this.data);
 			return innerMap;
 		}
 
@@ -354,7 +360,7 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param <T>;
+	 * @param <T>
 	 *            the generic type
 	 * @param value
 	 *            the value
@@ -554,6 +560,8 @@ public final class ArgUtil {
 	 *
 	 * @param value
 	 *            the value
+	 * @param defaultValue
+	 *            the default value
 	 * @return : Long object if valid else null
 	 */
 	public static Long parseAsLong(Object value, Long defaultValue) {
@@ -577,6 +585,13 @@ public final class ArgUtil {
 		return defaultValue;
 	}
 
+	/**
+	 * Parses the as long.
+	 *
+	 * @param value
+	 *            the value
+	 * @return the long
+	 */
 	public static Long parseAsLong(Object value) {
 		return parseAsLong(value, null);
 	}
@@ -658,7 +673,7 @@ public final class ArgUtil {
 	 * @return the string
 	 */
 	public static String parseAsString(Object object, String defaultValue) {
-		if (object == null || Constants.defaultString.equals(object)) {
+		if (object == null || Constants.DEFAULT_STRING.equals(object)) {
 			return defaultValue;
 		}
 		return parseAsString(object);
@@ -669,8 +684,6 @@ public final class ArgUtil {
 	 *
 	 * @param object
 	 *            the object
-	 * @param defaultValue
-	 *            - if passed value is null or empty then default is returned.
 	 * @return the string
 	 */
 	public static String[] parseAsStringArray(Object object) {
@@ -713,6 +726,32 @@ public final class ArgUtil {
 		}
 	}
 
+	public static Enum parseAsEnum(Object value, Type type) {
+		try {
+			String enumString = parseAsString(value);
+			if (enumString == null) {
+				return null;
+			}
+			Class clazz = (Class) type;
+			if (clazz.isEnum()) {
+				return Enum.valueOf(clazz, enumString);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Enum Cast Exception", e);
+		}
+		return null;
+	}
+
+	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {
+		Class<T> type = (Class<T>) componentType;
+		String[] str = ArgUtil.parseAsStringArray(value);
+		Object o = Array.newInstance(type, str.length);
+		for (int i = 0; i < str.length; i++) {
+			Array.set(o, i, ArgUtil.parseAsEnum(str[i].toUpperCase(), componentType));
+		}
+		return (T[]) o;
+	}
+
 	/**
 	 * Checks if is object empty.
 	 *
@@ -747,8 +786,33 @@ public final class ArgUtil {
 		return false;
 	}
 
+	/**
+	 * Checks if is empty string.
+	 *
+	 * @param str
+	 *            the str
+	 * @return true, if is empty string
+	 */
 	public static boolean isEmptyString(String str) {
 		return (str == null || Constants.BLANK.equals(str));
+	}
+
+	public static boolean areEqual(Object a, Object b) {
+		if (a == null || b == null) {
+			return (a == null && b == null);
+		}
+		String strA = parseAsString(a, Constants.BLANK);
+		String strB = parseAsString(b, Constants.BLANK);
+		return strA.equals(strB);
+	}
+
+	public static <T> T ifNotEmpty(T... strs) {
+		for (T str : strs) {
+			if (!isEmpty(str)) {
+				return str;
+			}
+		}
+		return null;
 	}
 
 }

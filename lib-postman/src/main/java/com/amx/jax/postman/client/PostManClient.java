@@ -1,7 +1,5 @@
 package com.amx.jax.postman.client;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +15,12 @@ import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
-import com.amx.utils.JsonUtil;
 
 @Component
 public class PostManClient implements PostManService {
@@ -41,8 +35,6 @@ public class PostManClient implements PostManService {
 
 	@Value("${jax.postman.url}")
 	private String postManUrl;
-
-	private String googleSecret = "6LdtFEMUAAAAAKAhPVOk7iOA8SPnaOLGV9lFIqMJ";
 
 	public void setLang(String lang) {
 		ContextUtil.map().put(PARAM_LANG, lang);
@@ -121,45 +113,11 @@ public class PostManClient implements PostManService {
 	public File processTemplate(File file) throws PostManException {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.PROCESS_TEMPLATE_FILE)
-					.queryParam(PARAM_LANG, getLang()).header("content-type", "application/json")
-					.header("accept", "application/json").post(file).as(File.class);
+					.queryParam(PARAM_LANG, getLang()).contentTypeJson().acceptJson().post(file).as(File.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 
-	}
-
-	@Override
-	public Boolean verifyCaptcha(String responseKey, String remoteIP) throws PostManException {
-		try {
-			@SuppressWarnings("unchecked")
-			Map<String, Object> resp = restService.ajax("https://www.google.com/recaptcha/api/siteverify")
-					.header("accept", "application/json").field("secret", googleSecret).field("response", responseKey)
-					.field("remoteip", remoteIP).postForm().as(Map.class);
-			if (resp != null) {
-				return ArgUtil.parseAsBoolean(resp.get("success"));
-			}
-			return null;
-		} catch (Exception e) {
-			throw new PostManException(e);
-		}
-
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public Map<String, Object> getMap(String url) throws PostManException {
-		try {
-			Map<String, Object> response = restService.ajax(url)
-					// .header("content-type", "application/json")
-					.header("accept", "application/json").get().as(Map.class);
-			if (response != null) {
-				return response;
-			}
-			return null;
-		} catch (Exception e) {
-			throw new PostManException(e);
-		}
 	}
 
 	@Override
@@ -167,10 +125,9 @@ public class PostManClient implements PostManService {
 	public ExceptionReport notifyException(ExceptionReport e) {
 		LOGGER.info("Sending exception = {} : {}", e.getTitle(), e.getClass().getName());
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP)
-					.header("content-type", "application/json").queryParam("appname", appConfig.getAppName())
-					.queryParam("title", e.getTitle()).queryParam("exception", e.getException()).post(e)
-					.as(ExceptionReport.class);
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP_REPORT)
+					.contentTypeJson().queryParam("appname", appConfig.getAppName()).queryParam("title", e.getTitle())
+					.queryParam("exception", e.getException()).post(e).as(ExceptionReport.class);
 
 		} catch (Exception e1) {
 			LOGGER.error("Exception while sending title={}", e.getTitle(), e1);

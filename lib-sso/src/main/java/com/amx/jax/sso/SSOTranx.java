@@ -2,17 +2,13 @@ package com.amx.jax.sso;
 
 import java.io.Serializable;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.TransactionModel;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 
 @Component
 public class SSOTranx extends TransactionModel<SSOModel> {
-
-	private Logger LOGGER = LoggerService.getLogger(SSOTranx.class);
 
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
@@ -20,6 +16,7 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		private String landingUrl = null;
 		private String returnUrl = null;
 		private String sotp = null;
+		private String motp = null;
 
 		public String getReturnUrl() {
 			return returnUrl;
@@ -45,6 +42,14 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.sotp = sotp;
 		}
 
+		public String getMotp() {
+			return motp;
+		}
+
+		public void setMotp(String motp) {
+			this.motp = motp;
+		}
+
 	}
 
 	@Override
@@ -62,6 +67,13 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		SSOModel msg = this.get();
 		msg.setLandingUrl(landingUrl);
 		msg.setSotp(sotp);
+		this.save(msg);
+		return msg;
+	}
+
+	public SSOModel setMOtp(String motp) {
+		SSOModel msg = this.get();
+		msg.setMotp(motp);
 		this.save(msg);
 		return msg;
 	}

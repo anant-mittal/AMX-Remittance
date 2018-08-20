@@ -100,10 +100,20 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	// CountryMasterDTO
 
 	public ApiResponse<CountryMasterDTO> getAllCountry() {
-		return beneClient.getBeneficiaryCountryList();
+		try {
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/country/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CountryMasterDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getAllCountry : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 	@Deprecated
@@ -337,6 +347,23 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
+	public ApiResponse<AuthenticationLimitCheckDTO> getContactTime() {
+		try {
+			LOGGER.info("Contact Us time");
+
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/contacttime/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<AuthenticationLimitCheckDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in getContactUsTime : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+	
 	public ApiResponse<MultiCountryDTO> getMultiCountryList() {
 		try {
 			LOGGER.info("Contact Us time");
@@ -371,11 +398,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 * @return CurrencyMasterDTO
 	 */
 	public ApiResponse<CurrencyMasterDTO> getBeneficiaryCurrency(BigDecimal beneficiaryCountryId,
-			BigDecimal serviceGroupId, BigDecimal routingBankId) {
-		ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
+			BigDecimal serviceGroupId, BigDecimal routingBankId) {	
+	  ResponseEntity<ApiResponse<CurrencyMasterDTO>> response;
 		try {
 			LOGGER.info("in getBeneficiaryCurrency");
 			String url = this.getBaseUrl() + META_API_ENDPOINT + "/currency/beneservice/";
+
 			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url)
 					.queryParam("beneficiaryCountryId", beneficiaryCountryId)
 					.queryParam("serviceGroupId", serviceGroupId).queryParam("routingBankId", routingBankId);

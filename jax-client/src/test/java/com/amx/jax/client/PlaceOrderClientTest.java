@@ -103,7 +103,7 @@ public class PlaceOrderClientTest {
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		
 		PlaceOrderDTO placeOrderDTO = new PlaceOrderDTO();
-		placeOrderDTO.setPlaceOrderId(new BigDecimal(22));
+		placeOrderDTO.setPlaceOrderId(new BigDecimal(21));
 		placeOrderDTO.setCustomerId(new BigDecimal(5218));
 		placeOrderDTO.setBeneficiaryRelationshipSeqId(new BigDecimal(2));
 		placeOrderDTO.setPayAmount(new BigDecimal(200));

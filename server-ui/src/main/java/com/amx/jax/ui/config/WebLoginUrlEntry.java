@@ -17,20 +17,38 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.ui.session.GuestSession;
 
+/**
+ * The Class WebLoginUrlEntry.
+ */
 @Component
 public class WebLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(WebLoginUrlEntry.class);
+
+	/** The Constant LOGIN_URL. */
 	private static final String LOGIN_URL = "/login";
 
+	/** The guest session. */
 	@Autowired
 	GuestSession guestSession;
 
+	/**
+	 * Instantiates a new web login url entry.
+	 */
 	@Autowired
 	public WebLoginUrlEntry() {
 		super(LOGIN_URL);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.springframework.security.web.authentication.
+	 * LoginUrlAuthenticationEntryPoint#commence(javax.servlet.http.
+	 * HttpServletRequest, javax.servlet.http.HttpServletResponse,
+	 * org.springframework.security.core.AuthenticationException)
+	 */
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authenticationException) throws IOException, ServletException {

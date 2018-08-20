@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,19 +18,21 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsView;
+import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
-import com.amx.jax.exception.GlobalException;
+import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
@@ -59,7 +63,9 @@ public class PurposeOfTransactionService extends AbstractService {
 	@Autowired
 	private IBeneficiaryOnlineDao beneficiaryOnlineDao;
 	@Autowired
-	RoutingService routingService ;
+	RemittanceTransactionManager remittanceTxnManger;
+	@Resource
+	public Map<String, Object> remitApplParametersMap;
 	
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
@@ -131,7 +137,7 @@ public class PurposeOfTransactionService extends AbstractService {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
 							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
 									routingCountry, dyamicLabel.getFlexiField());
-							List<AdditionalBankDetailsView> listAdditionaView = additionalBankDetailsDao
+							List<AdditionalBankDetailsViewx> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
 											routingCountry, dyamicLabel.getFlexiField());
 
@@ -163,7 +169,7 @@ public class PurposeOfTransactionService extends AbstractService {
 								System.out.println("listAdditionaView:" + listAdditionaView.size());
 
 								System.out.println("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsView lst : listAdditionaView) {
+								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
 									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
 											+ lst.getAmieceDescription());
 
@@ -234,13 +240,13 @@ public class PurposeOfTransactionService extends AbstractService {
 		return listAdditionalBankDataTable;
 	}
 
-	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsView> listAdditionaView) {
+	private List<AdditionalBankDetailsViewDto> convertViewModel(List<AdditionalBankDetailsViewx> listAdditionaView) {
 		List<AdditionalBankDetailsViewDto> listView = new ArrayList<>();
 		listAdditionaView.forEach(viewModel -> listView.add(convertAddModelToDto(viewModel)));
 		return listView;
 	}
 
-	private AdditionalBankDetailsViewDto convertAddModelToDto(AdditionalBankDetailsView viewModel) {
+	private AdditionalBankDetailsViewDto convertAddModelToDto(AdditionalBankDetailsViewx viewModel) {
 		AdditionalBankDetailsViewDto dto = new AdditionalBankDetailsViewDto();
 		try {
 			BeanUtils.copyProperties(dto, viewModel);
@@ -262,12 +268,16 @@ public class PurposeOfTransactionService extends AbstractService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
-		logger.info("in getPurposeOfTransaction with params: "+ model.toString());
+	public ApiResponse getPurposeOfTransaction(IRemitTransReqPurpose request) {
+		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) request;
+		logger.info("in getPurposeOfTransaction with params: " + model.toString());
 		ApiResponse response = getBlackApiResponse();
+		if (model.getLocalAmount() == null && model.getForeignAmount() == null) {
+			model.setLocalAmount(BigDecimal.ONE);
+		}
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
-		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
+		remittanceTxnManger.validateTransactionData(model);
+		Map<String, Object> routingDetails = remitApplParametersMap;
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal rountingCountry = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");

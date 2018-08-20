@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import com.amx.amxlib.model.CustomerModelInterface.ICustomerCredential;
 
@@ -11,11 +12,12 @@ public class CustomerCredential implements Serializable, ICustomerCredential {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
-	@Pattern(regexp = "^[A-Za-z0-9]+$")
+	@NotNull(message="User Id may not be null")
+	@Size(min=6, max=12, message="User ID should be between 6 and 12 characters")
+	@Pattern(regexp = "^\\S+", message="The User ID you have entered is not valid. Please enter the User ID with minimum 6 alphanumeric characters.")
 	String loginId;
 
-	@NotNull
+	@NotNull(message="Password may not be null")
 	String password;
 
 	public CustomerCredential() {

@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.repository.ICustomerRepository;
 import com.amx.jax.services.AbstractService;
 
@@ -68,6 +68,13 @@ public class CustomerService extends AbstractService {
 	public Class<?> getModelClass() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+
+	public Customer getCustomerDetails(String loginId) {
+		
+		return customerRepository.getCustomerDetails(loginId);
 	}
 	
 	/*public void updateLoyaltyPoint(BigDecimal loyaltyPoint,BigDecimal countryId,BigDecimal companyId,BigDecimal customerId) {

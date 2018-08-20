@@ -1,11 +1,14 @@
 package com.amx.jax.logger;
 
-import com.amx.utils.EnumType;
+import com.amx.jax.exception.IExceptionEnum;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
-public abstract class AuditEvent extends AbstractAuditEvent {
+public abstract class AuditEvent extends AbstractEvent {
 
+	private static final long serialVersionUID = -1539116953165424464L;
+	protected Result result;
+	protected IExceptionEnum errorCode;
 	protected long tranxTime;
 	protected long traceTime;
 	protected long eventTime;
@@ -14,24 +17,32 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 	protected String exception;
 	protected String exceptionType;
 	protected String actorId;
+	protected Object data;
+
+	public static enum Result {
+		DONE, FAIL, ERROR, PASS;
+	}
 
 	public AuditEvent() {
 		super();
+		this.result = Result.DONE;
 	}
 
-	public AuditEvent(EnumType type) {
+	public AuditEvent(EventType type, Result result) {
 		super(type);
+		this.result = result;
 	}
 
-	public AuditEvent(EnumType type, String description) {
-		this(type);
-		this.description = description;
+	public AuditEvent(EventType type) {
+		this(type, Result.DONE);
 	}
 
-	public AuditEvent(EnumType type, String description, String message) {
-		this(type);
-		this.description = description;
-		this.message = message;
+	public Result getResult() {
+		return result;
+	}
+
+	public void setResult(Result result) {
+		this.result = result;
 	}
 
 	public String getMessage() {
@@ -43,6 +54,9 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 	}
 
 	public String getDescription() {
+		if (this.description == null) {
+			return String.format("%s_%s", this.type, this.result);
+		}
 		return this.description;
 	}
 
@@ -96,6 +110,22 @@ public abstract class AuditEvent extends AbstractAuditEvent {
 
 	public void setEventTime(long eventTime) {
 		this.eventTime = eventTime;
+	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	public IExceptionEnum getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(IExceptionEnum errorCode) {
+		this.errorCode = errorCode;
 	}
 
 }

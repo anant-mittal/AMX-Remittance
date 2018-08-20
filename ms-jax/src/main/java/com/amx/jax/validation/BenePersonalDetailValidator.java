@@ -2,6 +2,7 @@ package com.amx.jax.validation;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -9,10 +10,12 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
+import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 
@@ -24,6 +27,9 @@ public class BenePersonalDetailValidator implements Validator {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	BlackListDao blackListDao;
 
 	@Override
 	public boolean supports(Class clazz) {
@@ -35,9 +41,67 @@ public class BenePersonalDetailValidator implements Validator {
 		ValidationUtils.rejectIfEmpty(e, "mobileNumber", "mobileNumber.empty");
 		BeneficiaryTrnxModel beneficiaryTrnxModel = (BeneficiaryTrnxModel) target;
 		BenePersonalDetailModel benePersonalDetailModel = beneficiaryTrnxModel.getBenePersonalDetailModel();
-		validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+	    validateMobile(benePersonalDetailModel, beneficiaryTrnxModel);
+	    validateBeneBlacklist(benePersonalDetailModel);
+	    validateBeneArabicBlacklist(benePersonalDetailModel);
 	}
 
+	private void validateBeneBlacklist(BenePersonalDetailModel benePersonalDetailModel)
+	{
+		StringBuilder beneName = new StringBuilder();
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFirstName())) {
+			beneName.append(benePersonalDetailModel.getFirstName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getSecondName())) {
+			beneName.append(benePersonalDetailModel.getSecondName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getThirdName())) {
+			beneName.append(benePersonalDetailModel.getThirdName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFourthName())) {
+			beneName.append(benePersonalDetailModel.getFourthName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getFifthName())) {
+			beneName.append(benePersonalDetailModel.getFifthName().trim());
+		}
+	
+		List<BlackListModel> blist =blackListDao.getBlackByName(beneName.toString());
+		
+		if (blist != null && !blist.isEmpty()) {
+			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
+					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+		}
+	}
+	
+	private void validateBeneArabicBlacklist(BenePersonalDetailModel benePersonalDetailModel)
+	{
+		StringBuilder beneArabicName = new StringBuilder();
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFirstName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFirstName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalSecondName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalSecondName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalThirdName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalThirdName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFourthName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFourthName().trim());
+		}
+		if(StringUtils.isNotBlank(benePersonalDetailModel.getLocalFifthName())) {
+			beneArabicName.append(benePersonalDetailModel.getLocalFifthName().trim());
+		}
+	
+		if (beneArabicName.toString() != null && !beneArabicName.toString().isEmpty()) {
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneArabicName.toString());
+
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
+						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+			}
+		}
+	}
+	
 	private void validateMobile(BenePersonalDetailModel benePersonalDetailModel,
 			BeneficiaryTrnxModel beneficiaryTrnxModel) {
 
@@ -51,7 +115,7 @@ public class BenePersonalDetailValidator implements Validator {
 			if (i.getMinLenght()!=null) {
 			   return i.getMinLenght().intValue();
 			}else { 
-			  return -1;
+			  return Integer.MAX_VALUE;
 			}  
 		}).min().orElse(-1);
 		
@@ -59,7 +123,7 @@ public class BenePersonalDetailValidator implements Validator {
 			if (i.getMaxLenght()!=null) {
 				return i.getMaxLenght().intValue();
 			}else {
-				return -1;
+				return Integer.MIN_VALUE;
 			}
 		}).max().orElse(-1);
 

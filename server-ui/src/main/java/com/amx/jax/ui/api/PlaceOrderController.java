@@ -15,13 +15,22 @@ import com.amx.jax.ui.service.JaxService;
 
 import io.swagger.annotations.Api;
 
+/**
+ * The Class PlaceOrderController.
+ */
 @RestController
 @Api(value = "Rate Alerts Apis")
 public class PlaceOrderController {
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/**
+	 * List of place orders.
+	 *
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/po/list", method = { RequestMethod.GET })
 	public ResponseWrapper<List<PlaceOrderDTO>> listOfPlaceOrders() {
 		ResponseWrapper<List<PlaceOrderDTO>> wrapper = new ResponseWrapper<List<PlaceOrderDTO>>();
@@ -31,6 +40,13 @@ public class PlaceOrderController {
 		return wrapper;
 	}
 
+	/**
+	 * Save place order.
+	 *
+	 * @param placeOrderDTO
+	 *            the place order DTO
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/po/save", method = { RequestMethod.POST })
 	public ResponseWrapper<PlaceOrderDTO> savePlaceOrder(@RequestBody PlaceOrderDTO placeOrderDTO) {
 		ResponseWrapper<PlaceOrderDTO> wrapper = new ResponseWrapper<PlaceOrderDTO>();
@@ -40,6 +56,13 @@ public class PlaceOrderController {
 		return wrapper;
 	}
 
+	/**
+	 * Update place order.
+	 *
+	 * @param placeOrderDTO
+	 *            the place order DTO
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/po/update", method = { RequestMethod.POST })
 	public ResponseWrapper<PlaceOrderDTO> updatePlaceOrder(@RequestBody PlaceOrderDTO placeOrderDTO) {
 		ResponseWrapper<PlaceOrderDTO> wrapper = new ResponseWrapper<PlaceOrderDTO>();
@@ -49,6 +72,13 @@ public class PlaceOrderController {
 		return wrapper;
 	}
 
+	/**
+	 * Delete place order.
+	 *
+	 * @param placeOrderDTO
+	 *            the place order DTO
+	 * @return the response wrapper
+	 */
 	@RequestMapping(value = "/api/po/delete", method = { RequestMethod.POST })
 	public ResponseWrapper<PlaceOrderDTO> deletePlaceOrder(@RequestBody PlaceOrderDTO placeOrderDTO) {
 		ResponseWrapper<PlaceOrderDTO> wrapper = new ResponseWrapper<PlaceOrderDTO>();

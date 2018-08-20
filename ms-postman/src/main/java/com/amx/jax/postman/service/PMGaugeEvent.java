@@ -8,108 +8,229 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
-import com.amx.utils.EnumType;
 
+/**
+ * The Class PMGaugeEvent.
+ */
 public class PMGaugeEvent extends AuditEvent {
 
-	public static enum Type implements EnumType {
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -6667775998834926934L;
+
+	/**
+	 * The Enum Type.
+	 */
+	public static enum Type implements EventType {
+
+		/** The pm event. */
 		PM_EVENT,
+
 		// Sms Events
-		SMS_SENT_NOT, SMS_SENT_SUCCESS, SMS_SENT_ERROR,
+		SEND_SMS,
 		// Email Events
-		EMAIL_SENT_NOT, EMAIL_SENT_SUCCESS, EMAIL_SENT_ERROR,
+		SEND_EMAIL,
 		// PDF Events
-		PDF_CREATED, PDF_ERROR,
+		CREATE_PDF,
+
 		// NOTIFCATION Events
-		NOTIFCATION_ANDROID, NOTIFCATION_IOS, NOTIFCATION_WEB
+		NOTIFCATION_ANDROID,
+		/** The notifcation ios. */
+		NOTIFCATION_IOS,
+		/** The notifcation web. */
+		NOTIFCATION_WEB,
+
+		NOTIFCATION_SUBSCRIPTION;
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see com.amx.jax.logger.AbstractEvent.EventType#marker()
+		 */
+		@Override
+		public EventMarker marker() {
+			return null;
+		}
 
 	}
 
+	/** The template. */
 	Templates template = null;
-	private List<String> to = null;
-	private Object response;
 
+	/** The to. */
+	private List<String> to = null;
+
+	/** The responseText. */
+	private String responseText;
+
+	/**
+	 * Instantiates a new PM gauge event.
+	 */
 	public PMGaugeEvent() {
 		super();
 	}
 
-	public PMGaugeEvent(EnumType type) {
+	/**
+	 * Instantiates a new PM gauge event.
+	 *
+	 * @param type
+	 *            the type
+	 */
+	public PMGaugeEvent(EventType type) {
 		super(type);
 	}
 
-	public PMGaugeEvent(Type type, String description, String message) {
-		super(type, description, message);
-	}
-
-	public PMGaugeEvent(Type type, String description) {
-		super(type, description);
-	}
-
+	/**
+	 * Instantiates a new PM gauge event.
+	 *
+	 * @param type
+	 *            the type
+	 * @param sms
+	 *            the sms
+	 */
 	public PMGaugeEvent(Type type, SMS sms) {
 		super(type);
-		this.fillDetail(type, sms);
+		this.set(sms);
 	}
 
+	/**
+	 * Instantiates a new PM gauge event.
+	 *
+	 * @param type
+	 *            the type
+	 * @param email
+	 *            the email
+	 */
 	public PMGaugeEvent(Type type, Email email) {
 		super(type);
-		this.fillDetail(type, email);
+		this.set(email);
 	}
 
+	/**
+	 * Instantiates a new PM gauge event.
+	 *
+	 * @param type
+	 *            the type
+	 * @param file
+	 *            the file
+	 */
 	public PMGaugeEvent(Type type, File file) {
 		super(type);
-		this.fillDetail(type, file);
+		this.set(file);
 	}
 
+	/**
+	 * Gets the template.
+	 *
+	 * @return the template
+	 */
 	public Templates getTemplate() {
 		return template;
 	}
 
+	/**
+	 * Sets the template.
+	 *
+	 * @param template
+	 *            the new template
+	 */
 	public void setTemplate(Templates template) {
 		this.template = template;
 	}
 
+	/**
+	 * Gets the to.
+	 *
+	 * @return the to
+	 */
 	public List<String> getTo() {
 		return to;
 	}
 
+	/**
+	 * Sets the to.
+	 *
+	 * @param to
+	 *            the new to
+	 */
 	public void setTo(List<String> to) {
 		this.to = to;
 	}
 
-	public PMGaugeEvent fillDetail(Type type, File file) {
-		this.type = type;
+	public PMGaugeEvent set(Result result) {
+		this.result = result;
+		return this;
+	}
+
+	/**
+	 * Fill detail.
+	 *
+	 * @param type
+	 *            the type
+	 * @param file
+	 *            the file
+	 * @return the PM gauge event
+	 */
+	public PMGaugeEvent set(File file) {
 		this.template = file.getTemplate();
 		return this;
 	}
 
-	public PMGaugeEvent fillDetail(Type type, SMS sms) {
-		this.type = type;
+	/**
+	 * Fill detail.
+	 *
+	 * @param type
+	 *            the type
+	 * @param sms
+	 *            the sms
+	 * @return the PM gauge event
+	 */
+	public PMGaugeEvent set(SMS sms) {
 		this.template = sms.getTemplate();
 		this.to = sms.getTo();
 		return this;
 	}
 
-	public PMGaugeEvent fillDetail(Type type, Email email) {
-		this.type = type;
+	/**
+	 * Fill detail.
+	 *
+	 * @param type
+	 *            the type
+	 * @param email
+	 *            the email
+	 * @return the PM gauge event
+	 */
+	public PMGaugeEvent set(Email email) {
 		this.template = email.getTemplate();
 		this.to = email.getTo();
 		return this;
 	}
 
-	public AuditEvent fillDetail(Type type, PushMessage msg, String message, Object response) {
-		this.type = type;
+	/**
+	 * Fill detail.
+	 *
+	 * @param type
+	 *            the type
+	 * @param msg
+	 *            the msg
+	 * @param message
+	 *            the message
+	 * @param response
+	 *            the response
+	 * @return the audit event
+	 */
+	public AuditEvent set(PushMessage msg, String message, String responseText) {
 		this.to = msg.getTo();
 		this.message = message;
-		this.response = response;
+		this.responseText = responseText;
 		return this;
 	}
 
-	public Object getResponse() {
-		return response;
+	public String getResponseText() {
+		return responseText;
 	}
 
-	public void setResponse(Object response) {
-		this.response = response;
+	public void setResponseText(String responseText) {
+		this.responseText = responseText;
 	}
 
 }

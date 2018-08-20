@@ -21,6 +21,7 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
@@ -233,5 +234,25 @@ public class JaxNotificationService {
 		} catch (Exception e) {
 			logger.error("error in sendErrormail", e);
 		}
+	}
+
+	public void sendPartialRegistraionMail(PersonInfo personinfo, ApplicationSetup applicationSetup ) {
+
+		logger.info("Sending Email to Team Of The Customer : " + personinfo.getFirstName());
+		try
+		{
+		Email email = new Email();
+		email.setSubject("New Customer Registration");
+		email.addTo(applicationSetup.getEmailId());
+		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
+		email.setHtml(true);
+		email.getModel().put(RESP_DATA_KEY, personinfo);		
+		sendEmail(email);
+		}
+		catch (Exception e) {
+			logger.error("error in sendErrormail", e);
+		}
+		
+
 	}
 }

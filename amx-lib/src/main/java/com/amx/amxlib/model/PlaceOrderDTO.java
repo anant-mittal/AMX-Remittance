@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+import com.amx.jax.model.AbstractModel;
+
 
 /**
  * @author Subodh Bhoir
@@ -12,9 +14,9 @@ import javax.validation.constraints.NotNull;
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
-	
+	@NotNull
 	private BigDecimal placeOrderId;
-	
+
 	private BigDecimal customerId;
 	
 	@NotNull
@@ -49,12 +51,12 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	@NotNull
 	private BigDecimal receiveAmount;
 	
+	@NotNull
+	private BigDecimal receiveAmount;
+	
 	private BigDecimal baseCurrencyId;
-	
 	private String baseCurrencyQuote;
-	
 	private BigDecimal foreignCurrencyId;
-	
 	private String foreignCurrencyQuote;
 
 	public BigDecimal getPlaceOrderId() {

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -25,12 +26,12 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
+import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -133,7 +134,7 @@ public class CustomerDataVerificationService extends AbstractService {
 	}
 
 	private void sendTpinTocustomer(CustomerVerification cv) {
-		String tpin = util.createRandomPassword(6);
+		String tpin = Random.randomNumeric(6);
 		logger.info("generated tpin/otp for customer data verification is: " + tpin);
 		PersonInfo pinfo = userService.getPersonInfo(metaData.getCustomerId());
 		CivilIdOtpModel model = new CivilIdOtpModel();

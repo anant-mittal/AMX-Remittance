@@ -1,5 +1,7 @@
 package com.amx.jax.user;
 
+import java.io.Serializable;
+
 import org.springframework.mobile.device.DevicePlatform;
 import org.springframework.mobile.device.DeviceType;
 
@@ -7,7 +9,14 @@ import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.Version;
 
-public class UserDevice {
+/**
+ * 
+ * @author lalittanwar
+ *
+ */
+public class UserDevice implements Serializable {
+
+	private static final long serialVersionUID = 4015555971724271185L;
 
 	public enum AppType {
 		WEB, ANDROID, IOS;

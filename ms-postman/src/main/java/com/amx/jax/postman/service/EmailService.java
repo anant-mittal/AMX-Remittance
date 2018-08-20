@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
@@ -29,54 +31,93 @@ import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
 
+/**
+ * The Class EmailService.
+ */
 @TenantScoped
 @Component
 public class EmailService {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
+	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
+
+	/** The template utils. */
 	@Autowired
 	private TemplateUtils templateUtils;
 
+	/** The file service. */
 	@Autowired
 	private FileService fileService;
 
+	/** The mail from. */
 	@TenantValue("${spring.mail.from}")
 	private String mailFrom;
+
+	@TenantValue("${spring.mail.from.title}")
+	private String mailFromTitle;
+
+	/** The mail host. */
 	@TenantValue("${spring.mail.host}")
 	private String mailHost;
+
+	/** The mail port. */
 	@TenantValue("${spring.mail.port}")
 	private int mailPort;
+
+	/** The mail username. */
 	@TenantValue("${spring.mail.username}")
 	private String mailUsername;
+
+	/** The mail password. */
 	@TenantValue("${spring.mail.password}")
 	private String mailPassword;
+
+	/** The mail smtp auth. */
 	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
 	private Boolean mailSmtpAuth;
+
+	/** The mail smtp tls. */
 	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
 	private boolean mailSmtpTls;
+
+	/** The mail protocol. */
 	@TenantValue("${spring.mail.protocol}")
 	private String mailProtocol;
+
+	/** The mail default encoding. */
 	@TenantValue("${spring.mail.defaultEncoding}")
 	private String mailDefaultEncoding;
 
+	/** The default sender. */
 	@Value("${spring.mail.from}")
 	private String defaultSender;
 
+	/** The mail sender. */
 	private JavaMailSender mailSender;
 
+	/** The default mail sender. */
 	@Autowired
 	private JavaMailSender defaultMailSender;
 
+	/** The post man config. */
 	@Autowired
 	private PostManConfig postManConfig;
 
+	/** The slack service. */
 	@Autowired
 	SlackService slackService;
 
+	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
+	/**
+	 * Gets the mail sender.
+	 *
+	 * @return the mail sender
+	 */
 	public JavaMailSender getMailSender() {
 		if (mailSender == null) {
 			if (postManConfig.getTenant() != null) {
@@ -102,8 +143,18 @@ public class EmailService {
 		return this.mailSender;
 	}
 
+	/**
+	 * Send email.
+	 *
+	 * @param email
+	 *            the email
+	 * @return the email
+	 * @throws PostManException
+	 *             the post man exception
+	 */
 	public Email sendEmail(Email email) throws PostManException {
 
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
 		try {
 			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
@@ -133,27 +184,47 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.fail(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
 			}
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return email;
 	}
 
-	public Email send(Email eParams) throws MessagingException, IOException {
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
+	/**
+	 * Send.
+	 *
+	 * @param eParams
+	 *            the e params
+	 * @return the email
+	 * @throws MessagingException
+	 *             the messaging exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	private Email send(Email eParams) throws MessagingException, IOException {
 		if (eParams.isHtml()) {
 			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
-		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 
+	/**
+	 * Send html mail.
+	 *
+	 * @param eParams
+	 *            the e params
+	 * @throws MessagingException
+	 *             the messaging exception
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
 	private void sendHtmlMail(Email eParams) throws MessagingException, IOException {
 
 		boolean isHtml = true;
@@ -163,15 +234,27 @@ public class EmailService {
 		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
-		if (eParams.getFrom() == null || Constants.defaultString.equals(eParams.getFrom())) {
+		if (eParams.getFrom() == null || Constants.DEFAULT_STRING.equals(eParams.getFrom())) {
 			eParams.setFrom(mailFrom);
 		}
 
-		if (eParams.getReplyTo() == null || Constants.defaultString.equals(eParams.getReplyTo())) {
+		String fromEmail = null;
+		String fromTitle = null;
+
+		Matcher matcher = pattern.matcher(eParams.getFrom());
+		if (matcher.find()) {
+			fromEmail = matcher.group(2);
+			fromTitle = matcher.group(1);
+		} else {
+			fromEmail = eParams.getFrom();
+			fromTitle = eParams.getFrom();
+		}
+
+		if (eParams.getReplyTo() == null || Constants.DEFAULT_STRING.equals(eParams.getReplyTo())) {
 			eParams.setReplyTo(eParams.getFrom());
 		}
 
-		helper.setFrom(eParams.getFrom());
+		helper.setFrom(new InternetAddress(fromEmail, fromTitle));
 		helper.setReplyTo(eParams.getReplyTo());
 
 		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();
@@ -200,6 +283,12 @@ public class EmailService {
 		getMailSender().send(message);
 	}
 
+	/**
+	 * Send plain text mail.
+	 *
+	 * @param eParams
+	 *            the e params
+	 */
 	private void sendPlainTextMail(Email eParams) {
 		SimpleMailMessage mailMessage = new SimpleMailMessage();
 

@@ -1,28 +1,30 @@
 package com.amx.jax.exception;
 
-public class AmxApiError {
+import com.amx.jax.api.AResponse;
+import com.amx.utils.ArgUtil;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-	private String errorClass;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AmxApiError extends AResponse<Object> {
 
 	private String errorId;
 
 	private String errorMessage;
 
-	// warning error
-	private String errorType;
+	private String errorType; // IExceptionEnum
 
-	public AmxApiError(String errorId, String errorMessage, String errorType) {
+	public AmxApiError(String errorId, String errorMessage, IExceptionEnum errorType) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
-		this.errorType = errorType;
+		this.errorType = ArgUtil.parseAsString(errorType);
 	}
 
 	public AmxApiError(String errorId, String errorMessage) {
 		super();
 		this.errorId = errorId;
 		this.errorMessage = errorMessage;
-		this.errorType = "Error";
+		this.errorType = null;
 	}
 
 	public AmxApiError() {
@@ -53,11 +55,4 @@ public class AmxApiError {
 		this.errorType = errorType;
 	}
 
-	public String getErrorClass() {
-		return errorClass;
-	}
-
-	public void setErrorClass(String errorClass) {
-		this.errorClass = errorClass;
-	}
 }

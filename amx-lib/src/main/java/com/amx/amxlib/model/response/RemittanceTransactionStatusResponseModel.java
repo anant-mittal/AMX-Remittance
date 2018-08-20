@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 
@@ -17,6 +17,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	BigDecimal netAmount;
 	TransactionHistroyDTO transactionHistroyDTO;
 	String transactionReference;
+	String errorMessage;
 
 	public JaxTransactionStatus getStatus() {
 		return status;
@@ -54,5 +55,15 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	public void setTransactionReference(String transactionReference) {
 		this.transactionReference = transactionReference;
 	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+	
+	
 
 }

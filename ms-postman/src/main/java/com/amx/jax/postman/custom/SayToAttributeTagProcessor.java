@@ -14,15 +14,41 @@ import org.unbescape.xml.XmlEscape;
 import com.amx.jax.postman.service.TemplateUtils;
 import com.amx.utils.ArgUtil;
 
+/**
+ * The Class SayToAttributeTagProcessor.
+ * 
+ * @author lalittanwar
+ *
+ */
 public class SayToAttributeTagProcessor extends AbstractStandardExpressionAttributeTagProcessor {
 
+	/** The Constant PRECEDENCE. */
 	public static final int PRECEDENCE = 1300;
+
+	/** The Constant ATTR_NAME. */
 	public static final String ATTR_NAME = "pftext";
 
+	/**
+	 * Instantiates a new say to attribute tag processor.
+	 *
+	 * @param templateMode
+	 *            the template mode
+	 * @param dialectPrefix
+	 *            the dialect prefix
+	 */
 	public SayToAttributeTagProcessor(final TemplateMode templateMode, final String dialectPrefix) {
 		super(templateMode, dialectPrefix, ATTR_NAME, PRECEDENCE, true);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.thymeleaf.standard.processor.
+	 * AbstractStandardExpressionAttributeTagProcessor#doProcess(org.thymeleaf.
+	 * context.ITemplateContext, org.thymeleaf.model.IProcessableElementTag,
+	 * org.thymeleaf.engine.AttributeName, java.lang.String, java.lang.Object,
+	 * org.thymeleaf.processor.element.IElementTagStructureHandler)
+	 */
 	@Override
 	protected void doProcess(final ITemplateContext context, final IProcessableElementTag tag,
 			final AttributeName attributeName, final String attributeValue, final Object expressionResult2,
@@ -85,6 +111,15 @@ public class SayToAttributeTagProcessor extends AbstractStandardExpressionAttrib
 
 	}
 
+	/**
+	 * Produce escaped output.
+	 *
+	 * @param templateMode
+	 *            the template mode
+	 * @param input
+	 *            the input
+	 * @return the string
+	 */
 	private static String produceEscapedOutput(final TemplateMode templateMode, final String input) {
 
 		switch (templateMode) {

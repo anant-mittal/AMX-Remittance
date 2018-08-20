@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.REMIT_API_ENDPOINT;
 import java.math.BigDecimal;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -128,7 +130,7 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/save-application/", method = RequestMethod.POST)
-	public ApiResponse saveApplication(@RequestBody RemittanceTransactionRequestModel model) {
+	public ApiResponse saveApplication(@RequestBody @Valid RemittanceTransactionRequestModel model) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_APPLICATION);
 		JaxContextUtil.setRequestModel(model);
 		logger.info("In Save-Application with parameters" + model.toString());
@@ -137,7 +139,7 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/purpose-of-txn/list/", method = RequestMethod.POST)
-	public ApiResponse getPurposeOfTransaction(@RequestBody RemittanceTransactionRequestModel model) {
+	public ApiResponse getPurposeOfTransaction(@RequestBody IRemitTransReqPurpose model) {
 		logger.info("In getPurposeOfTransaction with parameters" + model.toString());
 		ApiResponse response = purposeOfTransactionService.getPurposeOfTransaction(model);
 		return response;

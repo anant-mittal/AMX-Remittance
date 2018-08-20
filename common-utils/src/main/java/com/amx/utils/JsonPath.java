@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+
 //TODO: Auto-generated Javadoc
 /**
  * JsonPath is to Json, what XPath is to XML. The main use of this class is to
@@ -276,11 +277,6 @@ public class JsonPath {
 	 * @return the t
 	 */
 	public <T> T loadNullable(Map<String, Object> properties, T defaultValue) {
-		// T value = loadInternal(properties, null, defaultValue, false);
-		// if (value == defaultValue) {
-		// return null;
-		// }
-		// return value;
 		Object value = internalLoad(properties, null);
 		if (value == null) {
 			return null;
@@ -336,12 +332,6 @@ public class JsonPath {
 	 * @return the t
 	 */
 	public <T> T loadNullable(Map<String, Object> properties, Map<String, Object> refProperties, T defaultValue) {
-		// T value = loadInternal(properties, refProperties, defaultValue,
-		// false);
-		// if (value == defaultValue) {
-		// return null;
-		// }
-		// return value;
 		Object value = internalLoad(properties, refProperties);
 		if (value == null) {
 			return null;
@@ -405,7 +395,7 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<T> loadList(Map<String, Object> properties, T defaultValue) {
-		return loadInternalList(properties, null, defaultValue, ((List<T>) Constants.emptyList), false);
+		return loadInternalList(properties, null, defaultValue, ((List<T>) Constants.EMPTY_LIST), false);
 	}
 
 	/**
@@ -437,8 +427,8 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<T> loadListNullable(Map<String, Object> properties, T defaultValue) {
-		List<T> value = loadInternalList(properties, null, defaultValue, ((List<T>) Constants.emptyList), false);
-		if (value == Constants.emptyList) {
+		List<T> value = loadInternalList(properties, null, defaultValue, ((List<T>) Constants.EMPTY_LIST), false);
+		if (value == Constants.EMPTY_LIST) {
 			return null;
 		}
 		return value;
@@ -477,7 +467,7 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<T> loadRequiredList(Map<String, Object> properties, T defaultValue) {
-		return loadInternalList(properties, null, defaultValue, ((List<T>) Constants.emptyList), true);
+		return loadInternalList(properties, null, defaultValue, ((List<T>) Constants.EMPTY_LIST), true);
 	}
 
 	/**
@@ -511,7 +501,7 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<T> loadList(Map<String, Object> properties, Map<String, Object> refProperties, T defaultValue) {
-		return loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.emptyList), false);
+		return loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.EMPTY_LIST), false);
 	}
 
 	/**
@@ -549,9 +539,9 @@ public class JsonPath {
 	 */
 	public <T> List<T> loadListNullable(Map<String, Object> properties, Map<String, Object> refProperties,
 			T defaultValue) {
-		List<T> value = loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.emptyList),
+		List<T> value = loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.EMPTY_LIST),
 				false);
-		if (value == Constants.emptyList) {
+		if (value == Constants.EMPTY_LIST) {
 			return null;
 		}
 		return value;
@@ -596,7 +586,7 @@ public class JsonPath {
 	 */
 	public <T> List<T> loadRequiredList(Map<String, Object> properties, Map<String, Object> refProperties,
 			T defaultValue) {
-		return loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.emptyList), true);
+		return loadInternalList(properties, refProperties, defaultValue, ((List<T>) Constants.EMPTY_LIST), true);
 	}
 
 	/**
@@ -661,8 +651,8 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<List<T>> loadListOfList(Map<String, Object> properties, T defaultValue) {
-		return loadInternalListOfList(properties, null, defaultValue, (List<T>) Constants.emptyList,
-				(List<List<T>>) ((Object) Constants.emptyListOfList), false);
+		return loadInternalListOfList(properties, null, defaultValue, (List<T>) Constants.EMPTY_LIST,
+				(List<List<T>>) ((Object) Constants.EMPTY_LISTOF_LIST), false);
 	}
 
 	/**
@@ -697,8 +687,8 @@ public class JsonPath {
 	 * @return the list
 	 */
 	public <T> List<List<T>> loadRequiredListOfList(Map<String, Object> properties, T defaultValue) {
-		return loadInternalListOfList(properties, null, defaultValue, (List<T>) Constants.emptyList,
-				(List<List<T>>) ((Object) Constants.emptyListOfList), true);
+		return loadInternalListOfList(properties, null, defaultValue, (List<T>) Constants.EMPTY_LIST,
+				(List<List<T>>) ((Object) Constants.EMPTY_LISTOF_LIST), true);
 	}
 
 	/**
@@ -736,8 +726,8 @@ public class JsonPath {
 	 */
 	public <T> List<List<T>> loadListOfList(Map<String, Object> properties, Map<String, Object> refProperties,
 			T defaultValue) {
-		return loadInternalListOfList(properties, refProperties, defaultValue, (List<T>) Constants.emptyList,
-				(List<List<T>>) ((Object) Constants.emptyListOfList), false);
+		return loadInternalListOfList(properties, refProperties, defaultValue, (List<T>) Constants.EMPTY_LIST,
+				(List<List<T>>) ((Object) Constants.EMPTY_LISTOF_LIST), false);
 	}
 
 	/**
@@ -778,8 +768,8 @@ public class JsonPath {
 	 */
 	public <T> List<List<T>> loadRequiredListOfList(Map<String, Object> properties, Map<String, Object> refProperties,
 			T defaultValue) {
-		return loadInternalListOfList(properties, refProperties, defaultValue, (List<T>) Constants.emptyList,
-				(List<List<T>>) ((Object) Constants.emptyListOfList), true);
+		return loadInternalListOfList(properties, refProperties, defaultValue, (List<T>) Constants.EMPTY_LIST,
+				(List<List<T>>) ((Object) Constants.EMPTY_LISTOF_LIST), true);
 	}
 
 	/**

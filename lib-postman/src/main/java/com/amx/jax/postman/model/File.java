@@ -59,9 +59,6 @@ public class File {
 
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
-	@Null
-	@JsonIgnore
-	private String object;
 
 	public File() {
 	}
@@ -138,7 +135,6 @@ public class File {
 			response.addHeader("Content-Disposition", "attachment; filename=" + getName());
 		}
 		try {
-			// final File outputFile = File.createTempFile(fileName, ".pdf");
 			if (body != null) {
 				outputStream = response.getOutputStream();
 				outputStream.write(this.body);

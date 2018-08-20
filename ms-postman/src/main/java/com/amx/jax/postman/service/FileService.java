@@ -22,26 +22,42 @@ import com.amx.utils.ArgUtil;
 
 import net.sf.jasperreports.engine.JRException;
 
+/**
+ * The Class FileService.
+ */
 @Component
 public class FileService {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(FileService.class);
 
+	/** The pdf service. */
 	@Autowired
 	private PdfService pdfService;
 
+	/** The template service. */
 	@Autowired
 	private TemplateService templateService;
 
+	/** The template utils. */
 	@Autowired
 	TemplateUtils templateUtils;
 
+	/** The slack service. */
 	@Autowired
 	SlackService slackService;
 
+	/** The audit service. */
 	@Autowired
 	AuditService auditService;
 
+	/**
+	 * Creates the.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the file
+	 */
 	public File create(File file) {
 		if (file.getTemplate() != null) {
 			/**
@@ -70,18 +86,25 @@ public class FileService {
 			/**
 			 * From string to File type
 			 */
-			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent();
+			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.CREATE_PDF, file);
 			try {
 				pdfService.convert(file);
-				auditService.gauge(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_CREATED, file));
+				auditService.gauge(pmGaugeEvent);
 			} catch (JRException e) {
-				auditService.excep(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
+				auditService.excep(pmGaugeEvent, LOGGER, e);
 			}
 
 		}
 		return file;
 	}
 
+	/**
+	 * To input stream.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the input stream
+	 */
 	public InputStream toInputStream(File file) {
 		// convert bytes into InputStream
 		InputStream is = new ByteArrayInputStream(file.getBody());
@@ -97,6 +120,15 @@ public class FileService {
 		return is;
 	}
 
+	/**
+	 * To data source.
+	 *
+	 * @param file
+	 *            the file
+	 * @return the data source
+	 * @throws MessagingException
+	 *             the messaging exception
+	 */
 	public DataSource toDataSource(File file) throws MessagingException {
 		DataSource dataSource = new ByteArrayDataSource(file.getBody(), "application/pdf");
 		MimeBodyPart pdfBodyPart = new MimeBodyPart();

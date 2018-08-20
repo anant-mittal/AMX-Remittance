@@ -28,6 +28,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
@@ -44,6 +45,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
@@ -60,7 +62,6 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
-import com.amx.jax.exception.GlobalException;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
@@ -108,41 +109,43 @@ public class BeneficiaryService extends AbstractService {
 
 	@Autowired
 	ITransactionHistroyDAO tranxHistDao;
-	
+
 	@Autowired
 	MetaData metaData;
-	
+
 	@Autowired
 	RelationsRepository relationsRepository;
-	
+
 	@Autowired
 	JaxUtil jaxUtil;
-	
+
 	@Autowired
 	JaxNotificationService jaxNotificationService;
-	
+
 	@Autowired
 	private UserValidationService userValidationService;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@Autowired
 	RoutingBankMasterRepository routingBankMasterRepository;
-	
+
 	@Autowired
 	RoutingAgentLocationRepository routingAgentLocationRepository;
-	
+
 	@Autowired
 	MetaService metaService;
-	
+
 	@Autowired
 	CountryRepository countryRepository;
-	
-   @Autowired
-   PlaceOrderService placeOrderService;
+
+	@Autowired
+	PlaceOrderService placeOrderService;
 	@Autowired
 	BeneficaryAccountRepository beneficaryAccountRepository;
+	@Autowired
+	JaxProperties jaxProperties ; 
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -795,9 +798,12 @@ public class BeneficiaryService extends AbstractService {
 	// Added by chetan 03-05-2018 for country with channeling
 	public ApiResponse getBeneficiaryCountryListWithChannelingForOnline(BigDecimal customerId) {
 
-		//List<CountryMasterView> countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
-		List<CountryMasterView> countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
-		
+		List<CountryMasterView> countryList;
+		if (jaxProperties.getBeneThreeCountryCheck()) {
+			countryList = countryRepository.getBeneCountryList(metaData.getLanguageId());
+		} else {
+			countryList = countryRepository.findByLanguageId(metaData.getLanguageId());
+		}
 		List<BigDecimal> supportedServiceGroupList = beneDao.getRoutingBankMasterList(); // add for channeling
 																							// 03-05-2018
 		ApiResponse response = getBlackApiResponse();
@@ -821,10 +827,11 @@ public class BeneficiaryService extends AbstractService {
 			listData.add(map.get(BigDecimal.valueOf(2)));
 			CountryMasterDTO model = new CountryMasterDTO();
 			jaxUtil.convert(beneCountry, model);
-			//disable cash
-			/*if (supportedServiceGroupList.contains(model.getCountryId())) {
-				listData.add(map.get(BigDecimal.valueOf(1)));
-			}*/
+			if (!jaxProperties.getCashDisable()) {
+				if (supportedServiceGroupList.contains(model.getCountryId())) {
+					listData.add(map.get(BigDecimal.valueOf(1)));
+				}
+			}
 			model.setSupportedServiceGroup(listData);
 			list.add(model);
 		}

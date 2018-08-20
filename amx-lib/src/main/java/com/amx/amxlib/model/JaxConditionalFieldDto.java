@@ -36,4 +36,9 @@ public class JaxConditionalFieldDto {
 		this.field = field;
 	}
 
+	@Override
+	public String toString() {
+		return "JaxConditionalFieldDto [id=" + id + ", entityName=" + entityName + ", field=" + field + "]";
+	}
+
 }

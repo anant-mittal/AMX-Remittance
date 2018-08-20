@@ -320,7 +320,7 @@ public class MetaController {
 		LOGGER.info("in getbankBranches" + request.toString());
 		JaxContextUtil.setJaxEvent(JaxEvent.BANK_BRANCH_SEARCH);
 		JaxContextUtil.setRequestModel(request);
-		//bankBranchSearchRequestlValidator.validate(request, bindingResult);
+		bankBranchSearchRequestlValidator.validate(request, bindingResult);
 		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
 		return apiResponse;
 	}

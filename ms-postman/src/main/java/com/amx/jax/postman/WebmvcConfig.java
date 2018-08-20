@@ -12,19 +12,43 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+/**
+ * The Class WebmvcConfig.
+ */
 @Configuration
 public class WebmvcConfig extends WebMvcConfigurerAdapter {
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#
+	 * addViewControllers(org.springframework.web.servlet.config.annotation.
+	 * ViewControllerRegistry)
+	 */
 	@Override
 	public void addViewControllers(ViewControllerRegistry registry) {
 		registry.addViewController("/index/**").setViewName("mains");
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#
+	 * addInterceptors(org.springframework.web.servlet.config.annotation.
+	 * InterceptorRegistry)
+	 */
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(localeChangeInterceptor());
 	}
 
+	/**
+	 * Locale resolver.
+	 *
+	 * @return the locale resolver
+	 */
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver slr = new SessionLocaleResolver();
@@ -32,6 +56,11 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 		return slr;
 	}
 
+	/**
+	 * Locale change interceptor.
+	 *
+	 * @return the locale change interceptor
+	 */
 	@Bean
 	public LocaleChangeInterceptor localeChangeInterceptor() {
 		LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
@@ -39,6 +68,11 @@ public class WebmvcConfig extends WebMvcConfigurerAdapter {
 		return lci;
 	}
 
+	/**
+	 * Message source.
+	 *
+	 * @return the reloadable resource bundle message source
+	 */
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();

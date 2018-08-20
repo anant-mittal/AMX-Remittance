@@ -4,9 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-
-import org.springframework.format.annotation.NumberFormat;
 
 /** THis model represents customer's home address */
 public class CustomerHomeAddress implements Serializable {
@@ -16,23 +15,23 @@ public class CustomerHomeAddress implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
+	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull
+	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull
+	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
-	@NotNull
-	@NumberFormat
-	@Size(min = 1)
+	@NotNull(message="Mobile may not be null")
+	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
+	@Size(min = 1)	
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull
-	@NumberFormat
+	@NotNull(message="telPrefix may not be null")
+	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 
 	public BigDecimal getCountryId() {

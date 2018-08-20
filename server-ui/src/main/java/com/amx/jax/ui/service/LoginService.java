@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.exception.IncorrectInputException;
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
@@ -20,6 +21,7 @@ import com.amx.jax.ui.auth.AuthState;
 import com.amx.jax.ui.auth.AuthState.AuthStep;
 import com.amx.jax.ui.auth.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
+import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -29,23 +31,38 @@ import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.session.UserSession;
 import com.amx.utils.ListManager;
 
+/**
+ * The Class LoginService.
+ */
 @Service
 public class LoginService {
 
+	/** The log. */
 	private Logger log = LoggerFactory.getLogger(getClass());
 
+	/** The user session. */
 	@Autowired
 	private UserSession userSession;
 
+	/** The jax service. */
 	@Autowired
 	private JaxService jaxService;
 
+	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
 
+	/** The audit service. */
 	@Autowired
 	private AuditService auditService;
 
+	/**
+	 * Gets the random security question.
+	 *
+	 * @param customerModel
+	 *            the customer model
+	 * @return the random security question
+	 */
 	private AuthData getRandomSecurityQuestion(CustomerModel customerModel) {
 		AuthData loginData = new AuthData();
 		ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
@@ -65,10 +82,18 @@ public class LoginService {
 
 		loginData.setImageId(customerModel.getImageUrl());
 		loginData.setImageCaption(customerModel.getCaption());
-		// loginData.setAnswer(answer);
 		return loginData;
 	}
 
+	/**
+	 * Login.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param password
+	 *            the password
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> login(String identity, String password) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
 		sessionService.clear();
@@ -87,6 +112,15 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Login sec ques.
+	 *
+	 * @param guestanswer
+	 *            the guestanswer
+	 * @param mOtp
+	 *            the m otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> loginSecQues(SecurityQuestionModel guestanswer, String mOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.SECQUES);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
@@ -124,31 +158,46 @@ public class LoginService {
 			sessionService.getGuestSession().endStep(AuthStep.SECQUES);
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
-		} catch (IncorrectInputException e) {
-			customerModel = sessionService.getGuestSession().getCustomerModel();
+		} catch (GlobalException e) {
+			if (e.getError() == JaxError.INCORRECT_SECURITY_QUESTION_ANSWER) {
+				customerModel = sessionService.getGuestSession().getCustomerModel();
 
-			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-					customerModel.getSecurityquestions());
+				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+						customerModel.getSecurityquestions());
 
-			SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
-			sessionService.getGuestSession().nextQuesIndex();
+				SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
+				sessionService.getGuestSession().nextQuesIndex();
 
-			List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
+				List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
 
-			for (QuestModelDTO questModelDTO : questModel) {
-				if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-					wrapper.getData().setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
-					wrapper.getData().setQues(questModelDTO);
+				for (QuestModelDTO questModelDTO : questModel) {
+					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
+						wrapper.getData().setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
+						wrapper.getData().setQues(questModelDTO);
+					}
 				}
+				wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
+				auditService.log(new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL,
+						e.getError()));
+			} else {
+				UIServerError.evaluate(e);
 			}
-			// wrapper.getData().setAnswer(answer);
-			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
-			auditService.log(
-					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));
+
+		} catch (Exception e) {
+			UIServerError.evaluate(e);
 		}
 		return wrapper;
 	}
 
+	/**
+	 * Send OTP.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param motp
+	 *            the motp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> sendOTP(String identity, String motp) {
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(new AuthData());
 		CivilIdOtpModel model;
@@ -165,6 +214,13 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Inits the reset password.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> initResetPassword(String identity) {
 		sessionService.clear();
 		sessionService.invalidate();
@@ -181,6 +237,17 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Verify reset password.
+	 *
+	 * @param identity
+	 *            the identity
+	 * @param motp
+	 *            the motp
+	 * @param eotp
+	 *            the eotp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<AuthResponse> verifyResetPassword(String identity, String motp, String eotp) {
 		sessionService.getGuestSession().initStep(AuthStep.MOTPVFY);
 		ResponseWrapper<AuthResponse> wrapper = new ResponseWrapper<AuthResponse>(null);
@@ -198,6 +265,17 @@ public class LoginService {
 		return wrapper;
 	}
 
+	/**
+	 * Updatepwd.
+	 *
+	 * @param password
+	 *            the password
+	 * @param mOtp
+	 *            the m otp
+	 * @param eOtp
+	 *            the e otp
+	 * @return the response wrapper
+	 */
 	public ResponseWrapper<UserUpdateData> updatepwd(String password, String mOtp, String eOtp) {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());

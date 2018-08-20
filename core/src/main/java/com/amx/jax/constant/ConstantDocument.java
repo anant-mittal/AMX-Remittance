@@ -8,6 +8,7 @@ public class ConstantDocument {
 	public static final BigDecimal DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION = new BigDecimal(1);
 	public static final String No = "N";
 	public static final String Yes = "Y";
+	public static final String Deleted = "D";
 	public static final String Update = "U";
 	// document id
 	public static final BigDecimal APPLICATION_DOCUMENT_ID = new BigDecimal(1);
@@ -45,7 +46,17 @@ public class ConstantDocument {
 	public static final String BANGLADESH_ALPHA3_CODE = "BGD";
 	public static final String SERVICE_GROUP_CODE_CASH = "C";
 	public static final String SERVICE_GROUP_CODE_BANK = "B";
-	
+
 	public static final String CONSTANT_ALL = "ALL";
+
+	public static final String BANK_INDICATOR_CORRESPONDING_BANK = "CB";
+	public static final String BANK_INDICATOR_BENEFICIARY_BANK = "BE";
+	public static final BigDecimal REMITTANCE_MODE_EFT = new BigDecimal(3);
+	public static final BigDecimal REMITTANCE_MODE_RTGS = new BigDecimal(4);
+
+	public static final BigDecimal DELIVERY_MODE_BANKING_CHANNEL = new BigDecimal(105);
+	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
+	
+	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
 
 }

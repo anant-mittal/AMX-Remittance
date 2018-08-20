@@ -1,17 +1,20 @@
 package com.amx.jax.filter;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.AmxApiError;
+import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.exception.AmxHttpExceptions.AmxHttpClientException;
+import com.amx.jax.exception.AmxHttpExceptions.AmxHttpNotFoundException;
+import com.amx.jax.exception.AmxHttpExceptions.AmxHttpServerException;
 import com.amx.jax.exception.ExceptionFactory;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
 
 @Component
@@ -32,19 +35,39 @@ public class AppClientErrorHanlder implements ResponseErrorHandler {
 	@Override
 	public void handleError(ClientHttpResponse response) throws IOException {
 
-		String apiErrorJson = (String) response.getHeaders().getFirst("apiErrorJson");
+		HttpStatus statusCode = response.getStatusCode();
+		String statusText = response.getStatusText();
+		String apiErrorJson = ArgUtil.parseAsString(response.getHeaders().getFirst("apiErrorJson"));
+		AmxApiError apiError = throwError(apiErrorJson);
+
+		if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
+			throw new AmxHttpNotFoundException(statusCode);
+		}
+
+		if (response.getStatusCode().series() == HttpStatus.Series.SERVER_ERROR) {
+			String body = IoUtils.inputstream_to_string(response.getBody());
+			apiError = throwError(body);
+			throw new AmxHttpServerException(statusCode, apiError);
+		} else if (response.getStatusCode().series() == HttpStatus.Series.CLIENT_ERROR) {
+			String body2 = IoUtils.inputstream_to_string(response.getBody());
+			apiError = throwError(body2);
+			throw new AmxHttpClientException(statusCode, apiError);
+		}
+
+	}
+
+	private AmxApiError throwError(String apiErrorJson) {
 		AmxApiError apiError = JsonUtil.fromJson(apiErrorJson, AmxApiError.class);
-
-		AmxApiException defExcp = ExceptionFactory.get(apiError.getErrorClass());
-
-		if (defExcp == null) {
-			defExcp = ExceptionFactory.get(apiError.getErrorId());
+		if (!ArgUtil.isEmpty(apiError)) {
+			AmxApiException defExcp = ExceptionFactory.get(apiError.getException());
+			if (defExcp == null) {
+				defExcp = ExceptionFactory.get(apiError.getErrorId());
+			}
+			if (defExcp != null) {
+				throw defExcp.getInstance(apiError);
+			}
 		}
-
-		if (defExcp != null) {
-			throw defExcp.getInstance(apiError);
-		}
-
+		return apiError;
 	}
 
 	static {
