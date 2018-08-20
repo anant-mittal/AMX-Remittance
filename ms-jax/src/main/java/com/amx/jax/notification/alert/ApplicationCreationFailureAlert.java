@@ -21,6 +21,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
+import com.amx.jax.service.TenantService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxContextUtil;
@@ -40,6 +41,8 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
+	@Autowired
+	TenantService tenantService;
 	
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -87,7 +90,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	        	cusName.append(customer.getLastName());
 	        }
 			remittanceTransactionFailure.setCustomerName(cusName.toString());
-		
+			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
 			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

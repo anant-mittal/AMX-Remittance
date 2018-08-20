@@ -76,6 +76,8 @@ public class RemittanceCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
 			remittanceTransactionFailure.setService(product);
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
+			BigDecimal localNetTranxAmount = lstPayIdDetails.get(0).getLocalNetTranxAmount();
+			remittanceTransactionFailure.setTransactionAmount(localNetTranxAmount);
 	        if(customer.getFirstName() !=null){
 	        	cusName.append(customer.getFirstName());
 	        	cusName.append(" ");
