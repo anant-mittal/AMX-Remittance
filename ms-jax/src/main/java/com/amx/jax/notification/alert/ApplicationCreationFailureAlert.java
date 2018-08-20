@@ -41,6 +41,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
+	
 	@Autowired
 	TenantService tenantService;
 	
@@ -78,6 +79,8 @@ public class ApplicationCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
 			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
 			remittanceTransactionFailure.setExceptionMessage(ex.toString());
+			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
+			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
 			if(customer.getFirstName() !=null){
 	        	cusName.append(customer.getFirstName());
 	        	cusName.append(" ");
@@ -90,7 +93,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 	        	cusName.append(customer.getLastName());
 	        }
 			remittanceTransactionFailure.setCustomerName(cusName.toString());
-			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
+
 			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

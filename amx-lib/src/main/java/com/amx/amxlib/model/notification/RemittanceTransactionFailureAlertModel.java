@@ -14,8 +14,7 @@ public class RemittanceTransactionFailureAlertModel {
 	String beneficiaryBranch;
 	String beneficiaryAccountNo;
 	String service;
-
-	String exceptionMessage;
+    String exceptionMessage;
 
 	public String getCustomerReference() {
 		return customerReference;

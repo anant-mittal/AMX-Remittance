@@ -22,6 +22,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
+import com.amx.jax.service.TenantService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxContextUtil;
@@ -44,6 +45,9 @@ public class RemittanceCreationFailureAlert implements IAlert {
 	
 	@Autowired
 	RemittanceApplicationRepository applicationDao;
+	
+	@Autowired
+	TenantService tenantService;
 	
 	@Override
 	public List<String> getAlertContacts(CommunicationChannel notificationType) {
@@ -78,6 +82,8 @@ public class RemittanceCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
 			BigDecimal localNetTranxAmount = lstPayIdDetails.get(0).getLocalNetTranxAmount();
 			remittanceTransactionFailure.setTransactionAmount(localNetTranxAmount);
+			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
+			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
 	        if(customer.getFirstName() !=null){
 	        	cusName.append(customer.getFirstName());
 	        	cusName.append(" ");
