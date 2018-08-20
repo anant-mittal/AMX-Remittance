@@ -3,10 +3,10 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.amx.jax.placeorder</groupId>
-	<artifactId>server-placeorder</artifactId>
+	<artifactId>ms-worker</artifactId>
 	<packaging>jar</packaging>
 
-	<name>server-placeorder</name>
+	<name>ms-worker</name>
 	<url>http://maven.apache.org</url>
 
 	<parent>
