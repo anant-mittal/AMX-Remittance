@@ -13,6 +13,7 @@ public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
 	private final static int interval = 30;
+	private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
 	private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
@@ -34,7 +35,7 @@ public final class CryptoUtil {
 			Long epoch = Math.round(currentTime / 1000.0);
 			String elapsed = Long.toString(epoch / interval);
 			String password = String.join(PASS_DELIMITER, elapsed, publicKey, message);
-			MessageDigest md = MessageDigest.getInstance(SHA1);
+			MessageDigest md = MessageDigest.getInstance(ALGO_SHA1);
 			ByteArrayOutputStream pwsalt = new ByteArrayOutputStream();
 			pwsalt.write(password.getBytes(DEFAULT_ENCODING));
 			byte[] unhashedBytes = pwsalt.toByteArray();
