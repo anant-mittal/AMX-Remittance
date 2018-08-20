@@ -183,6 +183,8 @@ public class SMService {
 
 			String responseText = restService.ajax(this.smsReqUrl).build(smsReqType, smsReqQuery, smsReqFields, params)
 					.asString();
+			
+			
 
 			// Tenant tnt = TenantContextHolder.currentSite();
 			//
