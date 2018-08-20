@@ -17,11 +17,11 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AbstractEvent;
+import com.amx.jax.logger.AbstractEvent.EventMarker;
+import com.amx.jax.logger.AbstractEvent.EventType;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.logger.AbstractEvent.EventMarker;
-import com.amx.jax.logger.AbstractEvent.EventType;
 import com.amx.jax.tunnel.ITunnelService;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
@@ -207,6 +207,7 @@ public class AuditServiceClient implements AuditService {
 	 * @return
 	 */
 	public static AuditLoggerResponse excepStatic(AuditEvent event) {
+		event.setResult(AuditEvent.Result.ERROR);
 		return logAuditEvent(excepmarker, event);
 	}
 

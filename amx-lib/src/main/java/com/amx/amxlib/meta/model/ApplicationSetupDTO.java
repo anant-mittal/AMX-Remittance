@@ -2,7 +2,7 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 
 public class ApplicationSetupDTO  extends AbstractModel{

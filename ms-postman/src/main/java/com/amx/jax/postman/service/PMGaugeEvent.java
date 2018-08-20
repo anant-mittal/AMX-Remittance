@@ -25,35 +25,21 @@ public class PMGaugeEvent extends AuditEvent {
 		/** The pm event. */
 		PM_EVENT,
 
-		/** The sms sent not. */
 		// Sms Events
-		SMS_SENT_NOT,
-		/** The sms sent success. */
-		SMS_SENT_SUCCESS,
-		/** The sms sent error. */
-		SMS_SENT_ERROR,
-
-		/** The email sent not. */
+		SEND_SMS,
 		// Email Events
-		EMAIL_SENT_NOT,
-		/** The email sent success. */
-		EMAIL_SENT_SUCCESS,
-		/** The email sent error. */
-		EMAIL_SENT_ERROR,
-
-		/** The pdf created. */
+		SEND_EMAIL,
 		// PDF Events
-		PDF_CREATED,
-		/** The pdf error. */
-		PDF_ERROR,
+		CREATE_PDF,
 
-		/** The notifcation android. */
 		// NOTIFCATION Events
 		NOTIFCATION_ANDROID,
 		/** The notifcation ios. */
 		NOTIFCATION_IOS,
 		/** The notifcation web. */
-		NOTIFCATION_WEB;
+		NOTIFCATION_WEB,
+
+		NOTIFCATION_SUBSCRIPTION;
 
 		/*
 		 * (non-Javadoc)
@@ -98,38 +84,12 @@ public class PMGaugeEvent extends AuditEvent {
 	 *
 	 * @param type
 	 *            the type
-	 * @param description
-	 *            the description
-	 * @param message
-	 *            the message
-	 */
-	public PMGaugeEvent(Type type, String description, String message) {
-		super(type, description, message);
-	}
-
-	/**
-	 * Instantiates a new PM gauge event.
-	 *
-	 * @param type
-	 *            the type
-	 * @param description
-	 *            the description
-	 */
-	public PMGaugeEvent(Type type, String description) {
-		super(type, description);
-	}
-
-	/**
-	 * Instantiates a new PM gauge event.
-	 *
-	 * @param type
-	 *            the type
 	 * @param sms
 	 *            the sms
 	 */
 	public PMGaugeEvent(Type type, SMS sms) {
 		super(type);
-		this.fillDetail(type, sms);
+		this.set(sms);
 	}
 
 	/**
@@ -142,7 +102,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 */
 	public PMGaugeEvent(Type type, Email email) {
 		super(type);
-		this.fillDetail(type, email);
+		this.set(email);
 	}
 
 	/**
@@ -155,7 +115,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 */
 	public PMGaugeEvent(Type type, File file) {
 		super(type);
-		this.fillDetail(type, file);
+		this.set(file);
 	}
 
 	/**
@@ -196,6 +156,11 @@ public class PMGaugeEvent extends AuditEvent {
 		this.to = to;
 	}
 
+	public PMGaugeEvent set(Result result) {
+		this.result = result;
+		return this;
+	}
+
 	/**
 	 * Fill detail.
 	 *
@@ -205,8 +170,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the file
 	 * @return the PM gauge event
 	 */
-	public PMGaugeEvent fillDetail(Type type, File file) {
-		this.type = type;
+	public PMGaugeEvent set(File file) {
 		this.template = file.getTemplate();
 		return this;
 	}
@@ -220,8 +184,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the sms
 	 * @return the PM gauge event
 	 */
-	public PMGaugeEvent fillDetail(Type type, SMS sms) {
-		this.type = type;
+	public PMGaugeEvent set(SMS sms) {
 		this.template = sms.getTemplate();
 		this.to = sms.getTo();
 		return this;
@@ -236,8 +199,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the email
 	 * @return the PM gauge event
 	 */
-	public PMGaugeEvent fillDetail(Type type, Email email) {
-		this.type = type;
+	public PMGaugeEvent set(Email email) {
 		this.template = email.getTemplate();
 		this.to = email.getTo();
 		return this;
@@ -256,8 +218,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 *            the response
 	 * @return the audit event
 	 */
-	public AuditEvent fillDetail(Type type, PushMessage msg, String message, String responseText) {
-		this.type = type;
+	public AuditEvent set(PushMessage msg, String message, String responseText) {
 		this.to = msg.getTo();
 		this.message = message;
 		this.responseText = responseText;

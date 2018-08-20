@@ -25,9 +25,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 	/** The redirect url. */
 	private String redirectUrl = null;
 
-	/** The exception. */
-	private String exception = null;
-
 	/**
 	 * Instantiates a new response wrapper M.
 	 */
@@ -254,25 +251,6 @@ public class ResponseWrapperM<T, M> extends AmxApiResponse<T, M> {
 		this.setStatus(status);
 		this.message = excep.getMessage();
 		this.exception = excep.getClass().getName();
-	}
-
-	/**
-	 * Gets the exception.
-	 *
-	 * @return the exception
-	 */
-	public String getException() {
-		return exception;
-	}
-
-	/**
-	 * Sets the exception.
-	 *
-	 * @param exception
-	 *            the new exception
-	 */
-	public void setException(String exception) {
-		this.exception = exception;
 	}
 
 }

@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -9,7 +7,6 @@
 	<name>ms-logger</name>
 	<url>http://maven.apache.org</url>
 	<description>Logger Service</description>
-
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -35,21 +32,13 @@
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
 
-		<!-- Swagger infos -->
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 	</dependencies>

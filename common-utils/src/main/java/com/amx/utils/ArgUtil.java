@@ -1,5 +1,7 @@
 package com.amx.utils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -9,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Class ArgUtil.
@@ -21,6 +24,8 @@ import java.util.Set;
  * 
  */
 public final class ArgUtil {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ArgUtil.class);
 
 	/**
 	 * Instantiates a new arg util.
@@ -355,11 +360,16 @@ public final class ArgUtil {
 	/**
 	 * Parse as List &lt;T&gt;.
 	 *
-	 * @param <T> the generic type
-	 * @param value            the value
-	 * @param defaultValue            the default value
-	 * @param defaultListValue            the default list value
-	 * @param required            the required
+	 * @param <T>
+	 *            the generic type
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
+	 * @param defaultListValue
+	 *            the default list value
+	 * @param required
+	 *            the required
 	 * @return the list
 	 */
 	public static <T> List<T> parseAsListOfT(Object value, T defaultValue, List<T> defaultListValue, boolean required) {
@@ -548,8 +558,10 @@ public final class ArgUtil {
 	 * 5) String ("023567" / "011256" etc.) - Octal or base 8 if starts with 0
 	 * </pre>
 	 *
-	 * @param value            the value
-	 * @param defaultValue the default value
+	 * @param value
+	 *            the value
+	 * @param defaultValue
+	 *            the default value
 	 * @return : Long object if valid else null
 	 */
 	public static Long parseAsLong(Object value, Long defaultValue) {
@@ -576,7 +588,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as long.
 	 *
-	 * @param value the value
+	 * @param value
+	 *            the value
 	 * @return the long
 	 */
 	public static Long parseAsLong(Object value) {
@@ -669,7 +682,8 @@ public final class ArgUtil {
 	/**
 	 * Parses the as string.
 	 *
-	 * @param object            the object
+	 * @param object
+	 *            the object
 	 * @return the string
 	 */
 	public static String[] parseAsStringArray(Object object) {
@@ -712,6 +726,32 @@ public final class ArgUtil {
 		}
 	}
 
+	public static Enum parseAsEnum(Object value, Type type) {
+		try {
+			String enumString = parseAsString(value);
+			if (enumString == null) {
+				return null;
+			}
+			Class clazz = (Class) type;
+			if (clazz.isEnum()) {
+				return Enum.valueOf(clazz, enumString);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Enum Cast Exception", e);
+		}
+		return null;
+	}
+
+	public static <T extends Enum<T>> T[] parseAsEnumArray(Object value, Type componentType) {
+		Class<T> type = (Class<T>) componentType;
+		String[] str = ArgUtil.parseAsStringArray(value);
+		Object o = Array.newInstance(type, str.length);
+		for (int i = 0; i < str.length; i++) {
+			Array.set(o, i, ArgUtil.parseAsEnum(str[i].toUpperCase(), componentType));
+		}
+		return (T[]) o;
+	}
+
 	/**
 	 * Checks if is object empty.
 	 *
@@ -749,11 +789,30 @@ public final class ArgUtil {
 	/**
 	 * Checks if is empty string.
 	 *
-	 * @param str the str
+	 * @param str
+	 *            the str
 	 * @return true, if is empty string
 	 */
 	public static boolean isEmptyString(String str) {
 		return (str == null || Constants.BLANK.equals(str));
+	}
+
+	public static boolean areEqual(Object a, Object b) {
+		if (a == null || b == null) {
+			return (a == null && b == null);
+		}
+		String strA = parseAsString(a, Constants.BLANK);
+		String strB = parseAsString(b, Constants.BLANK);
+		return strA.equals(strB);
+	}
+
+	public static <T> T ifNotEmpty(T... strs) {
+		for (T str : strs) {
+			if (!isEmpty(str)) {
+				return str;
+			}
+		}
+		return null;
 	}
 
 }

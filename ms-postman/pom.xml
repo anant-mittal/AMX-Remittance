@@ -50,23 +50,14 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
-		<!-- Swagger infos -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- PDF FLYINSOC -->
@@ -84,13 +75,6 @@
 
 
 		<!-- jasper reports -->
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-
 
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

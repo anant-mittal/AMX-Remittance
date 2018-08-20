@@ -4,7 +4,9 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +32,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -54,13 +57,28 @@ public class RemittanceClientTest {
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(1424));
+		request.setLocalAmount(new BigDecimal(10));
+		response = client.getPurposeOfTransactions(request);
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
+	}
+	
+	@Test
+	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		jaxMetaInfo.setTenant(Tenant.KWT2);
+		ApiResponse<PurposeOfTransactionModel> response = null;
 		response = client.getPurposeOfTransactions(new BigDecimal(1424));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -70,22 +88,42 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312610));
+		request.setBeneId(new BigDecimal(4312621));
 		request.setLocalAmount(new BigDecimal(10));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(142));
-		request.setSrlId(new BigDecimal(673));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(163));
+		request.setSrlId(new BigDecimal(697));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(266.6666666667));
+		exRateBreakup.setRate(new BigDecimal(162.7074520013));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);
 		} catch (AdditionalFlexRequiredException exp) {
+			exp.deserializeMeta();
 			List<JaxConditionalFieldDto> list = exp.getConditionalFileds();
 			list.get(0);
+			response = resendRequestWithAddtionalFlexField(request, list);
 		}
+
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
+	}
+
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+		
+		Map<String, String> flexFields = new HashMap<>();
+		list.forEach(i -> {
+			if(i.getField().getType().equals("select")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			}else if(i.getField().getType().equals("date")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
+			}else {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
+			}
+		});
+		request.setFlexFields(flexFields);
+		return client.saveTransaction(request);
+		
 	}
 
 	// @Test
@@ -128,7 +166,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	//@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -169,9 +207,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-	
-	@Test
+
+	// @Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;

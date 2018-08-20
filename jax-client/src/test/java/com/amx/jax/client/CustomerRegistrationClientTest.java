@@ -19,10 +19,10 @@ import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
-import com.amx.amxlib.model.SendOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppConstants;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 
@@ -37,7 +37,7 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 
 	@Test
 	public void testSendOtp() throws URISyntaxException, IOException {
-		setDefaults();	
+		setBahrainDefaults();	
 		jaxMetaInfo.setLanguageId(new BigDecimal(1));
 		ApiResponse<BooleanResponse> response = null;
 		String json = new String(

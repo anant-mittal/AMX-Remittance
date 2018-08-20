@@ -4,6 +4,8 @@ import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
 
 import java.math.BigDecimal;
 
+import javax.validation.Valid;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +45,7 @@ public class PlaceOrderController {
 	 * @return
 	 */
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public ApiResponse handleUrlSave(@RequestBody PlaceOrderDTO dto) 
+	public ApiResponse handleUrlSave(@RequestBody @Valid PlaceOrderDTO dto) 
 	{
 		logger.info("In save with parameters" + dto.toString());
 		BigDecimal customerId = metaData.getCustomerId();

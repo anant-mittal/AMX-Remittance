@@ -106,16 +106,14 @@ public class RemittanceApplicationManager {
 		RemittanceApplication remittanceApplication = new RemittanceApplication();
 
 		BigDecimal localCurrencyId = metaData.getDefaultCurrencyId();
-		@SuppressWarnings("unchecked")
-		Map<String, Object> routingDetails = (Map<String, Object>) validatedObjects.get("ROUTINGDETAILS");
-		BigDecimal routingCountryId = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");
+		BigDecimal routingCountryId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_COUNTRY_ID");
 		Customer customer = (Customer) validatedObjects.get("CUSTOMER");
-		BigDecimal routingBankId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_ID");
-		BigDecimal routingBankBranchId = (BigDecimal) routingDetails.get("P_ROUTING_BANK_BRANCH_ID");
+		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
+		BigDecimal routingBankBranchId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_BRANCH_ID");
 		BenificiaryListView beneDetails = (BenificiaryListView) validatedObjects.get("BENEFICIARY");
 		BigDecimal foreignCurrencyId = beneDetails.getCurrencyId();
-		BigDecimal deliveryId = (BigDecimal) routingDetails.get("P_DELIVERY_MODE_ID");
-		BigDecimal remittanceId = (BigDecimal) routingDetails.get("P_REMITTANCE_MODE_ID");
+		BigDecimal deliveryId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
+		BigDecimal remittanceId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 		Document document = documentDao.getDocumnetByCode(ConstantDocument.DOCUMENT_CODE_FOR_REMITTANCE_APPLICATION).get(0);
 		BigDecimal selectedCurrency = getSelectedCurrency(foreignCurrencyId, requestModel);
 
@@ -141,7 +139,8 @@ public class RemittanceApplicationManager {
 		// net amt currency
 		remittanceApplication.setExCurrencyMasterByLocalNetCurrencyId(localCurrency);
 		remittanceApplication.setSpotRateInd(ConstantDocument.No);
-		remittanceApplication.setLoyaltyPointInd(requestModel.isAvailLoyalityPoints() ? ConstantDocument.Yes : ConstantDocument.No);
+		remittanceApplication.setLoyaltyPointInd(
+				loyalityPointsAvailed(requestModel, validationResults) ? ConstantDocument.Yes : ConstantDocument.No);
 		// company Id and code
 		CompanyMaster companymaster = new CompanyMaster();
 		companymaster.setCompanyId(metaData.getCompanyId());
@@ -311,7 +310,7 @@ public class RemittanceApplicationManager {
 		ExchangeRateBreakup breakup = validationResults.getExRateBreakup();
 
 		BigDecimal loyalityPointsEncashed = BigDecimal.ZERO;
-		if (requestModel.isAvailLoyalityPoints() && validationResults.getCanRedeemLoyalityPoints()) {
+		if (loyalityPointsAvailed(requestModel, validationResults)) {
 			loyalityPointsEncashed = loyalityPointService.getVwLoyalityEncash().getEquivalentAmount();
 		}
 		remittanceApplication.setForeignTranxAmount(breakup.getConvertedFCAmount());
@@ -323,5 +322,21 @@ public class RemittanceApplicationManager {
 		remittanceApplication.setLocalNetTranxAmount(breakup.getNetAmountWithoutLoyality());
 		remittanceApplication.setLoyaltyPointsEncashed(loyalityPointsEncashed);
 
+	}
+	
+	/**
+	 * whether customer has availed loyality points or not
+	 * 
+	 * @param requestModel
+	 * @param responseModel
+	 * @return
+	 * 
+	 */
+	public Boolean loyalityPointsAvailed(RemittanceTransactionRequestModel requestModel,
+			RemittanceTransactionResponsetModel responseModel) {
+		if (requestModel.isAvailLoyalityPoints() && responseModel.getCanRedeemLoyalityPoints()) {
+			return true;
+		}
+		return false;
 	}
 }

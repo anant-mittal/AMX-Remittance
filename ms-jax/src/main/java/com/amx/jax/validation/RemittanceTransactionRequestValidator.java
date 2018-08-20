@@ -2,6 +2,7 @@ package com.amx.jax.validation;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.JaxFieldValueDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
@@ -33,6 +35,8 @@ import com.amx.jax.dbmodel.remittance.FlexFiledView;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
+import com.amx.jax.services.JaxFieldService;
+import com.amx.jax.util.DateUtil;
 
 @Component
 public class RemittanceTransactionRequestValidator {
@@ -47,6 +51,10 @@ public class RemittanceTransactionRequestValidator {
 	IAdditionalBankRuleMapDao additionalBankRuleMapDao;
 	@Autowired
 	IAdditionalBankDetailsDao additionalBankDetailsDao;
+	@Autowired
+	JaxFieldService jaxFieldService ;
+	@Autowired
+	DateUtil dateUtil;
 
 	public void validateExchangeRate(RemittanceTransactionRequestModel request,
 			RemittanceTransactionResponsetModel response) {
@@ -62,11 +70,14 @@ public class RemittanceTransactionRequestValidator {
 
 	public void validateFlexFields(RemittanceTransactionRequestModel request,
 			Map<String, Object> remitApplParametersMap) {
+		request.populateFlexFieldDtoMap();
 		List<FlexFiledView> allFlexFields = remittanceApplicationDao.getFlexFields();
-		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFields();
+		Map<String, FlexFieldDto> requestFlexFields = request.getFlexFieldDtoMap();
 		if (requestFlexFields == null) {
 			requestFlexFields = new HashMap<>();
-			request.setFlexFields(requestFlexFields);
+			request.setFlexFieldDtoMap(requestFlexFields);
+		} else {
+			validateFlexFieldValues(requestFlexFields);
 		}
 		requestFlexFields.put("INDIC1",
 				new FlexFieldDto(request.getAdditionalBankRuleFiledId(), request.getSrlId(), null));
@@ -99,22 +110,31 @@ public class RemittanceTransactionRequestValidator {
 			field.setRequired(ConstantDocument.Yes.equals(flexField.getIsRequired()));
 			field.setMinLength(BigDecimal.ONE);
 			field.setMaxLength(new BigDecimal(100));
+			field.setDtoPath("flexFields." + bankRule.getFlexField());
 			dto.setId(bankRule.getAdditionalBankRuleId());
 			if (FlexFieldBehaviour.PRE_DEFINED.toString().equals(fieldBehaviour)) {
 				field.setType(FlexFieldBehaviour.PRE_DEFINED.getFieldType().toString());
-				List<Object> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId, deliveryModeId,
-						remittanceModeId, routingBankId, foreignCurrencyId, bankRule.getAdditionalBankRuleId());
+				List<JaxFieldValueDto> amiecValues = getAmiecValues(bankRule.getFlexField(), routingCountryId,
+						deliveryModeId, remittanceModeId, routingBankId, foreignCurrencyId,
+						bankRule.getAdditionalBankRuleId());
 				field.setPossibleValues(amiecValues);
+			} else {
+				field.setType(FlexFieldBehaviour.USER_ENTERABLE.getFieldType().toString());
 			}
 			dto.setField(field);
 			if (flexFieldValueInRequest == null) {
 				requiredFlexFields.add(dto);
 			} else {
-				if (hasFieldValueChanged(field, flexFieldValueInRequest)) {
+				if (field.getPossibleValues() != null  && hasFieldValueChanged(field, flexFieldValueInRequest)) {
 					requiredFlexFields.add(dto);
 				}
 			}
 		}
+		// update jaxfield defination from db
+		List<JaxFieldDto> jaxFieldDtos = requiredFlexFields.stream().map(i -> i.getField()).collect(Collectors.toList());
+		jaxFieldService.updateDtoFromDb(jaxFieldDtos);
+		updateAdditionalValidations(jaxFieldDtos);
+		
 		if (!requiredFlexFields.isEmpty()) {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
@@ -125,25 +145,85 @@ public class RemittanceTransactionRequestValidator {
 
 	}
 
-	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
-		boolean changedValue = true;
-		for (Object value : field.getPossibleValues()) {
-			FlexFieldDto ffd = (FlexFieldDto) value;
-			if (ffd.equals(flexFieldValue)) {
-				changedValue = false;
+	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
+		if (requestFlexFields != null) {
+			LocalDate today = LocalDate.now();
+			LocalDate fromDate = null;
+			LocalDate toDate = null;
+			for (Map.Entry<String, FlexFieldDto> entry : requestFlexFields.entrySet()) {
+				if ("INDIC4".equals(entry.getKey())) {
+					// from date
+					fromDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+					if (fromDate == null) {
+						throw new GlobalException("Invalid from date");
+					}
+					if (fromDate.isAfter(today)) {
+						throw new GlobalException("From date must be less than current date");
+					}
+
+				}
+				if ("INDIC5".equals(entry.getKey())) {
+					// to date
+					toDate = dateUtil.validateDate(entry.getValue().getAmieceDescription(),
+							ConstantDocument.MM_DD_YYYY_DATE_FORMAT);
+					if (toDate == null) {
+						throw new GlobalException("Invalid to date");
+					}
+				}
+			}
+			if (toDate != null && fromDate == null) {
+				throw new GlobalException("From date is not present");
+			}
+			if (toDate != null && toDate.isBefore(fromDate)) {
+				throw new GlobalException("To date must be greater than from date");
 			}
 		}
+	}
+
+	private void updateAdditionalValidations(List<JaxFieldDto> jaxFieldDtos) {
+		jaxFieldDtos.forEach(i -> {
+			if ("PAYMENT PERIOD FROM DATE".equals(i.getName())) {
+				String format = "MM/DD/YYYY";
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("lteq", dateUtil.format(LocalDate.now(), "MM/d/YYYY"));
+				additionalValidations.put("format", format);
+				i.setAdditionalValidations(additionalValidations);
+			}
+
+			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
+				Map<String, Object> additionalValidations = i.getAdditionalValidations();
+				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
+				additionalValidations.put("format", "MM/DD/YYYY");
+				i.setAdditionalValidations(additionalValidations);
+			}
+		});
+
+	}
+
+	private boolean hasFieldValueChanged(JaxFieldDto field, FlexFieldDto flexFieldValue) {
+		boolean changedValue = true;
+			for (Object value : field.getPossibleValues()) {
+				JaxFieldValueDto jaxFieldValueDto = (JaxFieldValueDto) value;
+				if (jaxFieldValueDto.getValue().equals(flexFieldValue)) {
+					changedValue = false;
+				}
+			}
 		return changedValue;
 	}
 
-	private List<Object> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
+	private List<JaxFieldValueDto> getAmiecValues(String flexiField, BigDecimal countryId, BigDecimal deleveryModeId,
 			BigDecimal remittanceModeId, BigDecimal bankId, BigDecimal currencyId,
 			BigDecimal additionalBankRuleFiledId) {
 		List<AdditionalBankDetailsViewx> addtionalBankDetails = additionalBankDetailsDao
 				.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId, countryId, flexiField);
 		return addtionalBankDetails.stream().map(x -> {
 			FlexFieldDto ffDto = new FlexFieldDto(additionalBankRuleFiledId, x.getSrlId(), x.getAmieceDescription());
-			return ffDto;
+			JaxFieldValueDto dto = new JaxFieldValueDto();
+			dto.setId(ffDto.getSrlId());
+			dto.setOptLable(ffDto.getAmieceDescription());
+			dto.setValue(ffDto);
+			return dto;
 		}).collect(Collectors.toList());
 	}
 }

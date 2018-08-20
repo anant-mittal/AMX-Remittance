@@ -45,9 +45,24 @@ public class CountryMetaValidation {
 	}
 
 	public void validateMobileNumber(BigDecimal countryId, String mobile) {
-		String CountryCode = countryService.getCountryMaster(countryId).getCountryCode();
-		if(CountryCode.toString().equals("001")) {
+		//String CountryCode = countryService.getCountryMaster(countryId).getCountryCode();
+		String countryAlpha2Code = countryService.getCountryMaster(countryId).getCountryAlpha2Code();
+		if(countryAlpha2Code.toString().equals("KW")) {
 			final Pattern pattern = Pattern.compile("^[5679]\\d+$");
+			if (!pattern.matcher(mobile).matches()) {
+				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+			}
+		}
+		
+		if(countryAlpha2Code.toString().equals("BH")) {
+			final Pattern pattern = Pattern.compile("^[367]\\d+$");
+			if (!pattern.matcher(mobile).matches()) {
+				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+			}
+		}
+		
+		if(countryAlpha2Code.toString().equals("OM")) {
+			final Pattern pattern = Pattern.compile("^[79]\\d+$");
 			if (!pattern.matcher(mobile).matches()) {
 				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
 			}

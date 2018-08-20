@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import com.amx.jax.model.AbstractModel;
+
 
 public class PersonInfo extends AbstractModel implements Cloneable {
 

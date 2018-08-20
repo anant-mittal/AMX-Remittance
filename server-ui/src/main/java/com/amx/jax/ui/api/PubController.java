@@ -1,5 +1,8 @@
 package com.amx.jax.ui.api;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -13,20 +16,26 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AppConfig;
+import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.GoogleService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.service.HttpService;
+import com.amx.jax.tunnel.TunnelClient;
+import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.AppEnvironment;
+import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
@@ -52,6 +61,9 @@ public class PubController {
 	/** The post man service. */
 	@Autowired
 	private PostManService postManService;
+
+	@Autowired
+	private GoogleService googleService;
 
 	/** The geo location service. */
 	@Autowired
@@ -105,6 +117,9 @@ public class PubController {
 		return geoLocationService.getLocation(httpService.getIPAddress());
 	}
 
+	@Autowired
+	TunnelService tunnelService;
+
 	/**
 	 * Status.
 	 *
@@ -142,9 +157,20 @@ public class PubController {
 		wrapper.getData().setScheme(request.getScheme());
 		wrapper.getData().setDevice(userDevice.toMap());
 		wrapper.getData().message = calcLibs.get().getRSName();
-		log.info("==========appConfig======== {} == {} = {}", appConfig.isSwaggerEnabled(), appConfig.getAppName(),
-				appConfig.isDebug());
+
+		tunnelService.send(TunnelClient.TEST_TOPIC, new SessionEvent());
+		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
+
 		return wrapper;
+	}
+
+	@Autowired
+	private JaxService jaxService;
+
+	@RequestMapping(value = "/pub/rates", method = { RequestMethod.GET })
+	public ResponseWrapper<List<MinMaxExRateDTO>> rates() {
+		return new ResponseWrapper<List<MinMaxExRateDTO>>(
+				jaxService.setDefaults(new BigDecimal(0)).getxRateClient().getMinMaxExchangeRate().getResults());
 	}
 
 	/**
@@ -195,7 +221,7 @@ public class PubController {
 			@RequestParam String cphone, @RequestParam String message, @RequestParam String verify) {
 		ResponseWrapper<Email> wrapper = new ResponseWrapper<>();
 		try {
-			if (postManService.verifyCaptcha(verify, httpService.getIPAddress())) {
+			if (googleService.verifyCaptcha(verify, httpService.getIPAddress())) {
 				SupportEmail email = new SupportEmail();
 				email.setCaptchaCode(verify);
 				email.setVisitorName(name);

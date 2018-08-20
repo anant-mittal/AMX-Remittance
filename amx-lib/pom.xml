@@ -44,16 +44,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.5.10</version>
-			<scope>provided</scope>
-		</dependency>
-
 	</dependencies>
 
 </project>

@@ -6,6 +6,7 @@
 	<packaging>jar</packaging>
 	<name>lib-postman</name>
 	<url>http://maven.apache.org</url>
+	<description>Client for postman service</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -24,16 +25,13 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>
-	<description>Common utils library for boot projects</description>
 </project>

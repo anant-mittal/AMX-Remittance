@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.exrateservice.service.ExchangeRateService;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 
 @RestController
 @RequestMapping(EXCHANGE_RATE_ENDPOINT)
@@ -23,7 +23,7 @@ public class ExchangeRateController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	ExchangeRateService service;
+	NewExchangeRateService service;
 
 	@RequestMapping(value = "/online/", method = RequestMethod.GET)
 	public ApiResponse getOnlineExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal amount,

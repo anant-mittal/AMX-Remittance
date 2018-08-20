@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.amx.jax.dbmodel.BankMasterModel;
 
+
 public interface BankMasterRepository extends CrudRepository<BankMasterModel, BigDecimal> {
 
 	public List<BankMasterModel> findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(BigDecimal bankCountryId, String isActive);

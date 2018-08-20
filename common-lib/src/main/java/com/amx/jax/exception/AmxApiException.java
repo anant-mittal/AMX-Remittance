@@ -1,9 +1,17 @@
 package com.amx.jax.exception;
 
+import java.lang.reflect.Constructor;
+
+import org.slf4j.Logger;
+import org.springframework.http.HttpStatus;
+
+import com.amx.jax.logger.LoggerService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 
 public abstract class AmxApiException extends AmxException {
+
+	private static final Logger LOGGER = LoggerService.getLogger(AmxApiException.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -33,6 +41,11 @@ public abstract class AmxApiException extends AmxException {
 	public AmxApiException(String errorMessage) {
 		this();
 		this.errorMessage = errorMessage;
+	}
+
+	public AmxApiException(IExceptionEnum error) {
+		this();
+		this.error = error;
 	}
 
 	public AmxApiException(String errorMessage, String errorCode) {
@@ -74,7 +87,9 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public AmxApiError createAmxApiError() {
-		return new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		AmxApiError error = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		error.setException(this.getClass().getName());
+		return error;
 	}
 
 	/**
@@ -84,7 +99,16 @@ public abstract class AmxApiException extends AmxException {
 	 * 
 	 * @return
 	 */
-	public abstract AmxApiException getInstance(AmxApiError apiError);
+	public AmxApiException getInstance(AmxApiError apiError) {
+		try {
+			Constructor<? extends AmxApiException> constructor = this.getClass().getConstructor(AmxApiError.class);
+			return constructor.newInstance(apiError);
+
+		} catch (Exception e) {
+			LOGGER.error("error occured in getinstance method", e);
+		}
+		return null;
+	}
 
 	public abstract IExceptionEnum getErrorIdEnum(String errorId);
 
@@ -98,4 +122,11 @@ public abstract class AmxApiException extends AmxException {
 
 	public abstract boolean isReportable();
 
+	public HttpStatus getHttpStatus() {
+		return httpStatus == null ? HttpStatus.BAD_REQUEST : httpStatus;
+	}
+
+	public void setHttpStatus(HttpStatus httpStatus) {
+		this.httpStatus = httpStatus;
+	}
 }

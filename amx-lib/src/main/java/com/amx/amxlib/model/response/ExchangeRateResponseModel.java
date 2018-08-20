@@ -3,7 +3,7 @@ package com.amx.amxlib.model.response;
 import java.util.List;
 
 import com.amx.amxlib.meta.model.BankMasterDTO;
-import com.amx.amxlib.model.AbstractModel;
+import com.amx.jax.model.AbstractModel;
 
 public class ExchangeRateResponseModel extends AbstractModel {
 

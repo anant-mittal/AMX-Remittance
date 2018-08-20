@@ -68,15 +68,16 @@ public class RemittanceApplicationAdditionalDataManager {
 						ConstantDocument.INDIC4),
 				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_5", "P_AMIEC_CODE_5", "P_FLEX_FIELD_VALUE_5",
 						ConstantDocument.INDIC5) };
-		Map<String, FlexFieldDto> flexFields = remittanceTransactionRequestModel.getFlexFields();
+		Map<String, FlexFieldDto> flexFields = remittanceTransactionRequestModel.getFlexFieldDtoMap();
 		flexFields.forEach((k, v) -> {
 			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 			BigDecimal remittanceModeId = (BigDecimal) remitApplParametersMap.get("P_REMITTANCE_MODE_ID");
 			BigDecimal deliveryModeId = (BigDecimal) remitApplParametersMap.get("P_DELIVERY_MODE_ID");
 			BigDecimal foreignCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),
-					foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
-			if (additionaBnankDetail != null) {
+			
+			if (v.getSrlId() != null) {
+				AdditionalBankDetailsViewx additionaBnankDetail = bankService.getAdditionalBankDetail(v.getSrlId(),
+						foreignCurrencyId, bankId, remittanceModeId, deliveryModeId);
 				AdditionalInstructionData additionalInsDataTmp = createAdditionalIndicatorsData(remittanceApplication,
 						applicationCountryId, k, additionaBnankDetail.getAmiecCode(),
 						additionaBnankDetail.getAmieceDescription(), v.getAdditionalBankRuleFiledId());
@@ -118,9 +119,11 @@ public class RemittanceApplicationAdditionalDataManager {
 		countrymaster.setCountryId(applicationCountryId);
 		additionalInsData.setFsCountryMaster(countrymaster);
 
-		AdditionalBankRuleMap additionalBank = new AdditionalBankRuleMap();
-		additionalBank.setAdditionalBankRuleId(additionalBankRuleId);
-		additionalInsData.setAdditionalBankFieldsId(additionalBank);
+		if (additionalBankRuleId != null) {
+			AdditionalBankRuleMap additionalBank = new AdditionalBankRuleMap();
+			additionalBank.setAdditionalBankRuleId(additionalBankRuleId);
+			additionalInsData.setAdditionalBankFieldsId(additionalBank);
+		}
 		additionalInsData.setFlexField(indicatorCode);
 		additionalInsData.setFlexFieldValue(flexFieldValue);
 		if (amiecCode != null) {

@@ -2,6 +2,8 @@ package com.amx.jax.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -61,12 +63,8 @@ public class DateUtil {
 	}
 
 	public static void main(String[] args) {
-		String date = "10/10/2017";
-		System.out
-				.println("Date ---->:" + DateUtil.convertStringToDate(DateUtil.todaysDateWithDDMMYY(new Date(), "10")));
-		System.out.println("Date to String :" + DateUtil.todaysDateWithDDMMYY(new Date(), "10"));
-
-		System.out.println("Convert String to SQL Date :" + DateUtil.convretStringToSqlDate("17/06/2018"));
+		DateUtil u = new DateUtil();
+		u.validateDate("01/01/2018", "dd/MM/yyyy");
 	}
 
 	/** Added by Rabil */
@@ -106,4 +104,41 @@ public class DateUtil {
 
 		return date.getTime();
 	}
+	
+	/**
+	 * validates date string according to the format passed
+	 * 
+	 * @param strDate
+	 * @param format
+	 * @return if date string is valid Date object is returned otherwise null
+	 * 
+	 */
+	public LocalDate validateDate(String strDate, String format) {
+
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return LocalDate.parse(strDate, formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	/**
+	 * parses the date object
+	 * 
+	 * @param localDate
+	 * @param format
+	 * @return parsed date
+	 * 
+	 */
+	public String format(LocalDate localDate, String format) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+		try {
+			return localDate.format(formatter);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	
 }
