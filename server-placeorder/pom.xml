@@ -1,15 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.amx.jax.placeorder</groupId>
-  <artifactId>server-placeorder</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+	<groupId>com.amx.jax.placeorder</groupId>
+	<artifactId>server-placeorder</artifactId>
+	<packaging>jar</packaging>
 
-  <name>server-placeorder</name>
-  <url>http://maven.apache.org</url>
+	<name>server-placeorder</name>
+	<url>http://maven.apache.org</url>
 
- 
 	<parent>
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
@@ -23,21 +22,15 @@
 		<java.version>1.8</java.version>
 	</properties>
 
-		<dependencies>
-	
+	<dependencies>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-	    <dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-cache</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>lib-mcq</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-beanutils</groupId>
@@ -46,7 +39,6 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
@@ -54,22 +46,8 @@
 			<version>${project.version}</version>
 		</dependency>
 
-				<!-- Swagger infos -->
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger2</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.springfox</groupId>
-			<artifactId>springfox-swagger-ui</artifactId>
-			<version>2.6.1</version>
-			<scope>compile</scope>
-		</dependency>
-				<!-- Swagger infos -->
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -79,14 +57,7 @@
 					<executable>true</executable>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<configuration>
-					<attachClasses>true</attachClasses>
-					<classesClassifier>classes</classesClassifier>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>

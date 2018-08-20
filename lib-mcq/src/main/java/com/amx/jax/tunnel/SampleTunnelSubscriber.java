@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = TunnelClient.TEST_TOPIC, queued = true)
+@TunnelEvent(topic = SampleTunnelEvents.TEST_TOPIC, queued = true)
 public class SampleTunnelSubscriber implements ITunnelSubscriber<AuditEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

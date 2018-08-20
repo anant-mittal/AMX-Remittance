@@ -1,4 +1,4 @@
-package com.amx.jax.placeorder.service;
+package com.amx.jax.worker.service;
 
 import java.math.BigDecimal;
 import java.util.List;

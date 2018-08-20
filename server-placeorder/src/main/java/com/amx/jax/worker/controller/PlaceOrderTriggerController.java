@@ -1,4 +1,4 @@
-package com.amx.jax.placeorder.controller;
+package com.amx.jax.worker.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.placeorder.service.PlaceOrderRateAlertService;
+import com.amx.jax.worker.service.PlaceOrderRateAlertService;
 
 import java.math.BigDecimal;
 import org.apache.log4j.Logger;

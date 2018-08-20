@@ -1,4 +1,4 @@
-package com.amx.jax.placeorder.dao;
+package com.amx.jax.worker.dao;
 
 import java.math.BigDecimal;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package com.amx.jax.placeorder.service;
+package com.amx.jax.worker.service;
 
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 

@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TunnelEvent {
-	String topic() default "topic";
+	Class<? extends Enum<?>> enumClass() default ITunnelEvents.class;
+
+	String topic();
 
 	boolean queued() default false;
 }

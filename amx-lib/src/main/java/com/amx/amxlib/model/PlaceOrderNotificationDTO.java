@@ -1,7 +1,8 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
+
+import com.amx.jax.model.AbstractModel;
 
 public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneable{
 
