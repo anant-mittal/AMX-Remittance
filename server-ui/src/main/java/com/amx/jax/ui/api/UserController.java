@@ -338,6 +338,5 @@ public class UserController {
 		} else {
 			return loginService.verifyResetPassword(null, mOtp, null);
 		}
-
 	}
 }
