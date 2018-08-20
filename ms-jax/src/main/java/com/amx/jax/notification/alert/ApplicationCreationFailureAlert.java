@@ -51,37 +51,54 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
-		// TODO fetch bene and customer details
-		// TODO fill data in RemittanceTransactionFailureAlertModel'		
-		logger.info("Inside Application Creation Failure --->"+ex);
+	
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
-		BenificiaryListView benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+		BenificiaryListView benificiaryListView = null;
+		List<ExEmailNotification> emailid =null;
+		String product = "Product could not be derived";
+		StringBuilder cusName = new StringBuilder();
+		
+		try {
+			benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+			BigDecimal customerId = benificiaryListView.getCustomerId();
+			Customer customer = custDao.getCustById(customerId);
+		    emailid = emailNotificationDao.getEmailNotification();
 
-		BigDecimal customerId = benificiaryListView.getCustomerId();
-		Customer customer = custDao.getCustById(customerId);
-
-		List<ExEmailNotification> emailid = emailNotificationDao.getEmailNotification();
-
-		RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
-
-		remittanceTransactionFailure.setBeneficiaryName(benificiaryListView.getBenificaryName());
-		remittanceTransactionFailure.setBeneficiaryAccountNo(benificiaryListView.getBankAccountNumber());
-		remittanceTransactionFailure.setBeneficiaryBank(benificiaryListView.getBankName());
-		remittanceTransactionFailure.setBeneficiaryBranch(benificiaryListView.getBankBranchName());
-		remittanceTransactionFailure.setCustomerReference(customer.getCustomerReference().toString());
-		remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
-		remittanceTransactionFailure.setService(ex.getErrorMessage());
-		remittanceTransactionFailure.setCustomerContact(customer.getMobile());
-		remittanceTransactionFailure.setCustomerName(
-				customer.getFirstName() + " " + customer.getMiddleName() + " " + customer.getLastName());
-
-		jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+			RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
+			remittanceTransactionFailure.setBeneficiaryName(benificiaryListView.getBenificaryName());
+			remittanceTransactionFailure.setBeneficiaryAccountNo(benificiaryListView.getBankAccountNumber());
+			remittanceTransactionFailure.setBeneficiaryBank(benificiaryListView.getBankName());
+			remittanceTransactionFailure.setBeneficiaryBranch(benificiaryListView.getBankBranchName());
+			remittanceTransactionFailure.setCustomerReference(customer.getCustomerReference().toString());
+			remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
+			remittanceTransactionFailure.setService(product);
+			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
+			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
+			remittanceTransactionFailure.setExceptionMessage(ex.toString());
+			if(customer.getFirstName() !=null){
+	        	cusName.append(customer.getFirstName());
+	        	cusName.append(" ");
+	        }
+	        if(customer.getMiddleName() !=null){
+	        	cusName.append(customer.getMiddleName());
+	        	cusName.append(" ");
+	        }
+	        if(customer.getLastName() !=null){
+	        	cusName.append(customer.getLastName());
+	        }
+			remittanceTransactionFailure.setCustomerName(cusName.toString());
+		
+			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 
 	@Override
