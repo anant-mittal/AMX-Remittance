@@ -35,7 +35,7 @@ public class CompanyService extends AbstractService {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
 		if (companyDetails.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		} 
+		}
 		return AmxApiResponse.buildList(convert(companyDetails));
 	}
 	

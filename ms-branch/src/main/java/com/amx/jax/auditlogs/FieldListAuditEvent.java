@@ -1,22 +1,22 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
+import com.amx.amxlib.model.request.DynamicFieldRequest;
 
 public class FieldListAuditEvent extends JaxAuditEvent {
 
-	GetJaxFieldRequest detJaxFieldModel;	
+	DynamicFieldRequest dynamicFieldModel;
 
-	public GetJaxFieldRequest getDetJaxFieldModel() {
-		return detJaxFieldModel;
+	public DynamicFieldRequest getDynamicFieldModel() {
+		return dynamicFieldModel;
 	}
 
-	public void setDetJaxFieldModel(GetJaxFieldRequest detJaxFieldModel) {
-		this.detJaxFieldModel = detJaxFieldModel;
+	public void setDynamicFieldModel(DynamicFieldRequest dynamicFieldModel) {
+		this.dynamicFieldModel = dynamicFieldModel;
 	}
 
-	public FieldListAuditEvent(GetJaxFieldRequest detJaxFieldModel) {
+	public FieldListAuditEvent(DynamicFieldRequest dynamicFieldModel) {
 		super(Type.FIELD_LIST);
-		this.detJaxFieldModel = detJaxFieldModel;
+		this.dynamicFieldModel = dynamicFieldModel;
 	}
 
 }

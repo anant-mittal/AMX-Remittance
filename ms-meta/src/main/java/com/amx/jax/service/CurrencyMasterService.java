@@ -134,7 +134,7 @@ public class CurrencyMasterService extends AbstractService {
 		List<CurrencyMasterModel> currencyList = getCurrencyMasterByCountryId(countryId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		} 
+		}
 		return AmxApiResponse.buildList(convertToModelDto(currencyList));
 	}
 	
@@ -230,7 +230,7 @@ public class CurrencyMasterService extends AbstractService {
 				return;
 			}
 			currencyListDto.add(convertModel(currencyMaster));
-		});		
+		});
 		return AmxApiResponse.buildList(currencyListDto);
 	}
 

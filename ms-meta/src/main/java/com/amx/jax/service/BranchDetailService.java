@@ -37,9 +37,10 @@ public class BranchDetailService extends AbstractService {
 	public AmxApiResponse<BranchDetailModel, Object> getBracnchDetailResponse() {
 		
 		List<BranchDetailModel> branchDetailList = branchDetailDao.getBranchDetailList(meta.getCountryId());
+		
 		if (branchDetailList.isEmpty()) {
 			throw new GlobalException("Branch Details are not available");
-		} 
+		}
 		return AmxApiResponse.buildList(branchDetailList);
 	}
 	

@@ -29,7 +29,7 @@ public class TenantService implements Serializable {
 	 *
 	 * @return the dom currency
 	 */
-	@CacheForTenant
+	//@CacheForTenant
 	public CurrencyMasterDTO getDomCurrency() {
 		return jaxService.setDefaults().getMetaClient()
 				.getCurrencyByCountryId(TenantContextHolder.currentSite().getBDCode()).getResult();
@@ -40,7 +40,7 @@ public class TenantService implements Serializable {
 	 *
 	 * @return the online currencies
 	 */
-	@CacheForTenant
+	//@CacheForTenant
 	public List<CurrencyMasterDTO> getOnlineCurrencies() {
 		return jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
 	}

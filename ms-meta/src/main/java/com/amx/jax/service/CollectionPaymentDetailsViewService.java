@@ -27,7 +27,7 @@ public class CollectionPaymentDetailsViewService extends AbstractService {
 
 		if(listPaymentDetails.isEmpty()) {
 				throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-			} 
+			}
 			return AmxApiResponse.buildList(listPaymentDetails);	
 	}
 	

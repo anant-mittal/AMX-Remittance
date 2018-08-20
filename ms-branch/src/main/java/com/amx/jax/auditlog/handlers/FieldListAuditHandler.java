@@ -5,10 +5,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
+import com.amx.amxlib.model.request.DynamicFieldRequest;
 import com.amx.jax.auditlogs.FieldListAuditEvent;
 import com.amx.jax.auditlogs.JaxAuditEvent;
-import com.amx.jax.auditlogs.SendOtpAuditEvent;
 import com.amx.jax.utils.JaxContextUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -17,7 +16,7 @@ public class FieldListAuditHandler extends AbstractAuditHanlder{
 
 	@Override
 	public JaxAuditEvent createAuditEvent() {
-		GetJaxFieldRequest model = (GetJaxFieldRequest) JaxContextUtil.getRequestModel();
+		DynamicFieldRequest model = (DynamicFieldRequest) JaxContextUtil.getRequestModel();
 		JaxAuditEvent event = new FieldListAuditEvent(model);		
 		return event;
 	}

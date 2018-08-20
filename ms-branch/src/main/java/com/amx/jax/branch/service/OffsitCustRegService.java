@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -26,15 +27,25 @@ import com.amx.amxlib.exception.jax.InvalidOtpException;
 import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
 import com.amx.amxlib.meta.model.ArticleMasterDescDto;
 import com.amx.amxlib.meta.model.IncomeRangeDto;
+import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.ComponentDataDto;
+import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.JaxFieldDto;
+import com.amx.amxlib.model.ValidationRegexDto;
 import com.amx.amxlib.model.request.CommonRequest;
 import com.amx.amxlib.model.request.DynamicFieldRequest;
 import com.amx.amxlib.model.request.EmploymentDetailsRequest;
 import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
+import com.amx.jax.api.ARespModel;
+import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.auditlogs.ArticleListAuditEvent;
 import com.amx.jax.auditlogs.DesignationListAuditEvent;
@@ -43,22 +54,30 @@ import com.amx.jax.auditlogs.IncomeRangeAuditEvent;
 import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
 import com.amx.jax.branch.dao.EmployeeDao;
 import com.amx.jax.branch.repository.EmployeeRepository;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
+import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
+import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.service.PrefixService;
+import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
+import com.amx.jax.userservice.service.AbstractUserService;
 import com.amx.jax.userservice.service.CheckListManager;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
@@ -133,7 +152,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return null;
 	}*/
 
-	public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
+	/*public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		if(offsiteCustRegModel.getCivilId() == null)
 			throw new GlobalException("Null civil id passed ", JaxError.BLANK_CIVIL_ID);
@@ -188,7 +207,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			LOGGER.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
 		LOGGER.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
-	}
+	}*/
 
 	/*@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
@@ -196,23 +215,17 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return null;
 	}
 */
-	
-	public AmxApiResponse<List<JaxConditionalFieldRuleDto>, Object> getIdDetailsFields(GetJaxFieldRequest request) {
+
+	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
-		{
-			auditService.excep(new FieldListAuditEvent(request), new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION));
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
-		}			
+			
 		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
 		if(fieldList.isEmpty())
-		{
-			auditService.excep(new FieldListAuditEvent(request), new NullPointerException());
 			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
-		}			
 		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
-		//auditService.log(new FieldListAuditEvent(request));
-		return AmxApiResponse.build(dtoList);
+		return AmxApiResponse.buildList(dtoList);
 	}
 
 	private List<JaxConditionalFieldRuleDto> convertData(List<JaxConditionalFieldRule> fieldList) {
@@ -221,8 +234,8 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			output.add(convertInDto(i));
 		});
 		return output;
-	}
-	
+	}	
+
 
 	private JaxConditionalFieldRuleDto convertInDto(JaxConditionalFieldRule i) {
 		JaxConditionalFieldRuleDto dto = new JaxConditionalFieldRuleDto();
@@ -237,7 +250,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	@SuppressWarnings("null")
+	/*@SuppressWarnings("null")
 	public AmxApiResponse<String, Object> validateOTP(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		LOGGER.info("In validateopt of civilid: " + offsiteCustRegModel.getCivilId());
 		String civilId = offsiteCustRegModel.getCivilId();
@@ -277,21 +290,21 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Employee Authentication Successfull");		
 		obj.setMessageKey("AUTH_SUCCESS");
 		return obj;
-	}
+	}*/
 	
 	/**
 	 * reset lock
 	 */
-	protected void unlockCustomer(Employee employee) {
+	/*protected void unlockCustomer(Employee employee) {
 		if (employee.getLockCnt() != null || employee.getLockDt() != null) {
 			employee.setLockCnt(null);
 			employee.setLockDt(null);
 			repo.save(employee);
 		}
 		employee.setTokenSentCount(BigDecimal.ZERO);
-	}
+	}*/
 	
-	public AmxApiResponse<List<ComponentDataDto>, Object> sendIdTypes() {
+	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
 		List<ComponentDataDto> list = new ArrayList<>();
@@ -306,12 +319,11 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		// List<BizComponentDataDesc> bizComponentDataDescs =
 		// bizcomponentDao.getBizComponentDataDescListByComponmentId();
 		if (tempList.isEmpty())
-		{			
+		{
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
-		}
-			
-		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);		
-		return AmxApiResponse.build(list);
+		}			
+		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
+		return AmxApiResponse.buildList(list);
 	}
 
 	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
@@ -455,7 +467,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 					new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE));
 			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
 		}
-		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);		
+		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
 		auditService.log(new IncomeRangeAuditEvent(details));
 		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
@@ -498,8 +510,11 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		}	
 		if(map == null || map.isEmpty())
 		{
+			auditService.excep(new FieldListAuditEvent(model),
+					new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION));
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
 		}		
+		auditService.log(new FieldListAuditEvent(model));
 		return AmxApiResponse.build(map);
 	}
 	
