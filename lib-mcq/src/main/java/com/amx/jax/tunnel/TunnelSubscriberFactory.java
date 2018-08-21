@@ -1,8 +1,10 @@
 package com.amx.jax.tunnel;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RMap;
+import org.redisson.api.MapOptions;
+import org.redisson.api.RMapCache;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
@@ -17,6 +19,8 @@ import com.amx.jax.AppConfig;
 public class TunnelSubscriberFactory {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
+	public static long TIME_TO_EXPIRE = 10;
+	public static TimeUnit UNIT_OF_TIME = TimeUnit.SECONDS;
 
 	@Autowired
 	AppConfig appConfig;
@@ -71,21 +75,19 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
-				RMap<String, String> map = redisson.getMap(channel);
+				RMapCache<String, String> map = redisson.getMapCache(channel);
 				if (this.integrity) {
 					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
 							+ msg.getId();
 
-					String prevObject = map.put(integrityKey, msg.getId());
+					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
 					if (prevObject == null || this.integrity == false) { // Hey I got it first :) OR it doesn't matter
-																			// :(
-						LOGGER.info("Previous Value was null");
 						this.subscriber.onMessage(channel, msg.getData());
-						if (this.integrity == false) {
-							map.put(integrityKey, "DONE");
+						if (this.integrity == true) {
+							map.put(integrityKey, "DONE", TIME_TO_EXPIRE, UNIT_OF_TIME);
 						}
-					} else { // Hopefully other guy (The Lucky Bugger) is doing his job right.
-						LOGGER.info("Message ignored");
+					} else { // I hope, other guy (The Lucky Bugger) is doing his job, right.
+						LOGGER.info("Message ignored EVENT_CODE : {}", channel);
 					}
 				} else {
 					this.subscriber.onMessage(channel, msg.getData());
