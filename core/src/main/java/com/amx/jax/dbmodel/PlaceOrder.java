@@ -49,6 +49,8 @@ public class PlaceOrder implements Serializable {
 	private String baseCurrencyQuote;
 	private BigDecimal foreignCurrencyId;
 	private String foreignCurrencyQuote;
+	
+	
 
 	@Id
 	@GeneratedValue(generator = "jax_online_place_order_seq", strategy = GenerationType.SEQUENCE)
@@ -196,7 +198,6 @@ public class PlaceOrder implements Serializable {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-    
 
 	@Column(name = "REMITTANCE_APPLICATION_ID")
     public BigDecimal getRemittanceApplicationId() {
