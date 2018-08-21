@@ -14,6 +14,7 @@ import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
 import com.amx.utils.JsonUtil;
+import com.amx.amxlib.model.AbstractModel;
 
 /**
  * @author Prashant
@@ -37,6 +38,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private BigDecimal placeOrderId;
 
 	/*
 	 * (non-Javadoc)
@@ -94,13 +96,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
-	}
-
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -117,6 +112,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
 	
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
    public String getmOtp() {
         return mOtp;
     }
@@ -174,5 +177,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
+
+    @Override
+    public String toString() {
+        return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+                + ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+                + availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+                + ", placeOrderId=" + placeOrderId + "]";
+    }
 
 }

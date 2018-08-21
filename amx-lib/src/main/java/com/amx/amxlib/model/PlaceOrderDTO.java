@@ -16,7 +16,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	private static final long serialVersionUID = 1L;
 	@NotNull
 	private BigDecimal placeOrderId;
-	
+
 	private BigDecimal customerId;
 	
 	@NotNull
@@ -36,7 +36,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	
 	@NotNull
 	private String isActive;
-
+	
 	private Date createdDate;
 	
 	@NotNull
@@ -47,6 +47,9 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	
 	@NotNull
 	private BigDecimal payAmount;
+	
+	@NotNull
+	private BigDecimal receiveAmount;
 	
 	@NotNull
 	private BigDecimal receiveAmount;
