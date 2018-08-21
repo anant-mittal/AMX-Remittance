@@ -45,5 +45,4 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 		BigDecimal derivedSellRate = ArgUtil.parseAsBigDecimal(event.getData().get(DRVSELLRATE));
 		rateAlertService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
 	}
-
 }
