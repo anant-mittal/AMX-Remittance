@@ -38,10 +38,19 @@ public class PlaceOrder implements Serializable {
 	private String createdBy;
 	private Date updatedDate;
 	private String updatedBy;
-	private BigDecimal currencyId;
+	private BigDecimal remittanceApplicationId;
+	private BigDecimal remittanceTransactionId;
+	private Date firstRateMatchDate;
+    private BigDecimal currencyId;
 	private BigDecimal bankId;
 	private BigDecimal countryId;
 	private Date notificationDate;
+	private BigDecimal baseCurrencyId;
+	private String baseCurrencyQuote;
+	private BigDecimal foreignCurrencyId;
+	private String foreignCurrencyQuote;
+	
+	
 
 	@Id
 	@GeneratedValue(generator = "jax_online_place_order_seq", strategy = GenerationType.SEQUENCE)
@@ -189,41 +198,105 @@ public class PlaceOrder implements Serializable {
 	public void setUpdatedBy(String updatedBy) {
 		this.updatedBy = updatedBy;
 	}
-    
-	@Column(name = "CURRENCY_ID")
-	public BigDecimal getCurrencyId() {
-		return currencyId;
+
+	@Column(name = "REMITTANCE_APPLICATION_ID")
+    public BigDecimal getRemittanceApplicationId() {
+        return remittanceApplicationId;
+    }
+
+    public void setRemittanceApplicationId(BigDecimal remittanceApplicationId) {
+        this.remittanceApplicationId = remittanceApplicationId;
+    }
+
+    @Column(name = "REMITTANCE_TRANSACTION_ID")
+    public BigDecimal getRemittanceTransactionId() {
+        return remittanceTransactionId;
+    }
+
+    public void setRemittanceTransactionId(BigDecimal remittanceTransactionId) {
+        this.remittanceTransactionId = remittanceTransactionId;
+    }
+
+    @Column(name = "FIRST_RATE_MATCH_DATE")
+    public Date getFirstRateMatchDate() {
+        return firstRateMatchDate;
+    }
+
+    public void setFirstRateMatchDate(Date firstRateMatchDate) {
+        this.firstRateMatchDate = firstRateMatchDate;
+    }
+
+    @Column(name = "CURRENCY_ID")
+    public BigDecimal getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(BigDecimal currencyId) {
+        this.currencyId = currencyId;
+    }
+
+    @Column(name = "BANK_ID")
+    public BigDecimal getBankId() {
+        return bankId;
+    }
+
+    public void setBankId(BigDecimal bankId) {
+        this.bankId = bankId;
+    }
+
+    @Column(name = "COUNTRY_ID")
+    public BigDecimal getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(BigDecimal countryId) {
+        this.countryId = countryId;
+    }
+
+    @Column(name = "NOTIFICATION_DATE")
+    public Date getNotificationDate() {
+        return notificationDate;
+    }
+
+    public void setNotificationDate(Date notificationDate) {
+        this.notificationDate = notificationDate;
 	}
 
-	public void setCurrencyId(BigDecimal currencyId) {
-		this.currencyId = currencyId;
+    @Column(name = "BASE_CURRENCY_ID")
+	public BigDecimal getBaseCurrencyId() {
+		return baseCurrencyId;
 	}
 
-	@Column(name = "BANK_ID")
-	public BigDecimal getBankId() {
-		return bankId;
+	public void setBaseCurrencyId(BigDecimal baseCurrencyId) {
+		this.baseCurrencyId = baseCurrencyId;
 	}
 
-	public void setBankId(BigDecimal bankId) {
-		this.bankId = bankId;
+	@Column(name = "BASE_CURRENCY_CODE")
+	public String getBaseCurrencyQuote() {
+		return baseCurrencyQuote;
 	}
 
-	@Column(name = "COUNTRY_ID")
-	public BigDecimal getCountryId() {
-		return countryId;
+	public void setBaseCurrencyQuote(String baseCurrencyQuote) {
+		this.baseCurrencyQuote = baseCurrencyQuote;
 	}
 
-	public void setCountryId(BigDecimal countryId) {
-		this.countryId = countryId;
+	@Column(name = "FOREIGN_CURRENCY_ID")
+	public BigDecimal getForeignCurrencyId() {
+		return foreignCurrencyId;
 	}
 
-	@Column(name = "NOTIFICATION_DATE")
-	public Date  getNotificationDate() {
-		return notificationDate;
+	public void setForeignCurrencyId(BigDecimal foreignCurrencyId) {
+		this.foreignCurrencyId = foreignCurrencyId;
 	}
 
-	public void setNotificationDate(Date notificationDate) {
-		this.notificationDate = notificationDate;
+	@Column(name = "FOREIGN_CURRENCY_CODE")
+	public String getForeignCurrencyQuote() {
+		return foreignCurrencyQuote;
+	}
+
+	
+	public void setForeignCurrencyQuote(String foreignCurrencyQuote) {
+		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
 }

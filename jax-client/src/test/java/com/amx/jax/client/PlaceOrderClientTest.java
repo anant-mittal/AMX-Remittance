@@ -53,6 +53,10 @@ public class PlaceOrderClientTest {
 		placeOrderDTO.setCreatedDate(new Date());
 		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
 		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-09"));
+		placeOrderDTO.setBaseCurrencyId(new BigDecimal(1));
+		placeOrderDTO.setBaseCurrencyQuote("KWD");
+		placeOrderDTO.setForeignCurrencyId(new BigDecimal(4));
+		placeOrderDTO.setForeignCurrencyQuote("INR");
 		
 		ApiResponse<PlaceOrderDTO> response = client.savePlaceOrder(placeOrderDTO);
 		assertNotNull("Response is null", response);
@@ -115,6 +119,10 @@ public class PlaceOrderClientTest {
 		placeOrderDTO.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
 		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-02"));
 		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-11"));
+		placeOrderDTO.setBaseCurrencyId(new BigDecimal(1));
+		placeOrderDTO.setBaseCurrencyQuote("KWD");
+		placeOrderDTO.setForeignCurrencyId(new BigDecimal(4));
+		placeOrderDTO.setForeignCurrencyQuote("INR");
 		
 		ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
 		assertNotNull("Response is null", response);
