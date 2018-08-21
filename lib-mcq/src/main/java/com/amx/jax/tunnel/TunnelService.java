@@ -26,7 +26,7 @@ public class TunnelService implements ITunnelService {
 	}
 
 	public void sayHello() {
-		this.send(TunnelClient.TEST_TOPIC, "Hey There");
+		this.send(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
 	}
 
 }
