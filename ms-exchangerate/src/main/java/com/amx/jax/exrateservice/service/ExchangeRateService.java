@@ -427,5 +427,17 @@ public class ExchangeRateService extends AbstractService {
 		}
 		return dtoList;
 	}
-
+	
+	public ApiResponse setOnlineExchangeRatesPlaceorder(String quoteName,BigDecimal bankId, BigDecimal value) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		value  = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
+		BigDecimal toCurrency = currencyMasterDao.getCurrencyMasterByQuote(quoteName).getCurrencyId();
+		List<ExchangeRateApprovalDetModel> exRateModel =  exchangeRateDao.getExchangeRatesPlaceorder(toCurrency, bankId);
+		for(ExchangeRateApprovalDetModel exRate : exRateModel) {
+		exRate.setSellRateMax(value);
+		exchangeRateDao.saveOrUpdate(exRate);
+		}
+		apiResponse.getData().getValues().add(new BooleanResponse(true));
+		return apiResponse;
+	}
 }

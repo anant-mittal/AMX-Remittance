@@ -165,6 +165,7 @@
 		<module>lib-postman</module>
 		<module>ms-postman</module>
 
+
 		<module>amx-lib</module>
 		<module>core</module>
 		<module>ms-meta</module>
@@ -175,11 +176,11 @@
 		<module>jax-client</module>
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
+		<module>ms-worker</module>
 
 		<module>ms-scheduler</module>
 
 		<module>server-payg</module>
-
 		<module>server-ui</module>
 		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->

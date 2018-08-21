@@ -90,7 +90,7 @@ h1, h2, h3 {
 	font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande",
 		sans-serif;
 	color: #000;
-	margin: 40px 0 0;
+	margin: 0;
 	line-height: 1.2em;
 	font-weight: 400;
 }
@@ -139,7 +139,7 @@ a {
 	color: #FFF;
 	background-color: #348eda;
 	border: solid #348eda;
-	border-width: 10px 20px;
+	border-width: 5px 10px;
 	line-height: 2em;
 	/* 2em * 14px = 28px, use px to get airier line-height also in Thunderbird, and Yahoo!, Outlook.com, AOL webmail clients */
 	/*line-height: 28px;*/
@@ -149,6 +149,7 @@ a {
 	display: inline-block;
 	border-radius: 5px;
 	text-transform: capitalize;
+	font-size: 18px;
 }
 
 .last {
@@ -271,7 +272,10 @@ a {
 					<table class="main" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
 							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" />
-							<h2 style='color:#fff; margin-top:15px'>Rate Alert!</h2></td>
+							</td>
+						</tr>
+						<tr>
+							<td align="center"><h2 style='color:#000; margin-top:15px'>Rate Alert!</h2></td>
 						</tr>
 						<tr>
 							<td class="content-wrap">
@@ -288,7 +292,7 @@ a {
 									</tr>
 									<tr>
 										<td class="content-block" align="center" style="padding:20px">
-											&nbsp;
+											<a th:href="${data.url}" style="width:200px" class="btn-primary" target="_blank">Remit Now</a>
 										</td>
 									</tr>
 									<tr>
@@ -313,6 +317,7 @@ a {
 			<td></td>
 		</tr>
 	</table>
+
 
 </body>
 </html>

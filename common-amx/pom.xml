@@ -29,6 +29,10 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>common-utils</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
 		</dependency>
 

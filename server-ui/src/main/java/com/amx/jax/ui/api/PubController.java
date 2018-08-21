@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AppConfig;
-import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -28,7 +27,6 @@ import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
 import com.amx.jax.service.HttpService;
-import com.amx.jax.tunnel.TunnelClient;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
@@ -158,7 +156,6 @@ public class PubController {
 		wrapper.getData().setDevice(userDevice.toMap());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
-		tunnelService.send(TunnelClient.TEST_TOPIC, new SessionEvent());
 		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());
 
 		return wrapper;
