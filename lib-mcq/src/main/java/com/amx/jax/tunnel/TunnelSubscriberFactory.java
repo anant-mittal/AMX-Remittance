@@ -32,8 +32,8 @@ public class TunnelSubscriberFactory {
 				Class<?> c = listener.getClass();
 				TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
 				String eventTopic = tunnelEvent.topic();
-				boolean queued = tunnelEvent.queued();
-				this.addListener(eventTopic, redisson, listener, queued);
+				boolean integrity = tunnelEvent.integrity();
+				this.addListener(eventTopic, redisson, listener, integrity);
 			}
 		}
 
@@ -42,12 +42,12 @@ public class TunnelSubscriberFactory {
 	public static class WrapperML<M> implements MessageListener<TunnelMessage<M>> {
 
 		ITunnelSubscriber<M> subscriber = null;
-		boolean queued = false;
+		boolean integrity = false;
 
-		public WrapperML(ITunnelSubscriber<M> subscriber, boolean queued) {
+		public WrapperML(ITunnelSubscriber<M> subscriber, boolean integrity) {
 			super();
 			this.subscriber = subscriber;
-			this.queued = queued;
+			this.integrity = integrity;
 		}
 
 		@Override
@@ -65,20 +65,26 @@ public class TunnelSubscriberFactory {
 
 	}
 
-	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener, boolean queued) {
+	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			boolean integrity) {
 		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(topic);
-		topicQueue.addListener(new WrapperML<M>(listener, queued) {
+		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
 				RMap<String, String> map = redisson.getMap(channel);
-				if (this.queued) {
-					String prevObject = map.put(
-							appConfig.getAppClass() + "#" + listener.getClass().getName() + "#" + msg.getId(),
-							msg.getId());
-					if (prevObject == null || this.queued == false) {
+				if (this.integrity) {
+					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
+							+ msg.getId();
+
+					String prevObject = map.put(integrityKey, msg.getId());
+					if (prevObject == null || this.integrity == false) { // Hey I got it first :) OR it doesn't matter
+																			// :(
 						LOGGER.info("Previous Value was null");
 						this.subscriber.onMessage(channel, msg.getData());
-					} else {
+						if (this.integrity == false) {
+							map.put(integrityKey, "DONE");
+						}
+					} else { // Hopefully other guy (The Lucky Bugger) is doing his job right.
 						LOGGER.info("Message ignored");
 					}
 				} else {

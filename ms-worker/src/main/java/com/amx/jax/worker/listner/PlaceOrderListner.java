@@ -12,10 +12,9 @@ import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.jax.worker.service.PlaceOrderRateAlertService;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonPath;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, queued = true)
+@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, integrity = true)
 public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 
 	@Autowired
