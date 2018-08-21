@@ -726,7 +726,7 @@ public class UserService extends AbstractUserService {
 			dto.setIdentityExpiredDate(model.getIdentityExpiredDate());
 			dto.setEmail(model.getEmail() == null ? "" : model.getEmail());
 			dto.setMobile(model.getMobile() == null ? "" : model.getMobile());
-			dto.setLoyaltyPoints(model.getLoyaltyPoints());
+			dto.setLoyaltyPoints(model.getLoyaltyPoints().compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO : model.getLoyaltyPoints());
 			dto.setDateOfBirth(model.getDateOfBirth());
 			dto.setCustomerId(model.getCustomerId());
 			dto.setCustomerReference(model.getCustomerReference());
