@@ -63,11 +63,6 @@
 			<artifactId>lib-postman</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-sso</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
 
 	</dependencies>
 
