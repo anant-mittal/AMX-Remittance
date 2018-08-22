@@ -78,7 +78,7 @@ public class ApplicationCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setService(product);
 			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
 			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
-			remittanceTransactionFailure.setExceptionMessage(ex.toString());
+			remittanceTransactionFailure.setExceptionMessage(ex.getErrorMessage());
 			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
 			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
 			if(customer.getFirstName() !=null){
