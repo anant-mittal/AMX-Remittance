@@ -115,7 +115,7 @@ public class BenePersonalDetailValidator implements Validator {
 			if (i.getMinLenght()!=null) {
 			   return i.getMinLenght().intValue();
 			}else { 
-			  return -1;
+			  return Integer.MAX_VALUE;
 			}  
 		}).min().orElse(-1);
 		
@@ -123,7 +123,7 @@ public class BenePersonalDetailValidator implements Validator {
 			if (i.getMaxLenght()!=null) {
 				return i.getMaxLenght().intValue();
 			}else {
-				return -1;
+				return Integer.MIN_VALUE;
 			}
 		}).max().orElse(-1);
 

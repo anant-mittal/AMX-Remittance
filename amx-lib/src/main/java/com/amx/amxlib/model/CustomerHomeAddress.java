@@ -15,22 +15,22 @@ public class CustomerHomeAddress implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
+	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull
+	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull
+	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
-	@NotNull
+	@NotNull(message="Mobile may not be null")
 	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
 	@Size(min = 1)	
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull
+	@NotNull(message="telPrefix may not be null")
 	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 

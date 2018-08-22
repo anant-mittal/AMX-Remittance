@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -69,6 +70,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 			outputModel.setBankWiseRates(bankWiseRates);
 			if (bankId != null) {
 				outputModel.setExRateBreakup(getExchangeRateBreakUp(toCurrency, lcAmount, null, bankId));
+			} else {
+				outputModel.setExRateBreakup(bankWiseRates.get(0).getExRateBreakup());
 			}
 			response.getData().getValues().add(outputModel);
 			response.getData().setType(outputModel.getModelType());
@@ -90,7 +93,11 @@ public class NewExchangeRateService extends ExchangeRateService {
 			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 		}
 
-		return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
+		if (fcAmount != null) {
+			return createBreakUpFromForeignCurrency(pips.get(0).getDerivedSellRate(), fcAmount);
+		} else {
+			return createBreakUp(pips.get(0).getDerivedSellRate(), lcAmount);
+		}
 	}
 
 	/**
@@ -123,4 +130,21 @@ public class NewExchangeRateService extends ExchangeRateService {
 		return apiResponse.getResult().getExRateBreakup();
 	}
 
+	public BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
+
+		if (inputTemp.get("P_FOREIGN_AMT") != null) {
+			return (BigDecimal) inputTemp.get("P_FOREIGN_AMT");
+		}
+
+		if (inputTemp.get("P_CALCULATED_FC_AMOUNT") != null) {
+			return (BigDecimal) inputTemp.get("P_CALCULATED_FC_AMOUNT");
+		}
+
+		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
+		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		ExchangeRateBreakup exRateBreakup = getExchangeRateBreakup(toCurrencyId, localAmount, routingBankId);
+		return exRateBreakup.getConvertedFCAmount();
+
+	}
 }

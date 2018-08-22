@@ -201,8 +201,8 @@ public class RemittanceTransactionManager {
 		validateBlackListedBene(beneficiary);
 		validatedObjects.put("BENEFICIARY", beneficiary);
 		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
 		remitApplParametersMap.putAll(beneBankDetails);
+		Map<String, Object> routingDetails = routingService.getRoutingDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(routingDetails);
 		remitApplParametersMap.put("P_BENEFICIARY_SWIFT_BANK1", routingDetails.get("P_SWIFT"));
 		remitApplParametersMap.put("P_BENEFICARY_ACCOUNT_SEQ_ID", beneficiary.getBeneficiaryAccountSeqId());
@@ -211,6 +211,8 @@ public class RemittanceTransactionManager {
 		/** End here **/
 		validatedObjects.put("ROUTINGDETAILS", routingDetails);
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
+		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT",
+				newExchangeRateService.getForeignAmount(remitApplParametersMap));
 		BigDecimal newCommission = reCalculateComission();
 
 		logger.info("newCommission: " + newCommission);
@@ -292,13 +294,21 @@ public class RemittanceTransactionManager {
 		exRatebreakUp.setFcDecimalNumber(currencyMasterService.getCurrencyMasterById(fcurrencyId).getDecinalNumber());
 		exRatebreakUp
 				.setLcDecimalNumber(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber());
-		logger.info(
-				"getConvertedFCAmount :" + RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
-		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
-		exRatebreakUp.setConvertedFCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedFCAmount(),
-				exRatebreakUp.getFcDecimalNumber().intValue()));
-		exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),
-				exRatebreakUp.getLcDecimalNumber().intValue()));
+
+		if (exRatebreakUp.getConvertedFCAmount() != null) {
+			logger.info("getConvertedFCAmount :"
+					+ RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
+			exRatebreakUp
+					.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
+			exRatebreakUp.setConvertedFCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedFCAmount(),
+					exRatebreakUp.getFcDecimalNumber().intValue()));
+		}
+
+		if (exRatebreakUp.getConvertedLCAmount() != null) {
+			exRatebreakUp.setConvertedLCAmount(RoundUtil.roundBigDecimal(exRatebreakUp.getConvertedLCAmount(),
+					exRatebreakUp.getLcDecimalNumber().intValue()));
+		}
+
 		exRatebreakUp.setNetAmount(
 				RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmount(), exRatebreakUp.getLcDecimalNumber().intValue()));
 		exRatebreakUp.setNetAmountWithoutLoyality(RoundUtil.roundBigDecimal(exRatebreakUp.getNetAmountWithoutLoyality(),
@@ -535,11 +545,37 @@ public class RemittanceTransactionManager {
 			BigDecimal comission) {
 		BigDecimal fcAmount = model.getForeignAmount();
 		BigDecimal lcAmount = model.getLocalAmount();
+		ExchangeRateBreakup exchangeRateBreakup;
 		if (jaxProperties.getExrateBestRateLogicEnable()) {
 			BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
 			BigDecimal fCurrencyId = (BigDecimal) remitApplParametersMap.get("P_FOREIGN_CURRENCY_ID");
-			return newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount, routingBankId);
+			exchangeRateBreakup = newExchangeRateService.getExchangeRateBreakUp(fCurrencyId, lcAmount, fcAmount,
+					routingBankId);
+		} else {
+			exchangeRateBreakup = createExchangeRateBreakUp(exchangeRates, model, responseModel);
 		}
+
+		BigDecimal netAmount = exchangeRateBreakup.getConvertedLCAmount().add(comission);
+		exchangeRateBreakup.setNetAmountWithoutLoyality(netAmount);
+
+		if (comission == null || comission.intValue() == 0) {
+			responseModel.setCanRedeemLoyalityPoints(false);
+			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
+		}
+		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
+			exchangeRateBreakup
+					.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
+		} else {
+			exchangeRateBreakup.setNetAmount(netAmount);
+		}
+		return exchangeRateBreakup;
+
+	}
+
+	private ExchangeRateBreakup createExchangeRateBreakUp(List<ExchangeRateApprovalDetModel> exchangeRates,
+			RemittanceTransactionRequestModel model, RemittanceTransactionResponsetModel responseModel) {
+		BigDecimal fcAmount = model.getForeignAmount();
+		BigDecimal lcAmount = model.getLocalAmount();
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		ExchangeRateApprovalDetModel exchangeRate = exchangeRates.get(0);
 		BigDecimal inverseExchangeRate = exchangeRate.getSellRateMax();
@@ -578,20 +614,7 @@ public class RemittanceTransactionManager {
 			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
 			breakup.setConvertedLCAmount(lcAmount);
 		}
-		BigDecimal netAmount = breakup.getConvertedLCAmount().add(comission);
-		breakup.setNetAmountWithoutLoyality(netAmount);
-
-		if (comission == null || comission.intValue() == 0) {
-			responseModel.setCanRedeemLoyalityPoints(false);
-			responseModel.setLoyalityPointState(LoyalityPointState.CAN_NOT_AVAIL);
-		}
-		if (remitAppManager.loyalityPointsAvailed(model, responseModel)) {
-			breakup.setNetAmount(netAmount.subtract(loyalityPointService.getVwLoyalityEncash().getEquivalentAmount()));
-		} else {
-			breakup.setNetAmount(netAmount);
-		}
 		return breakup;
-
 	}
 
 	private BankCharges getApplicableCharge(List<BankCharges> charges) {
@@ -848,22 +871,5 @@ public class RemittanceTransactionManager {
 					.get(0);
 		}
 		return otpMmodel;
-	}
-
-	private BigDecimal reCalculateForeignAmount() {
-
-		if (remitApplParametersMap.get("P_FOREIGN_AMT") != null) {
-			return (BigDecimal) remitApplParametersMap.get("P_FOREIGN_AMT");
-		}
-		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_LOCAL_AMT");
-		BigDecimal toCurrencyId = (BigDecimal) remitApplParametersMap.get("P_CURRENCY_ID");
-		BigDecimal routingBankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
-		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
-				routingBankId);
-		remitApplParametersMap.put("P_FOREIGN_AMT", exRateBreakup.getConvertedFCAmount());
-		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", exRateBreakup.getConvertedFCAmount());
-		
-		return exRateBreakup.getConvertedFCAmount();
-
 	}
 }
