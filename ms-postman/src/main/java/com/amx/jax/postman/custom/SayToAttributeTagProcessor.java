@@ -70,7 +70,7 @@ public class SayToAttributeTagProcessor extends AbstractStandardExpressionAttrib
 		 * serializer wants to do, it does it directly on the output Writer and the
 		 * entire results are never really needed in memory.
 		 */
-
+		
 		Object expressionResult = TemplateUtils.fixBiDiCheck(ArgUtil.parseAsString(expressionResult2));
 
 		final CharSequence text;

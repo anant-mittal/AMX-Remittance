@@ -65,6 +65,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	public static boolean isPublicUrl(String url) {
 		Matcher matcher = pattern.matcher(url);
+		
 		return matcher.find();
 	}
 

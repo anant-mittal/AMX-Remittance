@@ -9,6 +9,7 @@ import static com.amx.jax.constant.ConstantDocument.Yes;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dao.BankDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -28,8 +31,10 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.remittance.ImpsMaster;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
 import com.amx.jax.dbmodel.treasury.BankIndicator;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.service.BankMetaService;
 import com.amx.jax.service.ImpsMasterService;
+import com.amx.jax.services.RoutingService;
 
 @Component
 public class ImpsRoutingLogic implements IRoutingLogic {
@@ -46,27 +51,26 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 	BankMetaService bankMetaService;
 	@Autowired
 	BankDao bankDao;
+	@Autowired
+	RoutingService routingService;
+	@Autowired
+	NewExchangeRateService newExchangeRateService;
 
 	@Override
 	public void apply(Map<String, Object> input, Map<String, Object> output) {
 		LOGGER.info("in ifsc routing logic with input, {}", input);
+		Map<String, Object> inputTemp = new HashMap<String, Object>(input);
 		try {
-			BigDecimal rouringBankId = null;
-			BigDecimal routingCountryId = (BigDecimal) input.get("P_ROUTING_COUNTRY_ID");
-			BigDecimal beneCountryId = (BigDecimal) input.get("P_BENEFICIARY_COUNTRY_ID");
-			BigDecimal beneBankId = (BigDecimal) input.get("P_BENEFICIARY_BANK_ID");
-			BigDecimal serviceMasterid = (BigDecimal) input.get("P_SERVICE_MASTER_ID");
-			BigDecimal fcurrencyId = (BigDecimal) input.get("P_CURRENCY_ID");
-			BigDecimal fcAmount = (BigDecimal) input.get("P_CALCULATED_FC_AMOUNT");
-			try {
-				rouringBankId = jdbcTemplate.queryForObject("SELECT   ROUTING_BANK_ID"
-						+ "          FROM     EX_ROUTING_HEADER" + "          WHERE    SERVICE_MASTER_ID = 102"
-						+ "          AND      ROUTING_COUNTRY_ID =  94 " + "          AND      NVL(ISACTIVE,'')='Y' ",
-						BigDecimal.class);
-			} catch (Exception e) {
-				throw new GlobalException("Duplicate Routing setup  for  Indian Bank");
-			}
+			inputTemp.put("P_SERVICE_MASTER_ID", ConstantDocument.SERVICE_MASTER_ID_TT);
 
+			BigDecimal routingCountryId = (BigDecimal) inputTemp.get("P_ROUTING_COUNTRY_ID");
+			BigDecimal beneCountryId = (BigDecimal) inputTemp.get("P_BENEFICIARY_COUNTRY_ID");
+			BigDecimal beneBankId = (BigDecimal) inputTemp.get("P_BENEFICIARY_BANK_ID");
+			BigDecimal fcurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+			BigDecimal fcAmount = getForeignAmount(inputTemp);
+			inputTemp.put("P_FOREIGN_AMT", fcAmount);
+			findRoutingBankAndBranchId(inputTemp);
+			BigDecimal rouringBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
 			List<ImpsMaster> impsMasters = impsMasterService.getImpsMaster(new BankMasterModel(rouringBankId),
 					new BankMasterModel(beneBankId), Yes, new CountryMaster(routingCountryId));
 
@@ -77,10 +81,17 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 						LOGGER.warn("IMPS SETUP  NOT DONE FOR ROUTING");
 						return;
 					}
+					boolean result = false;
 					if (fcAmount.intValue() < toAmount.intValue()) {
-						findRemittanceAndDeliveryModeIFSC(input, output);
+						result = findRemittanceAndDeliveryModeIFSC(inputTemp, output);
 					} else {
-						findRemittanceAndDeliveryModeNonIFSC(output, beneBankId, beneCountryId, fcurrencyId, rouringBankId);
+						result = findRemittanceAndDeliveryModeNonIFSC(output, beneBankId, beneCountryId, fcurrencyId,
+								rouringBankId);
+					}
+					if (result) {
+						output.put("P_SERVICE_MASTER_ID", inputTemp.get("P_SERVICE_MASTER_ID"));
+						output.put("P_ROUTING_BANK_ID", inputTemp.get("P_ROUTING_BANK_ID"));
+						output.put("P_ROUTING_BANK_BRANCH_ID", inputTemp.get("P_ROUTING_BANK_BRANCH_ID"));
 					}
 				}
 			}
@@ -90,8 +101,57 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		}
 	}
 
-	private void findRemittanceAndDeliveryModeNonIFSC(Map<String, Object> output, BigDecimal beneBankId,
+	private BigDecimal getForeignAmount(Map<String, Object> inputTemp) {
+
+		if (inputTemp.get("P_FOREIGN_AMT") != null) {
+			return (BigDecimal) inputTemp.get("P_FOREIGN_AMT");
+		}
+		BigDecimal localAmount = (BigDecimal) inputTemp.get("P_LOCAL_AMT");
+		BigDecimal toCurrencyId = (BigDecimal) inputTemp.get("P_CURRENCY_ID");
+		BigDecimal routingBankId = (BigDecimal) inputTemp.get("P_ROUTING_BANK_ID");
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.getExchangeRateBreakup(toCurrencyId, localAmount,
+				routingBankId);
+		return exRateBreakup.getConvertedFCAmount();
+
+	}
+
+	private void findRoutingBankAndBranchId(Map<String, Object> inputTemp) {
+		BigDecimal routingBankId = null;
+		try {
+			routingBankId = jdbcTemplate.queryForObject("SELECT   ROUTING_BANK_ID"
+					+ "          FROM     EX_ROUTING_HEADER" + "          WHERE    SERVICE_MASTER_ID = "
+					+ ConstantDocument.SERVICE_MASTER_ID_TT.intValue() + "          AND      ROUTING_COUNTRY_ID =  94 "
+					+ "          AND      NVL(ISACTIVE,'')='Y' ", BigDecimal.class);
+			inputTemp.put("P_ROUTING_BANK_ID", routingBankId);
+
+		} catch (Exception e) {
+			throw new GlobalException("Duplicate Routing setup  for  Indian Bank");
+		}
+		try {
+			BigDecimal routingBankBranchId = jdbcTemplate.queryForObject("SELECT   BANK_BRANCH_ID"
+					+ "          FROM     EX_ROUTING_DETAILS" + "  WHERE  ROUTING_BANK_ID = " + routingBankId.intValue()
+					+ " AND   SERVICE_MASTER_ID = " + ConstantDocument.SERVICE_MASTER_ID_TT.intValue()
+					+ "          AND      ROUTING_COUNTRY_ID =  94 " + "          AND      NVL(ISACTIVE,'')='Y' ",
+					BigDecimal.class);
+			inputTemp.put("P_ROUTING_BANK_BRANCH_ID", routingBankBranchId);
+
+		} catch (Exception e) {
+			throw new GlobalException("Duplicate Routing setup  for  Indian Bank Branch");
+		}
+	}
+
+	/**
+	 * @param output
+	 * @param beneBankId
+	 * @param beneCountryId
+	 * @param fcurrencyId
+	 * @param rouringBankId
+	 * @return true when remittance and delivery mode is found else false
+	 * 
+	 */
+	private boolean findRemittanceAndDeliveryModeNonIFSC(Map<String, Object> output, BigDecimal beneBankId,
 			BigDecimal beneCountryId, BigDecimal fcurrencyId, BigDecimal rouringBankId) {
+		boolean result = false;
 		BankApplicability bankApplicabality = bankMetaService.getBankApplicability(beneBankId);
 		if (bankApplicabality != null && bankApplicabality.getBankInd() != null) {
 			BankIndicator bankInd = bankApplicabality.getBankInd();
@@ -101,6 +161,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 				if (CollectionUtils.isNotEmpty(eftServiceRule)) {
 					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_EFT);
 					output.put("P_DELIVERY_MODE_ID", DELIVERY_MODE_BANKING_CHANNEL);
+					result = true;
 				}
 			}
 			if (BANK_INDICATOR_BENEFICIARY_BANK.equals(bankInd.getBankIndicatorCode())) {
@@ -109,12 +170,20 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 				if (CollectionUtils.isNotEmpty(eftServiceRule)) {
 					output.put("P_REMITTANCE_MODE_ID", REMITTANCE_MODE_RTGS);
 					output.put("P_DELIVERY_MODE_ID", DELIVERY_MODE_BANKING_CHANNEL);
+					result = true;
 				}
 			}
 		}
+		return result;
 	}
 
-	private void findRemittanceAndDeliveryModeIFSC(Map<String, Object> input, Map<String, Object> output) {
+	/**
+	 * @param input
+	 * @param output
+	 * @return true when remittance and delivery mode is found else false
+	 * 
+	 */
+	private boolean findRemittanceAndDeliveryModeIFSC(Map<String, Object> input, Map<String, Object> output) {
 		List<Object> args = new ArrayList<>();
 		args.add(input.get("P_APPLICATION_COUNTRY_ID"));
 		args.add(input.get("P_BENEFICIARY_COUNTRY_ID"));
@@ -126,7 +195,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 		args.add(input.get("P_FOREIGN_CURRENCY_ID"));
 		args.add(input.get("P_SERVICE_MASTER_ID"));
 		args.add(bizcomponentDao.findCustomerTypeId("I")); // Individual
-		args.add(input.get("P_CALCULATED_FC_AMOUNT"));
+		args.add(input.get("P_FOREIGN_AMT"));
 
 		String sqlQuery = " SELECT DISTINCT A.REMITTANCE_MODE_ID as P_REMITTANCE_MODE_ID ,A.DELIVERY_MODE_ID as P_DELIVERY_MODE_ID"
 				+ "  FROM   V_EX_ROUTING_DETAILS_IMPS A , EX_BANK_SERVICE_RULE B,EX_BANK_CHARGES C"
@@ -153,6 +222,11 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 			map = jdbcTemplate.queryForMap(sqlQuery, args.toArray());
 		}
 		output.putAll(map);
+		if (map != null && !map.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private BigDecimal getToAmount(BigDecimal routingCountryId, BigDecimal fcurrencyId, BigDecimal routingBankId) {
