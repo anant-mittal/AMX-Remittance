@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.repository.ICustomerEmailMobileCheck;
 import com.amx.jax.services.AbstractService;
@@ -24,10 +25,10 @@ public class EmailMobileCheckService extends AbstractService{
 	ICustomerEmailMobileCheck customerEmailMobileCheck;
 	
 	
-	public ApiResponse checkEmail(BigDecimal languageId,BigDecimal countryId,String email){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkEmail(BigDecimal languageId,BigDecimal countryId,String email){
 		List<ViewOnlineEmailMobileCheck> emailCheck = customerEmailMobileCheck.getEmailCheck(languageId, countryId, email);
 	
-		ApiResponse response = getBlackApiResponse();
+		/*ApiResponse response = getBlackApiResponse();
 		if(emailCheck.isEmpty()) {
 			response.setResponseStatus(ResponseStatus.OK);
 		}else if(emailCheck.size()==1){
@@ -37,15 +38,15 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(emailCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
-		response.getData().setType("email");
-		return response;
+		response.getData().setType("email");*/		
+		return AmxApiResponse.buildList(emailCheck);
 	}
 	
 	
-	public ApiResponse checkMobile(BigDecimal languageId,BigDecimal countryId,String mobile){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> checkMobile(BigDecimal languageId,BigDecimal countryId,String mobile){
 		List<ViewOnlineEmailMobileCheck> mobileCheck = customerEmailMobileCheck.getMobileCheck(languageId, countryId, mobile);
 	
-		ApiResponse response = getBlackApiResponse();
+		/*ApiResponse response = getBlackApiResponse();
 		if(mobileCheck.isEmpty()) {
 			response.setResponseStatus(ResponseStatus.OK);
 		}else if(mobileCheck.size()==1){
@@ -55,8 +56,8 @@ public class EmailMobileCheckService extends AbstractService{
 			response.getData().getValues().addAll(mobileCheck);
 			response.setResponseStatus(ResponseStatus.DUPLICATE);
 		}
-		response.getData().setType("mobile");
-		return response;
+		response.getData().setType("mobile");*/
+		return AmxApiResponse.buildList(mobileCheck);
 	}
 	
 	

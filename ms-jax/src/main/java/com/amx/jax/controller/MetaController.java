@@ -14,11 +14,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.ApplicationSetupDTO;
+import com.amx.amxlib.meta.model.AuthenticationLimitCheckDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
+import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.JaxMetaParameter;
+import com.amx.amxlib.meta.model.MultiCountryDTO;
+import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
+import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.ViewCityDto;
+import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
+import com.amx.amxlib.meta.model.ViewDistrictDto;
+import com.amx.amxlib.meta.model.ViewStateDto;
+import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
+import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.BranchDetailModel;
+import com.amx.jax.dbmodel.CollectionDetailViewModel;
+import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
+import com.amx.jax.dbmodel.CountryMasterView;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
+import com.amx.jax.dbmodel.PrefixModel;
+import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
+import com.amx.jax.dbmodel.UserFinancialYear;
+import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -56,7 +81,6 @@ import com.amx.jax.validation.BankBranchSearchRequestlValidator;
  */
 @RestController
 @RequestMapping(META_API_ENDPOINT)
-@SuppressWarnings("rawtypes")
 public class MetaController {
 
 
@@ -134,124 +158,124 @@ public class MetaController {
 	
 
 	@RequestMapping(value = "/country", method = RequestMethod.GET)
-	public ApiResponse getCountryListResponse() {
+	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
 		return countryService.getCountryListResponse();
 	}	
 	
 	@RequestMapping(value = "/country/{languageId}", method = RequestMethod.GET)
-	public ApiResponse getCountryByLanguageIdResponse(@PathVariable("languageId") BigDecimal languageId) {
+	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdResponse(@PathVariable("languageId") BigDecimal languageId) {
 		return countryService.getCountryListByLanguageIdResponse(languageId);
 	}	
 	
 	@RequestMapping(value = "/country/{languageId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getCountryByLanguageIdAndCountryIdResponse(@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
+	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse(@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
 		return countryService.getCountryByLanguageIdAndCountryIdResponse(languageId, countryId);
 	}
 	
 	
 	@RequestMapping(value = "/country/bc/{languageId}", method = RequestMethod.GET)
-	public ApiResponse getBusinessCountryResponse(@PathVariable("languageId") BigDecimal languageId) {
+	public AmxApiResponse<CountryMasterView, Object> getBusinessCountryResponse(@PathVariable("languageId") BigDecimal languageId) {
 		return countryService.getBusinessCountryResponse(languageId);
 	}	
 	
 	@RequestMapping(value = "/applcountry", method = RequestMethod.GET)
-	public ApiResponse getApplicationCountryResponse() {
+	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse() {
 		return applicationCountryService.getApplicationCountryListResponse();
 	}
 	
 	
 	@RequestMapping(value = "/applcountry/{companyId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getApplicationCountryResponse(@PathVariable("companyId") BigDecimal companyId,@PathVariable("countryId") BigDecimal countryId) {
+	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse(@PathVariable("companyId") BigDecimal companyId,@PathVariable("countryId") BigDecimal countryId) {
 		return applicationCountryService.getApplicationCountryResponse(companyId, countryId);
 	}	
 	
 	@RequestMapping(value = "/quest/{languageId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getAllQuestionResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return questionAnswerService.findAllQuestion(languageId, countryId);
 	}
 		
 	@RequestMapping(value = "/quest/{languageId}/{countryId}/{questId}", method = RequestMethod.GET)
-	public ApiResponse getAllQuestionResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("questId") BigDecimal questId){
+	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("questId") BigDecimal questId){
 		return questionAnswerService.getQuestionDescription(languageId, countryId,questId);
 	}	
 	
 	@RequestMapping(value = "/terms/{languageId}", method = RequestMethod.GET)
-	public ApiResponse getTermsAndConditionResponse(@PathVariable("languageId") BigDecimal languageId){
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionResponse(@PathVariable("languageId") BigDecimal languageId){
 		return termsAndConditionService.getTermsAndCondition(languageId);
 	}	
 	
 	@RequestMapping(value = "/terms/{languageId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getTermsAndConditionAsPerCountryResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return termsAndConditionService.getTermsAndConditionAsPerCountry(languageId, countryId);
 	}
 	
 	
 	@RequestMapping(value = "/why/{languageId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getWhyAskInformationResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInformationResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return whyDoAskService.getWhyDoAskInformation(languageId,countryId);
 	}
 	
 	@RequestMapping(value = "/emailcheck/{languageId}/{countryId}/{emailId}", method = RequestMethod.GET)
-	public ApiResponse emailCheckResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("emailId") String emailId){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> emailCheckResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("emailId") String emailId){
 		return emailMobileCheckService.checkEmail(languageId, countryId, emailId);
 	}
 		
 	@RequestMapping(value = "/mobilecheck/{languageId}/{countryId}/{mobile}", method = RequestMethod.GET)
-	public ApiResponse mobileCheckResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("mobile") String mobile){
+	public AmxApiResponse<ViewOnlineEmailMobileCheck, Object> mobileCheckResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId,@PathVariable("mobile") String mobile){
 		return emailMobileCheckService.checkMobile(languageId, countryId, mobile);
 	}
 	
 	@RequestMapping(value = "/fyear", method = RequestMethod.GET)
-	public ApiResponse getFinancialYearResponse(){
+	public AmxApiResponse<UserFinancialYear, Object> getFinancialYearResponse(){
 		return financialService.getFinancialYear();
 	}
 	
 	
 	@RequestMapping(value = "/contacttime", method = RequestMethod.GET)
-	public ApiResponse getContactTimeResponse(){
+	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactTimeResponse(){
 		return parameterService.getContactUsTime();
 	}
 	
 	@RequestMapping(value = "/contactnumber", method = RequestMethod.GET)
-	public ApiResponse getContactNumberResponse(){
+	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactNumberResponse(){
 		return parameterService.getContactPhoneNo();
 	}
 	
 	@RequestMapping(value = "/company/{languageId}", method = RequestMethod.GET)
-	public ApiResponse getCompanyDetailResponse(@PathVariable("languageId") BigDecimal languageId){
+	public AmxApiResponse<ViewCompanyDetailDTO, Object> getCompanyDetailResponse(@PathVariable("languageId") BigDecimal languageId){
 		return companyService.getCompanyDetails(languageId);
 	}
 
 	@RequestMapping(value = "/currency/{currencyId}", method = RequestMethod.GET)
-	public ApiResponse getCurrencyMasterResponse(@PathVariable("currencyId") BigDecimal currencyId){
+	public AmxApiResponse<CurrencyMasterModel, Object> getCurrencyMasterResponse(@PathVariable("currencyId") BigDecimal currencyId){
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}
 	
 	@RequestMapping(value = "/currency/online/", method = RequestMethod.GET)
-	public ApiResponse getAllOnlineCurrencyDetails(){
+	public AmxApiResponse<CurrencyMasterDTO, Object>  getAllOnlineCurrencyDetails(){
 		return currencyMasterService.getAllOnlineCurrencyDetails();
 	}
 	
 	// added by chetan 30/04/2018 list the country for currency.
 	@RequestMapping(value = "/exchange-rate-currency/list/", method = RequestMethod.GET)
-	public ApiResponse getAllExchangeRateCurrencyDetails() {
+	public AmxApiResponse<CurrencyMasterDTO, Object>  getAllExchangeRateCurrencyDetails() {
 		return currencyMasterService.getAllExchangeRateCurrencyList();
 	}
 	
 	
 	@RequestMapping(value = "/currency/bycountry/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getCurrencyDetailsByCountryId(@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<CurrencyMasterDTO, Object>  getCurrencyDetailsByCountryId(@PathVariable("countryId") BigDecimal countryId){
 		return currencyMasterService.getCurrencyByCountryId(countryId);
 	}
 	
 	@RequestMapping(value = "/purpose/{documentNumber}/{documentFinancialYear}", method = RequestMethod.GET)
-	public ApiResponse getPurposeOfRemittanceResponse(@PathVariable("documentNumber") BigDecimal documentNumber,@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
+	public AmxApiResponse<PurposeOfRemittanceViewModel, Object> getPurposeOfRemittanceResponse(@PathVariable("documentNumber") BigDecimal documentNumber,@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){
 		return purposeOfRemittanceService.getPurposeOfRemittance(documentNumber, documentFinancialYear);
 	}
 	
 	
 	@RequestMapping(value = "/colldetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
-	public ApiResponse getCollectionDetailFromView(
+	public AmxApiResponse<CollectionDetailViewModel, Object> getCollectionDetailFromView(
 			@PathVariable("companyId") BigDecimal companyId,
 			@PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear) {		
@@ -259,7 +283,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = "/collpaydetview/{companyId}/{documentNo}/{documentFinancialYear}/{documentCode}", method = RequestMethod.GET)
-	public ApiResponse getCollectPaymentDetailsFromView(
+	public AmxApiResponse<CollectionPaymentDetailsViewModel, Object> getCollectPaymentDetailsFromView(
 			@PathVariable("companyId") BigDecimal companyId,
 			@PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){			
@@ -269,64 +293,64 @@ public class MetaController {
 	}
 	
 	@RequestMapping(value = "/multicountry/", method = RequestMethod.GET)
-	public ApiResponse getMultiCountry() {
+	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountry() {
 		return multiCountryService.getMultiCountryList();
 	}
 
 	@RequestMapping(value = "/bank/{country-id}", method = RequestMethod.GET)
-	public ApiResponse getAllCurrencyDetails(@PathVariable("country-id") BigDecimal countryId){
+	public AmxApiResponse<BankMasterDTO, Object> getAllCurrencyDetails(@PathVariable("country-id") BigDecimal countryId){
 		return bankMasterService.getBanksApiResponseByCountryId(countryId);
 	}
 		
 	@RequestMapping(value = "/districtdesc/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
-	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
+	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("districtId") BigDecimal districtId){
 		return districtService.getDistrict(stateId, districtId, languageId);
 	}
 	
 	@RequestMapping(value = "/districtlist/{languageId}/{stateId}/", method = RequestMethod.GET)
-	public ApiResponse getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
+	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
 		return districtService.getAllDistrict(stateId, languageId);
 	}
 	
 	@RequestMapping(value = "/statedesc/{languageId}/{stateId}/{countryId}", method = RequestMethod.GET)
-	public ApiResponse getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<ViewStateDto, Object> getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId,@PathVariable("countryId") BigDecimal countryId){
 		return stateService.getState(countryId, stateId, languageId);
 	}
 	
 	@RequestMapping(value = "/statelist/{languageId}/{countryId}/", method = RequestMethod.GET)
-	public ApiResponse getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
+	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
 		return stateService.getStateAll(countryId, languageId);
 	}
 	
 	@RequestMapping(value = "/citylist/{languageId}/{districtId}", method = RequestMethod.GET)
-	public ApiResponse getCityListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("districtId") BigDecimal districtId){
+	public AmxApiResponse<ViewCityDto, Object> getCityListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("districtId") BigDecimal districtId){
 		return metaService.getDistrictCity(districtId, languageId);
 	}
 		
 	@RequestMapping(value = "/citydesc/{districtid}/{languageId}/{cityid}", method = RequestMethod.GET)
-	public ApiResponse getCityNameResponse(@PathVariable("districtid") BigDecimal districtid,
+	public AmxApiResponse<ViewCityDto, Object> getCityNameResponse(@PathVariable("districtid") BigDecimal districtid,
 			@PathVariable("languageId") BigDecimal languageId,
 			@PathVariable("cityid") BigDecimal cityid){
 		return metaService.getCityDescription(districtid, languageId, cityid);
 	}
 	
 	@RequestMapping(value = "/onlineconfig/{applInd}/", method = RequestMethod.GET)
-	public ApiResponse getOnlineConfig(@PathVariable("applInd") String applInd){
+	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(@PathVariable("applInd") String applInd){
 		return metaService.getOnlineConfig(applInd);
 	}
 		
 	@RequestMapping(value = "/bankbranch/get/", method = RequestMethod.POST)
-	public ApiResponse getBankBranches(@RequestBody GetBankBranchRequest request,BindingResult bindingResult){
+	public AmxApiResponse<BankBranchDto, Object> getBankBranches(@RequestBody GetBankBranchRequest request,BindingResult bindingResult){
 		LOGGER.info("in getbankBranches" + request.toString());
 		JaxContextUtil.setJaxEvent(JaxEvent.BANK_BRANCH_SEARCH);
 		JaxContextUtil.setRequestModel(request);
 		bankBranchSearchRequestlValidator.validate(request, bindingResult);
-		ApiResponse<BankBranchDto> apiResponse = bankMasterService.getBankBranches(request);
+		AmxApiResponse<BankBranchDto, Object> apiResponse = bankMasterService.getBankBranches(request);
 		return apiResponse;
 	}
 	
 	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
-	public ApiResponse getServiceGroup(){
+	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroup(){
 		return metaService.getServiceGroups();
 	}
 	
@@ -338,7 +362,7 @@ public class MetaController {
 	 * @return CurrencyMasterDTO
 	 */
 	@RequestMapping(value = "/currency/beneservice/", method = RequestMethod.GET)
-	public ApiResponse getBeneficiaryCurrencyList(
+	public AmxApiResponse<CurrencyMasterDTO, Object> getBeneficiaryCurrencyList(
 			@RequestParam(value = "beneficiaryCountryId", required = true) BigDecimal beneficiaryCountryId,
 			@RequestParam(value = "serviceGroupId", required = false) BigDecimal serviceGroupId,
 			@RequestParam(value = "routingBankId", required = false) BigDecimal routingBankId) {
@@ -346,17 +370,17 @@ public class MetaController {
 	}
 	
 	@RequestMapping(value = "/meta-parameter/", method = RequestMethod.GET)
-	public ApiResponse getAuthParameter(){
+	public AmxApiResponse<JaxMetaParameter, Object> getAuthParameter(){
 		return parameterService.getJaxMetaParameter();
 	}
 	
 	@RequestMapping(value = "/prefix/", method = RequestMethod.GET)
-	public ApiResponse getPrefixList() {
+	public AmxApiResponse<PrefixModel, Object> getPrefixList() {
 		return prefixService.getPrefixListResponse();
 	}
 	
 	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
-	public ApiResponse getBranchDetail() {
+	public AmxApiResponse<BranchDetailModel, Object> getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();
 	}
 }

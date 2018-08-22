@@ -10,6 +10,7 @@ import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.AbstractService;
@@ -28,27 +29,34 @@ public class PrefixService extends AbstractService {
 	 * @return returns prefix list
 	 * 
 	 */
-	public ApiResponse getPrefixListResponse() {
+	public AmxApiResponse<PrefixModel, Object> getPrefixListResponse() {
 		List<PrefixModel> prefixList = new ArrayList<PrefixModel>();
 
 		prefixList.add(new PrefixModel(PrefixEnum.MR_CODE));
 		prefixList.add(new PrefixModel(PrefixEnum.MRS_CODE));
 		prefixList.add(new PrefixModel(PrefixEnum.MS));
-		ApiResponse response = getBlackApiResponse();
-
 		if (prefixList.isEmpty()) {
 			throw new GlobalException("Prefix list is not abaliable");
-		} else {
-			response.getData().getValues().addAll(prefixList);
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("prefix");
-		return response;
+		} 
+		return AmxApiResponse.buildList(prefixList);
 	}
 
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return "prefix";
+	}
+	
+	public List<PrefixModel> getPrefixListOffsite() {
+		List<PrefixModel> prefixList = new ArrayList<PrefixModel>();
+
+		prefixList.add(new PrefixModel(PrefixEnum.MR_CODE));
+		prefixList.add(new PrefixModel(PrefixEnum.MRS_CODE));
+		prefixList.add(new PrefixModel(PrefixEnum.MS));
+		
+		if (prefixList.isEmpty()) {
+			throw new GlobalException("Prefix list is not abaliable");
+		} 
+		return prefixList;
 	}
 }
