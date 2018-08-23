@@ -26,8 +26,6 @@ import com.amx.utils.JsonUtil;
  */
 public class RemittanceTransactionRequestModel extends AbstractModel implements IRemitTransReqPurpose {
 
-	public static final Logger LOGGER = LoggerFactory.getLogger(RemittanceTransactionRequestModel.class);
-	
 	/**
 	 * 
 	 */
@@ -45,6 +43,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, Object> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private BigDecimal placeOrderId;
 
 	/*
 	 * (non-Javadoc)
@@ -149,6 +148,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.exRateBreakup = exRateBreakup;
 	}
 
+
 	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
 		return flexFieldDtoMap;
 	}
@@ -191,6 +191,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 
 	public void setFlexFields(Map<String, Object> flexFields) {
 		this.flexFields = flexFields;
+	}
+
+	public BigDecimal getPlaceOrderId() {
+		return placeOrderId;
+	}
+
+	public void setPlaceOrderId(BigDecimal placeOrderId) {
+		this.placeOrderId = placeOrderId;
 	}
 
 
