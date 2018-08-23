@@ -84,6 +84,7 @@ public class RemittanceCreationFailureAlert implements IAlert {
 			remittanceTransactionFailure.setTransactionAmount(localNetTranxAmount);
 			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
 			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
+			remittanceTransactionFailure.setExceptionMessage(ex.getErrorMessage());
 	        if(customer.getFirstName() !=null){
 	        	cusName.append(customer.getFirstName());
 	        	cusName.append(" ");
