@@ -859,7 +859,7 @@ public class BeneficiaryService extends AbstractService {
 
             ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
             
-            if (poResponse.getData() != null || (poResponse.getData().getValues().size()!=0)) {
+            if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
                 remitPageDto.setPlaceOrderDTO(poDto);
