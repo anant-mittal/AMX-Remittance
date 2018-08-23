@@ -5,8 +5,15 @@ package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import javax.validation.constraints.NotNull;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
@@ -32,8 +39,9 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private BigDecimal srlId;
 	private String mOtp;
 	private String eOtp;
+	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
-	private Map<String, String> flexFields;
+	private Map<String, Object> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private BigDecimal placeOrderId;
 
@@ -93,6 +101,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.availLoyalityPoints = availLoyalityPoints;
 	}
 
+	@Override
+	public String toString() {
+		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
+				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+	}
+
 	public BigDecimal getSrlId() {
 		return srlId;
 	}
@@ -109,6 +124,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
 	
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
    public String getmOtp() {
         return mOtp;
     }
@@ -133,13 +156,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.exRateBreakup = exRateBreakup;
 	}
 
-	public Map<String, String> getFlexFields() {
-		return flexFields;
-	}
-
-	public void setFlexFields(Map<String, String> flexFields) {
-		this.flexFields = flexFields;
-	}
 
 	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
 		return flexFieldDtoMap;
@@ -151,6 +167,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	
 	public void populateFlexFieldDtoMap() {
 		if (this.flexFields != null) {
+			Map<String, String> flexFieldMap = createFlexFieldMap(flexFields);
 			Function<Map.Entry<String, String>, FlexFieldDto> valueMapper = (entryObject) -> {
 				String value = entryObject.getValue().toString();
 				FlexFieldDto flexFieldDto = null;
@@ -163,24 +180,34 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 				}
 				return flexFieldDto;
 			};
-			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+			this.flexFieldDtoMap = flexFieldMap.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
 
-    public BigDecimal getPlaceOrderId() {
-        return placeOrderId;
-    }
+	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
 
-    public void setPlaceOrderId(BigDecimal placeOrderId) {
-        this.placeOrderId = placeOrderId;
-    }
+		Set<Entry<String, Object>> es = flexFields2.entrySet();
+		Map<String, String> output = es.stream()
+				.collect(Collectors.toMap(x -> x.getKey(),  x -> JsonUtil.toJson(x.getValue())));
+		return output;
+	}
 
-    @Override
-    public String toString() {
-        return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-                + ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
-                + availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
-                + ", placeOrderId=" + placeOrderId + "]";
-    }
+	public Map<String, Object> getFlexFields() {
+		return flexFields;
+	}
+
+	public void setFlexFields(Map<String, Object> flexFields) {
+		this.flexFields = flexFields;
+	}
+
+	public BigDecimal getPlaceOrderId() {
+		return placeOrderId;
+	}
+
+	public void setPlaceOrderId(BigDecimal placeOrderId) {
+		this.placeOrderId = placeOrderId;
+	}
+
 
 }

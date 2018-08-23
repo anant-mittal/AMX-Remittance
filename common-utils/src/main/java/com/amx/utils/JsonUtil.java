@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+
 /**
  * The Class JsonUtil.
  */
@@ -264,6 +265,7 @@ public final class JsonUtil {
 	public static Map<String, Object> getMapFromJsonString(String jsonString) throws IOException {
 		return ((Map<String, Object>) instance.getMapper().readValue(jsonString, Map.class));
 	}
+	
 
 	/**
 	 * Gets the generic object list from json string.
@@ -291,3 +293,5 @@ class EnumByIdSerializer extends JsonSerializer<EnumById> {
 		gen.writeString(value.getId());
 	}
 }
+
+

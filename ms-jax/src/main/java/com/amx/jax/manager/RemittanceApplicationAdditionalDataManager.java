@@ -43,7 +43,6 @@ public class RemittanceApplicationAdditionalDataManager {
 	MetaData metaData;
 
 	@Resource
-	// @Qualifier("remitApplParametersMap")
 	private Map<String, Object> remitApplParametersMap;
 
 	@Autowired
@@ -56,18 +55,6 @@ public class RemittanceApplicationAdditionalDataManager {
 
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		List<AdditionalInstructionData> lstAddInstrData = new ArrayList<AdditionalInstructionData>();
-		AdditionalInstructionData additionalInsData = null;
-		AdditionalRuleDataParamer[] parameterList = {
-				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_1", "P_AMIEC_CODE_1", "P_FLEX_FIELD_VALUE_1",
-						ConstantDocument.INDIC1),
-				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_2", "P_AMIEC_CODE_2", "P_FLEX_FIELD_VALUE_2",
-						ConstantDocument.INDIC2),
-				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_3", "P_AMIEC_CODE_3", "P_FLEX_FIELD_VALUE_3",
-						ConstantDocument.INDIC3),
-				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_4", "P_AMIEC_CODE_4", "P_FLEX_FIELD_VALUE_4",
-						ConstantDocument.INDIC4),
-				new AdditionalRuleDataParamer("P_ADDITIONAL_BANK_RULE_ID_5", "P_AMIEC_CODE_5", "P_FLEX_FIELD_VALUE_5",
-						ConstantDocument.INDIC5) };
 		Map<String, FlexFieldDto> flexFields = remittanceTransactionRequestModel.getFlexFieldDtoMap();
 		flexFields.forEach((k, v) -> {
 			BigDecimal bankId = (BigDecimal) remitApplParametersMap.get("P_ROUTING_BANK_ID");
