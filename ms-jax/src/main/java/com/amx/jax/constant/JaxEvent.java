@@ -4,6 +4,7 @@ import com.amx.jax.notification.alert.ApplicationCreationFailureAlert;
 import com.amx.jax.notification.alert.BankBranchSearchFailureAlert;
 import com.amx.jax.notification.alert.IAlert;
 import com.amx.jax.notification.alert.RemittanceCreationFailureAlert;
+import com.amx.jax.auditlog.handler.PlaceOrderTriggerAuditHandler;
 
 /**
  * @author Prashant - Represents api flow defination
