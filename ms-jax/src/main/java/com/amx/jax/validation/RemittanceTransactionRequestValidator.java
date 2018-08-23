@@ -3,7 +3,10 @@ package com.amx.jax.validation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +66,7 @@ public class RemittanceTransactionRequestValidator {
 		ExchangeRateBreakup newExchangeRate = response.getExRateBreakup();
 		oldExchangeRate
 				.setRate(oldExchangeRate.getRate().setScale(newExchangeRate.getRate().scale(), RoundingMode.HALF_UP));
-		if (oldExchangeRate.compareTo(oldExchangeRate) != 0) {
+		if (oldExchangeRate.compareTo(newExchangeRate) != 0) {
 			throw new GlobalException("Exchange rate has been changed", JaxError.EXCHANGE_RATE_CHANGED);
 		}
 	}

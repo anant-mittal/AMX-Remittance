@@ -32,6 +32,8 @@ import com.amx.jax.dbmodel.BizComponentDataRef;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
+import com.amx.jax.repository.IBizComponentDataRepository;
+
 import com.amx.utils.Constants;
 
 @Component
@@ -47,6 +49,8 @@ public class BizcomponentDao {
 	IBizComponentDataDescDaoRepository iBizDataDecReporsitory;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IBizComponentDataRepository iBizComponentDataRepository;
 
 	@Transactional
 	public BigDecimal findCustomerTypeId(String CustomerType) {
@@ -120,5 +124,9 @@ public class BizcomponentDao {
 		}
 		 
 		return rtnIdentity;
-		}
+	}
+
+	public BizComponentData getBizComponentDataByComponmentCode(String componentCode) {
+		return iBizComponentDataRepository.findBycomponentCode(componentCode);
+	}
 }

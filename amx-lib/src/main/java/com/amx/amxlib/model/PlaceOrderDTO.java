@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.validation.constraints.NotNull;
+
 import com.amx.jax.model.AbstractModel;
 
 /**
@@ -46,9 +47,6 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	
 	@NotNull
 	private BigDecimal payAmount;
-	
-	@NotNull
-	private BigDecimal receiveAmount;
 	
 	@NotNull
 	private BigDecimal receiveAmount;

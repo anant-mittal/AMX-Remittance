@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -19,6 +21,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
+import com.amx.jax.service.TenantService;
 import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.JaxContextUtil;
@@ -38,6 +41,11 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Autowired
 	IExEmailNotificationDao emailNotificationDao;
+	
+	@Autowired
+	TenantService tenantService;
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Override
 	public List<String> getAlertContacts(CommunicationChannel notificationType) {
@@ -47,37 +55,56 @@ public class ApplicationCreationFailureAlert implements IAlert {
 
 	@Override
 	public void sendAlert(AbstractJaxException ex) {
-
-		// TODO fetch bene and customer details
-		// TODO fill data in RemittanceTransactionFailureAlertModel
+	
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) JaxContextUtil.getRequestModel();
-		BenificiaryListView benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+		BenificiaryListView benificiaryListView = null;
+		List<ExEmailNotification> emailid =null;
+		String product = "Product could not be derived";
+		StringBuilder cusName = new StringBuilder();
+		
+		try {
+			benificiaryListView = beneficiaryOnlineDao.findOne(model.getBeneId());
+			BigDecimal customerId = benificiaryListView.getCustomerId();
+			Customer customer = custDao.getCustById(customerId);
+		    emailid = emailNotificationDao.getEmailNotification();
 
-		BigDecimal customerId = benificiaryListView.getCustomerId();
-		Customer customer = custDao.getCustById(customerId);
+			RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
+			remittanceTransactionFailure.setBeneficiaryName(benificiaryListView.getBenificaryName());
+			remittanceTransactionFailure.setBeneficiaryAccountNo(benificiaryListView.getBankAccountNumber());
+			remittanceTransactionFailure.setBeneficiaryBank(benificiaryListView.getBankName());
+			remittanceTransactionFailure.setBeneficiaryBranch(benificiaryListView.getBankBranchName());
+			remittanceTransactionFailure.setCustomerReference(customer.getCustomerReference().toString());
+			remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
+			remittanceTransactionFailure.setService(product);
+			remittanceTransactionFailure.setCustomerContact(customer.getMobile());
+			remittanceTransactionFailure.setTransactionAmount(model.getLocalAmount());
+			remittanceTransactionFailure.setExceptionMessage(ex.getErrorMessage());
+			String currencyQuoteName = tenantService.getDefaultCurrencyMaster().getQuoteName();
+			remittanceTransactionFailure.setCurrencyQuoteName(currencyQuoteName);
+			if(customer.getFirstName() !=null){
+	        	cusName.append(customer.getFirstName());
+	        	cusName.append(" ");
+	        }
+	        if(customer.getMiddleName() !=null){
+	        	cusName.append(customer.getMiddleName());
+	        	cusName.append(" ");
+	        }
+	        if(customer.getLastName() !=null){
+	        	cusName.append(customer.getLastName());
+	        }
+			remittanceTransactionFailure.setCustomerName(cusName.toString());
 
-		List<ExEmailNotification> emailid = emailNotificationDao.getEmailNotification();
-
-		RemittanceTransactionFailureAlertModel remittanceTransactionFailure = new RemittanceTransactionFailureAlertModel();
-
-		remittanceTransactionFailure.setBeneName(benificiaryListView.getBenificaryName());
-		remittanceTransactionFailure.setBeneAccountNumber(benificiaryListView.getBankAccountNumber());
-		remittanceTransactionFailure.setBeneBankName(benificiaryListView.getBankName());
-		remittanceTransactionFailure.setBeneBankBranchName(benificiaryListView.getBankBranchName());
-		remittanceTransactionFailure.setCustomerReference(customer.getCustomerReference().toString());
-		remittanceTransactionFailure.setCurrencyQuoteName(benificiaryListView.getCurrencyQuoteName());
-		remittanceTransactionFailure.setSelectedProduct(ex.getErrorMessage());
-		remittanceTransactionFailure.setCustomerContact(customer.getMobile());
-		remittanceTransactionFailure.setCustomerName(
-				customer.getFirstName() + " " + customer.getMiddleName() + " " + customer.getLastName());
-
-		jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+			jaxNotificationService.sendErrorEmail(remittanceTransactionFailure, emailid);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return false;
+		return true;
 	}
 
 	@Override
