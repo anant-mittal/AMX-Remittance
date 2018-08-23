@@ -1,7 +1,5 @@
 package com.amx.jax.dbmodel;
 
-
-
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -17,45 +15,9 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Proxy;
 
-/*import com.amg.exchange.common.model.BizComponentData;
-import com.amg.exchange.common.model.CompanyMaster;
-import com.amg.exchange.common.model.CountryMaster;
-import com.amg.exchange.common.model.LanguageType;
-import com.amg.exchange.treasury.model.ArticleDetails;*/
-
-
-
-
-/*******************************************************************************************************************
-
-		 File		: Customer.java
- 
-		 Project	: AlmullaExchange
-
-		 Package	: com.amg.exchange.model
- 
-		 Created	:	
- 						Date	: 29-May-2014 5:03:37 pm
-		 				By		: Justin Vincent
- 						Revision:
- 
- 		 Last Change:
- 						Date	: 29-JAN-2015 
- 						By		: Nazish Ehsan Hashmi
-		 				Revision:
-		 				
-		 Last Change:
- 						Date	: 22 Nov 2017
- 						By		: Rabil
-		 				Revision: 				
-
-		 Description: TODO 
-
-********************************************************************************************************************/
 
 @Entity
 @Table(name = "FS_CUSTOMER" )
-
 @Proxy(lazy = false)
 public class Customer implements java.io.Serializable {
 
@@ -127,7 +89,7 @@ public class Customer implements java.io.Serializable {
 	private String kioskPin;
 	private BigDecimal nationalityId;
 	private String isOnlineUser;
-	
+	private BigDecimal customerTypeId;
 	private Date identityExpiredDate;
 	
 	
@@ -165,7 +127,8 @@ public class Customer implements java.io.Serializable {
 	private BigDecimal interTrnfyr;
 	private BigDecimal interTrnref;
 	private String identityInt;
-	
+	private BigDecimal identityFor;
+	private BigDecimal identityTypeId;
 	
 	//private IncomeRangeMaster fsIncomeRangeMaster;
 	
@@ -887,36 +850,31 @@ public class Customer implements java.io.Serializable {
 		this.identityExpiredDate = identityExpiredDate;
 	}
 
-	/*@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "ARTICLE_DETAIL_ID")
-	public ArticleDetails getFsArticleDetails() {
-		return this.fsArticleDetails;
+	@Column(name = "CUSTOMER_TYPE_ID")
+	public BigDecimal getCustomerTypeId() {
+		return customerTypeId;
 	}
 
-	public void setFsArticleDetails(ArticleDetails fsArticleDetails) {
-		this.fsArticleDetails = fsArticleDetails;
-	}
-	 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "INCOME_RANGE_ID")
-	public IncomeRangeMaster getFsIncomeRangeMaster() {
-		return fsIncomeRangeMaster;
+	public void setCustomerTypeId(BigDecimal customerTypeId) {
+		this.customerTypeId = customerTypeId;
 	}
 
-	public void setFsIncomeRangeMaster(IncomeRangeMaster fsIncomeRangeMaster) {
-		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
-	}
-	*/
-	/*@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "LANGUAGE_ID")
-	public LanguageType getFsLanguageType() {
-		return this.fsLanguageType;
+	@Column(name = "IDENTITY_FOR")
+	public BigDecimal getIdentityFor() {
+		return identityFor;
 	}
 
-	public void setFsLanguageType(LanguageType fsLanguageType) {
-		this.fsLanguageType = fsLanguageType;
-	}*/
+	public void setIdentityFor(BigDecimal identityFor) {
+		this.identityFor = identityFor;
+	}
 
-	
-	
+	@Column(name = "IDENTITY_TYPE_ID")
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
 }

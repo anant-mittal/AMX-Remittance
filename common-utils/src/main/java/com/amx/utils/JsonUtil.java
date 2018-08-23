@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-
 /**
  * The Class JsonUtil.
  */
@@ -133,13 +132,13 @@ public final class JsonUtil {
 	public static final JsonUtil.JsonUtilConfigurable instance;
 	static {
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleModule module = new SimpleModule("MyModule", new Version(1, 0, 0, null));
+		SimpleModule module = new SimpleModule("MyModule", new Version(1, 0, 0, null, null, null));
 		module.addSerializer(EnumById.class, new EnumByIdSerializer());
 		module.addSerializer(JsonSerializerType.class, new JsonSerializerTypeSerializer());
 		mapper.registerModule(module);
 		instance = new JsonUtil.JsonUtilConfigurable(mapper);
 	}
-	
+
 	/**
 	 * Gets the mapper.
 	 *
@@ -265,18 +264,21 @@ public final class JsonUtil {
 	public static Map<String, Object> getMapFromJsonString(String jsonString) throws IOException {
 		return ((Map<String, Object>) instance.getMapper().readValue(jsonString, Map.class));
 	}
-	
 
 	/**
 	 * Gets the generic object list from json string.
 	 *
-	 * @param <T> the generic type
-	 * @param jsonStr            the json str
+	 * @param <T>
+	 *            the generic type
+	 * @param jsonStr
+	 *            the json str
 	 * @return the generic object list from json string
-	 * @throws IOException             Signals that an I/O exception has occurred.
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
 	 */
-	public static <T> List<T>  getListFromJsonString(String jsonStr) throws IOException {
-		return instance.getMapper().readValue(jsonStr, new TypeReference<List<T>>(){});
+	public static <T> List<T> getListFromJsonString(String jsonStr) throws IOException {
+		return instance.getMapper().readValue(jsonStr, new TypeReference<List<T>>() {
+		});
 	}
 
 }
@@ -289,5 +291,3 @@ class EnumByIdSerializer extends JsonSerializer<EnumById> {
 		gen.writeString(value.getId());
 	}
 }
-
-

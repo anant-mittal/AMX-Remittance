@@ -179,6 +179,18 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setGender(prefixEnum.getGender());
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
+		customer.setCompanyId(jaxMetaInfo.getCompanyId());
+		customer.setCustomerTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setLanguageId(jaxMetaInfo.getLanguageId());
+		customer.setBranchCode(jaxMetaInfo.getCountryBranchId());
+		customer.setNationalityId(customerPersonalDetail.getNationalityId());
+		customer.setMobile(customerPersonalDetail.getMobile());
+		/*customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		customer.setIdentityTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.BIZ_COMPONENT_CODE_CIVIL_ID)
+						.getComponentDataId());
+		*/
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
