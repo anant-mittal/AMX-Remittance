@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 
-public interface IFunctionalityTypeRepository extends JpaRepository<FunctionalityTypeMaster, Serializable>{
+public interface OldIFunctionalityTypeRepository extends JpaRepository<FunctionalityTypeMaster, Serializable>{
 	
 	public FunctionalityTypeMaster findByFunctionalityTypeEnum(String functionalityTypeDescription);
 	

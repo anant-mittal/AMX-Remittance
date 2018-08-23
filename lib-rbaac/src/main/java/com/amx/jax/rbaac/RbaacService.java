@@ -18,7 +18,10 @@ public interface RbaacService {
 	 */
 	public static class ApiEndPoints {
 
+		/** The Constant SERVICE_PREFIX. */
 		private static final String SERVICE_PREFIX = "/rbaac";
+		
+		/** The Constant API_VERSION_V1. */
 		private static final String API_VERSION_V1 = "/v1";
 
 		/** The Constant INIT_AUTH. */
@@ -45,18 +48,19 @@ public interface RbaacService {
 		/** The Constant UAC_UPDATE. */
 		public static final String UAC_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/user/account/update";
 
+		/** The Constant TEST_GET. */
+		public static final String TEST_GET = SERVICE_PREFIX + API_VERSION_V1 + "/test/get";
+
+		/** The Constant TEST_POST. */
+		public static final String TEST_POST = SERVICE_PREFIX + API_VERSION_V1 + "/test/post";
+
 	}
 
 	/**
 	 * Begins process of user Authentication with employee details - empCode,
 	 * CivilId and Access Terminal IP .
 	 *
-	 * @param employeeNo
-	 *            the employee no
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param userAuthInitReqDTO the user auth init req DTO
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
@@ -64,16 +68,23 @@ public interface RbaacService {
 	/**
 	 * Authorise user.
 	 *
-	 * @param employeeNo
-	 *            the employee no
-	 * @param mOtpHash
-	 *            the m otp hash
-	 * @param eOtpHash
-	 *            the e otp hash
-	 * @param ipAddress
-	 *            the ip address
+	 * @param reqDto the req dto
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
+
+	/**
+	 * Test get.
+	 *
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<String, Object> testGet();
+
+	/**
+	 * Test post.
+	 *
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<String, Object> testPost();
 
 }

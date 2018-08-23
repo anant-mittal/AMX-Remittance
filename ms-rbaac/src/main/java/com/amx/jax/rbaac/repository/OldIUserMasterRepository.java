@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 
-public interface IUserMasterRepository extends JpaRepository<UserRoleMaster, Serializable>{
+public interface OldIUserMasterRepository extends JpaRepository<UserRoleMaster, Serializable>{
 	
 	public UserRoleMaster findByUserRoleId(BigDecimal userRoleId);
 	

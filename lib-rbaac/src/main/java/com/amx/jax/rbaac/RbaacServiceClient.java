@@ -54,4 +54,15 @@ public class RbaacServiceClient implements RbaacService {
 
 	}
 
+	@Override
+	public AmxApiResponse<String, Object> testGet() {
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get().asApiResponse(String.class);
+	}
+
+	@Override
+	public AmxApiResponse<String, Object> testPost() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

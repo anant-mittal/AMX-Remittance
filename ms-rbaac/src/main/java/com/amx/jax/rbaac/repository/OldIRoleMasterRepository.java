@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.RoleMaster;
 
-public interface IRoleMasterRepository extends JpaRepository<RoleMaster, Serializable>{
+public interface OldIRoleMasterRepository extends JpaRepository<RoleMaster, Serializable>{
 
 }

@@ -17,6 +17,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAuthService;
 
 /**
@@ -33,6 +34,9 @@ public class RbaacServiceApiController implements RbaacService {
 	/** The user auth service. */
 	@Autowired
 	UserAuthService userAuthService;
+
+	@Autowired
+	RespTestService respTestService;
 
 	/**
 	 * Init User Authentication.
@@ -68,6 +72,22 @@ public class RbaacServiceApiController implements RbaacService {
 		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(reqDto);
 
 		return AmxApiResponse.build(employeeDetailsDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.TEST_GET, method = RequestMethod.GET)
+	public AmxApiResponse<String, Object> testGet() {
+
+		String resp = respTestService.testGetUrlCall();
+
+		return AmxApiResponse.build(resp);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.TEST_POST, method = RequestMethod.POST)
+	public AmxApiResponse<String, Object> testPost() {
+
+		return AmxApiResponse.build("Success");
 	}
 
 }

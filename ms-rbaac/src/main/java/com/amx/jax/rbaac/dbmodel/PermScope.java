@@ -16,13 +16,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 /**
- * The Class Scope.
+ * The Class PermScope.
  *
  * @author abhijeet
  */
 @Entity
 @Table(name = "JX_RB_SCOPE" )
-public class Scope implements Serializable {
+public class PermScope implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 8008244265891481170L;

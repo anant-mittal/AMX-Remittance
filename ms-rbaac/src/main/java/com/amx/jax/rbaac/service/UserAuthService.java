@@ -37,7 +37,7 @@ import com.amx.utils.ContextUtil;
 public class UserAuthService {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceImpl.class);
+	private static final Logger LOGGER = LoggerService.getLogger(UserAuthService.class);
 
 	/** The login dao. */
 	@Autowired

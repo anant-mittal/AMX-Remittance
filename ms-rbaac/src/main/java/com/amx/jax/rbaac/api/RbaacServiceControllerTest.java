@@ -38,4 +38,16 @@ public class RbaacServiceControllerTest implements RbaacService {
 		return rbaacServiceClient.authoriseUser(reqDto);
 	}
 
+	@Override
+	public AmxApiResponse<String, Object> testGet() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<String, Object> testPost() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
