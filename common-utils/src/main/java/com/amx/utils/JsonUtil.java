@@ -2,11 +2,15 @@ package com.amx.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.amx.utils.ArgUtil.EnumById;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -278,6 +282,27 @@ public final class JsonUtil {
 	public static <T> List<T>  getListFromJsonString(String jsonStr) throws IOException {
 		return instance.getMapper().readValue(jsonStr, new TypeReference<List<T>>(){});
 	}
+	
+	/**
+	 * @param jsonString
+	 *            - json string
+	 * @return returns Map of string , string
+	 * @throws JSONException
+	 * 
+	 */
+	public static Map<String, String> jsonToMap(String jsonString) throws JSONException {
+
+		Map<String, String> map = new HashMap<String, String>();
+		JSONObject jObject = new JSONObject(jsonString);
+		Iterator<?> keys = jObject.keys();
+
+		while (keys.hasNext()) {
+			String key = (String) keys.next();
+			String value = jObject.getString(key);
+			map.put(key, value);
+		}
+		return map;
+	}
 
 }
 
@@ -289,5 +314,4 @@ class EnumByIdSerializer extends JsonSerializer<EnumById> {
 		gen.writeString(value.getId());
 	}
 }
-
 

@@ -5,15 +5,23 @@ package com.amx.amxlib.model.request;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
 import com.amx.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * @author Prashant
@@ -21,6 +29,8 @@ import com.amx.utils.JsonUtil;
  */
 public class RemittanceTransactionRequestModel extends AbstractModel implements IRemitTransReqPurpose {
 
+	public static final Logger LOGGER = LoggerFactory.getLogger(RemittanceTransactionRequestModel.class);
+	
 	/**
 	 * 
 	 */
@@ -36,7 +46,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private String eOtp;
 	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
-	private Map<String, String> flexFields;
+	private Map<String, Object> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 
 	/*
@@ -142,14 +152,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.exRateBreakup = exRateBreakup;
 	}
 
-	public Map<String, String> getFlexFields() {
-		return flexFields;
-	}
-
-	public void setFlexFields(Map<String, String> flexFields) {
-		this.flexFields = flexFields;
-	}
-
 	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
 		return flexFieldDtoMap;
 	}
@@ -160,6 +162,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	
 	public void populateFlexFieldDtoMap() {
 		if (this.flexFields != null) {
+			Map<String, String> flexFieldMap = createFlexFieldMap(flexFields);
 			Function<Map.Entry<String, String>, FlexFieldDto> valueMapper = (entryObject) -> {
 				String value = entryObject.getValue().toString();
 				FlexFieldDto flexFieldDto = null;
@@ -172,8 +175,26 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 				}
 				return flexFieldDto;
 			};
-			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
+			this.flexFieldDtoMap = flexFieldMap.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
+
+	private Map<String, String> createFlexFieldMap(Map<String, Object> flexFields2) {
+
+		Set<Entry<String, Object>> es = flexFields2.entrySet();
+		Map<String, String> output = es.stream()
+				.collect(Collectors.toMap(x -> x.getKey(),  x -> JsonUtil.toJson(x.getValue())));
+		return output;
+	}
+
+	public Map<String, Object> getFlexFields() {
+		return flexFields;
+	}
+
+	public void setFlexFields(Map<String, Object> flexFields) {
+		this.flexFields = flexFields;
+	}
+
 
 }

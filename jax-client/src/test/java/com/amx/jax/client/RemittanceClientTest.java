@@ -111,7 +111,7 @@ public class RemittanceClientTest {
 
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 		
-		Map<String, String> flexFields = new HashMap<>();
+		Map<String, Object> flexFields = new HashMap<>();
 		list.forEach(i -> {
 			if(i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
