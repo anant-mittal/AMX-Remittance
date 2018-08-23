@@ -29,6 +29,7 @@ import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.service.FBPushServiceImpl;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -246,7 +247,7 @@ public class PostManController {
 	}
 
 	@Autowired
-	FBPushService fBPushService;
+	FBPushServiceImpl fBPushService;
 
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
