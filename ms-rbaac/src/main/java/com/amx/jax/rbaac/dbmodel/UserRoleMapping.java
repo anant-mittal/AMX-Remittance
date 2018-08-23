@@ -34,7 +34,7 @@ public class UserRoleMapping implements Serializable {
 	private BigDecimal employeeId;
 
 	/** The role id. */
-	@Column(name = "ROLE_ID", unique = true, nullable = false, precision = 22, scale = 0)
+	@Column(name = "ROLE_ID", nullable = false)
 	private BigDecimal roleId;
 
 	/** The suspended. */
