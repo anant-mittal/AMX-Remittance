@@ -1,6 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.DynamicFieldRequest;
+import com.amx.jax.model.request.DynamicFieldRequest;
 
 public class FieldListAuditEvent extends JaxAuditEvent {
 

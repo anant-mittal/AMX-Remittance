@@ -1,4 +1,4 @@
-package com.amx.amxlib.model.request;
+package com.amx.jax.model.request;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.model.JaxCondition;

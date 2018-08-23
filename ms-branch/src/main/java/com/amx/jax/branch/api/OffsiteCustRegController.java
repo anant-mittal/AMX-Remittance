@@ -11,21 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
-import com.amx.amxlib.meta.model.ArticleMasterDescDto;
-import com.amx.amxlib.meta.model.IncomeRangeDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
-import com.amx.amxlib.model.request.CommonRequest;
-import com.amx.amxlib.model.request.DynamicFieldRequest;
-import com.amx.amxlib.model.request.EmploymentDetailsRequest;
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
-import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
@@ -34,6 +26,15 @@ import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.DynamicFieldRequest;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.GetJaxFieldRequest;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
+import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.FieldListDto;
+import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
@@ -43,7 +44,7 @@ import com.amx.jax.utils.JaxContextUtil;
 
 @RestController
 @RequestMapping(OFFSITE_CUSTOMER_REG)
-public class OffsiteCustRegController /*implements ICustRegService*/ {
+public class OffsiteCustRegController implements ICustRegService {
 	
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 
@@ -169,8 +170,8 @@ public class OffsiteCustRegController /*implements ICustRegService*/ {
 		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(),model.getArticleDetailsId());
 	}
 	
-	@RequestMapping(value ="/new-field-list" , method = RequestMethod.POST)
-	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+	@RequestMapping(value = CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		//JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getFieldList(model);

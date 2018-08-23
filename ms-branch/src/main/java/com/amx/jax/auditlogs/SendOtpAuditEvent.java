@@ -1,6 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 
 public class SendOtpAuditEvent extends JaxAuditEvent {
 

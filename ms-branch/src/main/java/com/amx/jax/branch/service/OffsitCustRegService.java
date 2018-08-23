@@ -24,9 +24,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
-import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
-import com.amx.amxlib.meta.model.ArticleMasterDescDto;
-import com.amx.amxlib.meta.model.IncomeRangeDto;
 import com.amx.amxlib.model.AbstractUserModel;
 import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -35,11 +32,6 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.JaxFieldDto;
 import com.amx.amxlib.model.ValidationRegexDto;
-import com.amx.amxlib.model.request.CommonRequest;
-import com.amx.amxlib.model.request.DynamicFieldRequest;
-import com.amx.amxlib.model.request.EmploymentDetailsRequest;
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
-import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.ICustRegService;
@@ -72,6 +64,15 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.DynamicFieldRequest;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.GetJaxFieldRequest;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
+import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.FieldListDto;
+import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
@@ -488,22 +489,29 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(DynamicFieldRequest model) {
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
 		List<FieldList> fieldList = null;
 		fieldList = fieldListDao.getFieldList(model.getTenant(),Constants.COMMON_NATIONALITY,model.getComponent());
-		Map<String,FieldList> map = new HashMap<>();
-		if(fieldList != null)
+		if(fieldList == null)
 		{
-			map = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));	
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		}
+		List<FieldListDto> listDto = convertFieldList(fieldList) ;
+		Map<String,FieldListDto> map = new HashMap<>();
+		if(listDto != null)
+		{
+			map = listDto.stream().collect(Collectors.toMap(FieldListDto:: getKey, Function.identity()));	
 		}
 		
 		if(model.getNationality()!= null && !model.getNationality().equalsIgnoreCase("ALL"))
 		{
 			//fieldList = null;
-			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());			
 			if(fieldList != null)
 			{				
-				Map<String,FieldList> map1 = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));
+				listDto = new ArrayList<>(); 
+				listDto = convertFieldList(fieldList) ;
+				Map<String,FieldListDto> map1 = listDto.stream().collect(Collectors.toMap(FieldListDto:: getKey, Function.identity()));
 				map.putAll(map1);
 			}
 		}	
@@ -515,6 +523,27 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		}		
 		auditService.log(new FieldListAuditEvent(model));
 		return AmxApiResponse.build(map);
+	}
+
+	private List<FieldListDto> convertFieldList(List<FieldList> fieldList) {
+		List<FieldListDto> output = new ArrayList<>();
+		fieldList.forEach(i -> {
+			output.add(convertFieldList(i));
+		});
+		return output;
+	}
+
+	private FieldListDto convertFieldList(FieldList i) {
+		FieldListDto dto = new FieldListDto();
+		dto.setFieldId(i.getFieldId());
+		dto.setComponent(i.getComponent());
+		dto.setDetails(i.getDetails());
+		dto.setKey(i.getKey());
+		dto.setNationality(i.getNationality());
+		dto.setRemitCountry(i.getRemitCountry());
+		dto.setTenant(i.getTenant());
+		dto.setValue(i.getValue());
+		return dto;
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
