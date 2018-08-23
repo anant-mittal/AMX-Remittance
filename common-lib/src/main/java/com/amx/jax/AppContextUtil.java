@@ -26,7 +26,7 @@ public class AppContextUtil {
 	 * @return -returns current token
 	 */
 	public static String generateTraceId(boolean generate, boolean override) {
-		String sessionId = AppContextUtil.getSessionId();
+		String sessionId = getSessionId();
 		if (override) {
 			if (ArgUtil.isEmpty(sessionId)) {
 				sessionId = UniqueID.generateString();
@@ -81,7 +81,7 @@ public class AppContextUtil {
 		TenantContextHolder.setCurrent(tenant);
 	}
 
-	public static void setTraceId(String traceId) {
+	public static void setTranceId(String traceId) {
 		ContextUtil.setTraceId(traceId);
 	}
 

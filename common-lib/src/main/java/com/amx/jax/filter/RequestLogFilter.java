@@ -115,16 +115,17 @@ public class RequestLogFilter implements Filter {
 					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
-				traceId = ContextUtil.getTraceId(true, sessionID);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+
 				AppContextUtil.setSessionId(sessionID);
+				traceId = AppContextUtil.getTraceId();
+				AppContextUtil.init();
+
 				if (session != null) {
 					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {
-				ContextUtil.setTraceId(traceId);
+				AppContextUtil.setTranceId(traceId);
 				AppContextUtil.init();
 			}
 

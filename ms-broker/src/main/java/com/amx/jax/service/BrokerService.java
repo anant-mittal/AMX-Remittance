@@ -22,6 +22,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.service.dao.EventNotificationDao;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
+import com.amx.utils.UniqueID;
 
 @Configuration
 @EnableScheduling
@@ -40,14 +41,17 @@ public class BrokerService {
 	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
 	public void pushNewEventNotifications() {
 
-		AppContextUtil.setTenant(Tenant.KWT);
+		String sessionId = UniqueID.generateString();
 
 		logger.info("pushNewEventNotifications Job started ...");
 
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
 		for (EventNotificationView current_event_record : event_list) {
+			AppContextUtil.setTenant(Tenant.KWT);
+			AppContextUtil.setSessionId(sessionId);
 			AppContextUtil.generateTraceId(true, true);
+			AppContextUtil.init();
 			try {
 				logger.info("------------------ current_event_record DB Data --------------------");
 				logger.info(current_event_record.toString());
@@ -83,6 +87,8 @@ public class BrokerService {
 				temp_event_record.setStatus(new BigDecimal(BrokerConstants.FAILURE_STATUS));
 
 				eventNotificationDao.saveEventNotificationRecordUpdates(temp_event_record);
+			} finally {
+				AppContextUtil.clear();
 			}
 		}
 	}
