@@ -11,9 +11,6 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
-import com.amx.utils.UniqueID;
 
 @Service
 public class TunnelService implements ITunnelService {
