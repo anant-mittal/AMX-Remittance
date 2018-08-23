@@ -27,6 +27,7 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
+import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
@@ -340,7 +341,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		/*if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
 			List<ViewState> stateList = viewStateDao.getState(beneDto.getCountryId(), beneDto.getStateId(),
 					beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
@@ -356,7 +357,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
-		}*/
+		}
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(),
@@ -388,13 +389,12 @@ public class BeneficiaryCheckService extends AbstractService {
 				errorListDto.add(errorStatusDto);
 
 			}
-		} /*
-			 * else { beneDto.setUpdateNeeded(true); errorDesc = "Invalid beneficiary city";
-			 * errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(),
-			 * errorDesc); errorListDto.add(errorStatusDto);
-			 * 
-			 * }
-			 */
+		} else {
+					beneDto.setUpdateNeeded(true); errorDesc = "Invalid beneficiary city";
+					errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(),
+							errorDesc); errorListDto.add(errorStatusDto);
+				}
+			 
 
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());
