@@ -22,7 +22,6 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.service.dao.EventNotificationDao;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
-import com.amx.utils.UniqueID;
 
 @Configuration
 @EnableScheduling
@@ -42,14 +41,13 @@ public class BrokerService {
 	public void pushNewEventNotifications() {
 
 		AppContextUtil.setTenant(Tenant.KWT);
-		AppContextUtil.generateTraceId(true);
 
 		logger.info("pushNewEventNotifications Job started ...");
 
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
 		for (EventNotificationView current_event_record : event_list) {
-
+			AppContextUtil.generateTraceId(true, true);
 			try {
 				logger.info("------------------ current_event_record DB Data --------------------");
 				logger.info(current_event_record.toString());

@@ -125,8 +125,7 @@ public class RequestLogFilter implements Filter {
 				}
 			} else {
 				ContextUtil.setTraceId(traceId);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+				AppContextUtil.init();
 			}
 
 			// Actual Request Handling
@@ -147,8 +146,7 @@ public class RequestLogFilter implements Filter {
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
-			MDC.clear();
-			ContextUtil.clear();
+			AppContextUtil.clear();
 		}
 	}
 

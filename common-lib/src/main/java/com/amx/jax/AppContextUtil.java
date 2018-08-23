@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
@@ -16,20 +17,31 @@ import com.amx.utils.UniqueID;
 
 public class AppContextUtil {
 
-	public static String generateTraceId(boolean generate) {
-		String traceId = ContextUtil.getTraceId(false);
-		if (generate && ArgUtil.isEmpty(traceId)) {
-			String sessionId = AppContextUtil.getSessionId();
+	/**
+	 * 
+	 * @param generate
+	 *            - create new token if not present
+	 * @param override
+	 *            - create new token anyway
+	 * @return -returns current token
+	 */
+	public static String generateTraceId(boolean generate, boolean override) {
+		String sessionId = AppContextUtil.getSessionId();
+		if (override) {
 			if (ArgUtil.isEmpty(sessionId)) {
 				sessionId = UniqueID.generateString();
 			}
+			return ContextUtil.generateTraceId(sessionId);
+		}
+		String traceId = ContextUtil.getTraceId(false);
+		if (generate && ArgUtil.isEmpty(traceId)) {
 			return ContextUtil.getTraceId(true, sessionId);
 		}
 		return traceId;
 	}
 
 	public static String getTraceId() {
-		return generateTraceId(true);
+		return generateTraceId(true, false);
 	}
 
 	public static String getTranxId() {
@@ -69,6 +81,10 @@ public class AppContextUtil {
 		TenantContextHolder.setCurrent(tenant);
 	}
 
+	public static void setTraceId(String traceId) {
+		ContextUtil.setTraceId(traceId);
+	}
+
 	public static void setTranxId(String tranxId) {
 		ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, tranxId);
 	}
@@ -83,6 +99,16 @@ public class AppContextUtil {
 
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
+	}
+
+	public static void init() {
+		MDC.put(ContextUtil.TRACE_ID, getTraceId());
+		MDC.put(TenantContextHolder.TENANT, getTenant());
+	}
+
+	public static void clear() {
+		MDC.clear();
+		ContextUtil.clear();
 	}
 
 	public static AppContext getContext() {
