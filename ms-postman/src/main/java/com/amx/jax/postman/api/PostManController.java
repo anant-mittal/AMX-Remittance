@@ -246,13 +246,4 @@ public class PostManController {
 		return eMsg;
 	}
 
-	@Autowired
-	FBPushServiceImpl fBPushService;
-
-	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
-	public PushMessage fbPush(@RequestBody PushMessage msg)
-			throws PostManException, InterruptedException, ExecutionException {
-		fBPushService.sendDirect(msg);
-		return msg;
-	}
 }
