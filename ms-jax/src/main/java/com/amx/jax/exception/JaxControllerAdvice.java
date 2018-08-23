@@ -33,6 +33,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
 			HttpServletResponse response) {
+		logger.info("Inside AMX API Error handle --->"+ex);
 		AmxApiError error = ex.createAmxApiError();
 		error.setException(ex.getClass().getName());
 		error.setMeta(ex.getMeta());
