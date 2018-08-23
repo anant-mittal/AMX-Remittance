@@ -12,11 +12,24 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
+import com.amx.utils.UniqueID;
 
 public class AppContextUtil {
 
+	public static String generateTraceId(boolean generate) {
+		String traceId = ContextUtil.getTraceId(false);
+		if (generate && ArgUtil.isEmpty(traceId)) {
+			String sessionId = AppContextUtil.getSessionId();
+			if (ArgUtil.isEmpty(sessionId)) {
+				sessionId = UniqueID.generateString();
+			}
+			return ContextUtil.getTraceId(true, sessionId);
+		}
+		return traceId;
+	}
+
 	public static String getTraceId() {
-		return ContextUtil.getTraceId();
+		return generateTraceId(true);
 	}
 
 	public static String getTranxId() {
@@ -50,6 +63,10 @@ public class AppContextUtil {
 
 	public static Tenant getTenant() {
 		return TenantContextHolder.currentSite();
+	}
+
+	public static void setTenant(Tenant tenant) {
+		TenantContextHolder.setCurrent(tenant);
 	}
 
 	public static void setTranxId(String tranxId) {

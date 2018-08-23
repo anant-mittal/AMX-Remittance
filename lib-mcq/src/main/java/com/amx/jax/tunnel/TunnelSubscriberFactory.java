@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
 
 @Service
 public class TunnelSubscriberFactory {
@@ -74,23 +78,27 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
-				RMapCache<String, String> map = redisson.getMapCache(channel);
+				AppContext context = msg.getContext();
+				AppContextUtil.setContext(context);
 				if (this.integrity) {
+					RMapCache<String, String> map = redisson.getMapCache(channel);
 					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
 							+ msg.getId();
-
 					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
-					if (prevObject == null || this.integrity == false) { // Hey I got it first :) OR it doesn't matter
-						this.subscriber.onMessage(channel, msg.getData());
-						if (this.integrity == true) {
-							map.put(integrityKey, "DONE", TIME_TO_EXPIRE, UNIT_OF_TIME);
-						}
+					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
+						this.doMessage(channel, msg);
+						map.put(integrityKey, "DONE", TIME_TO_EXPIRE, UNIT_OF_TIME);
 					} else { // I hope, other guy (The Lucky Bugger) is doing his job, right.
-						LOGGER.info("Message ignored EVENT_CODE : {}", channel);
+						LOGGER.debug("IGNORED EVENT : {} : {}", channel, msg.getId());
 					}
 				} else {
-					this.subscriber.onMessage(channel, msg.getData());
+					this.doMessage(channel, msg);
 				}
+			}
+
+			public void doMessage(String channel, TunnelMessage<M> msg) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+				this.subscriber.onMessage(channel, msg.getData());
 			}
 		});
 	}

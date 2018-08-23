@@ -64,9 +64,9 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-			long startTime = System.currentTimeMillis();
-			HttpServletRequest req = ((HttpServletRequest) request);
-			HttpServletResponse resp = ((HttpServletResponse) response);
+		long startTime = System.currentTimeMillis();
+		HttpServletRequest req = ((HttpServletRequest) request);
+		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
@@ -134,11 +134,11 @@ public class RequestLogFilter implements Filter {
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 
 			try {
-			if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			} else {
-				chain.doFilter(request, new AppResponseWrapper(resp));
-			}
+				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				} else {
+					chain.doFilter(request, new AppResponseWrapper(resp));
+				}
 			} finally {
 				AuditServiceClient
 						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
