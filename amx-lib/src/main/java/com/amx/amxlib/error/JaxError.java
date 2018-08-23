@@ -116,6 +116,7 @@ public enum JaxError implements IExceptionEnum {
     
 	/*place order*/
 	PLACE_ORDER_ID_NOT_FOUND,
+	
 	INVALID_MOBILE_NUMBER,
 	BLACK_LISTED_EXISTING_CIVIL_ID,
 	EXCHANGE_RATE_CHANGED,

@@ -62,12 +62,14 @@ import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.TransactionLimitCheckView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.exception.GlobalException;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
@@ -75,11 +77,13 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.VTransferRepository;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.service.LoyalityPointService;
 import com.amx.jax.service.ParameterService;
 import com.amx.jax.services.BeneficiaryCheckService;
+import com.amx.jax.services.PlaceOrderService;
 import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.RoutingService;
 import com.amx.jax.services.TransactionHistroyService;
@@ -165,7 +169,7 @@ public class RemittanceTransactionManager {
 
 	@Autowired
 	private RemittanceTransactionRequestValidator remittanceTransactionRequestValidator;
-	
+
 	@Autowired
 	private UserService userService;
 
@@ -177,7 +181,6 @@ public class RemittanceTransactionManager {
 	private JaxUtil jaxUtil;
 	@Autowired
 	RoutingService routingService;
-
 	@Autowired
 	JaxProperties jaxProperties;
 	@Autowired
@@ -188,7 +191,6 @@ public class RemittanceTransactionManager {
 	private static final String IOS = "IOS";
 	private static final String ANDROID = "ANDROID";
 	private static final String WEB = "WEB";
-
 
 	public RemittanceTransactionResponsetModel validateTransactionData(RemittanceTransactionRequestModel model) {
 
@@ -215,7 +217,16 @@ public class RemittanceTransactionManager {
 		remitApplParametersMap.put("BENEFICIARY", beneficiary);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT",
 				newExchangeRateService.getForeignAmount(remitApplParametersMap));
+		BigDecimal newCommission = reCalculateComission();
 
+		logger.info("newCommission: " + newCommission);
+		if (new BigDecimal(94).equals(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID"))
+				&& new BigDecimal(102).equals(remitApplParametersMap.get("P_SERVICE_MASTER_ID"))
+				&& newCommission == null) {
+			logger.info("recalculating del mode for TT and routing countyr india");
+			recalculateDeliveryAndRemittanceModeId();
+		}
+		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
 		BigDecimal serviceMasterId = new BigDecimal(remitApplParametersMap.get("P_SERVICE_MASTER_ID").toString());
 		BigDecimal routingBankId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_BANK_ID").toString());
 		BigDecimal rountingCountryId = new BigDecimal(remitApplParametersMap.get("P_ROUTING_COUNTRY_ID").toString());
@@ -252,23 +263,14 @@ public class RemittanceTransactionManager {
 		}
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
-		BigDecimal newCommission = reCalculateComission(routingDetails, breakup);
-
-		logger.info("newCommission: " + newCommission);
 	
 		if (newCommission != null) {
 			commission = newCommission;
 		}
 		
 		applyRoudingLogic(breakup);
-		if (new BigDecimal(94).equals(rountingCountryId) && new BigDecimal(102).equals(serviceMasterId)
-				&& newCommission == null) {
-			logger.info("recalculating del mode for TT and routing countyr india");
-			recalculateDeliveryAndRemittanceModeId(routingDetails, breakup);
-		}
-		routingService.recalculateRemittanceAndDeliveryMode(remitApplParametersMap);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
-		validateTransactionAmount(breakup, newCommission, currencyId, routingDetails);
+		validateTransactionAmount(breakup, newCommission, currencyId);
 		// commission
 		responseModel.setTxnFee(commission);
 		// exrate
@@ -317,9 +319,8 @@ public class RemittanceTransactionManager {
 				exRatebreakUp.getLcDecimalNumber().intValue()));
 	}
 
-	private BigDecimal reCalculateComission(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+	private BigDecimal reCalculateComission() {
 		logger.info("recalculating comission ");
-		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 		BigDecimal comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
@@ -332,7 +333,7 @@ public class RemittanceTransactionManager {
 		return comission;
 	}
 
-	private Map<String, Object> getCommissionRange(Map<String, Object> routingDetails, ExchangeRateBreakup breakup) {
+	private Map<String, Object> getCommissionRange(ExchangeRateBreakup breakup) {
 
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
@@ -347,10 +348,10 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void recalculateDeliveryAndRemittanceModeId(Map<String, Object> routingDetails,
-			ExchangeRateBreakup breakup) {
-		if (breakup.getConvertedFCAmount() != null) {
-			remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
+	private void recalculateDeliveryAndRemittanceModeId() {
+		
+		if (remitApplParametersMap.get("P_CALCULATED_FC_AMOUNT") != null) {
+			
 			BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 			remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 			Map<String, Object> outputMap = exchangeRateProcedureDao
@@ -367,10 +368,9 @@ public class RemittanceTransactionManager {
 			}
 
 			if (outputMap.get("P_DELIVERY_MODE_ID") == null) {
-				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + routingDetails.get("P_ROUTING_BANK_ID"),
+				throw new GlobalException("COMMISSION NOT DEFINED BankId: " + remitApplParametersMap.get("P_ROUTING_BANK_ID"),
 						COMISSION_NOT_DEFINED_FOR_ROUTING_BANK);
 			}
-			routingDetails.putAll(outputMap);
 			remitApplParametersMap.putAll(outputMap);
 		}
 	}
@@ -471,8 +471,7 @@ public class RemittanceTransactionManager {
 
 	}
 
-	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId,
-			Map<String, Object> routingDetails) {
+	private void validateTransactionAmount(ExchangeRateBreakup breakup, BigDecimal newCommission, BigDecimal currencyId ) {
 		if (!isSaveRemittanceFlow) {
 			return;
 		}
@@ -489,8 +488,7 @@ public class RemittanceTransactionManager {
 		BigDecimal decimalCurrencyValue = beneCurrencyMaster.getDecinalNumber();
 		String currencyQuoteName = beneCurrencyMaster.getQuoteName();
 		if (newCommission == null) {
-			//TODO:- after merge there is issue
-			Map<String, Object> commissionRangeMap = getCommissionRange(null, breakup);
+			Map<String, Object> commissionRangeMap = getCommissionRange(breakup);
 			String msg = "";
 			BigDecimal fromAmount = BigDecimal.ZERO;
 			BigDecimal toAmount = BigDecimal.ZERO;
@@ -734,10 +732,10 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = remittanceAppAddlDataManager.createAdditionalInstnData(remittanceApplication,
 					model);
 		} else {
-			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager
-					.createAdditionalInstnData(remittanceApplication);
+			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+		remitAppDao.updatePlaceOrder(model,remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
@@ -879,5 +877,4 @@ public class RemittanceTransactionManager {
 		}
 		return otpMmodel;
 	}
-
 }

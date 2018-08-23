@@ -260,7 +260,7 @@ public class PlaceOrder implements Serializable {
 
     public void setNotificationDate(Date notificationDate) {
         this.notificationDate = notificationDate;
-    }
+	}
 
     @Column(name = "BASE_CURRENCY_ID")
 	public BigDecimal getBaseCurrencyId() {

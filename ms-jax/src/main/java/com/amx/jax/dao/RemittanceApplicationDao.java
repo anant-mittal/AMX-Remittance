@@ -24,6 +24,7 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
+import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -49,10 +50,8 @@ public class RemittanceApplicationDao {
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
 	IFlexFiledView IFlexFiledView;
-	
     @Autowired
     IPlaceOrderDao placeOrderdao;
-
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
@@ -85,6 +84,7 @@ public class RemittanceApplicationDao {
 	public List<FlexFiledView> getFlexFields() {
 		return (List<FlexFiledView>) IFlexFiledView.findAll();
 	}
+
     public void updatePlaceOrder(RemittanceTransactionRequestModel model,RemittanceApplication remittanceApplication) {
 
         //to update place order status we update applicaiton id in placeorder table
