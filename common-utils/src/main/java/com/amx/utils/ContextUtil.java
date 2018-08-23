@@ -109,8 +109,10 @@ public final class ContextUtil {
 	/**
 	 * Gets the trace id.
 	 *
-	 * @param generate            the generate
-	 * @param midfix the midfix
+	 * @param generate
+	 *            the generate
+	 * @param midfix
+	 *            the midfix
 	 * @return the trace id
 	 */
 	public static String getTraceId(boolean generate, String midfix) {
@@ -122,6 +124,12 @@ public final class ContextUtil {
 			traceId = UniqueID.generateSystemString(midfix);
 			context.get().put(TRACE_ID, traceId);
 		}
+		return traceId;
+	}
+
+	public static String generateTraceId(String midfix) {
+		String traceId = UniqueID.generateSystemString(midfix);
+		context.get().put(TRACE_ID, traceId);
 		return traceId;
 	}
 

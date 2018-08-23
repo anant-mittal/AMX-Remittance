@@ -10,5 +10,7 @@ import org.springframework.stereotype.Component;
 public @interface TunnelEvent {
 	String topic();
 
+	boolean integrity() default true;
+
 	boolean queued() default false;
 }

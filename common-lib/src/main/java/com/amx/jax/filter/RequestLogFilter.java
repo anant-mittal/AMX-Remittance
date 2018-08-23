@@ -64,9 +64,9 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-			long startTime = System.currentTimeMillis();
-			HttpServletRequest req = ((HttpServletRequest) request);
-			HttpServletResponse resp = ((HttpServletResponse) response);
+		long startTime = System.currentTimeMillis();
+		HttpServletRequest req = ((HttpServletRequest) request);
+		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
@@ -115,18 +115,18 @@ public class RequestLogFilter implements Filter {
 					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
-				traceId = ContextUtil.getTraceId(true, sessionID);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+
 				AppContextUtil.setSessionId(sessionID);
+				traceId = AppContextUtil.getTraceId();
+				AppContextUtil.init();
+
 				if (session != null) {
 					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {
-				ContextUtil.setTraceId(traceId);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+				AppContextUtil.setTranceId(traceId);
+				AppContextUtil.init();
 			}
 
 			// Actual Request Handling
@@ -134,11 +134,11 @@ public class RequestLogFilter implements Filter {
 			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 
 			try {
-			if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			} else {
-				chain.doFilter(request, new AppResponseWrapper(resp));
-			}
+				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				} else {
+					chain.doFilter(request, new AppResponseWrapper(resp));
+				}
 			} finally {
 				AuditServiceClient
 						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
@@ -147,8 +147,7 @@ public class RequestLogFilter implements Filter {
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
-			MDC.clear();
-			ContextUtil.clear();
+			AppContextUtil.clear();
 		}
 	}
 
