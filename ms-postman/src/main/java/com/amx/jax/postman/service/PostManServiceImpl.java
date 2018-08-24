@@ -1,6 +1,6 @@
 package com.amx.jax.postman.service;
 
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -8,13 +8,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
@@ -24,8 +24,6 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 /**
  * The Class PostManServiceImpl.
@@ -190,6 +188,36 @@ public class PostManServiceImpl implements PostManService {
 	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Email sendEmailAsync(Email email) throws PostManException {
 		return this.sendEmail(email);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * Sends Bulk email for the Same Template. First Email in the list is used to generate the Template.
+	 */
+	@Override
+	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList) {
+
+		if (null == emailList || emailList.isEmpty()) {
+			return new PostManResponse();
+		}
+
+		Email templateEmail = emailList.get(0);
+
+		File file = new File();
+		file.setTemplate(templateEmail.getTemplate());
+		file.setModel(templateEmail.getModel());
+		file.setLang(templateEmail.getLang());
+
+		PostManResponse postManResponse = new PostManResponse();
+
+		for (Email email : emailList) {
+			emailService.sendEmailForTemplate(email, file);
+		}
+
+		postManResponse.getRespData().put("Status", "Success");
+
+		return postManResponse;
 	}
 
 	/*

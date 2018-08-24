@@ -1,5 +1,6 @@
 package com.amx.jax.postman.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
@@ -19,6 +20,7 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
@@ -176,6 +178,12 @@ public class PostManController {
 			postManService.sendEmail(email);
 		}
 		return email;
+	}
+
+	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK_TEMPLATE, method = RequestMethod.POST)
+	public PostManResponse sendEmailBulkForTemplate(@RequestBody List<Email> emailList) throws PostManException {
+
+		return postManService.sendEmailBulkForTemplate(emailList);
 	}
 
 	/**

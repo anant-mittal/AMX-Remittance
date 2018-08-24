@@ -1,5 +1,7 @@
 package com.amx.jax.postman.client;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
@@ -87,6 +90,26 @@ public class PostManClient implements PostManService {
 		return sendEmail(email, Boolean.TRUE);
 	}
 
+	/*
+	 * Sends Bulk email Async. Template is being picked up from the first email in
+	 * the list (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.postman.PostManService#sendEmailBulkForTemplate(java.util.List)
+	 */
+	@Override
+	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList) {
+		LOGGER.info("Sending bulk Email for Notification Service ");
+		try {
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_BULK_TEMPLATE)
+					.post(emailList).as(PostManResponse.class);
+		} catch (Exception e) {
+			throw new PostManException(e);
+		}
+	}
+
+	
+	
 	@Override
 	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
 		LOGGER.info("Sending support email from {}", email.getVisitorName());

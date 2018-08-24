@@ -1,11 +1,14 @@
 package com.amx.jax.postman;
 
+import java.util.List;
+
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
+import com.amx.jax.postman.model.Templates;
 
 public interface PostManService {
 
@@ -29,5 +32,7 @@ public interface PostManService {
 	public SMS sendSMSAsync(SMS sms) throws PostManException;
 
 	public File processTemplate(File file) throws PostManException;
+
+	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList);
 
 }
