@@ -129,13 +129,13 @@ public class PurposeOfTransactionService extends AbstractService {
 			for (AddDynamicLabel dyamicLabel : listDynamicLabel) {
 				AddAdditionalBankDataDto adddata = new AddAdditionalBankDataDto();
 				if (dyamicLabel.getValidation() != null && dyamicLabel.getValidation().equalsIgnoreCase("Y")) {
-					logger.info("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
+					logger.debug("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
 				
 					List<AdditionalBankRuleMap> listAdditinalBankfield = additionalBankRuleMapDao
 							.getDynamicLevelMatch(routingCountry, dyamicLabel.getFlexiField());
 					if (!listAdditinalBankfield.isEmpty()) {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
-							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
+							logger.debug("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
 									routingCountry, dyamicLabel.getFlexiField());
 							List<AdditionalBankDetailsViewx> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
@@ -166,11 +166,11 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
+								logger.debug("listAdditionaView:" + listAdditionaView.size());
 
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
+								logger.debug("listAdditionaView:" + listAdditionaView.size());
 								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
-									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
+									logger.debug("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
 											+ lst.getAmieceDescription());
 
 								}
