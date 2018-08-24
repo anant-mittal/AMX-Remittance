@@ -17,10 +17,8 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
@@ -197,50 +195,6 @@ public class EmailService {
 		return email;
 	}
 
-	/**
-	 * Special Method for sending emails with fixed template
-	 * 
-	 * @param email
-	 * @param template
-	 * @return
-	 * @throws PostManException
-	 */
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
-	public Email sendEmailForTemplate(Email email, File template) throws PostManException {
-
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
-		String to = null;
-		try {
-			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
-
-			to = email.getTo() != null ? email.getTo().get(0) : null;
-
-			email.setMessage(template.getContent());
-
-			if (ArgUtil.isEmptyString(email.getSubject())) {
-				email.setSubject(template.getTitle());
-			}
-
-			if (email.getFiles() != null && email.getFiles().size() > 0) {
-				for (File file : email.getFiles()) {
-					if (file.getLang() == null) {
-						file.setLang(email.getLang());
-					}
-					fileService.create(file);
-				}
-			}
-			if (!ArgUtil.isEmpty(to)) {
-				this.send(email);
-				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
-			} else {
-				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
-			}
-		} catch (Exception e) {
-			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
-			slackService.sendException(to, e);
-		}
-		return email;
-	}
 
 	/**
 	 * Send.

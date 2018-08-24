@@ -2,7 +2,6 @@ package com.amx.jax.postman.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
-import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManResponse;
@@ -27,11 +25,9 @@ import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
-import com.amx.jax.postman.service.FBPushServiceImpl;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
@@ -180,10 +176,18 @@ public class PostManController {
 		return email;
 	}
 
-	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK_TEMPLATE, method = RequestMethod.POST)
-	public PostManResponse sendEmailBulkForTemplate(@RequestBody List<Email> emailList) throws PostManException {
+	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK, method = RequestMethod.POST)
+	public PostManResponse sendEmailBulk(@RequestBody List<Email> emailList) throws PostManException {
 
-		return postManService.sendEmailBulkForTemplate(emailList);
+		for (Email email : emailList) {
+			postManService.sendEmailAsync(email);
+		}
+
+		PostManResponse postManResponse = new PostManResponse();
+
+		postManResponse.getRespData().put("Status", "Success");
+
+		return postManResponse;
 	}
 
 	/**

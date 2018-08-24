@@ -190,35 +190,6 @@ public class PostManServiceImpl implements PostManService {
 		return this.sendEmail(email);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * Sends Bulk email for the Same Template. First Email in the list is used to generate the Template.
-	 */
-	@Override
-	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList) {
-
-		if (null == emailList || emailList.isEmpty()) {
-			return new PostManResponse();
-		}
-
-		Email templateEmail = emailList.get(0);
-
-		File file = new File();
-		file.setTemplate(templateEmail.getTemplate());
-		file.setModel(templateEmail.getModel());
-		file.setLang(templateEmail.getLang());
-
-		PostManResponse postManResponse = new PostManResponse();
-
-		for (Email email : emailList) {
-			emailService.sendEmailForTemplate(email, file);
-		}
-
-		postManResponse.getRespData().put("Status", "Success");
-
-		return postManResponse;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -258,6 +229,13 @@ public class PostManServiceImpl implements PostManService {
 		msg.setChannel(Notipy.Channel.INQUIRY);
 		this.notifySlack(msg);
 		return email;
+	}
+
+	@Override
+	public PostManResponse sendEmailBulk(List<Email> emailList) {
+		// TODO Empty Method : 
+		// Need to remove Interface Implementation
+		return null;
 	}
 
 }

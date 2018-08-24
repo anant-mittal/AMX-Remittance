@@ -97,19 +97,16 @@ public class PostManClient implements PostManService {
 	 * @see
 	 * com.amx.jax.postman.PostManService#sendEmailBulkForTemplate(java.util.List)
 	 */
-	@Override
-	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList) {
+	public PostManResponse sendEmailBulk(List<Email> emailList) {
 		LOGGER.info("Sending bulk Email for Notification Service ");
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_BULK_TEMPLATE)
-					.post(emailList).as(PostManResponse.class);
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_BULK).post(emailList)
+					.as(PostManResponse.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
 
-	
-	
 	@Override
 	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
 		LOGGER.info("Sending support email from {}", email.getVisitorName());

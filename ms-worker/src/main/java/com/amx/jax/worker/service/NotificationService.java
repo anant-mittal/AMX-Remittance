@@ -42,7 +42,7 @@ public class NotificationService {
 			emailList.add(email);
 		}
 		try {
-			postManService.sendEmailBulkForTemplate(emailList);
+			postManService.sendEmailBulk(emailList);
 		} catch (PostManException e) {
 			logger.error("error in sendBatchNotification", e);
 		}

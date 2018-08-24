@@ -8,7 +8,6 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
 
 public interface PostManService {
 
@@ -33,6 +32,6 @@ public interface PostManService {
 
 	public File processTemplate(File file) throws PostManException;
 
-	public PostManResponse sendEmailBulkForTemplate(List<Email> emailList);
+	public PostManResponse sendEmailBulk(List<Email> emailList);
 
 }
