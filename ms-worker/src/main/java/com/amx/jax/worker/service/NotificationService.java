@@ -2,6 +2,7 @@ package com.amx.jax.worker.service;
 
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -25,6 +26,9 @@ public class NotificationService {
 	private PostManService postManService;
 	
 	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
+		
+		List<Email> emailList = new ArrayList<Email>();
+		
 		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
 			logger.info("Sending rate alert to " + placeorderNot.getEmail());
 			Email email = new Email();
@@ -33,11 +37,16 @@ public class NotificationService {
 			email.setTemplate(Templates.RATE_ALERT);
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, placeorderNot);
-			try {
-				postManService.sendEmailAsync(email);
-			} catch (PostManException e) {
-				logger.error("error in sendBatchNotification", e);
-			}
+			
+			emailList.add(email);
+			
+			
+		}
+		
+		try {
+			postManService.sendEmailBulkForTemplate(emailList);
+		} catch (PostManException e) {
+			logger.error("error in sendBatchNotification", e);
 		}
 	}
 }
