@@ -62,4 +62,14 @@ public class ApiResponse<T> {
 		return result;
 
 	}
+
+	public static <T> ApiResponse<T> getBlackApiResponse() {
+		ApiResponse<T> response = new ApiResponse<T>();
+		ResponseData data = new ResponseData();
+		data.setType(null);
+		List<Object> values = new ArrayList<Object>();
+		data.setValues(values);
+		response.setData(data);
+		return response;
+	}
 }

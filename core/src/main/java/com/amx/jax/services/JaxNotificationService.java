@@ -226,7 +226,7 @@ public class JaxNotificationService {
 			Email email = new Email();
 			email.setSubject(BRANCH_SEARCH);
 			email.addTo(emailid);
-			email.setTemplate(Templates.BRANCH_SEARCH_EMPTY);
+			email.setTemplate(Templates.TRANSACTION_FAILURE);
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, model);
 			sendEmail(email);

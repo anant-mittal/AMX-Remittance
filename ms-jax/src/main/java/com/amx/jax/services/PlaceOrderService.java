@@ -306,6 +306,8 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setEmail(cusotmer.getEmail());
 					placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
 					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
+					placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
+					placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
 					placeorderNotDTO.setRate(derivedSellRate);
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);

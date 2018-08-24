@@ -1,10 +1,8 @@
 package com.amx.jax.client;
 
-import static com.amx.amxlib.constant.ApiEndpoint.EXCHANGE_RATE_ENDPOINT;
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import javax.validation.ValidationException;
 
@@ -14,7 +12,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.InvalidInputException;
@@ -23,8 +20,6 @@ import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.rest.RestService;
 
 @Component

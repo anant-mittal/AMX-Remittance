@@ -1,8 +1,9 @@
 package com.amx.jax.tunnel;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import org.redisson.api.RMap;
+import org.redisson.api.RMapCache;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
@@ -12,11 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
 
 @Service
 public class TunnelSubscriberFactory {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
+	public static long TIME_TO_EXPIRE = 10;
+	public static TimeUnit UNIT_OF_TIME = TimeUnit.SECONDS;
 
 	@Autowired
 	AppConfig appConfig;
@@ -32,8 +39,8 @@ public class TunnelSubscriberFactory {
 				Class<?> c = listener.getClass();
 				TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
 				String eventTopic = tunnelEvent.topic();
-				boolean queued = tunnelEvent.queued();
-				this.addListener(eventTopic, redisson, listener, queued);
+				boolean integrity = tunnelEvent.integrity();
+				this.addListener(eventTopic, redisson, listener, integrity);
 			}
 		}
 
@@ -42,12 +49,12 @@ public class TunnelSubscriberFactory {
 	public static class WrapperML<M> implements MessageListener<TunnelMessage<M>> {
 
 		ITunnelSubscriber<M> subscriber = null;
-		boolean queued = false;
+		boolean integrity = false;
 
-		public WrapperML(ITunnelSubscriber<M> subscriber, boolean queued) {
+		public WrapperML(ITunnelSubscriber<M> subscriber, boolean integrity) {
 			super();
 			this.subscriber = subscriber;
-			this.queued = queued;
+			this.integrity = integrity;
 		}
 
 		@Override
@@ -65,25 +72,33 @@ public class TunnelSubscriberFactory {
 
 	}
 
-	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener, boolean queued) {
+	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			boolean integrity) {
 		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(topic);
-		topicQueue.addListener(new WrapperML<M>(listener, queued) {
+		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
-				RMap<String, String> map = redisson.getMap(channel);
-				if (this.queued) {
-					String prevObject = map.put(
-							appConfig.getAppClass() + "#" + listener.getClass().getName() + "#" + msg.getId(),
-							msg.getId());
-					if (prevObject == null || this.queued == false) {
-						LOGGER.info("Previous Value was null");
-						this.subscriber.onMessage(channel, msg.getData());
-					} else {
-						LOGGER.info("Message ignored");
+				AppContext context = msg.getContext();
+				AppContextUtil.setContext(context);
+				if (this.integrity) {
+					RMapCache<String, String> map = redisson.getMapCache(channel);
+					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
+							+ msg.getId();
+					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
+					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
+						this.doMessage(channel, msg);
+						map.put(integrityKey, "DONE", TIME_TO_EXPIRE, UNIT_OF_TIME);
+					} else { // I hope, other guy (The Lucky Bugger) is doing his job, right.
+						LOGGER.debug("IGNORED EVENT : {} : {}", channel, msg.getId());
 					}
 				} else {
-					this.subscriber.onMessage(channel, msg.getData());
+					this.doMessage(channel, msg);
 				}
+			}
+
+			public void doMessage(String channel, TunnelMessage<M> msg) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+				this.subscriber.onMessage(channel, msg.getData());
 			}
 		});
 	}
