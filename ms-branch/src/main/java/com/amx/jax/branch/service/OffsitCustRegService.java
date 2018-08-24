@@ -67,7 +67,7 @@ import com.amx.jax.model.OtpData;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
-import com.amx.jax.model.request.GetJaxFieldRequest;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
