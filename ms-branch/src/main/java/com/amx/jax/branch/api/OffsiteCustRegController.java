@@ -2,6 +2,7 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
+import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
@@ -117,7 +119,6 @@ public class OffsiteCustRegController implements ICustRegService {
 		return  stateService.getStateListOffsite(model.getCountryId(), metaData.getLanguageId());
 	}	*/
 	
-	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/customer-mobile-email-send-otp", method = RequestMethod.POST)
 	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
@@ -176,4 +177,17 @@ public class OffsiteCustRegController implements ICustRegService {
 		//JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getFieldList(model);
 	}
+
+	@Override
+	public AmxApiResponse<BigDecimal, Object> getModes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel modeId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 }

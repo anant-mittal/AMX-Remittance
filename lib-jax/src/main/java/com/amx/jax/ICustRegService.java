@@ -63,7 +63,5 @@ public interface ICustRegService {
 	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model);
 	
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
-	
-	AmxApiResponse<List, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail);
 
 }
