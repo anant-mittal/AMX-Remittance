@@ -27,11 +27,10 @@ public class NotificationService {
 	@Autowired
 	private PostManService postManService;
 	
-	@Async(ExecutorConfig.EXECUTER_BRONZE)
+
 	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
 		
 		List<Email> emailList = new ArrayList<Email>();
-		
 		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
 			logger.info("Sending rate alert to " + placeorderNot.getEmail());
 			Email email = new Email();
@@ -40,12 +39,8 @@ public class NotificationService {
 			email.setTemplate(Templates.RATE_ALERT);
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, placeorderNot);
-			
 			emailList.add(email);
-			
-			
 		}
-		
 		try {
 			postManService.sendEmailBulkForTemplate(emailList);
 		} catch (PostManException e) {
