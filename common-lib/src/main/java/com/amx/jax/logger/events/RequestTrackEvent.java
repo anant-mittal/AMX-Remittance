@@ -16,7 +16,9 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.tunnel.TunnelMessage;
 
 public class RequestTrackEvent extends AuditEvent {
 
@@ -24,7 +26,7 @@ public class RequestTrackEvent extends AuditEvent {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestTrackEvent.class);
 
 	public static enum Type implements EventType {
-		REQT_IN, RESP_OUT, REQT_OUT, RESP_IN;
+		REQT_IN, RESP_OUT, REQT_OUT, RESP_IN, PUB_OUT, SUB_IN;
 
 		@Override
 		public EventMarker marker() {
@@ -33,6 +35,7 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	private MultiValueMap<String, String> header;
+	private AppContext context;
 	private long responseTime;
 
 	public MultiValueMap<String, String> getHeader() {
@@ -45,6 +48,11 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent(Type type) {
 		super(type);
+	}
+
+	public <T> RequestTrackEvent(Type type, TunnelMessage<T> message) {
+		super(type);
+		this.context = message.getContext();
 	}
 
 	public RequestTrackEvent(HttpRequest request) {
@@ -122,6 +130,14 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public void setResponseTime(long responseTime) {
 		this.responseTime = responseTime;
+	}
+
+	public AppContext getContext() {
+		return context;
+	}
+
+	public void setContext(AppContext context) {
+		this.context = context;
 	}
 
 }

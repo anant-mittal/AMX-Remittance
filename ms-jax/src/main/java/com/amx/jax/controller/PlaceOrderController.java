@@ -11,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PlaceOrderService;
+import com.amx.jax.util.JaxContextUtil;
 
 /**
  * @author Subodh Bhoir
@@ -125,6 +129,28 @@ public class PlaceOrderController {
 		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = placeOrderService.updatePlaceOrder(dto);
+		
+		return response;
+	}
+	
+	/**
+	 * update place order 
+	 * @return
+	 */
+	@RequestMapping(value = "/get/placeorder/ontrigger", method = RequestMethod.GET)
+	public ApiResponse handleUrlPlaceOrderOnTrigger(@RequestParam BigDecimal fromAmount,@RequestParam BigDecimal toAmount, @RequestParam BigDecimal countryId, @RequestParam BigDecimal currencyId,@RequestParam BigDecimal bankId,@RequestParam BigDecimal derivedSellRate) {
+		logger.info(String.format(
+				"Inside PlaceOrderOnTrigger Request with parameters --> CountryId: %s,CurrencyId: %s, BankId: %s, ExchangeRate: %s",
+				countryId, currencyId, bankId, derivedSellRate));
+		PlaceOrder placeOrder =new PlaceOrder();
+		placeOrder.setCountryId(countryId);
+		placeOrder.setCurrencyId(currencyId);
+		placeOrder.setBankId(bankId);
+		placeOrder.setTargetExchangeRate(derivedSellRate);
+		/*JaxContextUtil.setJaxEvent(JaxEvent.PLACE_ORDER_TRIGGER);*/
+		JaxContextUtil.setRequestModel(placeOrder);
+		ApiResponse response = null;
+		response = placeOrderService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
 		
 		return response;
 	}

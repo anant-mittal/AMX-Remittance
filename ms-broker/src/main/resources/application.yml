@@ -8,19 +8,19 @@ multitenancy:
         driverClassName: org.h2.Driver
       -
         tenantId: KWT
-        url: jdbc:oracle:thin:@172.17.1.99:1522:TEMOS
+        url: jdbc:oracle:thin:@10.28.42.10:1521:TEMOS
         username: TEMOS
         password: TEMOS
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: BHR
-        url: jdbc:oracle:thin:@172.17.1.99:1522:TBHEMOS
+        url: jdbc:oracle:thin:@10.28.42.10:1521:TBHEMOS
         username: tbexchdba
         password: tbexchdba
         driverClassName: oracle.jdbc.OracleDriver
       -
         tenantId: OMN
-        url: jdbc:oracle:thin:@172.17.1.99:1522:TMEX
+        url: jdbc:oracle:thin:@10.28.42.10:1521:TMEX
         username: tmex
         password: tmex
         driverClassName: oracle.jdbc.OracleDriver
