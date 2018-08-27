@@ -98,6 +98,7 @@ public class RemittanceApplicationDao {
             if (poList!=null && poList.size()!=0) {
                 po=poList.get(0);
                 po.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+                po.setIsActive("C");
                 placeOrderdao.save(po);
             }else {
                 logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
