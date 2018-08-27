@@ -129,4 +129,8 @@ public class BizcomponentDao {
 	public BizComponentData getBizComponentDataByComponmentCode(String componentCode) {
 		return iBizComponentDataRepository.findBycomponentCode(componentCode);
 	}
+	
+	public BizComponentData getBizComponentDataByComponmentDataId(BigDecimal componentDataId) {
+		return iBizComponentDataRepository.findOne(componentDataId);
+	}
 }
