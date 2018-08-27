@@ -58,5 +58,7 @@ public class ConstantDocument {
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
 	
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
+	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
+	public static final String BIZ_COMPONENT_CODE_CIVIL_ID = "C";
 
 }

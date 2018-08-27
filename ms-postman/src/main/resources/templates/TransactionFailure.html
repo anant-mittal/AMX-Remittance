@@ -308,7 +308,7 @@ a {
 											</tr>
 											<tr>
 												<td>Transaction Amount</td>
-												<td th:text="${data.transactionAmount}"></td>
+												<td><span th:text="${data.transactionAmount}"></span> (<span th:text="${data.currencyQuoteName}"></span>)</td>
 											</tr>
 											<tr>
 												<td>Beneficiary Bank</td>
@@ -326,10 +326,22 @@ a {
 												<td>Product / Service</td>
 												<td th:text="${data.service}"></td>
 											</tr>
+											
 										</table>	
 										</td>
 									</tr>
-								
+									<tr>
+										<td><table class="table" width="100%" border="1" cellpadding="5" cellspacing="0">
+											<tr>
+												<th align="left">Customer Reference</th>
+											</tr>
+											<tr>
+												<td th:text="${data.exceptionMessage}"></td>
+											</tr>
+							
+										</table>	</td>
+									</tr>
+									<tr><td>&nbsp;</td></tr>
 									<tr>
 										<td class="content-block">Thanks and Regards,<br/>
 											<strong><span th:text="${_tu.prop('company.fullname')}" th:remove="tag"></span>,</strong><br/>
