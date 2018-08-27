@@ -104,8 +104,8 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	@Override
 	public String toString() {
 		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
+				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+				+ availLoyalityPoints + "]";
 	}
 
 	public BigDecimal getSrlId() {
@@ -123,30 +123,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	public void setAdditionalBankRuleFiledId(BigDecimal additionalBankRuleFiledId) {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
-	
-    public BigDecimal getPlaceOrderId() {
-        return placeOrderId;
-    }
 
-    public void setPlaceOrderId(BigDecimal placeOrderId) {
-        this.placeOrderId = placeOrderId;
-    }
+	public String getmOtp() {
+		return mOtp;
+	}
 
-   public String getmOtp() {
-        return mOtp;
-    }
+	public void setmOtp(String mOtp) {
+		this.mOtp = mOtp;
+	}
 
-    public void setmOtp(String mOtp) {
-        this.mOtp = mOtp;
-    }
+	public String geteOtp() {
+		return eOtp;
+	}
 
-    public String geteOtp() {
-        return eOtp;
-    }
-
-    public void seteOtp(String eOtp) {
-        this.eOtp = eOtp;
-    }
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
 
 	public ExchangeRateBreakup getExRateBreakup() {
 		return exRateBreakup;
@@ -156,7 +148,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 		this.exRateBreakup = exRateBreakup;
 	}
 
-
 	public Map<String, FlexFieldDto> getFlexFieldDtoMap() {
 		return flexFieldDtoMap;
 	}
@@ -164,7 +155,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	public void setFlexFieldDtoMap(Map<String, FlexFieldDto> flexFieldDtoMap) {
 		this.flexFieldDtoMap = flexFieldDtoMap;
 	}
-	
+
 	public void populateFlexFieldDtoMap() {
 		if (this.flexFields != null) {
 			Map<String, String> flexFieldMap = createFlexFieldMap(flexFields);
@@ -189,7 +180,7 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 
 		Set<Entry<String, Object>> es = flexFields2.entrySet();
 		Map<String, String> output = es.stream()
-				.collect(Collectors.toMap(x -> x.getKey(),  x -> JsonUtil.toJson(x.getValue())));
+				.collect(Collectors.toMap(x -> x.getKey(), x -> JsonUtil.toJson(x.getValue())));
 		return output;
 	}
 
@@ -208,6 +199,5 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	public void setPlaceOrderId(BigDecimal placeOrderId) {
 		this.placeOrderId = placeOrderId;
 	}
-
 
 }
