@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
-
-import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -25,6 +22,19 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		super();
 		this.data = null;
 		this.results = new ArrayList<T>();
+	}
+
+	public AmxApiResponse(List<T> resultList) {
+		super();
+		this.data = null;
+		this.results = resultList;
+	}
+
+	public AmxApiResponse(List<T> resultList, M meta) {
+		super();
+		this.data = null;
+		this.results = resultList;
+		this.meta = meta;
 	}
 
 	/**
@@ -56,7 +66,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	@JsonIgnore
 	public T getResult() {
-		if (results == null) {
+		if (results != null && !results.isEmpty()) {
 			return results.get(0);
 		}
 		return null;
@@ -77,6 +87,14 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		resp.addResult(result);
 		resp.setMeta(meta);
 		return resp;
+	}
+
+	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
+		return new AmxApiResponse<TS, Object>(resultList);
+	}
+
+	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {
+		return new AmxApiResponse<TS, MS>(resultList, meta);
 	}
 
 }
