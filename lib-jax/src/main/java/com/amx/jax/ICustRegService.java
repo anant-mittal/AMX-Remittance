@@ -40,20 +40,6 @@ public interface ICustRegService {
 		public void setMode(BigDecimal modeId);
 	}
 
-	/**
-	 * Get List of modes, available for customer registration
-	 * 
-	 * @return
-	 */
-	AmxApiResponse<BigDecimal, Object> getModes();
-	
-	/**
-	 * Get List of fields required for identity validation, for particular mode id
-	 * 
-	 * @return
-	 */
-	AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel modeId);
-	
 	AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model);
 	
 	AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model);

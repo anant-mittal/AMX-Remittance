@@ -64,7 +64,7 @@
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
-			</dependency>
+			</dependency>			
 		</dependencies>
 	</dependencyManagement>
 
