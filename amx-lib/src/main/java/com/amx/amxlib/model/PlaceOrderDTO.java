@@ -14,41 +14,41 @@ import com.amx.jax.model.AbstractModel;
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
-	@NotNull
+	
 	private BigDecimal placeOrderId;
 	
 	private BigDecimal customerId;
 	
-	@NotNull
+	@NotNull(message="beneficiaryRelationshipSeqId may not be null")
 	private BigDecimal beneficiaryRelationshipSeqId;
 	
-	@NotNull
+	@NotNull(message="targetExchangeRate may not be null")
 	private BigDecimal targetExchangeRate;
 	
-	@NotNull
+	@NotNull(message="bankRuleFieldId may not be null")
 	private BigDecimal bankRuleFieldId;
 	
-	@NotNull
+	@NotNull(message="srlId may not be null")
 	private BigDecimal srlId;
 	
-	@NotNull
+	@NotNull(message="sourceOfIncomeId may not be null")
 	private BigDecimal sourceOfIncomeId;
 	
-	@NotNull
+	@NotNull(message="isActive may not be null")
 	private String isActive;
 	
 	private Date createdDate;
 	
-	@NotNull
+	@NotNull(message="validToDate may not be null")
 	private Date validToDate;
 	
-	@NotNull
+	@NotNull(message="validFromDate may not be null")
 	private Date validFromDate;
 	
-	@NotNull
+	@NotNull(message="payAmount may not be null")
 	private BigDecimal payAmount;
 	
-	@NotNull
+	@NotNull(message="receiveAmount may not be null")
 	private BigDecimal receiveAmount;
 	
 	private BigDecimal baseCurrencyId;

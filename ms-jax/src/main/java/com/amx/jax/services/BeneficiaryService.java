@@ -5,6 +5,7 @@ package com.amx.jax.services;
  */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -861,6 +862,24 @@ public class BeneficiaryService extends AbstractService {
             
             if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+                
+                Boolean isExpired = false;
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String sysdate = sdf.format(new Date());
+                String fromDate = sdf.format(poDto.getValidFromDate());
+                String toDate = sdf.format(poDto.getValidToDate());
+                                
+                if(sysdate.compareTo(fromDate) >=0 && sysdate.compareTo(toDate) <= 0) {
+                	isExpired = false;
+                }else {
+                	isExpired = true;
+                }
+                
+                if (isExpired) {
+            		throw new GlobalException("PO got expired for id : "+placeOrderId,JaxError.PLACE_ORDER_EXPIRED);
+            	}
+                
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
                 remitPageDto.setPlaceOrderDTO(poDto);
             }else {
