@@ -11,6 +11,7 @@ import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +20,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("test/")
 public class RbaacServiceControllerTest implements RbaacService {
 
-	//private static final Logger LOGGER = LoggerFactory.getLogger(RbaacServiceControllerTest.class);
+	// private static final Logger LOGGER =
+	// LoggerFactory.getLogger(RbaacServiceControllerTest.class);
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
@@ -36,6 +38,13 @@ public class RbaacServiceControllerTest implements RbaacService {
 	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto) {
 		return rbaacServiceClient.authoriseUser(reqDto);
+	}
+
+	@Override
+	@ApiOperation("User Permissions Get")
+	@RequestMapping(value = ApiEndPoints.PERMS_GET, method = RequestMethod.POST)
+	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId) {
+		return rbaacServiceClient.getAllPermissions(ipAddr, deviceId);
 	}
 
 	@Override

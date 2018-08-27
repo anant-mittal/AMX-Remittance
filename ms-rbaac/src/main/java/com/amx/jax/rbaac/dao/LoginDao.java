@@ -60,8 +60,6 @@ public class LoginDao {
 	@Autowired
 	OldIPermissionRepository permissionRepositoryOld;
 
-	/******* TO BE Removed From Here ********/
-
 	@Autowired
 	IAccessTypeRepository accessTypeRepository;
 
@@ -72,7 +70,6 @@ public class LoginDao {
 	IPermissionRepository permissionRepository;
 
 	public List<AccessType> getAllAccessTypes() {
-		// return accessTypeRepository.findByFlags(new BigDecimal(0));
 		return accessTypeRepository.findAll();
 	}
 
@@ -83,8 +80,6 @@ public class LoginDao {
 	public List<Permission> getAllPermissions() {
 		return permissionRepository.findAll();
 	}
-
-	/******* TO BE Removed From Here End ********/
 
 	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
 		List<Employee> empList = loginRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,

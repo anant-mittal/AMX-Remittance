@@ -3,12 +3,15 @@
  */
 package com.amx.jax.rbaac.api;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
@@ -16,9 +19,11 @@ import com.amx.jax.rbaac.RbaacService;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAuthService;
+import com.amx.jax.rbaac.service.UserRoleService;
 
 /**
  * The Class RbaacServiceApiController.
@@ -37,6 +42,9 @@ public class RbaacServiceApiController implements RbaacService {
 
 	@Autowired
 	RespTestService respTestService;
+
+	@Autowired
+	UserRoleService userRoleService;
 
 	/**
 	 * Init User Authentication.
@@ -72,6 +80,19 @@ public class RbaacServiceApiController implements RbaacService {
 		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(reqDto);
 
 		return AmxApiResponse.build(employeeDetailsDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.PERMS_GET, method = RequestMethod.POST)
+	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(@RequestParam(required = true) String ipAddr,
+			@RequestParam String deviceId) {
+
+		LOGGER.info("Received request for Get Permissions " + " from Ip Address: " + ipAddr + " from device Id: "
+				+ deviceId);
+
+		List<PermissionsResposeDTO> permissionsResposeDTOList = userRoleService.getAllPermissions(ipAddr, deviceId);
+
+		return AmxApiResponse.buildList(permissionsResposeDTOList);
 	}
 
 	@Override

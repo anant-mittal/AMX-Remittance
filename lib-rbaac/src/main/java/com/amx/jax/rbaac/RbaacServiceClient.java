@@ -13,24 +13,36 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rest.RestService;
 
 /**
- * @author abhijeet
+ * The Class RbaacServiceClient.
  *
+ * @author abhijeet
  */
 @Component
 public class RbaacServiceClient implements RbaacService {
 
+	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceClient.class);
 
+	/** The rest service. */
 	@Autowired
 	RestService restService;
 
+	/** The app config. */
 	@Autowired
 	AppConfig appConfig;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.RbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
+	 * UserAuthInitReqDTO)
+	 */
 	@Override
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO) {
 
@@ -43,6 +55,13 @@ public class RbaacServiceClient implements RbaacService {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.RbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
+	 * UserAuthorisationReqDTO)
+	 */
 	@Override
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDTO) {
 
@@ -54,11 +73,37 @@ public class RbaacServiceClient implements RbaacService {
 
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId) {
+
+		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}", ipAddr, deviceId);
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddr)
+				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionsResposeDTO.class);
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.RbaacService#testGet()
+	 */
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get().asApiResponse(String.class);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.RbaacService#testPost()
+	 */
 	@Override
 	public AmxApiResponse<String, Object> testPost() {
 		// TODO Auto-generated method stub

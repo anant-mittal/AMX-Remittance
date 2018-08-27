@@ -102,14 +102,27 @@ public class AuthServiceException extends AmxApiException {
 
 	}
 
-	/**
+	/*
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param e
-	 *            the e
+	 * @param e the e
 	 */
 	public AuthServiceException(Exception e) {
 		super(e);
+	}
+
+
+	/*
+	 * Instantiates a new auth service exception.
+	 *
+	 * @param errorMessage the error message
+	 * @param error the error
+	 * @param e the e
+	 */
+	public AuthServiceException(String errorMessage, AuthServiceError error, Exception e) {
+		super(e);
+		this.errorMessage = errorMessage;
+		this.errorKey = error.getCode();
 	}
 
 	/*

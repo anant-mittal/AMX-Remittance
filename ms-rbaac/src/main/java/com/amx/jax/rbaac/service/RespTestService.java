@@ -32,6 +32,8 @@ public class RespTestService {
 
 	public String testGetUrlCall() {
 
+		LOGGER.info("Test Get Url API ");
+
 		List<AccessType> accessTypes = loginDao.getAllAccessTypes();
 
 		List<PermScope> permScopes = loginDao.getAllScopes();

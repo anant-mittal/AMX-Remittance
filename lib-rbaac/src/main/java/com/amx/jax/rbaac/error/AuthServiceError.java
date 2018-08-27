@@ -38,6 +38,9 @@ public enum AuthServiceError implements IExceptionEnum {
 	/** The user account locked. */
 	USER_ACCOUNT_LOCKED,
 
+	/** The incompatible data type. */
+	INCOMPATIBLE_DATA_TYPE,
+	
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

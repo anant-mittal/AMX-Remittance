@@ -4,6 +4,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
 /**
@@ -20,7 +21,7 @@ public interface RbaacService {
 
 		/** The Constant SERVICE_PREFIX. */
 		private static final String SERVICE_PREFIX = "/rbaac";
-		
+
 		/** The Constant API_VERSION_V1. */
 		private static final String API_VERSION_V1 = "/v1";
 
@@ -29,6 +30,9 @@ public interface RbaacService {
 
 		/** The Constant AUTHORISE. */
 		public static final String AUTHORISE = SERVICE_PREFIX + API_VERSION_V1 + "/auth/authorise";
+		
+		/** The Constant PERMS_GET. */
+		public static final String PERMS_GET = SERVICE_PREFIX + API_VERSION_V1 + "/perms/get";
 
 		/** The Constant ROLES_GET. */
 		public static final String ROLES_GET = SERVICE_PREFIX + API_VERSION_V1 + "/roles/get";
@@ -60,7 +64,8 @@ public interface RbaacService {
 	 * Begins process of user Authentication with employee details - empCode,
 	 * CivilId and Access Terminal IP .
 	 *
-	 * @param userAuthInitReqDTO the user auth init req DTO
+	 * @param userAuthInitReqDTO
+	 *            the user auth init req DTO
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
@@ -68,10 +73,18 @@ public interface RbaacService {
 	/**
 	 * Authorise user.
 	 *
-	 * @param reqDto the req dto
+	 * @param reqDto
+	 *            the req dto
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
+
+	/**
+	 * Gets the all permissions.
+	 *
+	 * @return the all permissions
+	 */
+	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId);
 
 	/**
 	 * Test get.
