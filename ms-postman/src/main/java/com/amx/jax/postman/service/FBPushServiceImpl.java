@@ -1,7 +1,5 @@
 package com.amx.jax.postman.service;
 
-import java.util.Map;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,8 +14,10 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
 import com.amx.utils.MapBuilder;
+import com.amx.utils.MapBuilder.BuilderMap;
 
 /**
  * The Class FBPushServiceImpl.
@@ -32,22 +32,6 @@ public class FBPushServiceImpl implements FBPushService {
 	@Value("${fcm.server.key}")
 	String serverKey;
 
-	// @Autowired
-	// public FBPushServiceImpl(@Value("${fcm.service.file}") String fcmServiceFile)
-	// {
-	// try {
-	// InputStream serviceAccount =
-	// FileUtil.getExternalResourceAsStream(fcmServiceFile, FBPushService.class);
-	//
-	// FirebaseOptions options = new FirebaseOptions.Builder()
-	// .setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
-	// FirebaseApp.initializeApp(options);
-	//
-	// } catch (Exception e) {
-	// LOGGER.error("While Loading firebase key ", e);
-	// }
-	// }
-
 	/** The rest service. */
 	@Autowired
 	RestService restService;
@@ -61,6 +45,7 @@ public class FBPushServiceImpl implements FBPushService {
 
 	/** The Constant MAIN_TOPIC. */
 	private static final JsonPath MAIN_TOPIC = new JsonPath("/to");
+	private static final JsonPath MAIN_CONDITION = new JsonPath("/condition");
 
 	/** The Constant DATA_TITLE. */
 	private static final JsonPath DATA_TITLE = new JsonPath("/data/data/title");
@@ -100,22 +85,43 @@ public class FBPushServiceImpl implements FBPushService {
 		LOGGER.info("Inside message");
 		if (msg.getTo() != null) {
 			String topic = msg.getTo().get(0);
+			StringBuilder androidTopic = new StringBuilder();
+			StringBuilder iosTopic = new StringBuilder();
+			StringBuilder webTopic = new StringBuilder();
+
+			if (msg.getTo().size() > 1) {
+				String seperator = Constants.BLANK;
+				for (String singleTopicPath : msg.getTo()) {
+					String singleTopic = singleTopicPath.toLowerCase().replace(PushMessage.TOPICS_PREFIX,
+							Constants.BLANK);
+					androidTopic.append(seperator + "'" + singleTopic + "_and'" + " in topics ");
+					iosTopic.append(seperator + "'" + singleTopic + "_ios'" + " in topics ");
+					webTopic.append(seperator + "'" + singleTopic + "_web'" + " in topics ");
+					seperator = PushMessage.CONDITION_SEPRATOR;
+				}
+				msg.setCondition(true);
+			} else {
+				String topicLower = topic.toLowerCase();
+				androidTopic.append(topicLower + "_and");
+				iosTopic.append(topicLower + "_ios");
+				webTopic.append(topicLower + "_web");
+			}
 
 			if (!ArgUtil.isEmptyString(topic)) {
-				String topicLower = topic.toLowerCase();
 				if (msg.getMessage() != null) {
-					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, msg.getMessage());
-					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, msg.getMessage());
-					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, msg.getMessage());
+					this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, msg.getMessage());
 				}
 				if (msg.getLines() != null) {
 					for (String message : msg.getLines()) {
-						this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, topicLower, msg, message);
-						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, topicLower, msg, message);
-						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, topicLower, msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_ANDROID, androidTopic.toString(), msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_IOS, iosTopic.toString(), msg, message);
+						this.send(PMGaugeEvent.Type.NOTIFCATION_WEB, webTopic.toString(), msg, message);
 					}
 				}
 			}
+
 		}
 
 		return msg;
@@ -168,14 +174,14 @@ public class FBPushServiceImpl implements FBPushService {
 	 * @return the string
 	 */
 	private String sendAndroid(String topic, PushMessage msg, String message) {
-		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_and")
+		BuilderMap fields = MapBuilder.map().put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject())
+				.put(DATA_MESSAGE, message).put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
+				.put(DATA_TIMESTAMP, System.currentTimeMillis());
 
-				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
-				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
-				.put(DATA_TIMESTAMP, System.currentTimeMillis()).toMap();
+		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
 		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-				.header("Content-Type", "application/json").post(fields).asString();
+				.header("Content-Type", "application/json").post(fields.toMap()).asString();
 	}
 
 	/**
@@ -190,18 +196,18 @@ public class FBPushServiceImpl implements FBPushService {
 	 * @return the string
 	 */
 	private String sendIOS(String topic, PushMessage msg, String message) {
-		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_ios")
+		BuilderMap fields = MapBuilder.map()
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default");
 
-				.toMap();
+		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
 		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-				.header("Content-Type", "application/json").post(fields).asString();
+				.header("Content-Type", "application/json").post(fields.toMap()).asString();
 
 	}
 
@@ -217,18 +223,18 @@ public class FBPushServiceImpl implements FBPushService {
 	 * @return the string
 	 */
 	private String sendWeb(String topic, PushMessage msg, String message) {
-		Map<String, Object> fields = MapBuilder.map().put(MAIN_TOPIC, topic + "_web")
+		BuilderMap fields = MapBuilder.map()
 
 				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
 				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis())
 
-				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default")
+				.put(NOTFY_TITLE, msg.getSubject()).put(NOTFY_MESSAGE, message).put(NOTFY_SOUND, "default");
 
-				.toMap();
+		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
 
 		return restService.ajax("https://fcm.googleapis.com/fcm/send").header("Authorization", "key=" + serverKey)
-				.header("Content-Type", "application/json").post(fields).asString();
+				.header("Content-Type", "application/json").post(fields.toMap()).asString();
 	}
 
 	/*
