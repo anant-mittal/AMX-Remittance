@@ -12,18 +12,15 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
-
 @SpringBootApplication
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"com.amx.jax"})
-@EnableAsync
-public class PlaceOrderApplication 
-{
-    public static void main( String[] args )
-    {
+@ComponentScan(basePackages = { "com.amx.jax" })
+@EnableAsync(proxyTargetClass = true)
+public class PlaceOrderApplication {
+	public static void main(String[] args) {
 		SpringApplication.run(PlaceOrderApplication.class, args);
-    }
-    
+	}
+
 	/**
 	 * Jax meta info.
 	 *
@@ -34,10 +31,10 @@ public class PlaceOrderApplication
 	public JaxMetaInfo jaxMetaInfo() {
 		return new com.amx.jax.amxlib.model.JaxMetaInfo();
 	}
-	
+
 	@Bean
 	public CustomScopeConfigurer customScopeConfigurer() {
-		CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer(); 
+		CustomScopeConfigurer customScopeConfigurer = new CustomScopeConfigurer();
 		org.springframework.beans.factory.config.Scope customScope = new ThreadScope();
 		customScopeConfigurer.addScope("thread", customScope);
 		return customScopeConfigurer;

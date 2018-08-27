@@ -12,22 +12,20 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 
 @Service
 public class NotificationService {
 
-
 	Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	private PostManService postManService;
-	
+	private PostManClient postManClient;
 
 	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
-		
+
 		List<Email> emailList = new ArrayList<Email>();
 		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
 			logger.info("Sending rate alert to " + placeorderNot.getEmail());
@@ -40,7 +38,7 @@ public class NotificationService {
 			emailList.add(email);
 		}
 		try {
-			postManService.sendEmailBulk(emailList);
+			postManClient.sendEmailBulk(emailList);
 		} catch (PostManException e) {
 			logger.error("error in sendBatchNotification", e);
 		}
