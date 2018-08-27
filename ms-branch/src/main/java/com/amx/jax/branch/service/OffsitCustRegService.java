@@ -87,7 +87,7 @@ import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class OffsitCustRegService /*implements ICustRegService*/ {
+public class OffsitCustRegService implements ICustRegService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 	
@@ -343,7 +343,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<String, Object> validateOtp(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
@@ -425,9 +425,9 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(BigDecimal articleId,
-			BigDecimal languageId) {
-		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, languageId);
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
+		BigDecimal articleId = model.getArticleId();
+		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId,null,null);
 		if(designationList == null || designationList.isEmpty())
 		{
@@ -457,9 +457,10 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(BigDecimal countryId,
-			BigDecimal articleDetailsId) {
-		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal articleDetailsId = model.getArticleDetailsId(); 
+		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId,articleDetailsId);
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null,articleDetailsId,countryId);
 		if(incomeRangeList == null || incomeRangeList.isEmpty())
 		{

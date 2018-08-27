@@ -2,29 +2,20 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.amx.amxlib.meta.model.ViewDistrictDto;
-import com.amx.amxlib.meta.model.ViewStateDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
-import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
-import com.amx.jax.dbmodel.CountryMasterView;
-import com.amx.jax.dbmodel.FieldList;
-import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CommonRequest;
@@ -110,7 +101,7 @@ public class OffsiteCustRegController implements ICustRegService {
 	 * offsiteCustRegService.validateOTP(offsiteCustRegModel); }
 	 */
 
-	@RequestMapping(value = "/send-id-types", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		// JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
 		// JaxContextUtil.setRequestModel();
@@ -126,7 +117,7 @@ public class OffsiteCustRegController implements ICustRegService {
 	 * metaData.getLanguageId()); }
 	 */
 
-	@RequestMapping(value = "/customer-mobile-email-send-otp", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
@@ -135,12 +126,12 @@ public class OffsiteCustRegController implements ICustRegService {
 		return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
 	}
 
-	@RequestMapping(value = "/customer-mobile-email-validate-otp", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.VALIDATE_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
 			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		// JaxContextUtil.setJaxEvent(JaxEvent.VALIDATE_OTP);
 		// JaxContextUtil.setRequestModel(offsiteCustRegModel);
-		return offsiteCustRegService.validateOtp(offsiteCustRegModel);
+		return offsiteCustRegService.validateOtpForEmailAndMobile(offsiteCustRegModel);
 	}
 
 	/*
@@ -164,29 +155,29 @@ public class OffsiteCustRegController implements ICustRegService {
 	 * metaData.getLanguageId()).getResults()); }
 	 */
 
-	@RequestMapping(value = "/articleList", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_ARTICLE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(@RequestBody CommonRequest model) {
 		// JaxContextUtil.setJaxEvent(JaxEvent.ARTICLE_LIST);
 		// JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getArticleListResponse(model);
 	}
 
-	@RequestMapping(value = "/designationList", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_DESIGNATION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
 			@RequestBody EmploymentDetailsRequest model) {
 		// JaxContextUtil.setJaxEvent(JaxEvent.DESIGNATION_LIST);
 		// JaxContextUtil.setRequestModel(model);
-		return offsiteCustRegService.getDesignationListResponse(model.getArticleId(), metaData.getLanguageId());
+		return offsiteCustRegService.getDesignationListResponse(model);
 	}
 
-	@RequestMapping(value = "/incomeRangeList", method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_INCOME_RANGE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
 		// JaxContextUtil.setJaxEvent(JaxEvent.INCOME_RANGE);
 		// JaxContextUtil.setRequestModel(model);
-		return offsiteCustRegService.getIncomeRangeResponse(metaData.getCountryId(), model.getArticleDetailsId());
+		return offsiteCustRegService.getIncomeRangeResponse(model);
 	}
 
-	@RequestMapping(value = ICustRegService.CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
+	@RequestMapping(value = CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		// JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		// JaxContextUtil.setRequestModel(model);
