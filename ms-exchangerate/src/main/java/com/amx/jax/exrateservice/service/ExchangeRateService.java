@@ -33,6 +33,7 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -364,14 +365,14 @@ public class ExchangeRateService extends AbstractService {
 		ApiResponse<MinMaxExRateDTO> apiResponse = getBlackApiResponse();
 	
 		BigDecimal languageId = meta.getLanguageId();
-		ApiResponse responseFromCur = companyService.getCompanyDetails(languageId);
-		List listFromCur = responseFromCur.getData().getValues();
+		AmxApiResponse<ViewCompanyDetailDTO, Object> responseFromCur = companyService.getCompanyDetails(languageId);
+		List listFromCur = responseFromCur.getResults();
 		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
 		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
 		
 		CurrencyMasterModel getFromCurrencyData = currencyMasterService.getCurrencyMasterById(fromCurrency);
 		
-		ApiResponse responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
+		AmxApiResponse<CurrencyMasterDTO, Object> responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
 		List<CurrencyMasterDTO> listToCur = responseToCur.getResults();
 		listToCur.add(currencyMasterService.convertModel(getFromCurrencyData));
 		List dtoList = getMinMaxData(listToCur, fromCurrency);

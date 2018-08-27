@@ -3,10 +3,10 @@ package com.amx.jax.auditlogs;
 import java.math.BigDecimal;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
-import com.amx.jax.model.request.GetJaxFieldRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 
 public class JaxAuditEvent extends AuditEvent {
