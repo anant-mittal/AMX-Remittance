@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +18,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -31,7 +32,7 @@ import com.amx.jax.util.PlaceOrderUtil;
 @SuppressWarnings("rawtypes")
 public class PlaceOrderService extends AbstractService {
 	
-	private Logger logger = Logger.getLogger(PlaceOrderService.class);
+	private Logger logger = LoggerService.getLogger(getClass());
 	
 	@Autowired
 	IPlaceOrderDao placeOrderdao;
@@ -327,8 +328,7 @@ public class PlaceOrderService extends AbstractService {
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List by Trigger Exchange Rate");
-			e.printStackTrace();
+			logger.error("Error while fetching Place Order List by Trigger Exchange Rate",e);
 		}
 		return response;
 	}
