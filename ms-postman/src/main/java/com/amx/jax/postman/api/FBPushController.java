@@ -23,10 +23,8 @@ import com.amx.jax.postman.service.FBPushServiceImpl;
 @RestController
 public class FBPushController {
 
-	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(FBPushController.class);
 
-	/** The b push service. */
 	@Autowired
 	FBPushServiceImpl fBPushService;
 
