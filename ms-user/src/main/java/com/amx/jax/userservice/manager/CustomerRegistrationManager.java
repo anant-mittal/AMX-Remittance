@@ -172,7 +172,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(jaxMetaInfo.getDeviceType() != null ? jaxMetaInfo.getDeviceType()
+		customer.setCreatedBy(jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType()
 				: customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
