@@ -98,7 +98,12 @@ public class TunnelSubscriberFactory {
 
 			public void doMessage(String channel, TunnelMessage<M> msg) {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
-				this.subscriber.onMessage(channel, msg.getData());
+				try {
+					this.subscriber.onMessage(channel, msg.getData());
+				} catch (Exception e) {
+					LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+				}
+
 			}
 		});
 	}
