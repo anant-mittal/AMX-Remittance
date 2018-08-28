@@ -6,10 +6,12 @@ import java.util.List;
 
 public class Email extends Message {
 
+
 	private static final long serialVersionUID = 9210306073311369368L;
 	private String from = null;
 	private String replyTo = null;
 	private List<String> cc = null;
+	private PushMessage pushNotification = null;
 
 	private boolean isHtml;
 

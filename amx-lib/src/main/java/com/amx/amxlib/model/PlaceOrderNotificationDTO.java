@@ -4,12 +4,12 @@ import java.math.BigDecimal;
 
 import com.amx.jax.model.AbstractModel;
 
-public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneable{
+public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneable {
 
-	/**
-	 * 
-	 */
-    BigDecimal onlinePlaceOrderId;
+	private static final long serialVersionUID = -6610524516718235211L;
+
+	BigDecimal onlinePlaceOrderId;
+	BigDecimal customerId;
 	BigDecimal rate;
 	String firstName;
 	String middleName;
@@ -20,8 +20,6 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 	BigDecimal inputAmount;
 	BigDecimal outputAmount;
 	String date;
-
-	
 
 	public BigDecimal getOnlinePlaceOrderId() {
 		return onlinePlaceOrderId;
@@ -144,5 +142,13 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		builder.append("]");
 		return builder.toString();
 	}
-	
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+
 }
