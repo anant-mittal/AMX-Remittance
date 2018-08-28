@@ -29,22 +29,10 @@ public class PlaceOrderRateAlertService {
 					.getPlaceOrderOnTrigger(fromAmount, toAmount, countryId, currencyId, bankId, derivedSellRate)
 					.getResults();
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
-				placeOrderDetails(placeOrderList);
+				notificationService.sendBatchNotification(placeOrderList);
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
 		}
 	}
-
-	private void placeOrderDetails(List<PlaceOrderNotificationDTO> placeOrderList) {
-		int batchSize = 10;
-		for (int i = 0; i < placeOrderList.size(); i += batchSize) {
-			int endIndex = (i + batchSize);
-			if (endIndex >= placeOrderList.size()) {
-				endIndex = placeOrderList.size() - 1;
-			}
-			notificationService.sendBatchNotification(placeOrderList.subList(i, endIndex + 1));
-		}
-	}
-
 }
