@@ -85,7 +85,6 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 */
 	@Async
 	public PushMessage sendDirect(PushMessage msg) {
-		LOGGER.info("Inside message");
 		if (msg.getTo() != null) {
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();

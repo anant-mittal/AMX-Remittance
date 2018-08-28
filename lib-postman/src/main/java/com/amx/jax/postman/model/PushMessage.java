@@ -18,7 +18,12 @@ public class PushMessage extends Message {
 
 	String image = null;
 
-	boolean condition = false;
+	boolean condition;
+
+	public PushMessage() {
+		super();
+		this.condition = false;
+	}
 
 	public Object getResult() {
 		return result;
