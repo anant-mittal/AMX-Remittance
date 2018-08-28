@@ -311,7 +311,7 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setRate(derivedSellRate);
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);
-					placeorderNotDTO.setCustomerID(placeorder.getCustomerId());
+					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
 					logger.info("place Order for Notfication:" + placeorderNotDTO.toString());
 					
 					dtoList.add(placeorderNotDTO);
