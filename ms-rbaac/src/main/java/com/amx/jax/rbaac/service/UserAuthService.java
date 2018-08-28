@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -41,7 +41,7 @@ public class UserAuthService {
 
 	/** The login dao. */
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	/** The user otp data. */
 	@Autowired
@@ -96,9 +96,9 @@ public class UserAuthService {
 		List<Employee> employees;
 
 		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
-			employees = loginDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
+			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
-			employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
+			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
 		}
 
 		/**
@@ -265,11 +265,11 @@ public class UserAuthService {
 	 */
 	private boolean lockUserAccount(Employee srcEmp) {
 
-		Employee destEmp = loginDao.fetchEmpByEmpId(srcEmp.getEmployeeId());
+		Employee destEmp = rbaacDao.fetchEmpByEmpId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
 
-		loginDao.saveEmployee(destEmp);
+		rbaacDao.saveEmployee(destEmp);
 
 		return true;
 	}

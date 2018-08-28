@@ -13,7 +13,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.dto.SendOtpModel;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
@@ -48,7 +48,7 @@ public class AuthLoginOTPManager {
 	CryptoUtil cryptoUtil;
 
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	// Initiate new OTP
 	public void init() {
@@ -114,9 +114,9 @@ public class AuthLoginOTPManager {
 				throw new AuthServiceException("Invalid otp", AuthServiceError.INVALID_OTP);
 			}
 			otpData.setOtpValidated(true);
-			UserRoleMaster usermaster = loginDao.fetchUserMasterDetails(empDetails.getEmployeeId());
+			UserRoleMaster usermaster = rbaacDao.fetchUserMasterDetails(empDetails.getEmployeeId());
 			if (usermaster != null && usermaster.getUserRoleId() != null) {
-				List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(usermaster.getUserRoleId());
+				List<RoleDefinition> roleDef = rbaacDao.fetchEmpRoleMenu(usermaster.getUserRoleId());
 				if (roleDef != null && roleDef.size() != 0) {
 					authLoginTrnxModel = authLoginManager.fetchEmployeeDetails(empDetails, usermaster, roleDef);
 				} else {

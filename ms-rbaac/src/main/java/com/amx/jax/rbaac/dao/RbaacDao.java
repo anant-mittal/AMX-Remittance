@@ -17,12 +17,14 @@ import com.amx.jax.rbaac.dbmodel.PermScope;
 import com.amx.jax.rbaac.dbmodel.Permission;
 import com.amx.jax.rbaac.dbmodel.PermissionMaster;
 import com.amx.jax.rbaac.dbmodel.PermissionScopeMaster;
+import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.RoleMaster;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.repository.IAccessTypeRepository;
-import com.amx.jax.rbaac.repository.ILoginRepository;
+import com.amx.jax.rbaac.repository.IEmployeeRepository;
 import com.amx.jax.rbaac.repository.IPermissionRepository;
+import com.amx.jax.rbaac.repository.IRoleRepository;
 import com.amx.jax.rbaac.repository.IScopeRepository;
 import com.amx.jax.rbaac.repository.OldIFunctionalityTypeRepository;
 import com.amx.jax.rbaac.repository.OldIModuleRepository;
@@ -34,10 +36,10 @@ import com.amx.jax.rbaac.repository.OldIUserMasterRepository;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
-public class LoginDao {
+public class RbaacDao {
 
 	@Autowired
-	ILoginRepository loginRepository;
+	IEmployeeRepository employeeRepository;
 
 	@Autowired
 	OldIRoleDefinitionRepository roleDefinitionRepositoryOld;
@@ -69,6 +71,9 @@ public class LoginDao {
 	@Autowired
 	IPermissionRepository permissionRepository;
 
+	@Autowired
+	IRoleRepository roleRepository;
+	
 	public List<AccessType> getAllAccessTypes() {
 		return accessTypeRepository.findAll();
 	}
@@ -80,9 +85,13 @@ public class LoginDao {
 	public List<Permission> getAllPermissions() {
 		return permissionRepository.findAll();
 	}
-
+	
+	public List<Role> getAllRoles(){
+		return roleRepository.findAll();
+	}
+ 
 	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
-		List<Employee> empList = loginRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
+		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
 				ipAddress);
 		if (null != empList && !empList.isEmpty()) {
 			return empList.get(0);
@@ -92,27 +101,27 @@ public class LoginDao {
 	}
 
 	public List<Employee> getEmployees(String empcode, String identity, String ipAddress) {
-		return loginRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity, ipAddress);
+		return employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity, ipAddress);
 	}
 
 	public List<Employee> getEmployeesByDeviceId(String empcode, String identity, String deviceId) {
-		return loginRepository.findByEmployeeNumberAndCivilIdAndDeviceId(empcode, identity, deviceId);
+		return employeeRepository.findByEmployeeNumberAndCivilIdAndDeviceId(empcode, identity, deviceId);
 	}
 
 	public Employee fetchEmpDetails(String user, String pass) {
-		return loginRepository.findByUserNameAndPassword(user, pass);
+		return employeeRepository.findByUserNameAndPassword(user, pass);
 	}
 
 	public Employee fetchEmpDetailsByECNO(String empNo) {
-		return loginRepository.findByEmployeeNumber(empNo);
+		return employeeRepository.findByEmployeeNumber(empNo);
 	}
 
 	public Employee fetchEmpByEmpId(BigDecimal empId) {
-		return loginRepository.findByEmployeeId(empId);
+		return employeeRepository.findByEmployeeId(empId);
 	}
 
 	public Employee saveEmployee(Employee employee) {
-		return loginRepository.save(employee);
+		return employeeRepository.save(employee);
 	}
 
 	public List<RoleDefinition> fetchEmpRoleMenu(BigDecimal roleId) {

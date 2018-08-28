@@ -49,7 +49,6 @@ public class RbaacServiceControllerTest implements RbaacService {
 
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

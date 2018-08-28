@@ -1,64 +1,43 @@
-package com.amx.jax.rbaac.dbmodel;
+package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import java.util.Map;
 
 /**
- * The Class Role.
+ * The Class RolesResponseDTO.
  */
-@Entity
-@Table(name = "JX_RB_ROLE")
-public class Role implements Serializable {
+public class RolesResponseDTO implements Serializable {
 
-	
 	/** The Constant serialVersionUID. */
-	private static final long serialVersionUID = -3884746406628189127L;
-	
+	private static final long serialVersionUID = -8763145353885254066L;
 	
 	/** The id. */
-	@Id
-	@GeneratedValue(generator = "role_seq", strategy = GenerationType.SEQUENCE)
-	@SequenceGenerator(name = "role_seq", sequenceName = "JX_RB_ROLE_SEQ", allocationSize = 1)
-	@Column(name = "ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal id;
 	
 	/** The role. */
-	@Column(name = "ROLE", unique = true, nullable = false)
 	private String role;
 	
-	/** The permissions json. */
-	@Column(name = "PERMS")
-	private String permissionsJson;
-
+	/** The permission map. */
+	private Map<String, Map<String, String>> permissionMap;
+	
 	/** The suspended. */
-	@Column(name = "SUSPENDED")
 	private String suspended;
 	
 	/** The flags. */
-	@Column(name = "FLAGS")
 	private BigDecimal flags;
 	
 	/** The info. */
-	@Column(name = "INFO")
 	private String info;
 	
 	/** The created date. */
-	@Column(name = "CREATED_DATE")
 	private Date createdDate;
 	
 	/** The updated date. */
-	@Column(name = "UPDATED_DATE")
 	private Date updatedDate;
-
+	
+	
 	/**
 	 * Gets the id.
 	 *
@@ -67,7 +46,7 @@ public class Role implements Serializable {
 	public BigDecimal getId() {
 		return id;
 	}
-
+	
 	/**
 	 * Sets the id.
 	 *
@@ -76,7 +55,7 @@ public class Role implements Serializable {
 	public void setId(BigDecimal id) {
 		this.id = id;
 	}
-
+	
 	/**
 	 * Gets the role.
 	 *
@@ -85,7 +64,7 @@ public class Role implements Serializable {
 	public String getRole() {
 		return role;
 	}
-
+	
 	/**
 	 * Sets the role.
 	 *
@@ -94,25 +73,25 @@ public class Role implements Serializable {
 	public void setRole(String role) {
 		this.role = role;
 	}
-
+	
 	/**
-	 * Gets the permissions json.
+	 * Gets the permission map.
 	 *
-	 * @return the permissions json
+	 * @return the permission map
 	 */
-	public String getPermissionsJson() {
-		return permissionsJson;
+	public Map<String, Map<String, String>> getPermissionMap() {
+		return permissionMap;
 	}
-
+	
 	/**
-	 * Sets the permissions json.
+	 * Sets the permission map.
 	 *
-	 * @param permissionsJson the new permissions json
+	 * @param permissionMap the permission map
 	 */
-	public void setPermissionsJson(String permissionsJson) {
-		this.permissionsJson = permissionsJson;
+	public void setPermissionMap(Map<String, Map<String, String>> permissionMap) {
+		this.permissionMap = permissionMap;
 	}
-
+	
 	/**
 	 * Gets the suspended.
 	 *
@@ -121,7 +100,7 @@ public class Role implements Serializable {
 	public String getSuspended() {
 		return suspended;
 	}
-
+	
 	/**
 	 * Sets the suspended.
 	 *
@@ -130,7 +109,7 @@ public class Role implements Serializable {
 	public void setSuspended(String suspended) {
 		this.suspended = suspended;
 	}
-
+	
 	/**
 	 * Gets the flags.
 	 *
@@ -139,7 +118,7 @@ public class Role implements Serializable {
 	public BigDecimal getFlags() {
 		return flags;
 	}
-
+	
 	/**
 	 * Sets the flags.
 	 *
@@ -148,7 +127,7 @@ public class Role implements Serializable {
 	public void setFlags(BigDecimal flags) {
 		this.flags = flags;
 	}
-
+	
 	/**
 	 * Gets the info.
 	 *
@@ -157,7 +136,7 @@ public class Role implements Serializable {
 	public String getInfo() {
 		return info;
 	}
-
+	
 	/**
 	 * Sets the info.
 	 *
@@ -166,7 +145,7 @@ public class Role implements Serializable {
 	public void setInfo(String info) {
 		this.info = info;
 	}
-
+	
 	/**
 	 * Gets the created date.
 	 *
@@ -175,7 +154,7 @@ public class Role implements Serializable {
 	public Date getCreatedDate() {
 		return createdDate;
 	}
-
+	
 	/**
 	 * Sets the created date.
 	 *
@@ -184,7 +163,7 @@ public class Role implements Serializable {
 	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
-
+	
 	/**
 	 * Gets the updated date.
 	 *
@@ -193,7 +172,7 @@ public class Role implements Serializable {
 	public Date getUpdatedDate() {
 		return updatedDate;
 	}
-
+	
 	/**
 	 * Sets the updated date.
 	 *
@@ -206,5 +185,5 @@ public class Role implements Serializable {
 
 	
 	
-
+	
 }

@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.AccessType;
 import com.amx.jax.rbaac.dbmodel.PermScope;
 import com.amx.jax.rbaac.dbmodel.Permission;
@@ -28,17 +28,17 @@ public class RespTestService {
 
 	/** The login dao. */
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	public String testGetUrlCall() {
 
 		LOGGER.info("Test Get Url API ");
 
-		List<AccessType> accessTypes = loginDao.getAllAccessTypes();
+		List<AccessType> accessTypes = rbaacDao.getAllAccessTypes();
 
-		List<PermScope> permScopes = loginDao.getAllScopes();
+		List<PermScope> permScopes = rbaacDao.getAllScopes();
 
-		List<Permission> permissions = loginDao.getAllPermissions();
+		List<Permission> permissions = rbaacDao.getAllPermissions();
 
 		StringBuilder builder = new StringBuilder();
 

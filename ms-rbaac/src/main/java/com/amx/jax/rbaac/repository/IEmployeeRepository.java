@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.amx.jax.rbaac.dbmodel.Employee;
 
-public interface ILoginRepository extends JpaRepository<Employee, Serializable> {
+public interface IEmployeeRepository extends JpaRepository<Employee, Serializable> {
 
 	public Employee findByEmployeeNumberAndCivilId(String empcode, String identity);
 

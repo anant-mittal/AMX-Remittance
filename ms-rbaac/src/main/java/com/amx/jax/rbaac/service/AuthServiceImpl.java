@@ -18,7 +18,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rbaac.AuthService;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.FunctionalityTypeMaster;
 import com.amx.jax.rbaac.dbmodel.ModuleMaster;
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
 	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceImpl.class);
 
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	@Autowired
 	AuthLoginManager authLoginManager;
@@ -64,22 +64,22 @@ public class AuthServiceImpl implements AuthService {
 	UserOtpCache userOtpCache;
 
 	public Employee validateEmployeeData(String empcode, String identity, String ipAddress) {
-		Employee emp = loginDao.validateEmpDetails(empcode, identity, ipAddress);
+		Employee emp = rbaacDao.validateEmpDetails(empcode, identity, ipAddress);
 		return emp;
 	}
 
 	public Employee fetchEmployeeDetails(String user, String pass) {
-		Employee emp = loginDao.fetchEmpDetails(user, pass);
+		Employee emp = rbaacDao.fetchEmpDetails(user, pass);
 		return emp;
 	}
 
 	public Employee fetchEmployeeDetailsByECNO(String empNo) {
-		Employee emp = loginDao.fetchEmpDetailsByECNO(empNo);
+		Employee emp = rbaacDao.fetchEmpDetailsByECNO(empNo);
 		return emp;
 	}
 
 	public List<RoleDefinition> fetchEmployeeRoleDef(BigDecimal role) {
-		List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(role);
+		List<RoleDefinition> roleDef = rbaacDao.fetchEmpRoleMenu(role);
 		return roleDef;
 	}
 
@@ -126,7 +126,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			// fetch all the data from module table
-			List<ModuleMaster> moduleDB = loginDao.fetchModule();
+			List<ModuleMaster> moduleDB = rbaacDao.fetchModule();
 
 			if (moduleDB != null && moduleDB.size() != 0) {
 				for (ModuleMaster moduleMaster : moduleDB) {
@@ -149,7 +149,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			if (moduleStore != null && moduleStore.size() != 0) {
-				loginDao.saveModuleData(moduleStore);
+				rbaacDao.saveModuleData(moduleStore);
 				savesStatus = Boolean.TRUE;
 			}
 
@@ -177,7 +177,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			// fetch all the data from module table
-			List<FunctionalityTypeMaster> permTypeDB = loginDao.fetchFunctionalityTypeMaster();
+			List<FunctionalityTypeMaster> permTypeDB = rbaacDao.fetchFunctionalityTypeMaster();
 
 			if (permTypeDB != null && permTypeDB.size() != 0) {
 				for (FunctionalityTypeMaster functionalityTypeMaster : permTypeDB) {
@@ -200,7 +200,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			if (funTypeStore != null && funTypeStore.size() != 0) {
-				loginDao.saveFunctionalityTypeMaster(funTypeStore);
+				rbaacDao.saveFunctionalityTypeMaster(funTypeStore);
 				savesStatus = Boolean.TRUE;
 			}
 
@@ -229,7 +229,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			// fetch all the data from module table
-			List<PermissionScopeMaster> permScopeDB = loginDao.fetchPermissionScopeMaster();
+			List<PermissionScopeMaster> permScopeDB = rbaacDao.fetchPermissionScopeMaster();
 
 			if (permScopeDB != null && permScopeDB.size() != 0) {
 				for (PermissionScopeMaster permissionScopeMaster : permScopeDB) {
@@ -252,7 +252,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			if (permScopeStore != null && permScopeStore.size() != 0) {
-				loginDao.savePermissionScopeMaster(permScopeStore);
+				rbaacDao.savePermissionScopeMaster(permScopeStore);
 				savesStatus = Boolean.TRUE;
 			}
 		} catch (Exception e) {
@@ -310,7 +310,7 @@ public class AuthServiceImpl implements AuthService {
 
 			// fetch all the data from module table
 			/*
-			 * List<PermissionMaster> permDB = loginDao.fetchPermissionMaster();
+			 * List<PermissionMaster> permDB = rbaacDao.fetchPermissionMaster();
 			 * 
 			 * if(permDB != null && permDB.size() != 0){ for (PermissionMaster
 			 * permissionMaster : permDB) { if(permissionMaster.getPermissionId() != null){
@@ -331,7 +331,7 @@ public class AuthServiceImpl implements AuthService {
 			 */
 
 			if (permStore != null && permStore.size() != 0) {
-				loginDao.savePermissionMaster(permStore);
+				rbaacDao.savePermissionMaster(permStore);
 				savesStatus = Boolean.TRUE;
 			}
 
@@ -346,7 +346,7 @@ public class AuthServiceImpl implements AuthService {
 	// fetch module id by name
 	public BigDecimal fetchModuleId(String module) {
 		BigDecimal moduleId = null;
-		ModuleMaster moduleMaster = loginDao.fetchModuleId(module);
+		ModuleMaster moduleMaster = rbaacDao.fetchModuleId(module);
 		if (moduleMaster != null) {
 			moduleId = moduleMaster.getModuleId();
 		}
@@ -356,7 +356,7 @@ public class AuthServiceImpl implements AuthService {
 	// fetch module id by name
 	public BigDecimal fetchFunctionalityTypeId(String functionalityType) {
 		BigDecimal functionalityTypeId = null;
-		FunctionalityTypeMaster functionalityTypeMasterId = loginDao.fetchFunctionalityTypeMasterId(functionalityType);
+		FunctionalityTypeMaster functionalityTypeMasterId = rbaacDao.fetchFunctionalityTypeMasterId(functionalityType);
 		if (functionalityTypeMasterId != null) {
 			functionalityTypeId = functionalityTypeMasterId.getFunctionalityTypeId();
 		}
@@ -367,7 +367,7 @@ public class AuthServiceImpl implements AuthService {
 	public BigDecimal fetchPermissionMasterId(BigDecimal moduleId, BigDecimal functionalityTypeId,
 			String functionality) {
 		BigDecimal permissionId = null;
-		PermissionMaster permissionMaster = loginDao.fetchPermissionMasterId(moduleId, functionalityTypeId,
+		PermissionMaster permissionMaster = rbaacDao.fetchPermissionMasterId(moduleId, functionalityTypeId,
 				functionality);
 		if (permissionMaster != null) {
 			permissionId = permissionMaster.getPermissionId();
@@ -388,7 +388,7 @@ public class AuthServiceImpl implements AuthService {
 			roleMasterData.add(roleTitle);
 
 			// fetch all the data from module table
-			List<RoleMaster> roleMasterDB = loginDao.fetchRoleMaster();
+			List<RoleMaster> roleMasterDB = rbaacDao.fetchRoleMaster();
 
 			if (roleMasterDB != null && roleMasterDB.size() != 0) {
 				for (RoleMaster roleMaster : roleMasterDB) {
@@ -411,7 +411,7 @@ public class AuthServiceImpl implements AuthService {
 			}
 
 			if (roleMasterStore != null && roleMasterStore.size() != 0) {
-				loginDao.saveRoleMaster(roleMasterStore);
+				rbaacDao.saveRoleMaster(roleMasterStore);
 				savesStatus = Boolean.TRUE;
 			}
 
@@ -425,7 +425,7 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	public AmxApiResponse<UserDetailsDTO, Object> fetchUserMasterDetails(BigDecimal userId) {
-		UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
+		UserRoleMaster user = rbaacDao.fetchUserMasterDetails(userId);
 
 		// ????
 		UserDetailsDTO userDetail = new UserDetailsDTO();
@@ -439,7 +439,7 @@ public class AuthServiceImpl implements AuthService {
 		boolean savesStatus = Boolean.FALSE;
 
 		try {
-			UserRoleMaster user = loginDao.fetchUserMasterDetails(userId);
+			UserRoleMaster user = rbaacDao.fetchUserMasterDetails(userId);
 
 			UserRoleMaster userM = new UserRoleMaster();
 
@@ -459,7 +459,7 @@ public class AuthServiceImpl implements AuthService {
 				userM.setRoleId(roleId);
 			}
 
-			loginDao.saveRoleToUser(userM);
+			rbaacDao.saveRoleToUser(userM);
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
@@ -472,7 +472,7 @@ public class AuthServiceImpl implements AuthService {
 	// fetch permission scope Id by permission description
 	public BigDecimal fetchPermissionScopeId(String permScope) {
 		BigDecimal scopeId = null;
-		PermissionScopeMaster permissionScopeMaster = loginDao.fetchPermissionScopeMasterId(permScope);
+		PermissionScopeMaster permissionScopeMaster = rbaacDao.fetchPermissionScopeMasterId(permScope);
 		if (permissionScopeMaster != null) {
 			scopeId = permissionScopeMaster.getScopeId();
 		}
@@ -492,7 +492,7 @@ public class AuthServiceImpl implements AuthService {
 			LOGGER.info("permission" + permissionId);
 			BigDecimal scopeId = fetchPermissionScopeId(permScope.name());
 
-			RoleDefinition roleDef = loginDao.fetchRoleDefinitionByRolePermScope(roleId, permissionId, scopeId);
+			RoleDefinition roleDef = rbaacDao.fetchRoleDefinitionByRolePermScope(roleId, permissionId, scopeId);
 			LOGGER.info(JsonUtil.toJson(roleDef));
 
 			RoleDefinition roleDefinition = new RoleDefinition();
@@ -513,7 +513,7 @@ public class AuthServiceImpl implements AuthService {
 				roleDefinition.setAdmin(admin);
 			}
 
-			loginDao.saveRoleDefintionDetails(roleDefinition);
+			rbaacDao.saveRoleDefintionDetails(roleDefinition);
 			savesStatus = Boolean.TRUE;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
