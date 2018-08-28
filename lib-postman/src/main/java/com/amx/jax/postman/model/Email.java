@@ -10,6 +10,7 @@ public class Email extends Message {
 	private String from = null;
 	private String replyTo = null;
 	private List<String> cc = null;
+	private PushMessage pushNotification = null;
 
 	private boolean isHtml;
 
@@ -118,6 +119,14 @@ public class Email extends Message {
 
 	public void addAllTo(String toMultiple) {
 		this.to.addAll(Arrays.asList(splitByComma(toMultiple)));
+	}
+
+	public PushMessage getPushNotification() {
+		return pushNotification;
+	}
+
+	public void setPushNotification(PushMessage pushNotification) {
+		this.pushNotification = pushNotification;
 	}
 
 }

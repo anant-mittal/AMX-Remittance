@@ -1,5 +1,7 @@
 package com.amx.jax.postman.service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,8 +11,9 @@ import org.springframework.stereotype.Service;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
-import com.amx.jax.postman.FBPushService;
+import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
@@ -23,10 +26,10 @@ import com.amx.utils.MapBuilder.BuilderMap;
  * The Class FBPushServiceImpl.
  */
 @Service
-public class FBPushServiceImpl implements FBPushService {
+public class FBPushServiceImpl implements IPushNotifyService {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerService.getLogger(FBPushService.class);
+	private static final Logger LOGGER = LoggerService.getLogger(FBPushServiceImpl.class);
 
 	/** The server key. */
 	@Value("${fcm.server.key}")
@@ -243,7 +246,7 @@ public class FBPushServiceImpl implements FBPushService {
 	 * @see com.amx.jax.postman.FBPushService#subscribe(java.lang.String,
 	 * java.lang.String)
 	 */
-	public void subscribe(String token, String topic) {
+	public PostManResponse subscribe(String token, String topic) {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
 		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
 		try {
@@ -256,6 +259,12 @@ public class FBPushServiceImpl implements FBPushService {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
 			slackService.sendException(topic, e);
 		}
+		return new PostManResponse();
+	}
+
+	@Override
+	public PostManResponse send(List<PushMessage> msgs) throws PostManException {
+		return new PostManResponse();
 	}
 
 }
