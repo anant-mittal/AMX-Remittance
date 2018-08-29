@@ -571,16 +571,23 @@ public class UserValidationService {
 	/**
 	 * validates inactive or not registered customers status
 	 */
+	@SuppressWarnings("unused")
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
+<<<<<<< HEAD
+		Customer customer = custDao.getCustomerByIdentityInt(identityInt);		
+=======
 		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
+		logger.info("MRU ----identityInt --->"+identityInt +"\t Customer status :" + customer==null ? "":customer.getIsActive());
+		
+>>>>>>> 65ecb90ff... partial registration duplicate customer check
 		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
 		}
 		if (customer == null && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
-			throw new GlobalException("Customer not registered in branch", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer not active in branch, go to branch", JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException("Customer not active in branch, go to branch ", JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
 		}
 		if (apiFlow == JaxApiFlow.SIGNUP_ONLINE) {
 			return;
