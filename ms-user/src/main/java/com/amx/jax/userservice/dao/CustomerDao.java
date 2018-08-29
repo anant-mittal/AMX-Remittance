@@ -145,8 +145,10 @@ public class CustomerDao {
 			}
 			if(cust.getUpdatedBy() == null)
 				cust.setUpdatedBy(cust.getCreatedBy());		
+
 			customerRepo.save(cust);
 		}
+		
 		return onlineCust;
 	}
 
