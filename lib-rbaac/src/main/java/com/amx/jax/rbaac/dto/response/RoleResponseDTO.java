@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * The Class RolesResponseDTO.
+ * The Class RoleResponseDTO.
  */
-public class RolesResponseDTO implements Serializable {
+public class RoleResponseDTO implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -8763145353885254066L;

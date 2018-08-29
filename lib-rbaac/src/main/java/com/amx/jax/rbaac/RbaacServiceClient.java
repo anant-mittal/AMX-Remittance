@@ -13,8 +13,8 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
-import com.amx.jax.rbaac.dto.response.RolesResponseDTO;
+import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rest.RestService;
 
@@ -81,12 +81,12 @@ public class RbaacServiceClient implements RbaacService {
 	 * java.lang.String)
 	 */
 	@Override
-	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId) {
+	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId) {
 
 		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}", ipAddr, deviceId);
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddr)
-				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionsResposeDTO.class);
+				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionResposeDTO.class);
 
 	}
 
@@ -97,12 +97,12 @@ public class RbaacServiceClient implements RbaacService {
 	 * java.lang.String)
 	 */
 	@Override
-	public AmxApiResponse<RolesResponseDTO, Object> getAllRoles(String ipAddr, String deviceId) {
+	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId) {
 
 		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}", ipAddr, deviceId);
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddr)
-				.queryParam("deviceId", deviceId).post().asApiResponse(RolesResponseDTO.class);
+				.queryParam("deviceId", deviceId).post().asApiResponse(RoleResponseDTO.class);
 	}
 
 	/*

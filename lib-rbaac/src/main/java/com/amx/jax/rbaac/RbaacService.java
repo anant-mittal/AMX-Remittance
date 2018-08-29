@@ -4,8 +4,8 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
-import com.amx.jax.rbaac.dto.response.RolesResponseDTO;
+import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
 // TODO: Auto-generated Javadoc
@@ -88,7 +88,7 @@ public interface RbaacService {
 	 * @param deviceId the device id
 	 * @return the all permissions
 	 */
-	public AmxApiResponse<PermissionsResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId);
+	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId);
 	
 
 	/**
@@ -98,7 +98,7 @@ public interface RbaacService {
 	 * @param deviceId the device id
 	 * @return the all roles
 	 */
-	public AmxApiResponse<RolesResponseDTO, Object> getAllRoles(String ipAddr, String deviceId);
+	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId);
 
 	/**
 	 * Test get.

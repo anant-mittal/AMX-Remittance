@@ -13,8 +13,8 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Permission;
 import com.amx.jax.rbaac.dbmodel.Role;
-import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
-import com.amx.jax.rbaac.dto.response.RolesResponseDTO;
+import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.error.AuthServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.JsonUtil;
@@ -41,26 +41,26 @@ public class UserRoleService {
 	 *            the device id
 	 * @return the all permissions
 	 */
-	public List<PermissionsResposeDTO> getAllPermissions(String ipAddr, String deviceId) {
+	public List<PermissionResposeDTO> getAllPermissions(String ipAddr, String deviceId) {
 
 		LOGGER.info("Get All Perms API Called");
 
 		List<Permission> permissionList = rbaacDao.getAllPermissions();
 
-		List<PermissionsResposeDTO> permDTOList = new ArrayList<PermissionsResposeDTO>();
+		List<PermissionResposeDTO> permDTOList = new ArrayList<PermissionResposeDTO>();
 
 		for (Permission permission : permissionList) {
-			PermissionsResposeDTO permissionsResposeDTO = new PermissionsResposeDTO();
+			PermissionResposeDTO permissionResposeDTO = new PermissionResposeDTO();
 
-			permissionsResposeDTO.setId(permission.getId());
-			permissionsResposeDTO.setPermission(permission.getPermission());
-			permissionsResposeDTO.setContext(permission.getContext());
-			permissionsResposeDTO.setFlags(permission.getFlags());
-			permissionsResposeDTO.setInfo(permission.getInfo());
+			permissionResposeDTO.setId(permission.getId());
+			permissionResposeDTO.setPermission(permission.getPermission());
+			permissionResposeDTO.setContext(permission.getContext());
+			permissionResposeDTO.setFlags(permission.getFlags());
+			permissionResposeDTO.setInfo(permission.getInfo());
 
 			try {
-				permissionsResposeDTO.setAccessList(JsonUtil.getListFromJsonString(permission.getAccessListJson()));
-				permissionsResposeDTO.setScopeList(JsonUtil.getListFromJsonString(permission.getScopeListJson()));
+				permissionResposeDTO.setAccessList(JsonUtil.getListFromJsonString(permission.getAccessListJson()));
+				permissionResposeDTO.setScopeList(JsonUtil.getListFromJsonString(permission.getScopeListJson()));
 			} catch (IOException e) {
 
 				throw new AuthServiceException("Incompatible JSON Data Type", AuthServiceError.INCOMPATIBLE_DATA_TYPE,
@@ -68,41 +68,40 @@ public class UserRoleService {
 
 			}
 
-			permDTOList.add(permissionsResposeDTO);
+			permDTOList.add(permissionResposeDTO);
 
 		}
 
 		return permDTOList;
 	}
 
-	public List<RolesResponseDTO> getAllRoles(String ipAddr, String deviceId) {
+	public List<RoleResponseDTO> getAllRoles(String ipAddr, String deviceId) {
 
 		LOGGER.info("Get All Roles API Called");
 
 		List<Role> roleList = rbaacDao.getAllRoles();
 
-		List<RolesResponseDTO> rolesResponseDTOList = new ArrayList<RolesResponseDTO>();
+		List<RoleResponseDTO> rolesResponseDTOList = new ArrayList<RoleResponseDTO>();
 
 		for (Role role : roleList) {
-			RolesResponseDTO rolesResponseDTO = new RolesResponseDTO();
+			RoleResponseDTO roleResponseDTO = new RoleResponseDTO();
 
-			rolesResponseDTO.setId(role.getId());
-			rolesResponseDTO.setRole(role.getRole());
-			rolesResponseDTO.setSuspended(role.getSuspended());
-			rolesResponseDTO.setFlags(role.getFlags());
-			rolesResponseDTO.setInfo(role.getInfo());
-			rolesResponseDTO.setCreatedDate(role.getCreatedDate());
-			rolesResponseDTO.setUpdatedDate(role.getUpdatedDate());
-			rolesResponseDTO.setPermissionMap(JsonUtil.fromJson(role.getPermissionsJson(), Map.class));
+			roleResponseDTO.setId(role.getId());
+			roleResponseDTO.setRole(role.getRole());
+			roleResponseDTO.setSuspended(role.getSuspended());
+			roleResponseDTO.setFlags(role.getFlags());
+			roleResponseDTO.setInfo(role.getInfo());
+			roleResponseDTO.setCreatedDate(role.getCreatedDate());
+			roleResponseDTO.setUpdatedDate(role.getUpdatedDate());
+			roleResponseDTO.setPermissionMap(JsonUtil.fromJson(role.getPermissionsJson(), Map.class));
 			
-			rolesResponseDTOList.add(rolesResponseDTO);
+			rolesResponseDTOList.add(roleResponseDTO);
 		}
-
-		
-		
 		
 		return rolesResponseDTOList;
 
 	}
+	
+	
 
 }

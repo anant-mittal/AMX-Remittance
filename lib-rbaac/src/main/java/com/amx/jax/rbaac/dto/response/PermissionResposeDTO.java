@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * The Class PermissionsResposeDTO.
+ * The Class PermissionResposeDTO.
  */
-public class PermissionsResposeDTO implements Serializable {
+public class PermissionResposeDTO implements Serializable {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1700300245171551125L;
