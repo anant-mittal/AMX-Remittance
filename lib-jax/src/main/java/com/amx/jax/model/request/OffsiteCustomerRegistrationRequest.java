@@ -6,8 +6,8 @@ import javax.validation.constraints.NotNull;
 
 public class OffsiteCustomerRegistrationRequest {
 	
-	BigDecimal ecNumber;
-	String civilId;
+	//BigDecimal ecNumber;
+	String identityInt;
 	String mOtp;
 	String eOtp;
 	String email;
@@ -17,17 +17,12 @@ public class OffsiteCustomerRegistrationRequest {
 	@NotNull
 	private BigDecimal nationalityId;	
 	
-	public BigDecimal getEcNumber() {
-		return ecNumber;
+	
+	public String getIdentityInt() {
+		return identityInt;
 	}
-	public void setEcNumber(BigDecimal ecNumber) {
-		this.ecNumber = ecNumber;
-	}
-	public String getCivilId() {
-		return civilId;
-	}
-	public void setCivilId(String civilId) {
-		this.civilId = civilId;
+	public void setIdentityInt(String identityInt) {
+		this.identityInt = identityInt;
 	}
 	public String getmOtp() {
 		return mOtp;
@@ -68,7 +63,9 @@ public class OffsiteCustomerRegistrationRequest {
 	}
 	@Override
 	public String toString() {
-		return "OffsiteCustomerRegistrationRequest [ecNumber=" + ecNumber + ", civilId=" + civilId + ", mOtp=" + mOtp
-				+ ", eOtp=" + eOtp + ", email=" + email + ", mobile=" + mobile + "]";
+		return "OffsiteCustomerRegistrationRequest [identityInt=" + identityInt + ", mOtp=" + mOtp + ", eOtp=" + eOtp
+				+ ", email=" + email + ", mobile=" + mobile + ", countryId=" + countryId + ", nationalityId="
+				+ nationalityId + "]";
 	}
+	
 }
