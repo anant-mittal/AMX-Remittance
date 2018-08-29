@@ -14,6 +14,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
+import com.amx.jax.rbaac.dto.response.RolesResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rest.RestService;
 
@@ -87,6 +88,21 @@ public class RbaacServiceClient implements RbaacService {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddr)
 				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionsResposeDTO.class);
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public AmxApiResponse<RolesResponseDTO, Object> getAllRoles(String ipAddr, String deviceId) {
+
+		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}", ipAddr, deviceId);
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddr)
+				.queryParam("deviceId", deviceId).post().asApiResponse(RolesResponseDTO.class);
 	}
 
 	/*

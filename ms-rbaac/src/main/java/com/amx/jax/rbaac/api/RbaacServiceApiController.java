@@ -20,6 +20,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionsResposeDTO;
+import com.amx.jax.rbaac.dto.response.RolesResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAuthService;
@@ -93,6 +94,18 @@ public class RbaacServiceApiController implements RbaacService {
 		List<PermissionsResposeDTO> permissionsResposeDTOList = userRoleService.getAllPermissions(ipAddr, deviceId);
 
 		return AmxApiResponse.buildList(permissionsResposeDTOList);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.ROLES_GET, method = RequestMethod.POST)
+	public AmxApiResponse<RolesResponseDTO, Object> getAllRoles(@RequestParam(required = true) String ipAddr,
+			@RequestParam String deviceId) {
+
+		LOGGER.info("Received request for Get Roles " + " from Ip Address: " + ipAddr + " from device Id: " + deviceId);
+
+		List<RolesResponseDTO> rolesResponseDTOList = userRoleService.getAllRoles(ipAddr, deviceId);
+
+		return AmxApiResponse.buildList(rolesResponseDTOList);
 	}
 
 	@Override
