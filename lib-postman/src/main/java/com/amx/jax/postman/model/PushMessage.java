@@ -10,12 +10,20 @@ public class PushMessage extends Message {
 	public static final String FORMAT_TO_ALL = "%s-all";
 	public static final String FORMAT_TO_NATIONALITY = "%s-nationality-%s";
 	public static final String FORMAT_TO_USER = "%s-user-%s";
+	public static final String CONDITION_SEPRATOR = " || ";
 
 	private static final long serialVersionUID = -1354844357577261297L;
 
 	Object result = null;
 
 	String image = null;
+
+	boolean condition;
+
+	public PushMessage() {
+		super();
+		this.condition = false;
+	}
 
 	public Object getResult() {
 		return result;
@@ -49,6 +57,14 @@ public class PushMessage extends Message {
 
 	public void addToEveryone() {
 		this.addTo(TOPICS_PREFIX + String.format(FORMAT_TO_ALL, TenantContextHolder.currentSite()).toLowerCase());
+	}
+
+	public boolean isCondition() {
+		return condition;
+	}
+
+	public void setCondition(boolean condition) {
+		this.condition = condition;
 	}
 
 }

@@ -190,6 +190,12 @@ public class PostManServiceImpl implements PostManService {
 		return this.sendEmail(email);
 	}
 
+	@Override
+	public PostManResponse sendEmailBulk(List<Email> emailList) {
+		// TODO Empty Method :
+		// Need to remove Interface Implementation
+		return null;
+	}
 
 	/*
 	 * (non-Javadoc)
@@ -229,13 +235,6 @@ public class PostManServiceImpl implements PostManService {
 		msg.setChannel(Notipy.Channel.INQUIRY);
 		this.notifySlack(msg);
 		return email;
-	}
-
-	@Override
-	public PostManResponse sendEmailBulk(List<Email> emailList) {
-		// TODO Empty Method : 
-		// Need to remove Interface Implementation
-		return null;
 	}
 
 }

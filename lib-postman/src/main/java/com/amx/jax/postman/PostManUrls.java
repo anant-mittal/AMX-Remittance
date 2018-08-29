@@ -13,6 +13,7 @@ public final class PostManUrls {
 	public static final String SEND_EMAIL_SUPPORT = "/postman/email/support";
 	public static final String NOTIFY_SLACK = "/postman/slack/notify";
 	public static final String NOTIFY_PUSH = "/postman/push/notify";
+	public static final String NOTIFY_PUSH_BULK = "/postman/push/bulk_notify";
 	public static final String NOTIFY_PUSH_SUBSCRIBE = "/postman/subscribe/{topic}";
 	public static final String NOTIFY_SLACK_EXCEP = "/postman/slack/exception";
 	public static final String NOTIFY_SLACK_EXCEP_REPORT = "/postman/slack/excep_report";
