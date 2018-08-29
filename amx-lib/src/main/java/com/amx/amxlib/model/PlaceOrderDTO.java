@@ -58,6 +58,10 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	private BigDecimal foreignCurrencyId;
 	
 	private String foreignCurrencyQuote;
+	
+	private BigDecimal currencyId;
+	private BigDecimal bankId;
+	private BigDecimal countryId;
 
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -195,6 +199,30 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+
 	@Override
 	public String getModelType() {
 		return "place-order-dto";
@@ -210,7 +238,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 				+ ", validToDate=" + validToDate + ", validFromDate=" + validFromDate + ", payAmount=" + payAmount
 				+ ", receiveAmount=" + receiveAmount + ", baseCurrencyId=" + baseCurrencyId + ", baseCurrencyQuote="
 				+ baseCurrencyQuote + ", foreignCurrencyId=" + foreignCurrencyId + ", foreignCurrencyQuote="
-				+ foreignCurrencyQuote + "]";
+				+ foreignCurrencyQuote + ", currencyId=" + currencyId + ", bankId=" + bankId + ", countryId=" + countryId + "]";
 	}
 
 	@Override

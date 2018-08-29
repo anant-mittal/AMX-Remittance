@@ -35,4 +35,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 	@Query("select p from   PlaceOrder p  where p.countryId =:countryId and  p.currencyId =:currencyId and p.bankId =:bankId  and p.targetExchangeRate <=:targetExchangeRate and  (to_date(p.notificationDate,'dd-mm-yy') < to_date(SYSDATE,'dd-mm-YY') or p.notificationDate IS NULL) and isActive='Y' ")
 	public List<PlaceOrder> getPlaceOrderAlertRate(@Param("countryId") BigDecimal countryId,@Param("currencyId") BigDecimal currencyId, @Param("bankId") BigDecimal bankId,@Param("targetExchangeRate") BigDecimal targetExchangeRate);
 
+	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
+	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+
 }
