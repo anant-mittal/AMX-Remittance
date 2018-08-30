@@ -16,9 +16,9 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 @EnableTransactionManagement
 @ComponentScan(basePackages = { "com.amx.jax" })
 @EnableAsync(proxyTargetClass = true)
-public class PlaceOrderApplication {
+public class WorkerApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(PlaceOrderApplication.class, args);
+		SpringApplication.run(WorkerApplication.class, args);
 	}
 
 	/**

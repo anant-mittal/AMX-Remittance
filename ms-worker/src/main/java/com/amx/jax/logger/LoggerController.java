@@ -3,7 +3,6 @@ package com.amx.jax.logger;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -18,9 +17,6 @@ import com.amx.jax.tunnel.TunnelService;
  */
 @RestController
 public class LoggerController {
-
-	@Autowired
-	MongoTemplate mongoTemplate;
 
 	@Autowired
 	TunnelService tunnelService;

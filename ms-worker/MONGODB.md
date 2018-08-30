@@ -1,5 +1,3 @@
-
-
 ## User and DB creation
 
 * Start MongoDB without access control.
@@ -61,5 +59,4 @@ db.createUser(
 ```
 mongo --port 27017 -u "logger" -p "logger" --authenticationDatabase "logger"
 ```
-
 

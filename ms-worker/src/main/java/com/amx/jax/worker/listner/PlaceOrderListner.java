@@ -36,6 +36,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 	public static final String CURRID = "CURRID";
 	public static final String FROMAMOUNT = "FROMAMOUNT";
 	public static final String DRVSELLRATE = "DRVSELLRATE";
+	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
 	public void onMessage(String channel, Event event) {
@@ -46,18 +47,18 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 		BigDecimal currencyId = ArgUtil.parseAsBigDecimal(event.getData().get(CURRID));
 		BigDecimal fromAmount = ArgUtil.parseAsBigDecimal(event.getData().get(FROMAMOUNT));
 		BigDecimal derivedSellRate = ArgUtil.parseAsBigDecimal(event.getData().get(DRVSELLRATE));
-		this.rateAlertPlaceOrder(fromAmount, toAmount, countryId, currencyId, bankId, derivedSellRate);
+		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
+		this.rateAlertPlaceOrder(pipsMasterId);
 	}
 
 	@Autowired
 	PlaceOrderClient placeOrderClient;
 
-	public void rateAlertPlaceOrder(BigDecimal fromAmount, BigDecimal toAmount, BigDecimal countryId,
-			BigDecimal currencyId, BigDecimal bankId, BigDecimal derivedSellRate) {
+	public void rateAlertPlaceOrder(BigDecimal pipsMasterId) {
 
 		try {
 			List<PlaceOrderNotificationDTO> placeOrderList = placeOrderClient
-					.getPlaceOrderOnTrigger(fromAmount, toAmount, countryId, currencyId, bankId, derivedSellRate)
+					.getPlaceOrderOnTrigger(pipsMasterId)
 					.getResults();
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				this.sendBatchNotification(placeOrderList);
