@@ -323,7 +323,7 @@ public class PlaceOrderService extends AbstractService {
 					placeOrderdao.save(placeorder);
 				}
 			}
-			logger.info("place Order for Notfication dtoset2:" + dtoList.toString());
+			logger.info("place Order for Notfication :" + dtoList.toString());
 
 			response.getData().getValues().addAll(dtoList);
 			response.setResponseStatus(ResponseStatus.OK);
