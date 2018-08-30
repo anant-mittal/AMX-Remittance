@@ -172,13 +172,16 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(jaxMetaInfo.getDeviceType() != null ? jaxMetaInfo.getDeviceType()
+		customer.setCreatedBy(jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType()
 				: customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
+		customer.setCompanyId(jaxMetaInfo.getCompanyId());
+		customer.setLanguageId(jaxMetaInfo.getLanguageId());
+		
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);
