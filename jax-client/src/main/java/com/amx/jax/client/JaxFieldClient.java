@@ -13,10 +13,10 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.constant.JaxFieldEntity;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.JaxCondition;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.rest.RestService;
 
 @Component

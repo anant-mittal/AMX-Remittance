@@ -14,6 +14,7 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManResponse;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;

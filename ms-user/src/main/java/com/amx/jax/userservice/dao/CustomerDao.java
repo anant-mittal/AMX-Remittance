@@ -70,7 +70,7 @@ public class CustomerDao {
 	
 	@Transactional
 	public Customer getCustomerByIdentityInt(String identityInt) {
-		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
+		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
 	}
 
 	@Transactional

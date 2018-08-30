@@ -4,12 +4,14 @@ import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
