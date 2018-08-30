@@ -129,9 +129,11 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal pipsMasterId) throws ResourceNotFoundException, InvalidInputException {
 		try {
 			String endpoint = PLACE_ORDER_ENDPOINT+"/get/placeorder/ontrigger";
-			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + pipsMasterId;
+			StringBuilder sb = new StringBuilder();
+			sb.append("?").append("pipsMasterId=").append(pipsMasterId);
+			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
 			HttpEntity<PlaceOrderNotificationDTO> requestEntity = new HttpEntity<PlaceOrderNotificationDTO>(getHeader());
-			log.info("calling getExchangeRate api: " + getPlaceOrderRateUrl);
+			log.info("calling Place Order api: " + getPlaceOrderRateUrl);
 			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderNotificationDTO>>() {
 					});

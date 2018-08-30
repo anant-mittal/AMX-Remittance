@@ -285,19 +285,23 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal pipsMasterId,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
+	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal pipsMasterId) {
 		Set<PlaceOrderNotificationDTO> dtoList = new HashSet<PlaceOrderNotificationDTO>();
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		try {
 
 			Set<PlaceOrder> placeOrderList1 = placeOrderdao.getPlaceOrderAlertRate1(pipsMasterId);
 			if (!placeOrderList1.isEmpty()) {
-				dtoList.add((PlaceOrderNotificationDTO) placeOrderListForNotification(placeOrderList1));
+				Set<PlaceOrderNotificationDTO> dtoList1 = placeOrderListForNotification(placeOrderList1);
+				logger.info("place Order for Notfication dtoset1:" + dtoList1.toString());
+				dtoList.addAll(dtoList1);
 			}
 
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
 			if (!placeOrderList2.isEmpty()) {
-				dtoList.add((PlaceOrderNotificationDTO) placeOrderListForNotification(placeOrderList2));
+				Set<PlaceOrderNotificationDTO> dtoList2 = placeOrderListForNotification(placeOrderList2);
+				logger.info("place Order for Notfication dtoset2:" + dtoList2.toString());
+				dtoList.addAll(dtoList2);
 			}
 
 			response.getData().getValues().addAll(dtoList);
@@ -335,8 +339,6 @@ public class PlaceOrderService extends AbstractService {
 				placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 				placeorderNotDTO.setDate(date);
 				placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
-				logger.info("place Order for Notfication:" + placeorderNotDTO.toString());
-
 				dtoList.add(placeorderNotDTO);
 
 				placeorder.setUpdatedDate(new Date());
