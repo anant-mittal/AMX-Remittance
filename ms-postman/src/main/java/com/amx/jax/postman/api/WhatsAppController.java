@@ -1,10 +1,10 @@
 package com.amx.jax.postman.api;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,42 +12,42 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
-import com.amx.jax.postman.model.GeoLocation;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.service.GeoLocationServiceImpl;
-import com.maxmind.geoip2.exception.GeoIp2Exception;
+import com.amx.jax.postman.model.Message;
+import com.amx.jax.postman.service.WhatsAppService;
 
-import io.swagger.annotations.ApiParam;
-
-/**
- * The Class GeoServiceController.
- */
 @RestController
 public class WhatsAppController {
 
-	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerFactory.getLogger(WhatsAppController.class);
 
-	/** The geo location service. */
 	@Autowired
-	GeoLocationServiceImpl geoLocationService;
+	WhatsAppService whatsAppService;
 
-	/**
-	 * Geo location.
-	 *
-	 * @param ip
-	 *            the ip
-	 * @return the geo location
-	 * @throws PostManException
-	 *             the post man exception
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
-	 * @throws GeoIp2Exception
-	 *             the geo ip 2 exception
-	 */
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
-	public GeoLocation geoLocation(@RequestParam SMS sms) throws PostManException, IOException, GeoIp2Exception {
-		return null;
+	public Message sendWhatsApp(@RequestBody Message msg) throws PostManException {
+		return whatsAppService.send(msg);
+	}
+
+	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.GET)
+	public Message sendWhatsAppGet(@RequestParam String to, @RequestParam String message) throws PostManException {
+		Message msg = new Message();
+		msg.addTo(to);
+		msg.setMessage(message);
+		return whatsAppService.send(msg);
+	}
+
+	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = {
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public Message sendWhatsAppForm(@RequestParam String to, @RequestParam String message) throws PostManException {
+		Message msg = new Message();
+		msg.addTo(to);
+		msg.setMessage(message);
+		return whatsAppService.send(msg);
+	}
+
+	@RequestMapping(value = PostManUrls.WHATS_APP_POLL, method = RequestMethod.GET)
+	public Message pollWhatsApp() throws PostManException {
+		return whatsAppService.poll();
 	}
 
 }
