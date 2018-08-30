@@ -286,23 +286,44 @@ public class PlaceOrderService extends AbstractService {
 	}
 	
 	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal pipsMasterId) {
-		Set<PlaceOrderNotificationDTO> dtoList = new HashSet<PlaceOrderNotificationDTO>();
+		List<PlaceOrderNotificationDTO> dtoList = new ArrayList<PlaceOrderNotificationDTO>();
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		try {
-
+			Set<PlaceOrder> placeOrderList = new HashSet<>();
 			Set<PlaceOrder> placeOrderList1 = placeOrderdao.getPlaceOrderAlertRate1(pipsMasterId);
-			if (!placeOrderList1.isEmpty()) {
-				Set<PlaceOrderNotificationDTO> dtoList1 = placeOrderListForNotification(placeOrderList1);
-				logger.info("place Order for Notfication dtoset1:" + dtoList1.toString());
-				dtoList.addAll(dtoList1);
-			}
-
+			placeOrderList.addAll(placeOrderList1);
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
-			if (!placeOrderList2.isEmpty()) {
-				Set<PlaceOrderNotificationDTO> dtoList2 = placeOrderListForNotification(placeOrderList2);
-				logger.info("place Order for Notfication dtoset2:" + dtoList2.toString());
-				dtoList.addAll(dtoList2);
+			placeOrderList.addAll(placeOrderList2);
+
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			String date = simpleDateFormat.format(new Date());
+
+			if (placeOrderList != null && !placeOrderList.isEmpty()) {
+				for (PlaceOrder placeorder : placeOrderList) {
+
+					Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
+					logger.info("customer ID:" + placeorder.getCustomerId());
+					PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
+					placeorderNotDTO.setFirstName(cusotmer.getFirstName());
+					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
+					placeorderNotDTO.setLastName(cusotmer.getLastName());
+					placeorderNotDTO.setEmail(cusotmer.getEmail());
+					placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
+					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
+					placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
+					placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
+					placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
+					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
+					placeorderNotDTO.setDate(date);
+					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
+					dtoList.add(placeorderNotDTO);
+
+					placeorder.setUpdatedDate(new Date());
+					placeorder.setNotificationDate(new Date());
+					placeOrderdao.save(placeorder);
+				}
 			}
+			logger.info("place Order for Notfication dtoset2:" + dtoList.toString());
 
 			response.getData().getValues().addAll(dtoList);
 			response.setResponseStatus(ResponseStatus.OK);
@@ -310,46 +331,12 @@ public class PlaceOrderService extends AbstractService {
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List by Trigger Exchange Rate",e);
+			logger.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
 		}
 		return response;
 	}
-	
-	public Set<PlaceOrderNotificationDTO> placeOrderListForNotification(Set<PlaceOrder> placeOrderList) {
-        
-		Set<PlaceOrderNotificationDTO> dtoList = new HashSet<PlaceOrderNotificationDTO>();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-		String date = simpleDateFormat.format(new Date());
 
-		if (placeOrderList != null && !placeOrderList.isEmpty()) {
-			for (PlaceOrder placeorder : placeOrderList) {
 
-				Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
-				logger.info("customer ID:" + placeorder.getCustomerId());
-				PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
-				placeorderNotDTO.setFirstName(cusotmer.getFirstName());
-				placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
-				placeorderNotDTO.setLastName(cusotmer.getLastName());
-				placeorderNotDTO.setEmail(cusotmer.getEmail());
-				placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
-				placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
-				placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
-				placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
-				placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
-				placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
-				placeorderNotDTO.setDate(date);
-				placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
-				dtoList.add(placeorderNotDTO);
-
-				placeorder.setUpdatedDate(new Date());
-				placeorder.setNotificationDate(new Date());
-				placeOrderdao.save(placeorder);
-			}
-		}
-		return dtoList;
-	}
-	
-	
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
