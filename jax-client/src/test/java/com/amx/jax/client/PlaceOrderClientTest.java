@@ -135,7 +135,7 @@ public class PlaceOrderClientTest {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<PlaceOrderNotificationDTO> response = null;
-		response = client.getPlaceOrderOnTrigger(new BigDecimal(1), new BigDecimal(200), new BigDecimal(94), new BigDecimal(4), new BigDecimal(1256),new BigDecimal(300));
+		response = client.getPlaceOrderOnTrigger(new BigDecimal(1));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
