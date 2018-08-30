@@ -33,6 +33,8 @@ import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
 import com.amx.utils.Constants;
+import com.amx.jax.repository.IBizComponentDataRepository;
+
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -47,6 +49,8 @@ public class BizcomponentDao {
 	IBizComponentDataDescDaoRepository iBizDataDecReporsitory;
 	@Autowired
 	MetaData metaData;
+	@Autowired
+	IBizComponentDataRepository iBizComponentDataRepository;
 
 	@Transactional
 	public BigDecimal findCustomerTypeId(String CustomerType) {
@@ -120,5 +124,14 @@ public class BizcomponentDao {
 		}
 		 
 		return rtnIdentity;
-		}
+	}
+
+
+	public BizComponentData getBizComponentDataByComponmentCode(String componentCode) {
+		return iBizComponentDataRepository.findBycomponentCode(componentCode);
+	}
+	
+	public BizComponentData getBizComponentDataByComponmentDataId(BigDecimal componentDataId) {
+		return iBizComponentDataRepository.findOne(componentDataId);
+	}
 }

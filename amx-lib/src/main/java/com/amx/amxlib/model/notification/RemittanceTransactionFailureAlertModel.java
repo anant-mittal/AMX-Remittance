@@ -7,15 +7,14 @@ public class RemittanceTransactionFailureAlertModel {
 	String customerReference;
 	String customerName;
 	String customerContact;
-	String beneName;
+	String beneficiaryName;
 	BigDecimal transactionAmount;
 	String currencyQuoteName;
-	String beneBankName;
-	String beneBankBranchName;
-	String beneAccountNumber;
-	String selectedProduct;
-
-	String exceptionMessage;
+	String beneficiaryBank;
+	String beneficiaryBranch;
+	String beneficiaryAccountNo;
+	String service;
+    String exceptionMessage;
 
 	public String getCustomerReference() {
 		return customerReference;
@@ -41,14 +40,6 @@ public class RemittanceTransactionFailureAlertModel {
 		this.customerContact = contact;
 	}
 
-	public String getBeneName() {
-		return beneName;
-	}
-
-	public void setBeneName(String beneName) {
-		this.beneName = beneName;
-	}
-
 	public BigDecimal getTransactionAmount() {
 		return transactionAmount;
 	}
@@ -65,38 +56,6 @@ public class RemittanceTransactionFailureAlertModel {
 		this.currencyQuoteName = currencyQuoteName;
 	}
 
-	public String getBeneBankName() {
-		return beneBankName;
-	}
-
-	public void setBeneBankName(String beneBankName) {
-		this.beneBankName = beneBankName;
-	}
-
-	public String getBeneBankBranchName() {
-		return beneBankBranchName;
-	}
-
-	public void setBeneBankBranchName(String beneBankBranchName) {
-		this.beneBankBranchName = beneBankBranchName;
-	}
-
-	public String getBeneAccountNumber() {
-		return beneAccountNumber;
-	}
-
-	public void setBeneAccountNumber(String beneAccountNumber) {
-		this.beneAccountNumber = beneAccountNumber;
-	}
-
-	public String getSelectedProduct() {
-		return selectedProduct;
-	}
-
-	public void setSelectedProduct(String selectedProduct) {
-		this.selectedProduct = selectedProduct;
-	}
-
 	public String getExceptionMessage() {
 		return exceptionMessage;
 	}
@@ -105,4 +64,45 @@ public class RemittanceTransactionFailureAlertModel {
 		this.exceptionMessage = exceptionMessage;
 	}
 
+	public String getBeneficiaryName() {
+		return beneficiaryName;
+	}
+
+	public void setBeneficiaryName(String beneficiaryName) {
+		this.beneficiaryName = beneficiaryName;
+	}
+
+	public String getBeneficiaryBank() {
+		return beneficiaryBank;
+	}
+
+	public void setBeneficiaryBank(String beneficiaryBank) {
+		this.beneficiaryBank = beneficiaryBank;
+	}
+
+	public String getBeneficiaryBranch() {
+		return beneficiaryBranch;
+	}
+
+	public void setBeneficiaryBranch(String beneficiaryBranch) {
+		this.beneficiaryBranch = beneficiaryBranch;
+	}
+
+	public String getBeneficiaryAccountNo() {
+		return beneficiaryAccountNo;
+	}
+
+	public void setBeneficiaryAccountNo(String beneficiaryAccountNo) {
+		this.beneficiaryAccountNo = beneficiaryAccountNo;
+	}
+
+	public String getService() {
+		return service;
+	}
+
+	public void setService(String service) {
+		this.service = service;
+	}
+	
 }
+
