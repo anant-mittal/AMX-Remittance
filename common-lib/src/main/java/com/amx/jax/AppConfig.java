@@ -22,6 +22,7 @@ import com.amx.utils.ArgUtil;
 public class AppConfig {
 
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
+	public static final String APP_CLASS = "${app.class}";
 	public static final String APP_NAME = "${app.name}";
 	public static final String APP_PROD = "${app.prod}";
 	public static final String APP_SWAGGER = "${app.swagger}";
@@ -40,6 +41,10 @@ public class AppConfig {
 	public static final String JAX_LOGGER_URL = "${jax.logger.url}";
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
+
+	@Value(APP_CLASS)
+	@AppParamKey(AppParam.APP_CLASS)
+	private String appClass;
 
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
@@ -220,6 +225,10 @@ public class AppConfig {
 
 	public boolean isAppAuthEnabled() {
 		return appAuthEnabled;
+	}
+
+	public String getAppClass() {
+		return appClass;
 	}
 
 }

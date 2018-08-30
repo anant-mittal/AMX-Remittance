@@ -7,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
+
 @Service
 public class TunnelService implements ITunnelService {
 
@@ -16,16 +21,23 @@ public class TunnelService implements ITunnelService {
 	RedissonClient redisson;
 
 	public <T> long send(String topic, T messagePayload) {
-		if(redisson==null) {
+		if (redisson == null) {
 			LOGGER.error("No Redissson Client Instance Available");
 			return 0L;
 		}
-		RTopic<T> topicQueue = redisson.getTopic(topic);
-		return topicQueue.publish(messagePayload);
+		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(topic);
+		long startTime = System.currentTimeMillis();
+
+		AppContextUtil.setTraceTime(startTime);
+		AppContext context = AppContextUtil.getContext();
+
+		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		return topicQueue.publish(message);
 	}
 
 	public void sayHello() {
-		this.send(TunnelClient.TEST_TOPIC, "Hey There");
+		this.send(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
 	}
 
 }

@@ -81,6 +81,7 @@
 			<artifactId>lib-ext-jar</artifactId>
 		</dependency>
 
+
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
 			<artifactId>jasperreports</artifactId>
@@ -189,6 +190,11 @@
 	</build>
 
 	<repositories>
+<!-- 		<repository>
+			<id>itext</id>
+			<name>iText Repository - releases</name>
+			<url>https://repo.itextsupport.com/releases</url>
+		</repository> -->
 		<repository>
 			<id>Adobe</id>
 			<name>Adobe Repository - releases</name>

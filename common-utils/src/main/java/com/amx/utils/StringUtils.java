@@ -1,7 +1,6 @@
 package com.amx.utils;
 
 import java.util.Map;
-
 import com.google.common.base.Splitter;
 
 public final class StringUtils {

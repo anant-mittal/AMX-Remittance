@@ -235,11 +235,24 @@ public class ExchangeRateService extends AbstractService {
 		return createBreakUp(exrate, lcAmount);
 	}
 
-	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
+	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal lcAmount) {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConvertedFCAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setInverseRate(exrate);
+			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
+		return breakup;
+	}
+	
+	ExchangeRateBreakup createBreakUpFromForeignCurrency(BigDecimal exrate, BigDecimal fcAmount) {
+		ExchangeRateBreakup breakup = null;
+		if (exrate != null) {
+			breakup = new ExchangeRateBreakup();
+			breakup.setConvertedLCAmount(fcAmount.multiply(exrate));
+			breakup.setConvertedFCAmount(fcAmount);
 			breakup.setInverseRate(exrate);
 			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
 		}
@@ -403,5 +416,17 @@ public class ExchangeRateService extends AbstractService {
 		}
 		return dtoList;
 	}
-
+	
+	public ApiResponse setOnlineExchangeRatesPlaceorder(String quoteName,BigDecimal bankId, BigDecimal value) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		value  = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
+		BigDecimal toCurrency = currencyMasterDao.getCurrencyMasterByQuote(quoteName).getCurrencyId();
+		List<ExchangeRateApprovalDetModel> exRateModel =  exchangeRateDao.getExchangeRatesPlaceorder(toCurrency, bankId);
+		for(ExchangeRateApprovalDetModel exRate : exRateModel) {
+		exRate.setSellRateMax(value);
+		exchangeRateDao.saveOrUpdate(exRate);
+		}
+		apiResponse.getData().getValues().add(new BooleanResponse(true));
+		return apiResponse;
+	}
 }

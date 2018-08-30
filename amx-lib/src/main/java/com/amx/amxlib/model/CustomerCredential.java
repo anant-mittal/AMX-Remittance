@@ -12,12 +12,12 @@ public class CustomerCredential implements Serializable, ICustomerCredential {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
-	@Size(min=6, max=12)
-	@Pattern(regexp = "^\\S+")
+	@NotNull(message="User Id may not be null")
+	@Size(min=6, max=12, message="User ID should be between 6 and 12 characters")
+	@Pattern(regexp = "^\\S+", message="The User ID you have entered is not valid. Please enter the User ID with minimum 6 alphanumeric characters.")
 	String loginId;
 
-	@NotNull
+	@NotNull(message="Password may not be null")
 	String password;
 
 	public CustomerCredential() {
