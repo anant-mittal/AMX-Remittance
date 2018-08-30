@@ -65,12 +65,9 @@ public class CustomerPersonalDetailValidator implements Validator {
 		CustomerPersonalDetail customerPersonalDetail = beneficiaryTrnxModel.getCustomerPersonalDetail();
 		tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
-		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
-				customerPersonalDetail.getMobile());
-		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
-				customerPersonalDetail.getMobile());
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),
-				JaxApiFlow.SIGNUP_DEFAULT);
+		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
+		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(), JaxApiFlow.SIGNUP_DEFAULT);
 		validateCustomerBlackList(customerPersonalDetail);
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		resetAttempts(otpData);
