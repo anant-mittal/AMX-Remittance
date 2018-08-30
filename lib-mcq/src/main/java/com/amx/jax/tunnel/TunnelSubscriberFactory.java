@@ -82,8 +82,8 @@ public class TunnelSubscriberFactory {
 				AppContextUtil.setContext(context);
 				if (this.integrity) {
 					RMapCache<String, String> map = redisson.getMapCache(channel);
-					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
-							+ msg.getId();
+					String integrityKey = appConfig.getAppEnv() + "#" + appConfig.getAppName() + "#"
+							+ listener.getClass().getName() + "#" + msg.getId();
 					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
 					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
 						this.doMessage(channel, msg);
