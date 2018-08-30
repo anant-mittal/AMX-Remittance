@@ -126,20 +126,10 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 		return response.getBody();
 	}
 	
-	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal fromAmount, BigDecimal toAmount,
-			BigDecimal countryId, BigDecimal currencyId, BigDecimal bankId, BigDecimal derivedSellRate) throws ResourceNotFoundException, InvalidInputException {
+	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal pipsMasterId) throws ResourceNotFoundException, InvalidInputException {
 		try {
 			String endpoint = PLACE_ORDER_ENDPOINT+"/get/placeorder/ontrigger";
-			StringBuilder sb = new StringBuilder();
-			sb.append("?").append("fromAmount=").append(fromAmount);
-			sb.append("&").append("toAmount=").append(toAmount);
-			sb.append("&").append("countryId=").append(countryId);
-			sb.append("&").append("currencyId=").append(currencyId);
-			if(bankId != null) {
-				sb.append("&").append("bankId=").append(bankId);
-			}
-			sb.append("&").append("derivedSellRate=").append(derivedSellRate);
-			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + pipsMasterId;
 			HttpEntity<PlaceOrderNotificationDTO> requestEntity = new HttpEntity<PlaceOrderNotificationDTO>(getHeader());
 			log.info("calling getExchangeRate api: " + getPlaceOrderRateUrl);
 			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
