@@ -299,4 +299,29 @@ public class PlaceOrder implements Serializable {
 		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((onlinePlaceOrderId == null) ? 0 : onlinePlaceOrderId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PlaceOrder other = (PlaceOrder) obj;
+		if (onlinePlaceOrderId == null) {
+			if (other.onlinePlaceOrderId != null)
+				return false;
+		} else if (!onlinePlaceOrderId.equals(other.onlinePlaceOrderId))
+			return false;
+		return true;
+	}
 }
