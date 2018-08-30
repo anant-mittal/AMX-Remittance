@@ -157,10 +157,8 @@
 		<module>lib-sso</module>
 		<module>lib-jax</module>
 
-		<module>ms-logger</module>
 		<module>lib-postman</module>
 		<module>ms-postman</module>
-
 
 		<module>amx-lib</module>
 		<module>core</module>
@@ -173,8 +171,6 @@
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
 		<module>ms-worker</module>
-
-		<module>ms-scheduler</module>
 
 		<module>server-payg</module>
 		<module>server-ui</module>

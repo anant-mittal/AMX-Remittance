@@ -60,6 +60,11 @@
 			<artifactId>lib-postman</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-mcq</artifactId>
+		</dependency>
+
 		<!-- PDF FLYINSOC -->
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
@@ -115,7 +120,7 @@
 			<version>1.0.24</version>
 		</dependency>
 
- 		<dependency>
+		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.5.0</version>
@@ -184,11 +189,8 @@
 	</build>
 
 	<repositories>
-<!-- 		<repository>
-			<id>itext</id>
-			<name>iText Repository - releases</name>
-			<url>https://repo.itextsupport.com/releases</url>
-		</repository> -->
+		<!-- <repository> <id>itext</id> <name>iText Repository - releases</name> 
+			<url>https://repo.itextsupport.com/releases</url> </repository> -->
 		<repository>
 			<id>Adobe</id>
 			<name>Adobe Repository - releases</name>

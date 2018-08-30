@@ -354,6 +354,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		} else {
 			isUpdateNeeded = true;
+			beneDto.setUpdateNeeded(true);
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
