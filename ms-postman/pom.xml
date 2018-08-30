@@ -52,7 +52,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-amx</artifactId>
+			<artifactId>common-lib</artifactId>
 		</dependency>
 
 		<dependency>
@@ -75,6 +75,12 @@
 
 
 		<!-- jasper reports -->
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>
@@ -115,7 +121,7 @@
 			<version>1.0.24</version>
 		</dependency>
 
- 		<dependency>
+		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.5.0</version>

@@ -16,7 +16,7 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.rest.RestService;
 
 @Component
-public class CustRegClient /*implements ICustRegService*/ {
+public class CustRegClient implements ICustRegService {
 
 	@Autowired
 	RestService restService;
@@ -24,13 +24,13 @@ public class CustRegClient /*implements ICustRegService*/ {
 	@Autowired
 	AppConfig appConfig;
 
-	
+	@Override
 	public AmxApiResponse<BigDecimal, Object> getModes() {
-		/*return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).get()
-				.asApiResponse(BigDecimal.class);*/
-		return null;
+		return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).get()
+				.asApiResponse(BigDecimal.class);
 	}
 
+	@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
 		/*return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_ID_FIELDS).post(regModeModel)
 				.asApiResponse(ARespModel.class);*/
