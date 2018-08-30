@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.bind.annotation.RequestBody;
-
 import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.CommonRequest;
@@ -15,6 +14,7 @@ import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -31,6 +31,8 @@ public interface ICustRegService {
 		public static final String GET_ARTICLE_LIST = "/articleList";
 		public static final String GET_DESIGNATION_LIST = "/designationList";
 		public static final String GET_INCOME_RANGE_LIST = "/incomeRangeList";
+		public static final String GET_EMPLOYMENT_TYPE_LIST = "/employmentTypeList";
+		public static final String GET_PROFESSION_LIST = "/professionList";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -49,5 +51,9 @@ public interface ICustRegService {
 	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model);
 	
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
+	
+	AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList();
+	
+	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 
 }

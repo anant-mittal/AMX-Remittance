@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,73 +16,44 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-
-import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.exception.jax.InvalidCivilIdException;
-import com.amx.amxlib.exception.jax.InvalidJsonInputException;
-import com.amx.amxlib.exception.jax.InvalidOtpException;
-import com.amx.amxlib.model.AbstractUserModel;
-import com.amx.amxlib.model.BizComponentDataDescDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.ComponentDataDto;
-import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.ValidationRegexDto;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.api.ARespModel;
-import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.auditlogs.ArticleListAuditEvent;
 import com.amx.jax.auditlogs.DesignationListAuditEvent;
 import com.amx.jax.auditlogs.FieldListAuditEvent;
 import com.amx.jax.auditlogs.IncomeRangeAuditEvent;
 import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
-import com.amx.jax.branch.dao.EmployeeDao;
-import com.amx.jax.branch.repository.EmployeeRepository;
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
-import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
-import com.amx.jax.dbmodel.JaxField;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.service.PrefixService;
-import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
-import com.amx.jax.userservice.service.AbstractUserService;
-import com.amx.jax.userservice.service.CheckListManager;
-import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -91,7 +61,7 @@ public class OffsitCustRegService implements ICustRegService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 	
-	@Autowired
+	/*@Autowired
 	private EmployeeDao employeeDao;
 	
 	@Autowired
@@ -107,7 +77,7 @@ public class OffsitCustRegService implements ICustRegService {
 	private EmployeeRepository repo;
 	
 	@Autowired
-	private CheckListManager checkListManager;
+	private CheckListManager checkListManager;*/
 
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
@@ -545,6 +515,18 @@ public class OffsitCustRegService implements ICustRegService {
 		dto.setTenant(i.getTenant());
 		dto.setValue(i.getValue());
 		return dto;
+	}
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {

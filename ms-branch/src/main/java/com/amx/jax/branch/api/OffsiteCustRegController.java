@@ -4,7 +4,6 @@ import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
 import java.util.List;
 import java.util.Map;
-
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
@@ -26,6 +24,7 @@ import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.service.CountryService;
@@ -184,6 +183,20 @@ public class OffsiteCustRegController implements ICustRegService {
 		// JaxContextUtil.setJaxEvent(JaxEvent.FIELD_LIST);
 		// JaxContextUtil.setRequestModel(model);
 		return offsiteCustRegService.getFieldList(model);
+	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST, method = RequestMethod.POST)
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
+		// JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
+		// JaxContextUtil.setRequestModel();
+		return offsiteCustRegService.sendIdTypes();
+	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
+		// JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
+		// JaxContextUtil.setRequestModel();
+		return offsiteCustRegService.sendIdTypes();
 	}
 
 }
