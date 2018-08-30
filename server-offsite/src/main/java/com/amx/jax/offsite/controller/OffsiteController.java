@@ -1,6 +1,3 @@
-/**  AlMulla Exchange
-  *  
-  */
 package com.amx.jax.offsite.controller;
 
 import org.apache.log4j.Logger;
