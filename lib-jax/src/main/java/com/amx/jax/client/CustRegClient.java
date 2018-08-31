@@ -14,6 +14,7 @@ import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.rest.RestService;
@@ -53,6 +54,18 @@ public class CustRegClient implements ICustRegService {
 	@Override
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
 		// TODO Auto-generated method stub
 		return null;
 	}

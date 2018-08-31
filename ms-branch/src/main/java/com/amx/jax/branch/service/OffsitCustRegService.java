@@ -30,9 +30,11 @@ import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
+import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
+import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -48,7 +50,9 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
+import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.service.PrefixService;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.util.DateUtil;
@@ -111,7 +115,12 @@ public class OffsitCustRegService implements ICustRegService {
 	
 	@Autowired
 	AuditService auditService;
+
+	@Autowired
+	EmploymentTypeRepository employmentTypeRepo;
 	
+	@Autowired	
+	ProfessionRepository professionRepository;
 	/*@Override
 	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
 		return null;
@@ -519,15 +528,33 @@ public class OffsitCustRegService implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		List<EmploymentTypeMasterView> view = employmentTypeRepo.findAll();
+		if(view.isEmpty())
+		{
+			throw new GlobalException("Employment Type List Not Available",JaxError.EMPTY_EMPLOYMENT_TYPE);
+		}
+		List<ComponentDataDto> list = new ArrayList<>();
+		for(EmploymentTypeMasterView map : view)
+		{
+			list.add(new ComponentDataDto(map.getComponentDataId(),map.getDataDesc()));
+		}	
+		return AmxApiResponse.buildList(list);
+	}	
 
 	@Override
 	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+		List<ProfessionMasterView> view = professionRepository.findAll();
+		if(view.isEmpty())
+		{
+			throw new GlobalException("Profession List Not Available",JaxError.EMPTY_PROFESSION_LIST);
+		}
+		List<ComponentDataDto> list = new ArrayList<>();
+		for(ProfessionMasterView map : view)
+		{
+			list.add(new ComponentDataDto(map.getComponentDataId(),map.getDataDesc()));
+		}
+		return AmxApiResponse.buildList(list);
+	}	
 	
 	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
 		List<JaxConditionalFieldDto> list = new ArrayList<>();

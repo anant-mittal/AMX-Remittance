@@ -186,17 +186,13 @@ public class OffsiteCustRegController implements ICustRegService {
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
-		// JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
-		// JaxContextUtil.setRequestModel();
-		return offsiteCustRegService.sendIdTypes();
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {		
+		return offsiteCustRegService.sendEmploymentTypeList();
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
-		// JaxContextUtil.setJaxEvent(JaxEvent.ID_TYPE);
-		// JaxContextUtil.setRequestModel();
-		return offsiteCustRegService.sendIdTypes();
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {		
+		return offsiteCustRegService.sendProfessionList();
 	}
 
 }
