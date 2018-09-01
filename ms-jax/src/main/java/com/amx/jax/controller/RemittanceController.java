@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.IRemitTransReqPurpose;
@@ -26,6 +27,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
@@ -63,6 +65,9 @@ public class RemittanceController {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	CustomerRatingService customerRatingService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
@@ -197,4 +202,11 @@ public class RemittanceController {
 		return response;
 	}
 
+	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
+	public ApiResponse saveCustomerRating(@RequestBody CustomerRatingDTO customerRating) {
+
+		logger.info("In save customer rating :" + customerRating.toString());
+		ApiResponse response = customerRatingService.saveCustomerRating(customerRating);
+		return response;
+	}
 }
