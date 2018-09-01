@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.request.IRemitTransReqPurpose;
@@ -25,6 +24,7 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.CustomerRatingService;
@@ -203,7 +203,7 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
-	public ApiResponse saveCustomerRating(@RequestBody CustomerRatingDTO customerRating) {
+	public ApiResponse saveCustomerRating(@RequestBody CustomerRating customerRating) {
 
 		logger.info("In save customer rating :" + customerRating.toString());
 		ApiResponse response = customerRatingService.saveCustomerRating(customerRating);
