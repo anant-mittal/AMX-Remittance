@@ -158,6 +158,14 @@ public class PostManController {
 		return sms;
 	}
 
+	@RequestMapping(value = PostManUrls.SEND_SMS, method = RequestMethod.GET)
+	public SMS sendSMSGet(@RequestParam String to, @RequestParam String message) throws PostManException {
+		SMS sms = new SMS();
+		sms.addTo(to);
+		sms.setMessage(message);
+		return sms;
+	}
+
 	@RequestMapping(value = PostManUrls.SEND_EMAIL, method = RequestMethod.POST)
 	public Email sendEmail(@RequestBody Email email,
 			@RequestParam(required = false, defaultValue = "false") Boolean async) throws PostManException {
