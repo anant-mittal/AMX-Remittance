@@ -271,7 +271,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
 			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
 			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<PaymentResponseDto>>() {
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
