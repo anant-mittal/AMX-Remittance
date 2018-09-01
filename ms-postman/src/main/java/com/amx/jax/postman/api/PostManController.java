@@ -1,7 +1,7 @@
 package com.amx.jax.postman.api;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -16,16 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
-import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.postman.model.Templates;
@@ -177,6 +176,20 @@ public class PostManController {
 		return email;
 	}
 
+	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK, method = RequestMethod.POST)
+	public PostManResponse sendEmailBulk(@RequestBody List<Email> emailList) throws PostManException {
+
+		for (Email email : emailList) {
+			postManService.sendEmailAsync(email);
+		}
+
+		PostManResponse postManResponse = new PostManResponse();
+
+		postManResponse.getRespData().put("Status", "Success");
+
+		return postManResponse;
+	}
+
 	/**
 	 * Send email.
 	 *
@@ -245,13 +258,4 @@ public class PostManController {
 		return eMsg;
 	}
 
-	@Autowired
-	FBPushService fBPushService;
-
-	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
-	public PushMessage fbPush(@RequestBody PushMessage msg)
-			throws PostManException, InterruptedException, ExecutionException {
-		fBPushService.sendDirect(msg);
-		return msg;
-	}
 }

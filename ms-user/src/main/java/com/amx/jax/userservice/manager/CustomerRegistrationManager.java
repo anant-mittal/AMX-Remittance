@@ -172,7 +172,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(jaxMetaInfo.getDeviceType() != null ? jaxMetaInfo.getDeviceType()
+		customer.setCreatedBy(jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType()
 				: customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
@@ -180,6 +180,14 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
 		customer.setCompanyId(jaxMetaInfo.getCompanyId());
+		customer.setCustomerTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setLanguageId(jaxMetaInfo.getLanguageId());
+		customer.setBranchCode(jaxMetaInfo.getCountryBranchId());
+		customer.setNationalityId(customerPersonalDetail.getNationalityId());
+		customer.setMobile(customerPersonalDetail.getMobile());
+		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
 		
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());

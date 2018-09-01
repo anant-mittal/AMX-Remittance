@@ -16,7 +16,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -79,7 +79,7 @@ public class UserController {
 
 	/** The fb push client. */
 	@Autowired
-	private FBPushClient fbPushClient;
+	private PushNotifyClient pushNotifyClient;
 
 	/** The hot point service. */
 	@Autowired
@@ -168,7 +168,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
 		for (String topic : userService.getNotifyTopics("")) {
-			fbPushClient.subscribe(token, topic + "_web");
+			pushNotifyClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();
 	}

@@ -5,9 +5,11 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +23,7 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -34,7 +37,7 @@ import com.amx.jax.util.PlaceOrderUtil;
 @SuppressWarnings("rawtypes")
 public class PlaceOrderService extends AbstractService {
 	
-	private Logger logger = Logger.getLogger(PlaceOrderService.class);
+	private Logger logger = LoggerService.getLogger(getClass());
 	
 	@Autowired
 	IPlaceOrderDao placeOrderdao;
@@ -126,10 +129,6 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
 					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
-					
-					placeDTO.setBankId(rec.getBankId());
-					placeDTO.setCountryId(rec.getCountryId());
-					placeDTO.setCurrencyId(rec.getCurrencyId());
 					
 					dtoList.add(placeDTO);
 				}
@@ -321,50 +320,53 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 	
-	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal fromAmount,BigDecimal toAmount,BigDecimal countryId,BigDecimal currencyId,BigDecimal bankId ,BigDecimal derivedSellRate) {
-
-		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
+	public ApiResponse<PlaceOrderDTO> rateAlertPlaceOrder(BigDecimal pipsMasterId) {
 		List<PlaceOrderNotificationDTO> dtoList = new ArrayList<PlaceOrderNotificationDTO>();
+		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		try {
-			derivedSellRate  = BigDecimal.ONE.divide(derivedSellRate, 3, RoundingMode.HALF_UP);
-			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderAlertRate(countryId, currencyId, bankId,
-					derivedSellRate);
+			Set<PlaceOrder> placeOrderList = new HashSet<>();
+			Set<PlaceOrder> placeOrderList1 = placeOrderdao.getPlaceOrderAlertRate1(pipsMasterId);
+			placeOrderList.addAll(placeOrderList1);
+			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
+			placeOrderList.addAll(placeOrderList2);
 
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
-				String date = simpleDateFormat.format(new Date());
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			String date = simpleDateFormat.format(new Date());
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
-				
-					Customer cusotmer= customerDao.getCustById(placeorder.getCustomerId());
+
+					Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
 					logger.info("customer ID:" + placeorder.getCustomerId());
-					PlaceOrderNotificationDTO placeorderNotDTO =new PlaceOrderNotificationDTO();
+					PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
 					placeorderNotDTO.setFirstName(cusotmer.getFirstName());
 					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
 					placeorderNotDTO.setLastName(cusotmer.getLastName());
 					placeorderNotDTO.setEmail(cusotmer.getEmail());
 					placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
 					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
-					placeorderNotDTO.setRate(derivedSellRate);
+					placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
+					placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
+					placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);
-					logger.info("place Order for Notfication:" + placeorderNotDTO.toString());
-					
+					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
 					dtoList.add(placeorderNotDTO);
-					
+
 					placeorder.setUpdatedDate(new Date());
 					placeorder.setNotificationDate(new Date());
 					placeOrderdao.save(placeorder);
 				}
 			}
+			logger.info("place Order for Notfication :" + dtoList.toString());
+
 			response.getData().getValues().addAll(dtoList);
 			response.setResponseStatus(ResponseStatus.OK);
 			response.getData().setType("place-order-not-dto");
 
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while fetching Place Order List by Trigger Exchange Rate");
-			e.printStackTrace();
+			logger.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
 		}
 		return response;
 	}
