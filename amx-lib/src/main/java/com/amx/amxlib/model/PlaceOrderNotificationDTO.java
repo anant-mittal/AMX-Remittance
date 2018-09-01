@@ -108,7 +108,7 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 	public void setOutputAmount(BigDecimal outputAmount) {
 		this.outputAmount = outputAmount;
 	}
-
+	
 	@Override
 	public String getModelType() {
 		return "place-order-not-dto";

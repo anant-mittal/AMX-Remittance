@@ -249,26 +249,4 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		return result;
 	}
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PlaceOrderDTO other = (PlaceOrderDTO) obj;
-		if (placeOrderId == null) {
-			if (other.placeOrderId != null)
-				return false;
-		} else if (!placeOrderId.equals(other.placeOrderId))
-			return false;
-		return true;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 }
