@@ -274,7 +274,7 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
-				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE));
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 			} else {
 				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
