@@ -2,8 +2,6 @@ package com.amx.jax.worker.logger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelSubscriber;
