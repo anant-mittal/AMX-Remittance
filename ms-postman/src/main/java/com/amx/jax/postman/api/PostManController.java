@@ -163,6 +163,7 @@ public class PostManController {
 		SMS sms = new SMS();
 		sms.addTo(to);
 		sms.setMessage(message);
+		postManService.sendSMSAsync(sms);
 		return sms;
 	}
 
