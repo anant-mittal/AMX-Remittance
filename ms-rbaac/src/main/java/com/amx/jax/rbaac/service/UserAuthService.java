@@ -21,7 +21,7 @@ import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
@@ -85,12 +85,12 @@ public class UserAuthService {
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)
 				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
 			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		if (DEVICE_TYPE.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
 			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		List<Employee> employees;
@@ -105,7 +105,7 @@ public class UserAuthService {
 		 * Invalid Employee Details
 		 */
 		if (null == employees || employees.isEmpty()) {
-			throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_USER_DETAILS);
+			throw new AuthServiceException("Employee Details not available", RbaacServiceError.INVALID_USER_DETAILS);
 		}
 
 		/**
@@ -113,7 +113,7 @@ public class UserAuthService {
 		 */
 		if (employees.size() > 1) {
 			throw new AuthServiceException("Multiple Users Corresponding to the same Info: Pls contact Support",
-					AuthServiceError.MULTIPLE_USERS);
+					RbaacServiceError.MULTIPLE_USERS);
 		}
 
 		Employee emp = employees.get(0);
@@ -124,7 +124,7 @@ public class UserAuthService {
 		if (StringUtils.isBlank(emp.getIsActive()) || !"Y".equalsIgnoreCase(emp.getIsActive())
 				|| "D".equalsIgnoreCase(emp.getDeletedUser()) || "Y".equalsIgnoreCase(emp.getDeletedUser())) {
 			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended.",
-					AuthServiceError.USER_NOT_ACTIVE_OR_DELETED);
+					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
 		}
 
 		/**
@@ -133,7 +133,7 @@ public class UserAuthService {
 		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= MAX_LOCK_COUNT) {
 			throw new AuthServiceException(
 					"User Account Locked : User Account Login is Suspended, from: " + emp.getLockDate(),
-					AuthServiceError.USER_ACCOUNT_LOCKED);
+					RbaacServiceError.USER_ACCOUNT_LOCKED);
 		}
 
 		/**
@@ -195,7 +195,7 @@ public class UserAuthService {
 		 */
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtpHash) || StringUtils.isBlank(ipAddress)) {
 			throw new AuthServiceException("Employee Number, Otp Hash & IP Address are Manadatory",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		// Get Cached OTP data for the user.
@@ -206,7 +206,7 @@ public class UserAuthService {
 		// eOtp is not checked
 		if (userOtpData == null || StringUtils.isBlank(userOtpData.getOtpData().getHashedmOtp())) {
 			throw new AuthServiceException("Invalid OTP: OTP is not generated for the user or timedOut",
-					AuthServiceError.INVALID_OTP);
+					RbaacServiceError.INVALID_OTP);
 		}
 
 		Employee employee = userOtpData.getEmployee();
@@ -226,7 +226,7 @@ public class UserAuthService {
 				userOtpCache.remove(employeeNo);
 
 				throw new AuthServiceException("Invalid OTP : Max OTP Attempts are Exeeded : User Account is LOCKED ",
-						AuthServiceError.USER_ACCOUNT_LOCKED);
+						RbaacServiceError.USER_ACCOUNT_LOCKED);
 			}
 
 			// Normal Incorrect Attempt: Increment Count
@@ -234,7 +234,7 @@ public class UserAuthService {
 
 			userOtpCache.fastPut(employeeNo, userOtpData);
 
-			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", AuthServiceError.INVALID_OTP);
+			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", RbaacServiceError.INVALID_OTP);
 		}
 
 		// OTP is validated

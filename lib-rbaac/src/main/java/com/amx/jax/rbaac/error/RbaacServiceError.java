@@ -2,10 +2,11 @@ package com.amx.jax.rbaac.error;
 
 import com.amx.jax.exception.IExceptionEnum;
 
+// TODO: Auto-generated Javadoc
 /**
- * The Enum AuthServiceError.
+ * The Enum RbaacServiceError.
  */
-public enum AuthServiceError implements IExceptionEnum {
+public enum RbaacServiceError implements IExceptionEnum {
 
 	/** The already exist. */
 	// RBAC error
@@ -25,6 +26,11 @@ public enum AuthServiceError implements IExceptionEnum {
 
 	/** The invalid role definition. */
 	INVALID_ROLE_DEFINITION,
+	
+	/** The invalid permission. */
+	INVALID_PERMISSION,
+	
+	INVALID_ACCESS_TYPE_SCOPE,
 
 	/** The invalid user details. */
 	INVALID_USER_DETAILS,
@@ -38,9 +44,12 @@ public enum AuthServiceError implements IExceptionEnum {
 	/** The user account locked. */
 	USER_ACCOUNT_LOCKED,
 
+	/** The duplicate role. */
+	DUPLICATE_ROLE,
+
 	/** The incompatible data type. */
 	INCOMPATIBLE_DATA_TYPE,
-	
+
 	/** The unknown exception. */
 	// MISC
 	UNKNOWN_EXCEPTION;

@@ -1,6 +1,7 @@
 package com.amx.jax.rbaac;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -8,7 +9,6 @@ import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Interface RbaacService.
  *
@@ -32,7 +32,7 @@ public interface RbaacService {
 
 		/** The Constant AUTHORISE. */
 		public static final String AUTHORISE = SERVICE_PREFIX + API_VERSION_V1 + "/auth/authorise";
-		
+
 		/** The Constant PERMS_GET. */
 		public static final String PERMS_GET = SERVICE_PREFIX + API_VERSION_V1 + "/perms/get";
 
@@ -84,21 +84,32 @@ public interface RbaacService {
 	/**
 	 * Gets the all permissions.
 	 *
-	 * @param ipAddr the ip addr
-	 * @param deviceId the device id
+	 * @param ipAddr
+	 *            the ip addr
+	 * @param deviceId
+	 *            the device id
 	 * @return the all permissions
 	 */
 	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId);
-	
 
 	/**
 	 * Gets the all roles.
 	 *
-	 * @param ipAddr the ip addr
-	 * @param deviceId the device id
+	 * @param ipAddr
+	 *            the ip addr
+	 * @param deviceId
+	 *            the device id
 	 * @return the all roles
 	 */
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId);
+
+	/**
+	 * Save role.
+	 *
+	 * @param roleRequestDTO the role request DTO
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<RoleResponseDTO, Object> saveRole(RoleRequestDTO roleRequestDTO);
 
 	/**
 	 * Test get.

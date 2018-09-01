@@ -11,7 +11,7 @@ import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.util.JaxUtil;
 
 /**
@@ -55,7 +55,7 @@ public class AuthServiceException extends AmxApiException {
 	 * @param error
 	 *            the error
 	 */
-	public AuthServiceException(String errorMessage, AuthServiceError error) {
+	public AuthServiceException(String errorMessage, RbaacServiceError error) {
 		super(errorMessage, error.getCode());
 	}
 
@@ -77,7 +77,7 @@ public class AuthServiceException extends AmxApiException {
 	 * @param expressions
 	 *            the expressions
 	 */
-	public AuthServiceException(AuthServiceError error, Object... expressions) {
+	public AuthServiceException(RbaacServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
 		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
@@ -94,7 +94,7 @@ public class AuthServiceException extends AmxApiException {
 	 * @param expressions
 	 *            the expressions
 	 */
-	public AuthServiceException(String errorMessage, AuthServiceError error, Object... expressions) {
+	public AuthServiceException(String errorMessage, RbaacServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
 		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
@@ -119,7 +119,7 @@ public class AuthServiceException extends AmxApiException {
 	 * @param error the error
 	 * @param e the e
 	 */
-	public AuthServiceException(String errorMessage, AuthServiceError error, Exception e) {
+	public AuthServiceException(String errorMessage, RbaacServiceError error, Exception e) {
 		super(e);
 		this.errorMessage = errorMessage;
 		this.errorKey = error.getCode();
@@ -150,7 +150,7 @@ public class AuthServiceException extends AmxApiException {
 	 */
 	@Override
 	public IExceptionEnum getErrorIdEnum(String errorId) {
-		return AuthServiceError.valueOf(errorId);
+		return RbaacServiceError.valueOf(errorId);
 	}
 
 	/*

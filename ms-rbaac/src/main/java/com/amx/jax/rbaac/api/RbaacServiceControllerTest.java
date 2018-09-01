@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.RbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
@@ -53,6 +54,13 @@ public class RbaacServiceControllerTest implements RbaacService {
 	@RequestMapping(value = ApiEndPoints.ROLES_GET, method = RequestMethod.POST)
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId) {
 		return rbaacServiceClient.getAllRoles(ipAddr, deviceId);
+	}
+
+	@Override
+	@ApiOperation("User Roles Save")
+	@RequestMapping(value = ApiEndPoints.ROLES_SAVE, method = RequestMethod.POST)
+	public AmxApiResponse<RoleResponseDTO, Object> saveRole(RoleRequestDTO roleRequestDTO) {
+		return rbaacServiceClient.saveRole(roleRequestDTO);
 	}
 
 	@Override

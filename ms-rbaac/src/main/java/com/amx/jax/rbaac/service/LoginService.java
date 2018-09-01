@@ -29,7 +29,7 @@ import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.dto.RoleDefinitionDataTable;
 import com.amx.jax.rbaac.dto.UserDetailsDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.AuthLoginManager;
 import com.amx.jax.rbaac.manager.AuthLoginOTPManager;
@@ -592,7 +592,7 @@ public class LoginService extends AbstractService {
 					userM.setEmployeeId(user.getEmployeeId());
 					if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 						// error already exist
-						throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.ALREADY_EXIST);
+						throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.ALREADY_EXIST);
 					} else {
 						userM.setRoleId(roleId);
 					}
@@ -604,7 +604,7 @@ public class LoginService extends AbstractService {
 				rbaacDao.saveRoleToUser(userM);
 				savesStatus = Boolean.TRUE;
 			} else {
-				throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.INVALID_USER_DETAILS);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -782,11 +782,11 @@ public class LoginService extends AbstractService {
 					apiResponse = sendOtp(emp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_USER_DETAILS);
+							RbaacServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_OR_MISSING_DATA);
+						RbaacServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -819,11 +819,11 @@ public class LoginService extends AbstractService {
 					apiResponse = validateOtp(emp, mOtp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_USER_DETAILS);
+							RbaacServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_OR_MISSING_DATA);
+						RbaacServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			System.out.println(e.getMessage());

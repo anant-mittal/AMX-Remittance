@@ -29,7 +29,7 @@ import com.amx.jax.rbaac.dbmodel.RoleMaster;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.dto.UserDetailsDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.AuthLoginManager;
 import com.amx.jax.rbaac.manager.AuthLoginOTPManager;
@@ -450,7 +450,7 @@ public class AuthServiceImpl implements AuthService {
 				userM.setEmployeeId(user.getEmployeeId());
 				if (user.getRoleId() != null && user.getRoleId().compareTo(roleId) == 0) {
 					// error already exist
-					throw new AuthServiceException("saveAssignRoleToUser fail ", AuthServiceError.ALREADY_EXIST);
+					throw new AuthServiceException("saveAssignRoleToUser fail ", RbaacServiceError.ALREADY_EXIST);
 				} else {
 					userM.setRoleId(roleId);
 				}
@@ -566,19 +566,19 @@ public class AuthServiceImpl implements AuthService {
 		UserOtpData otpData = userOtpCache.get(emp.getEmployeeNumber());
 
 		if(null == otpData) {
-			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
+			throw new AuthServiceException("Invalid OTP", RbaacServiceError.INVALID_OTP);
 		}
 		
 		if (!otpData.getOtpData().getmOtp().equalsIgnoreCase(mOtp)) {
 			otpData.incrementOtpAttemptCount();
-			throw new AuthServiceException("Invalid OTP", AuthServiceError.INVALID_OTP);
+			throw new AuthServiceException("Invalid OTP", RbaacServiceError.INVALID_OTP);
 		}
 
 		userOtpCache.remove(emp.getEmployeeNumber());
 
 		if (otpData.getOtpAttemptCount() >= 3) {
 
-			throw new AuthServiceException("Otp Count Exceeded", AuthServiceError.OTP_LIMIT_EXCEEDED);
+			throw new AuthServiceException("Otp Count Exceeded", RbaacServiceError.OTP_LIMIT_EXCEEDED);
 		}
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
@@ -621,11 +621,11 @@ public class AuthServiceImpl implements AuthService {
 					return sendOtp(emp);
 				} else {
 					throw new AuthServiceException("Employee Details not available",
-							AuthServiceError.INVALID_USER_DETAILS);
+							RbaacServiceError.INVALID_USER_DETAILS);
 				}
 			} else {
 				throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-						AuthServiceError.INVALID_OR_MISSING_DATA);
+						RbaacServiceError.INVALID_OR_MISSING_DATA);
 			}
 		} catch (Exception e) {
 			LOGGER.info(e.getMessage());
@@ -641,11 +641,11 @@ public class AuthServiceImpl implements AuthService {
 			if (emp != null) {
 				return validateOtp(emp, mOtp);
 			} else {
-				throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_USER_DETAILS);
+				throw new AuthServiceException("Employee Details not available", RbaacServiceError.INVALID_USER_DETAILS);
 			}
 		} else {
 			throw new AuthServiceException("Employee Number and Civil Id Manadatory",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 	}

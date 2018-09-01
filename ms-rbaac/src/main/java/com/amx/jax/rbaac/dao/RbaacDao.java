@@ -73,7 +73,7 @@ public class RbaacDao {
 
 	@Autowired
 	IRoleRepository roleRepository;
-	
+
 	public List<AccessType> getAllAccessTypes() {
 		return accessTypeRepository.findAll();
 	}
@@ -85,11 +85,23 @@ public class RbaacDao {
 	public List<Permission> getAllPermissions() {
 		return permissionRepository.findAll();
 	}
-	
-	public List<Role> getAllRoles(){
+
+	public Role getRoleById(BigDecimal id) {
+		return roleRepository.findById(id);
+	}
+
+	public Role getRoleByRoleName(String roleName) {
+		return roleRepository.findByRole(roleName);
+	}
+
+	public List<Role> getAllRoles() {
 		return roleRepository.findAll();
 	}
- 
+
+	public Role saveRole(Role role) {
+		return roleRepository.saveAndFlush(role);
+	}
+
 	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
 		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
 				ipAddress);
@@ -121,8 +133,10 @@ public class RbaacDao {
 	}
 
 	public Employee saveEmployee(Employee employee) {
-		return employeeRepository.save(employee);
+		return employeeRepository.saveAndFlush(employee);
 	}
+
+	/** UnUsed APIs **/
 
 	public List<RoleDefinition> fetchEmpRoleMenu(BigDecimal roleId) {
 		return roleDefinitionRepositoryOld.findByRoleId(roleId);
