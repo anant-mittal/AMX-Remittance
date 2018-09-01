@@ -142,7 +142,7 @@
 	</repositories>	
 -->
 
-<!-- 
+ 
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -150,7 +150,7 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
- -->
+
 
 	<modules>
 		<module>common-utils</module>
