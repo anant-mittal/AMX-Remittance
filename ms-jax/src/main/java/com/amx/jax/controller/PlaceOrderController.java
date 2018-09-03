@@ -11,12 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PlaceOrderService;
+import com.amx.jax.util.JaxContextUtil;
 
 /**
  * @author Subodh Bhoir
@@ -125,6 +129,20 @@ public class PlaceOrderController {
 		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = placeOrderService.updatePlaceOrder(dto);
+		
+		return response;
+	}
+	
+	/**
+	 * place order on trigger
+	 * @return
+	 */
+	@RequestMapping(value = "/get/placeorder/ontrigger", method = RequestMethod.GET)
+	public ApiResponse handleUrlPlaceOrderOnTrigger(@RequestParam BigDecimal pipsMasterId) {
+		logger.info("Inside PlaceOrderOnTrigger Request with parameters --> Pips Master Id: "+pipsMasterId);
+
+		ApiResponse response = null;
+		response = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
 		
 		return response;
 	}

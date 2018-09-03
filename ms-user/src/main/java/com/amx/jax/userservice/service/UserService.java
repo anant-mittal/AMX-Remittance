@@ -512,14 +512,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new GlobalException("User with userId: " + userId + " is not registered",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered",JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered or not active",JaxError.USER_NOT_REGISTERED);
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);
@@ -759,7 +757,11 @@ public class UserService extends AbstractUserService {
 			dto.setIdentityExpiredDate(model.getIdentityExpiredDate());
 			dto.setEmail(model.getEmail() == null ? "" : model.getEmail());
 			dto.setMobile(model.getMobile() == null ? "" : model.getMobile());
-			dto.setLoyaltyPoints(model.getLoyaltyPoints());
+			if(model.getLoyaltyPoints()!=null) {
+				dto.setLoyaltyPoints(model.getLoyaltyPoints().compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO : model.getLoyaltyPoints());
+			}else {
+				dto.setLoyaltyPoints(BigDecimal.ZERO);
+			}
 			dto.setDateOfBirth(model.getDateOfBirth());
 			dto.setCustomerId(model.getCustomerId());
 			dto.setCustomerReference(model.getCustomerReference());

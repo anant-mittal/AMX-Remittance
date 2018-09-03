@@ -7,6 +7,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.logger.client.AuditServiceClient;
+import com.amx.jax.logger.events.RequestTrackEvent;
+
 @Service
 public class TunnelService implements ITunnelService {
 
@@ -21,12 +26,18 @@ public class TunnelService implements ITunnelService {
 			return 0L;
 		}
 		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(topic);
-		LOGGER.info("TOPICS===|{}", topicQueue.getChannelNames().toString());
-		return topicQueue.publish(new TunnelMessage<T>(messagePayload));
+		long startTime = System.currentTimeMillis();
+
+		AppContextUtil.setTraceTime(startTime);
+		AppContext context = AppContextUtil.getContext();
+
+		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		return topicQueue.publish(message);
 	}
 
 	public void sayHello() {
-		this.send(TunnelClient.TEST_TOPIC, "Hey There");
+		this.send(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
 	}
 
 }

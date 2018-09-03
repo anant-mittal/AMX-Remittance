@@ -867,7 +867,7 @@ public class BeneficiaryService extends AbstractService {
 
     public ApiResponse getPlaceOrderBeneficiary(BigDecimal customerId, BigDecimal applicationCountryId,BigDecimal placeOrderId) {
         ApiResponse response = getBlackApiResponse();
-        try {
+
             BenificiaryListView poBene = null;
             BeneficiaryListDTO beneDto = null;
             CustomerRemittanceTransactionView trnxView = null;
@@ -876,11 +876,13 @@ public class BeneficiaryService extends AbstractService {
 
             ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
             
-            if (poResponse.getData() != null) {
+            if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+                logger.info("PlaceOrderDTO --> "+poDto.toString());
+                remitPageDto.setPlaceOrderDTO(poDto);
             }else {
-            	auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
-                throw new GlobalException("PO not found for id : "+placeOrderId);
+                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
+                throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
             
             
@@ -891,8 +893,8 @@ public class BeneficiaryService extends AbstractService {
             } 
 
             if (poBene == null) {
-            	auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_PO_ID));
-                throw new GlobalException("Not found");
+                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_PO_ID));
+                throw new GlobalException("PO bene not found : ",JaxError.BENEFICIARY_LIST_NOT_FOUND);
             } else {
                 beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
                 
@@ -921,10 +923,6 @@ public class BeneficiaryService extends AbstractService {
             response.getData().setType(remitPageDto.getModelType());
             response.setResponseStatus(ResponseStatus.OK);
             auditService.log (createBeneficiaryEvent(remitPageDto,Type.BENE_PO_SUCCESS));
-        } catch (Exception e) {
-            logger.error("Error occured in getDefaultBeneficiary method", e);
-            throw new GlobalException("Default bene not found" + e.getMessage());
-        }
         return response;
     }
     
