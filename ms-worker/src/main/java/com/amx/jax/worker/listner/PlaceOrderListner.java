@@ -45,8 +45,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 	public void rateAlertPlaceOrder(BigDecimal pipsMasterId) {
 
 		try {
-			List<PlaceOrderNotificationDTO> placeOrderList = placeOrderClient
-					.getPlaceOrderOnTrigger(pipsMasterId)
+			List<PlaceOrderNotificationDTO> placeOrderList = placeOrderClient.getPlaceOrderOnTrigger(pipsMasterId)
 					.getResults();
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				this.sendBatchNotification(placeOrderList);
@@ -77,12 +76,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 			emailList.add(email);
 			PushMessage pushMessage = new PushMessage();
 			pushMessage.addToUser(placeorderNot.getCustomerId());
-			pushMessage.setSubject("Target Exchange Rate is met");
-			pushMessage.setMessage(String.format(
-					"The {%s-%s} target rate of %.4f has been met. Please execute the order immediately."
-							+ " Rates are subject to change as per market movement.",
-					placeorderNot.getInputCur(), placeorderNot.getOutputCur(), placeorderNot.getRate()));
-
+			pushMessage.getModel().put(RESP_DATA_KEY, placeorderNot);
 			notificationsList.add(pushMessage);
 		}
 		try {
