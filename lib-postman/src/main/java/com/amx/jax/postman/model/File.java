@@ -20,7 +20,8 @@ public class File {
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
 	public enum Type {
-		PDF("application/pdf"), CSV("text/csv"), PNG("image/png");
+		PDF("application/pdf"), CSV("text/csv"), PNG("image/png"), JSON("application/json"), HTML("text/html"), TEXT(
+				"text/plain");
 
 		String contentType;
 
