@@ -1,7 +1,7 @@
 variables:
-  SONAR_URL: "http://your_sonar_url"
-  SONAR_LOGIN: "sonar_user_id"
-  SONAR_PASSWORD: "sonar_password"
+  SONAR_URL: "https://sonar.amxremit.com"
+  SONAR_LOGIN: "gitlab"
+  SONAR_PASSWORD: "amx@123"
 
 sonarqube_master_job:
   stage: test
