@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,14 +74,6 @@ public class HomeController {
 	@Autowired
 	private RestService restService;
 
-	/** The clean CDN url. */
-	@Value("${jax.cdn.url}")
-	private String cleanCDNUrl;
-
-	/** The fcm sender id. */
-	@Value("${fcm.senderid}")
-	private String fcmSenderId;
-
 	/**
 	 * Gets the version.
 	 *
@@ -92,8 +83,8 @@ public class HomeController {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
 			try {
-				Map<String, Object> map = restService.ajax(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew).get()
-						.asMap();
+				Map<String, Object> map = restService
+						.ajax(webAppConfig.getCleanCDNUrl() + "/dist/build.json?_=" + checkTimeNew).get().asMap();
 				if (map.containsKey("version")) {
 					versionNew = ArgUtil.parseAsString(map.get("version"));
 				}
@@ -139,10 +130,10 @@ public class HomeController {
 	public String loginJPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
-		model.addAttribute("cdnUrl", cleanCDNUrl);
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
-		model.addAttribute("fcmSenderId", fcmSenderId);
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
 
@@ -171,10 +162,10 @@ public class HomeController {
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
-		model.addAttribute("cdnUrl", cleanCDNUrl);
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
-		model.addAttribute("fcmSenderId", fcmSenderId);
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
 
@@ -193,5 +184,11 @@ public class HomeController {
 		sessionService.getGuestSession().setLanguage(lang);
 		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
 		return "terms";
+	}
+
+	@RequestMapping(value = { "/apple-app-site-association" }, method = { RequestMethod.GET })
+	public String applejson(Model model) {
+		model.addAttribute("appid", webAppConfig.getIosAppId());
+		return "json/apple-app-site-association";
 	}
 }

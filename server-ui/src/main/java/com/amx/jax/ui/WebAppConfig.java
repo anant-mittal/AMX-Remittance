@@ -14,6 +14,17 @@ import com.amx.jax.ui.UIConstants.Features;
 @Component
 public class WebAppConfig {
 
+	/** The clean CDN url. */
+	@Value("${jax.cdn.url}")
+	private String cleanCDNUrl;
+
+	/** The fcm sender id. */
+	@Value("${fcm.senderid}")
+	private String fcmSenderId;
+
+	@Value("${ui.ios.appid}")
+	private String iosAppId;
+
 	/** The features. */
 	@TenantValue("${ui.features}")
 	private Features[] features;
@@ -84,6 +95,18 @@ public class WebAppConfig {
 
 	public boolean isNotifyGeoEnabled() {
 		return notifyGeoEnabled;
+	}
+
+	public String getCleanCDNUrl() {
+		return cleanCDNUrl;
+	}
+
+	public String getFcmSenderId() {
+		return fcmSenderId;
+	}
+
+	public String getIosAppId() {
+		return iosAppId;
 	}
 
 }
