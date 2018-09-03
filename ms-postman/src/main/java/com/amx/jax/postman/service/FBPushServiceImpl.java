@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +15,18 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManResponse;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.MapBuilder.BuilderMap;
+
+import net.bytebuddy.description.annotation.AnnotationList.Empty;
+import net.minidev.json.JSONUtil;
 
 /**
  * The Class FBPushServiceImpl.
@@ -45,6 +51,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/** The audit service client. */
 	@Autowired
 	AuditServiceClient auditServiceClient;
+
+	@Autowired
+	private FileService fileService;
 
 	/** The Constant MAIN_TOPIC. */
 	private static final JsonPath MAIN_TOPIC = new JsonPath("/to");
@@ -86,6 +95,37 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	@Async
 	public PushMessage sendDirect(PushMessage msg) {
 		if (msg.getTo() != null) {
+
+			if (msg.getTemplate() != null) {
+				File file = new File();
+				file.setTemplate(msg.getTemplate());
+				file.setModel(msg.getModel());
+				file.setLang(msg.getLang());
+
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file).getContent(), Map.class);
+				msg.setModel(map);
+
+				String message = ArgUtil.parseAsString(map.get("_message"));
+				if (!ArgUtil.isEmptyString(message)) {
+					msg.setMessage(message);
+					map.remove("_message");
+				}
+
+				String subject = ArgUtil.parseAsString(map.get("_subject"));
+				if (!ArgUtil.isEmptyString(subject)) {
+					msg.setSubject(subject);
+					map.remove("_subject");
+				}
+
+				String image = ArgUtil.parseAsString(map.get("_image"));
+				if (!ArgUtil.isEmptyString(image)) {
+					msg.setImage(image);
+					map.remove("_image");
+				}
+
+			}
+
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();
 			StringBuilder iosTopic = new StringBuilder();
