@@ -34,18 +34,18 @@ public class WebAppConfig {
 	private String appTitle;
 
 	/** The notification gap. */
-	@Value("${notification.sleep.gap}")
+	@TenantValue("${notification.sleep.gap}")
 	private String notificationGap;
 
 	/** The notify range long. */
-	@Value("${notification.range.long}")
+	@TenantValue("${notification.range.long}")
 	private String notifyRangeLong;
 
 	/** The notify range short. */
-	@Value("${notification.range.short}")
+	@TenantValue("${notification.range.short}")
 	private String notifyRangeShort;
 
-	@Value("${notification.geo.enabled}")
+	@TenantValue("${notification.geo.enabled}")
 	private boolean notifyGeoEnabled;
 
 	/**
