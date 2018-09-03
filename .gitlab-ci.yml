@@ -1,0 +1,12 @@
+variables:
+  SONAR_URL: "http://your_sonar_url"
+  SONAR_LOGIN: "sonar_user_id"
+  SONAR_PASSWORD: "sonar_password"
+
+sonarqube_master_job:
+  stage: test
+  only:
+    - master
+  image: maven:3.3.9-jdk-8-alpine
+  script:
+    - mvn --batch-mode verify sonar:sonar -Dsonar.host.url=$SONAR_URL -Dsonar.login=$SONAR_LOGIN -Dsonar.password=$SONAR_PASSWORD
