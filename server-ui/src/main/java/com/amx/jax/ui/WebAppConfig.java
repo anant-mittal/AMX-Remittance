@@ -22,7 +22,7 @@ public class WebAppConfig {
 	@Value("${fcm.senderid}")
 	private String fcmSenderId;
 
-	@Value("${ui.ios.appid}")
+	@TenantValue("${ui.ios.appid}")
 	private String iosAppId;
 
 	/** The features. */
