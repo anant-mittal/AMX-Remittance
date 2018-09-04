@@ -9,11 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
@@ -256,4 +260,25 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	
+	public ApiResponse saveCustomerRating(@RequestBody CustomerRatingDTO customerRatingDTO) 
+		throws RemittanceTransactionValidationException, LimitExeededException {
+		
+		try {
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
+			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
 }
