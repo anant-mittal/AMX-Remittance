@@ -82,8 +82,8 @@ public class TunnelSubscriberFactory {
 				AppContextUtil.setContext(context);
 				if (this.integrity) {
 					RMapCache<String, String> map = redisson.getMapCache(channel);
-					String integrityKey = appConfig.getAppClass() + "#" + listener.getClass().getName() + "#"
-							+ msg.getId();
+					String integrityKey = appConfig.getAppEnv() + "#" + appConfig.getAppName() + "#"
+							+ listener.getClass().getName() + "#" + msg.getId();
 					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
 					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
 						this.doMessage(channel, msg);
@@ -98,7 +98,12 @@ public class TunnelSubscriberFactory {
 
 			public void doMessage(String channel, TunnelMessage<M> msg) {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
-				this.subscriber.onMessage(channel, msg.getData());
+				try {
+					this.subscriber.onMessage(channel, msg.getData());
+				} catch (Exception e) {
+					LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+				}
+
 			}
 		});
 	}

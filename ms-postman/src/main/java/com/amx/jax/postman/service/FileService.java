@@ -76,6 +76,8 @@ public class FileService {
 			if (file.getName() == null) {
 				if (file.getType() == Type.PDF) {
 					file.setName(file.getTemplate().getFileName() + ".pdf");
+				} else if (file.getType() == Type.JSON) {
+					file.setName(file.getTemplate().getFileName() + ".json");
 				} else {
 					file.setName(file.getTemplate().getFileName() + ".html");
 				}

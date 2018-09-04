@@ -13,8 +13,8 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
@@ -129,7 +129,7 @@ public class HotPointService {
 
 	/** The b push service. */
 	@Autowired
-	FBPushService fBPushService;
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	AuditService auditService;
@@ -192,7 +192,7 @@ public class HotPointService {
 
 		if (webAppConfig.isNotifyGeoEnabled()) {
 			auditService.log(event);
-			fBPushService.sendDirect(pushMessage);
+			pushNotifyClient.sendDirect(pushMessage);
 		}
 		return messages;
 	}

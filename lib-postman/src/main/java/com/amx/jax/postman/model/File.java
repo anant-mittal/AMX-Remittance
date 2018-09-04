@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.constraints.Null;
 
 import org.slf4j.Logger;
 
@@ -20,7 +19,8 @@ public class File {
 	private static Logger LOGGER = LoggerService.getLogger(File.class);
 
 	public enum Type {
-		PDF("application/pdf"), CSV("text/csv"), PNG("image/png");
+		PDF("application/pdf"), CSV("text/csv"), PNG("image/png"), JSON("application/json"), HTML("text/html"), TEXT(
+				"text/plain");
 
 		String contentType;
 
