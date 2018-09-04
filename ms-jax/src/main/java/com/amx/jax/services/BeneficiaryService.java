@@ -953,7 +953,6 @@ public class BeneficiaryService extends AbstractService {
         return response;
     }
     
-<<<<<<<<< Temporary merge branch 1
     private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
     	CurrencyMasterDTO dto = new CurrencyMasterDTO();
     	List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
@@ -969,7 +968,6 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
-=========
     private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;
@@ -995,5 +993,4 @@ public class BeneficiaryService extends AbstractService {
         return beneAuditEvent;
     }
     
->>>>>>>>> Temporary merge branch 2
 }
