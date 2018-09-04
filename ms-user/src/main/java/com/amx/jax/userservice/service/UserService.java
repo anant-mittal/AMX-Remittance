@@ -335,6 +335,9 @@ public class UserService extends AbstractUserService {
 			if (customer != null) {
 				customerId = customer.getCustomerId();
 			}
+			
+			//---- check for blacklisted customer ----
+			userValidationService.validateBlackListedCustomerForLogin(customer);
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
