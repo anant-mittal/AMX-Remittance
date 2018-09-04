@@ -18,8 +18,11 @@ import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.meta.MetaData;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
@@ -45,6 +48,11 @@ public class PlaceOrderService extends AbstractService {
 	@Autowired
 	CustomerDao customerDao;
 
+	@Autowired
+	MetaData metaData;
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;	
 	/**
 	 * Saved place order
 	 * @param dto
@@ -52,11 +60,26 @@ public class PlaceOrderService extends AbstractService {
 	 */
 	public ApiResponse savePlaceOrder(PlaceOrderDTO dto) {
 		ApiResponse response = getBlackApiResponse();
+		
+		BenificiaryListView poBene = null;
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
+		BigDecimal beneRealtionId = dto.getBeneficiaryRelationshipSeqId();
+		
+		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+            poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
+        }
+				
 		PlaceOrder placeOrderModel = PlaceOrderUtil.getPlaceOrderModel(dto);
 		//dto.getBeneficiaryRelationshipSeqId();
 		try {
 			placeOrderModel.setCreatedDate(new Date());
 			placeOrderModel.setIsActive("Y");
+			
+			placeOrderModel.setBankId(poBene.getBankId());
+			placeOrderModel.setCountryId(poBene.getCountryId());
+			placeOrderModel.setCurrencyId(poBene.getCurrencyId());
 			
 			placeOrderdao.save(placeOrderModel);
 			response.setResponseStatus(ResponseStatus.OK);
@@ -158,6 +181,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 					
+					placeDTO.setBankId(rec.getBankId());
+					placeDTO.setCountryId(rec.getCountryId());
+					placeDTO.setCurrencyId(rec.getCurrencyId());
+					
 					dtoList.add(placeDTO);
 				}
 				
@@ -228,6 +255,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
 					
+					placeDTO.setBankId(rec.getBankId());
+					placeDTO.setCountryId(rec.getCountryId());
+					placeDTO.setCurrencyId(rec.getCurrencyId());
+					
 					dtoList.add(placeDTO);
 				}
 				
@@ -269,6 +300,10 @@ public class PlaceOrderService extends AbstractService {
 				rec.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
 				rec.setForeignCurrencyId(rec.getForeignCurrencyId());
 				rec.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
+				
+				rec.setBankId(rec.getBankId());
+				rec.setCountryId(rec.getCountryId());
+				rec.setCurrencyId(rec.getCurrencyId());
 				
 				placeOrderdao.save(rec);
 				
@@ -335,8 +370,7 @@ public class PlaceOrderService extends AbstractService {
 		}
 		return response;
 	}
-
-
+	
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub

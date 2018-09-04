@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PlaceOrderService;
@@ -48,9 +47,10 @@ public class PlaceOrderController {
 	public ApiResponse handleUrlSave(@RequestBody @Valid PlaceOrderDTO dto) 
 	{
 		logger.info("In save with parameters" + dto.toString());
-		BigDecimal customerId = metaData.getCustomerId();
 		
+		BigDecimal customerId = metaData.getCustomerId();
 		dto.setCustomerId(customerId);
+				
 		ApiResponse response = null;
 		response = placeOrderService.savePlaceOrder(dto);
 		return response;
