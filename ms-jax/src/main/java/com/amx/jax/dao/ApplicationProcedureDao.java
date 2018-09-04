@@ -977,7 +977,7 @@ public class ApplicationProcedureDao {
 
 	public Map<String, Object> getRoutingDetailFromOthProcedure(Map<String, Object> inputValue) {
 
-		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+		LOGGER.info("In getRoutingDetailFromOthProcedure params:" + inputValue.toString());
 
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
 				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
@@ -1045,7 +1045,7 @@ public class ApplicationProcedureDao {
 
 	public Map<String, Object> getRoutingDetailFromOthRateProcedure(Map<String, Object> inputValue) {
 
-		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+		LOGGER.info("In getRoutingDetailFromOthRateProcedure params:" + inputValue.toString());
 
 		Connection connection = null;
 		CallableStatement cs = null;

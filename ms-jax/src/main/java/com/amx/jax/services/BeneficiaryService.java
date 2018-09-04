@@ -47,6 +47,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.auditlog.BeneficiaryAuditEvent;
+import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.BeneficiaryDao;
@@ -65,6 +67,8 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
@@ -150,10 +154,12 @@ public class BeneficiaryService extends AbstractService {
 	BeneficaryAccountRepository beneficaryAccountRepository;
 	@Autowired
 	JaxProperties jaxProperties ; 
-	
+
 	@Autowired
 	ICurrencyDao currencyDao;
 
+    @Autowired
+    AuditService auditService;
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
@@ -274,11 +280,14 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
 		} catch (Exception e) {
+			auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_EXEC));
 			throw new GlobalException("Error while update");
 		}
 	}
@@ -302,12 +311,15 @@ public class BeneficiaryService extends AbstractService {
 				}
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_FAV_UPDATE_SUCCESS));
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_FAV_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 
 			return response;
 		} catch (Exception e) {
+			auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_FAV_UPDATE_EXEC));
 			throw new GlobalException("Error while update");
 		}
 
@@ -662,9 +674,11 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 				response.getData().getValues().add(new BooleanResponse(Boolean.TRUE));
 				response.getData().setType("boolean_response");
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
@@ -892,6 +906,7 @@ public class BeneficiaryService extends AbstractService {
                 remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
                 
             }else {
+                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
                 throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
             
@@ -902,7 +917,7 @@ public class BeneficiaryService extends AbstractService {
             } 
 
             if (poBene == null) {
-            	logger.info("Beneficiary is not available for benen relationship id "+beneRealtionId);
+                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_PO_ID));
                 throw new GlobalException("PO bene not found : ",JaxError.BENEFICIARY_LIST_NOT_FOUND);
             } else {
                 beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
@@ -931,7 +946,7 @@ public class BeneficiaryService extends AbstractService {
             response.getData().getValues().add(remitPageDto);
             response.getData().setType(remitPageDto.getModelType());
             response.setResponseStatus(ResponseStatus.OK);
-        
+            auditService.log (createBeneficiaryEvent(remitPageDto,Type.BENE_PO_SUCCESS));
         return response;
     }
     
@@ -950,4 +965,30 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
+
+    private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BeneficiaryListDTO beneficiaryListDTO, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficiaryListDTO);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(RemittancePageDto remitPageDto, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,remitPageDto);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BigDecimal customerId, BigDecimal placeOrderId, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId,placeOrderId);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BigDecimal customerId, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId);
+        return beneAuditEvent;
+    }
+    
 }
