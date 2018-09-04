@@ -503,14 +503,12 @@ public class UserService extends AbstractUserService {
 		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(userId, JaxApiFlow.LOGIN);
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(userId);
 		if (onlineCustomer == null) {
-			throw new GlobalException("User with userId: " + userId + " is not registered",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered",JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
-			throw new GlobalException("User with userId: " + userId + " is not registered or not active",
-					JaxError.USER_NOT_REGISTERED);
+			throw new GlobalException("User with userId: " + userId + " is not registered or not active",JaxError.USER_NOT_REGISTERED);
 		}
 
 		userValidationService.validateCustomerLockCount(onlineCustomer);

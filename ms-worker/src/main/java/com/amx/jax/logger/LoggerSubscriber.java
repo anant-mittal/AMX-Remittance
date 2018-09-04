@@ -16,8 +16,8 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggerSubscriber.class);
 
-	@Autowired
-	MongoTemplate mongoTemplate;
+	//@Autowired
+	//MongoTemplate mongoTemplate;
 
 	/*
 	 * (non-Javadoc)
@@ -28,7 +28,7 @@ public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 	@Override
 	public void onMessage(String channel, Object event) {
 		LOGGER.debug("onMessage {}", channel);
-		mongoTemplate.save(event, "AuditEvent");
+		//mongoTemplate.save(event, "AuditEvent");
 	}
 
 }

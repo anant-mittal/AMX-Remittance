@@ -112,7 +112,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		BeneficiaryErrorStatusDto errorStatusDto = null;
 		String errorDesc = null;
 
-		System.out.println("beneDto :" + beneDto.isUpdateNeeded());
+		logger.debug("beneDto :" + beneDto.isUpdateNeeded());
 		if (!JaxUtil.isNullZeroBigDecimalCheck(beneDto.getLanguageId())) {
 			beneDto.setLanguageId(new BigDecimal(1));
 		}
@@ -194,7 +194,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					} else if (JaxUtil.isNullZeroBigDecimalCheck(beneContactList.get(0).getMobileNumber())) {
 						benePhoneLength = beneContactList.get(0).getMobileNumber().toString().length();
 					}
-					System.out.println("benePhoneLength :" + benePhoneLength);
+					logger.debug("benePhoneLength :" + benePhoneLength);
 				}
 			}
 
@@ -354,6 +354,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		} else {
 			isUpdateNeeded = true;
+			beneDto.setUpdateNeeded(true);
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);

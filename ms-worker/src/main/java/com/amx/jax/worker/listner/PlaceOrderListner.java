@@ -1,47 +1,95 @@
 package com.amx.jax.worker.listner;
 
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
+import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.event.Event;
+import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.postman.model.Templates;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEvent;
-import com.amx.jax.worker.service.PlaceOrderRateAlertService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 @TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, integrity = true)
 public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 
-	@Autowired
-	PlaceOrderRateAlertService rateAlertService;
-	
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-	public static final String BANK_ID = "BANKID";
-	public static final String TOAMOUNT = "TOAMOUNT";
-	public static final String CNTRYID = "CNTRYID";
-	public static final String CURRID = "CURRID";
-	public static final String FROMAMOUNT = "FROMAMOUNT";
-	public static final String DRVSELLRATE = "DRVSELLRATE";
-
-	// {"event_code":"XRATE_BEST_RATE_CHANGE","priority":"H",
-	// "description":"Exchange Rate change","data":
-	// {"FROMAMOUNT":"1","TOAMOUNT":"300000","CNTRYID":"94","CURRID":"4","BANKID":"1256","DRVSELLRATE":".004524"}}
+	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
 	public void onMessage(String channel, Event event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		BigDecimal bankId = ArgUtil.parseAsBigDecimal(event.getData().get(BANK_ID));
-		BigDecimal toAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TOAMOUNT));
-		BigDecimal countryId = ArgUtil.parseAsBigDecimal(event.getData().get(CNTRYID));
-		BigDecimal currencyId = ArgUtil.parseAsBigDecimal(event.getData().get(CURRID));
-		BigDecimal fromAmount = ArgUtil.parseAsBigDecimal(event.getData().get(FROMAMOUNT));
-		BigDecimal derivedSellRate = ArgUtil.parseAsBigDecimal(event.getData().get(DRVSELLRATE));
-		rateAlertService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
+		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
+		this.rateAlertPlaceOrder(pipsMasterId);
+	}
+
+	@Autowired
+	PlaceOrderClient placeOrderClient;
+
+	public void rateAlertPlaceOrder(BigDecimal pipsMasterId) {
+
+		try {
+			List<PlaceOrderNotificationDTO> placeOrderList = placeOrderClient
+					.getPlaceOrderOnTrigger(pipsMasterId)
+					.getResults();
+			if (placeOrderList != null && !placeOrderList.isEmpty()) {
+				this.sendBatchNotification(placeOrderList);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
+		}
+	}
+
+	@Autowired
+	private PostManClient postManClient;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
+
+	public void sendBatchNotification(List<PlaceOrderNotificationDTO> placeorderNotDTO) {
+
+		List<Email> emailList = new ArrayList<Email>();
+		List<PushMessage> notificationsList = new ArrayList<PushMessage>();
+		for (PlaceOrderNotificationDTO placeorderNot : placeorderNotDTO) {
+			LOGGER.info("Sending rate alert to " + placeorderNot.getEmail());
+			Email email = new Email();
+			email.setSubject("AMX Rate Alert");
+			email.addTo(placeorderNot.getEmail());
+			email.setTemplate(Templates.RATE_ALERT);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, placeorderNot);
+			emailList.add(email);
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.addToUser(placeorderNot.getCustomerId());
+			pushMessage.setSubject("Target Exchange Rate is met");
+			pushMessage.setMessage(String.format(
+					"The {%s-%s} target rate of %.4f has been met. Please execute the order immediately."
+							+ " Rates are subject to change as per market movement.",
+					placeorderNot.getInputCur(), placeorderNot.getOutputCur(), placeorderNot.getRate()));
+
+			notificationsList.add(pushMessage);
+		}
+		try {
+			postManClient.sendEmailBulk(emailList);
+			pushNotifyClient.send(notificationsList);
+		} catch (PostManException e) {
+			LOGGER.error("error in sendBatchNotification", e);
+		}
 	}
 }
