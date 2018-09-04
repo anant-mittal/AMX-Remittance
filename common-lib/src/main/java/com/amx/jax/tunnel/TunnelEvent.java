@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TunnelEvent {
+
+	TunnelEventScheme scheme() default TunnelEventScheme.ONCE_PER_COMPONENT;
+
 	String topic();
 
 	boolean integrity() default true;

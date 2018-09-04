@@ -52,6 +52,7 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public <T> RequestTrackEvent(Type type, TunnelMessage<T> message) {
 		super(type);
+		this.description = String.format("%s %s", this.type, message.getTopic());
 		this.context = message.getContext();
 	}
 

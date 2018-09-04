@@ -96,7 +96,7 @@ public class AuditServiceClient implements AuditService {
 			map.put("traceId", appContext.getTraceId());
 			map.put("tranxId", appContext.getTranxId());
 			map.put("tenant", appContext.getTenant());
-			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+			ITUNNEL_SERVICE.audit(AUDIT_EVENT_TOPIC, map);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while Publishing Event", e);
 		}

@@ -17,6 +17,7 @@ public class PushMessage extends Message {
 	Object result = null;
 
 	String image = null;
+	String link = null;
 
 	boolean condition;
 
@@ -65,6 +66,14 @@ public class PushMessage extends Message {
 
 	public void setCondition(boolean condition) {
 		this.condition = condition;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 
 }
