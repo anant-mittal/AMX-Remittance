@@ -26,6 +26,7 @@ import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
+import com.amx.jax.util.ObjectConverter;
 import com.amx.utils.ContextUtil;
 
 /**
@@ -240,8 +241,9 @@ public class UserAuthService {
 		// OTP is validated
 		userOtpCache.remove(employeeNo);
 
-		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
+		EmployeeDetailsDTO empDetail = ObjectConverter.convertEmployeeToEmpDetailsDTO(employee);
 
+		/*
 		empDetail.setCivilId(employee.getCivilId());
 		empDetail.setCountryId(employee.getCountryId());
 		empDetail.setDesignation(employee.getDesignation());
@@ -253,7 +255,8 @@ public class UserAuthService {
 		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
 		empDetail.setUserName(employee.getUserName());
 		empDetail.setRoleId(new BigDecimal("1"));
-
+		 */
+		
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
 

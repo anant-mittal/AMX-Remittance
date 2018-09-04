@@ -16,6 +16,8 @@ public interface IEmployeeRepository extends JpaRepository<Employee, Serializabl
 
 	public List<Employee> findByEmployeeNumberAndCivilIdAndDeviceId(String empcode, String identity, String deviceId);
 	
+	public List<Employee> findByFsCountryBranch(BigDecimal countryBranchId);
+	
 	public Employee findByUserNameAndPassword(String user, String pass);
 
 	public Employee findByEmployeeNumber(String empNo);

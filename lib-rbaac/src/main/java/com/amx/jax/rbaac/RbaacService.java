@@ -1,5 +1,7 @@
 package com.amx.jax.rbaac;
 
+import java.math.BigDecimal;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
@@ -8,6 +10,7 @@ import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 
 /**
  * The Interface RbaacService.
@@ -42,14 +45,14 @@ public interface RbaacService {
 		/** The Constant ROLES_SAVE. */
 		public static final String ROLES_SAVE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/save";
 
-		/** The Constant ROLES_ALLOCATE. */
-		public static final String ROLES_ALLOCATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/allocate";
+		/** The Constant RA_GET_FOR_BRANCH. */
+		public static final String RA_GET_FOR_BRANCH = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/get_for_branch";
 
-		/** The Constant ROLES_UPDATE. */
-		public static final String ROLES_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/update";
+		/** The Constant RA_UPDATE. */
+		public static final String RA_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/update";
 
-		/** The Constant ROLES_REVOKE. */
-		public static final String ROLES_REVOKE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/access/revoke";
+		/** The Constant RA_REVOKE. */
+		public static final String RA_REVOKE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/revoke";
 
 		/** The Constant UAC_UPDATE. */
 		public static final String UAC_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/user/account/update";
@@ -106,10 +109,22 @@ public interface RbaacService {
 	/**
 	 * Save role.
 	 *
-	 * @param roleRequestDTO the role request DTO
+	 * @param roleRequestDTO
+	 *            the role request DTO
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(RoleRequestDTO roleRequestDTO);
+
+	/**
+	 * Gets the user role mappings for branch.
+	 *
+	 * @param countryBranchId the country branch id
+	 * @param ipAddr the ip addr
+	 * @param deviceId the device id
+	 * @return the user role mappings for branch
+	 */
+	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
+			String ipAddr, String deviceId);
 
 	/**
 	 * Test get.

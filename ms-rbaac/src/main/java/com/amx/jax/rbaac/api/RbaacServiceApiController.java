@@ -3,6 +3,7 @@
  */
 package com.amx.jax.rbaac.api;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,6 +24,7 @@ import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAuthService;
 import com.amx.jax.rbaac.service.UserRoleService;
@@ -120,6 +122,21 @@ public class RbaacServiceApiController implements RbaacService {
 		RoleResponseDTO rolesResponseDTO = userRoleService.saveRole(roleRequestDTO);
 
 		return AmxApiResponse.build(rolesResponseDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
+	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
+			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddr,
+			@RequestParam String deviceId) {
+
+		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddr
+				+ " from device Id: " + deviceId);
+
+		UserRoleMappingsResponseDTO urMappingsResponseDTO = userRoleService
+				.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
+
+		return AmxApiResponse.build(urMappingsResponseDTO);
 	}
 
 	@Override

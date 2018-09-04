@@ -20,12 +20,14 @@ import com.amx.jax.rbaac.dbmodel.PermissionScopeMaster;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.RoleMaster;
+import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
 import com.amx.jax.rbaac.repository.IAccessTypeRepository;
 import com.amx.jax.rbaac.repository.IEmployeeRepository;
 import com.amx.jax.rbaac.repository.IPermissionRepository;
 import com.amx.jax.rbaac.repository.IRoleRepository;
 import com.amx.jax.rbaac.repository.IScopeRepository;
+import com.amx.jax.rbaac.repository.IUserRoleMappingRepository;
 import com.amx.jax.rbaac.repository.OldIFunctionalityTypeRepository;
 import com.amx.jax.rbaac.repository.OldIModuleRepository;
 import com.amx.jax.rbaac.repository.OldIPermissionRepository;
@@ -74,6 +76,9 @@ public class RbaacDao {
 	@Autowired
 	IRoleRepository roleRepository;
 
+	@Autowired
+	IUserRoleMappingRepository userRoleMappingRepository;
+
 	public List<AccessType> getAllAccessTypes() {
 		return accessTypeRepository.findAll();
 	}
@@ -102,6 +107,10 @@ public class RbaacDao {
 		return roleRepository.saveAndFlush(role);
 	}
 
+	public List<UserRoleMapping> getUserRoleMappingsByEmployeeIds(List<BigDecimal> employeeIdList) {
+		return userRoleMappingRepository.findByEmployeeIdIn(employeeIdList);
+	}
+
 	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
 		List<Employee> empList = employeeRepository.findByEmployeeNumberAndCivilIdAndIpAddress(empcode, identity,
 				ipAddress);
@@ -118,6 +127,10 @@ public class RbaacDao {
 
 	public List<Employee> getEmployeesByDeviceId(String empcode, String identity, String deviceId) {
 		return employeeRepository.findByEmployeeNumberAndCivilIdAndDeviceId(empcode, identity, deviceId);
+	}
+
+	public List<Employee> getEmployeesByCountryBranchId(BigDecimal countryBranchId) {
+		return employeeRepository.findByFsCountryBranch(countryBranchId);
 	}
 
 	public Employee fetchEmpDetails(String user, String pass) {

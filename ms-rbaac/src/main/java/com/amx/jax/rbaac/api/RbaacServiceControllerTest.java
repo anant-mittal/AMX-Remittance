@@ -1,5 +1,7 @@
 package com.amx.jax.rbaac.api;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +17,7 @@ import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -64,13 +67,21 @@ public class RbaacServiceControllerTest implements RbaacService {
 	}
 
 	@Override
+	@ApiOperation("User Roles Allocations Get for Branch")
+	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
+	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
+			String ipAddr, String deviceId) {
+
+		return rbaacServiceClient.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
+	}
+
+	@Override
 	public AmxApiResponse<String, Object> testGet() {
 		return null;
 	}
 
 	@Override
 	public AmxApiResponse<String, Object> testPost() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

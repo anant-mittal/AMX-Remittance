@@ -3,6 +3,8 @@
  */
 package com.amx.jax.rbaac;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -121,6 +124,25 @@ public class RbaacServiceClient implements RbaacService {
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_SAVE).post(roleRequestDTO)
 				.asApiResponse(RoleResponseDTO.class);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.rbaac.RbaacService#getUserRoleMappingsForBranch(java.math.
+	 * BigDecimal, java.lang.String, java.lang.String)
+	 */
+	@Override
+	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
+			String ipAddr, String deviceId) {
+
+		LOGGER.info(
+				"Received request for Get User Role Allocations For Branch Id: {} , from IP address: {}, device Id: {}",
+				countryBranchId, ipAddr, deviceId);
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_GET_FOR_BRANCH)
+				.queryParam("countryBranchId", countryBranchId).queryParam("ipAddress", ipAddr)
+				.queryParam("deviceId", deviceId).post().asApiResponse(UserRoleMappingsResponseDTO.class);
 	}
 
 	/*

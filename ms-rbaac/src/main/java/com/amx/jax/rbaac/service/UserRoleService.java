@@ -15,13 +15,19 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dao.RbaacDao;
+import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Permission;
 import com.amx.jax.rbaac.dbmodel.Role;
+import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
+import com.amx.jax.util.ObjectConverter;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -80,6 +86,15 @@ public class UserRoleService {
 		return permDTOList;
 	}
 
+	/**
+	 * Gets the all roles.
+	 *
+	 * @param ipAddr
+	 *            the ip addr
+	 * @param deviceId
+	 *            the device id
+	 * @return the all roles
+	 */
 	@SuppressWarnings("unchecked")
 	public List<RoleResponseDTO> getAllRoles(String ipAddr, String deviceId) {
 
@@ -108,6 +123,13 @@ public class UserRoleService {
 
 	}
 
+	/**
+	 * Save role.
+	 *
+	 * @param roleRequestDTO
+	 *            the role request DTO
+	 * @return the role response DTO
+	 */
 	public RoleResponseDTO saveRole(RoleRequestDTO roleRequestDTO) {
 
 		synchronized (this) {
@@ -161,22 +183,68 @@ public class UserRoleService {
 
 			rbaacDao.saveRole(role);
 
-			RoleResponseDTO roleResponseDTO = new RoleResponseDTO();
-
-			roleResponseDTO.setId(role.getId());
-			roleResponseDTO.setRole(role.getRole());
-			roleResponseDTO.setPermissionMap(roleRequestDTO.getPermissionMap());
-			roleResponseDTO.setSuspended(role.getSuspended());
-			roleResponseDTO.setFlags(role.getFlags());
-			roleResponseDTO.setInfo(role.getInfo());
-			roleResponseDTO.setCreatedDate(role.getCreatedDate());
-			roleResponseDTO.setUpdatedDate(role.getUpdatedDate());
-
-			return roleResponseDTO;
+			return ObjectConverter.convertRoleToRoleResponseDTO(role);
 
 		}
 	}
 
+	public UserRoleMappingsResponseDTO getUserRoleMappingsForBranch(BigDecimal countryBranchId, String ipAddr, String deviceId) {
+
+		UserRoleMappingsResponseDTO urmResponseDTO = new UserRoleMappingsResponseDTO();
+
+		List<Employee> employeeList = rbaacDao.getEmployeesByCountryBranchId(countryBranchId);
+
+		if (employeeList == null || employeeList.isEmpty()) {
+			return urmResponseDTO;
+		}
+
+		Map<BigDecimal, EmployeeDetailsDTO> employeeInfoMap = new HashMap<BigDecimal, EmployeeDetailsDTO>();
+
+		List<BigDecimal> empIdList = new ArrayList<BigDecimal>();
+
+		for (Employee employee : employeeList) {
+			empIdList.add(employee.getEmployeeId());
+
+			/**
+			 * Populate the Employee Details.
+			 */
+			employeeInfoMap.put(employee.getEmployeeId(), ObjectConverter.convertEmployeeToEmpDetailsDTO(employee));
+
+		}
+
+		urmResponseDTO.setEmployeeInfoMap(employeeInfoMap);
+
+		List<Role> roleList = rbaacDao.getAllRoles();
+
+		Map<BigDecimal, RoleResponseDTO> roleInfoMap = new HashMap<BigDecimal, RoleResponseDTO>();
+
+		for (Role role : roleList) {
+			roleInfoMap.put(role.getId(), ObjectConverter.convertRoleToRoleResponseDTO(role));
+		}
+
+		urmResponseDTO.setRoleInfoMap(roleInfoMap);
+
+		List<UserRoleMapping> userRoleMappingList = rbaacDao.getUserRoleMappingsByEmployeeIds(empIdList);
+
+		Map<BigDecimal, UserRoleMappingDTO> userRoleMappingInfoMap = new HashMap<BigDecimal, UserRoleMappingDTO>();
+
+		for (UserRoleMapping userRoleMapping : userRoleMappingList) {
+			userRoleMappingInfoMap.put(userRoleMapping.getEmployeeId(),
+					ObjectConverter.convertUrmToUrmDTO(userRoleMapping));
+		}
+
+		urmResponseDTO.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
+
+		return urmResponseDTO;
+	}
+
+	/**
+	 * Validate perms.
+	 *
+	 * @param roleRequestDTO
+	 *            the role request DTO
+	 * @return true, if successful
+	 */
 	private boolean validatePerms(RoleRequestDTO roleRequestDTO) {
 
 		List<Permission> permList = rbaacDao.getAllPermissions();
