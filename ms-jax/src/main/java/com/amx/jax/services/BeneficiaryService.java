@@ -154,12 +154,12 @@ public class BeneficiaryService extends AbstractService {
 	BeneficaryAccountRepository beneficaryAccountRepository;
 	@Autowired
 	JaxProperties jaxProperties ; 
-
+	
+    	@Autowired
+   	AuditService auditService;
 	@Autowired
 	ICurrencyDao currencyDao;
 
-    @Autowired
-    AuditService auditService;
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
 		List<BenificiaryListView> beneList = null;
@@ -405,10 +405,12 @@ public class BeneficiaryService extends AbstractService {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
 		if (beneList.isEmpty()) {
+			auditService.log (createBeneficiaryEvent(customerId,Type.BENE_FAV_LIST_NOT_EXIST));
 			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
+			auditService.log (createBeneficiaryEvent(customerId,Type.BENE_FAV_LIST_SUCCESS));
 		}
 		response.getData().setType("beneList");
 		return response;
@@ -910,6 +912,7 @@ public class BeneficiaryService extends AbstractService {
                 throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
             
+            
             BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
             
             if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
@@ -950,6 +953,7 @@ public class BeneficiaryService extends AbstractService {
         return response;
     }
     
+<<<<<<<<< Temporary merge branch 1
     private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
     	CurrencyMasterDTO dto = new CurrencyMasterDTO();
     	List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
@@ -965,7 +969,7 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
-
+=========
     private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;
@@ -991,4 +995,5 @@ public class BeneficiaryService extends AbstractService {
         return beneAuditEvent;
     }
     
+>>>>>>>>> Temporary merge branch 2
 }
