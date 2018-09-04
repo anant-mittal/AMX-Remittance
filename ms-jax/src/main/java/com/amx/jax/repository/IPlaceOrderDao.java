@@ -39,7 +39,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 			+ "and PO.RECEIVE_AMOUNT <= PM.TO_AMOUNT " + "and RH.SERVICE_MASTER_ID=101 "
 			+ "and (1/PM.DERIVED_SELL_RATE) >= PO.TARGET_EXCHANGE_RATE " + "and PO.ISACTIVE='Y' "
 			+ "and RH.ISACTIVE='Y' "
-			+ "and  trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE)) "
+			+ "and  (trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE)) "
 			+ "and (trunc( PO.NOTIFICATION_DATE) < trunc(sysdate) or PO.NOTIFICATION_DATE  is null)")
 	public Set<PlaceOrder> getPlaceOrderAlertRate1(@Param("pipsMasterId") BigDecimal pipsMasterId);
 	
@@ -55,7 +55,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 			" and RH.SERVICE_MASTER_ID=102" + 
 			" and (1/PM.DERIVED_SELL_RATE) >= PO.TARGET_EXCHANGE_RATE" + 
 			" and PO.ISACTIVE='Y' and RH.ISACTIVE='Y'" +
-			" and  trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE))" +
+			" and (trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE))" +
 			" and (trunc( PO.NOTIFICATION_DATE) < trunc(sysdate) or PO.NOTIFICATION_DATE  is null)")
 	public Set<PlaceOrder> getPlaceOrderAlertRate2(@Param("pipsMasterId") BigDecimal pipsMasterId);
 
