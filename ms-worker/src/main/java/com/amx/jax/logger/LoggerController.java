@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.logger.client.AuditServiceClient;
-import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.tunnel.TunnelService;
 
@@ -44,17 +43,6 @@ public class LoggerController {
 	 */
 	@RequestMapping(value = "/api/event/SessionEvent", method = RequestMethod.POST)
 	public void syncPermsMeta(@RequestBody SessionEvent event) {
-		auditService.log(event);
-	}
-
-	/**
-	 * Sync perms meta.
-	 *
-	 * @param event
-	 *            the event
-	 */
-	@RequestMapping(value = "/api/event/CActivityEvent", method = RequestMethod.POST)
-	public void syncPermsMeta(@RequestBody CActivityEvent event) {
 		auditService.log(event);
 	}
 

@@ -125,11 +125,30 @@ public enum JaxError implements IExceptionEnum {
 	BLANK_EMPLOYEE_ID,
 	INVALID_EMPLOYEE,
 	EMPLOYEE_EMAIL_ID_NOT_AVAILABLE,
-	EMPLOYEE_OTP_ATTEMPT_EXCEEDED;
+	EMPLOYEE_OTP_ATTEMPT_EXCEEDED,
+	EMPTY_FIELD_CONDITION,
+	WRONG_FIELD_CONDITION,
+	EMPTY_ID_TYPE_LIST,
+	EMPTY_ARTICLE_LIST,
+	EMPTY_DESIGNATION_LIST,
+	EMPTY_INCOME_RANGE,
+	EMPTY_EMPLOYMENT_TYPE,
+	EMPTY_PROFESSION_LIST;
 
 
+	@Deprecated
     public String getCode() {
         return this.toString();
     }
+
+	@Override
+    public String getStatusKey() {
+        return this.toString();
+    }
+
+	@Override
+	public int getStatusCode() {
+		return this.ordinal();
+	}
 
 }

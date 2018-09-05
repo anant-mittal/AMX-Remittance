@@ -56,7 +56,7 @@ public class AuthServiceException extends AmxApiException {
 	 *            the error
 	 */
 	public AuthServiceException(String errorMessage, RbaacServiceError error) {
-		super(errorMessage, error.getCode());
+		super(errorMessage, error.getStatusKey());
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class AuthServiceException extends AmxApiException {
 	public AuthServiceException(RbaacServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 
 	}
 
@@ -97,32 +97,34 @@ public class AuthServiceException extends AmxApiException {
 	public AuthServiceException(String errorMessage, RbaacServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 		this.errorMessage = errorMessage;
 
 	}
 
-	/*
+	/**
 	 * Instantiates a new auth service exception.
 	 *
-	 * @param e the e
+	 * @param e
+	 *            the e
 	 */
 	public AuthServiceException(Exception e) {
 		super(e);
 	}
 
-
 	/*
 	 * Instantiates a new auth service exception.
 	 *
 	 * @param errorMessage the error message
+	 * 
 	 * @param error the error
+	 * 
 	 * @param e the e
 	 */
 	public AuthServiceException(String errorMessage, RbaacServiceError error, Exception e) {
 		super(e);
 		this.errorMessage = errorMessage;
-		this.errorKey = error.getCode();
+		this.errorKey = error.getStatusKey();
 	}
 
 	/*

@@ -21,8 +21,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
@@ -54,18 +53,12 @@ public class BankMetaService extends AbstractService {
 		return repo.findBybankCountryIdAndRecordStatusOrderByBankShortNameAsc(countryId, ConstantDocument.Yes);
 	}
 
-	public ApiResponse getBanksApiResponseByCountryId(BigDecimal countryId) {
+	public AmxApiResponse<BankMasterDTO, Object> getBanksApiResponseByCountryId(BigDecimal countryId) {
 		List<BankMasterModel> banks = this.getBanksByCountryId(countryId);
-		ApiResponse response = getBlackApiResponse();
 		if (banks.isEmpty()) {
 			throw new GlobalException("banks details not avaliable");
-		} else {
-			response.getData().getValues().addAll(convert(banks));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-
-		response.getData().setType("bankmaster");
-		return response;
+		} 
+		return AmxApiResponse.buildList(convert(banks));
 	}
 
 	private List<BankMasterDTO> convert(List<BankMasterModel> banks) {
@@ -103,7 +96,7 @@ public class BankMetaService extends AbstractService {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ApiResponse<BankBranchDto> getBankBranches(GetBankBranchRequest request) {
+	public AmxApiResponse<BankBranchDto, Object> getBankBranches(GetBankBranchRequest request) {
 
 		BigDecimal bankId = request.getBankId();
 		validateGetBankBrancheRequest(request);
@@ -137,13 +130,8 @@ public class BankMetaService extends AbstractService {
 
 		if (branchesList.isEmpty()) {
 			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
-		}
-
-		ApiResponse response = getBlackApiResponse();
-		response.getData().getValues().addAll(convertBranchView(branchesList));
-		response.getData().setType("bank-branch-dto");
-		response.setResponseStatus(ResponseStatus.OK);
-		return response;
+		}		
+		return AmxApiResponse.buildList(convertBranchView(branchesList));
 	}
 
 	private void validateGetBankBrancheRequest(GetBankBranchRequest request) {

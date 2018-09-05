@@ -258,11 +258,11 @@ public class UserRoleService {
 
 				persistURMappings.add(urm);
 
-				newURMappings.add(userRoleMappingDTO);
+				//newURMappings.add(userRoleMappingDTO);
 			} else if (userRoleMappingDTO.getIsDeleted()) {
-				deleteURMappings.add(userRoleMappingDTO);
+				//deleteURMappings.add(userRoleMappingDTO);
 			} else {
-				updateURMappings.add(userRoleMappingDTO);
+				//updateURMappings.add(userRoleMappingDTO);
 			}
 		}
 

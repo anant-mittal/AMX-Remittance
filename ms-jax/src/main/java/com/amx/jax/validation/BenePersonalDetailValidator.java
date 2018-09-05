@@ -69,7 +69,7 @@ public class BenePersonalDetailValidator implements Validator {
 		
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+					JaxError.BLACK_LISTED_BENEFICIARY.getStatusKey());
 		}
 	}
 	
@@ -97,7 +97,7 @@ public class BenePersonalDetailValidator implements Validator {
 
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
-						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getStatusKey());
 			}
 		}
 	}

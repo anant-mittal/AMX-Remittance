@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PlaceOrderService;

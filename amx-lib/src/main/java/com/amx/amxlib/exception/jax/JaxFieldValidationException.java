@@ -16,7 +16,7 @@ public class JaxFieldValidationException extends AbstractJaxException {
 	}
 
 	public JaxFieldValidationException(String errorMessage) {
-		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getCode());
+		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getStatusKey());
 	}
 
 }
