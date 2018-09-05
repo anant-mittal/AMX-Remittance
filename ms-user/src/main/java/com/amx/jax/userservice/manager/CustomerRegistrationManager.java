@@ -156,6 +156,9 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setMobile(customerHomeAddress.getMobile());
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
+			contactDetail.setLanguageId(customer.getLanguageId());
+			contactDetail.setCreatedBy(customer.getCreatedBy());
+			contactDetail.setCreationDate(customer.getCreationDate());
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
