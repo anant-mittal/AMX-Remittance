@@ -91,7 +91,11 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 */
 	@Async
 	public PushMessage sendDirect(PushMessage msg) {
-		if (msg.getTo() != null) {
+		try {
+
+			if (msg.getTo() == null) {
+				throw new PostManException(PostManException.ErrorCode.NO_RECIPIENT_DEFINED);
+			}
 
 			if (msg.getTemplate() != null) {
 				File file = new File();
@@ -160,9 +164,13 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					}
 				}
 			}
-
+		} catch (PostManException e) {
+			auditServiceClient.log(
+					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));
+		} catch (Exception e) {
+			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
+					LOGGER, e);
 		}
-
 		return msg;
 	}
 
@@ -192,9 +200,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			} else {
 				throw new PostManException(PostManException.ErrorCode.NO_CHANNEL_DEFINED);
 			}
-			auditServiceClient.gauge(pMGaugeEvent.set(Result.DONE).set(msg, message, response));
+			auditServiceClient.log(pMGaugeEvent.set(Result.DONE).set(msg, message, response));
 		} catch (PostManException e) {
-			auditServiceClient.gauge(pMGaugeEvent.set(Result.FAIL).set(msg, message, null));
+			auditServiceClient.log(pMGaugeEvent.set(Result.FAIL).set(msg, message, null));
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent.set(msg, message, null), LOGGER, e);
 		}
