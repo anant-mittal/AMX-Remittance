@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.jax.logger.AuditEvent;
 
-public class JaxAuditEvent extends AuditEvent {
+public class JaxUserAuditEvent extends AuditEvent {
 
 	private static final long serialVersionUID = 7451732272992078549L;
 	BigDecimal customerId;
@@ -55,7 +55,7 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 
 
-	public JaxAuditEvent(EventType type) {
+	public JaxUserAuditEvent(EventType type) {
 		super(type);
 	}
 
