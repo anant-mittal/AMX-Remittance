@@ -3,6 +3,7 @@ package com.amx.jax.model.response;
 import java.math.BigDecimal;
 
 public class ComponentDataDto {
+
 private BigDecimal componentDataId;
 private String componentDataDesc;
 public BigDecimal getComponentDataId() {
@@ -18,6 +19,9 @@ public void setComponentDataDesc(String componentDataDesc) {
 	this.componentDataDesc = componentDataDesc;
 }
 
+public ComponentDataDto() {
+	super();
+}
 public ComponentDataDto(BigDecimal componentDataId, String componentDataDesc) {
 	super();
 	this.componentDataId = componentDataId;

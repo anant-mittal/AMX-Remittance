@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
-import com.amx.amxlib.error.JaxError;
+
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
@@ -29,12 +29,12 @@ import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
-import com.amx.jax.dbmodel.BizComponentDataDesc;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.ProfessionMasterView;
+import com.amx.amxlib.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
@@ -42,7 +42,6 @@ import com.amx.jax.model.OtpData;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
-import com.amx.amxlib.model.BizComponentDataDescDto;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -63,25 +62,7 @@ import com.amx.utils.Constants;
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class OffsitCustRegService implements ICustRegService {
 
-	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
-	
-	/*@Autowired
-	private EmployeeDao employeeDao;
-	
-	@Autowired
-	private EmployeeValidationService employeeValidationService;
-	
-	@Autowired
-	private JaxUtil util;
-	
-	@Autowired
-	private CryptoUtil cryptoUtil;
-	
-	@Autowired
-	private EmployeeRepository repo;
-	
-	@Autowired
-	private CheckListManager checkListManager;*/
+	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);	
 
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
@@ -120,80 +101,7 @@ public class OffsitCustRegService implements ICustRegService {
 	EmploymentTypeRepository employmentTypeRepo;
 	
 	@Autowired	
-	ProfessionRepository professionRepository;
-	/*@Override
-	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<BigDecimal, Object> getModes() {
-		return null;
-	}*/
-
-	/*public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
-			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		if(offsiteCustRegModel.getCivilId() == null)
-			throw new GlobalException("Null civil id passed ", JaxError.BLANK_CIVIL_ID);
-		
-		if(offsiteCustRegModel.getEcNumber() == null)
-			throw new GlobalException("Null civil id passed ", JaxError.BLANK_EMPLOYEE_ID);
-		
-		Employee employeeDetails = employeeDao.getEmployeeDetails(offsiteCustRegModel.getCivilId(),offsiteCustRegModel.getEcNumber());
-		
-		if(employeeDetails ==null)
-			throw new GlobalException("Invalid Employee", JaxError.INVALID_EMPLOYEE);
-		
-		if(employeeDetails.getEmail() == null)
-			throw new GlobalException("Your Email Id Not Present",
-					JaxError.EMPLOYEE_EMAIL_ID_NOT_AVAILABLE);
-		
-		employeeValidationService.validateEmployeeLockCount(employeeDetails);
-		try {
-			employeeValidationService.validateTokenDate(employeeDetails);
-		} catch (GlobalException e) {
-			// reset sent token count
-			employeeDetails.setTokenSentCount(BigDecimal.ZERO);
-		}
-		employeeValidationService.validateTokenSentCount(employeeDetails);
-		CivilIdOtpModel model = new CivilIdOtpModel();
-		List<CommunicationChannel> channels = null;
-		generateToken(employeeDetails.getCivilId(), model, channels);
-		employeeDetails.setEmailToken(model.getHashedeOtp());
-		employeeDetails.setSmsToken(model.getHashedmOtp());
-		employeeDetails.setTokenDate(new Date());
-		
-		BigDecimal tokenSentCount = (employeeDetails.getTokenSentCount() == null) ? BigDecimal.ZERO
-				: employeeDetails.getTokenSentCount().add(new BigDecimal(1));
-		employeeDetails.setTokenSentCount(tokenSentCount);
-		repo.save(employeeDetails);		
-		
-		return AmxApiResponse.build(model);		
-	}
-
-	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
-		String randmOtp = util.createRandomPassword(6);
-		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
-		String randeOtp = util.createRandomPassword(6);
-		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
-		model.setHashedmOtp(hashedmOtp);
-		model.setmOtp(randmOtp);
-		model.setmOtpPrefix(Random.randomAlpha(3));
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			model.setHashedeOtp(hashedeOtp);
-			model.seteOtp(randeOtp);
-			model.seteOtpPrefix(Random.randomAlpha(3));
-			LOGGER.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
-		}
-		LOGGER.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
-	}*/
-
-	/*@Override
-	public AmxApiResponse<BigDecimal, Object> getModes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-*/
+	ProfessionRepository professionRepository;	
 	
 	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
@@ -227,61 +135,7 @@ public class OffsitCustRegService implements ICustRegService {
 			dto.setPossibleValues(prefixService.getPrefixListOffsite());			
 		}		
 		return dto;
-	}
-
-	/*@SuppressWarnings("null")
-	public AmxApiResponse<String, Object> validateOTP(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		LOGGER.info("In validateopt of civilid: " + offsiteCustRegModel.getCivilId());
-		String civilId = offsiteCustRegModel.getCivilId();
-		String mOtp = offsiteCustRegModel.getmOtp();
-		String eOtp = offsiteCustRegModel.geteOtp();
-		Employee employee = null;
-		if (civilId != null) {
-			employee = employeeDao.getEmployeeByCivilId(civilId);
-		}
-		if (employee == null) {
-			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
-		}
-		if (offsiteCustRegModel.getmOtp() == null) {
-			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
-		}		 
-		employeeValidationService.validateEmployeeLockCount(employee);
-		employeeValidationService.validateTokenDate(employee);
-		String etokenHash = employee.getEmailToken();
-		String mtokenHash = employee.getSmsToken();
-		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
-		String eOtpHash = null;
-		if (StringUtils.isNotBlank(eOtp)) {
-			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
-		}
-		if (!mOtpHash.equals(mtokenHash)) {
-			employeeValidationService.incrementLockCount(employee);
-			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
-		}
-		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
-			employeeValidationService.incrementLockCount(employee);
-			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
-		}
-		checkListManager.updateMobileAndEmailCheck(employee, employeeDao.getCheckListForUserId(civilId));
-		this.unlockCustomer(employee);				
-		LOGGER.info("end of validateopt for civilid: " + civilId);
-		//repo.save(employee);			
-		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Employee Authentication Successfull");		
-		obj.setMessageKey("AUTH_SUCCESS");
-		return obj;
-	}*/
-	
-	/**
-	 * reset lock
-	 */
-	/*protected void unlockCustomer(Employee employee) {
-		if (employee.getLockCnt() != null || employee.getLockDt() != null) {
-			employee.setLockCnt(null);
-			employee.setLockDt(null);
-			repo.save(employee);
-		}
-		employee.setTokenSentCount(BigDecimal.ZERO);
-	}*/
+	}	
 	
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -293,34 +147,13 @@ public class OffsitCustRegService implements ICustRegService {
 				list.add(
 						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC")));
 			}
-		}
-
-		// List<BizComponentDataDesc> bizComponentDataDescs =
-		// bizcomponentDao.getBizComponentDataDescListByComponmentId();
+		}		
 		if (tempList.isEmpty())
 		{
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
-		}			
-		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
+		}		
 		return AmxApiResponse.buildList(list);
-	}
-
-	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
-		List<BizComponentDataDescDto> output = new ArrayList<>();
-		bizComponentDataDescs.forEach(i -> {
-			output.add(convert(i));
-		});
-		return output;
-	}*/
-
-	private BizComponentDataDescDto convert(BizComponentDataDesc i) {
-		BizComponentDataDescDto dto =  new BizComponentDataDescDto();
-		dto.setComponentDataDescId(i.getComponentDataDescId());
-		dto.setDataDesc(i.getDataDesc());
-		dto.setFsBizComponentData(i.getFsBizComponentData().getComponentDataId());
-		dto.setFsLanguageType(i.getFsLanguageType().getLanguageId());
-		return dto;
-	}
+	}	
 
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		
@@ -555,37 +388,4 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 		return AmxApiResponse.buildList(list);
 	}	
-	
-	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
-		List<JaxConditionalFieldDto> list = new ArrayList<>();
-		fieldList.forEach(i -> {
-			list.add(convert(i));
-		});
-		return list;
-	}
-	
-	private JaxConditionalFieldDto convert(JaxConditionalFieldRule i) {
-		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
-		dto.setEntityName(i.getEntityName());
-		JaxFieldDto fieldDto = convert(i.getField());
-		dto.setField(fieldDto);
-		dto.setId(i.getId());
-		return dto;
-	}
-	
-	private JaxFieldDto convert(JaxField field) {
-		JaxFieldDto dto = new JaxFieldDto();
-		jaxUtil.convert(field, dto);
-		dto.setRequired(ConstantDocument.Yes.equals(field.getRequired()) ? true : false);
-		List<ValidationRegexDto> validationdtos = new ArrayList<>();
-		if (field.getValidationRegex() != null) {
-			field.getValidationRegex().forEach(validation -> {
-				ValidationRegexDto regexdto = new ValidationRegexDto();
-				jaxUtil.convert(validation, regexdto);
-				validationdtos.add(regexdto);
-			});
-		}
-		dto.setValidationRegex(validationdtos);
-		return dto;
-	}*/
 }

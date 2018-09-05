@@ -41,7 +41,9 @@ public interface ICustRegService {
 
 		public void setMode(BigDecimal modeId);
 	}
-
+	
+	AmxApiResponse<ComponentDataDto, Object> sendIdTypes();
+	
 	AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model);
 	
 	AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model);
