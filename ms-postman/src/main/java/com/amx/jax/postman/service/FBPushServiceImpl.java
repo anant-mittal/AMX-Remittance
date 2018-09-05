@@ -221,8 +221,10 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * @return the string
 	 */
 	private String sendAndroid(String topic, PushMessage msg, String message) {
-		BuilderMap fields = MapBuilder.map().put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject())
-				.put(DATA_MESSAGE, message).put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
+		BuilderMap fields = MapBuilder.map()
+
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
+				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
