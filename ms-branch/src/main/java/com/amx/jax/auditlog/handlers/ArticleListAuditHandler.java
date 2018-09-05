@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.auditlogs.ArticleListAuditEvent;
-import com.amx.jax.auditlogs.CityListAuditEvent;
 import com.amx.jax.auditlogs.JaxAuditEvent;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.utils.JaxContextUtil;

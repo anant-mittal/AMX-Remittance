@@ -11,8 +11,13 @@ public class PostManException extends AmxApiException {
 	public enum ErrorCode implements IExceptionEnum {
 		NO_RECIPIENT_DEFINED, NO_TENANT_DEFINED, NO_CHANNEL_DEFINED;
 		@Override
-		public String getCode() {
+		public String getStatusKey() {
 			return this.toString();
+		}
+
+		@Override
+		public int getStatusCode() {
+			return this.ordinal();
 		}
 	}
 

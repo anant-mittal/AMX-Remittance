@@ -136,8 +136,13 @@ public enum JaxError implements IExceptionEnum {
 	EMPTY_PROFESSION_LIST;
 
 
-    public String getCode() {
+    public String getStatusKey() {
         return this.toString();
     }
+
+	@Override
+	public int getStatusCode() {
+		return this.ordinal();
+	}
 
 }

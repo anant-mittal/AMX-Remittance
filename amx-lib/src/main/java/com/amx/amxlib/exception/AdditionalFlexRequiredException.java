@@ -22,7 +22,7 @@ public class AdditionalFlexRequiredException extends AbstractJaxException {
 	}
 
 	public AdditionalFlexRequiredException(String errorMessage, JaxError error) {
-		super(errorMessage, error.getCode());
+		super(errorMessage, error.getStatusKey());
 	}
 
 	@SuppressWarnings("unchecked")

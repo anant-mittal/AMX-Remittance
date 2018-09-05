@@ -1,6 +1,5 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.jax.auditlogs.JaxAuditEvent.Type;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 
 public class DesignationListAuditEvent extends JaxAuditEvent {

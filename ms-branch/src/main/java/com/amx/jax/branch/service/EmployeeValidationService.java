@@ -69,7 +69,7 @@ public void validateTokenDate(Employee employeeDetails) {
 		long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 		long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 		if (tokenTimeinMins > otpValidTimeInMins) {
-			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
+			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getStatusKey());
 		}
 	}
 }
@@ -78,6 +78,6 @@ public void validateTokenSentCount(Employee employeeDetails) {
 
 	Integer limit = otpSettings.getMaxSendOtpAttempts();
 	if (employeeDetails.getTokenSentCount() != null && employeeDetails.getTokenSentCount().intValue() >= limit) {
-		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey());
 	}
 }}

@@ -112,17 +112,17 @@ public class ReportManagerService extends AbstractService{
 		customerRefernce =transactionHistroyDTO.getCustomerReference(); 
 		logger.info("companyId : "+companyId+ " languageId : "+languageId);
 		 if (customerId == null) {
-				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getStatusKey());
 			}
 		
 		 if (applicationCountryId == null) {
-				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getCode());
+				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getStatusKey());
 		  } 
 		
 		if(!currencyDao.getCurrencyListByCountryId(applicationCountryId).isEmpty()) {
 			currencyId = currencyDao.getCurrencyListByCountryId(applicationCountryId).get(0).getCurrencyId();
 		}else {
-			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getCode());
+			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getStatusKey());
 			
 		  }
 		

@@ -14,7 +14,7 @@ public class GlobalException extends AbstractJaxException {
 	private static final long serialVersionUID = 1L;
 
 	public GlobalException(String errorMessage) {
-		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getCode());
+		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getStatusKey());
 	}
 
 	public GlobalException(String errorMessage, String errorCode) {
@@ -22,7 +22,7 @@ public class GlobalException extends AbstractJaxException {
 	}
 
 	public GlobalException(String errorMessage, JaxError error) {
-		super(errorMessage, error.getCode());
+		super(errorMessage, error.getStatusKey());
 	}
 
 	public GlobalException(AmxApiError error) {
@@ -32,14 +32,14 @@ public class GlobalException extends AbstractJaxException {
 	public GlobalException(JaxError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 
 	}
 
 	public GlobalException(String errorMessage, JaxError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 		this.errorMessage = errorMessage;
 
 	}

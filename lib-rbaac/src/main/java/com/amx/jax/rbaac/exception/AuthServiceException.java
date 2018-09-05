@@ -56,7 +56,7 @@ public class AuthServiceException extends AmxApiException {
 	 *            the error
 	 */
 	public AuthServiceException(String errorMessage, AuthServiceError error) {
-		super(errorMessage, error.getCode());
+		super(errorMessage, error.getStatusKey());
 	}
 
 	/**
@@ -80,7 +80,7 @@ public class AuthServiceException extends AmxApiException {
 	public AuthServiceException(AuthServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 
 	}
 
@@ -97,7 +97,7 @@ public class AuthServiceException extends AmxApiException {
 	public AuthServiceException(String errorMessage, AuthServiceError error, Object... expressions) {
 		JaxUtil util = new JaxUtil();
 		List<String> list = Arrays.asList(expressions).stream().map(i -> i.toString()).collect(Collectors.toList());
-		this.errorKey = util.buildErrorExpressions(error.getCode(), list);
+		this.errorKey = util.buildErrorExpressions(error.getStatusKey(), list);
 		this.errorMessage = errorMessage;
 
 	}

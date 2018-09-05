@@ -58,11 +58,11 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> generateRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			Integer customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
 		}
 		if (size > 4) {
 			throw new GlobalException("Random questions size can't be more than 4",
-					JaxError.INVALID_RANDOM_QUEST_SIZE.getCode());
+					JaxError.INVALID_RANDOM_QUEST_SIZE.getStatusKey());
 		}
 		List<BigDecimal> questions = new ArrayList<>();
 		questions.add(onlineCustomer.getSecurityQuestion1());
@@ -79,7 +79,7 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> getDataVerificationRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			BigDecimal customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
 		}
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();

@@ -12,7 +12,7 @@ public class InvalidOtpException extends AbstractJaxException {
 	private static final long serialVersionUID = 1L;
 
 	public InvalidOtpException(String errorMessage) {
-		super(errorMessage, JaxError.INVALID_OTP.getCode());
+		super(errorMessage, JaxError.INVALID_OTP.getStatusKey());
 	}
 	
 	public InvalidOtpException(AmxApiError error) {

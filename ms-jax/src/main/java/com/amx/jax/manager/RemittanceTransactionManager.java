@@ -656,13 +656,13 @@ public class RemittanceTransactionManager {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-					BLACK_LISTED_CUSTOMER.getCode());
+					BLACK_LISTED_CUSTOMER.getStatusKey());
 		}
 		if (beneficiary.getArbenificaryName() != null) {
 			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Beneficiary local name found matching with black list ",
-						BLACK_LISTED_CUSTOMER.getCode());
+						BLACK_LISTED_CUSTOMER.getStatusKey());
 			}
 		}
 	}

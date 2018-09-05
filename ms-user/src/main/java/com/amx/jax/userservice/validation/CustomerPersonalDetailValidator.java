@@ -24,8 +24,8 @@ import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.jax.util.DateUtil;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.validation.CountryMetaValidation;
 
 @Component
@@ -92,7 +92,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		}
 		List<BlackListModel> blist = blackListDao.getBlackByName(customerName.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
 		}
 	}
 	

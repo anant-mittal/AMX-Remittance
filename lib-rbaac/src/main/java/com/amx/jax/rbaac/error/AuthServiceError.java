@@ -47,8 +47,13 @@ public enum AuthServiceError implements IExceptionEnum {
 	 * 
 	 * @see com.amx.jax.exception.IExceptionEnum#getCode()
 	 */
-	public String getCode() {
+	public String getStatusKey() {
 		return this.toString();
+	}
+
+	@Override
+	public int getStatusCode() {
+		return this.ordinal();
 	}
 
 }

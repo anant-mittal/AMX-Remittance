@@ -7,7 +7,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.auditlogs.IdTypeAuditEvent;
 import com.amx.jax.auditlogs.JaxAuditEvent;
-import com.amx.jax.auditlogs.SendOtpAuditEvent;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.utils.JaxContextUtil;
 
