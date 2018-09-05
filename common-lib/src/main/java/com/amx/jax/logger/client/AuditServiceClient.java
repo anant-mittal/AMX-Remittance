@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -23,6 +24,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
@@ -36,6 +38,7 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker trackmarker = MarkerFactory.getMarker(EventMarker.TRACK.toString());
 	private static final Marker gaugemarker = MarkerFactory.getMarker(EventMarker.GAUGE.toString());
 	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
+	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
 	private static String appName = null;
@@ -46,6 +49,13 @@ public class AuditServiceClient implements AuditService {
 	@Autowired
 	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
 			@Autowired(required = false) ITunnelService iTunnelService) {
+
+		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
+
+		for (String markerString : allowedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.TRUE);
+		}
+
 		if (!FILTER_MAP_DONE) {
 			appName = appConfig.getAppName();
 			for (AuditFilter filter : filters) {
@@ -105,7 +115,11 @@ public class AuditServiceClient implements AuditService {
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
 		event.setComponent(appName);
 		String json = JsonUtil.toJson(event);
-		LOGGER.info(marker, json);
+
+		String marketName = marker.getName();
+		if (allowedMarkersMap.getOrDefault(marketName, Boolean.FALSE).booleanValue()) {
+			LOGGER.info(marker, json);
+		}
 		if (capture && ITUNNEL_SERVICE != null) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
