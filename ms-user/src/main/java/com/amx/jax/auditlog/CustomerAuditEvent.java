@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.amx.amxlib.model.CustomerModel;
 
-public class CustomerAuditEvent extends JaxAuditEvent {
+public class CustomerAuditEvent extends JaxUserAuditEvent {
 
     private static final long serialVersionUID = 8094510477453442873L;
     
