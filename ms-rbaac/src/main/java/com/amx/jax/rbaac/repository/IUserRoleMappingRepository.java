@@ -14,8 +14,24 @@ public interface IUserRoleMappingRepository extends JpaRepository<UserRoleMappin
 	 * Gives User Role Mappings for the EmployeeIds
 	 * 
 	 * @param employeeIdList
-	 * @return List of user role mappings
+	 * @return List of {@link UserRoleMapping}
 	 */
 	List<UserRoleMapping> findByEmployeeIdIn(List<BigDecimal> employeeIdList);
+
+	/**
+	 * Gives User Role Mapping for the Id
+	 * 
+	 * @param id
+	 * @return {@link UserRoleMapping}
+	 */
+	UserRoleMapping findById(BigDecimal id);
+
+	/**
+	 * Gives User Role Mappings for the Ids
+	 * 
+	 * @param ids
+	 * @return
+	 */
+	List<UserRoleMapping> findByIdIn(List<BigDecimal> ids);
 
 }

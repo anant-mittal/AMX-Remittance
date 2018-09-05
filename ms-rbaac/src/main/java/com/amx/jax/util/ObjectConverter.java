@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
-import javax.persistence.Column;
-
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
@@ -18,11 +16,19 @@ import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.utils.JsonUtil;
 
 /**
- * @author abhijeet
+ * The Class ObjectConverter.
  *
+ * @author abhijeet
  */
 public final class ObjectConverter {
 
+	/**
+	 * Convert employee to emp details DTO.
+	 *
+	 * @param employee
+	 *            the employee
+	 * @return the employee details DTO
+	 */
 	public static EmployeeDetailsDTO convertEmployeeToEmpDetailsDTO(Employee employee) {
 
 		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
@@ -42,6 +48,13 @@ public final class ObjectConverter {
 		return empDetail;
 	}
 
+	/**
+	 * Convert role to role response DTO.
+	 *
+	 * @param role
+	 *            the role
+	 * @return the role response DTO
+	 */
 	@SuppressWarnings("unchecked")
 	public static RoleResponseDTO convertRoleToRoleResponseDTO(Role role) {
 
@@ -60,6 +73,13 @@ public final class ObjectConverter {
 
 	}
 
+	/**
+	 * Convert urm to urm DTO.
+	 *
+	 * @param userRoleMapping
+	 *            the user role mapping
+	 * @return the user role mapping DTO
+	 */
 	public static UserRoleMappingDTO convertUrmToUrmDTO(UserRoleMapping userRoleMapping) {
 
 		UserRoleMappingDTO userRoleMappingDTO = new UserRoleMappingDTO();
@@ -74,6 +94,30 @@ public final class ObjectConverter {
 		userRoleMapping.setUpdatedDate(userRoleMapping.getUpdatedDate());
 
 		return userRoleMappingDTO;
+
+	}
+
+	/**
+	 * Convert urm DTO to urm.
+	 *
+	 * @param urMappingDTO
+	 *            the ur mapping DTO
+	 * @return the user role mapping
+	 */
+	public static UserRoleMapping convertUrmDTOToUserRoleMapping(UserRoleMappingDTO urMappingDTO) {
+
+		UserRoleMapping userRoleMapping = new UserRoleMapping();
+
+		userRoleMapping.setId(urMappingDTO.getId());
+		userRoleMapping.setEmployeeId(urMappingDTO.getEmployeeId());
+		userRoleMapping.setRoleId(urMappingDTO.getRoleId());
+		userRoleMapping.setSuspended("N");
+		userRoleMapping.setFlags(new BigDecimal(0));
+		userRoleMapping.setInfo("{}");
+		userRoleMapping.setCreatedDate(new Date());
+		userRoleMapping.setUpdatedDate(new Date());
+
+		return userRoleMapping;
 
 	}
 

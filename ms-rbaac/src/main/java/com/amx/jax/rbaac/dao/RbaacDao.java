@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.rbaac.dbmodel.AccessType;
@@ -107,8 +109,51 @@ public class RbaacDao {
 		return roleRepository.saveAndFlush(role);
 	}
 
+	public UserRoleMapping getUserRoleMappingById(BigDecimal id) {
+		return userRoleMappingRepository.findById(id);
+	}
+
+	public List<UserRoleMapping> getUserRoleMappingsByIds(List<BigDecimal> ids) {
+		return userRoleMappingRepository.findByIdIn(ids);
+	}
+
 	public List<UserRoleMapping> getUserRoleMappingsByEmployeeIds(List<BigDecimal> employeeIdList) {
 		return userRoleMappingRepository.findByEmployeeIdIn(employeeIdList);
+	}
+
+	/**
+	 * Saves Single Entity of User Role Mapping
+	 * 
+	 * @param urm
+	 * @return
+	 */
+	@Modifying
+	@Transactional
+	public UserRoleMapping saveUserRoleMapping(UserRoleMapping urm) {
+		return userRoleMappingRepository.save(urm);
+	}
+
+	/**
+	 * Saves Batch Entities of User Role Mapping
+	 * 
+	 * @param urMappings
+	 * @return
+	 */
+	@Modifying
+	@Transactional
+	public List<UserRoleMapping> saveUserRoleMappings(List<UserRoleMapping> urMappings) {
+		return userRoleMappingRepository.save(urMappings);
+	}
+
+	/**
+	 * Deletes given user role mappings in the list
+	 * 
+	 * @param urMappings
+	 */
+	@Modifying
+	@Transactional
+	public void deleteUserRoleMappings(List<UserRoleMapping> urMappings) {
+		userRoleMappingRepository.deleteInBatch(urMappings);
 	}
 
 	public Employee validateEmpDetails(String empcode, String identity, String ipAddress) {
@@ -145,6 +190,14 @@ public class RbaacDao {
 		return employeeRepository.findByEmployeeId(empId);
 	}
 
+	/**
+	 * Saves Employee Data and Flushes for immediate Push
+	 * 
+	 * @param employee
+	 * @return
+	 */
+	@Modifying
+	@Transactional
 	public Employee saveEmployee(Employee employee) {
 		return employeeRepository.saveAndFlush(employee);
 	}

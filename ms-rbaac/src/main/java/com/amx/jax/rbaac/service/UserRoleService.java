@@ -244,16 +244,20 @@ public class UserRoleService {
 
 		List<UserRoleMappingDTO> urmInfoList = urmRequestDTO.getUserRoleMappingInfoList();
 
-		List<UserRoleMappingDTO> newURMappings = new ArrayList<UserRoleMappingDTO>();
-		List<UserRoleMappingDTO> updateURMappings = new ArrayList<UserRoleMappingDTO>();
-		List<UserRoleMappingDTO> deleteURMappings = new ArrayList<UserRoleMappingDTO>();
+		List<UserRoleMapping> persistURMappings = new ArrayList<UserRoleMapping>();
+		List<UserRoleMapping> deleteURMappings = new ArrayList<UserRoleMapping>();
 
 		if (urmInfoList == null || urmInfoList.isEmpty()) {
-			return newURMappings;
+			return new ArrayList<UserRoleMappingDTO>();
 		}
 
 		for (UserRoleMappingDTO userRoleMappingDTO : urmInfoList) {
 			if (userRoleMappingDTO.getId() == null || userRoleMappingDTO.getId().longValue() == 0) {
+
+				UserRoleMapping urm = ObjectConverter.convertUrmDTOToUserRoleMapping(userRoleMappingDTO);
+
+				persistURMappings.add(urm);
+
 				newURMappings.add(userRoleMappingDTO);
 			} else if (userRoleMappingDTO.getIsDeleted()) {
 				deleteURMappings.add(userRoleMappingDTO);
@@ -261,8 +265,6 @@ public class UserRoleService {
 				updateURMappings.add(userRoleMappingDTO);
 			}
 		}
-		
-		
 
 		return null;
 	}
