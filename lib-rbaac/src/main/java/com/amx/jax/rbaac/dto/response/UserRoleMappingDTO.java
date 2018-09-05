@@ -32,6 +32,9 @@ public class UserRoleMappingDTO {
 	/** The updated date. */
 	private Date updatedDate;
 
+	/** The is deleted. */
+	private Boolean isDeleted;
+	
 	/**
 	 * Gets the id.
 	 *
@@ -174,6 +177,24 @@ public class UserRoleMappingDTO {
 	 */
 	public void setUpdatedDate(Date updatedDate) {
 		this.updatedDate = updatedDate;
+	}
+
+	/**
+	 * Gets the checks if is deleted.
+	 *
+	 * @return the checks if is deleted
+	 */
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	/**
+	 * Sets the checks if is deleted.
+	 *
+	 * @param isDeleted the new checks if is deleted
+	 */
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 }

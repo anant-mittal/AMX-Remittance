@@ -20,6 +20,7 @@ import com.amx.jax.rbaac.dbmodel.Permission;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
+import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
@@ -188,7 +189,8 @@ public class UserRoleService {
 		}
 	}
 
-	public UserRoleMappingsResponseDTO getUserRoleMappingsForBranch(BigDecimal countryBranchId, String ipAddr, String deviceId) {
+	public UserRoleMappingsResponseDTO getUserRoleMappingsForBranch(BigDecimal countryBranchId, String ipAddr,
+			String deviceId) {
 
 		UserRoleMappingsResponseDTO urmResponseDTO = new UserRoleMappingsResponseDTO();
 
@@ -236,6 +238,33 @@ public class UserRoleService {
 		urmResponseDTO.setUserRoleMappingInfoMap(userRoleMappingInfoMap);
 
 		return urmResponseDTO;
+	}
+
+	public List<UserRoleMappingDTO> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO) {
+
+		List<UserRoleMappingDTO> urmInfoList = urmRequestDTO.getUserRoleMappingInfoList();
+
+		List<UserRoleMappingDTO> newURMappings = new ArrayList<UserRoleMappingDTO>();
+		List<UserRoleMappingDTO> updateURMappings = new ArrayList<UserRoleMappingDTO>();
+		List<UserRoleMappingDTO> deleteURMappings = new ArrayList<UserRoleMappingDTO>();
+
+		if (urmInfoList == null || urmInfoList.isEmpty()) {
+			return newURMappings;
+		}
+
+		for (UserRoleMappingDTO userRoleMappingDTO : urmInfoList) {
+			if (userRoleMappingDTO.getId() == null || userRoleMappingDTO.getId().longValue() == 0) {
+				newURMappings.add(userRoleMappingDTO);
+			} else if (userRoleMappingDTO.getIsDeleted()) {
+				deleteURMappings.add(userRoleMappingDTO);
+			} else {
+				updateURMappings.add(userRoleMappingDTO);
+			}
+		}
+		
+		
+
+		return null;
 	}
 
 	/**
