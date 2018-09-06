@@ -23,6 +23,9 @@ import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.ServiceApplicabilityField;
+import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
@@ -33,6 +36,7 @@ import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCrea
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
+import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.service.CountryService;
 import com.amx.jax.util.JaxUtil;
@@ -80,6 +84,12 @@ public class BeneficiaryValidationService {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	IBeneficiaryOnlineDao beneficiaryOnlineDao;
+	
+	@Autowired
+	BlackListDao blackListDao;
 
 	/**
 	 * @param beneAccountModel
@@ -248,6 +258,28 @@ public class BeneficiaryValidationService {
 			throw new GlobalException("Invalid swift", JaxError.INVALID_BANK_SWIFT);
 		}
 
+	}
+	
+	// Black listed Bene check
+	public void validateBeneList(BigDecimal beneRelationshipSeqId) {	
+		BenificiaryListView beneInfo = null;
+		beneInfo = beneficiaryService.getBeneByIdNo(beneRelationshipSeqId);
+		
+		if (!StringUtils.isBlank(beneInfo.getBenificaryName())) {
+			List<BlackListModel> blist = blackListDao.getBlackByName(beneInfo.getBenificaryName());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
+						JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+			}
+		}
+		
+		if (!StringUtils.isBlank(beneInfo.getArbenificaryName())) {
+			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneInfo.getArbenificaryName());
+			if (blist != null && !blist.isEmpty()) {
+				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
+						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+			}
+		}
 	}
 
 }
