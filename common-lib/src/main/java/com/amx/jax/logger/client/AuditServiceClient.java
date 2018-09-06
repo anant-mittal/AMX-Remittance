@@ -38,6 +38,8 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker trackmarker = MarkerFactory.getMarker(EventMarker.TRACK.toString());
 	private static final Marker gaugemarker = MarkerFactory.getMarker(EventMarker.GAUGE.toString());
 	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
+	private static final Marker noticemarker = MarkerFactory.getMarker(EventMarker.NOTICE.toString());
+	private static final Marker alertmarker = MarkerFactory.getMarker(EventMarker.ALERT.toString());
 	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
@@ -156,27 +158,43 @@ public class AuditServiceClient implements AuditService {
 		return logAuditEvent(marker, event, false);
 	}
 
+	public static AuditLoggerResponse logAuditEvent(EventMarker emarker, AuditEvent event) {
+		Marker marker = auditmarker;
+		boolean capture = false;
+		if (emarker == EventMarker.AUDIT) {
+			capture = true;
+		} else if (emarker == EventMarker.TRACK) {
+			marker = trackmarker;
+		} else if (emarker == EventMarker.GAUGE) {
+			marker = gaugemarker;
+		} else if (emarker == EventMarker.EXCEP) {
+			marker = excepmarker;
+		} else if (emarker == EventMarker.ALERT) {
+			marker = alertmarker;
+		} else if (emarker == EventMarker.NOTICE) {
+			marker = noticemarker;
+		} else {
+			capture = true;
+		}
+		return logAuditEvent(marker, event, capture);
+	}
+
 	/**
 	 * 
 	 * @param event
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		Marker marker = auditmarker;
-		boolean capture = false;
 		EventType eventType = event.getType();
-		if (eventType == null || eventType.marker() == EventMarker.AUDIT) {
-			capture = true;
-		} else if (eventType.marker() == EventMarker.TRACK) {
-			marker = trackmarker;
-		} else if (eventType.marker() == EventMarker.GAUGE) {
-			marker = gaugemarker;
-		} else if (eventType.marker() == EventMarker.EXCEP) {
-			marker = excepmarker;
-		} else {
-			capture = true;
+		if (eventType == null) {
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+			return null;
 		}
-		return logAuditEvent(marker, event, capture);
+		EventMarker eventMarker = eventType.marker();
+		if (eventMarker == null) {
+			eventMarker = EventMarker.AUDIT;
+		}
+		return logAuditEvent(eventMarker, event);
 	}
 
 	@Override
