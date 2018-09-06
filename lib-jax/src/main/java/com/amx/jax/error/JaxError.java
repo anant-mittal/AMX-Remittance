@@ -148,7 +148,7 @@ public enum JaxError implements IExceptionEnum {
 
 	@Override
 	public int getStatusCode() {
-		return this.ordinal();
+		return 6000 + this.ordinal();
 	}
 
 }

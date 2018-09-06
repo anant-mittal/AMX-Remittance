@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -37,7 +38,11 @@ public class OffsiteController {
 	private Logger logger = Logger.getLogger(OffsiteController.class);
 	
 	@Autowired
+	@Deprecated
 	private OffsiteService offsiteService;
+	
+	@Autowired
+	private OffsiteCustRegClient offsiteCustRegClient;
 
 	@ApiOperation(value = "Index page")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -50,9 +55,10 @@ public class OffsiteController {
 
 		logger.info("field list request called for tenant : " + model.getTenant() + " , nationality : "
 				+ model.getNationality() + " and component : " + model.getComponent());
-		Map<String, FieldListDto> mapFieldList = offsiteService.getFieldList(model);
+		//Map<String, FieldListDto> mapFieldList = offsiteService.getFieldList(model);
 
-		return AmxApiResponse.build(mapFieldList);
+		//return AmxApiResponse.build(mapFieldList);
+		return offsiteCustRegClient.getFieldList(model);
 	}
 	
 	@RequestMapping(value = "/offsite-cust-reg/incomeRangeList/", method = { RequestMethod.POST })
@@ -60,9 +66,10 @@ public class OffsiteController {
 
 		logger.info("Income range request called for article id : " + model.getArticleId() + " , article details id : "
 				+ model.getArticleDetailsId() + " and country id : " + model.getCountryId());
-		IncomeRangeDto incomeRangeDto = offsiteService.getIncomeRangeResponse(model);
+		//IncomeRangeDto incomeRangeDto = offsiteService.getIncomeRangeResponse(model);
 
-		return AmxApiResponse.build(incomeRangeDto);
+		//return AmxApiResponse.build(incomeRangeDto);
+		return offsiteCustRegClient.getIncomeRangeResponse(model);
 	}
 	
 	@RequestMapping(value = "/offsite-cust-reg/designationList/", method = { RequestMethod.POST })

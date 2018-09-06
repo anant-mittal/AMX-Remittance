@@ -1,4 +1,4 @@
-package com.amx.jax.amxlib.config;
+package com.amx.jax.error;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
@@ -9,8 +9,7 @@ import java.lang.annotation.Target;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.error.JaxError;
-import com.amx.jax.amxlib.config.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.swagger.IStatusCodeListPlugin;
 import com.google.common.base.Optional;
 

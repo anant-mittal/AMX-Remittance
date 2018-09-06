@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CommonRequest;
@@ -75,6 +77,7 @@ public class OffsiteCustRegController implements ICustRegService {
 		return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
 	}
 
+	@ApiJaxStatus({JaxError.MISSING_OTP,JaxError.VALIDATE_OTP_LIMIT_EXCEEDED})
 	@RequestMapping(value = CustRegApiEndPoints.VALIDATE_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
 			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {	
