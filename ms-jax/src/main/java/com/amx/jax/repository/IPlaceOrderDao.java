@@ -59,4 +59,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 			" and (trunc( PO.NOTIFICATION_DATE) < trunc(sysdate) or PO.NOTIFICATION_DATE  is null)")
 	public Set<PlaceOrder> getPlaceOrderAlertRate2(@Param("pipsMasterId") BigDecimal pipsMasterId);
 
+	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
+	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+
 }

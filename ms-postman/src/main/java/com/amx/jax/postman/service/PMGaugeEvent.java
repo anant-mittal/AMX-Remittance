@@ -33,7 +33,7 @@ public class PMGaugeEvent extends AuditEvent {
 		CREATE_PDF,
 
 		// NOTIFCATION Events
-		NOTIFCATION_ANDROID,
+		NOTIFCATION, NOTIFCATION_ANDROID,
 		/** The notifcation ios. */
 		NOTIFCATION_IOS,
 		/** The notifcation web. */

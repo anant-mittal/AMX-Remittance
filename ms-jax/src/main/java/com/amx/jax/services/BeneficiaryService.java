@@ -5,6 +5,7 @@ package com.amx.jax.services;
  */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,6 +33,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
@@ -55,6 +57,7 @@ import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterView;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
@@ -73,6 +76,7 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
@@ -151,8 +155,10 @@ public class BeneficiaryService extends AbstractService {
 	@Autowired
 	JaxProperties jaxProperties ; 
 	
-    @Autowired
-    AuditService auditService;
+    	@Autowired
+   	AuditService auditService;
+	@Autowired
+	ICurrencyDao currencyDao;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -878,13 +884,33 @@ public class BeneficiaryService extends AbstractService {
             
             if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+                
+                Boolean isExpired = false;
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String sysdate = sdf.format(new Date());
+                String fromDate = sdf.format(poDto.getValidFromDate());
+                String toDate = sdf.format(poDto.getValidToDate());
+                                
+                if(sysdate.compareTo(fromDate) >=0 && sysdate.compareTo(toDate) <= 0) {
+                	isExpired = false;
+                }else {
+                	isExpired = true;
+                }
+                
+                if (isExpired) {
+            		throw new GlobalException("PO got expired for id : "+placeOrderId,JaxError.PLACE_ORDER_EXPIRED);
+            	}
+                
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
                 remitPageDto.setPlaceOrderDTO(poDto);
+                remitPageDto.setForCur(getCurrencyDTO(poDto.getForeignCurrencyId()));
+                remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
+                
             }else {
-                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
+		auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
                 throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
-            
             
             BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
             
@@ -926,7 +952,22 @@ public class BeneficiaryService extends AbstractService {
         return response;
     }
     
-    private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
+    private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
+    	CurrencyMasterDTO dto = new CurrencyMasterDTO();
+    	List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		if (currencyList.isEmpty()) {
+			throw new GlobalException("Currency details not avaliable");
+		} else {
+			CurrencyMasterModel curModel = currencyList.get(0);
+			dto.setCountryId(curModel.getCountryId());
+			dto.setCurrencyCode(curModel.getCurrencyCode());
+			dto.setQuoteName(curModel.getQuoteName());
+			dto.setCurrencyId(curModel.getCurrencyId());
+			dto.setCurrencyName(curModel.getCurrencyName());
+		}
+    	return dto;
+    }
+ private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;
     }
@@ -950,5 +991,4 @@ public class BeneficiaryService extends AbstractService {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId);
         return beneAuditEvent;
     }
-    
 }

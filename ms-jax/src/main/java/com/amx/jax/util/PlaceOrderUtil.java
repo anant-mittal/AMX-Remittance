@@ -24,6 +24,10 @@ public class PlaceOrderUtil {
 		placeOrdermodel.setForeignCurrencyId(dto.getForeignCurrencyId());
 		placeOrdermodel.setForeignCurrencyQuote(dto.getForeignCurrencyQuote());
 		
+		placeOrdermodel.setCurrencyId(dto.getCurrencyId());
+		placeOrdermodel.setBankId(dto.getBankId());
+		placeOrdermodel.setCountryId(dto.getCountryId());
+		
 		return placeOrdermodel;
 	}
 }
