@@ -189,6 +189,17 @@ public class UserRoleService {
 		}
 	}
 
+	/**
+	 * Gets the user role mappings for branch.
+	 *
+	 * @param countryBranchId
+	 *            the country branch id
+	 * @param ipAddr
+	 *            the ip addr
+	 * @param deviceId
+	 *            the device id
+	 * @return the user role mappings for branch
+	 */
 	public UserRoleMappingsResponseDTO getUserRoleMappingsForBranch(BigDecimal countryBranchId, String ipAddr,
 			String deviceId) {
 
@@ -240,6 +251,13 @@ public class UserRoleService {
 		return urmResponseDTO;
 	}
 
+	/**
+	 * Update user role mappings.
+	 *
+	 * @param urmRequestDTO
+	 *            the urm request DTO
+	 * @return the list
+	 */
 	public List<UserRoleMappingDTO> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO) {
 
 		List<UserRoleMappingDTO> urmInfoList = urmRequestDTO.getUserRoleMappingInfoList();
@@ -254,19 +272,107 @@ public class UserRoleService {
 		for (UserRoleMappingDTO userRoleMappingDTO : urmInfoList) {
 			if (userRoleMappingDTO.getId() == null || userRoleMappingDTO.getId().longValue() == 0) {
 
+				// case 1: New Mapping Created.
+
 				UserRoleMapping urm = ObjectConverter.convertUrmDTOToUserRoleMapping(userRoleMappingDTO);
+
+				if (!validateUserRoleMapping(userRoleMappingDTO)) {
+
+					throw new AuthServiceException(
+							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
+									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+				}
 
 				persistURMappings.add(urm);
 
-				//newURMappings.add(userRoleMappingDTO);
 			} else if (userRoleMappingDTO.getIsDeleted()) {
-				//deleteURMappings.add(userRoleMappingDTO);
+
+				// case 2: Mapping is to be deleted.
+
+				UserRoleMapping existingMapping = rbaacDao.getUserRoleMappingById(userRoleMappingDTO.getId());
+
+				if (existingMapping == null) {
+
+					LOGGER.error("Invalid Delete Request for User Role Mapping Id: " + userRoleMappingDTO.getId()
+							+ ", EmployeeId: " + userRoleMappingDTO.getEmployeeId() + ", RoleId: "
+							+ userRoleMappingDTO.getRoleId());
+					continue;
+
+				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
+
+					throw new AuthServiceException(
+							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
+									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+				}
+
+				deleteURMappings.add(existingMapping);
+
 			} else {
-				//updateURMappings.add(userRoleMappingDTO);
+
+				// case 3: Mapping is to be Updated.
+
+				UserRoleMapping existingMapping = rbaacDao.getUserRoleMappingById(userRoleMappingDTO.getId());
+
+				if (existingMapping == null) {
+
+					LOGGER.error("Invalid Delete Request for User Role Mapping Id: " + userRoleMappingDTO.getId()
+							+ ", EmployeeId: " + userRoleMappingDTO.getEmployeeId() + ", RoleId: "
+							+ userRoleMappingDTO.getRoleId());
+					continue;
+
+				} else if (!validateUserRoleMapping(userRoleMappingDTO)) {
+
+					throw new AuthServiceException(
+							"Invalid User Role Mappings: One or more role mappings are Invalid for User Role Mapping Id: "
+									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
+							RbaacServiceError.INVALID_USER_ROLE_MAPPINGS);
+
+				} else if (userRoleMappingDTO.getEmployeeId() != existingMapping.getEmployeeId()) {
+
+					throw new AuthServiceException(
+							"Illegal User Role Mappings Modification: One or more role mapping modifications are Invalid for User Role Mapping Id: "
+									+ userRoleMappingDTO.getId() + ", EmployeeId: " + userRoleMappingDTO.getEmployeeId()
+									+ ", RoleId: " + userRoleMappingDTO.getRoleId(),
+							RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION);
+				}
+
+				existingMapping.setRoleId(userRoleMappingDTO.getRoleId());
+				existingMapping.setUpdatedDate(new Date());
+
+				persistURMappings.add(existingMapping);
 			}
 		}
 
-		return null;
+		List<UserRoleMappingDTO> respUrmDtoList = new ArrayList<UserRoleMappingDTO>();
+
+		// Insert / Update entries to be persisted.
+		if (!persistURMappings.isEmpty()) {
+
+			List<UserRoleMapping> savedUrm = rbaacDao.saveUserRoleMappings(persistURMappings);
+
+			for (UserRoleMapping urm : savedUrm) {
+				respUrmDtoList.add(ObjectConverter.convertUrmToUrmDTO(urm));
+			}
+		}
+
+		if (!deleteURMappings.isEmpty()) {
+
+			rbaacDao.deleteUserRoleMappings(deleteURMappings);
+
+			for (UserRoleMapping urm : deleteURMappings) {
+				UserRoleMappingDTO urmDto = ObjectConverter.convertUrmToUrmDTO(urm);
+				urmDto.setIsDeleted(Boolean.TRUE);
+
+				respUrmDtoList.add(urmDto);
+			}
+		}
+
+		return respUrmDtoList;
 	}
 
 	/**
@@ -312,6 +418,25 @@ public class UserRoleService {
 
 		return true;
 
+	}
+
+	/**
+	 * Validates User role Mappings.
+	 *
+	 * @param urm
+	 *            the urm
+	 * @return true, if successful
+	 */
+	private boolean validateUserRoleMapping(UserRoleMappingDTO urm) {
+
+		Employee employee = rbaacDao.getEmployeeByEmployeeId(urm.getEmployeeId());
+		Role role = rbaacDao.getRoleById(urm.getRoleId());
+
+		if (employee == null || role == null) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

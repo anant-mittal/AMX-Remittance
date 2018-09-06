@@ -2,7 +2,6 @@ package com.amx.jax.rbaac.error;
 
 import com.amx.jax.exception.IExceptionEnum;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Enum RbaacServiceError.
  */
@@ -26,11 +25,18 @@ public enum RbaacServiceError implements IExceptionEnum {
 
 	/** The invalid role definition. */
 	INVALID_ROLE_DEFINITION,
-	
+
 	/** The invalid permission. */
 	INVALID_PERMISSION,
-	
+
+	/** The invalid access type scope. */
 	INVALID_ACCESS_TYPE_SCOPE,
+
+	/** The invalid user role mappings. */
+	INVALID_USER_ROLE_MAPPINGS,
+
+	/** The illegal user role mapping modification. */
+	ILLEGAL_USER_ROLE_MAPPING_MODIFICATION,
 
 	/** The invalid user details. */
 	INVALID_USER_DETAILS,
@@ -63,6 +69,11 @@ public enum RbaacServiceError implements IExceptionEnum {
 		return this.toString();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.amx.jax.exception.IExceptionEnum#getStatusCode()
+	 */
 	@Override
 	public int getStatusCode() {
 		return this.ordinal();

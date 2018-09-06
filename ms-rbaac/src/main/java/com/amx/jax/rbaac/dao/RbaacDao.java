@@ -178,16 +178,16 @@ public class RbaacDao {
 		return employeeRepository.findByFsCountryBranch(countryBranchId);
 	}
 
+	public Employee getEmployeeByEmployeeId(BigDecimal empId) {
+		return employeeRepository.findByEmployeeId(empId);
+	}
+
 	public Employee fetchEmpDetails(String user, String pass) {
 		return employeeRepository.findByUserNameAndPassword(user, pass);
 	}
 
 	public Employee fetchEmpDetailsByECNO(String empNo) {
 		return employeeRepository.findByEmployeeNumber(empNo);
-	}
-
-	public Employee fetchEmpByEmpId(BigDecimal empId) {
-		return employeeRepository.findByEmployeeId(empId);
 	}
 
 	/**

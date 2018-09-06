@@ -20,10 +20,12 @@ import com.amx.jax.rbaac.RbaacService;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAuthService;
@@ -137,6 +139,20 @@ public class RbaacServiceApiController implements RbaacService {
 				.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
 
 		return AmxApiResponse.build(urMappingsResponseDTO);
+	}
+
+	@Override
+	@RequestMapping(value = ApiEndPoints.RA_UPDATE, method = RequestMethod.POST)
+	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(
+			@RequestBody(required = true) UserRoleMappingsRequestDTO urmRequestDTO) {
+
+		LOGGER.info("Received request for Update User Role Allocations " + " from Ip Address: "
+				+ urmRequestDTO.getIpAddr() + " from device Id: " + urmRequestDTO.getDeviceId());
+
+		List<UserRoleMappingDTO> urmDtoList = userRoleService.updateUserRoleMappings(urmRequestDTO);
+
+		return AmxApiResponse.buildList(urmDtoList);
+
 	}
 
 	@Override

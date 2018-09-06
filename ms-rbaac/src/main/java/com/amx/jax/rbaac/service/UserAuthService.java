@@ -268,7 +268,7 @@ public class UserAuthService {
 	 */
 	private boolean lockUserAccount(Employee srcEmp) {
 
-		Employee destEmp = rbaacDao.fetchEmpByEmpId(srcEmp.getEmployeeId());
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
 

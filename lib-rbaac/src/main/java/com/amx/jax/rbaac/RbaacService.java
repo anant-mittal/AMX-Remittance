@@ -6,10 +6,12 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.rbaac.dto.response.PermissionResposeDTO;
 import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
+import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 
 /**
@@ -118,13 +120,24 @@ public interface RbaacService {
 	/**
 	 * Gets the user role mappings for branch.
 	 *
-	 * @param countryBranchId the country branch id
-	 * @param ipAddr the ip addr
-	 * @param deviceId the device id
+	 * @param countryBranchId
+	 *            the country branch id
+	 * @param ipAddr
+	 *            the ip addr
+	 * @param deviceId
+	 *            the device id
 	 * @return the user role mappings for branch
 	 */
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
 			String ipAddr, String deviceId);
+
+	/**
+	 * Update user role mappings.
+	 *
+	 * @param urmRequestDTO the urm request DTO
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO);
 
 	/**
 	 * Test get.
