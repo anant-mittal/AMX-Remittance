@@ -53,9 +53,14 @@ public class AuditServiceClient implements AuditService {
 			@Autowired(required = false) ITunnelService iTunnelService) {
 
 		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
+		String[] skippedMarkersList = appConfig.getSkipAuditMarkers();
 
 		for (String markerString : allowedMarkersList) {
 			allowedMarkersMap.put(markerString, Boolean.TRUE);
+		}
+
+		for (String markerString : skippedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.FALSE);
 		}
 
 		if (!FILTER_MAP_DONE) {
