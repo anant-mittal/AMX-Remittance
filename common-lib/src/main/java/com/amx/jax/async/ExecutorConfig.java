@@ -11,9 +11,11 @@ import org.springframework.scheduling.annotation.AsyncConfigurerSupport;
 public class ExecutorConfig extends AsyncConfigurerSupport {
 
 	public static final String DEFAULT = "silverExecutor";
-	public static final String EXECUTER_GOLD = "goldExecutor";
 	public static final String EXECUTER_BRONZE = "bronzeExecutor";
+
+	public static final String EXECUTER_GOLD = "goldExecutor";
 	public static final String EXECUTER_PLATINUM = "platinumExecutor";
+	public static final String EXECUTER_DIAMOND = "diamondExecutor";
 
 	@Override
 	@Bean
@@ -39,6 +41,15 @@ public class ExecutorConfig extends AsyncConfigurerSupport {
 		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
 		executor.setCorePoolSize(50);
 		executor.setThreadNamePrefix(EXECUTER_PLATINUM + "-");
+		executor.initialize();
+		return executor;
+	}
+
+	@Bean(name = EXECUTER_DIAMOND)
+	public TaskExecutor taskExecutorDiamond() {
+		ContextAwarePoolExecutor executor = new ContextAwarePoolExecutor();
+		executor.setCorePoolSize(50);
+		executor.setThreadNamePrefix(EXECUTER_DIAMOND + "-");
 		executor.initialize();
 		return executor;
 	}

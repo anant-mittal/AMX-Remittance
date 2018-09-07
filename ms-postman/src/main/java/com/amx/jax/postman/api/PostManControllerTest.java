@@ -235,6 +235,10 @@ public class PostManControllerTest {
 			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
+		} else if ("json".equals(ext)) {
+			file.setType(File.Type.JSON);
+			file = postManClient.processTemplate(file);
+			return file.getContent();
 		} else if ("html".equals(ext)) {
 			file = postManClient.processTemplate(file);
 			if (email != null) {

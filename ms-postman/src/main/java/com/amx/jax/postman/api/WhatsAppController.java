@@ -25,7 +25,8 @@ public class WhatsAppController {
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
 	public Message sendWhatsApp(@RequestBody Message msg) throws PostManException {
-		return whatsAppService.send(msg);
+		whatsAppService.send(msg);
+		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.GET)
@@ -33,7 +34,8 @@ public class WhatsAppController {
 		Message msg = new Message();
 		msg.addTo(to);
 		msg.setMessage(message);
-		return whatsAppService.send(msg);
+		whatsAppService.send(msg);
+		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = {
@@ -42,7 +44,8 @@ public class WhatsAppController {
 		Message msg = new Message();
 		msg.addTo(to);
 		msg.setMessage(message);
-		return whatsAppService.send(msg);
+		whatsAppService.send(msg);
+		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_POLL, method = RequestMethod.GET)
