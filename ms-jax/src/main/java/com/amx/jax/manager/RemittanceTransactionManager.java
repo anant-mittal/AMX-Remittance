@@ -237,7 +237,7 @@ public class RemittanceTransactionManager {
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
-		if (exchangeRates == null || exchangeRates.isEmpty()) {
+		if (!jaxProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
 					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
@@ -731,6 +731,7 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+		remitAppDao.updatePlaceOrder(model,remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());

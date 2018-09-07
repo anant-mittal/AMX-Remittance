@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,6 +15,7 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
@@ -36,11 +38,12 @@ public class TemplateService {
 
 	/** The template engine. */
 	@Autowired
-	private TemplateEngine templateEngine;
+	@Qualifier("messageTemplateEngine")
+	private SpringTemplateEngine templateEngine;
 
 	/** The text template engine. */
 	@Autowired
-	private TemplateEngine textTemplateEngine;
+	private SpringTemplateEngine textTemplateEngine;
 
 	/** The message source. */
 	@Autowired

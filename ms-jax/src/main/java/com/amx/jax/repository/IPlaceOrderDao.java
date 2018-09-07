@@ -36,14 +36,16 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 			+ "EX_PIPS_MASTER PM " + " where  " + "PO.BANK_ID = PM.BANK_ID " + "and PM.bank_id = RH.ROUTING_BANK_ID "
 			+ "and PO.CURRENCY_ID = RH.CURRENCY_ID " + "and PO.CURRENCY_ID = RH.CURRENCY_ID "
 			+ "and PM.PIPS_MASTER_ID=:pipsMasterId " + "and PO.RECEIVE_AMOUNT >= PM.FROM_AMOUNT  "
-			+ "and PO.RECEIVE_AMOUNT <= PM.TO_AMOUNT " + "and RH.SERVICE_MASTER_ID=101"
-			+ "and (1/PM.DERIVED_SELL_RATE) >= PO.TARGET_EXCHANGE_RATE "
+			+ "and PO.RECEIVE_AMOUNT <= PM.TO_AMOUNT " + "and RH.SERVICE_MASTER_ID=101 "
+			+ "and (1/PM.DERIVED_SELL_RATE) >= PO.TARGET_EXCHANGE_RATE " + "and PO.ISACTIVE='Y' "
+			+ "and RH.ISACTIVE='Y' "
+			+ "and  (trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE)) "
 			+ "and (trunc( PO.NOTIFICATION_DATE) < trunc(sysdate) or PO.NOTIFICATION_DATE  is null)")
 	public Set<PlaceOrder> getPlaceOrderAlertRate1(@Param("pipsMasterId") BigDecimal pipsMasterId);
 	
 	@Query(nativeQuery = true, value ="select PO.* from " + 
 			"JAX_ONLINE_PLACE_ORDER PO ," + "EX_ROUTING_HEADER RH ," + 
-			"EX_PIPS_MASTER PM" + " where" + " PO.BANK_ID not in (select ROUTING_BANK_ID from EX_ROUTING_HEADER where ROUTING_BANK_ID != PM.BANK_ID)" + 
+			"EX_PIPS_MASTER PM" + " where" + " PO.BANK_ID not in (select ROUTING_BANK_ID from EX_ROUTING_HEADER where ROUTING_BANK_ID != PM.BANK_ID  and isactive='Y')" + 
 			" and PM.bank_id = RH.ROUTING_BANK_ID" + 
 			" and PO.CURRENCY_ID = RH.CURRENCY_ID" + 
 			" and PO.CURRENCY_ID = PM.CURRENCY_ID" + 
@@ -52,7 +54,12 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 			" and PO.RECEIVE_AMOUNT <= PM.TO_AMOUNT" + 
 			" and RH.SERVICE_MASTER_ID=102" + 
 			" and (1/PM.DERIVED_SELL_RATE) >= PO.TARGET_EXCHANGE_RATE" + 
+			" and PO.ISACTIVE='Y' and RH.ISACTIVE='Y'" +
+			" and (trunc(sysdate)  between trunc(PO.VALID_FROM_DATE) and  trunc(PO.VALID_TO_DATE))" +
 			" and (trunc( PO.NOTIFICATION_DATE) < trunc(sysdate) or PO.NOTIFICATION_DATE  is null)")
 	public Set<PlaceOrder> getPlaceOrderAlertRate2(@Param("pipsMasterId") BigDecimal pipsMasterId);
-	
+
+	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
+	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+
 }

@@ -1,4 +1,4 @@
-package com.amx.jax.logger;
+package com.amx.jax.worker.logger;
 
 import java.util.Map;
 
@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.SessionEvent;
 import com.amx.jax.tunnel.TunnelService;

@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CommonRequest;
@@ -61,6 +63,7 @@ public class OffsiteCustRegController implements ICustRegService {
 	@Autowired
 	MetaService metaService;	
 
+	@ApiJaxStatus({JaxError.EMPTY_ID_TYPE_LIST})
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		return offsiteCustRegService.sendIdTypes();
@@ -75,38 +78,45 @@ public class OffsiteCustRegController implements ICustRegService {
 		return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
 	}
 
+	@ApiJaxStatus({JaxError.MISSING_OTP,JaxError.VALIDATE_OTP_LIMIT_EXCEEDED})
 	@RequestMapping(value = CustRegApiEndPoints.VALIDATE_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
 			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {	
 		return offsiteCustRegService.validateOtpForEmailAndMobile(offsiteCustRegModel);
 	}
 	
+	@ApiJaxStatus({JaxError.EMPTY_ARTICLE_LIST})
 	@RequestMapping(value = CustRegApiEndPoints.GET_ARTICLE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(@RequestBody CommonRequest model) {		
 		return offsiteCustRegService.getArticleListResponse(model);
 	}
 
+	@ApiJaxStatus({JaxError.EMPTY_DESIGNATION_LIST})
 	@RequestMapping(value = CustRegApiEndPoints.GET_DESIGNATION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
 			@RequestBody EmploymentDetailsRequest model) {		
 		return offsiteCustRegService.getDesignationListResponse(model);
 	}
 
+	@ApiJaxStatus({JaxError.EMPTY_INCOME_RANGE})
 	@RequestMapping(value = CustRegApiEndPoints.GET_INCOME_RANGE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {		
 		return offsiteCustRegService.getIncomeRangeResponse(model);
 	}
 
+	@ApiJaxStatus({JaxError.EMPTY_FIELD_CONDITION})
 	@RequestMapping(value = CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {		
 		return offsiteCustRegService.getFieldList(model);
 	}
 	
+	@ApiJaxStatus({JaxError.EMPTY_EMPLOYMENT_TYPE})
 	@RequestMapping(value = CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {		
 		return offsiteCustRegService.sendEmploymentTypeList();
 	}
 	
+	@ApiJaxStatus({JaxError.EMPTY_PROFESSION_LIST})
 	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {		
 		return offsiteCustRegService.sendProfessionList();
