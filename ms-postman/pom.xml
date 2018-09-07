@@ -44,6 +44,7 @@
 			<version>3.0.0.RELEASE</version>
 		</dependency>
 
+		<!-- AMX -->
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>

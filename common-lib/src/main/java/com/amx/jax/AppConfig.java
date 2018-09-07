@@ -129,6 +129,12 @@ public class AppConfig {
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
 
+	@Value("${app.audit.file.print}")
+	String[] printableAuditMarkers;
+
+	@Value("${app.audit.file.skip}")
+	String[] skipAuditMarkers;
+
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
 	}
@@ -260,6 +266,14 @@ public class AppConfig {
 
 	public String getAppId() {
 		return appId;
+	}
+
+	public String[] getPrintableAuditMarkers() {
+		return printableAuditMarkers;
+	}
+
+	public String[] getSkipAuditMarkers() {
+		return skipAuditMarkers;
 	}
 
 }

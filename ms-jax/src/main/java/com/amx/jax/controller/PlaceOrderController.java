@@ -47,9 +47,10 @@ public class PlaceOrderController {
 	public ApiResponse handleUrlSave(@RequestBody @Valid PlaceOrderDTO dto) 
 	{
 		logger.info("In save with parameters" + dto.toString());
-		BigDecimal customerId = metaData.getCustomerId();
 		
+		BigDecimal customerId = metaData.getCustomerId();
 		dto.setCustomerId(customerId);
+				
 		ApiResponse response = null;
 		response = placeOrderService.savePlaceOrder(dto);
 		return response;
