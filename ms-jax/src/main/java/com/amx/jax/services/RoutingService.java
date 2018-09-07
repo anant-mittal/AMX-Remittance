@@ -55,6 +55,7 @@ public class RoutingService {
 			BigDecimal routingBankBranchId = routingProcedureDao.getRoutingBankBranchIdForCash(inputValue);
 			if (routingBankBranchId != null) {
 				output.put("P_ROUTING_BANK_BRANCH_ID", routingBankBranchId);
+				inputValue.put("P_ROUTING_BANK_BRANCH_ID", routingBankBranchId);
 			}
 			output.put("P_REMITTANCE_MODE_ID", routingProcedureDao.getRemittanceModeIdForCash(inputValue));
 			inputValue.putAll(output);

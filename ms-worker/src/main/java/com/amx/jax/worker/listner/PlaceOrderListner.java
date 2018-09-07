@@ -30,23 +30,11 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-	public static final String BANK_ID = "BANKID";
-	public static final String TOAMOUNT = "TOAMOUNT";
-	public static final String CNTRYID = "CNTRYID";
-	public static final String CURRID = "CURRID";
-	public static final String FROMAMOUNT = "FROMAMOUNT";
-	public static final String DRVSELLRATE = "DRVSELLRATE";
 	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
 	public void onMessage(String channel, Event event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
-		BigDecimal bankId = ArgUtil.parseAsBigDecimal(event.getData().get(BANK_ID));
-		BigDecimal toAmount = ArgUtil.parseAsBigDecimal(event.getData().get(TOAMOUNT));
-		BigDecimal countryId = ArgUtil.parseAsBigDecimal(event.getData().get(CNTRYID));
-		BigDecimal currencyId = ArgUtil.parseAsBigDecimal(event.getData().get(CURRID));
-		BigDecimal fromAmount = ArgUtil.parseAsBigDecimal(event.getData().get(FROMAMOUNT));
-		BigDecimal derivedSellRate = ArgUtil.parseAsBigDecimal(event.getData().get(DRVSELLRATE));
 		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
 		this.rateAlertPlaceOrder(pipsMasterId);
 	}

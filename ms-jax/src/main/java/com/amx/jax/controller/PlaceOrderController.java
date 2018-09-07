@@ -133,23 +133,15 @@ public class PlaceOrderController {
 	}
 	
 	/**
-	 * update place order 
+	 * place order on trigger
 	 * @return
 	 */
 	@RequestMapping(value = "/get/placeorder/ontrigger", method = RequestMethod.GET)
-	public ApiResponse handleUrlPlaceOrderOnTrigger(@RequestParam BigDecimal fromAmount,@RequestParam BigDecimal toAmount, @RequestParam BigDecimal countryId, @RequestParam BigDecimal currencyId,@RequestParam BigDecimal bankId,@RequestParam BigDecimal derivedSellRate) {
-		logger.info(String.format(
-				"Inside PlaceOrderOnTrigger Request with parameters --> CountryId: %s,CurrencyId: %s, BankId: %s, ExchangeRate: %s",
-				countryId, currencyId, bankId, derivedSellRate));
-		PlaceOrder placeOrder =new PlaceOrder();
-		placeOrder.setCountryId(countryId);
-		placeOrder.setCurrencyId(currencyId);
-		placeOrder.setBankId(bankId);
-		placeOrder.setTargetExchangeRate(derivedSellRate);
-		/*JaxContextUtil.setJaxEvent(JaxEvent.PLACE_ORDER_TRIGGER);*/
-		JaxContextUtil.setRequestModel(placeOrder);
+	public ApiResponse handleUrlPlaceOrderOnTrigger(@RequestParam BigDecimal pipsMasterId) {
+		logger.info("Inside PlaceOrderOnTrigger Request with parameters --> Pips Master Id: "+pipsMasterId);
+
 		ApiResponse response = null;
-		response = placeOrderService.rateAlertPlaceOrder(fromAmount,toAmount,countryId,currencyId,bankId,derivedSellRate);
+		response = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
 		
 		return response;
 	}
