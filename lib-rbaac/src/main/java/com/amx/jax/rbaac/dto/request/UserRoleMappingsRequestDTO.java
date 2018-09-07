@@ -17,7 +17,7 @@ public class UserRoleMappingsRequestDTO implements Serializable {
 	private static final long serialVersionUID = -7204846177787386980L;
 
 	/** The employee role id map. */
-	List<UserRoleMappingDTO> userRoleMappingInfoList;
+	private List<UserRoleMappingDTO> userRoleMappingInfoList;
 
 	/** The ip addr. */
 	@NotBlank(message = "IP Address Can not be Blank.")

@@ -202,6 +202,12 @@ public class RbaacDao {
 		return employeeRepository.saveAndFlush(employee);
 	}
 
+	@Modifying
+	@Transactional
+	public List<Employee> saveEmployees(Iterable<Employee> employeeList) {
+		return employeeRepository.save(employeeList);
+	}
+
 	/** UnUsed APIs **/
 
 	public List<RoleDefinition> fetchEmpRoleMenu(BigDecimal roleId) {

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -147,10 +148,12 @@ public class RbaacServiceClient implements RbaacService {
 				.queryParam("deviceId", deviceId).post().asApiResponse(UserRoleMappingsResponseDTO.class);
 	}
 
-	
 	/*
 	 * (non-Javadoc)
-	 * @see com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
+	 * request.UserRoleMappingsRequestDTO)
 	 */
 	@Override
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO) {
@@ -161,6 +164,24 @@ public class RbaacServiceClient implements RbaacService {
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_UPDATE).post(urmRequestDTO)
 				.asApiResponse(UserRoleMappingDTO.class);
 
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
+	 * .dto.request.EmployeeDetailsRequestDTO)
+	 */
+	@Override
+	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
+			EmployeeDetailsRequestDTO edRequestDTO) {
+
+		LOGGER.info("Received request for Update User Account Details " + " from Ip Address: "
+				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId());
+
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.UAC_UPDATE).post(edRequestDTO)
+				.asApiResponse(EmployeeDetailsDTO.class);
 	}
 
 	/*

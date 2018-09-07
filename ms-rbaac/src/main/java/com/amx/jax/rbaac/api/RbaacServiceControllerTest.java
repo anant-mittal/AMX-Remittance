@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.RbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -132,6 +133,21 @@ public class RbaacServiceControllerTest implements RbaacService {
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO) {
 
 		return rbaacServiceClient.updateUserRoleMappings(urmRequestDTO);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
+	 * .dto.request.EmployeeDetailsRequestDTO)
+	 */
+	@Override
+	@ApiOperation("User Account Update / (In)Activate / (Un)Lock")
+	@RequestMapping(value = ApiEndPoints.UAC_UPDATE, method = RequestMethod.POST)
+	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
+			EmployeeDetailsRequestDTO edRequestDTO) {
+		return rbaacServiceClient.updateEmployeeAccountDetails(edRequestDTO);
 	}
 
 	/*

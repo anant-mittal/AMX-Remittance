@@ -3,6 +3,7 @@ package com.amx.jax.rbaac;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -52,9 +53,6 @@ public interface RbaacService {
 
 		/** The Constant RA_UPDATE. */
 		public static final String RA_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/update";
-
-		/** The Constant RA_REVOKE. */
-		public static final String RA_REVOKE = SERVICE_PREFIX + API_VERSION_V1 + "/roles/alloc/revoke";
 
 		/** The Constant UAC_UPDATE. */
 		public static final String UAC_UPDATE = SERVICE_PREFIX + API_VERSION_V1 + "/user/account/update";
@@ -134,10 +132,21 @@ public interface RbaacService {
 	/**
 	 * Update user role mappings.
 	 *
-	 * @param urmRequestDTO the urm request DTO
+	 * @param urmRequestDTO
+	 *            the urm request DTO
 	 * @return the amx api response
 	 */
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO);
+
+	/**
+	 * Update employee account details.
+	 *
+	 * @param employeeDTO
+	 *            the employee DTO
+	 * @return the amx api response
+	 */
+	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
+			EmployeeDetailsRequestDTO edRequestDTO);
 
 	/**
 	 * Test get.

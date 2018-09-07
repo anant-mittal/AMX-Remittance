@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rbaac.RbaacService;
+import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -28,6 +29,7 @@ import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 import com.amx.jax.rbaac.service.RespTestService;
+import com.amx.jax.rbaac.service.UserAccountService;
 import com.amx.jax.rbaac.service.UserAuthService;
 import com.amx.jax.rbaac.service.UserRoleService;
 
@@ -46,23 +48,23 @@ public class RbaacServiceApiController implements RbaacService {
 	@Autowired
 	UserAuthService userAuthService;
 
+	/** The resp test service. */
 	@Autowired
 	RespTestService respTestService;
 
+	/** The user role service. */
 	@Autowired
 	UserRoleService userRoleService;
+
+	/** The user account service. */
+	@Autowired
+	UserAccountService userAccountService;
 
 	/**
 	 * Init User Authentication.
 	 *
-	 * @param employeeNo
-	 *            the employee no
-	 * @param identity
-	 *            the identity
-	 * @param ipAddress
-	 *            the ip address
+	 * @param userAuthInitReqDTO the user auth init req DTO
 	 * @return the amx api response
-	 * 
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.INIT_AUTH, method = RequestMethod.POST)
@@ -76,6 +78,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.build(userAuthInitResponseDTO);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestBody UserAuthorisationReqDTO reqDto) {
@@ -88,6 +93,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.build(employeeDetailsDTO);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String, java.lang.String)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.PERMS_GET, method = RequestMethod.POST)
 	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(@RequestParam(required = true) String ipAddr,
@@ -101,6 +109,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.buildList(permissionsResposeDTOList);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String, java.lang.String)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.ROLES_GET, method = RequestMethod.POST)
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(@RequestParam(required = true) String ipAddr,
@@ -113,6 +124,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.buildList(rolesResponseDTOList);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#saveRole(com.amx.jax.rbaac.dto.request.RoleRequestDTO)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.ROLES_SAVE, method = RequestMethod.POST)
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(
@@ -126,6 +140,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.build(rolesResponseDTO);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#getUserRoleMappingsForBranch(java.math.BigDecimal, java.lang.String, java.lang.String)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
@@ -141,6 +158,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.build(urMappingsResponseDTO);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.request.UserRoleMappingsRequestDTO)
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(
@@ -155,6 +175,28 @@ public class RbaacServiceApiController implements RbaacService {
 
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO)
+	 */
+	@Override
+	@RequestMapping(value = ApiEndPoints.UAC_UPDATE, method = RequestMethod.POST)
+	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
+			@RequestBody(required = true) EmployeeDetailsRequestDTO edRequestDTO) {
+
+		LOGGER.info("Received request for Update User Account Details " + " from Ip Address: "
+				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId());
+
+		List<EmployeeDetailsDTO> employeeDetailsDTOList = userAccountService.updateEmployee(edRequestDTO);
+
+		return AmxApiResponse.buildList(employeeDetailsDTOList);
+	}
+
+	/**
+	 * ******** APIs For Service Test ***********.
+	 *
+	 * @return the amx api response
+	 */
+
 	@Override
 	@RequestMapping(value = ApiEndPoints.TEST_GET, method = RequestMethod.GET)
 	public AmxApiResponse<String, Object> testGet() {
@@ -164,6 +206,9 @@ public class RbaacServiceApiController implements RbaacService {
 		return AmxApiResponse.build(resp);
 	}
 
+	/* (non-Javadoc)
+	 * @see com.amx.jax.rbaac.RbaacService#testPost()
+	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.TEST_POST, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> testPost() {

@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Map;
 
+import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
 import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
@@ -43,6 +44,22 @@ public final class ObjectConverter {
 		empDetail.setLocation(employee.getLocation());
 		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
 		empDetail.setUserName(employee.getUserName());
+
+		empDetail.setStatus(employee.getStatus());
+
+		if (employee.getIsActive().equalsIgnoreCase("Y") || employee.getIsActive().equalsIgnoreCase("YES")) {
+			empDetail.setIsActive(Boolean.TRUE);
+		} else {
+			empDetail.setIsActive(Boolean.FALSE);
+		}
+
+		if (employee.getLockCount() != null
+				&& employee.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
+			empDetail.setIsLocked(Boolean.TRUE);
+		} else {
+			empDetail.setIsActive(Boolean.FALSE);
+		}
+
 		empDetail.setRoleId(new BigDecimal("1"));
 
 		return empDetail;

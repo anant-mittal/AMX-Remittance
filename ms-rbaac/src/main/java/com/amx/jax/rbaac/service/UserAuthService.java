@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
@@ -51,9 +52,6 @@ public class UserAuthService {
 	/** The user otp manager. */
 	@Autowired
 	UserOtpManager userOtpManager;
-
-	/** The Constant MAX_LOCK_COUNT. */
-	private static final int MAX_LOCK_COUNT = 3;
 
 	/**
 	 * Verify user details.
@@ -131,7 +129,7 @@ public class UserAuthService {
 		/**
 		 * Check if user A/C is Locked. lockcnt >= 3
 		 */
-		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= MAX_LOCK_COUNT) {
+		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			throw new AuthServiceException(
 					"User Account Locked : User Account Login is Suspended, from: " + emp.getLockDate(),
 					RbaacServiceError.USER_ACCOUNT_LOCKED);
