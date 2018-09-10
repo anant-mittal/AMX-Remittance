@@ -52,9 +52,14 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	@NotNull(message="receiveAmount may not be null")
 	private BigDecimal receiveAmount;
 	
+	@NotNull(message="baseCurrencyId may not be null")
 	private BigDecimal baseCurrencyId;
+	
 	private String baseCurrencyQuote;
+	
+	@NotNull(message="foreignCurrencyId may not be null")
 	private BigDecimal foreignCurrencyId;
+	
 	private String foreignCurrencyQuote;
 	
 	private BigDecimal currencyId;
