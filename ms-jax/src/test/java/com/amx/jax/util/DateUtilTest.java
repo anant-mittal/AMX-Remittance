@@ -22,7 +22,6 @@ public class DateUtilTest {
 	@Test
 	public void formatDateTest() {
 		String date = dateUtil.format(LocalDate.now(), "MM/d/YYYY");
-		System.out.println(date);
 		assertThat(date != null);
 	}
 }
