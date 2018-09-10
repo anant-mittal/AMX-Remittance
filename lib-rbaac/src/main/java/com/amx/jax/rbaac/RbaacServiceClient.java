@@ -88,11 +88,11 @@ public class RbaacServiceClient implements RbaacService {
 	 * java.lang.String)
 	 */
 	@Override
-	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId) {
+	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddress, String deviceId) {
 
-		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}", ipAddr, deviceId);
+		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}", ipAddress, deviceId);
 
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddr)
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddress)
 				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionResposeDTO.class);
 
 	}
@@ -104,11 +104,11 @@ public class RbaacServiceClient implements RbaacService {
 	 * java.lang.String)
 	 */
 	@Override
-	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId) {
+	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddress, String deviceId) {
 
-		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}", ipAddr, deviceId);
+		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}", ipAddress, deviceId);
 
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddr)
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddress)
 				.queryParam("deviceId", deviceId).post().asApiResponse(RoleResponseDTO.class);
 	}
 
@@ -137,14 +137,14 @@ public class RbaacServiceClient implements RbaacService {
 	 */
 	@Override
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
-			String ipAddr, String deviceId) {
+			String ipAddress, String deviceId) {
 
 		LOGGER.info(
 				"Received request for Get User Role Allocations For Branch Id: {} , from IP address: {}, device Id: {}",
-				countryBranchId, ipAddr, deviceId);
+				countryBranchId, ipAddress, deviceId);
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_GET_FOR_BRANCH)
-				.queryParam("countryBranchId", countryBranchId).queryParam("ipAddress", ipAddr)
+				.queryParam("countryBranchId", countryBranchId).queryParam("ipAddress", ipAddress)
 				.queryParam("deviceId", deviceId).post().asApiResponse(UserRoleMappingsResponseDTO.class);
 	}
 
