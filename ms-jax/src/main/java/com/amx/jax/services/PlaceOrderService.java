@@ -92,7 +92,7 @@ public class PlaceOrderService extends AbstractService {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while saving Place Order.", e);
 		}
-		logger.info(String.format("Place Order saved for customer %s  with beneficiaryRelationshipSeqId as %d",customerId,placeOrderModel.getBeneficiaryRelationshipSeqId()));       
+		logger.info("Place Order saved for customer : " +customerId);       
 		return response;
 	}
 
@@ -112,7 +112,7 @@ public class PlaceOrderService extends AbstractService {
 		try {
 			placeOrderList = placeOrderdao.getPlaceOrderForCustomer(customerId);
 			
-			logger.info(String.format("Place Order list size for customer %s  is %d",customerId,placeOrderList.size()));
+			logger.info("Place Order list size for customer " +placeOrderList.size());
 			
 			if(!placeOrderList.isEmpty()) {
 				for(PlaceOrder rec : placeOrderList) {
@@ -142,7 +142,7 @@ public class PlaceOrderService extends AbstractService {
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().setType("place-order-dto");
 			}else {
-				logger.info(String.format("Place Order list is empty for customer %s  ",customerId));
+				logger.info("Place Order list is empty for customer :  " +customerId);
 			}
 			
 		} catch (Exception e) {
