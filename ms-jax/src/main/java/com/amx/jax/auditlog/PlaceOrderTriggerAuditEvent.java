@@ -1,7 +1,5 @@
 package com.amx.jax.auditlog;
 
-import com.amx.jax.auditlog.JaxUserAuditEvent.Type;
-
 public class PlaceOrderTriggerAuditEvent extends JaxAuditEvent {
 	Object model;
 	

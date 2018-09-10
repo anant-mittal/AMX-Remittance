@@ -12,11 +12,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.error.JaxError;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

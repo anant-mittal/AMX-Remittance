@@ -4,6 +4,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
 import java.util.List;
 import java.util.Map;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
-import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;

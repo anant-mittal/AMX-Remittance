@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.UserVerificationCheckListModel;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 

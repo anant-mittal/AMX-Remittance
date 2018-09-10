@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
@@ -32,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;

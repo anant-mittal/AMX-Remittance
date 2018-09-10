@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.service.HttpService;

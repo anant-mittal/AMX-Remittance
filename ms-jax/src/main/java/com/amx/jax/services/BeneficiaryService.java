@@ -28,7 +28,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
@@ -67,6 +66,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;

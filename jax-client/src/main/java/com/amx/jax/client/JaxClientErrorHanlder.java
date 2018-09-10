@@ -8,7 +8,6 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResponseErrorHandler;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AlreadyExistsException;
 import com.amx.amxlib.exception.CustomerValidationException;
 import com.amx.amxlib.exception.IncorrectInputException;
@@ -18,6 +17,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.exception.UnknownJaxError;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.utils.JsonUtil;
 
