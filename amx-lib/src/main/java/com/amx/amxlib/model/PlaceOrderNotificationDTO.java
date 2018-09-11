@@ -17,8 +17,8 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 	String email;
 	String inputCur;
 	String outputCur;
-	BigDecimal inputAmount;
-	BigDecimal outputAmount;
+	String inputAmount;
+	String outputAmount;
 	String date;
 	String time;
 
@@ -94,28 +94,29 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		this.date = date2;
 	}
 
-	public BigDecimal getInputAmount() {
-		return inputAmount;
-	}
-
-	public void setInputAmount(BigDecimal inputAmount) {
-		this.inputAmount = inputAmount;
-	}
-
-	public BigDecimal getOutputAmount() {
-		return outputAmount;
-	}
-
-	public void setOutputAmount(BigDecimal outputAmount) {
-		this.outputAmount = outputAmount;
-	}
-	
 	public String getTime() {
 		return time;
 	}
 
 	public void setTime(String time) {
 		this.time = time;
+	}
+
+	
+	public String getInputAmount() {
+		return inputAmount;
+	}
+
+	public void setInputAmount(String inputAmount) {
+		this.inputAmount = inputAmount;
+	}
+
+	public String getOutputAmount() {
+		return outputAmount;
+	}
+
+	public void setOutputAmount(String outputAmount) {
+		this.outputAmount = outputAmount;
 	}
 
 	@Override
