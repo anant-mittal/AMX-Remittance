@@ -42,7 +42,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 
-	// @Test
+	@Test
 	public void testIdTypeList() {
 		setDefaults();
 		AmxApiResponse<ComponentDataDto, Object> response = null;
@@ -93,7 +93,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		assertNotNull(response.getResult());
 	}
 	
-	@Test
+	//@Test
 	public void testSendOTPForMobileAndEmail()  throws URISyntaxException, IOException {
 			setDefaults();		
 			/*String json = new String(
