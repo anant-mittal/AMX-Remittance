@@ -11,6 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Message;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.MapBuilder;

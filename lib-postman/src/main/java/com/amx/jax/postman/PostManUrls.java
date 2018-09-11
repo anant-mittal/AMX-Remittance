@@ -22,6 +22,7 @@ public final class PostManUrls {
 	public static final String WHATS_APP_SEND = "/postman/whatsapp/send";
 	public static final String WHATS_APP_RESEND = "/postman/whatsapp/resend";
 	public static final String WHATS_APP_STATUS = "/postman/whatsapp/status";
+	public static final String WHATS_APP_STATS = "/postman/whatsapp/stats";
 	public static final String WHATS_APP_POLL = "/postman/whatsapp/poll";
 
 	public static final String GEO_LOC = "/geo/location";
