@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -35,7 +37,7 @@ public class RemittanceApplicationService {
 	@Autowired
 	RemittanceProcedureDao remitDao;
 	
-	
+	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
 	
 	/**
@@ -48,7 +50,6 @@ public class RemittanceApplicationService {
 		try {
 			for (RemittanceApplication shoppingCartDataTableBean : lstPayIdDetails) {
 				RemittanceApplication remittanceApplication =  remittanceApplicationRepository.findOne(shoppingCartDataTableBean.getRemittanceApplicationId());
-				System.out.println("Update paymnetId :"+paymentResponse.toString());
 				if(remittanceApplication != null && !StringUtils.isBlank(paymentResponse.getPaymentId())){
 					remittanceApplication.setPaymentId(paymentResponse.getPaymentId());
 					remittanceApplication.setResultCode(paymentResponse.getResultCode());
@@ -136,7 +137,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 	 */
 	public Map<String, Object> saveRemittance(PaymentResponseDto paymentResponse) {
 		String result = null;
-		System.out.println("Payment ID :"+paymentResponse.getPaymentId());
+		logger.info("Payment ID :" + paymentResponse.getPaymentId());
 		Map<String, Object> resultMap =null;
 		try {
 			HashMap<String, Object> inputValues = new HashMap<>();
@@ -152,9 +153,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			//resultMap = applRemitDao.insertRemittanceOnlineProcedure(inputValues);
 			resultMap = remitDao.insertRemittanceForOnline(inputValues);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Message :"+e.getMessage());
+			logger.error("error occured in save remittance", e);
 		}
 		return resultMap;
 	}

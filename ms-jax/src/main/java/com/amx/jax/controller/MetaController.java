@@ -263,7 +263,7 @@ public class MetaController {
 			@PathVariable("companyId") BigDecimal companyId,
 			@PathVariable("documentNo") BigDecimal documentNo,
 			@PathVariable("documentFinancialYear") BigDecimal documentFinancialYear){			
-		System.out.println("Document :"+ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
+		LOGGER.info("Document :"+ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 		return collectionPaymentDetailsViewService.getCollectionPaymentDetailsFromView(companyId, documentNo, documentFinancialYear, 
 				ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
