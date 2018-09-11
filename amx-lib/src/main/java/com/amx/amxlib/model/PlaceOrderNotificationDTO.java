@@ -20,6 +20,7 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 	BigDecimal inputAmount;
 	BigDecimal outputAmount;
 	String date;
+	String time;
 
 	public BigDecimal getOnlinePlaceOrderId() {
 		return onlinePlaceOrderId;
@@ -109,6 +110,14 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		this.outputAmount = outputAmount;
 	}
 	
+	public String getTime() {
+		return time;
+	}
+
+	public void setTime(String time) {
+		this.time = time;
+	}
+
 	@Override
 	public String getModelType() {
 		return "place-order-not-dto";
@@ -119,6 +128,8 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		StringBuilder builder = new StringBuilder();
 		builder.append("PlaceOrderNotificationDTO [onlinePlaceOrderId=");
 		builder.append(onlinePlaceOrderId);
+		builder.append(", customerId=");
+		builder.append(customerId);
 		builder.append(", rate=");
 		builder.append(rate);
 		builder.append(", firstName=");
@@ -139,6 +150,8 @@ public class PlaceOrderNotificationDTO extends AbstractModel implements Cloneabl
 		builder.append(outputAmount);
 		builder.append(", date=");
 		builder.append(date);
+		builder.append(", time=");
+		builder.append(time);
 		builder.append("]");
 		return builder.toString();
 	}

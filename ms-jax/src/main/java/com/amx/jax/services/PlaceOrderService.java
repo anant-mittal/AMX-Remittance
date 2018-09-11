@@ -332,6 +332,9 @@ public class PlaceOrderService extends AbstractService {
 
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
 			String date = simpleDateFormat.format(new Date());
+			
+			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("hh:mm:z");
+			String time = simpleDateFormat.format(new Date());
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
@@ -350,6 +353,7 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);
+					placeorderNotDTO.setTime(time);
 					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
 					dtoList.add(placeorderNotDTO);
 
