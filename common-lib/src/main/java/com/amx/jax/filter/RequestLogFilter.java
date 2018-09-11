@@ -41,6 +41,19 @@ public class RequestLogFilter implements Filter {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
+	public static enum ReqType {
+		DEFAULT(true), POLL(false);
+		boolean track = false;
+
+		ReqType(boolean track) {
+			this.track = track;
+		}
+
+		public boolean isTrack() {
+			return track;
+		}
+	}
+
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
@@ -129,10 +142,17 @@ public class RequestLogFilter implements Filter {
 				AppContextUtil.init();
 			}
 
+			ReqType reqType = ReqType.DEFAULT;
+			String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
+			if (!StringUtils.isEmpty(reqTypeStr)) {
+				reqType = (ReqType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
+			}
+
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
-			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
-
+			if (reqType.isTrack()) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
+			}
 			try {
 				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -140,8 +160,10 @@ public class RequestLogFilter implements Filter {
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				}
 			} finally {
-				AuditServiceClient
-						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				if (reqType.isTrack()) {
+					AuditServiceClient
+							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				}
 			}
 
 		} finally {
