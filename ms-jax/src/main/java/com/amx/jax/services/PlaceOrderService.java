@@ -91,6 +91,7 @@ public class PlaceOrderService extends AbstractService {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while saving Place Order.", e);
 		}
+		logger.info("Place Order saved for customer : " +customerId);       
 		return response;
 	}
 
@@ -109,6 +110,8 @@ public class PlaceOrderService extends AbstractService {
 		
 		try {
 			placeOrderList = placeOrderdao.getPlaceOrderForCustomer(customerId);
+			
+			logger.info("Place Order list size for customer " +placeOrderList.size());
 			
 			if(!placeOrderList.isEmpty()) {
 				for(PlaceOrder rec : placeOrderList) {
@@ -137,6 +140,8 @@ public class PlaceOrderService extends AbstractService {
 				
 				response.setResponseStatus(ResponseStatus.OK);
 				response.getData().setType("place-order-dto");
+			}else {
+				logger.info("Place Order list is empty for customer :  " +customerId);
 			}
 			
 		} catch (Exception e) {
@@ -220,6 +225,8 @@ public class PlaceOrderService extends AbstractService {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while deleting Place Order record.", e);
 		}
+		
+		logger.info("Place order Deleted ");
 		return response;
 	}
 	
@@ -314,7 +321,7 @@ public class PlaceOrderService extends AbstractService {
 		
 		} catch (Exception e) {
 			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
-			logger.error("Error while deleting Place Order record.", e);
+			logger.error("Error while updating Place Order record.", e);
 		}
 		return response;
 	}
