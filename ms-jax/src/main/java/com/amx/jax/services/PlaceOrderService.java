@@ -1,6 +1,8 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,9 +22,9 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -283,7 +285,17 @@ public class PlaceOrderService extends AbstractService {
 
 	public ApiResponse updatePlaceOrder(PlaceOrderDTO dto) {
 		ApiResponse response = getBlackApiResponse();
+		
+		BenificiaryListView poBene = null;
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal beneRealtionId = dto.getBeneficiaryRelationshipSeqId();
+		
+		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+            poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
+        }
+		
 		beneficiaryValidationService.validateBeneList(beneRealtionId);
 		try {
 			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderUpdate(dto.getPlaceOrderId());
@@ -302,15 +314,15 @@ public class PlaceOrderService extends AbstractService {
 				rec.setValidToDate(dto.getValidToDate());
 				rec.setPayAmount(dto.getPayAmount());
 				rec.setReceiveAmount(dto.getReceiveAmount());
-				rec.setCreatedDate(dto.getCreatedDate());
-				rec.setBaseCurrencyId(rec.getBaseCurrencyId());
-				rec.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
-				rec.setForeignCurrencyId(rec.getForeignCurrencyId());
-				rec.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
+				//rec.setCreatedDate(dto.getCreatedDate());
+				rec.setBaseCurrencyId(dto.getBaseCurrencyId());
+				rec.setBaseCurrencyQuote(dto.getBaseCurrencyQuote());
+				rec.setForeignCurrencyId(dto.getForeignCurrencyId());
+				rec.setForeignCurrencyQuote(dto.getForeignCurrencyQuote());
 				
-				rec.setBankId(rec.getBankId());
-				rec.setCountryId(rec.getCountryId());
-				rec.setCurrencyId(rec.getCurrencyId());
+				rec.setBankId(poBene.getBankId());
+				rec.setCountryId(poBene.getCountryId());
+				rec.setCurrencyId(poBene.getCurrencyId());
 				
 				placeOrderdao.save(rec);
 				
@@ -336,8 +348,15 @@ public class PlaceOrderService extends AbstractService {
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
 			placeOrderList.addAll(placeOrderList2);
 
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
+
+			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("HH:MM a z");
+			String time = simpletimeFormat.format(new Date());
+			
+		    NumberFormat myFormat = NumberFormat.getInstance();
+		    myFormat.setGroupingUsed(true);
+
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
@@ -349,13 +368,14 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
 					placeorderNotDTO.setLastName(cusotmer.getLastName());
 					placeorderNotDTO.setEmail(cusotmer.getEmail());
-					placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
-					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
+					placeorderNotDTO.setInputAmount(myFormat.format(placeorder.getPayAmount()));
+					placeorderNotDTO.setOutputAmount(myFormat.format(placeorder.getReceiveAmount()));
 					placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
 					placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
 					placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);
+					placeorderNotDTO.setTime(time);
 					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
 					dtoList.add(placeorderNotDTO);
 

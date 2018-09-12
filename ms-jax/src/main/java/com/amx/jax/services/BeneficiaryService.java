@@ -366,7 +366,6 @@ public class BeneficiaryService extends AbstractService {
 				throw new GlobalException("Not found");
 			} else {
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
-				System.out.println("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
 								|| JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
