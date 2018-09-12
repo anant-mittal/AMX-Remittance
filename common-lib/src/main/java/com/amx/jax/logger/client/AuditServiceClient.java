@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -23,6 +24,7 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
@@ -36,6 +38,9 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker trackmarker = MarkerFactory.getMarker(EventMarker.TRACK.toString());
 	private static final Marker gaugemarker = MarkerFactory.getMarker(EventMarker.GAUGE.toString());
 	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
+	private static final Marker noticemarker = MarkerFactory.getMarker(EventMarker.NOTICE.toString());
+	private static final Marker alertmarker = MarkerFactory.getMarker(EventMarker.ALERT.toString());
+	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
 	private static String appName = null;
@@ -46,6 +51,18 @@ public class AuditServiceClient implements AuditService {
 	@Autowired
 	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
 			@Autowired(required = false) ITunnelService iTunnelService) {
+
+		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
+		String[] skippedMarkersList = appConfig.getSkipAuditMarkers();
+
+		for (String markerString : allowedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.TRUE);
+		}
+
+		for (String markerString : skippedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.FALSE);
+		}
+
 		if (!FILTER_MAP_DONE) {
 			appName = appConfig.getAppName();
 			for (AuditFilter filter : filters) {
@@ -105,7 +122,11 @@ public class AuditServiceClient implements AuditService {
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
 		event.setComponent(appName);
 		String json = JsonUtil.toJson(event);
-		LOGGER.info(marker, json);
+
+		String marketName = marker.getName();
+		if (allowedMarkersMap.getOrDefault(marketName, Boolean.FALSE).booleanValue()) {
+			LOGGER.info(marker, json);
+		}
 		if (capture && ITUNNEL_SERVICE != null) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
@@ -142,27 +163,43 @@ public class AuditServiceClient implements AuditService {
 		return logAuditEvent(marker, event, false);
 	}
 
+	public static AuditLoggerResponse logAuditEvent(EventMarker emarker, AuditEvent event) {
+		Marker marker = auditmarker;
+		boolean capture = false;
+		if (emarker == EventMarker.AUDIT) {
+			capture = true;
+		} else if (emarker == EventMarker.TRACK) {
+			marker = trackmarker;
+		} else if (emarker == EventMarker.GAUGE) {
+			marker = gaugemarker;
+		} else if (emarker == EventMarker.EXCEP) {
+			marker = excepmarker;
+		} else if (emarker == EventMarker.ALERT) {
+			marker = alertmarker;
+		} else if (emarker == EventMarker.NOTICE) {
+			marker = noticemarker;
+		} else {
+			capture = true;
+		}
+		return logAuditEvent(marker, event, capture);
+	}
+
 	/**
 	 * 
 	 * @param event
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		Marker marker = auditmarker;
-		boolean capture = false;
 		EventType eventType = event.getType();
-		if (eventType == null || eventType.marker() == EventMarker.AUDIT) {
-			capture = true;
-		} else if (eventType.marker() == EventMarker.TRACK) {
-			marker = trackmarker;
-		} else if (eventType.marker() == EventMarker.GAUGE) {
-			marker = gaugemarker;
-		} else if (eventType.marker() == EventMarker.EXCEP) {
-			marker = excepmarker;
-		} else {
-			capture = true;
+		if (eventType == null) {
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+			return null;
 		}
-		return logAuditEvent(marker, event, capture);
+		EventMarker eventMarker = eventType.marker();
+		if (eventMarker == null) {
+			eventMarker = EventMarker.AUDIT;
+		}
+		return logAuditEvent(eventMarker, event);
 	}
 
 	@Override
