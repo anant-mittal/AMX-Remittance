@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;

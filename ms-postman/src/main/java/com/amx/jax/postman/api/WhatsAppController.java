@@ -18,8 +18,8 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.audit.PMGaugeEvent;
-import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.Message.Status;
+import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.postman.service.WhatsAppService;
 import com.amx.utils.ArgUtil;
 
@@ -36,14 +36,14 @@ public class WhatsAppController {
 	AuditService auditService;
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
-	public Message sendWhatsApp(@RequestBody Message msg) throws PostManException {
+	public WAMessage sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
 		whatsAppService.send(msg);
 		return msg;
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.GET)
-	public Message sendWhatsAppGet(@RequestParam String to, @RequestParam String message) throws PostManException {
-		Message msg = new Message();
+	public WAMessage sendWhatsAppGet(@RequestParam String to, @RequestParam String message) throws PostManException {
+		WAMessage msg = new WAMessage();
 		msg.addTo(to);
 		msg.setMessage(message);
 		whatsAppService.send(msg);
@@ -52,8 +52,8 @@ public class WhatsAppController {
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public Message sendWhatsAppForm(@RequestParam String to, @RequestParam String message) throws PostManException {
-		Message msg = new Message();
+	public WAMessage sendWhatsAppForm(@RequestParam String to, @RequestParam String message) throws PostManException {
+		WAMessage msg = new WAMessage();
 		msg.addTo(to);
 		msg.setMessage(message);
 		whatsAppService.send(msg);
@@ -61,7 +61,7 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_POLL, method = RequestMethod.GET)
-	public Message pollWhatsApp(BigDecimal q) throws PostManException, InterruptedException {
+	public WAMessage pollWhatsApp(BigDecimal q) throws PostManException, InterruptedException {
 		return whatsAppService.poll(ArgUtil.parseAsBigDecimal(q, BigDecimal.ZERO));
 	}
 
@@ -71,7 +71,7 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_RESEND, method = RequestMethod.POST)
-	public Message resendWhatsApp(@RequestBody Message msg, @RequestParam BigDecimal q) throws PostManException {
+	public WAMessage resendWhatsApp(@RequestBody WAMessage msg, @RequestParam BigDecimal q) throws PostManException {
 		long ageOfMessage = System.currentTimeMillis() - msg.getTimestamp();
 
 		if (ageOfMessage < MESSAGE_TIMEOUT) {
@@ -84,12 +84,12 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_STATUS, method = RequestMethod.POST)
-	public Message statusWhatsApp(@RequestBody Message msg, @RequestParam(required = false) String reason)
+	public WAMessage statusWhatsApp(@RequestBody WAMessage msg, @RequestParam(required = false) String reason)
 			throws PostManException {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_WHATSAPP);
 		pMGaugeEvent.setTo(msg.getTo());
 		pMGaugeEvent.setMessage(msg.getMessage());
-		if (msg.getStatus() == Message.Status.SENT) {
+		if (msg.getStatus() == WAMessage.Status.SENT) {
 			pMGaugeEvent.setResult(Result.DONE);
 		} else {
 			pMGaugeEvent.setResponseText(reason);
