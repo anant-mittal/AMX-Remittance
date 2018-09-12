@@ -1,5 +1,6 @@
 package com.amx.jax.tunnel;
 
+import org.redisson.api.RQueue;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
@@ -32,8 +33,26 @@ public class TunnelService implements ITunnelService {
 		AppContext context = AppContextUtil.getContext();
 
 		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		message.setTopic(topic);
+
 		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
 		return topicQueue.publish(message);
+	}
+
+	public <T> long audit(String topic, T messagePayload) {
+		if (redisson == null) {
+			return 0L;
+		}
+
+		AppContext context = AppContextUtil.getContext();
+		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		message.setTopic(topic);
+
+		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventScheme.AUDIT.getQueue(topic));
+		queue.add(message);
+
+		RTopic<String> topicQueue = redisson.getTopic(TunnelEventScheme.AUDIT.getTopic(topic));
+		return topicQueue.publish(message.getId());
 	}
 
 	public void sayHello() {
