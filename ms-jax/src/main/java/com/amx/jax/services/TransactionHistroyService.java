@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -49,6 +51,8 @@ public class TransactionHistroyService extends AbstractService {
 
 	@Autowired
 	MetaData metaData;
+	
+	Logger logger = LoggerFactory.getLogger(TransactionHistroyDTO.class);
 
 	public ApiResponse getTransactionHistroy(BigDecimal cutomerReference, BigDecimal docfyr) {
 		List<CustomerRemittanceTransactionView> trnxHisList = transactionHistroyDao
@@ -119,7 +123,6 @@ public class TransactionHistroyService extends AbstractService {
 	}
 	
 	   private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist) {
-	        System.out.println("Application country Id :"+metaData.getCountryId());
 	        List<TransactionHistroyDTO> list = new ArrayList<>();
 	        for (CustomerRemittanceTransactionView hist : trnxHist) {
 	            BeneficiaryListDTO beneDtoCheck = null; 
@@ -175,7 +178,6 @@ public class TransactionHistroyService extends AbstractService {
 
 	private List<TransactionHistroyDTO> convert(List<CustomerRemittanceTransactionView> trnxHist,
 			Map<BigDecimal, BenificiaryListView> beneMap) {
-		System.out.println("Application country Id :"+metaData.getCountryId());
 		List<TransactionHistroyDTO> list = new ArrayList<>();
 		for (CustomerRemittanceTransactionView hist : trnxHist) {
 			BeneficiaryListDTO beneDtoCheck = null; 
@@ -246,7 +248,7 @@ public class TransactionHistroyService extends AbstractService {
 		try {
 			BeanUtils.copyProperties(dto, beneModel);
 		} catch (IllegalAccessException | InvocationTargetException e) {
-			System.out.println("Exception e:"+e.getMessage());
+			logger.error("error occured in convertBeneModelToDto", e);
 		}
 		return dto;
 	}

@@ -166,14 +166,6 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
-									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
-											+ lst.getAmieceDescription());
-
-								}
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
 						}

@@ -7,6 +7,7 @@ import javax.validation.constraints.NotNull;
 
 import com.amx.jax.model.AbstractModel;
 
+
 /**
  * @author Subodh Bhoir
  *
@@ -16,7 +17,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	private static final long serialVersionUID = 1L;
 	
 	private BigDecimal placeOrderId;
-	
+
 	private BigDecimal customerId;
 	
 	@NotNull(message="beneficiaryRelationshipSeqId may not be null")
@@ -51,10 +52,12 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	@NotNull(message="receiveAmount may not be null")
 	private BigDecimal receiveAmount;
 	
+	@NotNull(message="baseCurrencyId may not be null")
 	private BigDecimal baseCurrencyId;
 	
 	private String baseCurrencyQuote;
 	
+	@NotNull(message="foreignCurrencyId may not be null")
 	private BigDecimal foreignCurrencyId;
 	
 	private String foreignCurrencyQuote;

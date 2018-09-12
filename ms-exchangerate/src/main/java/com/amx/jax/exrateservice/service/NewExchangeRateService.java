@@ -45,7 +45,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
-				+ lcAmount);
+				+ lcAmount + " bankId: " + bankId);
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);

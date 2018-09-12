@@ -285,7 +285,7 @@ a {
 										</td>
 									</tr>
 									<tr>
-										<td class="content-block">The exchange rate on <span th:text="${#dates.format(new java.util.Date(data.date), 'dd-MMM-yyyy')}"></span> at <span th:text="${#dates.format(new java.util.Date(data.date), 'HH:mm z')}"></span> was</td>
+										<td class="content-block">The exchange rate on <span th:text="${data.date}"></span> at <span th:text="${data.time}"></span> was</td>
 									</tr>
 									<tr>
 										<td align="center"><h2>	<span  th:text="${data.inputAmount}" th:remove="tag"></span> <span  th:text="${data.inputCur}" th:remove="tag"></span> = <span  th:text="${data.outputAmount}" th:remove="tag"></span> <span  th:text="${data.outputCur}" th:remove="tag"></span></h2></td>
