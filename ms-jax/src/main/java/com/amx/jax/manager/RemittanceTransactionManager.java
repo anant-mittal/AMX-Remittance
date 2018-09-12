@@ -45,6 +45,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -229,7 +230,6 @@ public class RemittanceTransactionManager {
 		BigDecimal remittanceMode = new BigDecimal(remitApplParametersMap.get("P_REMITTANCE_MODE_ID").toString());
 		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
-		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
 		
 		
@@ -718,7 +718,7 @@ public class RemittanceTransactionManager {
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		deactivatePreviousApplications();
 		validateAdditionalCheck();
-		validateAdditionalBeneDetails();
+		validateAdditionalBeneDetails(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
@@ -768,10 +768,17 @@ public class RemittanceTransactionManager {
 		remittanceApplicationService.deActivateApplication(customerId);
 	}
 
-	private void validateAdditionalBeneDetails() {
+	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {
 		Map<String, Object> output = applicationProcedureDao
 				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
+		if (isSaveRemittanceFlow) {
+			BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+			if (!ConstantDocument.Yes.equals(beneficiary.getIsActive())) {
+				throw new GlobalException(
+						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
+			}
+		}
 	}
 
 	private void validateAdditionalCheck() {
