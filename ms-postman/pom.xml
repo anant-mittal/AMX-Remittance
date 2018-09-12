@@ -53,7 +53,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-amx</artifactId>
+			<artifactId>common-lib</artifactId>
 		</dependency>
 
 		<dependency>
@@ -81,6 +81,12 @@
 
 
 		<!-- jasper reports -->
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

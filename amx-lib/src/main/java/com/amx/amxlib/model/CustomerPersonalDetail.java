@@ -1,6 +1,7 @@
 package com.amx.amxlib.model;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -71,6 +72,16 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@NotNull
 	@NumberFormat
 	private String telPrefix;
+	
+	private String firstNameLocal;
+	
+	private String lastNameLocal;
+	
+	private Date issueDate;
+	
+	private Date expiryDate;
+	
+	private Date dateOfBirth;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -144,11 +155,48 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.telPrefix = telPrefix;
 	}
 
+	public String getFirstNameLocal() {
+		return firstNameLocal;
+	}
+
+	public void setFirstNameLocal(String firstNameLocal) {
+		this.firstNameLocal = firstNameLocal;
+	}
+
+	public String getLastNameLocal() {
+		return lastNameLocal;
+	}
+
+	public void setLastNameLocal(String lastNameLocal) {
+		this.lastNameLocal = lastNameLocal;
+	}
+
+	public Date getIssueDate() {
+		return issueDate;
+	}
+
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
 	@Override
 	public String toString() {
 		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt="
 				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + "]";
+				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
+				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
+				+ ", dateOfBirth=" + dateOfBirth + "]";
 	}
 
+	
+
+	
 }

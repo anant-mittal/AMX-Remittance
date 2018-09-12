@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
@@ -20,6 +19,7 @@ import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.error.JaxError;
 
 /**
  * @author Prashant

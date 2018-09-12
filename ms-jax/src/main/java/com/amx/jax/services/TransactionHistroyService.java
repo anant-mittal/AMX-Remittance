@@ -19,7 +19,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -28,6 +27,7 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;

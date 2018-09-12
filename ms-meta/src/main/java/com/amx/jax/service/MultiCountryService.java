@@ -11,6 +11,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.MultiCountryDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.JAXDbCredentailsModel;
 import com.amx.jax.repository.IMultiCounryRepository;
 import com.amx.jax.services.AbstractService;
@@ -23,18 +24,12 @@ public class MultiCountryService extends AbstractService {
 	@Autowired
 	IMultiCounryRepository multiCounryRepository;
 	
-	public ApiResponse getMultiCountryList() {
+	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountryList() {
 		List<JAXDbCredentailsModel> multiContryList = multiCounryRepository.getMultiCountryList();		
-		ApiResponse response = getBlackApiResponse();
-		
 		if(multiContryList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(convert(multiContryList));
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("multicountry");
-		return response;
+		return AmxApiResponse.buildList(convert(multiContryList));
 		
 	}
 	

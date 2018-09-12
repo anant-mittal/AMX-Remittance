@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.redisson.api.RMapCache;
+import org.redisson.api.RQueue;
 import org.redisson.api.RTopic;
 import org.redisson.api.RedissonClient;
 import org.redisson.api.listener.MessageListener;
@@ -23,7 +24,7 @@ public class TunnelSubscriberFactory {
 
 	private Logger LOGGER = LoggerFactory.getLogger(TunnelSubscriberFactory.class);
 	public static long TIME_TO_EXPIRE = 10;
-	public static TimeUnit UNIT_OF_TIME = TimeUnit.SECONDS;
+	public static TimeUnit UNIT_OF_TIME = TimeUnit.MINUTES;
 
 	@Autowired
 	AppConfig appConfig;
@@ -40,7 +41,12 @@ public class TunnelSubscriberFactory {
 				TunnelEvent tunnelEvent = c.getAnnotation(TunnelEvent.class);
 				String eventTopic = tunnelEvent.topic();
 				boolean integrity = tunnelEvent.integrity();
-				this.addListener(eventTopic, redisson, listener, integrity);
+				TunnelEventScheme scheme = tunnelEvent.scheme();
+				if (scheme == TunnelEventScheme.AUDIT) {
+					this.addAuditListener(eventTopic, redisson, listener, integrity);
+				} else {
+					this.addListener(eventTopic, redisson, listener, integrity);
+				}
 			}
 		}
 
@@ -102,6 +108,28 @@ public class TunnelSubscriberFactory {
 					this.subscriber.onMessage(channel, msg.getData());
 				} catch (Exception e) {
 					LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+				}
+
+			}
+		});
+	}
+
+	public <M> void addAuditListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			boolean integrity) {
+		RTopic<String> topicQueue = redisson.getTopic(TunnelEventScheme.AUDIT.getTopic(topic));
+		topicQueue.addListener(new MessageListener<String>() {
+			@Override
+			public void onMessage(String channel, String msgId) {
+				RQueue<TunnelMessage<M>> topicMessageQueue = redisson.getQueue(TunnelEventScheme.AUDIT.getQueue(topic));
+				TunnelMessage<M> msg = topicMessageQueue.poll();
+				if (msg != null) {
+					AppContext context = msg.getContext();
+					AppContextUtil.setContext(context);
+					try {
+						listener.onMessage(channel, msg.getData());
+					} catch (Exception e) {
+						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+					}
 				}
 
 			}

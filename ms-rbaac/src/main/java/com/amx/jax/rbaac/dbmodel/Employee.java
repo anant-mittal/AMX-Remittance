@@ -31,6 +31,7 @@ public class Employee implements java.io.Serializable {
 	private BigDecimal fsRoleMaster;
 	private BigDecimal fsCountryBranch;
 	private BigDecimal fsCompanyMaster;
+	private String status;
 	private String sesionStatus;
 	private String email;
 	@JsonIgnore
@@ -48,6 +49,8 @@ public class Employee implements java.io.Serializable {
 
 	private BigDecimal lockCount;
 	private Date lockDate;
+
+	//TODO: Add Unlock Info
 	
 	private String deviceId;
 
@@ -142,6 +145,15 @@ public class Employee implements java.io.Serializable {
 
 	public void setEmployeeNumber(String employeeNumber) {
 		this.employeeNumber = employeeNumber;
+	}
+
+	@Column(name = "STATUS")
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Column(name = "SESSION_STATUS")

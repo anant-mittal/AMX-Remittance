@@ -1,7 +1,7 @@
 package com.amx.amxlib.meta.model;
 
-import com.amx.jax.model.AbstractModel;
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.jax.model.AbstractModel;
 
 public class RemittancePageDto extends AbstractModel {
 
