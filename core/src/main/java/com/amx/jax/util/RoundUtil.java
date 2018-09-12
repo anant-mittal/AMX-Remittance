@@ -52,7 +52,5 @@ public class RoundUtil {
 	public static void main(String[] args) {
 		RoundUtil ruil = new RoundUtil();
 		BigDecimal output = ruil.roundBigDecimal(new BigDecimal(11.65), 0);
-		// output = ruil.roundBigDecimal(output, 2);
-		 System.out.println(output);
 	}
 }

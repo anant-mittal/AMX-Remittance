@@ -89,7 +89,6 @@ public class JaxUtil {
 			Random rand = new Random();
 			int randIndex = rand.nextInt(totalSize);
 			output.add(input.get(randIndex));
-			System.out.println(input.get(randIndex));
 			input.remove(randIndex);
 			totalSize--;
 		}
