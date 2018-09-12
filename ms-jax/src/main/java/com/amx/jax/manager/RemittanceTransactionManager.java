@@ -772,10 +772,12 @@ public class RemittanceTransactionManager {
 		Map<String, Object> output = applicationProcedureDao
 				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
-		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
-		if (!ConstantDocument.Yes.equals(beneficiary.getIsActive())) {
-			throw new GlobalException(
-					"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
+		if (isSaveRemittanceFlow) {
+			BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+			if (!ConstantDocument.Yes.equals(beneficiary.getIsActive())) {
+				throw new GlobalException(
+						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
+			}
 		}
 	}
 
