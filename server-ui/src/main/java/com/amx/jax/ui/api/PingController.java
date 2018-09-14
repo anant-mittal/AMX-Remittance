@@ -34,19 +34,26 @@ public class PingController {
 	 * @return the response wrapper
 	 */
 	@RequestMapping(value = "/pub/notify_all", method = { RequestMethod.GET })
-	public ResponseWrapper<Map<String, String>> listOfPlaceOrders(@RequestParam String to, @RequestParam String message,
-			@RequestParam AmxTunnelEvents topic, @RequestParam TunnelEventXchange scheme) {
+	public ResponseWrapper<Map<String, String>> listOfPlaceOrders(@RequestParam String sms,
+			@RequestParam String whatsapp, @RequestParam String email, @RequestParam String customerId,
+
+			@RequestParam String message, @RequestParam AmxTunnelEvents topic,
+			@RequestParam TunnelEventXchange scheme) {
 		ResponseWrapper<Map<String, String>> wrapper = new ResponseWrapper<Map<String, String>>(
 				new HashMap<String, String>());
 		wrapper.getData().put("message", message);
-		wrapper.getData().put("to", to);
+		wrapper.getData().put("sms", sms);
+		wrapper.getData().put("whatsapp", whatsapp);
+		wrapper.getData().put("email", email);
+		wrapper.getData().put("customerId", customerId);
+
 		Event event = new Event();
 		event.setEvent_code(topic.toString());
 		event.setData(wrapper.getData());
 		if (scheme == TunnelEventXchange.SEND_LISTNER) {
-			tunnelService.send(topic, event);
+			tunnelService.send(topic.toString(), event);
 		} else {
-			tunnelService.shout(topic, event);
+			tunnelService.shout(topic.toString(), event);
 		}
 		return wrapper;
 	}
