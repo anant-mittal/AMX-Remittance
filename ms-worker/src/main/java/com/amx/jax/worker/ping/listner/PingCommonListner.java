@@ -1,4 +1,4 @@
-package com.amx.jax.worker.listner;
+package com.amx.jax.worker.ping.listner;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,6 +14,8 @@ import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Notipy;
+import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
@@ -23,8 +25,7 @@ import com.amx.jax.tunnel.TunnelEvent;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.PING_MULTIPLE)
-public class PingMultiListner implements ITunnelSubscriber<Event> {
+public class PingCommonListner implements ITunnelSubscriber<Event> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -70,6 +71,11 @@ public class PingMultiListner implements ITunnelSubscriber<Event> {
 		sms.addTo(smsNo);
 		sms.setModel(wrapper);
 		postManClient.sendSMSAsync(sms);
+
+		Notipy slack = new Notipy();
+		slack.setMessage(message);
+		slack.setChannel(Channel.DEFAULT);
+		postManClient.notifySlack(slack);
 
 		WAMessage whatsapp = new WAMessage();
 		whatsapp.setMessage(message);
