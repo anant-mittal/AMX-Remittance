@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TunnelEvent {
 
-	TunnelEventScheme scheme() default TunnelEventScheme.ONCE_PER_COMPONENT;
+	TunnelEventXchange scheme() default TunnelEventXchange.SHOUT_LISTNER;
 
 	String topic();
 

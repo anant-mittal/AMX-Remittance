@@ -3,10 +3,10 @@ package com.amx.jax.cache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.def.ATransactionModel;
+import com.amx.jax.def.ATxCacheBox;
 import com.amx.jax.def.ICacheBox;
 
-public abstract class TransactionModel<T> extends ATransactionModel<T> {
+public abstract class TxCacheBox<T> extends ATxCacheBox<T> {
 
 	@Component
 	public class TCache extends CacheBox<T> {
@@ -22,11 +22,4 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 		return this.cache;
 	}
 
-	public T init() {
-		return null;
-	};
-
-	public T commit() {
-		return null;
-	};
 }
