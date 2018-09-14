@@ -44,6 +44,8 @@ public class TunnelSubscriberFactory {
 				TunnelEventXchange scheme = tunnelEvent.scheme();
 				if (scheme == TunnelEventXchange.AUDIT) {
 					this.addAuditListener(eventTopic, redisson, listener, integrity);
+				} else if (scheme == TunnelEventXchange.SEND_LISTNER) {
+					this.addQueuedListener(eventTopic, redisson, listener, integrity);
 				} else {
 					this.addListener(eventTopic, redisson, listener, integrity);
 				}
@@ -162,7 +164,8 @@ public class TunnelSubscriberFactory {
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override
 			public void onMessage(String channel, String msgId) {
-				RQueue<TunnelMessage<M>> topicMessageQueue = redisson.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
+				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
+						.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
 				TunnelMessage<M> msg = topicMessageQueue.poll();
 				if (msg != null) {
 					AppContext context = msg.getContext();
