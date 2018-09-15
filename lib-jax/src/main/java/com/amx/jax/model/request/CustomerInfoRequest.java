@@ -1,10 +1,13 @@
 package com.amx.jax.model.request;
 
+
+
 public class CustomerInfoRequest {
 	CustomerPersonalDetail customerPersonalDetail;
 	LocalAddressDetails localAddressDetails;
 	HomeAddressDetails homeAddressDestails;
 	CustomerEmploymentDetails customerEmploymentDetails;
+	/*OtpData otpData;*/
 	public CustomerPersonalDetail getCustomerPersonalDetail() {
 		return customerPersonalDetail;
 	}
@@ -28,6 +31,18 @@ public class CustomerInfoRequest {
 	}
 	public void setCustomerEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails) {
 		this.customerEmploymentDetails = customerEmploymentDetails;
+	}
+	/*public OtpData getOtpData() {
+		return otpData;
+	}
+	public void setOtpData(OtpData otpData) {
+		this.otpData = otpData;
+	}*/
+	@Override
+	public String toString() {
+		return "CustomerInfoRequest [customerPersonalDetail=" + customerPersonalDetail + ", localAddressDetails="
+				+ localAddressDetails + ", homeAddressDestails=" + homeAddressDestails + ", customerEmploymentDetails="
+				+ customerEmploymentDetails + "]";
 	}
 	
 	

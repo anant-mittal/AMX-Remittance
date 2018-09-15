@@ -1,5 +1,6 @@
 package com.amx.jax.client;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -48,6 +50,10 @@ public class OffsiteCustRegClient implements ICustRegService {
 			JaxMetaInfo metaInfo = new JaxMetaInfo();
 			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
 			metaInfo.setTenant(TenantContextHolder.currentSite());
+			metaInfo.setCompanyId(new BigDecimal(1));
+			metaInfo.setLanguageId(new BigDecimal(1));
+			metaInfo.setCountryBranchId(new BigDecimal(78));
+			metaInfo.setCustomerId(new BigDecimal(5218));
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
@@ -210,6 +216,12 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.error("exception in sendIdTypes : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
+
+	@Override
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

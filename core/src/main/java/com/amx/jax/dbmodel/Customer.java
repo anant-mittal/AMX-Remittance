@@ -5,9 +5,12 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -82,7 +85,7 @@ public class Customer implements java.io.Serializable {
 	private String signatureSpecimenClob;
 	private String remarks; 
 	
-	//private ArticleDetails fsArticleDetails;
+	private ArticleDetails fsArticleDetails;
 	private String sundryDebtorReference;
 	private String deactivatedBy;
 	private Date deactivatedDate;
@@ -129,8 +132,10 @@ public class Customer implements java.io.Serializable {
 	private String identityInt;
 	private BigDecimal identityFor;
 	private BigDecimal identityTypeId;
+	private Date issueDate;
+	private Date expiryDate;
 	
-	//private IncomeRangeMaster fsIncomeRangeMaster;
+	private IncomeRangeMaster fsIncomeRangeMaster;
 	
 
 	public Customer() {
@@ -876,5 +881,45 @@ public class Customer implements java.io.Serializable {
 	public void setIdentityTypeId(BigDecimal identityTypeId) {
 		this.identityTypeId = identityTypeId;
 	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "ARTICLE_DETAIL_ID")
+	public ArticleDetails getFsArticleDetails() {
+		return fsArticleDetails;
+	}
+	
+	public void setFsArticleDetails(ArticleDetails fsArticleDetails) {
+		this.fsArticleDetails = fsArticleDetails;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "INCOME_RANGE_ID")
+	public IncomeRangeMaster getFsIncomeRangeMaster() {
+		return fsIncomeRangeMaster;
+	}
+
+	public void setFsIncomeRangeMaster(IncomeRangeMaster fsIncomeRangeMaster) {
+		this.fsIncomeRangeMaster = fsIncomeRangeMaster;
+	}
+
+	@Column(name = "ISSUE_DATE")
+	public Date getIssueDate() {
+		return issueDate;
+	}
+
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	@Column(name = "EXPIRY_DATE")
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+	
+	
 
 }

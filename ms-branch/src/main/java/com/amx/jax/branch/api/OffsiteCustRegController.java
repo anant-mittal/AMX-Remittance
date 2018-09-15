@@ -2,6 +2,7 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
@@ -121,6 +123,12 @@ public class OffsiteCustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {		
 		return offsiteCustRegService.sendProfessionList();
+	}
+
+	@ApiJaxStatus({JaxError.EXISTING_CIVIL_ID})
+	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
+		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 
 }

@@ -17,6 +17,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.ICustRegService;
@@ -27,33 +28,54 @@ import com.amx.jax.auditlogs.DesignationListAuditEvent;
 import com.amx.jax.auditlogs.FieldListAuditEvent;
 import com.amx.jax.auditlogs.IncomeRangeAuditEvent;
 import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
+import com.amx.jax.dbmodel.BizComponentData;
+import com.amx.jax.dbmodel.CityMaster;
+import com.amx.jax.dbmodel.ContactDetail;
+import com.amx.jax.dbmodel.CountryMaster;
+import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.DistrictMaster;
+import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.ProfessionMasterView;
+import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.CustomerEmploymentDetails;
+import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.repository.CountryMasterRepository;
+import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.service.PrefixService;
+import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
+import com.amx.jax.userservice.repository.ContactDetailsRepository;
+import com.amx.jax.userservice.repository.CustomerIdProofRepository;
+import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Constants;
@@ -102,6 +124,24 @@ public class OffsitCustRegService implements ICustRegService {
 	
 	@Autowired	
 	ProfessionRepository professionRepository;	
+	
+	@Autowired
+	private CustomerDao customerDao;
+
+	@Autowired
+	private CustomerRepository customerRepository;
+
+	@Autowired
+	CustomerIdProofRepository customerIdProofRepository;
+	
+	@Autowired
+	private ContactDetailsRepository contactDetailsRepository;
+	
+	@Autowired
+	CountryMasterRepository countryMasterRepository;
+	
+	@Autowired
+	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
 	
 	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
@@ -387,5 +427,182 @@ public class OffsitCustRegService implements ICustRegService {
 			list.add(new ComponentDataDto(map.getComponentDataId(),map.getDataDesc()));
 		}
 		return AmxApiResponse.buildList(list);
+	}
+
+	@Override
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {		
+		//revalidateOtp(model.getOtpData());
+		Customer customer = commitCustomer(model.getCustomerPersonalDetail(),model.getCustomerEmploymentDetails());
+		commitCustomerLocalContact(model.getLocalAddressDetails(), customer);
+		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);				
+		commitOnlineCustomerIdProof(model, customer);
+		commitEmploymentDetails(model.getCustomerEmploymentDetails(),customer);
+		return AmxApiResponse.build(new BigDecimal(1));
+	}
+	
+	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer) {
+		if(customerEmploymentDetails != null)
+		{
+			EmployeeDetails employeeModel = new EmployeeDetails();
+			employeeModel.setFsBizComponentDataByEmploymentTypeId(
+					bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getEmploymentTypeId()));
+			employeeModel.setFsBizComponentDataByOccupationId(
+					bizcomponentDao.getBizComponentDataByComponmentDataId(customerEmploymentDetails.getProfessionId()));
+			employeeModel.setEmployerName(customerEmploymentDetails.getEmployer());
+			employeeModel.setBlock(customerEmploymentDetails.getBlock());
+			employeeModel.setStreet(customerEmploymentDetails.getStreet());
+			employeeModel.setArea(customerEmploymentDetails.getArea());
+			employeeModel.setPostal(customerEmploymentDetails.getPostal());
+			employeeModel.setOfficeTelephone(customerEmploymentDetails.getOfficeTelephone());
+			employeeModel.setFsCountryMaster(
+					countryMasterRepository.getCountryMasterByCountryId(customerEmploymentDetails.getCountryId()));
+			employeeModel.setFsStateMaster(customerEmploymentDetails.getStateId());
+			employeeModel.setFsDistrictMaster(customerEmploymentDetails.getDistrictId());
+			employeeModel.setFsCityMaster(customerEmploymentDetails.getCityId());
+			//employeeModel.setFsCompanyMaster(customerEmploymentDetails.getCompanyId());
+			employeeModel.setIsActive(ConstantDocument.Yes);
+			employeeModel.setCreatedBy(metaData.getCustomerId().toString());
+			employeeModel.setCreationDate(new Date());
+			employeeModel.setFsCustomer(customer);
+			customerEmployeeDetailsRepository.save(employeeModel);
+		}
+		
+	}
+
+	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer) {
+		if (localAddressDetails != null) {
+			ContactDetail contactDetail = new ContactDetail();
+			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
+			contactDetail.setFsDistrictMaster(new DistrictMaster(localAddressDetails.getDistrictId()));
+			contactDetail.setFsStateMaster(new StateMaster(localAddressDetails.getStateId()));
+			contactDetail.setFsCityMaster(new CityMaster(localAddressDetails.getCityId()));
+			contactDetail.setBuildingNo(localAddressDetails.getHouse());
+			contactDetail.setFlat(localAddressDetails.getFlat());
+			contactDetail.setBlock(localAddressDetails.getBlock());
+			contactDetail.setStreet(localAddressDetails.getStreet());			
+			contactDetail.setFsCustomer(customer);
+			contactDetail.setActiveStatus(ConstantDocument.Yes);
+			contactDetail.setLanguageId(customer.getLanguageId());
+			contactDetail.setCreatedBy(metaData.getCustomerId().toString());
+			contactDetail.setCreationDate(customer.getCreationDate());
+			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
+			// home type contact
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
+			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);			
+			contactDetailsRepository.save(contactDetail);
+		}
+	}
+
+	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer) {
+		if (homeAddressDestails != null) {
+			ContactDetail contactDetail = new ContactDetail();
+			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
+			contactDetail.setFsDistrictMaster(new DistrictMaster(homeAddressDestails.getDistrictId()));
+			contactDetail.setFsStateMaster(new StateMaster(homeAddressDestails.getStateId()));
+			contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
+			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
+			contactDetail.setFlat(homeAddressDestails.getFlat());
+			contactDetail.setFsCustomer(customer);
+			contactDetail.setActiveStatus(ConstantDocument.Yes);
+			contactDetail.setLanguageId(customer.getLanguageId());
+			contactDetail.setCreatedBy(metaData.getCustomerId().toString());
+			contactDetail.setCreationDate(customer.getCreationDate());
+			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
+			// home type contact
+			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
+			contactDetail.setFsBizComponentDataByContactTypeId(fsBizComponentDataByContactTypeId);
+			contactDetailsRepository.save(contactDetail);
+		}
+	}
+
+	/*private void revalidateOtp(OtpData otpData) {
+		if (!otpData.isOtpValidated()) {
+			throw new GlobalException("otp is not validated", JaxError.OTP_NOT_VALIDATED);
+		}
+	}*/
+
+	private Customer commitCustomer(CustomerPersonalDetail customerPersonalDetail, CustomerEmploymentDetails customerEmploymentDetails) {
+		Customer customer = new Customer();
+		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerPersonalDetail.getIdentityInt(),customerPersonalDetail.getCountryId());
+		if(customer != null)
+		{
+			throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
+		}
+		customer = new Customer();
+		jaxUtil.convert(customerPersonalDetail, customer);
+		BigDecimal customerReference = customerDao.generateCustomerReference();
+		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerPersonalDetail.getTitle());
+		customer.setCustomerReference(customerReference);
+		customer.setIsActive(ConstantDocument.No);
+		customer.setCountryId(metaData.getCountryId());
+		customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType()
+				: customerPersonalDetail.getIdentityInt());
+		customer.setCreationDate(new Date());
+		customer.setIsOnlineUser(ConstantDocument.Yes);
+		customer.setGender(prefixEnum.getGender());
+		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
+		customer.setLoyaltyPoints(BigDecimal.ZERO);
+		customer.setCompanyId(metaData.getCompanyId());
+		customer.setCustomerTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setLanguageId(metaData.getLanguageId());
+		customer.setBranchCode(metaData.getCountryBranchId());
+		customer.setNationalityId(customerPersonalDetail.getNationalityId());
+		customer.setMobile(customerPersonalDetail.getMobile());
+		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		customer.setIdentityTypeId(customerPersonalDetail.getIdentityTypeId());
+		customer.setFirstNameLocal(customerPersonalDetail.getFirstNameLocal());
+		customer.setLastNameLocal(customerPersonalDetail.getLastNameLocal());
+		customer.setDateOfBirth(customerPersonalDetail.getDateOfBirth());
+		if(customerPersonalDetail.getIdentityTypeId().toString().equals("204"))
+		{
+			customer.setIdentityExpiredDate(null);
+			customer.setExpiryDate(customerPersonalDetail.getExpiryDate());
+			customer.setIssueDate(customerPersonalDetail.getIssueDate());
+		}
+		else
+		{
+			customer.setIdentityExpiredDate(customerPersonalDetail.getExpiryDate());
+			customer.setExpiryDate(null);
+			customer.setIssueDate(null);
+		}		
+		customer.setIdentityInt(customerPersonalDetail.getIdentityInt());
+		if(customerEmploymentDetails != null)
+		{
+			customer.setFsArticleDetails(
+					articleDao.getArticleDetailsByArticleDetailId(customerEmploymentDetails.getArticleDetailsId()));
+			customer.setFsIncomeRangeMaster(
+					articleDao.getIncomeRangeMasterByIncomeRangeId(customerEmploymentDetails.getIncomeRangeId()));
+		}
+		
+		LOGGER.info("generated customer ref: {}", customerReference);
+		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
+		customerRepository.save(customer);
+		return customer;
 	}	
+	
+	private String getTitleLocal(String titleLocal) {
+		return bizcomponentDao.getBizComponentDataDescByComponmentId(titleLocal).getDataDesc();
+	}
+
+	private void commitOnlineCustomerIdProof(CustomerInfoRequest model, Customer customer) {
+		CustomerIdProof custProof = new CustomerIdProof();
+
+		Customer customerData = new Customer();
+		customerData.setCustomerId(customer.getCustomerId());
+		custProof.setFsCustomer(customerData);
+		custProof.setLanguageId(metaData.getLanguageId());
+		BizComponentData customerType = new BizComponentData();
+		customerType.setComponentDataId(
+				bizcomponentDao.getComponentId(Constants.CUSTOMERTYPE_INDU, metaData.getLanguageId())
+						.getFsBizComponentData().getComponentDataId());
+		custProof.setFsBizComponentDataByCustomerTypeId(customerType);
+		custProof.setIdentityInt(customer.getIdentityInt());
+		custProof.setIdentityStatus(Constants.CUST_ACTIVE_INDICATOR);
+		custProof.setCreatedBy(customer.getIdentityInt());
+		custProof.setCreationDate(new Date());
+		custProof.setIdentityTypeId(customer.getIdentityTypeId());
+		customerIdProofRepository.save(custProof);
+	}
+
 }
