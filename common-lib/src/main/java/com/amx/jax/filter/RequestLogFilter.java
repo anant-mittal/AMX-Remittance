@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
@@ -40,6 +38,19 @@ import com.amx.utils.Urly;
 public class RequestLogFilter implements Filter {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
+
+	public static enum ReqType {
+		DEFAULT(true), POLL(false);
+		boolean track = false;
+
+		ReqType(boolean track) {
+			this.track = track;
+		}
+
+		public boolean isTrack() {
+			return track;
+		}
+	}
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -129,10 +140,17 @@ public class RequestLogFilter implements Filter {
 				AppContextUtil.init();
 			}
 
+			ReqType reqType = ReqType.DEFAULT;
+			String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
+			if (!StringUtils.isEmpty(reqTypeStr)) {
+				reqType = (ReqType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
+			}
+
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
-			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
-
+			if (reqType.isTrack()) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
+			}
 			try {
 				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -140,8 +158,10 @@ public class RequestLogFilter implements Filter {
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				}
 			} finally {
-				AuditServiceClient
-						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				if (reqType.isTrack()) {
+					AuditServiceClient
+							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				}
 			}
 
 		} finally {

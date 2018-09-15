@@ -15,6 +15,11 @@ public class Message implements Serializable {
 	private static final long serialVersionUID = 1363933600245334964L;
 	private static final String DATA_KEY = "data";
 
+	public static enum Status {
+		INIT, SENT, DELIVERED, READ, FAILED
+	}
+
+	protected long timestamp;
 	protected Language lang = null;
 	protected String subject;
 	protected String message = null;
@@ -22,6 +27,7 @@ public class Message implements Serializable {
 	private Templates template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	private MessageType messageType = null;
+	private Status status = null;
 
 	private List<String> lines = new ArrayList<String>();
 
@@ -84,6 +90,8 @@ public class Message implements Serializable {
 	}
 
 	public Message() {
+		this.timestamp = System.currentTimeMillis();
+		this.status = Status.INIT;
 		this.to = new ArrayList<String>();
 	}
 
@@ -133,4 +141,21 @@ public class Message implements Serializable {
 	public void setMessageType(MessageType messageType) {
 		this.messageType = messageType;
 	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+
 }

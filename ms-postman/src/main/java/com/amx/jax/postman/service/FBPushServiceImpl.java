@@ -16,6 +16,7 @@ import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.model.File;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
@@ -171,6 +172,7 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
 					LOGGER, e);
 		}
+
 		return msg;
 	}
 

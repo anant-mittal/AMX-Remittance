@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -24,7 +23,6 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditLoggerResponse;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelService;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.TimeUtils;
 
@@ -43,7 +41,8 @@ public class AuditServiceClient implements AuditService {
 	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
-	private static String appName = null;
+	private static String APP_NAME = null;
+	private static boolean AUDIT_LOGGER_ENABLED = false;
 
 	private static ITunnelService ITUNNEL_SERVICE;
 
@@ -64,7 +63,8 @@ public class AuditServiceClient implements AuditService {
 		}
 
 		if (!FILTER_MAP_DONE) {
-			appName = appConfig.getAppName();
+			APP_NAME = appConfig.getAppName();
+			AUDIT_LOGGER_ENABLED = appConfig.isLogger();
 			for (AuditFilter filter : filters) {
 				Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 				if (matcher.find()) {
@@ -97,7 +97,7 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	private static AuditEvent captureDetails(AuditEvent event) {
-		event.setComponent(appName);
+		event.setComponent(APP_NAME);
 		Long traceTime = AppContextUtil.getTraceTime();
 		if (traceTime != null) {
 			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
@@ -113,21 +113,21 @@ public class AuditServiceClient implements AuditService {
 			map.put("traceId", appContext.getTraceId());
 			map.put("tranxId", appContext.getTranxId());
 			map.put("tenant", appContext.getTenant());
-			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+			ITUNNEL_SERVICE.audit(AUDIT_EVENT_TOPIC, map);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while Publishing Event", e);
 		}
 	}
 
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
-		event.setComponent(appName);
+		event.setComponent(APP_NAME);
 		String json = JsonUtil.toJson(event);
 
 		String marketName = marker.getName();
 		if (allowedMarkersMap.getOrDefault(marketName, Boolean.FALSE).booleanValue()) {
 			LOGGER.info(marker, json);
 		}
-		if (capture && ITUNNEL_SERVICE != null) {
+		if (capture && ITUNNEL_SERVICE != null && AUDIT_LOGGER_ENABLED) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
 			publishAbstractEvent(map);
