@@ -38,15 +38,15 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 				CryptoUtil.generateHMAC(appConfig.getAppAuthKey(), AppContextUtil.getTraceId()));
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));
 
-		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {
-			LOGGER.info("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
+		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
+			LOGGER.debug("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
 		}
 
 		ClientHttpResponse response = execution.execute(request, body);
 		AppContextUtil.importAppContextFrom(response.getHeaders());
 		AuditServiceClient.trackStatic(new RequestTrackEvent(response, request));
 
-		if (AppParam.PRINT_TRACK_BODY.isEnabled()) {
+		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
 			return traceResponse(response);
 		}
 
@@ -63,7 +63,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 			inputStringBuilder.append('\n');
 			line = bufferedReader.readLine();
 		}
-		LOGGER.info("*** RESPONSE_BODY ****: {}", inputStringBuilder.toString());
+		LOGGER.debug("*** RESPONSE_BODY ****: {}", inputStringBuilder.toString());
 		return responseWrapper;
 	}
 
