@@ -40,7 +40,7 @@ public class WhatsAppClient {
 	public AmxApiResponse<WAMessage, Object> send(List<WAMessage> msgs) throws PostManException {
 		LOGGER.info("Sending WAMessage Notifications");
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.WHATS_APP_SEND).post(msgs)
+			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.WHATS_APP_SEND_BULK).post(msgs)
 					.asApiResponse(WAMessage.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
