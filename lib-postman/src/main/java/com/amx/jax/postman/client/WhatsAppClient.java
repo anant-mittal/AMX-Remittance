@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.rest.RestService;
@@ -33,15 +33,15 @@ public class WhatsAppClient {
 	 * @return
 	 * @throws PostManException
 	 */
-	public PostManResponse send(WAMessage msg) throws PostManException {
+	public AmxApiResponse<WAMessage, Object> send(WAMessage msg) throws PostManException {
 		return this.send(Arrays.asList(msg));
 	}
 
-	public PostManResponse send(List<WAMessage> msgs) throws PostManException {
+	public AmxApiResponse<WAMessage, Object> send(List<WAMessage> msgs) throws PostManException {
 		LOGGER.info("Sending WAMessage Notifications");
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.WHATS_APP_SEND).post(msgs)
-					.as(PostManResponse.class);
+					.asApiResponse(WAMessage.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
