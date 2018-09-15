@@ -23,6 +23,7 @@ import com.amx.jax.postman.model.Message.Status;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.postman.service.WhatsAppService;
 import com.amx.utils.ArgUtil;
+import java.util.List;
 
 @RestController
 public class WhatsAppController {
@@ -36,7 +37,16 @@ public class WhatsAppController {
 	@Autowired
 	AuditService auditService;
 
-	@RequestMapping(value = PostManUrls.WHATS_APP_SEND + "/*", method = RequestMethod.POST)
+	@RequestMapping(value = PostManUrls.WHATS_APP_SEND_BULK, method = RequestMethod.POST)
+	public AmxApiResponse<WAMessage, Object> sendWhatsAppBulk(@RequestBody List<WAMessage> msgs)
+			throws PostManException {
+		for (WAMessage waMessage : msgs) {
+			whatsAppService.send(waMessage);
+		}
+		return AmxApiResponse.buildList(msgs);
+	}
+
+	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
 	public AmxApiResponse<WAMessage, Object> sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
 		whatsAppService.send(msg);
 		return AmxApiResponse.build(msg);
