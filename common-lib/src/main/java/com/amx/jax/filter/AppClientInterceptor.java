@@ -39,7 +39,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));
 
 		if (AppParam.PRINT_TRACK_BODY.isEnabled() || LOGGER.isDebugEnabled()) {
-			LOGGER.debug("*** REQUEST_BODY *****: {}", new String(body, "UTF-8"));
+			LOGGER.debug("*** REQT_OUT_BODY *****: {}", new String(body, "UTF-8"));
 		}
 
 		ClientHttpResponse response = execution.execute(request, body);
@@ -63,7 +63,7 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 			inputStringBuilder.append('\n');
 			line = bufferedReader.readLine();
 		}
-		LOGGER.debug("*** RESPONSE_BODY ****: {}", inputStringBuilder.toString());
+		LOGGER.debug("*** RESP_IN_BODY ****: {}", inputStringBuilder.toString());
 		return responseWrapper;
 	}
 

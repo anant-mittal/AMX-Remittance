@@ -24,7 +24,7 @@
 			  %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} [%replace(%t){"[^0-9a-zA-Z]+","-"} : %X{tnt}-%X{traceId}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}			</Pattern>
 		</layout>
 		<append>true</append>
-		<file>${logfile}</file>
+		<file>logs/app-debug.log</file>
 	</appender>
 	<logger name="com.amx.jax.logger.AuditService" level="info"  additivity="false">
 		<appender-ref ref="AUDIT" />

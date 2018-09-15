@@ -69,10 +69,10 @@ public class TunnelService implements ITunnelService {
 		message.setTopic(topic);
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topic));
-		queue.add(message);
-
 		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
+		
 		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		queue.add(message);
 		return topicQueue.publish(message);
 	}
 
