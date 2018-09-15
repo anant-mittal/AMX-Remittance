@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManException;
@@ -36,9 +37,9 @@ public class WhatsAppController {
 	AuditService auditService;
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
-	public WAMessage sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
+	public AmxApiResponse<WAMessage, Object> sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
 		whatsAppService.send(msg);
-		return msg;
+		return AmxApiResponse.build(msg);
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.GET)
@@ -71,7 +72,8 @@ public class WhatsAppController {
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_RESEND, method = RequestMethod.POST)
-	public WAMessage resendWhatsApp(@RequestBody WAMessage msg, @RequestParam BigDecimal q) throws PostManException {
+	public AmxApiResponse<WAMessage, Object> resendWhatsApp(@RequestBody WAMessage msg, @RequestParam BigDecimal q)
+			throws PostManException {
 		long ageOfMessage = System.currentTimeMillis() - msg.getTimestamp();
 
 		if (ageOfMessage < MESSAGE_TIMEOUT) {
@@ -80,12 +82,12 @@ public class WhatsAppController {
 			msg.setStatus(Status.FAILED);
 			return statusWhatsApp(msg, "TIMEOUT");
 		}
-		return msg;
+		return AmxApiResponse.build(msg);
 	}
 
 	@RequestMapping(value = PostManUrls.WHATS_APP_STATUS, method = RequestMethod.POST)
-	public WAMessage statusWhatsApp(@RequestBody WAMessage msg, @RequestParam(required = false) String reason)
-			throws PostManException {
+	public AmxApiResponse<WAMessage, Object> statusWhatsApp(@RequestBody WAMessage msg,
+			@RequestParam(required = false) String reason) throws PostManException {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_WHATSAPP);
 		pMGaugeEvent.setTo(msg.getTo());
 		pMGaugeEvent.setMessage(msg.getMessage());
@@ -96,7 +98,7 @@ public class WhatsAppController {
 			pMGaugeEvent.setResult(Result.FAIL);
 		}
 		auditService.log(pMGaugeEvent);
-		return msg;
+		return AmxApiResponse.build(msg);
 	}
 
 }
