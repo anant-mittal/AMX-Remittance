@@ -12,7 +12,7 @@ public enum Templates {
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"), REMIT_STATMENT_EMAIL(
 			"RemittanceStatmentEmail"), REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
-					"RegistrationSuccessEmail"), SERVER_PING("server-ping"), TXN_CRT_SUCC(
+					"RegistrationSuccessEmail"), TXN_CRT_SUCC(
 							"TransactionCreationSuccess"), PROFILE_CHANGE("AccoutDetailsUpdate"),
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
@@ -20,7 +20,9 @@ public enum Templates {
 	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("BranchTemplate"),
 
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"), PARTIAL_REGISTRATION_EMAIL(
-			"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure");
+			"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
+
+	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
 
 	String fileName;
 	PDFConverter converter;
