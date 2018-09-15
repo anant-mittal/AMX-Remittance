@@ -36,7 +36,7 @@ public class WhatsAppController {
 	@Autowired
 	AuditService auditService;
 
-	@RequestMapping(value = PostManUrls.WHATS_APP_SEND, method = RequestMethod.POST)
+	@RequestMapping(value = PostManUrls.WHATS_APP_SEND + "/*", method = RequestMethod.POST)
 	public AmxApiResponse<WAMessage, Object> sendWhatsApp(@RequestBody WAMessage msg) throws PostManException {
 		whatsAppService.send(msg);
 		return AmxApiResponse.build(msg);
