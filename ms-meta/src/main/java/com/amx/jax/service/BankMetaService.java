@@ -16,19 +16,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BankBranchView;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.treasury.BankApplicability;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.BankMasterRepository;
 import com.amx.jax.repository.CountryBranchRepository;
 import com.amx.jax.repository.VwBankBranchRepository;
@@ -37,7 +35,6 @@ import com.amx.jax.services.AbstractService;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-@SuppressWarnings("rawtypes")
 public class BankMetaService extends AbstractService {
 
 	private Logger logger = Logger.getLogger(BankMetaService.class);
@@ -59,7 +56,7 @@ public class BankMetaService extends AbstractService {
 		List<BankMasterModel> banks = this.getBanksByCountryId(countryId);
 		if (banks.isEmpty()) {
 			throw new GlobalException("banks details not avaliable");
-		} 
+		}
 		return AmxApiResponse.buildList(convert(banks));
 	}
 
@@ -97,7 +94,6 @@ public class BankMetaService extends AbstractService {
 		return countryBranchRepository.findOne(id);
 	}
 
-	@SuppressWarnings("unchecked")
 	public AmxApiResponse<BankBranchDto, Object> getBankBranches(GetBankBranchRequest request) {
 
 		BigDecimal bankId = request.getBankId();
@@ -132,7 +128,7 @@ public class BankMetaService extends AbstractService {
 
 		if (branchesList.isEmpty()) {
 			throw new GlobalException("Bank branch list is empty.", JaxError.BANK_BRANCH_SEARCH_EMPTY);
-		}		
+		}
 		return AmxApiResponse.buildList(convertBranchView(branchesList));
 	}
 

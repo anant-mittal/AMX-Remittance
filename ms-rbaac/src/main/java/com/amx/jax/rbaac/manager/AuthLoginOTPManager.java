@@ -13,11 +13,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.dto.SendOtpModel;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.RoleDefinition;
 import com.amx.jax.rbaac.dbmodel.UserRoleMaster;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.models.EmployeeInfo;
 import com.amx.jax.rbaac.service.AuthNotificationService;
@@ -48,7 +48,7 @@ public class AuthLoginOTPManager {
 	CryptoUtil cryptoUtil;
 
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	// Initiate new OTP
 	public void init() {
@@ -100,32 +100,32 @@ public class AuthLoginOTPManager {
 		OtpData otpData = authLoginManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(mOtp)) {
-				throw new AuthServiceException("Otp field is required", AuthServiceError.MISSING_OTP);
+				throw new AuthServiceException("Otp field is required", RbaacServiceError.MISSING_OTP);
 			}
 			// call from parameter master
 			if (otpData.getValidateOtpAttempts() >= 3) {
 				throw new AuthServiceException(
 						"Sorry, you cannot proceed to login. Please contact head office to unlock account",
-						AuthServiceError.OTP_LIMIT_EXCEEDED);
+						RbaacServiceError.OTP_LIMIT_EXCEEDED);
 			}
 			// actual validation logic
 			if (!otpData.getmOtp().equals(mOtp)) {
 				otpData.setValidateOtpAttempts(otpData.getValidateOtpAttempts() + 1);
-				throw new AuthServiceException("Invalid otp", AuthServiceError.INVALID_OTP);
+				throw new AuthServiceException("Invalid otp", RbaacServiceError.INVALID_OTP);
 			}
 			otpData.setOtpValidated(true);
-			UserRoleMaster usermaster = loginDao.fetchUserMasterDetails(empDetails.getEmployeeId());
+			UserRoleMaster usermaster = rbaacDao.fetchUserMasterDetails(empDetails.getEmployeeId());
 			if (usermaster != null && usermaster.getUserRoleId() != null) {
-				List<RoleDefinition> roleDef = loginDao.fetchEmpRoleMenu(usermaster.getUserRoleId());
+				List<RoleDefinition> roleDef = rbaacDao.fetchEmpRoleMenu(usermaster.getUserRoleId());
 				if (roleDef != null && roleDef.size() != 0) {
 					authLoginTrnxModel = authLoginManager.fetchEmployeeDetails(empDetails, usermaster, roleDef);
 				} else {
 					throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-							AuthServiceError.INVALID_ROLE_DEFINITION);
+							RbaacServiceError.INVALID_ROLE_DEFINITION);
 				}
 			} else {
 				throw new AuthServiceException("Sorry, you cannot proceed to login. Please contact head office",
-						AuthServiceError.INVALID_USER_DETAILS);
+						RbaacServiceError.INVALID_USER_DETAILS);
 			}
 		} finally {
 			authLoginManager.saveOtpData(otpData);

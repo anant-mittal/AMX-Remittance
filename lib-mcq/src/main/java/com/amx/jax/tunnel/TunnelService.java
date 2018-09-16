@@ -21,7 +21,17 @@ public class TunnelService implements ITunnelService {
 	@Autowired(required = false)
 	RedissonClient redisson;
 
-	public <T> long send(String topic, T messagePayload) {
+	/**
+	 * For broadcast purpose, it will send event to all the listeners which are
+	 * listening, actively, messages are NOT QUEUED, so there's no guarantee of
+	 * messages being deliver if client goes down at the time of shout was
+	 * triggered.
+	 * 
+	 * Though all the listeners can be informed, qualification is done based on
+	 * {@link TunnelEventXchange}
+	 * 
+	 */
+	public <T> long shout(String topic, T messagePayload) {
 		if (redisson == null) {
 			LOGGER.error("No Redissson Client Instance Available");
 			return 0L;
@@ -39,24 +49,55 @@ public class TunnelService implements ITunnelService {
 		return topicQueue.publish(message);
 	}
 
-	public <T> long audit(String topic, T messagePayload) {
+	/**
+	 * For broadcast purpose, it will send event to all the listeners which are
+	 * listening, actively, messages are NOT QUEUED, so there's no guarantee of
+	 * messages being deliver if client goes down at the time of shout was
+	 * triggered.
+	 * 
+	 * Though all the listeners can be informed, qualification is done based on
+	 * {@link TunnelEventXchange}
+	 * 
+	 */
+	public <T> long send(String topic, T messagePayload) {
 		if (redisson == null) {
+			LOGGER.error("No Redissson Client Instance Available");
 			return 0L;
 		}
-
 		AppContext context = AppContextUtil.getContext();
 		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
 		message.setTopic(topic);
 
-		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventScheme.AUDIT.getQueue(topic));
+		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topic));
+		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
+		
+		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		queue.add(message);
+		return topicQueue.publish(message);
+	}
+
+	/**
+	 * For audit purpose only, this will make sure, your log gets delivered to only
+	 * one client qualified with {@link TunnelEvent#scheme()} as
+	 * {@link TunnelEventXchange#AUDIT}
+	 */
+	public <T> long audit(String topic, T messagePayload) {
+		if (redisson == null) {
+			return 0L;
+		}
+		AppContext context = AppContextUtil.getContext();
+		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		message.setTopic(topic);
+
+		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.AUDIT.getQueue(topic));
 		queue.add(message);
 
-		RTopic<String> topicQueue = redisson.getTopic(TunnelEventScheme.AUDIT.getTopic(topic));
+		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
 		return topicQueue.publish(message.getId());
 	}
 
 	public void sayHello() {
-		this.send(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
+		this.shout(SampleTunnelEvents.Names.TEST_TOPIC, "Hey There");
 	}
 
 }

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -18,96 +17,52 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.exception.jax.InvalidCivilIdException;
-import com.amx.amxlib.exception.jax.InvalidJsonInputException;
-import com.amx.amxlib.exception.jax.InvalidOtpException;
-import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
-import com.amx.amxlib.meta.model.ArticleMasterDescDto;
-import com.amx.amxlib.meta.model.IncomeRangeDto;
-import com.amx.amxlib.model.AbstractUserModel;
-import com.amx.amxlib.model.BizComponentDataDescDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.ComponentDataDto;
-import com.amx.amxlib.model.CustomerModel;
-import com.amx.amxlib.model.JaxConditionalFieldDto;
-import com.amx.amxlib.model.JaxFieldDto;
-import com.amx.amxlib.model.ValidationRegexDto;
-import com.amx.amxlib.model.request.CommonRequest;
-import com.amx.amxlib.model.request.DynamicFieldRequest;
-import com.amx.amxlib.model.request.EmploymentDetailsRequest;
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
-import com.amx.amxlib.model.request.OffsiteCustomerRegistrationRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.api.ARespModel;
-import com.amx.jax.api.AResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.auditlogs.ArticleListAuditEvent;
 import com.amx.jax.auditlogs.DesignationListAuditEvent;
 import com.amx.jax.auditlogs.FieldListAuditEvent;
 import com.amx.jax.auditlogs.IncomeRangeAuditEvent;
 import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
-import com.amx.jax.branch.dao.EmployeeDao;
-import com.amx.jax.branch.repository.EmployeeRepository;
-import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
-import com.amx.jax.dbmodel.BizComponentData;
-import com.amx.jax.dbmodel.BizComponentDataDesc;
-import com.amx.jax.dbmodel.Customer;
-import com.amx.jax.dbmodel.CustomerOnlineRegistration;
-import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.JaxConditionalFieldRule;
 import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
-import com.amx.jax.dbmodel.JaxField;
+import com.amx.jax.dbmodel.ProfessionMasterView;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.DynamicFieldRequest;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
+import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.FieldListDto;
+import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
+import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.service.PrefixService;
-import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
-import com.amx.jax.userservice.service.AbstractUserService;
-import com.amx.jax.userservice.service.CheckListManager;
-import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.utils.Constants;
-import com.amx.utils.Random;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class OffsitCustRegService /*implements ICustRegService*/ {
+public class OffsitCustRegService implements ICustRegService {
 
-	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
-	
-	@Autowired
-	private EmployeeDao employeeDao;
-	
-	@Autowired
-	private EmployeeValidationService employeeValidationService;
-	
-	@Autowired
-	private JaxUtil util;
-	
-	@Autowired
-	private CryptoUtil cryptoUtil;
-	
-	@Autowired
-	private EmployeeRepository repo;
-	
-	@Autowired
-	private CheckListManager checkListManager;
+	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);	
 
 	@Autowired
 	JaxConditionalFieldRuleRepository jaxConditionalFieldRuleRepository;
@@ -141,81 +96,13 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 	
 	@Autowired
 	AuditService auditService;
+
+	@Autowired
+	EmploymentTypeRepository employmentTypeRepo;
 	
-	/*@Override
-	public AmxApiResponse<ARespModel, Object> getIdDetailsFields(RegModeModel regModeModel) {
-		return null;
-	}
-
-	@Override
-	public AmxApiResponse<BigDecimal, Object> getModes() {
-		return null;
-	}*/
-
-	/*public AmxApiResponse<CivilIdOtpModel, Object> validateEmployeeDetails(
-			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		if(offsiteCustRegModel.getCivilId() == null)
-			throw new GlobalException("Null civil id passed ", JaxError.BLANK_CIVIL_ID);
-		
-		if(offsiteCustRegModel.getEcNumber() == null)
-			throw new GlobalException("Null civil id passed ", JaxError.BLANK_EMPLOYEE_ID);
-		
-		Employee employeeDetails = employeeDao.getEmployeeDetails(offsiteCustRegModel.getCivilId(),offsiteCustRegModel.getEcNumber());
-		
-		if(employeeDetails ==null)
-			throw new GlobalException("Invalid Employee", JaxError.INVALID_EMPLOYEE);
-		
-		if(employeeDetails.getEmail() == null)
-			throw new GlobalException("Your Email Id Not Present",
-					JaxError.EMPLOYEE_EMAIL_ID_NOT_AVAILABLE);
-		
-		employeeValidationService.validateEmployeeLockCount(employeeDetails);
-		try {
-			employeeValidationService.validateTokenDate(employeeDetails);
-		} catch (GlobalException e) {
-			// reset sent token count
-			employeeDetails.setTokenSentCount(BigDecimal.ZERO);
-		}
-		employeeValidationService.validateTokenSentCount(employeeDetails);
-		CivilIdOtpModel model = new CivilIdOtpModel();
-		List<CommunicationChannel> channels = null;
-		generateToken(employeeDetails.getCivilId(), model, channels);
-		employeeDetails.setEmailToken(model.getHashedeOtp());
-		employeeDetails.setSmsToken(model.getHashedmOtp());
-		employeeDetails.setTokenDate(new Date());
-		
-		BigDecimal tokenSentCount = (employeeDetails.getTokenSentCount() == null) ? BigDecimal.ZERO
-				: employeeDetails.getTokenSentCount().add(new BigDecimal(1));
-		employeeDetails.setTokenSentCount(tokenSentCount);
-		repo.save(employeeDetails);		
-		
-		return AmxApiResponse.build(model);		
-	}
-
-	private void generateToken(String userId, CivilIdOtpModel model, List<CommunicationChannel> channels) {
-		String randmOtp = util.createRandomPassword(6);
-		String hashedmOtp = cryptoUtil.getHash(userId, randmOtp);
-		String randeOtp = util.createRandomPassword(6);
-		String hashedeOtp = cryptoUtil.getHash(userId, randeOtp);
-		model.setHashedmOtp(hashedmOtp);
-		model.setmOtp(randmOtp);
-		model.setmOtpPrefix(Random.randomAlpha(3));
-		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
-			model.setHashedeOtp(hashedeOtp);
-			model.seteOtp(randeOtp);
-			model.seteOtpPrefix(Random.randomAlpha(3));
-			LOGGER.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
-		}
-		LOGGER.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
-	}*/
-
-	/*@Override
-	public AmxApiResponse<BigDecimal, Object> getModes() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-*/
-
+	@Autowired	
+	ProfessionRepository professionRepository;	
+	
 	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
 		List<JaxConditionalFieldRule> fieldList = null;
 		if (request.getEntity() == null)
@@ -234,8 +121,8 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			output.add(convertInDto(i));
 		});
 		return output;
-	}	
-
+	}
+	
 
 	private JaxConditionalFieldRuleDto convertInDto(JaxConditionalFieldRule i) {
 		JaxConditionalFieldRuleDto dto = new JaxConditionalFieldRuleDto();
@@ -248,61 +135,7 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 			dto.setPossibleValues(prefixService.getPrefixListOffsite());			
 		}		
 		return dto;
-	}
-
-	/*@SuppressWarnings("null")
-	public AmxApiResponse<String, Object> validateOTP(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
-		LOGGER.info("In validateopt of civilid: " + offsiteCustRegModel.getCivilId());
-		String civilId = offsiteCustRegModel.getCivilId();
-		String mOtp = offsiteCustRegModel.getmOtp();
-		String eOtp = offsiteCustRegModel.geteOtp();
-		Employee employee = null;
-		if (civilId != null) {
-			employee = employeeDao.getEmployeeByCivilId(civilId);
-		}
-		if (employee == null) {
-			throw new InvalidCivilIdException("Civil Id " + civilId + " not registered.");
-		}
-		if (offsiteCustRegModel.getmOtp() == null) {
-			throw new InvalidJsonInputException("Otp is empty for civil-id: " + civilId);
-		}		 
-		employeeValidationService.validateEmployeeLockCount(employee);
-		employeeValidationService.validateTokenDate(employee);
-		String etokenHash = employee.getEmailToken();
-		String mtokenHash = employee.getSmsToken();
-		String mOtpHash = cryptoUtil.getHash(civilId, mOtp);
-		String eOtpHash = null;
-		if (StringUtils.isNotBlank(eOtp)) {
-			eOtpHash = cryptoUtil.getHash(civilId, eOtp);
-		}
-		if (!mOtpHash.equals(mtokenHash)) {
-			employeeValidationService.incrementLockCount(employee);
-			throw new InvalidOtpException("Sms Otp is incorrect for civil-id: " + civilId);
-		}
-		if (eOtpHash != null && !eOtpHash.equals(etokenHash)) {
-			employeeValidationService.incrementLockCount(employee);
-			throw new InvalidOtpException("Email Otp is incorrect for civil-id: " + civilId);
-		}
-		checkListManager.updateMobileAndEmailCheck(employee, employeeDao.getCheckListForUserId(civilId));
-		this.unlockCustomer(employee);				
-		LOGGER.info("end of validateopt for civilid: " + civilId);
-		//repo.save(employee);			
-		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Employee Authentication Successfull");		
-		obj.setMessageKey("AUTH_SUCCESS");
-		return obj;
-	}*/
-	
-	/**
-	 * reset lock
-	 */
-	/*protected void unlockCustomer(Employee employee) {
-		if (employee.getLockCnt() != null || employee.getLockDt() != null) {
-			employee.setLockCnt(null);
-			employee.setLockDt(null);
-			repo.save(employee);
-		}
-		employee.setTokenSentCount(BigDecimal.ZERO);
-	}*/
+	}	
 	
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -314,36 +147,15 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 				list.add(
 						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC")));
 			}
-		}
-
-		// List<BizComponentDataDesc> bizComponentDataDescs =
-		// bizcomponentDao.getBizComponentDataDescListByComponmentId();
+		}		
 		if (tempList.isEmpty())
 		{
 			throw new GlobalException("Id Type List Is Not available ", JaxError.EMPTY_ID_TYPE_LIST);
-		}			
-		// List<BizComponentDataDescDto> dtoList = convert(bizComponentDataDescs);
+		}		
 		return AmxApiResponse.buildList(list);
-	}
+	}	
 
-	/*private List<BizComponentDataDescDto> convert(List<BizComponentDataDesc> bizComponentDataDescs) {
-		List<BizComponentDataDescDto> output = new ArrayList<>();
-		bizComponentDataDescs.forEach(i -> {
-			output.add(convert(i));
-		});
-		return output;
-	}*/
-
-	private BizComponentDataDescDto convert(BizComponentDataDesc i) {
-		BizComponentDataDescDto dto =  new BizComponentDataDescDto();
-		dto.setComponentDataDescId(i.getComponentDataDescId());
-		dto.setDataDesc(i.getDataDesc());
-		dto.setFsBizComponentData(i.getFsBizComponentData().getComponentDataId());
-		dto.setFsLanguageType(i.getFsLanguageType().getLanguageId());
-		return dto;
-	}
-
-	public AmxApiResponse<String, Object> validateOtp(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
@@ -425,9 +237,9 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(BigDecimal articleId,
-			BigDecimal languageId) {
-		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, languageId);
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
+		BigDecimal articleId = model.getArticleId();
+		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId,null,null);
 		if(designationList == null || designationList.isEmpty())
 		{
@@ -457,9 +269,10 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(BigDecimal countryId,
-			BigDecimal articleDetailsId) {
-		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
+		BigDecimal countryId = metaData.getCountryId();
+		BigDecimal articleDetailsId = model.getArticleDetailsId(); 
+		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId,articleDetailsId);
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null,articleDetailsId,countryId);
 		if(incomeRangeList == null || incomeRangeList.isEmpty())
 		{
@@ -489,22 +302,29 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		return dto;
 	}
 
-	public AmxApiResponse<Map<String, FieldList>, Object> getFieldList(DynamicFieldRequest model) {
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
 		List<FieldList> fieldList = null;
 		fieldList = fieldListDao.getFieldList(model.getTenant(),Constants.COMMON_NATIONALITY,model.getComponent());
-		Map<String,FieldList> map = new HashMap<>();
-		if(fieldList != null)
+		if(fieldList == null)
 		{
-			map = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));	
+			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
+		}
+		List<FieldListDto> listDto = convertFieldList(fieldList) ;
+		Map<String,FieldListDto> map = new HashMap<>();
+		if(listDto != null)
+		{
+			map = listDto.stream().collect(Collectors.toMap(FieldListDto:: getKey, Function.identity()));	
 		}
 		
 		if(model.getNationality()!= null && !model.getNationality().equalsIgnoreCase("ALL"))
 		{
 			//fieldList = null;
-			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());
+			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());			
 			if(fieldList != null)
 			{				
-				Map<String,FieldList> map1 = fieldList.stream().collect(Collectors.toMap(FieldList:: getKey, Function.identity()));
+				listDto = new ArrayList<>(); 
+				listDto = convertFieldList(fieldList) ;
+				Map<String,FieldListDto> map1 = listDto.stream().collect(Collectors.toMap(FieldListDto:: getKey, Function.identity()));
 				map.putAll(map1);
 			}
 		}	
@@ -517,37 +337,55 @@ public class OffsitCustRegService /*implements ICustRegService*/ {
 		auditService.log(new FieldListAuditEvent(model));
 		return AmxApiResponse.build(map);
 	}
-	
-	/*private List<JaxConditionalFieldDto> convert(List<JaxConditionalFieldRule> fieldList) {
-		List<JaxConditionalFieldDto> list = new ArrayList<>();
+
+	private List<FieldListDto> convertFieldList(List<FieldList> fieldList) {
+		List<FieldListDto> output = new ArrayList<>();
 		fieldList.forEach(i -> {
-			list.add(convert(i));
+			output.add(convertFieldList(i));
 		});
-		return list;
+		return output;
 	}
-	
-	private JaxConditionalFieldDto convert(JaxConditionalFieldRule i) {
-		JaxConditionalFieldDto dto = new JaxConditionalFieldDto();
-		dto.setEntityName(i.getEntityName());
-		JaxFieldDto fieldDto = convert(i.getField());
-		dto.setField(fieldDto);
-		dto.setId(i.getId());
+
+	private FieldListDto convertFieldList(FieldList i) {
+		FieldListDto dto = new FieldListDto();
+		dto.setFieldId(i.getFieldId());
+		dto.setComponent(i.getComponent());
+		dto.setDetails(i.getDetails());
+		dto.setKey(i.getKey());
+		dto.setNationality(i.getNationality());
+		dto.setRemitCountry(i.getRemitCountry());
+		dto.setTenant(i.getTenant());
+		dto.setValue(i.getValue());
 		return dto;
 	}
-	
-	private JaxFieldDto convert(JaxField field) {
-		JaxFieldDto dto = new JaxFieldDto();
-		jaxUtil.convert(field, dto);
-		dto.setRequired(ConstantDocument.Yes.equals(field.getRequired()) ? true : false);
-		List<ValidationRegexDto> validationdtos = new ArrayList<>();
-		if (field.getValidationRegex() != null) {
-			field.getValidationRegex().forEach(validation -> {
-				ValidationRegexDto regexdto = new ValidationRegexDto();
-				jaxUtil.convert(validation, regexdto);
-				validationdtos.add(regexdto);
-			});
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
+		List<EmploymentTypeMasterView> view = employmentTypeRepo.findAll();
+		if(view.isEmpty())
+		{
+			throw new GlobalException("Employment Type List Not Available",JaxError.EMPTY_EMPLOYMENT_TYPE);
 		}
-		dto.setValidationRegex(validationdtos);
-		return dto;
-	}*/
+		List<ComponentDataDto> list = new ArrayList<>();
+		for(EmploymentTypeMasterView map : view)
+		{
+			list.add(new ComponentDataDto(map.getComponentDataId(),map.getDataDesc()));
+		}	
+		return AmxApiResponse.buildList(list);
+	}	
+
+	@Override
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
+		List<ProfessionMasterView> view = professionRepository.findAll();
+		if(view.isEmpty())
+		{
+			throw new GlobalException("Profession List Not Available",JaxError.EMPTY_PROFESSION_LIST);
+		}
+		List<ComponentDataDto> list = new ArrayList<>();
+		for(ProfessionMasterView map : view)
+		{
+			list.add(new ComponentDataDto(map.getComponentDataId(),map.getDataDesc()));
+		}
+		return AmxApiResponse.buildList(list);
+	}	
 }

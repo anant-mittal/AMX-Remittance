@@ -12,12 +12,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.dbmodel.Employee;
-import com.amx.jax.util.JaxUtil;
+import com.amx.jax.error.JaxError;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -29,9 +28,6 @@ public class EmployeeValidationService
 	
 	@Autowired
 	private EmployeeRepository repo;	
-	
-	@Autowired
-	private JaxUtil jaxUtil;
 	
 	public void validateEmployeeLockCount(Employee employeeDetails) {
 	final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
@@ -73,7 +69,7 @@ public void validateTokenDate(Employee employeeDetails) {
 		long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 		long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 		if (tokenTimeinMins > otpValidTimeInMins) {
-			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
+			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getStatusKey());
 		}
 	}
 }
@@ -82,31 +78,6 @@ public void validateTokenSentCount(Employee employeeDetails) {
 
 	Integer limit = otpSettings.getMaxSendOtpAttempts();
 	if (employeeDetails.getTokenSentCount() != null && employeeDetails.getTokenSentCount().intValue() >= limit) {
-		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey());
 	}
-}
-
-/**
- * updates lock count by one due to wrong password/otp attempt
- */
-public int incrementLockCount(Employee employeeDetails) {
-	Integer lockCnt = 0;
-	final Integer MAX_OTP_ATTEMPTS = otpSettings.getMaxValidateOtpAttempts();
-	if (employeeDetails.getLockCnt() != null) {
-		lockCnt = employeeDetails.getLockCnt().intValue();
-	}
-	lockCnt++;
-	if (lockCnt >= MAX_OTP_ATTEMPTS) {
-		employeeDetails.setLockDt(new Date());
-	}
-	employeeDetails.setLockCnt(new BigDecimal(lockCnt));
-	repo.save(employeeDetails);
-	if (lockCnt >= MAX_OTP_ATTEMPTS) {
-		String errorExpression = JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString();
-		errorExpression = jaxUtil.buildErrorExpression(JaxError.USER_LOGIN_ATTEMPT_EXCEEDED.toString(), lockCnt);
-		throw new GlobalException("Employee is locked. No of attempts:- " + lockCnt, errorExpression);
-	}
-	return MAX_OTP_ATTEMPTS - lockCnt;
-}
-
-}
+}}

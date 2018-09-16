@@ -289,7 +289,17 @@ public class PlaceOrderService extends AbstractService {
 
 	public ApiResponse updatePlaceOrder(PlaceOrderDTO dto) {
 		ApiResponse response = getBlackApiResponse();
+		
+		BenificiaryListView poBene = null;
+		
+		BigDecimal customerId = metaData.getCustomerId();
+		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal beneRealtionId = dto.getBeneficiaryRelationshipSeqId();
+		
+		if (beneRealtionId != null && beneRealtionId.compareTo(BigDecimal.ZERO) != 0) {
+            poBene = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(customerId, applicationCountryId,beneRealtionId);
+        }
+		
 		beneficiaryValidationService.validateBeneList(beneRealtionId);
 		try {
 			List<PlaceOrder> placeOrderList = placeOrderdao.getPlaceOrderUpdate(dto.getPlaceOrderId());
@@ -308,15 +318,15 @@ public class PlaceOrderService extends AbstractService {
 				rec.setValidToDate(dto.getValidToDate());
 				rec.setPayAmount(dto.getPayAmount());
 				rec.setReceiveAmount(dto.getReceiveAmount());
-				rec.setCreatedDate(dto.getCreatedDate());
-				rec.setBaseCurrencyId(rec.getBaseCurrencyId());
-				rec.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
-				rec.setForeignCurrencyId(rec.getForeignCurrencyId());
-				rec.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
+				//rec.setCreatedDate(dto.getCreatedDate());
+				rec.setBaseCurrencyId(dto.getBaseCurrencyId());
+				rec.setBaseCurrencyQuote(dto.getBaseCurrencyQuote());
+				rec.setForeignCurrencyId(dto.getForeignCurrencyId());
+				rec.setForeignCurrencyQuote(dto.getForeignCurrencyQuote());
 				
-				rec.setBankId(rec.getBankId());
-				rec.setCountryId(rec.getCountryId());
-				rec.setCurrencyId(rec.getCurrencyId());
+				rec.setBankId(poBene.getBankId());
+				rec.setCountryId(poBene.getCountryId());
+				rec.setCurrencyId(poBene.getCurrencyId());
 				
 				placeOrderdao.save(rec);
 				
@@ -344,7 +354,7 @@ public class PlaceOrderService extends AbstractService {
 
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
-			
+
 			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("HH:MM a z");
 			String time = simpletimeFormat.format(new Date());
 			

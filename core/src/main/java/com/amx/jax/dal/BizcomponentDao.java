@@ -32,9 +32,9 @@ import com.amx.jax.dbmodel.BizComponentDataRef;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;
+import com.amx.utils.Constants;
 import com.amx.jax.repository.IBizComponentDataRepository;
 
-import com.amx.utils.Constants;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -87,6 +87,7 @@ public class BizcomponentDao {
 
 	}
 	
+<<<<<<<<< Temporary merge branch 1
 	
 	public List<BizComponentDataDesc> getBizComponentDataDescListByComponmentId() {
 				LanguageType langId = new LanguageType(metaData.getLanguageId());				
@@ -124,7 +125,8 @@ public class BizcomponentDao {
 		}
 		 
 		return rtnIdentity;
-	}
+		}
+=========
 
 	public BizComponentData getBizComponentDataByComponmentCode(String componentCode) {
 		return iBizComponentDataRepository.findBycomponentCode(componentCode);
@@ -133,4 +135,5 @@ public class BizcomponentDao {
 	public BizComponentData getBizComponentDataByComponmentDataId(BigDecimal componentDataId) {
 		return iBizComponentDataRepository.findOne(componentDataId);
 	}
+>>>>>>>>> Temporary merge branch 2
 }

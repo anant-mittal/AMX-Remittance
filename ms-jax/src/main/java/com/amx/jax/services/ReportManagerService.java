@@ -18,7 +18,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
 import com.amx.jax.repository.ICompanyDAO;
@@ -112,17 +112,17 @@ public class ReportManagerService extends AbstractService{
 		customerRefernce =transactionHistroyDTO.getCustomerReference(); 
 		
 		 if (customerId == null) {
-				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getStatusKey());
 			}
 		
 		 if (applicationCountryId == null) {
-				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getCode());
+				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getStatusKey());
 		  } 
 		
 		if(!currencyDao.getCurrencyListByCountryId(applicationCountryId).isEmpty()) {
 			currencyId = currencyDao.getCurrencyListByCountryId(applicationCountryId).get(0).getCurrencyId();
 		}else {
-			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getCode());
+			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getStatusKey());
 			
 		  }
 		

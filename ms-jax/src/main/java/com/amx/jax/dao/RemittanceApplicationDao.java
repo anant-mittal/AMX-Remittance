@@ -24,7 +24,6 @@ import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.IPlaceOrderDao;
-import com.amx.jax.repository.IFlexFiledView;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -38,14 +37,19 @@ public class RemittanceApplicationDao {
 
 	@Autowired
 	RemittanceApplicationRepository appRepo;
+
 	@Autowired
 	RemittanceApplicationBeneRepository appBeneRepo;
+
 	@Autowired
 	AdditionalInstructionDataRepository addlInstDataRepo;
+
 	@Autowired
 	RemittanceApplicationManager remitApplManager;
+
 	@Autowired
 	FinancialService finanacialService;
+
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired

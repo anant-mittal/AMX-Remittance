@@ -22,7 +22,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -40,6 +39,7 @@ import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
@@ -49,13 +49,14 @@ import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.util.JaxUtil;
 
+
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @SuppressWarnings("rawtypes")
 public class ExchangeRateService extends AbstractService {
 
 	Logger logger = LoggerFactory.getLogger(getClass());
-
+	
 	static Map<BigDecimal, BigDecimal> currencyIdVsExchId = new HashMap<>();
 
 	@Autowired
@@ -68,20 +69,20 @@ public class ExchangeRateService extends AbstractService {
 	ExchangeRateDao exchangeRateDao;
 
 	@Autowired
-	MetaData meta;
+	 MetaData meta;
 
 	@Autowired
 	JaxUtil util;
 
 	@Autowired
 	CurrencyMasterDao currencyMasterDao;
-
+	
 	@Autowired
 	ExchangeRateProcedureDao exchangeRateProcedureDao;
-
+	
 	@Autowired
 	CompanyService companyService;
-
+	
 	@Autowired
 	CurrencyMasterService currencyMasterService;
 
@@ -95,10 +96,8 @@ public class ExchangeRateService extends AbstractService {
 		return null;
 	}
 
-	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,
-			BigDecimal bankId) {
-		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
-				+ lcAmount);
+	public ApiResponse getExchangeRatesForOnline(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal lcAmount,BigDecimal bankId) {
+		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "+ lcAmount);
 		ApiResponse response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
@@ -108,19 +107,17 @@ public class ExchangeRateService extends AbstractService {
 			validateExchangeRateInputdata(lcAmount);
 			BigDecimal countryBranchId = meta.getCountryBranchId();
 			List<BigDecimal> validBankIds = exchangeRateProcedureDao.getBankIdsForExchangeRates(toCurrency);
-
+			
 			if (validBankIds.isEmpty()) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
-
+			
 			CurrencyMasterModel toCurrencyMaster = currencyMasterDao.getCurrencyMasterById(toCurrency);
 			List<ExchangeRateApprovalDetModel> allExchangeRates = exchangeRateDao.getExchangeRates(toCurrency,
 					countryBranchId, toCurrencyMaster.getCountryId(), validBankIds);
 			filterNonMinServiceIdRates(allExchangeRates);
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(
-					allExchangeRates, pips, bankId);
-			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,
-					lcAmount);
+			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicableRatesWithDiscount = getApplicableExchangeRates(allExchangeRates, pips, bankId);
+			ExchangeRateBreakup equivalentAmount = getApplicableExchangeAmountWithDiscounts(applicableRatesWithDiscount,lcAmount);
 			if (equivalentAmount == null) {
 				equivalentAmount = checkAndApplyLowConversionRate(equivalentAmount, allExchangeRates, lcAmount);
 			}
@@ -166,8 +163,7 @@ public class ExchangeRateService extends AbstractService {
 		}
 	}
 
-	ExchangeRateBreakup checkAndApplyLowConversionRate(ExchangeRateBreakup equivalentAmount,
-			List<ExchangeRateApprovalDetModel> allExchangeRates, BigDecimal amount) {
+	ExchangeRateBreakup checkAndApplyLowConversionRate(ExchangeRateBreakup equivalentAmount,List<ExchangeRateApprovalDetModel> allExchangeRates, BigDecimal amount) {
 		BigDecimal maxInverseRate = null;
 		if (equivalentAmount != null) {
 			maxInverseRate = equivalentAmount.getInverseRate();
@@ -193,7 +189,7 @@ public class ExchangeRateService extends AbstractService {
 			dto.setExRateBreakup(getExchangeRateFromPips(piplist, rate, lcAmount));
 			logger.info("EXCHANGE_RATE_MASTER_APR_ID= " + rate.getExchangeRateMasterAprDetId() + " ,currencyid= "
 					+ rate.getCurrencyId());
-			currencyIdVsExchId.put(rate.getCurrencyId(), rate.getExchangeRateMasterAprDetId());
+			currencyIdVsExchId.put(rate.getCurrencyId(),  rate.getExchangeRateMasterAprDetId());
 			bankWiseRates.add(dto);
 		}
 
@@ -233,7 +229,7 @@ public class ExchangeRateService extends AbstractService {
 					}
 				}
 			}
-		}
+		} 
 		if (exrate == null) {
 			exrate = rate.getSellRateMax();
 		}
@@ -264,8 +260,7 @@ public class ExchangeRateService extends AbstractService {
 		return breakup;
 	}
 
-	ExchangeRateBreakup getApplicableExchangeAmountWithDiscounts(
-			Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicationRates, BigDecimal localAmount) {
+	ExchangeRateBreakup getApplicableExchangeAmountWithDiscounts(Map<ExchangeRateApprovalDetModel, List<PipsMaster>> applicationRates, BigDecimal localAmount) {
 
 		BigDecimal minServiceId = null;
 		BigDecimal exrate = null;
@@ -312,8 +307,7 @@ public class ExchangeRateService extends AbstractService {
 	}
 
 	// logic acc. to VW_EX_TRATE
-	Map<ExchangeRateApprovalDetModel, List<PipsMaster>> getApplicableExchangeRates(
-			List<ExchangeRateApprovalDetModel> allExchangeRates, List<PipsMaster> pips, BigDecimal bankId) {
+	Map<ExchangeRateApprovalDetModel, List<PipsMaster>> getApplicableExchangeRates(List<ExchangeRateApprovalDetModel> allExchangeRates, List<PipsMaster> pips, BigDecimal bankId) {
 		Map<ExchangeRateApprovalDetModel, List<PipsMaster>> output = new LinkedHashMap<>();
 		Map<BigDecimal, ExchangeRateApprovalDetModel> map = new HashMap<>();
 		if (allExchangeRates != null && !allExchangeRates.isEmpty()) {
@@ -328,8 +322,7 @@ public class ExchangeRateService extends AbstractService {
 						continue;
 					}
 					ExchangeRateApprovalDetModel value = map.get(bankMaster.getBankId());
-					if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())
-							&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
+					if (value != null && value.getCountryId().equals(pip.getCountryMaster().getCountryId())&& value.getCurrencyId().equals(pip.getCurrencyMaster().getCurrencyId())) {
 						List<PipsMaster> piplist = output.get(value);
 						if (piplist == null) {
 							piplist = new ArrayList<>();
@@ -353,9 +346,9 @@ public class ExchangeRateService extends AbstractService {
 
 	public ApiResponse setOnlineExchangeRates(String quoteName, BigDecimal value) {
 		ApiResponse apiResponse = getBlackApiResponse();
-		value = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
+		value  = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
 		BigDecimal toCurrency = currencyMasterDao.getCurrencyMasterByQuote(quoteName).getCurrencyId();
-		this.getExchangeRatesForOnline(BigDecimal.ONE, toCurrency, BigDecimal.ONE, null);
+		this.getExchangeRatesForOnline( BigDecimal.ONE, toCurrency,  BigDecimal.ONE, null);
 		BigDecimal exRateId = currencyIdVsExchId.get(toCurrency);
 		ExchangeRateApprovalDetModel exRateModel = exchangeRateDao.getExchangeRateApprovalDetModelById(exRateId);
 		exRateModel.setSellRateMax(value);
@@ -366,42 +359,39 @@ public class ExchangeRateService extends AbstractService {
 
 	/**
 	 * Get Min Max Exchange Rate API
-	 * 
 	 * @return min max exchage rate data
 	 */
 	public ApiResponse getMinMaxExrate() {
 		ApiResponse<MinMaxExRateDTO> apiResponse = getBlackApiResponse();
-
+	
 		BigDecimal languageId = meta.getLanguageId();
 		AmxApiResponse<ViewCompanyDetailDTO, Object> responseFromCur = companyService.getCompanyDetails(languageId);
-		List<ViewCompanyDetailDTO> listFromCur = responseFromCur.getResults();
-		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO) listFromCur.get(0);
+		List listFromCur = responseFromCur.getResults();
+		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
 		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
-
+		
 		CurrencyMasterModel getFromCurrencyData = currencyMasterService.getCurrencyMasterById(fromCurrency);
-
+		
 		AmxApiResponse<CurrencyMasterDTO, Object> responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
 		List<CurrencyMasterDTO> listToCur = responseToCur.getResults();
 		listToCur.add(currencyMasterService.convertModel(getFromCurrencyData));
 		List dtoList = getMinMaxData(listToCur, fromCurrency);
-
+		
 		apiResponse.setResponseStatus(ResponseStatus.OK);
 		apiResponse.getData().getValues().addAll(dtoList);
 		apiResponse.getData().setType("min-max-exrate");
-
+		
 		return apiResponse;
 	}
-
+	
 	/**
 	 * call get min max exchange rate method
-	 * 
 	 * @return dtoList gives fromCurrency, toCurrency, minRate, maxRate
 	 */
-	List<MinMaxExRateDTO> getMinMaxData(List<CurrencyMasterDTO> listToCur, BigDecimal fromCurrency) {
+	List<MinMaxExRateDTO> getMinMaxData(List<CurrencyMasterDTO> listToCur, BigDecimal fromCurrency){
 		List<MinMaxExRateDTO> dtoList = new ArrayList<MinMaxExRateDTO>();
-		Map<BigDecimal, CurrencyMasterDTO> mapToCur = listToCur.stream()
-				.collect(Collectors.toMap(CurrencyMasterDTO::getCurrencyId, x -> x));
-
+		Map<BigDecimal, CurrencyMasterDTO> mapToCur = listToCur.stream().collect(Collectors.toMap(CurrencyMasterDTO::getCurrencyId, x -> x));
+		
 		for (CurrencyMasterDTO rec : listToCur) {
 			try {
 				BigDecimal toCurrency = rec.getCurrencyId();

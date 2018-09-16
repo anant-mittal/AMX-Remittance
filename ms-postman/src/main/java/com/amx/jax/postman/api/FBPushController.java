@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.service.FBPushServiceImpl;
@@ -46,12 +46,13 @@ public class FBPushController implements IPushNotifyService {
 	 */
 	@Override
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
-	public PushMessage sendDirect(@RequestBody PushMessage msg) throws PostManException {
+	public AmxApiResponse<PushMessage, Object> sendDirect(@RequestBody PushMessage msg) throws PostManException {
 		return fBPushService.sendDirect(msg);
 	}
 
+	@Override
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_BULK, method = RequestMethod.POST)
-	public PostManResponse send(@RequestBody List<PushMessage> msgs) throws PostManException {
+	public AmxApiResponse<PushMessage, Object> send(@RequestBody List<PushMessage> msgs) throws PostManException {
 		for (PushMessage pushMessage : msgs) {
 			fBPushService.sendDirect(pushMessage);
 		}
@@ -69,8 +70,10 @@ public class FBPushController implements IPushNotifyService {
 	 * @throws PostManException
 	 *             the post man exception
 	 */
+	@Override
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
-	public PostManResponse subscribe(@RequestParam String token, @PathVariable String topic) throws PostManException {
+	public AmxApiResponse<String, Object> subscribe(@RequestParam String token, @PathVariable String topic)
+			throws PostManException {
 		return fBPushService.subscribe(token, topic);
 	}
 

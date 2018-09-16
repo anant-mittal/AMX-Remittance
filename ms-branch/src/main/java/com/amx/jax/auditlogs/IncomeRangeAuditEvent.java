@@ -1,6 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
 
 public class IncomeRangeAuditEvent extends JaxAuditEvent {
 

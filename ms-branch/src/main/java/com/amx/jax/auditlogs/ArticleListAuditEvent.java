@@ -1,8 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.CommonRequest;
-import com.amx.jax.auditlogs.JaxAuditEvent;
-import com.amx.jax.auditlogs.JaxAuditEvent.Type;
+import com.amx.jax.model.request.CommonRequest;
 
 public class ArticleListAuditEvent extends JaxAuditEvent {
 	CommonRequest dataModel;

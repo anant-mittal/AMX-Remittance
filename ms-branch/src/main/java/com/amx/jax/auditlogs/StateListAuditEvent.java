@@ -1,6 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.request.CommonRequest;
+import com.amx.jax.model.request.CommonRequest;
 
 public class StateListAuditEvent extends JaxAuditEvent {
 

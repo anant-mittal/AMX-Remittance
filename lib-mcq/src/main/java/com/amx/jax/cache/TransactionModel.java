@@ -22,7 +22,11 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 		return this.cache;
 	}
 
-	public abstract T init();
+	public T init() {
+		return null;
+	};
 
-	public abstract T commit();
+	public T commit() {
+		return null;
+	};
 }

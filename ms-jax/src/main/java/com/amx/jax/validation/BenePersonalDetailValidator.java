@@ -9,13 +9,13 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 
@@ -69,7 +69,7 @@ public class BenePersonalDetailValidator implements Validator {
 		
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-					JaxError.BLACK_LISTED_BENEFICIARY.getCode());
+					JaxError.BLACK_LISTED_BENEFICIARY.getStatusKey());
 		}
 	}
 	
@@ -97,7 +97,7 @@ public class BenePersonalDetailValidator implements Validator {
 
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Beneficiary Arabic name found matching with black list ",
-						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getCode());
+						JaxError.BLACK_LISTED_ARABIC_BENEFICIARY.getStatusKey());
 			}
 		}
 	}

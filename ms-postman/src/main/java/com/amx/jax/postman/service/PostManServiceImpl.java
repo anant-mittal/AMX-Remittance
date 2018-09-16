@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
@@ -65,8 +65,29 @@ public class PostManServiceImpl implements PostManService {
 	 * com.amx.jax.postman.PostManService#sendEmail(com.amx.jax.postman.model.Email)
 	 */
 	@Override
-	public Email sendEmail(Email email) throws PostManException {
-		return emailService.sendEmail(supportService.filterMessageType(email));
+	public AmxApiResponse<Email, Object> sendEmail(Email email) throws PostManException {
+		return AmxApiResponse.build(emailService.sendEmail(supportService.filterMessageType(email)));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * com.amx.jax.postman.PostManService#sendEmailAsync(com.amx.jax.postman.model.
+	 * Email)
+	 */
+	@Override
+
+	public AmxApiResponse<Email, Object> sendEmailAsync(Email email) throws PostManException {
+		return this.sendEmail(email);
+	}
+
+	@Override
+	public AmxApiResponse<Email, Object> sendEmailBulk(List<Email> emailList) {
+		for (Email email : emailList) {
+			this.sendEmail(email);
+		}
+		return AmxApiResponse.buildList(emailList);
 	}
 
 	/*
@@ -77,8 +98,8 @@ public class PostManServiceImpl implements PostManService {
 	 * File)
 	 */
 	@Override
-	public File processTemplate(File file) {
-		return fileService.create(file);
+	public AmxApiResponse<File, Object> processTemplate(File file) {
+		return AmxApiResponse.build(fileService.create(file));
 	}
 
 	/**
@@ -97,7 +118,7 @@ public class PostManServiceImpl implements PostManService {
 		file.setTemplate(template);
 		file.setType(fileType);
 		file.setModel(map);
-		return this.processTemplate(file);
+		return this.processTemplate(file).getResult();
 	}
 
 	/*
@@ -107,7 +128,7 @@ public class PostManServiceImpl implements PostManService {
 	 * com.amx.jax.postman.PostManService#sendSMS(com.amx.jax.postman.model.SMS)
 	 */
 	@Override
-	public SMS sendSMS(SMS sms) throws PostManException {
+	public AmxApiResponse<SMS, Object> sendSMS(SMS sms) throws PostManException {
 
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:START", "sendSMS");
@@ -117,7 +138,7 @@ public class PostManServiceImpl implements PostManService {
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:END", "sendSMS");
 		}
-		return sms;
+		return AmxApiResponse.build(sms);
 	}
 
 	/*
@@ -129,9 +150,9 @@ public class PostManServiceImpl implements PostManService {
 	 */
 	@Override
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
-	public Notipy notifySlack(Notipy msg) throws PostManException {
+	public AmxApiResponse<Notipy, Object> notifySlack(Notipy msg) throws PostManException {
 		try {
-			return slackService.sendNotification(msg);
+			return AmxApiResponse.build(slackService.sendNotification(msg));
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
@@ -145,7 +166,7 @@ public class PostManServiceImpl implements PostManService {
 	 * ExceptionReport)
 	 */
 	@Override
-	public ExceptionReport notifyException(ExceptionReport e) {
+	public AmxApiResponse<ExceptionReport, Object> notifyException(ExceptionReport e) {
 		return this.notifyException(appConfig.getAppName(), e.getTitle(), e.getException(), e);
 	}
 
@@ -162,8 +183,9 @@ public class PostManServiceImpl implements PostManService {
 	 *            the e
 	 * @return the exception report
 	 */
-	public ExceptionReport notifyException(String appname, String title, String exception, ExceptionReport e) {
-		return slackService.sendException(appname, title, exception, e);
+	public AmxApiResponse<ExceptionReport, Object> notifyException(String appname, String title, String exception,
+			ExceptionReport e) {
+		return AmxApiResponse.build(slackService.sendException(appname, title, exception, e));
 	}
 
 	/*
@@ -173,28 +195,8 @@ public class PostManServiceImpl implements PostManService {
 	 * java.lang.Exception)
 	 */
 	@Override
-	public ExceptionReport notifyException(String title, Exception exc) {
-		return this.notifyException(title, new ExceptionReport(exc));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * com.amx.jax.postman.PostManService#sendEmailAsync(com.amx.jax.postman.model.
-	 * Email)
-	 */
-	@Override
-	@Async(ExecutorConfig.EXECUTER_GOLD)
-	public Email sendEmailAsync(Email email) throws PostManException {
-		return this.sendEmail(email);
-	}
-
-	@Override
-	public PostManResponse sendEmailBulk(List<Email> emailList) {
-		// TODO Empty Method :
-		// Need to remove Interface Implementation
-		return null;
+	public AmxApiResponse<ExceptionReport, Object> notifyException(String title, Exception exc) {
+		return this.notifyException(new ExceptionReport(title, exc));
 	}
 
 	/*
@@ -206,7 +208,7 @@ public class PostManServiceImpl implements PostManService {
 	 */
 	@Override
 	@Async(ExecutorConfig.EXECUTER_PLATINUM)
-	public SMS sendSMSAsync(SMS sms) throws PostManException {
+	public AmxApiResponse<SMS, Object> sendSMSAsync(SMS sms) throws PostManException {
 		if (AppParam.DEBUG_INFO.isEnabled()) {
 			LOGGER.info("{}:START", "sendSMSAsync");
 		}
@@ -222,8 +224,8 @@ public class PostManServiceImpl implements PostManService {
 	 */
 	@Override
 	@Async(ExecutorConfig.EXECUTER_BRONZE)
-	public Email sendEmailToSupprt(SupportEmail supportEmail) throws PostManException {
-		Email email = this.sendEmail(supportService.createContactUsEmail(supportEmail));
+	public AmxApiResponse<Email, Object> sendEmailToSupprt(SupportEmail supportEmail) throws PostManException {
+		Email email = this.sendEmail(supportService.createContactUsEmail(supportEmail)).getResult();
 		Notipy msg = new Notipy();
 		msg.setMessage(supportEmail.getSubject());
 		msg.addLine("Tenant : " + AppContextUtil.getTenant());
@@ -234,7 +236,7 @@ public class PostManServiceImpl implements PostManService {
 		msg.setSubject(supportEmail.getSubject());
 		msg.setChannel(Notipy.Channel.INQUIRY);
 		this.notifySlack(msg);
-		return email;
+		return AmxApiResponse.build(email);
 	}
 
 }

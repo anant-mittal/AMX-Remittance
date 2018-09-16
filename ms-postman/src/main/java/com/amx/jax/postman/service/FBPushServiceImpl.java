@@ -9,14 +9,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
-import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.audit.PMGaugeEvent;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
@@ -91,7 +91,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * PushMessage)
 	 */
 	@Async
-	public PushMessage sendDirect(PushMessage msg) {
+	@Override
+	public AmxApiResponse<PushMessage, Object> sendDirect(PushMessage msg) {
 		try {
 
 			if (msg.getTo() == null) {
@@ -172,7 +173,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
 					LOGGER, e);
 		}
-		return msg;
+
+		return AmxApiResponse.build(msg);
 	}
 
 	/**
@@ -293,7 +295,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * @see com.amx.jax.postman.FBPushService#subscribe(java.lang.String,
 	 * java.lang.String)
 	 */
-	public PostManResponse subscribe(String token, String topic) {
+	@Override
+	public AmxApiResponse<String, Object> subscribe(String token, String topic) {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
 		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
 		try {
@@ -306,12 +309,12 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
 			slackService.sendException(topic, e);
 		}
-		return new PostManResponse();
+		return AmxApiResponse.build(token);
 	}
 
 	@Override
-	public PostManResponse send(List<PushMessage> msgs) throws PostManException {
-		return new PostManResponse();
+	public AmxApiResponse<PushMessage, Object> send(List<PushMessage> msgs) throws PostManException {
+		return AmxApiResponse.buildList(msgs);
 	}
 
 }

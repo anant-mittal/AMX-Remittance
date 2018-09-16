@@ -42,6 +42,11 @@
 				<version>${amx.version}</version>
 				<type>pom</type>
 			</dependency>
+			<dependency>
+                                <groupId>com.amx.jax</groupId>
+                                <artifactId>lib-ext-jar</artifactId>
+                                <version>${amx.version}</version>
+                        </dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -60,13 +65,22 @@
 				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-jax</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
 		</dependencies>
-	</dependencyManagement>
+
+	 </dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -125,24 +139,16 @@
 				</configuration>
 			</plugin>
 
-			<plugin> 
-				<groupId>org.sonarsource.scanner.maven</groupId> 
-				<artifactId>sonar-maven-plugin</artifactId> 
-				<version>3.3.0.603</version> 
-			</plugin>
+			<!-- <plugin> <groupId>org.sonarsource.scanner.maven</groupId> <artifactId>sonar-maven-plugin</artifactId> 
+				<version>3.3.0.603</version> </plugin> -->
 		</plugins>
 	</build>
 
-<!--   
-	<repositories>
-		<repository>
-			<id>gitlab.com.almullagroup.maven.mvn-amx</id>
-			<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url>
-		</repository>
-	</repositories>	
--->
+	<!-- <repositories> <repository> <id>gitlab.com.almullagroup.maven.mvn-amx</id> 
+		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
+		</repositories> -->
 
- 
+	<!--
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -151,6 +157,7 @@
 		</pluginRepository>
 	</pluginRepositories>
 
+	-->
 
 	<modules>
 		<module>common-utils</module>
@@ -181,10 +188,10 @@
 
 		<module>server-payg</module>
 		<module>server-ui</module>
+		<module>server-offsite</module>
 		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
 
-		<!-- <module>server-offsite</module> -->
 		<module>server-admin</module>
 		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->
