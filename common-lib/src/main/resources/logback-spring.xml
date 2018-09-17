@@ -2,6 +2,7 @@
 <configuration>
 	<property resource="application.properties" />
 	<property name="AUDIT" value="AUDIT" />
+	<springProperty scope="context" name="logfile" source="logging.debug-file" />
 	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">
@@ -17,8 +18,19 @@
 			</Pattern>
 		</layout>
 	</appender>
+	<appender name="DEBUGGER" class="ch.qos.logback.core.FileAppender">
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<Pattern>
+			  %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} [%replace(%t){"[^0-9a-zA-Z]+","-"} : %X{tnt}-%X{traceId}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %msg%n${LOG_EXCEPTION_CONVERSION_WORD:-%rEx}			</Pattern>
+		</layout>
+		<append>true</append>
+		<file>logs/app-debug.log</file>
+	</appender>
 	<logger name="com.amx.jax.logger.AuditService" level="info"  additivity="false">
 		<appender-ref ref="AUDIT" />
+	</logger>
+	<logger name="com.amx.jax.filter" level="info"  additivity="false">
+		<appender-ref ref="DEBUGGER" />
 	</logger>
 	<logger name="org.springframework" level="info" />
 	<logger name="org.hibernate" level="info" />

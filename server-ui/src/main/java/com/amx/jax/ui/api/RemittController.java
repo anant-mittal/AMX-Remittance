@@ -161,7 +161,8 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF));
+		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF))
+				.getResult();
 		file.create(response, true);
 		return wrapper;
 	}
@@ -194,7 +195,8 @@ public class RemittController {
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(file);
@@ -242,12 +244,14 @@ public class RemittController {
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManService.processTemplate(new File(
-					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null));
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null))
+					.getResult();
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);

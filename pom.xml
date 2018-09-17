@@ -76,7 +76,14 @@
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
-			</dependency>			
+			</dependency>	
+			
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-monitor</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+					
 		</dependencies>
 
 	 </dependencyManagement>

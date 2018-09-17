@@ -13,8 +13,11 @@ import org.springframework.web.context.WebApplicationContext;
 import com.amx.jax.def.MockParamBuilder;
 import com.amx.jax.def.MockParamBuilder.MockParam;
 
+import de.codecentric.boot.admin.config.EnableAdminServer;
+
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
+@EnableAdminServer
 public class AdminServiceApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
@@ -24,13 +27,6 @@ public class AdminServiceApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(AdminServiceApplication.class);
-	}
-
-	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
-		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
-		return metaInfo;
 	}
 
 	@Bean
