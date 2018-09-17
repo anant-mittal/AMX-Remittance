@@ -12,6 +12,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.remittance.AdditionalInstructionData;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
@@ -21,6 +23,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
 import com.amx.jax.repository.IFlexFiledView;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -34,19 +37,25 @@ public class RemittanceApplicationDao {
 
 	@Autowired
 	RemittanceApplicationRepository appRepo;
+
 	@Autowired
 	RemittanceApplicationBeneRepository appBeneRepo;
+
 	@Autowired
 	AdditionalInstructionDataRepository addlInstDataRepo;
+
 	@Autowired
 	RemittanceApplicationManager remitApplManager;
+
 	@Autowired
 	FinancialService finanacialService;
+
 	@Autowired
 	RemittanceTransactionRepository remittanceTransactionRepository;
 	@Autowired
 	IFlexFiledView IFlexFiledView;
-
+    @Autowired
+    IPlaceOrderDao placeOrderdao;
 	@Transactional
 	public void saveAllApplicationData(RemittanceApplication app, RemittanceAppBenificiary appBene,
 			List<AdditionalInstructionData> additionalInstrumentData) {
@@ -79,4 +88,24 @@ public class RemittanceApplicationDao {
 	public List<FlexFiledView> getFlexFields() {
 		return (List<FlexFiledView>) IFlexFiledView.findAll();
 	}
+
+    public void updatePlaceOrder(RemittanceTransactionRequestModel model,RemittanceApplication remittanceApplication) {
+
+        //to update place order status we update applicaiton id in placeorder table
+        if (model.getPlaceOrderId() != null) {
+        List<PlaceOrder> poList = placeOrderdao.getPlaceOrderForId(model.getPlaceOrderId());
+        PlaceOrder po =null;
+            if (poList!=null && poList.size()!=0) {
+                po=poList.get(0);
+                po.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+                //po.setIsActive("C");
+                placeOrderdao.save(po);
+            }else {
+                logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());
+            }
+            logger.info("Place Order updated for place_order_id: " + model.getPlaceOrderId());
+        }
+        
+       
+    }
 }

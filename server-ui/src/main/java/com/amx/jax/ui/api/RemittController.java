@@ -43,8 +43,8 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.ui.UIConstants;
-import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.AuthData;
+import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
 import com.amx.jax.ui.model.UserBean;
 import com.amx.jax.ui.model.XRateData;
 import com.amx.jax.ui.response.ResponseWrapper;
@@ -161,7 +161,8 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF));
+		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF))
+				.getResult();
 		file.create(response, true);
 		return wrapper;
 	}
@@ -194,7 +195,8 @@ public class RemittController {
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(file);
@@ -242,12 +244,14 @@ public class RemittController {
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManService.processTemplate(new File(
-					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null));
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null))
+					.getResult();
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
@@ -303,10 +307,18 @@ public class RemittController {
 	 */
 	@RequestMapping(value = "/api/remitt/default", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittancePageDto> bnfcryCheck(@RequestParam(required = false) BigDecimal beneId,
-			@RequestParam(required = false) BigDecimal transactionId) {
+			@RequestParam(required = false) BigDecimal transactionId,
+			@RequestParam(required = false) BigDecimal placeorderId) {
+
 		ResponseWrapper<RemittancePageDto> wrapper = new ResponseWrapper<RemittancePageDto>();
-		RemittancePageDto remittancePageDto = jaxService.setDefaults().getBeneClient()
-				.defaultBeneficiary(beneId, transactionId).getResult();
+
+		RemittancePageDto remittancePageDto = null;
+		if (placeorderId == null) {
+			remittancePageDto = jaxService.setDefaults().getBeneClient().defaultBeneficiary(beneId, transactionId)
+					.getResult();
+		} else {
+			remittancePageDto = jaxService.setDefaults().getBeneClient().poBeneficiary(placeorderId).getResult();
+		}
 
 		BigDecimal forCurId = remittancePageDto.getBeneficiaryDto().getCurrencyId();
 
@@ -351,6 +363,7 @@ public class RemittController {
 			RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
 					.validateTransaction(request).getResult();
 			wrapper.setData(respTxMdl);
+			wrapper.setMeta(jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(request).getResults());
 		} catch (RemittanceTransactionValidationException | LimitExeededException e) {
 			wrapper.setMessage(WebResponseStatus.ERROR, e);
 		}

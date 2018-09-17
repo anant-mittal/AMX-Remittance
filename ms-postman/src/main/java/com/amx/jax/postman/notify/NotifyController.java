@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.BranchesBHR;
 import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 
 import io.swagger.annotations.Api;
@@ -35,7 +36,7 @@ public class NotifyController {
 
 	/** The fb push client. */
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
 
 	/**
 	 * List of tenants.
@@ -108,14 +109,14 @@ public class NotifyController {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = "/postman/notify/all", method = RequestMethod.POST)
-	public PushMessage notifyAll(
+	public AmxApiResponse<PushMessage, Object> notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
 		PushMessage msg = new PushMessage();
 		msg.setMessage(message);
 		msg.setSubject(title);
 		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class NotifyController {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = "/postman/notify/nationality", method = RequestMethod.POST)
-	public PushMessage notifyNational(
+	public AmxApiResponse<PushMessage, Object> notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
@@ -148,7 +149,7 @@ public class NotifyController {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
 		}
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 }

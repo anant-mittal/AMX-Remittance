@@ -24,10 +24,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.util.DBUtil;
 
@@ -977,7 +977,7 @@ public class ApplicationProcedureDao {
 
 	public Map<String, Object> getRoutingDetailFromOthProcedure(Map<String, Object> inputValue) {
 
-		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+		LOGGER.info("In getRoutingDetailFromOthProcedure params:" + inputValue.toString());
 
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
 				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
@@ -1031,7 +1031,7 @@ public class ApplicationProcedureDao {
 			output.put("P_SWIFT", cs.getString(16));
 			output.put("P_ERROR_MESSAGE", cs.getString(17));
 		} catch (DataAccessException | SQLException e) {
-			LOGGER.error("error in generate docNo", e);
+			LOGGER.error("error in getRoutingDetailFromOthProcedure", e);
 			LOGGER.info(OUT_PARAMETERS + e.getMessage());
 		} finally {
 			DBUtil.closeResources(cs, connection);
@@ -1042,4 +1042,63 @@ public class ApplicationProcedureDao {
 		return output;
 	}
 
+
+	public Map<String, Object> getRoutingDetailFromOthRateProcedure(Map<String, Object> inputValue) {
+
+		LOGGER.info("In getRoutingDetailFromOthRateProcedure params:" + inputValue.toString());
+
+		Connection connection = null;
+		CallableStatement cs = null;
+		Map<String, Object> output = new HashMap<>();
+		try {
+			connection = connectionProvider.getDataSource().getConnection();
+
+			String proc = " { call EX_GET_ROUTING_SET_UP_OTH_RATE (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) } ";
+			cs = connection.prepareCall(proc);
+			// In Parameters
+			cs.setBigDecimal(1, (BigDecimal) inputValue.get("P_APPLICATION_COUNTRY_ID"));
+			cs.setString(2, inputValue.get("P_USER_TYPE").toString());
+			cs.setBigDecimal(3, (BigDecimal) inputValue.get("P_BENEFICIARY_COUNTRY_ID"));
+			cs.setBigDecimal(4, (BigDecimal) inputValue.get(P_BENEFICIARY_BANK_ID));
+			cs.setBigDecimal(5, (BigDecimal) inputValue.get("P_BENEFICIARY_BRANCH_ID"));
+			// cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setString(6, inputValue.get("P_BENEFICIARY_BANK_ACCOUNT") == null ? null
+					: inputValue.get("P_BENEFICIARY_BANK_ACCOUNT").toString());
+			cs.setBigDecimal(7, (BigDecimal) inputValue.get("P_CUSTOMER_ID"));
+			cs.setString(8, inputValue.get("P_SERVICE_GROUP_CODE").toString());
+			cs.setBigDecimal(9, (BigDecimal) inputValue.get("P_CURRENCY_ID"));
+			cs.setBigDecimal(10, (BigDecimal) inputValue.get("P_FOREIGN_AMT"));
+			cs.setBigDecimal(11, (BigDecimal) inputValue.get("P_LOCAL_AMT"));
+			// Out
+			// Parameters
+			cs.registerOutParameter(12, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(13, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(14, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(15, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(16, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(17, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(18, java.sql.Types.VARCHAR);
+			cs.registerOutParameter(19, java.sql.Types.NUMERIC);
+			cs.registerOutParameter(20, java.sql.Types.VARCHAR);
+			cs.execute();
+			output.put("P_SERVICE_MASTER_ID", cs.getBigDecimal(12));
+			output.put(P_ROUTING_COUNTRY_ID, cs.getBigDecimal(13));
+			output.put("P_ROUTING_BANK_ID", cs.getBigDecimal(14));
+			output.put("P_ROUTING_BANK_BRANCH_ID", cs.getBigDecimal(15));
+			output.put("P_REMITTANCE_MODE_ID", cs.getBigDecimal(16));
+			output.put("P_DELIVERY_MODE_ID", cs.getBigDecimal(17));
+			output.put("P_SWIFT", cs.getString(18));
+			output.put("P_DERIVED_SELL_RATE", cs.getBigDecimal(19));
+			output.put("P_ERROR_MESSAGE", cs.getString(20));
+		} catch (DataAccessException | SQLException e) {
+			LOGGER.error("error in getRoutingDetailFromOthRateProcedure", e);
+			LOGGER.info(OUT_PARAMETERS + e.getMessage());
+		} finally {
+			DBUtil.closeResources(cs, connection);
+		}
+
+		LOGGER.info(OUT_PARAMETERS + output.toString());
+
+		return output;
+	}
 }

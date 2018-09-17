@@ -17,12 +17,15 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.async.ExecutorConfig;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
@@ -152,6 +155,7 @@ public class EmailService {
 	 * @throws PostManException
 	 *             the post man exception
 	 */
+	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Email sendEmail(Email email) throws PostManException {
 
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);

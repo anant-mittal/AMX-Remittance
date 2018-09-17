@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
-import com.amx.jax.def.CacheForTenant;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
 
@@ -29,7 +28,7 @@ public class TenantService implements Serializable {
 	 *
 	 * @return the dom currency
 	 */
-	@CacheForTenant
+	//@CacheForTenant
 	public CurrencyMasterDTO getDomCurrency() {
 		return jaxService.setDefaults().getMetaClient()
 				.getCurrencyByCountryId(TenantContextHolder.currentSite().getBDCode()).getResult();
@@ -40,7 +39,7 @@ public class TenantService implements Serializable {
 	 *
 	 * @return the online currencies
 	 */
-	@CacheForTenant
+	//@CacheForTenant
 	public List<CurrencyMasterDTO> getOnlineCurrencies() {
 		return jaxService.setDefaults().getMetaClient().getAllOnlineCurrency().getResults();
 	}

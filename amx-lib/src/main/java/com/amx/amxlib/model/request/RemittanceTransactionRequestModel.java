@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.validation.constraints.NotNull;
-
 import com.amx.amxlib.model.FlexFieldDto;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.jax.model.AbstractModel;
@@ -19,7 +17,7 @@ import com.amx.utils.JsonUtil;
  * @author Prashant
  *
  */
-public class RemittanceTransactionRequestModel extends AbstractModel {
+public class RemittanceTransactionRequestModel extends AbstractModel implements IRemitTransReqPurpose {
 
 	/**
 	 * 
@@ -34,10 +32,10 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 	private BigDecimal srlId;
 	private String mOtp;
 	private String eOtp;
-	@NotNull
 	private ExchangeRateBreakup exRateBreakup;
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
+	private BigDecimal placeOrderId;
 
 	/*
 	 * (non-Javadoc)
@@ -49,10 +47,12 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		return "remittance_transaction";
 	}
 
+	@Override
 	public BigDecimal getBeneId() {
 		return beneId;
 	}
 
+	@Override
 	public void setBeneId(BigDecimal beneId) {
 		this.beneId = beneId;
 	}
@@ -65,18 +65,22 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.sourceOfFund = sourceOfFund;
 	}
 
+	@Override
 	public BigDecimal getLocalAmount() {
 		return localAmount;
 	}
 
+	@Override
 	public void setLocalAmount(BigDecimal localAmount) {
 		this.localAmount = localAmount;
 	}
 
+	@Override
 	public BigDecimal getForeignAmount() {
 		return foreignAmount;
 	}
 
+	@Override
 	public void setForeignAmount(BigDecimal foreignAmount) {
 		this.foreignAmount = foreignAmount;
 	}
@@ -87,13 +91,6 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 
 	public void setAvailLoyalityPoints(boolean availLoyalityPoints) {
 		this.availLoyalityPoints = availLoyalityPoints;
-	}
-
-	@Override
-	public String toString() {
-		return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
-				+ ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount 
-				+ ", availLoyalityPoints=" + availLoyalityPoints + "]";
 	}
 
 	public BigDecimal getSrlId() {
@@ -112,6 +109,14 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 		this.additionalBankRuleFiledId = additionalBankRuleFiledId;
 	}
 	
+    public BigDecimal getPlaceOrderId() {
+        return placeOrderId;
+    }
+
+    public void setPlaceOrderId(BigDecimal placeOrderId) {
+        this.placeOrderId = placeOrderId;
+    }
+
    public String getmOtp() {
         return mOtp;
     }
@@ -169,5 +174,13 @@ public class RemittanceTransactionRequestModel extends AbstractModel {
 			this.flexFieldDtoMap = this.flexFields.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, valueMapper));
 		}
 	}
+
+    @Override
+    public String toString() {
+        return "RemittanceTransactionRequestModel [beneId=" + beneId + ", sourceOfFund=" + sourceOfFund
+                + ", localAmount=" + localAmount + ", foreignAmount=" + foreignAmount + ", availLoyalityPoints="
+                + availLoyalityPoints + ", additionalBankRuleFiledId=" + additionalBankRuleFiledId + ", srlId=" + srlId
+                + ", placeOrderId=" + placeOrderId + "]";
+    }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
@@ -44,9 +45,10 @@ public class PlaceOrderController {
 	public ApiResponse handleUrlSave(@RequestBody @Valid PlaceOrderDTO dto) 
 	{
 		logger.info("In save with parameters" + dto.toString());
-		BigDecimal customerId = metaData.getCustomerId();
 		
+		BigDecimal customerId = metaData.getCustomerId();
 		dto.setCustomerId(customerId);
+				
 		ApiResponse response = null;
 		response = placeOrderService.savePlaceOrder(dto);
 		return response;
@@ -125,6 +127,20 @@ public class PlaceOrderController {
 		dto.setCustomerId(customerId);
 		ApiResponse response = null;
 		response = placeOrderService.updatePlaceOrder(dto);
+		
+		return response;
+	}
+	
+	/**
+	 * place order on trigger
+	 * @return
+	 */
+	@RequestMapping(value = "/get/placeorder/ontrigger", method = RequestMethod.GET)
+	public ApiResponse handleUrlPlaceOrderOnTrigger(@RequestParam BigDecimal pipsMasterId) {
+		logger.info("Inside PlaceOrderOnTrigger Request with parameters --> Pips Master Id: "+pipsMasterId);
+
+		ApiResponse response = null;
+		response = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
 		
 		return response;
 	}

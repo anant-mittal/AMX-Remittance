@@ -44,8 +44,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<version>${project.version}</version>
+			<artifactId>common-amx</artifactId>
 		</dependency>
 
 		<dependency>
@@ -119,7 +118,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.knet.test</groupId>
-					<artifactId>knet.test</artifactId>
+					<artifactId>knet_test</artifactId>
 					<version>1.0</version>
 				</dependency>
 			</dependencies>

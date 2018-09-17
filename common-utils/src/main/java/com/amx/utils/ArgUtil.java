@@ -2,6 +2,8 @@ package com.amx.utils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -586,14 +588,52 @@ public final class ArgUtil {
 	}
 
 	/**
-	 * Parses the as long.
-	 *
 	 * @param value
 	 *            the value
 	 * @return the long
 	 */
 	public static Long parseAsLong(Object value) {
 		return parseAsLong(value, null);
+	}
+
+	/**
+	 * <pre>
+	 * Parses the given object as an BigDecimal
+	 * 
+	 * Formats Supported -
+	 * 1) java.lang.BigDecimal
+	 * 2) String ("1" / "2" etc.)
+	 * </pre>
+	 * 
+	 * @param value
+	 * @param defaultValue
+	 *            [optional, default : null]
+	 * @return
+	 */
+	public static BigDecimal parseAsBigDecimal(Object value, BigDecimal defaultValue) {
+		BigDecimal ret = defaultValue;
+		if (value != null) {
+			if (value instanceof BigDecimal) {
+				ret = (BigDecimal) value;
+			} else if (value instanceof String) {
+				ret = new BigDecimal((String) value);
+			} else if (value instanceof BigInteger) {
+				ret = new BigDecimal((BigInteger) value);
+			} else if (value instanceof Number) {
+				ret = new BigDecimal(((Number) value).doubleValue());
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * {@link ArgUtil#parseAsBigDecimal(Object, BigDecimal)}
+	 * 
+	 * @param value
+	 * @return
+	 */
+	public static BigDecimal parseAsBigDecimal(Object value) {
+		return parseAsBigDecimal(value, null);
 	}
 
 	/**
@@ -798,10 +838,12 @@ public final class ArgUtil {
 	}
 
 	public static boolean areEqual(Object a, Object b) {
-		if (a == null) {
-			return b == null;
+		if (a == null || b == null) {
+			return (a == null && b == null);
 		}
-		return a.equals(b);
+		String strA = parseAsString(a, Constants.BLANK);
+		String strB = parseAsString(b, Constants.BLANK);
+		return strA.equals(strB);
 	}
 
 	public static <T> T ifNotEmpty(T... strs) {

@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.BlackListModel;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
@@ -24,8 +24,8 @@ import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
-import com.amx.jax.util.DateUtil;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.util.DateUtil;
 import com.amx.jax.validation.CountryMetaValidation;
 
 @Component
@@ -65,12 +65,9 @@ public class CustomerPersonalDetailValidator implements Validator {
 		CustomerPersonalDetail customerPersonalDetail = beneficiaryTrnxModel.getCustomerPersonalDetail();
 		tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
-		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
-				customerPersonalDetail.getMobile());
-		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
-				customerPersonalDetail.getMobile());
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),
-				JaxApiFlow.SIGNUP_DEFAULT);
+		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
+		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(), JaxApiFlow.SIGNUP_DEFAULT);
 		validateCustomerBlackList(customerPersonalDetail);
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		resetAttempts(otpData);
@@ -95,7 +92,7 @@ public class CustomerPersonalDetailValidator implements Validator {
 		}
 		List<BlackListModel> blist = blackListDao.getBlackByName(customerName.toString());
 		if (blist != null && !blist.isEmpty()) {
-			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getCode());
+			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
 		}
 	}
 	

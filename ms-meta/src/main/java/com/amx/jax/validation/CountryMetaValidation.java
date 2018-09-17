@@ -9,8 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.service.CountryService;
 
 /**
@@ -56,6 +56,13 @@ public class CountryMetaValidation {
 		
 		if(countryAlpha2Code.toString().equals("BH")) {
 			final Pattern pattern = Pattern.compile("^[367]\\d+$");
+			if (!pattern.matcher(mobile).matches()) {
+				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
+			}
+		}
+		
+		if(countryAlpha2Code.toString().equals("OM")) {
+			final Pattern pattern = Pattern.compile("^[79]\\d+$");
 			if (!pattern.matcher(mobile).matches()) {
 				throw new GlobalException("Invalid Mobile Number", JaxError.INVALID_MOBILE_NUMBER);
 			}

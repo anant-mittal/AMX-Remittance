@@ -42,16 +42,6 @@
 			<artifactId>spring-boot-starter-thymeleaf</artifactId>
 		</dependency>
 
-		<!-- Swagger infos -->
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-swagger</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		<!-- <dependency> <groupId>io.springfox</groupId> <artifactId>springfox-swagger2</artifactId> 
-			<version>2.6.1</version> </dependency> <dependency> <groupId>io.springfox</groupId> 
-			<artifactId>springfox-swagger-ui</artifactId> <version>2.6.1</version> </dependency> -->
-
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
@@ -60,24 +50,13 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>commons-beanutils</groupId>
-			<artifactId>commons-beanutils</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-sso</artifactId>
+			<artifactId>lib-jax</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

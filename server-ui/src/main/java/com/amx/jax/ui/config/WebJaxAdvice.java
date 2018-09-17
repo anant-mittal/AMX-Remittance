@@ -24,14 +24,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.service.HttpService;
-import com.amx.jax.ui.auth.AuthState;
-import com.amx.jax.ui.auth.CAuthEvent;
+import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.SessionService;

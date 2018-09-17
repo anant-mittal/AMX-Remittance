@@ -17,6 +17,7 @@ import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.rest.RestQuery;
 import com.amx.jax.rest.RestService;
@@ -183,6 +184,8 @@ public class SMService {
 
 			String responseText = restService.ajax(this.smsReqUrl).build(smsReqType, smsReqQuery, smsReqFields, params)
 					.asString();
+			
+			
 
 			// Tenant tnt = TenantContextHolder.currentSite();
 			//

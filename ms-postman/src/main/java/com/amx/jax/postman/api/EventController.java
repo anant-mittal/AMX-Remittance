@@ -43,7 +43,7 @@ public class EventController {
 	@RequestMapping(value = PostManUrls.EVENT_PUBLISH, method = RequestMethod.GET)
 	public long publishEvent(@RequestParam String event, @PathVariable String id,
 			@RequestParam(required = false) String value) throws PostManException, IOException {
-		return tunnelService.send(event, new TriggerEvent(event, id, value));
+		return tunnelService.shout(event, new TriggerEvent(event, id, value));
 	}
 
 }

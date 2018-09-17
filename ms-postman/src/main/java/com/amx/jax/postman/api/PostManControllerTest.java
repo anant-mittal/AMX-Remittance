@@ -23,12 +23,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
-import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
@@ -63,7 +64,7 @@ public class PostManControllerTest {
 
 	/** The fb push client. */
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
 
 	/** The post man service impl. */
 	@Autowired
@@ -163,7 +164,7 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.sendDirect(msg);
+		pushNotifyClient.sendDirect(msg);
 		return msg;
 	}
 
@@ -185,7 +186,7 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.subscribe(token, topic);
+		pushNotifyClient.subscribe(token, topic);
 		return topic;
 	}
 
@@ -231,12 +232,17 @@ public class PostManControllerTest {
 
 		if ("pdf".equals(ext)) {
 			file.setType(File.Type.PDF);
-			file = postManClient.processTemplate(file);
+			file = postManClient.processTemplate(file).getResult();
 			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
+		} else if ("json".equals(ext)) {
+			file.setType(File.Type.JSON);
+			file = postManClient.processTemplate(file).getResult();
+			return file.getContent();
 		} else if ("html".equals(ext)) {
-			file = postManClient.processTemplate(file);
+			AmxApiResponse<File, Object> resp = postManClient.processTemplate(file);
+			file = resp.getResult();
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);

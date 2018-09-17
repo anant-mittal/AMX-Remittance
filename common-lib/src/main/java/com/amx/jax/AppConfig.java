@@ -22,11 +22,19 @@ import com.amx.utils.ArgUtil;
 public class AppConfig {
 
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
+	public static final String APP_ENV = "${app.env}";
+	public static final String APP_GROUP = "${app.group}";
 	public static final String APP_NAME = "${app.name}";
+	public static final String APP_ID = "${app.id}";
+
 	public static final String APP_PROD = "${app.prod}";
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
+	public static final String APP_LOGGER = "${app.logger}";
+
+	@Deprecated
+	public static final String APP_CLASS = "${app.class}";
 
 	public static final String APP_AUTH_KEY = "${app.auth.key}";
 	public static final String APP_AUTH_ENABLED = "${app.auth.enabled}";
@@ -41,9 +49,25 @@ public class AppConfig {
 	public static final String JAX_SSO_URL = "${jax.sso.url}";
 	public static final String JAX_AUTH_URL = "${jax.auth.url}";
 
+	@Value(APP_ENV)
+	@AppParamKey(AppParam.APP_ENV)
+	private String appEnv;
+
+	@Value(APP_GROUP)
+	@AppParamKey(AppParam.APP_GROUP)
+	private String appGroup;
+
 	@Value(APP_NAME)
 	@AppParamKey(AppParam.APP_NAME)
 	private String appName;
+
+	@Value(APP_ID)
+	@AppParamKey(AppParam.APP_ID)
+	private String appId;
+
+	@Value(APP_CLASS)
+	@AppParamKey(AppParam.APP_CLASS)
+	private String appClass;
 
 	@Value(APP_PROD)
 	@AppParamKey(AppParam.APP_PROD)
@@ -56,6 +80,10 @@ public class AppConfig {
 	@Value(APP_DEBUG)
 	@AppParamKey(AppParam.APP_DEBUG)
 	private Boolean debug;
+	
+	@Value(APP_LOGGER)
+	@AppParamKey(AppParam.APP_LOGGER)
+	private boolean logger;
 
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
@@ -106,6 +134,12 @@ public class AppConfig {
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
 
+	@Value("${app.audit.file.print}")
+	String[] printableAuditMarkers;
+
+	@Value("${app.audit.file.skip}")
+	String[] skipAuditMarkers;
+
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
 	}
@@ -131,7 +165,7 @@ public class AppConfig {
 	}
 
 	public Boolean isCache() {
-		return debug;
+		return cache;
 	}
 
 	public String getCdnURL() {
@@ -220,6 +254,35 @@ public class AppConfig {
 
 	public boolean isAppAuthEnabled() {
 		return appAuthEnabled;
+	}
+
+	@Deprecated
+	public String getAppClass() {
+		return appClass;
+	}
+
+	public String getAppEnv() {
+		return appEnv;
+	}
+
+	public String getAppGroup() {
+		return appGroup;
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public String[] getPrintableAuditMarkers() {
+		return printableAuditMarkers;
+	}
+
+	public String[] getSkipAuditMarkers() {
+		return skipAuditMarkers;
+	}
+
+	public boolean isLogger() {
+		return logger;
 	}
 
 }

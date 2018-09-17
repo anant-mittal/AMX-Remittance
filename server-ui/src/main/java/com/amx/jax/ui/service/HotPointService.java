@@ -13,8 +13,8 @@ import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
@@ -68,6 +68,11 @@ public class HotPointService {
 		WAFRA_BRANCH("28.5631419","48.0628015"),
 		SURRA_BRANCH("29.3138254","48.0022465"),
 		HASSAWI_BRANCH("29.2662336","47.9239427"),
+		
+		
+		//test Locations
+		AWFIS_CHEMTEX_LANE("19.119084", "72.913620"), POWAI_PLAZA("19.123392", "72.913109"), D_MART_POWAI("19.116531",
+				"72.910423"),
 		
 		SALMIYA2(" 29.331993", "48.061422"), MURGAB3("29.369429", "47.978551"), SALMIYA4(" 29.325602", "48.058039");
 
@@ -129,7 +134,7 @@ public class HotPointService {
 
 	/** The b push service. */
 	@Autowired
-	FBPushService fBPushService;
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	AuditService auditService;
@@ -162,8 +167,8 @@ public class HotPointService {
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 			boolean toAdd = false;
 			for (BeneficiaryListDTO beneficiaryListDTO : benes) {
-				if (minMaxExRateDTO.getToCurrency().getCurrencyId()
-						.compareTo(beneficiaryListDTO.getCurrencyId()) == 0) {
+				if (ArgUtil.areEqual(minMaxExRateDTO.getToCurrency().getCurrencyId(),
+						beneficiaryListDTO.getCurrencyId())) {
 					toAdd = true;
 					continue;
 				}
@@ -185,12 +190,15 @@ public class HotPointService {
 		data.put("hotpoint", hotpoint);
 		data.put("messages", messages);
 		event.setData(data);
-		auditService.log(event);
 
 		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
-		fBPushService.sendDirect(pushMessage);
+
+		if (webAppConfig.isNotifyGeoEnabled()) {
+			auditService.log(event);
+			pushNotifyClient.sendDirect(pushMessage);
+		}
 		return messages;
 	}
 

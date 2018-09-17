@@ -3,16 +3,13 @@ package com.amx.jax.util;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Component;
 
@@ -56,7 +53,6 @@ public class DateUtil {
 		try {
 			utilDate = sdf.parse(strdate);
 			sqlDate = new java.sql.Date(utilDate.getTime());
-			System.out.println("String converted to java.sql.Date :" + sqlDate);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,7 +82,6 @@ public class DateUtil {
 		calendar.setTime(date);
 		String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-		System.out.println(Calendar.getInstance().get(Calendar.MONTH));
 		return "01/" + data.get(Calendar.getInstance().get(Calendar.MONTH)) + "/" + year;
 	}
 	

@@ -14,6 +14,17 @@ import com.amx.jax.ui.UIConstants.Features;
 @Component
 public class WebAppConfig {
 
+	/** The clean CDN url. */
+	@Value("${jax.cdn.url}")
+	private String cleanCDNUrl;
+
+	/** The fcm sender id. */
+	@Value("${fcm.senderid}")
+	private String fcmSenderId;
+
+	@TenantValue("${ui.ios.appid}")
+	private String iosAppId;
+
 	/** The features. */
 	@TenantValue("${ui.features}")
 	private Features[] features;
@@ -22,21 +33,20 @@ public class WebAppConfig {
 	@TenantValue("${application.title}")
 	private String appTitle;
 
-	/** The element to search. */
-	@Value("${ui.features}")
-	private String[] elementToSearch;
-
 	/** The notification gap. */
-	@Value("${notification.sleep.gap}")
+	@TenantValue("${notification.sleep.gap}")
 	private String notificationGap;
 
 	/** The notify range long. */
-	@Value("${notification.range.long}")
+	@TenantValue("${notification.range.long}")
 	private String notifyRangeLong;
 
 	/** The notify range short. */
-	@Value("${notification.range.short}")
+	@TenantValue("${notification.range.short}")
 	private String notifyRangeShort;
+
+	@TenantValue("${notification.geo.enabled}")
+	private boolean notifyGeoEnabled;
 
 	/**
 	 * Gets the features.
@@ -81,6 +91,22 @@ public class WebAppConfig {
 	 */
 	public String getNotifyRangeShort() {
 		return notifyRangeShort;
+	}
+
+	public boolean isNotifyGeoEnabled() {
+		return notifyGeoEnabled;
+	}
+
+	public String getCleanCDNUrl() {
+		return cleanCDNUrl;
+	}
+
+	public String getFcmSenderId() {
+		return fcmSenderId;
+	}
+
+	public String getIosAppId() {
+		return iosAppId;
 	}
 
 }

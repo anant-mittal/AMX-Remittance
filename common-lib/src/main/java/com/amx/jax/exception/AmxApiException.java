@@ -87,7 +87,9 @@ public abstract class AmxApiException extends AmxException {
 	}
 
 	public AmxApiError createAmxApiError() {
-		return new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		AmxApiError error = new AmxApiError(this.getErrorKey(), this.getErrorMessage());
+		error.setException(this.getClass().getName());
+		return error;
 	}
 
 	/**

@@ -4,7 +4,7 @@ public class SendOtpModel {
 
 	private String mOtpPrefix;
 	private String eOtpPrefix;
-	
+
 	private String mOtp;
 	private String eOtp;
 
@@ -39,4 +39,10 @@ public class SendOtpModel {
 	public void seteOtp(String eOtp) {
 		this.eOtp = eOtp;
 	}
+
+	@Override
+	public String toString() {
+		return "M-OTP: " + mOtpPrefix + "-" + mOtp + " || E-OTP: " + eOtpPrefix + "-" + eOtp;
+	}
+
 }

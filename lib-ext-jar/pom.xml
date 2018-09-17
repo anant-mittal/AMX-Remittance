@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>lib-ext-jar</artifactId>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<name>lib-ext-jar</name>
 	<description>Common lib for  db</description>
 	<url>http://maven.apache.org</url>
@@ -18,9 +18,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	
+
 	<dependencies>
 	</dependencies>
+
+<!-- 	<modules>
+		<module>masking</module>
+	</modules> -->
 
 	<build>
 		<plugins>
@@ -39,7 +43,7 @@
 							<artifactId>ojdbc6</artifactId>
 							<version>11.2.4</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/ojdbc6.jar</file>
+							<file>${basedir}/lib/ojdbc6.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -55,7 +59,7 @@
 							<artifactId>KNET_WinEPTS_API</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/KNET_WinEPTS_API.jar</file>
+							<file>${basedir}/lib/KNET_WinEPTS_API.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -72,7 +76,7 @@
 							<artifactId>knet</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/knet.jar</file>
+							<file>${basedir}/lib/knet.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -88,7 +92,7 @@
 							<artifactId>e24Pipe</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/e24Pipe.jar</file>
+							<file>${basedir}/lib/e24Pipe.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -104,7 +108,7 @@
 							<artifactId>knet_test</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/knet_test.jar</file>
+							<file>${basedir}/lib/knet_test.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -120,7 +124,7 @@
 							<artifactId>bhr-benefit</artifactId>
 							<version>1.0.shaded</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/bhr-benefit.jar</file>
+							<file>${basedir}/lib/bhr-benefit.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -136,7 +140,7 @@
 							<artifactId>bouncycastle-1.20</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/bouncycastle-1.20.jar</file>
+							<file>${basedir}/lib/bouncycastle-1.20.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -152,7 +156,7 @@
 							<artifactId>bcpkix-jdk15on</artifactId>
 							<version>1.48</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/itext-2.3/bcpkix-jdk15on-1.48.jar</file>
+							<file>${basedir}/lib/itext-2.3/bcpkix-jdk15on-1.48.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -168,7 +172,7 @@
 							<artifactId>bcprov-jdk15-145</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/bcprov-jdk15-145.jar</file>
+							<file>${basedir}/lib/bcprov-jdk15-145.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -184,7 +188,7 @@
 							<artifactId>htmlcomponent</artifactId>
 							<version>5.0.1</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/jasperreports-htmlcomponent-5.0.1.jar</file>
+							<file>${basedir}/lib/jasperreports-htmlcomponent-5.0.1.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -200,7 +204,7 @@
 							<artifactId>olap4j</artifactId>
 							<version>0.9.7.309-JS-3</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/olap4j-0.9.7.309-JS-3.jar</file>
+							<file>${basedir}/lib/olap4j-0.9.7.309-JS-3.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -216,7 +220,7 @@
 							<artifactId>itext</artifactId>
 							<version>2.1.8</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/itext-4.2.0.jar</file>
+							<file>${basedir}/lib/itext-4.2.0.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -232,7 +236,7 @@
 							<artifactId>itext-asian</artifactId>
 							<version>2.3</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/itext-2.3/itext-asian.jar</file>
+							<file>${basedir}/lib/itext-2.3/itext-asian.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -248,11 +252,11 @@
 							<artifactId>itext-hyph-xml</artifactId>
 							<version>2.3</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/itext-2.3/itext-hyph-xml.jar</file>
+							<file>${basedir}/lib/itext-2.3/itext-hyph-xml.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 					<execution>
 						<id>ipayPipe</id>
 						<phase>package</phase>
@@ -264,7 +268,7 @@
 							<artifactId>ipayPipe</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/ipayPipe.jar</file>
+							<file>${basedir}/lib/ipayPipe.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
@@ -280,11 +284,11 @@
 							<artifactId>cryptix32</artifactId>
 							<version>1.0</version>
 							<packaging>jar</packaging>
-							<file>${basedir}/../ext-jars/cryptix32.jar</file>
+							<file>${basedir}/lib/cryptix32.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>
-					
+
 				</executions>
 			</plugin>
 		</plugins>

@@ -1,15 +1,14 @@
 package com.amx.jax.async;
 
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.log4j.MDC;
 import org.slf4j.Logger;
+import org.slf4j.MDC;
 
 import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.scope.TenantContextHolder;
-import com.amx.utils.ContextUtil;
 
 public class ContextAwareCallable<T> implements Callable<T> {
 
@@ -17,18 +16,20 @@ public class ContextAwareCallable<T> implements Callable<T> {
 
 	private Callable<T> task;
 	private AppContext context = null;
+	Map<String, String> contextMap;
 
 	public ContextAwareCallable(Callable<T> task, AppContext context) {
 		this.task = task;
 		this.context = context;
+		this.contextMap = MDC.getCopyOfContextMap();
 	}
 
 	@Override
 	public T call() throws Exception {
+		MDC.setContextMap(contextMap);
 		if (context != null) {
 			AppContextUtil.setContext(context);
-			MDC.put(ContextUtil.TRACE_ID, context.getTraceId());
-			MDC.put(TenantContextHolder.TENANT, context.getTenant());
+			AppContextUtil.init();
 		}
 		try {
 			return task.call();
@@ -36,8 +37,8 @@ public class ContextAwareCallable<T> implements Callable<T> {
 			LOGGER.error("task.call", e);
 			throw new Exception(e);
 		} finally {
+			AppContextUtil.clear();
 			MDC.clear();
-			ContextUtil.clear();
 		}
 	}
 }

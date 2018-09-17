@@ -19,7 +19,7 @@ public abstract class AuditEvent extends AbstractEvent {
 	protected String actorId;
 	protected Object data;
 
-	public enum Result {
+	public static enum Result {
 		DONE, FAIL, ERROR, PASS;
 	}
 
@@ -28,22 +28,13 @@ public abstract class AuditEvent extends AbstractEvent {
 		this.result = Result.DONE;
 	}
 
-	public AuditEvent(EventType type) {
+	public AuditEvent(EventType type, Result result) {
 		super(type);
-		this.result = Result.DONE;
+		this.result = result;
 	}
 
-	public AuditEvent(EventType type, String description) {
-		this(type);
-		this.result = Result.DONE;
-		this.description = description;
-	}
-
-	public AuditEvent(EventType type, String description, String message) {
-		this(type);
-		this.result = Result.DONE;
-		this.description = description;
-		this.message = message;
+	public AuditEvent(EventType type) {
+		this(type, Result.DONE);
 	}
 
 	public Result getResult() {
@@ -63,6 +54,9 @@ public abstract class AuditEvent extends AbstractEvent {
 	}
 
 	public String getDescription() {
+		if (this.description == null) {
+			return String.format("%s_%s", this.type, this.result);
+		}
 		return this.description;
 	}
 

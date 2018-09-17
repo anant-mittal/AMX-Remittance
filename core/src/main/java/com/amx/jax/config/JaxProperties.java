@@ -23,6 +23,9 @@ public class JaxProperties {
 	
 	@Value("${jax.properties.exrate.bestratelogic.enable}")
 	Boolean exrateBestRateLogicEnable;
+	
+	@Value("${jax.properties.remittance.flexfield.enable}")
+	Boolean flexFieldEnabled;
 
 	public List<String> getSupportSoaEmail() {
 		return supportSoaEmail;
@@ -62,6 +65,14 @@ public class JaxProperties {
 
 	public void setExrateBestRateLogicEnable(Boolean exrateBestRateLogicEnable) {
 		this.exrateBestRateLogicEnable = exrateBestRateLogicEnable;
+	}
+
+	public Boolean getFlexFieldEnabled() {
+		return flexFieldEnabled;
+	}
+
+	public void setFlexFieldEnabled(Boolean flexFieldEnabled) {
+		this.flexFieldEnabled = flexFieldEnabled;
 	}
 
 }

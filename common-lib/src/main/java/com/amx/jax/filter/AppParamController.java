@@ -16,13 +16,14 @@ import com.amx.jax.types.WritersPnum;
 public class AppParamController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppParamController.class);
+	public static final String PARAM_URL = "/pub/amx/params";
 
 	static {
 		// Pnum.readEnums();
 		Pnum.init(WritersPnum.class);
 	}
 
-	@RequestMapping(value = "/pub/amx/params", method = RequestMethod.GET)
+	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
 		if (id != null) {
 			id.setEnabled(!id.isEnabled());

@@ -1,0 +1,15 @@
+{
+	"data": {
+		"customerName": "test",
+		"identityId": "test",
+		"bankFullName" : "test",
+		"customerQuery" : {
+			"branchName" : "test",
+			"ifscCode" : "test",
+			"swift" : "test",
+			"countryId" : "test",
+			"bankId" : "test"
+		}
+		
+	}
+}
