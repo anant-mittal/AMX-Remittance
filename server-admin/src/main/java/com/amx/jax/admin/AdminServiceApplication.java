@@ -10,11 +10,8 @@ import org.springframework.context.annotation.ComponentScan;
 import com.amx.jax.def.MockParamBuilder;
 import com.amx.jax.def.MockParamBuilder.MockParam;
 
-import de.codecentric.boot.admin.config.EnableAdminServer;
-
 @SpringBootApplication
 @ComponentScan("com.amx.jax")
-@EnableAdminServer
 public class AdminServiceApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
