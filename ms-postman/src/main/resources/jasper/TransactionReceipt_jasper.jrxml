@@ -74,7 +74,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("engCompanyInfo")]]>
+                                    <![CDATA[$F{tranx}.get("engCompanyInfo", "--")]]>
                                 </textFieldExpression>
                             </textField>
                             <textField isStretchWithOverflow="true">
@@ -86,7 +86,7 @@
                                           pdfFontName="fonts/all/arialbd.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("arabicCompanyInfo")]]>
+                                    <![CDATA[$F{tranx}.get("arabicCompanyInfo","--")]]>
                                 </textFieldExpression>
                             </textField>
                         </frame>
