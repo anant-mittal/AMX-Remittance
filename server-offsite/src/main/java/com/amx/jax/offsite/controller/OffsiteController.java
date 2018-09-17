@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;

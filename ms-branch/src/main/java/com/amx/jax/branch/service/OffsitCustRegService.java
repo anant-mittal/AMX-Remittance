@@ -1,5 +1,6 @@
 package com.amx.jax.branch.service;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -560,6 +561,11 @@ public class OffsitCustRegService implements ICustRegService {
 		custProof.setCreationDate(new Date());
 		custProof.setIdentityTypeId(customer.getIdentityTypeId());
 		customerIdProofRepository.save(custProof);
+	}
+
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() {
+		File f = new File("Desktop\\ganpati.jpg");
+		return null;
 	}
 
 }

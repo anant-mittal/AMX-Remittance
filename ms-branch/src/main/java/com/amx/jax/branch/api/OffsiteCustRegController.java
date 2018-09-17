@@ -129,5 +129,10 @@ public class OffsiteCustRegController implements ICustRegService {
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
+	
+	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() {		
+		return offsiteCustRegService.saveCustomeKycDocument();
+	}
 
 }
