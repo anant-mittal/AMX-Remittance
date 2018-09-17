@@ -53,18 +53,7 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-postman</artifactId>
-		</dependency>
-		
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-jax</artifactId>
 		</dependency>
 
 	</dependencies>
