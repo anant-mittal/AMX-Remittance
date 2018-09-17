@@ -12,7 +12,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.ui.UIConstants.Features;
-import com.amx.jax.ui.service.HotPointService.HotPoints;
+import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.jax.user.UserDevice;
 
 /**
@@ -59,7 +59,7 @@ public class UserMetaData extends AbstractModel {
 	String returnUrl = null;
 
 	/** The hot points. */
-	HotPoints[] hotPoints = HotPoints.values();
+	GeoHotPoints[] hotPoints = GeoHotPoints.values();
 
 	/**
 	 * Gets the config.
@@ -313,7 +313,7 @@ public class UserMetaData extends AbstractModel {
 	 *
 	 * @return the hot points
 	 */
-	public HotPoints[] getHotPoints() {
+	public GeoHotPoints[] getHotPoints() {
 		return hotPoints;
 	}
 
@@ -323,7 +323,7 @@ public class UserMetaData extends AbstractModel {
 	 * @param hotPoints
 	 *            the new hot points
 	 */
-	public void setHotPoints(HotPoints[] hotPoints) {
+	public void setHotPoints(GeoHotPoints[] hotPoints) {
 		this.hotPoints = hotPoints;
 	}
 

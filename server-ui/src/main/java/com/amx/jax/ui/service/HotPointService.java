@@ -155,7 +155,7 @@ public class HotPointService {
 	 *             the post man exception
 	 */
 	// @Async
-	public List<String> notify(BigDecimal customerId, String token, HotPoints hotpoint) throws PostManException {
+	public List<String> notify(BigDecimal customerId, String token, GeoHotPoints hotpoint) throws PostManException {
 
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()

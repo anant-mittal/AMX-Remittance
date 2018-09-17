@@ -25,8 +25,8 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.jax.ui.service.HotPointService;
-import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
@@ -150,7 +150,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
-			@RequestParam(required = false) HotPoints hotpoint, @RequestParam BigDecimal customerId)
+			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId)
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));

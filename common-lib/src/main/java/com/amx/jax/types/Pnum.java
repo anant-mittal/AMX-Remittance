@@ -27,7 +27,7 @@ public class Pnum extends Dnum<Pnum> {
 	public static <E> Dnum<? extends Dnum<?>>[] values() {
 		return values(Pnum.class);
 	}
-	
+
 	public static <E> void init(Class<E> clazz) {
 		try {
 			initProps(clazz);
@@ -41,6 +41,12 @@ public class Pnum extends Dnum<Pnum> {
 		String propertyFile = clazz.getSimpleName() + ".properties";
 		InputStream inSideInputStream = null;
 
+		inSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, clazz);
+		if (inSideInputStream != null) {
+			LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
+			return inSideInputStream;
+		}
+
 		URL ufile = FileUtil.getResource(propertyFile, clazz);
 		if (ufile != null) {
 			inSideInputStream = ufile.openStream();
@@ -49,12 +55,7 @@ public class Pnum extends Dnum<Pnum> {
 				return inSideInputStream;
 			}
 		}
-
-		inSideInputStream = FileUtil.getExternalResourceAsStream(propertyFile, clazz);
-		if (inSideInputStream != null) {
-			LOGGER.info("Loaded Properties from jarpath: {}", propertyFile);
-			return inSideInputStream;
-		}
+		
 		return inSideInputStream;
 	}
 
@@ -72,8 +73,17 @@ public class Pnum extends Dnum<Pnum> {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
 			Constructor<E> minimalConstructor = getConstructor(clazz, new Class[] { String.class, int.class });
-			Constructor<E> additionalConstructor = getConstructor(clazz,
+			Constructor<E> additionalConstructor1 = getConstructor(clazz,
 					new Class[] { String.class, int.class, String.class });
+			Constructor<E> additionalConstructor2 = getConstructor(clazz,
+					new Class[] { String.class, int.class, String.class, String.class });
+			Constructor<E> additionalConstructor3 = getConstructor(clazz,
+					new Class[] { String.class, int.class, String.class, String.class, String.class });
+			Constructor<E> additionalConstructor4 = getConstructor(clazz,
+					new Class[] { String.class, int.class, String.class, String.class, String.class, String.class });
+			Constructor<E> additionalConstructor5 = getConstructor(clazz, new Class[] { String.class, int.class,
+					String.class, String.class, String.class, String.class, String.class });
+
 			int ordinal = 0;
 			for (String line = reader.readLine(); line != null; line = reader.readLine()) {
 				line = line.replaceFirst("#.*", "").trim();
@@ -81,10 +91,23 @@ public class Pnum extends Dnum<Pnum> {
 					continue;
 				}
 				String[] parts = line.split("\\s*=\\s*");
-				if (parts.length == 1 || additionalConstructor == null) {
+				if (parts.length == 1) {
 					minimalConstructor.newInstance(parts[0], ordinal);
 				} else {
-					additionalConstructor.newInstance(parts[0], ordinal, parts[1]);
+					String[] args = parts[1].split("\\s*,\\s*");
+					if (args.length == 1) {
+						additionalConstructor1.newInstance(parts[0], ordinal, args[0]);
+					} else if (args.length == 2 && additionalConstructor2 != null) {
+						additionalConstructor2.newInstance(parts[0], ordinal, args[0], args[1]);
+					} else if (args.length == 3 && additionalConstructor3 != null) {
+						additionalConstructor3.newInstance(parts[0], ordinal, args[0], args[1], args[2]);
+					} else if (args.length == 4 && additionalConstructor4 != null) {
+						additionalConstructor4.newInstance(parts[0], ordinal, args[0], args[1], args[2], args[3]);
+					} else if (args.length == 5 && additionalConstructor5 != null) {
+						additionalConstructor5.newInstance(parts[0], ordinal, args[0], args[1], args[2], args[3],
+								args[4]);
+					}
+
 				}
 			}
 
@@ -123,7 +146,25 @@ public class Pnum extends Dnum<Pnum> {
 	private static <E> Constructor<E> getConstructor(Class<E> clazz, Class<?>[] argTypes) {
 		for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
 			try {
-				return (Constructor<E>) c.getDeclaredConstructor(String.class, int.class, String.class);
+				if (argTypes.length == 3) {
+					return (Constructor<E>) c.getDeclaredConstructor(String.class, int.class, String.class);
+				} else if (argTypes.length == 4) {
+					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2],
+							argTypes[3]);
+				} else if (argTypes.length == 5) {
+					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
+							argTypes[4]);
+				} else if (argTypes.length == 6) {
+					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
+							argTypes[4], argTypes[5]);
+				} else if (argTypes.length == 7) {
+					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
+							argTypes[4], argTypes[5], argTypes[6]);
+				} else if (argTypes.length == 7) {
+					return (Constructor<E>) c.getDeclaredConstructor(argTypes[0], argTypes[1], argTypes[2], argTypes[3],
+							argTypes[4], argTypes[5], argTypes[6], argTypes[7]);
+				}
+
 			} catch (Exception e) {
 				continue;
 			}
