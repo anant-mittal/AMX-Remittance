@@ -19,15 +19,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.auditlogs.ArticleListAuditEvent;
-import com.amx.jax.auditlogs.DesignationListAuditEvent;
 import com.amx.jax.auditlogs.FieldListAuditEvent;
-import com.amx.jax.auditlogs.IncomeRangeAuditEvent;
-import com.amx.jax.auditlogs.ValidateOTPAuditEvent;
+import com.amx.jax.auditlogs.JaxAuditEvent;
+import com.amx.jax.auditlogs.JaxAuditEvent.Type;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
@@ -42,8 +39,6 @@ import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
-import com.amx.jax.dbmodel.JaxConditionalFieldRule;
-import com.amx.jax.dbmodel.JaxConditionalFieldRuleDto;
 import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.dbmodel.StateMaster;
 import com.amx.jax.error.JaxError;
@@ -51,7 +46,6 @@ import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -143,40 +137,6 @@ public class OffsitCustRegService implements ICustRegService {
 	@Autowired
 	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
 	
-	public AmxApiResponse<JaxConditionalFieldRuleDto, Object> getIdDetailsFields(GetJaxFieldRequest request) {
-		List<JaxConditionalFieldRule> fieldList = null;
-		if (request.getEntity() == null)
-			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
-			
-		fieldList = jaxConditionalFieldRuleRepository.findByEntityName(request.getEntity());
-		if(fieldList.isEmpty())
-			throw new GlobalException("Wrong Field Condition. No Field List Found", JaxError.WRONG_FIELD_CONDITION);
-		List<JaxConditionalFieldRuleDto> dtoList = convertData(fieldList);
-		return AmxApiResponse.buildList(dtoList);
-	}
-
-	private List<JaxConditionalFieldRuleDto> convertData(List<JaxConditionalFieldRule> fieldList) {
-		List<JaxConditionalFieldRuleDto> output = new ArrayList<>();
-		fieldList.forEach(i-> {
-			output.add(convertInDto(i));
-		});
-		return output;
-	}
-	
-
-	private JaxConditionalFieldRuleDto convertInDto(JaxConditionalFieldRule i) {
-		JaxConditionalFieldRuleDto dto = new JaxConditionalFieldRuleDto();
-		dto.setConditionKey(i.getConditionKey());
-		dto.setConditionValue(i.getConditionValue());
-		dto.setEntityName(i.getEntityName());
-		dto.setField(i.getField());
-		if(i.getField().getName().equalsIgnoreCase("OFFSITE_CUST_FIRST_NAME_PREFIX"))
-		{
-			dto.setPossibleValues(prefixService.getPrefixListOffsite());			
-		}		
-		return dto;
-	}	
-	
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
@@ -200,13 +160,13 @@ public class OffsitCustRegService implements ICustRegService {
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		try {
 			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp()) || StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
-				auditService.excep(new ValidateOTPAuditEvent(offsiteCustRegModel), 
+				auditService.excep(new JaxAuditEvent(Type.VALIDATE_OTP,offsiteCustRegModel), 
 						new GlobalException("Otp field is required", JaxError.MISSING_OTP));
 				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				auditService.excep(new ValidateOTPAuditEvent(offsiteCustRegModel), 
+				auditService.excep(new JaxAuditEvent(Type.VALIDATE_OTP,offsiteCustRegModel), 
 						new GlobalException(
 								"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 								JaxError.VALIDATE_OTP_LIMIT_EXCEEDED));
@@ -225,7 +185,7 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfull");		
 		obj.setMessageKey("AUTH_SUCCESS");
-		auditService.log(new ValidateOTPAuditEvent(offsiteCustRegModel));
+		auditService.log(new JaxAuditEvent(Type.VALIDATE_OTP,offsiteCustRegModel));
 		return obj;
 	
 	}
@@ -247,16 +207,13 @@ public class OffsitCustRegService implements ICustRegService {
 
 	}
 
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model) {
-		List<Map<String, Object>> articleList = articleDao.getArtilces(model.getCountryId(), metaData.getLanguageId());
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
+		List<Map<String, Object>> articleList = articleDao.getArticles(metaData.getLanguageId());
 		if(articleList == null || articleList.isEmpty())
-		{
-			auditService.excep(new ArticleListAuditEvent(model), 
-					new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST));
+		{				
 			throw new GlobalException("Article List Is Empty ", JaxError.EMPTY_ARTICLE_LIST);
 		}
-		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);
-		auditService.log(new ArticleListAuditEvent(model));
+		List<ArticleMasterDescDto> articleDtoList = convertArticle(articleList);		
 		return AmxApiResponse.buildList(articleDtoList);
 	}
 
@@ -283,12 +240,12 @@ public class OffsitCustRegService implements ICustRegService {
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId,null,null);
 		if(designationList == null || designationList.isEmpty())
 		{
-			auditService.excep(new DesignationListAuditEvent(details), 
+			auditService.excep(new JaxAuditEvent(Type.DESIGNATION_LIST,details), 
 					new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST));
 			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		auditService.log(new DesignationListAuditEvent(details));
+		auditService.log(new JaxAuditEvent(Type.DESIGNATION_LIST,details));
 		return AmxApiResponse.buildList(designationDataList);
 	}
 
@@ -316,12 +273,12 @@ public class OffsitCustRegService implements ICustRegService {
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null,articleDetailsId,countryId);
 		if(incomeRangeList == null || incomeRangeList.isEmpty())
 		{
-			auditService.excep(new IncomeRangeAuditEvent(details), 
+			auditService.excep(new JaxAuditEvent(Type.INCOME_RANGE,details), 
 					new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE));
 			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
-		auditService.log(new IncomeRangeAuditEvent(details));
+		auditService.log(new JaxAuditEvent(Type.INCOME_RANGE,details));
 		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
 
@@ -358,7 +315,6 @@ public class OffsitCustRegService implements ICustRegService {
 		
 		if(model.getNationality()!= null && !model.getNationality().equalsIgnoreCase("ALL"))
 		{
-			//fieldList = null;
 			fieldList = fieldListDao.getFieldList(model.getTenant(),model.getNationality(),model.getComponent());			
 			if(fieldList != null)
 			{				
@@ -370,11 +326,11 @@ public class OffsitCustRegService implements ICustRegService {
 		}	
 		if(map == null || map.isEmpty())
 		{
-			auditService.excep(new FieldListAuditEvent(model),
+			auditService.excep(new JaxAuditEvent(Type.FIELD_LIST,model),
 					new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION));
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
 		}		
-		auditService.log(new FieldListAuditEvent(model));
+		auditService.log(new JaxAuditEvent(Type.FIELD_LIST,model));
 		return AmxApiResponse.build(map);
 	}
 
@@ -432,6 +388,7 @@ public class OffsitCustRegService implements ICustRegService {
 	@Override
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {		
 		//revalidateOtp(model.getOtpData());
+		auditService.log(new JaxAuditEvent(Type.CUST_INFO,model));
 		Customer customer = commitCustomer(model.getCustomerPersonalDetail(),model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);				
@@ -522,10 +479,10 @@ public class OffsitCustRegService implements ICustRegService {
 	}*/
 
 	private Customer commitCustomer(CustomerPersonalDetail customerPersonalDetail, CustomerEmploymentDetails customerEmploymentDetails) {
-		Customer customer = new Customer();
+		Customer customer = new Customer();		
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerPersonalDetail.getIdentityInt(),customerPersonalDetail.getCountryId());
 		if(customer != null)
-		{
+		{			
 			throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
 		}
 		customer = new Customer();

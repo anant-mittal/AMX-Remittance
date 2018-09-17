@@ -1,15 +1,9 @@
 package com.amx.jax;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.bind.annotation.RequestBody;
-import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerInfoRequest;
-import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
@@ -52,7 +46,7 @@ public interface ICustRegService {
 	
 	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model);
 	
-	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model);
+	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse();
 	
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
 	

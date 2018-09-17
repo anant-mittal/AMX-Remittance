@@ -75,13 +75,13 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/articleList/", method = { RequestMethod.POST })
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(@RequestBody CommonRequest model) {
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 
-		logger.info("Artcile list request called for country id : " + model.getCountryId() + " , state id : "
+		/*logger.info("Artcile list request called for country id : " + model.getCountryId() + " , state id : "
 				+ model.getStateId() + " and district id : " + model.getDistrictId() + " and city id : "
-				+ model.getCityId() + " and nationality id : " + model.getNationalityId());
+				+ model.getCityId() + " and nationality id : " + model.getNationalityId());*/
 
-		return offsiteCustRegClient.getArticleListResponse(model);
+		return offsiteCustRegClient.getArticleListResponse();
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })

@@ -17,7 +17,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -62,11 +61,9 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 
 	//@Test
 	public void testArticleList() {
-		setDefaults();
-		CommonRequest model = new CommonRequest();
-		model.setCountryId(new BigDecimal(91));
+		setDefaults();		
 		AmxApiResponse<ArticleMasterDescDto, Object> response = null;
-		response = offsiteClient.getArticleListResponse(model);
+		response = offsiteClient.getArticleListResponse();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

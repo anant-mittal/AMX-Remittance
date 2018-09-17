@@ -31,7 +31,7 @@ public class ArticleDao {
 	@Autowired
 	IIncomeRangeRepository iIncomeRangeRepository;
 	
-	public List<Map<String, Object>> getArtilces(BigDecimal countryId, BigDecimal languageId) {
+	public List<Map<String, Object>> getArticles(BigDecimal languageId) {
 		String sql = "select FAMD.ARTICLE_DESC,FAMD.ARTICLE_DESC_ID, FAMD.ARTICLE_ID,FAMD.LANGUAGE_ID " + 
 				"from FS_ARTICLE_MASTER_DESC FAMD INNER JOIN FS_ARTICLE_MASTER FAM ON FAMD.ARTICLE_ID = FAM.ARTICLE_ID " + 
 				"where FAMD.LANGUAGE_ID = ? AND FAM.ISACTIVE = ? AND FAM.CUSTOMER_TYPE <> ?" ; 

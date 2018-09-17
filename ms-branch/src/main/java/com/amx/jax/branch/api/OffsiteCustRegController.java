@@ -22,7 +22,6 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -90,8 +89,8 @@ public class OffsiteCustRegController implements ICustRegService {
 	
 	@ApiJaxStatus({JaxError.EMPTY_ARTICLE_LIST})
 	@RequestMapping(value = CustRegApiEndPoints.GET_ARTICLE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(@RequestBody CommonRequest model) {		
-		return offsiteCustRegService.getArticleListResponse(model);
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {		
+		return offsiteCustRegService.getArticleListResponse();
 	}
 
 	@ApiJaxStatus({JaxError.EMPTY_DESIGNATION_LIST})

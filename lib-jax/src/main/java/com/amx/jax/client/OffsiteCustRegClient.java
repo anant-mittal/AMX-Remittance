@@ -16,7 +16,6 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -117,12 +116,12 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model) {
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 		try {
 			LOGGER.info("Get all the Article List Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/articleList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleMasterDescDto, Object>>() {
 					});
