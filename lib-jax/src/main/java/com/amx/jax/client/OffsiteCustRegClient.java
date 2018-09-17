@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+
 import com.amx.jax.AppConfig;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;

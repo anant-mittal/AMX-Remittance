@@ -5,9 +5,6 @@ import java.lang.reflect.Constructor;
 import org.apache.log4j.Logger;
 
 import com.amx.jax.error.JaxError;
-import com.amx.jax.exception.AmxApiError;
-import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.IExceptionEnum;
 
 public abstract class AbstractJaxException extends AmxApiException {
 

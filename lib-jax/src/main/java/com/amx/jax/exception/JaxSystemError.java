@@ -1,9 +1,6 @@
 package com.amx.jax.exception;
 
 import com.amx.jax.error.JaxError;
-import com.amx.jax.exception.AmxApiError;
-import com.amx.jax.exception.AmxApiException;
-import com.amx.jax.exception.IExceptionEnum;
 
 public class JaxSystemError extends AmxApiException {
 
