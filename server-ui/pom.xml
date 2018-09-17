@@ -98,11 +98,10 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<!-- <dependency> <groupId>net.rossillo.mvc.cache</groupId> <artifactId>spring-mvc-cache-control</artifactId> 

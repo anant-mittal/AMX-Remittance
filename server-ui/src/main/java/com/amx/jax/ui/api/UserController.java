@@ -33,7 +33,6 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
 import com.amx.jax.ui.session.UserDeviceBean;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -94,7 +93,6 @@ public class UserController {
 	 *            the app version
 	 * @return the meta
 	 */
-	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
 			@RequestParam(required = false) String appVersion) {
