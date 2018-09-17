@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 public class Dnum<E extends Dnum<E>> {
 	private static Map<Class<? extends Dnum<?>>, Map<String, Dnum<?>>> elements = new LinkedHashMap<Class<? extends Dnum<?>>, Map<String, Dnum<?>>>();

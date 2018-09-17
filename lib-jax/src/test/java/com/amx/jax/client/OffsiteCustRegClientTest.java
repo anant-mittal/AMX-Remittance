@@ -5,8 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.junit.Test;
@@ -16,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -24,7 +21,6 @@ import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.IncomeRangeDto;
-import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
