@@ -197,7 +197,8 @@
 		<module>server-offsite</module>
 		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
-
+		
+		<module>server-monitor</module>
 		<module>server-admin</module>
 		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->
