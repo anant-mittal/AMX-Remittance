@@ -341,7 +341,7 @@
                                           pdfFontName="fonts/all/arial.ttf"/>
                                 </textElement>
                                 <textFieldExpression class="java.lang.String">
-                                    <![CDATA[$F{tranx}.get("loyalityPointExpiring")]]>
+                                    <![CDATA[$F{tranx}.get("loyalityPointExpiring","Not Applicable")]]>
                                 </textFieldExpression>
                             </textField>
 
