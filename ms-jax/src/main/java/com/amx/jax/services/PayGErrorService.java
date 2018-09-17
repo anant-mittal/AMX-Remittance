@@ -14,7 +14,6 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dao.PayGErrorDao;
 import com.amx.jax.dbmodel.PaygErrorMaster;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.services.AbstractService;
 
 /**
  * @author Shivaraj

@@ -14,9 +14,9 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
-import com.amx.jax.rbaac.models.EmployeeInfo;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.rbaac.models.EmployeeInfo;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

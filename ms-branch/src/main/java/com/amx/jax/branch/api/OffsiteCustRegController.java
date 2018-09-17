@@ -12,14 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.meta.model.ArticleDetailsDescDto;
-import com.amx.amxlib.meta.model.ArticleMasterDescDto;
-import com.amx.amxlib.meta.model.IncomeRangeDto;
-import com.amx.amxlib.meta.model.ViewCityDto;
-import com.amx.amxlib.meta.model.ViewDistrictDto;
-import com.amx.amxlib.meta.model.ViewStateDto;
-import com.amx.amxlib.model.CivilIdOtpModel;
-import com.amx.amxlib.model.ComponentDataDto;
 import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
