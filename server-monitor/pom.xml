@@ -7,7 +7,7 @@
 	<packaging>jar</packaging>
 
 	<name>server-monitor</name>
-	<description>Admin related services.</description>
+	<description>Monitor services.</description>
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
@@ -27,23 +27,13 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-postman</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>de.codecentric</groupId>
 			<artifactId>spring-boot-admin-starter-server</artifactId>
+			<version>1.5.7</version>
+		</dependency>
+		<dependency>
+			<groupId>de.codecentric</groupId>
+			<artifactId>spring-boot-admin-server-ui</artifactId>
 			<version>1.5.7</version>
 		</dependency>
 
