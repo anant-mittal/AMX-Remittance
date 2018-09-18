@@ -12,7 +12,7 @@ import com.amx.utils.ContextUtil;
 
 @Component
 @TenantScoped
-public class JaxClientMetaFilter implements RestMetaRequestOutFilter<JaxMetaInfo> {
+public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
