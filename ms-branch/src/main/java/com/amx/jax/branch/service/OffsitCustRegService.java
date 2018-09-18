@@ -397,7 +397,7 @@ public class OffsitCustRegService implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<Boolean, Object> saveCustomerInfo(CustomerInfoRequest model) {		
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {		
 		//revalidateOtp(model.getOtpData());
 		auditService.log(new JaxAuditEvent(Type.CUST_INFO,model));
 		Customer customer = commitCustomer(model.getCustomerPersonalDetail(),model.getCustomerEmploymentDetails());
@@ -405,7 +405,7 @@ public class OffsitCustRegService implements ICustRegService {
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);				
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(),customer);
-		return AmxApiResponse.build(true);
+		return AmxApiResponse.build(customer.getCustomerId());
 	}
 	
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer) {

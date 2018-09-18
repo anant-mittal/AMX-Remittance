@@ -55,6 +55,6 @@ public interface ICustRegService {
 	
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 	
-	AmxApiResponse<Boolean, Object> saveCustomerInfo(CustomerInfoRequest model);
+	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 }

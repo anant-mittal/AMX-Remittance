@@ -20,6 +20,7 @@ import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
@@ -128,7 +129,7 @@ public class OffsiteCustRegController implements ICustRegService {
 
 	@ApiJaxStatus({JaxError.EXISTING_CIVIL_ID})
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
-	public AmxApiResponse<Boolean, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 	
