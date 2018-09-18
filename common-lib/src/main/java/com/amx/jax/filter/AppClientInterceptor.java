@@ -19,7 +19,6 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import com.amx.jax.rest.RestMetaService;
 import com.amx.utils.CryptoUtil;
 
 @Component
@@ -30,15 +29,12 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 	@Autowired
 	AppConfig appConfig;
 
-	@Autowired
-	RestMetaService restMetaService;
-
 	@Override
 	public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
 			throws IOException {
 
 		AppContextUtil.exportAppContextTo(request.getHeaders());
-		restMetaService.exportMetaTo(request.getHeaders());
+		// restMetaService.exportMetaTo(request.getHeaders());
 
 		request.getHeaders().add(AppConstants.AUTH_KEY_XKEY,
 				CryptoUtil.generateHMAC(appConfig.getAppAuthKey(), AppContextUtil.getTraceId()));
