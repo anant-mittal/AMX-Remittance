@@ -2,7 +2,9 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -126,12 +128,12 @@ public class OffsiteCustRegController implements ICustRegService {
 
 	@ApiJaxStatus({JaxError.EXISTING_CIVIL_ID})
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
+	public AmxApiResponse<Boolean, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 	
-	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
-	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() {		
+	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() throws IOException {		
 		return offsiteCustRegService.saveCustomeKycDocument();
 	}
 

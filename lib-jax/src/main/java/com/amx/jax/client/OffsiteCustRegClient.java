@@ -219,9 +219,20 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		// TODO Auto-generated method stub
-		return null;
+	public AmxApiResponse<Boolean, Object> saveCustomerInfo(CustomerInfoRequest model) {
+		try {
+			LOGGER.info("Save customer info");
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<AmxApiResponse<Boolean, Object>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveCustomerInfo : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 }

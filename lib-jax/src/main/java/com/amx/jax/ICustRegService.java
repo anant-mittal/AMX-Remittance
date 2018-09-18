@@ -29,6 +29,7 @@ public interface ICustRegService {
 		public static final String GET_EMPLOYMENT_TYPE_LIST = "/employmentTypeList";
 		public static final String GET_PROFESSION_LIST = "/professionList";
 		public static final String SAVE_CUST_INFO = "/saveCustomerInfo";
+		public static final String SAVE_KYC_DOC = "/saveCustomerKYCDoc";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -54,6 +55,6 @@ public interface ICustRegService {
 	
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 	
-	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
+	AmxApiResponse<Boolean, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 }

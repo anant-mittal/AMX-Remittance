@@ -1,7 +1,12 @@
 package com.amx.jax.branch.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +15,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +29,6 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.auditlogs.FieldListAuditEvent;
 import com.amx.jax.auditlogs.JaxAuditEvent;
 import com.amx.jax.auditlogs.JaxAuditEvent.Type;
 import com.amx.jax.constant.ConstantDocument;
@@ -37,6 +42,7 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DistrictMaster;
+import com.amx.jax.dbmodel.DocBlobUpload;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
@@ -62,6 +68,7 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
+import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.EmploymentTypeRepository;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
@@ -137,6 +144,9 @@ public class OffsitCustRegService implements ICustRegService {
 	
 	@Autowired
 	CustomerEmployeeDetailsRepository customerEmployeeDetailsRepository;
+	
+	@Autowired
+	DOCBLOBRepository docblobRepository;
 	
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -387,7 +397,7 @@ public class OffsitCustRegService implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {		
+	public AmxApiResponse<Boolean, Object> saveCustomerInfo(CustomerInfoRequest model) {		
 		//revalidateOtp(model.getOtpData());
 		auditService.log(new JaxAuditEvent(Type.CUST_INFO,model));
 		Customer customer = commitCustomer(model.getCustomerPersonalDetail(),model.getCustomerEmploymentDetails());
@@ -395,7 +405,7 @@ public class OffsitCustRegService implements ICustRegService {
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);				
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(),customer);
-		return AmxApiResponse.build(new BigDecimal(1));
+		return AmxApiResponse.build(true);
 	}
 	
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer) {
@@ -563,9 +573,26 @@ public class OffsitCustRegService implements ICustRegService {
 		customerIdProofRepository.save(custProof);
 	}
 
-	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() {
-		File f = new File("Desktop\\ganpati.jpg");
-		return null;
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() throws IOException {		
+		File f = new File("C:\\Users\\Chetan Pawar\\Desktop\\ganpati.jpg");
+		byte[] fileContent = FileUtils.readFileToByteArray(f);
+		DocBlobUpload kycDocument = new DocBlobUpload();
+		kycDocument.setCntryCd(new BigDecimal(1));
+		kycDocument.setDocBlobID(new BigDecimal(1));
+		kycDocument.setSeqNo(new BigDecimal(1));
+		kycDocument.setDocFinYear(new BigDecimal(2018));
+		kycDocument.setDocContent(fileContent);
+		kycDocument.setUpdatedDate(new Date());
+		docblobRepository.save(kycDocument);
+		
+		
+		/*List<DocBlobUpload> doc = docblobRepository.findAll();
+		DocBlobUpload kycDocument = doc.get(0);
+		byte[] f = kycDocument.getDocContent();		
+		FileUtils.writeByteArrayToFile(new File("D:\\chetan\\ganpati123.jpg"), f);*/
+		
+		
+		return AmxApiResponse.build(new BigDecimal(1));
 	}
 
 }
