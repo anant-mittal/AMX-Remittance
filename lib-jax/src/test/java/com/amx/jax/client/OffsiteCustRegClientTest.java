@@ -61,7 +61,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 
 	//@Test
 	public void testArticleList() {
-		setDefaults();		
+		setDefaults();
 		AmxApiResponse<ArticleMasterDescDto, Object> response = null;
 		response = offsiteClient.getArticleListResponse();
 		assertNotNull("Response is null", response);

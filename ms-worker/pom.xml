@@ -55,6 +55,10 @@
 			<artifactId>jax-client</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
+		</dependency>
 
 	</dependencies>
 
