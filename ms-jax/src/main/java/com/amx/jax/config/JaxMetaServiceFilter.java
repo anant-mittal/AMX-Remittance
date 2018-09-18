@@ -18,13 +18,13 @@ import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
-import com.amx.jax.rest.IRestMetaFilter;
+import com.amx.jax.rest.RestMetaRequestInFilter;
 import com.amx.jax.service.CompanyService;
 import com.amx.jax.service.CountryBranchService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class JaxMetaServiceFilter implements IRestMetaFilter<JaxMetaInfo> {
+public class JaxMetaServiceFilter extends RestMetaRequestInFilter<JaxMetaInfo> {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -36,10 +36,6 @@ public class JaxMetaServiceFilter implements IRestMetaFilter<JaxMetaInfo> {
 
 	@Autowired
 	CompanyService companyService;
-
-	public JaxMetaInfo exportMeta() {
-		return null;
-	}
 
 	public void importMeta(JaxMetaInfo meta, HttpServletRequest req) throws Exception {
 		String metaInfo = req.getHeader(AppConstants.META_XKEY);
@@ -66,6 +62,11 @@ public class JaxMetaServiceFilter implements IRestMetaFilter<JaxMetaInfo> {
 			metaData.setCompanyId(company.getCompanyId());
 		}
 
+	}
+
+	@Override
+	public Class<JaxMetaInfo> getMetaClass() {
+		return JaxMetaInfo.class;
 	}
 
 }

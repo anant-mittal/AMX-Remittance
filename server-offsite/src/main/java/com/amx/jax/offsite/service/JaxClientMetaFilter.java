@@ -1,20 +1,18 @@
 package com.amx.jax.offsite.service;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.offsite.OffsiteAppConfig;
-import com.amx.jax.rest.IRestMetaFilter;
+import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.utils.ContextUtil;
 
 @Component
 @TenantScoped
-public class JaxClientMetaFilter implements IRestMetaFilter<JaxMetaInfo> {
+public class JaxClientMetaFilter implements RestMetaRequestOutFilter<JaxMetaInfo> {
 
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
@@ -32,11 +30,6 @@ public class JaxClientMetaFilter implements IRestMetaFilter<JaxMetaInfo> {
 		jaxMetaInfo.setCountryBranchId(offsiteAppConfig.getCountrybranchId());
 
 		return jaxMetaInfo;
-	}
-
-	@Override
-	public void importMeta(JaxMetaInfo meta, HttpServletRequest req) throws Exception {
-
 	}
 
 }

@@ -38,7 +38,7 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.rest.IRestMetaFilter;
+import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -60,7 +60,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 	RestService restService;
 
 	@Autowired
-	IRestMetaFilter<JaxMetaInfo> metaFilter;
+	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
 

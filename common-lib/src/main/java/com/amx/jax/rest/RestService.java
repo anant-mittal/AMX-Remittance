@@ -94,7 +94,7 @@ public class RestService {
 			builder = UriComponentsBuilder.fromUriString(uri.toString());
 		}
 
-		public <T> Ajax filter(IRestMetaFilter<T> restMetaServiceFilter) {
+		public <T> Ajax filter(RestMetaRequestOutFilter<T> restMetaServiceFilter) {
 			RestService.exportMetaToStatic(restMetaServiceFilter, this.header());
 			return this;
 		}
@@ -290,19 +290,18 @@ public class RestService {
 
 	}
 
-	public static <T> void exportMetaToStatic(IRestMetaFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
+	public static <T> void exportMetaToStatic(RestMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
 		if (restMetaFilter != null) {
 			T meta = restMetaFilter.exportMeta();
 			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));
 		}
 	}
 
-	public static <T> void importMetaFromStatic(IRestMetaFilter<T> restMetaFilter, HttpServletRequest req)
+	public static <T> void importMetaFromStatic(RestMetaRequestInFilter<T> restMetaFilter, HttpServletRequest req)
 			throws Exception {
 		if (restMetaFilter != null) {
 			String metaValueString = req.getHeader(AppConstants.META_XKEY);
-			restMetaFilter.importMeta(JsonUtil.fromJson(metaValueString, new TypeReference<T>() {
-			}), req);
+			restMetaFilter.importMeta(restMetaFilter.export(metaValueString), req);
 		}
 	}
 }

@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.amx.jax.rest.IRestMetaFilter;
+import com.amx.jax.rest.RestMetaRequestInFilter;
 import com.amx.jax.rest.RestService;
 
 @Component
 public class AppRequestInterceptor extends HandlerInterceptorAdapter {
 
 	@Autowired
-	IRestMetaFilter<?> restMetaFilter;
+	RestMetaRequestInFilter<?> restMetaFilter;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
