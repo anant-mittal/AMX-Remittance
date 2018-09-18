@@ -22,6 +22,7 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.offsite.service.OffsiteService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -37,6 +38,9 @@ public class OffsiteController {
 
 	@Autowired
 	private OffsiteCustRegClient offsiteCustRegClient;
+	
+	@Autowired
+	private OffsiteService offsiteService;
 
 	@ApiOperation(value = "Index page")
 	@RequestMapping(value = "/", method = RequestMethod.GET)
@@ -48,9 +52,17 @@ public class OffsiteController {
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 
 		logger.info("field list request called for tenant : " + model.getTenant() + " , nationality : "
+<<<<<<< c46922f0023e8d96dceacfcc549ba29adb932fe5
 				+ model.getNationality() + " and component : " + model.getComponent());
 
 		return offsiteCustRegClient.getFieldList(model);
+=======
+				+ model.getNationality() + " and component : " + model.getComponent() + " and component Data : " + model.getComponentData());
+		
+		AmxApiResponse<Map<String, FieldListDto>, Object> finalResponse =  offsiteService.getFieldList(model);
+		
+		return finalResponse;
+>>>>>>> Field List modified
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/incomeRangeList/", method = { RequestMethod.POST })
