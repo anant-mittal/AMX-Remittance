@@ -26,6 +26,7 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.jax.rest.RestMetaService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.CryptoUtil;
@@ -59,6 +60,9 @@ public class RequestLogFilter implements Filter {
 
 	@Autowired
 	AppConfig appConfig;
+
+	@Autowired
+	RestMetaService restMetaService;
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
@@ -155,6 +159,7 @@ public class RequestLogFilter implements Filter {
 				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				} else {
+					restMetaService.importMetaFrom(req);
 					chain.doFilter(request, new AppResponseWrapper(resp));
 				}
 			} finally {

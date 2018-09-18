@@ -76,6 +76,7 @@ public class RestService {
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		RestTemplate restTemplate;
 		HttpHeaders headers = new HttpHeaders();
+		Map<String, String> headersMeta = new HashMap<String, String>();
 		boolean isForm = false;
 
 		public Ajax(RestTemplate restTemplate, String url) {
@@ -133,6 +134,11 @@ public class RestService {
 
 		public Ajax header(String paramKey, String paramValue) {
 			headers.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax meta(String metaKey, String metaValue) {
+			headersMeta.put(metaKey, metaValue);
 			return this;
 		}
 
