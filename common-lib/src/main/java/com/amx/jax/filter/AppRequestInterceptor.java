@@ -13,7 +13,7 @@ import com.amx.jax.rest.RestService;
 @Component
 public class AppRequestInterceptor extends HandlerInterceptorAdapter {
 
-	@Autowired
+	@Autowired(required = false)
 	RestMetaRequestInFilter<?> restMetaFilter;
 
 	@Override
