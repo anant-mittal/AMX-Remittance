@@ -36,7 +36,7 @@ public class TunnelService implements ITunnelService {
 			LOGGER.error("No Redissson Client Instance Available");
 			return 0L;
 		}
-		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(topic);
+		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
 		long startTime = System.currentTimeMillis();
 
 		AppContextUtil.setTraceTime(startTime);
@@ -70,7 +70,7 @@ public class TunnelService implements ITunnelService {
 
 		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topic));
 		RTopic<TunnelMessage<T>> topicQueue = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topic));
-		
+
 		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
 		queue.add(message);
 		return topicQueue.publish(message);

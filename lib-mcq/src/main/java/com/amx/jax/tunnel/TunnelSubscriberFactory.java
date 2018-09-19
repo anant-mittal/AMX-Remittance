@@ -62,7 +62,7 @@ public class TunnelSubscriberFactory {
 				} else if (scheme == TunnelEventXchange.SEND_LISTNER) {
 					this.addQueuedListener(eventTopic, redisson, listener, integrity);
 				} else {
-					this.addListener(eventTopic, redisson, listener, integrity);
+					this.addShoutListener(eventTopic, redisson, listener, integrity);
 				}
 			}
 		}
@@ -95,9 +95,9 @@ public class TunnelSubscriberFactory {
 
 	}
 
-	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+	public <M> void addShoutListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
 			boolean integrity) {
-		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(topic);
+		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
@@ -105,9 +105,10 @@ public class TunnelSubscriberFactory {
 				AppContextUtil.setContext(context);
 				AppContextUtil.init();
 				if (this.integrity) {
-					RMapCache<String, String> map = redisson.getMapCache(channel);
-					String integrityKey = appConfig.getAppEnv() + "#" + appConfig.getAppName() + "#"
-							+ listener.getClass().getName() + "#" + msg.getId();
+					RMapCache<String, String> map = redisson
+							.getMapCache(TunnelEventXchange.SHOUT_LISTNER.getStatusMap(topic));
+					String integrityKey = appConfig.getAppName() + "#" + listener.getClass().getName() + "#"
+							+ msg.getId();
 					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
 					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
 						this.doMessage(channel, msg);
