@@ -40,16 +40,35 @@ public class RequestLogFilter implements Filter {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static enum ReqType {
-		DEFAULT(true), POLL(false);
+		DEFAULT(true, true), POLL(false, false), PING(false, false);
 		boolean track = false;
+		boolean auth = true;
 
-		ReqType(boolean track) {
+		ReqType(boolean track, boolean auth) {
 			this.track = track;
+			this.auth = auth;
 		}
 
 		public boolean isTrack() {
 			return track;
 		}
+
+		public boolean isAuth() {
+			return auth;
+		}
+
+		public static ReqType from(HttpServletRequest req) {
+			if (req.getRequestURI().contains(AppParamController.PUB_AMX_PREFIX)) {
+				return PING;
+			}
+			ReqType reqType = ReqType.DEFAULT;
+			String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
+			if (!StringUtils.isEmpty(reqTypeStr)) {
+				reqType = (ReqType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
+			}
+			return reqType;
+		}
+
 	}
 
 	@Override
@@ -62,9 +81,6 @@ public class RequestLogFilter implements Filter {
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
-		if (req.getRequestURI().contains(AppParamController.PARAM_URL)) {
-			return true;
-		}
 		if (StringUtils.isEmpty(authToken)
 				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
 			return false;
@@ -140,11 +156,7 @@ public class RequestLogFilter implements Filter {
 				AppContextUtil.init();
 			}
 
-			ReqType reqType = ReqType.DEFAULT;
-			String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
-			if (!StringUtils.isEmpty(reqTypeStr)) {
-				reqType = (ReqType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
-			}
+			ReqType reqType = ReqType.from(req);
 
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
@@ -152,7 +164,7 @@ public class RequestLogFilter implements Filter {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			}
 			try {
-				if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+				if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
 					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				} else {
 					chain.doFilter(request, new AppResponseWrapper(resp));
