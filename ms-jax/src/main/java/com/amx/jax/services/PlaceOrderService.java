@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
@@ -401,5 +402,18 @@ public class PlaceOrderService extends AbstractService {
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void validatePlaceOrderDto(PlaceOrderDTO dto) {
+		// both foreign and domestic amounts should not be null
+		if(dto.getPayAmount() == null && dto.getReceiveAmount() == null) {
+			throw new GlobalException("Both PayAmount and ReceivedAmount should not be null ",
+					JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL);
+		}
+		
+		if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {
+			throw new GlobalException("Either PayAmount or ReceivedAmount should have value ",
+					JaxError.PO_BOTH_PAY_RECEIVED_AMT_VALUE);
+		}
 	}
 }
