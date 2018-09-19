@@ -1,6 +1,7 @@
 package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -71,6 +72,18 @@ public class CustomerPersonalDetail extends AbstractModel {
 	@NotNull
 	@NumberFormat
 	private String telPrefix;
+
+	private String firstNameLocal;
+
+	private String lastNameLocal;
+
+	private Date issueDate;
+
+	private Date expiryDate;
+
+	private Date dateOfBirth;
+
+	private BigDecimal identityTypeId;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -144,11 +157,60 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.telPrefix = telPrefix;
 	}
 
+	public String getFirstNameLocal() {
+		return firstNameLocal;
+	}
+
+	public void setFirstNameLocal(String firstNameLocal) {
+		this.firstNameLocal = firstNameLocal;
+	}
+
+	public String getLastNameLocal() {
+		return lastNameLocal;
+	}
+
+	public void setLastNameLocal(String lastNameLocal) {
+		this.lastNameLocal = lastNameLocal;
+	}
+
+	public Date getIssueDate() {
+		return issueDate;
+	}
+
+	public void setIssueDate(Date issueDate) {
+		this.issueDate = issueDate;
+	}
+
+	public Date getExpiryDate() {
+		return expiryDate;
+	}
+
+	public void setExpiryDate(Date expiryDate) {
+		this.expiryDate = expiryDate;
+	}
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
+	}
+
 	@Override
 	public String toString() {
 		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt="
 				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
-				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + "]";
+				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
+				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
+				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + "]";
 	}
-
 }

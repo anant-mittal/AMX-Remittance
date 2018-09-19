@@ -1,7 +1,7 @@
 package com.amx.jax.ui.response;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.ui.UIConstants;
 import com.amx.utils.ContextUtil;

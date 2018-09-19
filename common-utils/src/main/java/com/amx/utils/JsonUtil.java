@@ -83,6 +83,19 @@ public final class JsonUtil {
 			return null;
 		}
 
+		@SuppressWarnings("rawtypes")
+		public <E> E fromJson(String json, TypeReference valueTypeRef) {
+			if (json == null || "".equals(json.trim()) || "\"\"".equals(json.trim())) {
+				return null;
+			}
+			try {
+				return getMapper().readValue(json, valueTypeRef);
+			} catch (IOException e) {
+				LOG.warn("error converting from json=" + json, e);
+			}
+			return null;
+		}
+
 		/**
 		 * To json.
 		 *
@@ -161,6 +174,11 @@ public final class JsonUtil {
 	 */
 	public static <E> E fromJson(String json, Class<E> type) {
 		return instance.fromJson(json, type);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static <E> E fromJson(String json, TypeReference valueTypeRef) {
+		return instance.fromJson(json, valueTypeRef);
 	}
 
 	/**

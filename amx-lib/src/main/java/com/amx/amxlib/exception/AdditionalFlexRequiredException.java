@@ -2,8 +2,8 @@ package com.amx.amxlib.exception;
 
 import java.util.List;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -97,14 +97,15 @@ public class RbaacServiceApiController implements RbaacService {
 	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@RequestMapping(value = ApiEndPoints.PERMS_GET, method = RequestMethod.POST)
-	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(@RequestParam(required = true) String ipAddress,
-			@RequestParam String deviceId) {
+	@PostMapping(value = ApiEndPoints.PERMS_GET)
+	@ResponseBody
+	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(
+			@RequestParam(required = true) String ipAddress, @RequestParam String deviceId) {
 
-		LOGGER.info("Received request for Get Permissions " + " from Ip Address: " + ipAddress + " from device Id: "
+		LOGGER.info("Received request for Get Permissions " + " from Ip Address: " + ipAddr + " from device Id: "
 				+ deviceId);
 
-		List<PermissionResposeDTO> permissionsResposeDTOList = userRoleService.getAllPermissions(ipAddress, deviceId);
+		List<PermissionResposeDTO> permissionsResposeDTOList = userRoleService.getAllPermissions(ipAddr, deviceId);
 
 		return AmxApiResponse.buildList(permissionsResposeDTOList);
 	}
@@ -113,13 +114,15 @@ public class RbaacServiceApiController implements RbaacService {
 	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String, java.lang.String)
 	 */
 	@Override
-	@RequestMapping(value = ApiEndPoints.ROLES_GET, method = RequestMethod.POST)
+	@ResponseBody
+	@PostMapping(value = ApiEndPoints.ROLES_GET)
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(@RequestParam(required = true) String ipAddress,
 			@RequestParam String deviceId) {
 
-		LOGGER.info("Received request for Get Roles " + " from Ip Address: " + ipAddress + " from device Id: " + deviceId);
+		LOGGER.info(
+				"Received request for Get Roles " + " from Ip Address: " + ipAddress + " from device Id: " + deviceId);
 
-		List<RoleResponseDTO> rolesResponseDTOList = userRoleService.getAllRoles(ipAddress, deviceId);
+		List<RoleResponseDTO> rolesResponseDTOList = userRoleService.getAllRoles(ipAddr, deviceId);
 
 		return AmxApiResponse.buildList(rolesResponseDTOList);
 	}
@@ -146,14 +149,14 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
-			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddress,
+			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddr,
 			@RequestParam String deviceId) {
 
-		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddress
+		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddr
 				+ " from device Id: " + deviceId);
 
 		UserRoleMappingsResponseDTO urMappingsResponseDTO = userRoleService
-				.getUserRoleMappingsForBranch(countryBranchId, ipAddress, deviceId);
+				.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
 
 		return AmxApiResponse.build(urMappingsResponseDTO);
 	}

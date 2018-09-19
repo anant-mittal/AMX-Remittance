@@ -29,6 +29,8 @@ public class PMGaugeEvent extends AuditEvent {
 		SEND_SMS,
 		// Email Events
 		SEND_EMAIL,
+		// WhatsApp Events
+		SEND_WHATSAPP,
 		// PDF Events
 		CREATE_PDF,
 

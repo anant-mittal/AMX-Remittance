@@ -62,7 +62,7 @@ public class AdminPushController {
 		msg.setMessage(message);
 		msg.setSubject(title);
 		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-		return pushNotifyClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg).getResult();
 	}
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
@@ -80,7 +80,7 @@ public class AdminPushController {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
 		}
-		return pushNotifyClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg).getResult();
 	}
 
 	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)

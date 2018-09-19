@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.util.JaxUtil;
 

@@ -4,6 +4,7 @@ public class DynamicFieldRequest {
 	private String tenant;
 	private String nationality;
 	private String component;
+	private String componentData;
 
 	public String getTenant() {
 		return tenant;
@@ -29,10 +30,17 @@ public class DynamicFieldRequest {
 		this.component = component;
 	}
 
+	public String getComponentData() {
+		return componentData;
+	}
+
+	public void setComponentData(String componentData) {
+		this.componentData = componentData;
+	}
+
 	@Override
 	public String toString() {
-		return "DynamicFieldRequest [tenant=" + tenant + ", nationality=" + nationality + ", component=" + component
-				+ "]";
+		return "DynamicFieldRequest [tenant=" + tenant + ", nationality=" + nationality + ", component=" + component +", componentData=" + componentData + "]";
 	}
 
 }

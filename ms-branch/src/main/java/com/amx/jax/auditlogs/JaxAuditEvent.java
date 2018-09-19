@@ -1,28 +1,27 @@
 package com.amx.jax.auditlogs;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
-import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.jax.logger.AuditEvent;
-import com.amx.jax.model.request.CommonRequest;
+import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 
 public class JaxAuditEvent extends AuditEvent {
 
-	private static final long serialVersionUID = 7451732272992078549L;
-	//BigDecimal customerId;
+	private static final long serialVersionUID = 7451732272992078549L;	
 	
-	OffsiteCustomerRegistrationRequest model;
-	
-	CommonRequest dataModel;
-	
-	GetJaxFieldRequest detJaxFieldModel;
+	OffsiteCustomerRegistrationRequest model;	
 
 	Boolean success;
 	
 	CustomerPersonalDetail customerPersonalDetails;
 
 	EmploymentDetailsRequest employeeDetailsRequest;
+	
+	DynamicFieldRequest dynamicFieldRequest;
+	
+	CustomerInfoRequest customerInfoRequest;
 
 	public Boolean getSuccess() {
 		return success;
@@ -33,7 +32,18 @@ public class JaxAuditEvent extends AuditEvent {
 	}
 	
 	public static enum Type implements EventType {
-		SEND_OTP,VALIDATE_OTP,ID_TYPE,COUNTRY_LIST,STATE_LIST,FIELD_LIST,MOBILE_EMAIL_OTP,DISTRICT_LIST,CITY_LIST,ARTICLE_LIST,DESIGNATION_LIST,INCOME_RANGE;
+		SEND_OTP,VALIDATE_OTP,
+		ID_TYPE,
+		COUNTRY_LIST,
+		STATE_LIST,
+		FIELD_LIST,
+		MOBILE_EMAIL_OTP,
+		DISTRICT_LIST,
+		CITY_LIST,
+		ARTICLE_LIST,
+		DESIGNATION_LIST,
+		INCOME_RANGE,
+		CUST_INFO;
 
 		@Override
 		public EventMarker marker() {
@@ -45,58 +55,35 @@ public class JaxAuditEvent extends AuditEvent {
 	public JaxAuditEvent(EventType type) {
 		super(type);
 	}
-
-	/*public BigDecimal getCustomerId() {
-		return customerId;
+	
+	public JaxAuditEvent(Type type, OffsiteCustomerRegistrationRequest offsiteRequest)
+	{
+		super(type);
+		this.model = offsiteRequest;
 	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-		if (customerId != null) {
-			this.actorId = customerId.toString();
-		}
-	}*/
-
-	public OffsiteCustomerRegistrationRequest getModel() {
-		return model;
-	}
-
-	public void setModel(OffsiteCustomerRegistrationRequest model) {
-		this.model = model;		
-			
-	}
-
-	public CommonRequest getDataModel() {
-		return dataModel;
-	}
-
-	public void setDataModel(CommonRequest dataModel) {
-		this.dataModel = dataModel;
-	}
-
-	public GetJaxFieldRequest getDetJaxFieldModel() {
-		return detJaxFieldModel;
-	}
-
-	public void setDetJaxFieldModel(GetJaxFieldRequest detJaxFieldModel) {
-		this.detJaxFieldModel = detJaxFieldModel;
-	}
-
-	public CustomerPersonalDetail getCustomerPersonalDetails() {
-		return customerPersonalDetails;
-	}
-
-	public void setCustomerPersonalDetails(CustomerPersonalDetail customerPersonalDetails) {
-		this.customerPersonalDetails = customerPersonalDetails;
-	}
-
-	public EmploymentDetailsRequest getEmployeeDetailsRequest() {
-		return employeeDetailsRequest;
-	}
-
-	public void setEmployeeDetailsRequest(EmploymentDetailsRequest employeeDetailsRequest) {
+	
+	public JaxAuditEvent(Type type, EmploymentDetailsRequest employeeDetailsRequest)
+	{		
+		super(type);
 		this.employeeDetailsRequest = employeeDetailsRequest;
 	}
+	
+	public JaxAuditEvent(Type type, DynamicFieldRequest dynamicFieldRequest)
+	{		
+		super(type);
+		this.dynamicFieldRequest = dynamicFieldRequest;
+	}
+	
+	public JaxAuditEvent(Type type, CustomerInfoRequest customerInfoRequest)
+	{		
+		super(type);
+		this.customerInfoRequest = customerInfoRequest;
+	}
+	
+
+	
+
+	
 	
 	
 	

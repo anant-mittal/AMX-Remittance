@@ -1,14 +1,9 @@
 package com.amx.jax;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.bind.annotation.RequestBody;
-import com.amx.jax.api.ARespModel;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.model.request.CommonRequest;
-import com.amx.jax.model.request.CustomerPersonalDetail;
+import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
@@ -33,6 +28,8 @@ public interface ICustRegService {
 		public static final String GET_INCOME_RANGE_LIST = "/incomeRangeList";
 		public static final String GET_EMPLOYMENT_TYPE_LIST = "/employmentTypeList";
 		public static final String GET_PROFESSION_LIST = "/professionList";
+		public static final String SAVE_CUST_INFO = "/saveCustomerInfo";
+		public static final String SAVE_KYC_DOC = "/saveCustomerKYCDoc";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -50,12 +47,14 @@ public interface ICustRegService {
 	
 	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model);
 	
-	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse(CommonRequest model);
+	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse();
 	
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
 	
 	AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList();
 	
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
+	
+	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 }
