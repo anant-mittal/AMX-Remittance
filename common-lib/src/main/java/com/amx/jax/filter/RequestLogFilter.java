@@ -39,38 +39,6 @@ public class RequestLogFilter implements Filter {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
-	public static enum ReqType {
-		DEFAULT(true, true), POLL(false, false), PING(true, false);
-		boolean track = false;
-		boolean auth = true;
-
-		ReqType(boolean track, boolean auth) {
-			this.track = track;
-			this.auth = auth;
-		}
-
-		public boolean isTrack() {
-			return track;
-		}
-
-		public boolean isAuth() {
-			return auth;
-		}
-
-		public static ReqType from(HttpServletRequest req) {
-			if (req.getRequestURI().contains(AppParamController.PUB_AMX_PREFIX)) {
-				return PING;
-			}
-			ReqType reqType = ReqType.DEFAULT;
-			String reqTypeStr = req.getHeader(AppConstants.REQUEST_TYPE_XKEY);
-			if (!StringUtils.isEmpty(reqTypeStr)) {
-				reqType = (ReqType) ArgUtil.parseAsEnum(reqTypeStr, reqType);
-			}
-			return reqType;
-		}
-
-	}
-
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// TODO Auto-generated method stub
@@ -95,6 +63,9 @@ public class RequestLogFilter implements Filter {
 		HttpServletRequest req = ((HttpServletRequest) request);
 		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
+			RequestType reqType = RequestType.from(req);
+			AppContextUtil.setRequestType(reqType);
+
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
 			if (StringUtils.isEmpty(siteId)) {
@@ -155,8 +126,6 @@ public class RequestLogFilter implements Filter {
 				AppContextUtil.setTranceId(traceId);
 				AppContextUtil.init();
 			}
-
-			ReqType reqType = ReqType.from(req);
 
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
