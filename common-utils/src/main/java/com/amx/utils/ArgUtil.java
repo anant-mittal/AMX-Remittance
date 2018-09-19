@@ -349,6 +349,16 @@ public final class ArgUtil {
 			ret = parseAsString(value);
 		} else if (defaultValue instanceof Enum) {
 			ret = parseAsEnum(value, (Enum) defaultValue);
+		} else if (defaultValue instanceof BigDecimal) {
+			ret = parseAsBigDecimal(value, (BigDecimal) defaultValue);
+		} else if (defaultValue instanceof Byte) {
+			ret = Byte.parseByte((String) value);
+		} else if (defaultValue instanceof Short) {
+			ret = Short.parseShort((String) value);
+		} else if (defaultValue instanceof Short) {
+			ret = Short.parseShort((String) value);
+		} else if (defaultValue instanceof Float) {
+			ret = Float.parseFloat((String) value);
 		}
 		if (ret == null) {
 			if (!required) {
@@ -357,6 +367,27 @@ public final class ArgUtil {
 			throw ArgExceptionFactory.paramMissingOrInvalid(null, value, defaultValue);
 		}
 		return (T) ret;
+	}
+
+	public static Object parseAsObject(Class clazz, Object objectvalue) {
+		String value = ArgUtil.parseAsString(objectvalue);
+		if (Boolean.class == clazz)
+			return Boolean.parseBoolean(value);
+		if (Byte.class == clazz)
+			return Byte.parseByte(value);
+		if (Short.class == clazz)
+			return Short.parseShort(value);
+		if (Integer.class == clazz)
+			return Integer.parseInt(value);
+		if (Long.class == clazz)
+			return Long.parseLong(value);
+		if (Float.class == clazz)
+			return Float.parseFloat(value);
+		if (Double.class == clazz)
+			return Double.parseDouble(value);
+		if (BigDecimal.class == clazz)
+			return parseAsBigDecimal(value);
+		return value;
 	}
 
 	/**
