@@ -306,9 +306,9 @@ public class MetaController {
 		return districtService.getDistrict(stateId, districtId, languageId);
 	}
 	
-	@RequestMapping(value = "/districtlist/{languageId}/{stateId}/", method = RequestMethod.GET)
-	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("stateId") BigDecimal stateId){
-		return districtService.getAllDistrict(stateId, languageId);
+	@RequestMapping(value = "/districtlist/{stateId}/", method = RequestMethod.GET)
+	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(@PathVariable("stateId") BigDecimal stateId){
+		return districtService.getAllDistrict(stateId, metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/statedesc/{languageId}/{stateId}/{countryId}", method = RequestMethod.GET)
@@ -316,14 +316,14 @@ public class MetaController {
 		return stateService.getState(countryId, stateId, languageId);
 	}
 	
-	@RequestMapping(value = "/statelist/{languageId}/{countryId}/", method = RequestMethod.GET)
-	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
-		return stateService.getStateAll(countryId, languageId);
+	@RequestMapping(value = "/statelist", method = RequestMethod.GET)
+	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(){
+		return stateService.getStateAll(metaData.getCountryId(),metaData.getLanguageId());
 	}
 	
-	@RequestMapping(value = "/citylist/{languageId}/{districtId}", method = RequestMethod.GET)
-	public AmxApiResponse<ViewCityDto, Object> getCityListResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("districtId") BigDecimal districtId){
-		return metaService.getDistrictCity(districtId, languageId);
+	@RequestMapping(value = "/citylist/{districtId}/", method = RequestMethod.GET)
+	public AmxApiResponse<ViewCityDto, Object> getCityListResponse(@PathVariable("districtId") BigDecimal districtId){
+		return metaService.getDistrictCity(districtId, metaData.getLanguageId());
 	}
 		
 	@RequestMapping(value = "/citydesc/{districtid}/{languageId}/{cityid}", method = RequestMethod.GET)

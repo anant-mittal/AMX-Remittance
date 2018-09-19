@@ -49,11 +49,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 			JaxMetaInfo metaInfo = new JaxMetaInfo();
 			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-			metaInfo.setTenant(TenantContextHolder.currentSite());
-			metaInfo.setCompanyId(new BigDecimal(1));
-			metaInfo.setLanguageId(new BigDecimal(1));
-			metaInfo.setCountryBranchId(new BigDecimal(78));
-			metaInfo.setCustomerId(new BigDecimal(5218));
+			metaInfo.setTenant(TenantContextHolder.currentSite());			
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);

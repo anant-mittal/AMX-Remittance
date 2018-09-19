@@ -1,21 +1,19 @@
 package com.amx.jax.branch.service;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.Blob;
-import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +33,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
+import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.CityMaster;
 import com.amx.jax.dbmodel.ContactDetail;
@@ -42,12 +41,13 @@ import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.DistrictMaster;
-import com.amx.jax.dbmodel.DocBlobUpload;
+import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.EmployeeDetails;
 import com.amx.jax.dbmodel.EmploymentTypeMasterView;
 import com.amx.jax.dbmodel.FieldList;
 import com.amx.jax.dbmodel.ProfessionMasterView;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -59,6 +59,7 @@ import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.HomeAddressDetails;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.LocalAddressDetails;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -70,6 +71,8 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.EmploymentTypeRepository;
+import com.amx.jax.repository.IDMSAppMappingRepository;
+import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.service.PrefixService;
@@ -147,6 +150,15 @@ public class OffsitCustRegService implements ICustRegService {
 	
 	@Autowired
 	DOCBLOBRepository docblobRepository;
+	
+	@Autowired
+	IUserFinancialYearRepo userFinancialYearRepo;
+	
+	@Autowired
+	ImageCheckDao imageCheckDao;
+	
+	@Autowired
+	IDMSAppMappingRepository idmsAppMappingRepository;
 	
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -573,26 +585,40 @@ public class OffsitCustRegService implements ICustRegService {
 		customerIdProofRepository.save(custProof);
 	}
 
-	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() throws IOException {		
-		File f = new File("C:\\Users\\Chetan Pawar\\Desktop\\ganpati.jpg");
-		byte[] fileContent = FileUtils.readFileToByteArray(f);
-		DocBlobUpload kycDocument = new DocBlobUpload();
-		kycDocument.setCntryCd(new BigDecimal(1));
-		kycDocument.setDocBlobID(new BigDecimal(1));
-		kycDocument.setSeqNo(new BigDecimal(1));
-		kycDocument.setDocFinYear(new BigDecimal(2018));
-		kycDocument.setDocContent(fileContent);
-		kycDocument.setUpdatedDate(new Date());
-		docblobRepository.save(kycDocument);
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws IOException, ParseException {		
+		
+		BigDecimal financialYear = getDealYearbyDate();
+		//BigDecimal docBlobId = imageCheckDao.callTogenerateBlobID(financialYear);		
+		BigDecimal applCountryId = metaData.getCountryId();
+		DmsApplMapping mappingData = new DmsApplMapping();
+		mappingData.setApplicationCountryId(applCountryId);
+		mappingData.setCustomerId(model.getCustomerId());
+		mappingData.setDocBlobId(new BigDecimal(1)); // need to change value
+		mappingData.setDocFormat("JPG");
+		mappingData.setFinancialYear(financialYear);
+		mappingData.setIdentityExpiryDate(model.getIdentityExpiryDate());
+		mappingData.setIdentityInt(model.getIdenetityInt());
+		mappingData.setIdentityIntId(model.getIdenetityIntId());
+		mappingData.setCreatedBy(metaData.getCustomerId().toString());
+		mappingData.setCreatedOn(new Date());
+		idmsAppMappingRepository.save(mappingData);
 		
 		
-		/*List<DocBlobUpload> doc = docblobRepository.findAll();
-		DocBlobUpload kycDocument = doc.get(0);
-		byte[] f = kycDocument.getDocContent();		
-		FileUtils.writeByteArrayToFile(new File("D:\\chetan\\ganpati123.jpg"), f);*/
+		
 		
 		
 		return AmxApiResponse.build(new BigDecimal(1));
 	}
 
+	public BigDecimal getDealYearbyDate() throws ParseException {		
+		DateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+		Date today = Calendar.getInstance().getTime(); 
+		String date = formatter.format(today);
+		UserFinancialYear list = userFinancialYearRepo.findAllByFinancialYearBegin(date,date);
+		BigDecimal financialYear = list.getFinancialYear();
+		return financialYear;		
+	}
+
+		
+	
 }

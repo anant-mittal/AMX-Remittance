@@ -512,11 +512,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + languageId + "/" + stateId + "/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ViewDistrictDto, Object>>() {
-					});
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/districtlist/" + stateId + "/";
+			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewDistrictDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -533,11 +530,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/" + languageId + "/" + countryId + "/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ViewStateDto, Object>>() {
-					});
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/";
+			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewStateDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -579,15 +573,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId);
-			LOGGER.info("City Input :" + sb.toString());
+			//StringBuffer sb = new StringBuffer();
+			//sb.append("districtId=").append(districtId);
+			//LOGGER.info("City Input :" + sb.toString());
 
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citylist/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
-					});
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/citylist/" + districtId+"/";			
+			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewCityDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {

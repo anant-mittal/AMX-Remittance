@@ -1,13 +1,14 @@
 package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Date;
 
 public class ImageSubmissionRequest {
 	
 	private BigDecimal customerId;
 	private BigDecimal idenetityIntId;
-	private BigDecimal idenetityInt;
+	private String idenetityInt;
 	private Date identityExpiryDate;	
 	private byte[] image;
 	
@@ -25,10 +26,10 @@ public class ImageSubmissionRequest {
 	public void setIdenetityIntId(BigDecimal idenetityIntId) {
 		this.idenetityIntId = idenetityIntId;
 	}
-	public BigDecimal getIdenetityInt() {
+	public String getIdenetityInt() {
 		return idenetityInt;
 	}
-	public void setIdenetityInt(BigDecimal idenetityInt) {
+	public void setIdenetityInt(String idenetityInt) {
 		this.idenetityInt = idenetityInt;
 	}
 	public Date getIdentityExpiryDate() {
@@ -42,6 +43,12 @@ public class ImageSubmissionRequest {
 	}
 	public void setImage(byte[] image) {
 		this.image = image;
+	}
+	@Override
+	public String toString() {
+		return "ImageSubmissionRequest [customerId=" + customerId + ", idenetityIntId=" + idenetityIntId
+				+ ", idenetityInt=" + idenetityInt + ", identityExpiryDate=" + identityExpiryDate + ", image="
+				+ Arrays.toString(image) + "]";
 	}
 	
 	

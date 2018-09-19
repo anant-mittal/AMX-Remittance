@@ -5,6 +5,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
@@ -134,8 +136,8 @@ public class OffsiteCustRegController implements ICustRegService {
 	}
 	
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
-	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument() throws IOException {		
-		return offsiteCustRegService.saveCustomeKycDocument();
+	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model) throws IOException, ParseException{		
+		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 
 }
