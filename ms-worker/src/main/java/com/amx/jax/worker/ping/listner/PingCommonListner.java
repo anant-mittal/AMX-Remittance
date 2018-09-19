@@ -50,36 +50,44 @@ public class PingCommonListner implements ITunnelSubscriber<Event> {
 		modeldata.put("msg", message);
 		wrapper.put("data", modeldata);
 
-		Email email = new Email();
-		email.setModel(wrapper);
-		email.addTo(emailId);
-		email.setHtml(true);
-		email.setTemplate(Templates.SERVER_PING);
-		email.setSubject("Subject:Server Ping");
-		postManClient.sendEmailAsync(email);
+		if (emailId != null) {
+			Email email = new Email();
+			email.setModel(wrapper);
+			email.addTo(emailId);
+			email.setHtml(true);
+			email.setTemplate(Templates.SERVER_PING);
+			email.setSubject("Subject:Server Ping");
+			postManClient.sendEmailAsync(email);
+		}
 
-		PushMessage pushMessage = new PushMessage();
-		pushMessage.setTemplate(Templates.SERVER_PING_JSON);
-		pushMessage.addToUser(customerId);
-		pushMessage.setModel(wrapper);
-		pushNotifyClient.send(pushMessage);
+		if (customerId != null) {
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setTemplate(Templates.SERVER_PING_JSON);
+			pushMessage.addToUser(customerId);
+			pushMessage.setModel(wrapper);
+			pushNotifyClient.send(pushMessage);
+		}
 
-		SMS sms = new SMS();
-		sms.setTemplate(Templates.SERVER_PING);
-		sms.addTo(smsNo);
-		sms.setModel(wrapper);
-		postManClient.sendSMSAsync(sms);
+		if (smsNo != null) {
+			SMS sms = new SMS();
+			sms.setTemplate(Templates.SERVER_PING);
+			sms.addTo(smsNo);
+			sms.setModel(wrapper);
+			postManClient.sendSMSAsync(sms);
+		}
+
+		if (whatsappNo != null) {
+			WAMessage whatsapp = new WAMessage();
+			whatsapp.setMessage(message);
+			whatsapp.addTo(whatsappNo);
+			whatsapp.setModel(wrapper);
+			whatsAppClient.send(whatsapp);
+		}
 
 		Notipy slack = new Notipy();
 		slack.setMessage(message);
 		slack.setChannel(Channel.DEFAULT);
 		postManClient.notifySlack(slack);
-
-		WAMessage whatsapp = new WAMessage();
-		whatsapp.setMessage(message);
-		whatsapp.addTo(whatsappNo);
-		whatsapp.setModel(wrapper);
-		whatsAppClient.send(whatsapp);
 
 	}
 }
