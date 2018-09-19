@@ -7,6 +7,8 @@ public enum TunnelEventXchange {
 	SHOUT_LISTNER("SD"),
 
 	SEND_LISTNER("SH"),
+
+	TASK_WORKER("TW"),
 	/**
 	 * For Audit purpose only
 	 */

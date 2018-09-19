@@ -51,9 +51,8 @@ public class TunnelService implements ITunnelService {
 
 	/**
 	 * For broadcast purpose, it will send event to all the listeners which are
-	 * listening, actively, messages are NOT QUEUED, so there's no guarantee of
-	 * messages being deliver if client goes down at the time of shout was
-	 * triggered.
+	 * listening, actively, messages are QUEUED, so there's guarantee of messages
+	 * being deliver if client goes down at the time of send was triggered.
 	 * 
 	 * Though all the listeners can be informed, qualification is done based on
 	 * {@link TunnelEventXchange}
@@ -74,6 +73,22 @@ public class TunnelService implements ITunnelService {
 		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
 		queue.add(message);
 		return topicQueue.publish(message);
+	}
+
+	public <T> long task(String topic, T messagePayload) {
+		if (redisson == null) {
+			return 0L;
+		}
+		AppContext context = AppContextUtil.getContext();
+		TunnelMessage<T> message = new TunnelMessage<T>(messagePayload, context);
+		message.setTopic(topic);
+
+		RQueue<TunnelMessage<T>> queue = redisson.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
+		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+
+		AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.PUB_OUT, message));
+		queue.add(message);
+		return topicQueue.publish(message.getId());
 	}
 
 	/**
