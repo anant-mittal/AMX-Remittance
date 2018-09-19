@@ -1,17 +1,24 @@
 package com.amx.jax.rbaac.repository;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
-import com.amx.jax.rbaac.dbmodel.PermissionMaster;
+import com.amx.jax.rbaac.dbmodel.Permission;
 
-public interface IPermissionRepository extends JpaRepository<PermissionMaster, Serializable>{
-	
-	@Query(value = "select * from EX_PERMISSION_MASTER where MODULE_ID=?1 and FUNCTIONALITY_TYPE_ID=?2 and FUNCTIONALITY=?3 and ISACTIVE='Y'", nativeQuery = true)
-	public PermissionMaster getPermissionMaster(BigDecimal moduleId,BigDecimal functionalityTypeId,String functionality);
-	
+/**
+ * The Interface IPermissionRepository.
+ */
+public interface IPermissionRepository extends JpaRepository<Permission, Serializable> {
+
+	/**
+	 * Find by context.
+	 *
+	 * @param context
+	 *            the context
+	 * @return the list
+	 */
+	public List<Permission> findByContext(String context);
+
 }
-

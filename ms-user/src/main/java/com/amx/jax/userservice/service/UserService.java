@@ -20,7 +20,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
@@ -40,7 +39,7 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.auditlog.CustomerAuditEvent;
-import com.amx.jax.auditlog.JaxAuditEvent.Type;
+import com.amx.jax.auditlog.JaxUserAuditEvent;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.CustomerVerificationType;
 import com.amx.jax.constant.JaxApiFlow;
@@ -56,6 +55,7 @@ import com.amx.jax.dbmodel.LoginLogoutHistory;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
 import com.amx.jax.dbmodel.ViewState;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
@@ -344,6 +344,9 @@ public class UserService extends AbstractUserService {
 			if (customer != null) {
 				customerId = customer.getCustomerId();
 			}
+			
+			//---- check for blacklisted customer ----
+			userValidationService.validateBlackListedCustomerForLogin(customer);
 		}
 		logger.info("customerId is --> " + customerId);
 		userValidationService.validateCustomerVerification(customerId);
@@ -561,12 +564,12 @@ public class UserService extends AbstractUserService {
 			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
 			response.getData().getValues().addAll(result);
 		}catch(GlobalException e) {
-		    auditService.log (createUserServiceEvent(new BigDecimal(customerId), Type.SEC_QUE_GENERATE_EXCEPTION));
+		    auditService.log (createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
 		    throw e;
 		}
 		response.getData().setType("quest");
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(new BigDecimal(customerId), Type.SEC_QUE_GENERATE_SUCCESS));
+		auditService.log (createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_SUCCESS));
 		return response;
 	}
 
@@ -591,7 +594,7 @@ public class UserService extends AbstractUserService {
 		try {
 		    userValidationService.validateCustomerLockCount(onlineCustomer);
 		}catch(GlobalException e) {
-            auditService.log (createUserServiceEvent(model, Type.SEC_QUE_VALIDATE_USER_LOGIN_ATTEMPT_EXCEEDED));
+            auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_USER_LOGIN_ATTEMPT_EXCEEDED));
             throw e;
         }
 		//commented trailing s and special characters removal
@@ -599,7 +602,7 @@ public class UserService extends AbstractUserService {
 		try {
 		    userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		}catch(GlobalException e) {
-	        auditService.log (createUserServiceEvent(model, Type.SEC_QUE_VALIDATE_INCORRECT_ANS));
+	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_INCORRECT_ANS));
 		    throw e;
 		}		
 		this.unlockCustomer(onlineCustomer);
@@ -608,20 +611,20 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(model, Type.SEC_QUE_VALIDATE_SUCCESS));
+		auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_SUCCESS));
 		return response;
 	}
 
 	public ApiResponse updatePassword(CustomerModel model) {
 		BigDecimal custId = (model.getCustomerId() == null) ? metaData.getCustomerId() : null;
 		if (custId == null) {
-			auditService.log (createUserServiceEvent(model, Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
+			auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_CUSTOMER_ID_NULL));
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		try {
 		    userValidationService.validateOtpFlow(model);
 		}catch (InvalidOtpException e) {
-	        auditService.log (createUserServiceEvent(model, Type.CUSTOMER_PASSWORD_UPDATE_INVALID_OTP));
+	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_INVALID_OTP));
 		    throw e;
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(custId);
@@ -632,7 +635,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(model, Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
+		auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_SUCCESS));
 		return response;
 	}
 	
@@ -795,7 +798,7 @@ public class UserService extends AbstractUserService {
 		BigDecimal customerId = metaData.getCustomerId();
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer == null) {
-			auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
+			auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
 			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -804,7 +807,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_UNLOCK_SUCCESS));
+		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
 		return response;
 
 	}
@@ -825,7 +828,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_DEACTIVATE_SUCCESS));
+		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
 		return response;
 
 	}
@@ -845,7 +848,7 @@ public class UserService extends AbstractUserService {
 
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customerId);
 		if (onlineCustomer == null) {
-			auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
+			auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_USER_NOT_REGISTERED));
 			throw new GlobalException("User with userId: " + customerId + " is not registered or not active",
 					JaxError.USER_NOT_REGISTERED);
 		}
@@ -854,7 +857,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_UNLOCK_SUCCESS));
+		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_UNLOCK_SUCCESS));
 		return response;
 	}
 
@@ -880,7 +883,7 @@ public class UserService extends AbstractUserService {
 		response.getData().getValues().add(responseModel);
 		response.getData().setType(responseModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
-		auditService.log (createUserServiceEvent(customerId,Type.CUSTOMER_DEACTIVATE_SUCCESS));
+		auditService.log (createUserServiceEvent(customerId,JaxUserAuditEvent.Type.CUSTOMER_DEACTIVATE_SUCCESS));
 		return response;
 
 	}
@@ -914,42 +917,42 @@ public class UserService extends AbstractUserService {
 	        response.getData().getValues().add(cusModel);
 	        response.getData().setType(cusModel.getModelType());
 	        response.setResponseStatus(ResponseStatus.OK);
-	        auditService.log (createUserServiceEvent(customerModel,Type.CUSTOMER_LOGIN_SUCCESS));
+	        auditService.log (createUserServiceEvent(customerModel,JaxUserAuditEvent.Type.CUSTOMER_LOGIN_SUCCESS));
 	        return response;
 	    }
 	   
 		private void addMyProfileAuditLog(CustomerModel model) {
 		    List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
 		    if (!CollectionUtils.isEmpty(secQuestions)) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_SEC_QUE_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_SEC_QUE_UPDATE));
 		    }
 		    if (model.getCaption() != null) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_CAPTION_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_CAPTION_UPDATE));
 		    }
 		    if (model.getImageUrl() != null) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_IMAGE_URL_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_IMAGE_URL_UPDATE));
 		    }
 
 		    if (model.getLoginId() != null) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_LOG_IN_ID_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_LOG_IN_ID_UPDATE));
 		    }
 		    
 		    if (model.getPassword() != null) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_PASSWORD_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_PASSWORD_UPDATE));
 		    }
 		    
 		    //update new email id
 		    if (model.getEmail() != null) {
-		        auditService.log (createUserServiceEvent(model, Type.MY_PROFILE_EMAIL_UPDATE));
+		        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.MY_PROFILE_EMAIL_UPDATE));
 		    }
 		}
 	   
-	    private AuditEvent createUserServiceEvent(CustomerModel model, Type type) {
+	    private AuditEvent createUserServiceEvent(CustomerModel model, JaxUserAuditEvent.Type type) {
 	        AuditEvent beneAuditEvent = new CustomerAuditEvent(type,model);
 	        return beneAuditEvent;
 	    }	
 	    
-       private AuditEvent createUserServiceEvent(BigDecimal customerId, Type type) {
+       private AuditEvent createUserServiceEvent(BigDecimal customerId, JaxUserAuditEvent.Type type) {
             AuditEvent beneAuditEvent = new CustomerAuditEvent(type,customerId);
             return beneAuditEvent;
         }

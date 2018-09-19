@@ -2,6 +2,7 @@ package com.amx.jax.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -348,8 +349,15 @@ public class PlaceOrderService extends AbstractService {
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
 			placeOrderList.addAll(placeOrderList2);
 
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MMM-yyyy");
+			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
+
+			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("HH:MM a z");
+			String time = simpletimeFormat.format(new Date());
+			
+		    NumberFormat myFormat = NumberFormat.getInstance();
+		    myFormat.setGroupingUsed(true);
+
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
@@ -361,13 +369,14 @@ public class PlaceOrderService extends AbstractService {
 					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
 					placeorderNotDTO.setLastName(cusotmer.getLastName());
 					placeorderNotDTO.setEmail(cusotmer.getEmail());
-					placeorderNotDTO.setInputAmount(placeorder.getPayAmount());
-					placeorderNotDTO.setOutputAmount(placeorder.getReceiveAmount());
+					placeorderNotDTO.setInputAmount(myFormat.format(placeorder.getPayAmount()));
+					placeorderNotDTO.setOutputAmount(myFormat.format(placeorder.getReceiveAmount()));
 					placeorderNotDTO.setInputCur(placeorder.getBaseCurrencyQuote());
 					placeorderNotDTO.setOutputCur(placeorder.getForeignCurrencyQuote());
 					placeorderNotDTO.setRate(placeorder.getTargetExchangeRate());
 					placeorderNotDTO.setOnlinePlaceOrderId(placeorder.getOnlinePlaceOrderId());
 					placeorderNotDTO.setDate(date);
+					placeorderNotDTO.setTime(time);
 					placeorderNotDTO.setCustomerId(placeorder.getCustomerId());
 					dtoList.add(placeorderNotDTO);
 

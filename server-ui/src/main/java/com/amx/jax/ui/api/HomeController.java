@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
@@ -31,7 +33,6 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -43,7 +44,7 @@ import io.swagger.annotations.Api;
 public class HomeController {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+	private static final Logger LOGGER = LoggerService.getLogger(HomeController.class);
 
 	/** The web app config. */
 	@Autowired
@@ -74,6 +75,7 @@ public class HomeController {
 	/** The post man service. */
 	@Autowired
 	private RestService restService;
+	
 
 	/**
 	 * Gets the version.
@@ -104,7 +106,7 @@ public class HomeController {
 	 *            the request
 	 * @return the string
 	 */
-	@Timed
+	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
 	public String loginPing(HttpServletRequest request) {
@@ -126,9 +128,10 @@ public class HomeController {
 	 *            the model
 	 * @return the string
 	 */
-	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
+		LOGGER.debug("This is debug Statment");
+		LOGGER.info("This is info Statment");
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
 		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
@@ -147,6 +150,8 @@ public class HomeController {
 			"Accept=application/json", "Accept=application/v0+json" })
 	@ResponseBody
 	public String loginPJson() {
+		LOGGER.debug("This is debug Statment");
+		LOGGER.info("This is debug Statment");
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
 		wrapper.setMessage(WebResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 		return JsonUtil.toJson(wrapper);

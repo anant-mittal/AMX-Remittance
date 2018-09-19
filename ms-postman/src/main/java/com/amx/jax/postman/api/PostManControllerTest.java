@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -231,16 +232,17 @@ public class PostManControllerTest {
 
 		if ("pdf".equals(ext)) {
 			file.setType(File.Type.PDF);
-			file = postManClient.processTemplate(file);
+			file = postManClient.processTemplate(file).getResult();
 			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
 		} else if ("json".equals(ext)) {
 			file.setType(File.Type.JSON);
-			file = postManClient.processTemplate(file);
+			file = postManClient.processTemplate(file).getResult();
 			return file.getContent();
 		} else if ("html".equals(ext)) {
-			file = postManClient.processTemplate(file);
+			AmxApiResponse<File, Object> resp = postManClient.processTemplate(file);
+			file = resp.getResult();
 			if (email != null) {
 				Email eml = new Email();
 				eml.setSubject("Email Template : " + template);

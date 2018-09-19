@@ -3,10 +3,7 @@ package com.amx.jax.validation;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AdditionalFlexRequiredException;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.FlexFieldDto;
@@ -35,6 +31,7 @@ import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
 import com.amx.jax.dbmodel.remittance.FlexFiledView;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
 import com.amx.jax.repository.IAdditionalDataDisplayDao;
@@ -142,10 +139,21 @@ public class RemittanceTransactionRequestValidator {
 			LOGGER.error(requiredFlexFields.toString());
 			AdditionalFlexRequiredException exp = new AdditionalFlexRequiredException(
 					"Addtional flex fields are required", JaxError.ADDTIONAL_FLEX_FIELD_REQUIRED);
+			processFlexFields(requiredFlexFields);
 			exp.setMeta(requiredFlexFields);
 			throw exp;
 		}
 
+	}
+
+	/**
+	 * process flex fields for further modification
+	 */
+	private void processFlexFields(List<JaxConditionalFieldDto> requiredFlexFields) {
+		// make type field to be upper case
+		requiredFlexFields.forEach(i -> {
+			i.getField().setType(i.getField().getType().toUpperCase());
+		});
 	}
 
 	private void validateFlexFieldValues(Map<String, FlexFieldDto> requestFlexFields) {
@@ -194,7 +202,7 @@ public class RemittanceTransactionRequestValidator {
 				i.setAdditionalValidations(additionalValidations);
 			}
 
-			if ("PAYMENT PERIOD EXPIRY PERIOD".equals(i.getName())) {
+			if ("PAYMENT PERIOD EXPIRY DATE".equals(i.getName())) {
 				Map<String, Object> additionalValidations = i.getAdditionalValidations();
 				additionalValidations.put("gt", "${PAYMENT PERIOD FROM DATE}");
 				additionalValidations.put("format", "MM/DD/YYYY");

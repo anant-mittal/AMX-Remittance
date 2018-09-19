@@ -9,7 +9,48 @@ public abstract class AbstractEvent implements Serializable {
 	private static final long serialVersionUID = -3042991299608634785L;
 
 	public enum EventMarker implements EnumType {
-		AUDIT, TRACK, GAUGE, EXCEP
+
+		/**
+		 * In case some alert is required SOS
+		 */
+		ALERT,
+
+		/**
+		 * Failure cases, usually for developers
+		 */
+		EXCEP,
+
+		/**
+		 * Event Important from business point of view, these event will be saved in
+		 * DataBase
+		 */
+		AUDIT,
+
+		/**
+		 * Just information logs, NO DB, these are logs which can become candidate for
+		 * AUDIT
+		 */
+		NOTICE,
+
+		/**
+		 * Events meant to be logged from method or event performance evaluation
+		 * perspective
+		 * 
+		 */
+		GAUGE,
+
+		/**
+		 * Events from tracking perspective, for example request/response coming/going
+		 * in/out to/from service or
+		 */
+		TRACK,
+
+		/**
+		 * Application Performance logs
+		 * 
+		 */
+		METER
+
 	}
 
 	public interface EventType extends EnumType {

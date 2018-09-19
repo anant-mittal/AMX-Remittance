@@ -22,7 +22,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -33,12 +32,14 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
@@ -364,14 +365,14 @@ public class ExchangeRateService extends AbstractService {
 		ApiResponse<MinMaxExRateDTO> apiResponse = getBlackApiResponse();
 	
 		BigDecimal languageId = meta.getLanguageId();
-		ApiResponse responseFromCur = companyService.getCompanyDetails(languageId);
-		List listFromCur = responseFromCur.getData().getValues();
+		AmxApiResponse<ViewCompanyDetailDTO, Object> responseFromCur = companyService.getCompanyDetails(languageId);
+		List listFromCur = responseFromCur.getResults();
 		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
 		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
 		
 		CurrencyMasterModel getFromCurrencyData = currencyMasterService.getCurrencyMasterById(fromCurrency);
 		
-		ApiResponse responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
+		AmxApiResponse<CurrencyMasterDTO, Object> responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
 		List<CurrencyMasterDTO> listToCur = responseToCur.getResults();
 		listToCur.add(currencyMasterService.convertModel(getFromCurrencyData));
 		List dtoList = getMinMaxData(listToCur, fromCurrency);

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
@@ -34,6 +33,7 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
@@ -156,6 +156,9 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setMobile(customerHomeAddress.getMobile());
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
+			contactDetail.setLanguageId(customer.getLanguageId());
+			contactDetail.setCreatedBy(customer.getCreatedBy());
+			contactDetail.setCreationDate(customer.getCreationDate());
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));

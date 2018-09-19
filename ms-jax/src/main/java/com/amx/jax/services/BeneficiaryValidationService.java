@@ -16,7 +16,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryAccountPredicateCreator;
 import com.amx.jax.dbmodel.bene.predicate.BeneficiaryPersonalDetailPredicateCreator;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;

@@ -48,12 +48,11 @@
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>common-amx</artifactId>
+			<artifactId>common-lib</artifactId>
 		</dependency>
 
 		<dependency>
@@ -81,6 +80,12 @@
 
 
 		<!-- jasper reports -->
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+		</dependency>
+
 
 		<dependency>
 			<groupId>net.sf.jasperreports</groupId>

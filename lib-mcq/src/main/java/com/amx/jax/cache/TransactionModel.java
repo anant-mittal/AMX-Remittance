@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import com.amx.jax.def.ATransactionModel;
 import com.amx.jax.def.ICacheBox;
 
-
 public abstract class TransactionModel<T> extends ATransactionModel<T> {
 
 	@Component
@@ -23,7 +22,11 @@ public abstract class TransactionModel<T> extends ATransactionModel<T> {
 		return this.cache;
 	}
 
-	public abstract T init();
+	public T init() {
+		return null;
+	};
 
-	public abstract T commit();
+	public T commit() {
+		return null;
+	};
 }
