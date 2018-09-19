@@ -40,7 +40,7 @@ public class RequestLogFilter implements Filter {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static enum ReqType {
-		DEFAULT(true, true), POLL(false, false), PING(false, false);
+		DEFAULT(true, true), POLL(false, false), PING(true, false);
 		boolean track = false;
 		boolean auth = true;
 
