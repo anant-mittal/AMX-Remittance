@@ -9,9 +9,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,8 +70,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * @return the amx api response
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.INIT_AUTH)
+	@RequestMapping(value = ApiEndPoints.INIT_AUTH, method = RequestMethod.POST)
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(
 			@RequestBody UserAuthInitReqDTO userAuthInitReqDTO) {
 
@@ -89,8 +89,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * UserAuthorisationReqDTO)
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.AUTHORISE)
+	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestBody UserAuthorisationReqDTO reqDto) {
 
 		LOGGER.info("Received request for authorising User Access : " + reqDto.getEmployeeNo() + " from Ip Address: "
@@ -148,8 +147,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * RoleRequestDTO)
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.ROLES_SAVE)
+	@RequestMapping(value = ApiEndPoints.ROLES_SAVE, method = RequestMethod.POST)
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(
 			@RequestBody(required = true) RoleRequestDTO roleRequestDTO) {
 
@@ -168,17 +166,16 @@ public class RbaacServiceApiController implements RbaacService {
 	 * BigDecimal, java.lang.String, java.lang.String)
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH)
+	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
-			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddress,
+			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddr,
 			@RequestParam String deviceId) {
 
-		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddress
+		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddr
 				+ " from device Id: " + deviceId);
 
 		UserRoleMappingsResponseDTO urMappingsResponseDTO = userRoleService
-				.getUserRoleMappingsForBranch(countryBranchId, ipAddress, deviceId);
+				.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
 
 		return AmxApiResponse.build(urMappingsResponseDTO);
 	}
@@ -191,8 +188,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * request.UserRoleMappingsRequestDTO)
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.RA_UPDATE)
+	@RequestMapping(value = ApiEndPoints.RA_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(
 			@RequestBody(required = true) UserRoleMappingsRequestDTO urmRequestDTO) {
 
@@ -213,8 +209,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.UAC_UPDATE)
+	@RequestMapping(value = ApiEndPoints.UAC_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
 			@RequestBody(required = true) EmployeeDetailsRequestDTO edRequestDTO) {
 
@@ -233,8 +228,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 */
 
 	@Override
-	@ResponseBody
-	@GetMapping(value = ApiEndPoints.TEST_GET)
+	@RequestMapping(value = ApiEndPoints.TEST_GET, method = RequestMethod.GET)
 	public AmxApiResponse<String, Object> testGet() {
 
 		String resp = respTestService.testGetUrlCall();
@@ -248,8 +242,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * @see com.amx.jax.rbaac.RbaacService#testPost()
 	 */
 	@Override
-	@ResponseBody
-	@PostMapping(value = ApiEndPoints.TEST_POST)
+	@RequestMapping(value = ApiEndPoints.TEST_POST, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> testPost() {
 
 		return AmxApiResponse.build("Success");
