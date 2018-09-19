@@ -1,4 +1,4 @@
-package com.amx.amxlib.error;
+package com.amx.jax.error;
 
 import com.amx.jax.exception.IExceptionEnum;
 
