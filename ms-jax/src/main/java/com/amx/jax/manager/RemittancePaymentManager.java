@@ -156,7 +156,6 @@ public class RemittancePaymentManager extends AbstractService{
 						// promotion check
 						promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
 								remittanceTransaction.getDocumentFinancialyear());
-
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
