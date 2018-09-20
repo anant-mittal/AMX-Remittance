@@ -181,6 +181,8 @@ public class RemittanceTransactionManager {
 	JaxProperties jaxProperties;
 	@Autowired
 	NewExchangeRateService newExchangeRateService;
+	@Autowired
+	PromotionManager promotionManager;
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -791,6 +793,7 @@ public class RemittanceTransactionManager {
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
 					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
+			model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
 		}
 		model.setTransactionReference(getTransactionReference(application));
 		if ("Y".equals(application.getLoyaltyPointInd())) {

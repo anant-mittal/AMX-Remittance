@@ -6,6 +6,7 @@ public class RemittanceTransactionStatusRequestModel {
 
 	BigDecimal applicationDocumentNumber;
 	BigDecimal documentFinancialYear;
+	
 	public BigDecimal getApplicationDocumentNumber() {
 		return applicationDocumentNumber;
 	}
@@ -23,4 +24,5 @@ public class RemittanceTransactionStatusRequestModel {
 		return "RemittanceTransactionStatusRequestModel [applicationDocumentNumber=" + applicationDocumentNumber
 				+ ", documentFinancialYear=" + documentFinancialYear + "]";
 	}
+	
 }

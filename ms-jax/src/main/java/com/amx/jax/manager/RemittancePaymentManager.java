@@ -21,6 +21,7 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
@@ -77,6 +78,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	private ReportManagerService reportManagerService;
+	@Autowired
+	PromotionManager promotionManager; 
 	
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
@@ -158,6 +161,11 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
+						// promotion check
+						PromotionDto promotionDto = promotionManager.promotionWinnerCheck(
+								remittanceTransaction.getDocumentNo(),
+								remittanceTransaction.getDocumentFinancialyear());
+						rrsrl.get(0).setPromotionDto(promotionDto);
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
