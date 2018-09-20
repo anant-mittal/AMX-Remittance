@@ -67,7 +67,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/new-field-list/";
 			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
-			return restService.ajax(url).post()
+			return restService.ajax(url).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
