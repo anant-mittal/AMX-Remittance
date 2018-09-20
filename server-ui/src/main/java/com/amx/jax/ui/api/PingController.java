@@ -51,6 +51,8 @@ public class PingController {
 		event.setData(wrapper.getData());
 		if (scheme == TunnelEventXchange.SEND_LISTNER) {
 			tunnelService.send(topic.toString(), event);
+		} else if (scheme == TunnelEventXchange.TASK_WORKER) {
+			tunnelService.task(topic.toString(), event);
 		} else {
 			tunnelService.shout(topic.toString(), event);
 		}
