@@ -22,8 +22,8 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittanceApplicationManager;
 import com.amx.jax.repository.AdditionalInstructionDataRepository;
-import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IFlexFiledView;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.RemittanceApplicationBeneRepository;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.repository.RemittanceTransactionRepository;
@@ -98,6 +98,7 @@ public class RemittanceApplicationDao {
             if (poList!=null && poList.size()!=0) {
                 po=poList.get(0);
                 po.setRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+                //po.setIsActive("C");
                 placeOrderdao.save(po);
             }else {
                 logger.info("Place Order not found for place_order_id: " + model.getPlaceOrderId());

@@ -28,8 +28,8 @@ public class ContactDetail implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal contactDetailId;
 	private Customer fsCustomer;
-	/*private LanguageType fsLanguageType;
-	 */
+	private BigDecimal languageId;
+	 
 	private BizComponentData fsBizComponentDataByContactTypeId;
 	
 	private CountryMaster fsCountryMaster;
@@ -110,17 +110,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsCustomer(Customer fsCustomer) {
 		this.fsCustomer = fsCustomer;
 	}
-/*
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "LANGUAGE_ID")
-	public LanguageType getFsLanguageType() {
-		return this.fsLanguageType;
-	}
-
-	public void setFsLanguageType(LanguageType fsLanguageType) {
-		this.fsLanguageType = fsLanguageType;
-	}
-*/
+	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CONTACT_TYPE_ID")
@@ -309,6 +299,15 @@ public class ContactDetail implements java.io.Serializable {
 
 	public void setTelephoneCode(String telephoneCode) {
 		this.telephoneCode = telephoneCode;
+	}
+
+	@Column(name = "LANGUAGE_ID")
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
 	}
 
 	/*@Column(name="CUSTOMER_ID")

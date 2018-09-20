@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
@@ -135,7 +132,7 @@ public class PlaceOrderClientTest {
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
 		ApiResponse<PlaceOrderNotificationDTO> response = null;
-		response = client.getPlaceOrderOnTrigger(new BigDecimal(1), new BigDecimal(200), new BigDecimal(94), new BigDecimal(4), new BigDecimal(1256),new BigDecimal(300));
+		response = client.getPlaceOrderOnTrigger(new BigDecimal(1));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

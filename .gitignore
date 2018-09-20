@@ -24,3 +24,6 @@ D:\\payment-service.log
 */.mvn/
 */target/*.class
 *.orig
+*-*/logs/*.log
+*-*/target/*
+logs/*.log

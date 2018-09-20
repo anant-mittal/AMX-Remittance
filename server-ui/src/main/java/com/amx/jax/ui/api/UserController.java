@@ -16,7 +16,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
@@ -25,15 +25,14 @@ import com.amx.jax.ui.model.AuthDataInterface.UserUpdateResponse;
 import com.amx.jax.ui.model.UserMetaData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.service.GeoHotPoints;
 import com.amx.jax.ui.service.HotPointService;
-import com.amx.jax.ui.service.HotPointService.HotPoints;
 import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
 import com.amx.jax.ui.session.UserDeviceBean;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -79,7 +78,7 @@ public class UserController {
 
 	/** The fb push client. */
 	@Autowired
-	private FBPushClient fbPushClient;
+	private PushNotifyClient pushNotifyClient;
 
 	/** The hot point service. */
 	@Autowired
@@ -94,7 +93,6 @@ public class UserController {
 	 *            the app version
 	 * @return the meta
 	 */
-	@Timed
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
 			@RequestParam(required = false) String appVersion) {
@@ -150,7 +148,7 @@ public class UserController {
 	 */
 	@RequestMapping(value = "/pub/user/notify/hotpoint", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> meNotify(@RequestParam(required = false) String token,
-			@RequestParam(required = false) HotPoints hotpoint, @RequestParam BigDecimal customerId)
+			@RequestParam(required = false) GeoHotPoints hotpoint, @RequestParam BigDecimal customerId)
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
@@ -168,7 +166,7 @@ public class UserController {
 	@RequestMapping(value = "/api/user/notify/register", method = { RequestMethod.POST })
 	public ResponseWrapper<Object> registerNotify(@RequestParam String token) throws PostManException {
 		for (String topic : userService.getNotifyTopics("")) {
-			fbPushClient.subscribe(token, topic + "_web");
+			pushNotifyClient.subscribe(token, topic + "_web");
 		}
 		return new ResponseWrapper<Object>();
 	}

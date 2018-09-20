@@ -24,10 +24,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.multitenant.MultiTenantConnectionProviderImpl;
 import com.amx.jax.util.DBUtil;
 
@@ -977,7 +977,7 @@ public class ApplicationProcedureDao {
 
 	public Map<String, Object> getRoutingDetailFromOthProcedure(Map<String, Object> inputValue) {
 
-		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+		LOGGER.info("In getRoutingDetailFromOthProcedure params:" + inputValue.toString());
 
 		List<SqlParameter> declareInAndOutputParameters = Arrays.asList(new SqlParameter(Types.NUMERIC),
 				new SqlParameter(Types.VARCHAR), new SqlParameter(Types.NUMERIC), new SqlParameter(Types.NUMERIC),
@@ -1045,7 +1045,7 @@ public class ApplicationProcedureDao {
 
 	public Map<String, Object> getRoutingDetailFromOthRateProcedure(Map<String, Object> inputValue) {
 
-		LOGGER.info("In getRoutingDetails params:" + inputValue.toString());
+		LOGGER.info("In getRoutingDetailFromOthRateProcedure params:" + inputValue.toString());
 
 		Connection connection = null;
 		CallableStatement cs = null;

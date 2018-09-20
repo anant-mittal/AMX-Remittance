@@ -10,7 +10,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestAnswerModelDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -19,6 +18,7 @@ import com.amx.amxlib.model.OptionAnswer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.OnlineQuestModel;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IQuestionAnswerRepository;
 import com.amx.jax.service.QuestionAnswerService;
@@ -58,11 +58,11 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> generateRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			Integer customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
 		}
 		if (size > 4) {
 			throw new GlobalException("Random questions size can't be more than 4",
-					JaxError.INVALID_RANDOM_QUEST_SIZE.getCode());
+					JaxError.INVALID_RANDOM_QUEST_SIZE.getStatusKey());
 		}
 		List<BigDecimal> questions = new ArrayList<>();
 		questions.add(onlineCustomer.getSecurityQuestion1());
@@ -79,7 +79,7 @@ public class SecurityQuestionsManager {
 	public List<QuestModelDTO> getDataVerificationRandomQuestions(CustomerOnlineRegistration onlineCustomer, Integer size,
 			BigDecimal customerId) {
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
 		}
 
 		QuestModelDTO q1 = CustomerDataVerificationQuestion.Q1.getQuestModelDTO();
