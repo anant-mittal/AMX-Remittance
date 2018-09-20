@@ -70,7 +70,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 		modeldata.put("date", trnxDate);
 		wrapper.put("data", modeldata);
 
-		if (ArgUtil.isEmpty(emailId)) {
+		if (!ArgUtil.isEmpty(emailId)) {
 
 			Email email = new Email();
 
@@ -89,7 +89,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 			postManClient.sendEmailAsync(email);
 		}
 
-		if (ArgUtil.isEmpty(smsNo)) {
+		if (!ArgUtil.isEmpty(smsNo)) {
 
 		}
 
