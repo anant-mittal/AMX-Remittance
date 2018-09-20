@@ -1,7 +1,8 @@
 package com.amx.jax.offsite.controller;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
@@ -49,12 +52,13 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/new-field-list/", method = { RequestMethod.POST })
-	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 
 		logger.info("field list request called for tenant : " + model.getTenant() + " , nationality : "
-				+ model.getNationality() + " and component : " + model.getComponent() + " and component Data : " + model.getComponentData());
+				+ model.getNationality() + " and component : " + model.getComponent() + " and component Data Id : " 
+				+ model.getComponentDataId() + " and component Data Desc : " + model.getComponentDataDesc());
 		
-		AmxApiResponse<Map<String, FieldListDto>, Object> finalResponse =  offsiteService.getFieldList(model);
+		AmxApiResponse<FieldListDto, Object> finalResponse =  offsiteService.getFieldList(model);
 		
 		return finalResponse;
 
@@ -140,6 +144,24 @@ public class OffsiteController {
 						+ customerPersonalDetail.getTelPrefix());
 
 		return offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail);
+	}
+	
+	@RequestMapping(value = "/offsite-cust-reg/saveCustomerInfo/", method = { RequestMethod.POST })
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+
+		logger.info(
+				"Save Customer Details request called for Customer Employee Details : " + model.getCustomerEmploymentDetails() + " , article details id : "
+						+ model.getCustomerPersonalDetail() + " and country id : " + model.getHomeAddressDestails() + " and country id : " + model.getLocalAddressDetails());
+
+		return offsiteCustRegClient.saveCustomerInfo(model);
+	}
+	
+	@RequestMapping(value = "/offsite-cust-reg/saveCustomerKYCDoc/", method = { RequestMethod.POST })
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData) throws ParseException {
+
+		logger.info("Save Customer KYC request called for ImageSubmissionRequest : " + modelData );
+
+		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
 }

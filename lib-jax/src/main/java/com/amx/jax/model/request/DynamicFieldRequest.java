@@ -1,10 +1,13 @@
 package com.amx.jax.model.request;
 
+import java.math.BigDecimal;
+
 public class DynamicFieldRequest {
 	private String tenant;
 	private String nationality;
 	private String component;
-	private String componentData;
+	private BigDecimal componentDataId;
+	private String componentDataDesc;
 
 	public String getTenant() {
 		return tenant;
@@ -30,17 +33,25 @@ public class DynamicFieldRequest {
 		this.component = component;
 	}
 
-	public String getComponentData() {
-		return componentData;
+	public BigDecimal getComponentDataId() {
+		return componentDataId;
 	}
 
-	public void setComponentData(String componentData) {
-		this.componentData = componentData;
+	public void setComponentDataId(BigDecimal componentDataId) {
+		this.componentDataId = componentDataId;
+	}
+
+	public String getComponentDataDesc() {
+		return componentDataDesc;
+	}
+
+	public void setComponentDataDesc(String componentDataDesc) {
+		this.componentDataDesc = componentDataDesc;
 	}
 
 	@Override
 	public String toString() {
-		return "DynamicFieldRequest [tenant=" + tenant + ", nationality=" + nationality + ", component=" + component +", componentData=" + componentData + "]";
+		return "DynamicFieldRequest [tenant=" + tenant + ", nationality=" + nationality + ", component=" + component +", componentDataId =" + componentDataId + ", componentDataDesc=" + componentDataDesc + "]";
 	}
 
 }
