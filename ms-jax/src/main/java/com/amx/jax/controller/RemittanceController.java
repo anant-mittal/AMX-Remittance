@@ -87,7 +87,8 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/remitReport/", method = RequestMethod.POST)
-	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO) {
+	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
+			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
@@ -100,7 +101,7 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCurrencyId());
 
 		ApiResponse response = reportManagerService
-				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
+				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, promotion);
 		return response;
 	}
 
@@ -168,9 +169,11 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/status/", method = RequestMethod.POST)
-	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request) {
+	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request,
+			@RequestParam("promotion") Boolean promotion) {
 
 		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		request.setPromotion(promotion);
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
