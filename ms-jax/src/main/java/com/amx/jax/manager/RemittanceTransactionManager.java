@@ -793,7 +793,9 @@ public class RemittanceTransactionManager {
 			TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
 					.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
 			model.setTransactionHistroyDTO(transactionHistoryDto);
-			model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+			if (Boolean.TRUE.equals(request.getPromotion())) {
+				model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
+			}
 		}
 		model.setTransactionReference(getTransactionReference(application));
 		if ("Y".equals(application.getLoyaltyPointInd())) {

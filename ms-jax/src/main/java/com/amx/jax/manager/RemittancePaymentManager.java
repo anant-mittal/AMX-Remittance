@@ -153,7 +153,11 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+						// promotion check
+						promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+								remittanceTransaction.getDocumentFinancialyear());
+
+						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
 						PersonInfo personinfo = new PersonInfo();
@@ -161,11 +165,6 @@ public class RemittancePaymentManager extends AbstractService{
 							BeanUtils.copyProperties(personinfo, customer);
 						} catch (Exception e) {
 						}
-						// promotion check
-						PromotionDto promotionDto = promotionManager.promotionWinnerCheck(
-								remittanceTransaction.getDocumentNo(),
-								remittanceTransaction.getDocumentFinancialyear());
-						rrsrl.get(0).setPromotionDto(promotionDto);
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
