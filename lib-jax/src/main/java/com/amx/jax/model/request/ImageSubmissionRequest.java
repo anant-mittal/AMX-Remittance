@@ -12,52 +12,23 @@ public class ImageSubmissionRequest implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
-	private BigDecimal idenetityIntId;
-	private String idenetityInt;
-	private Date identityExpiryDate;	
-	private byte[] image;
-	
-	
+	private String image;	
 	
 	public BigDecimal getCustomerId() {
 		return customerId;
 	}
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
-	}
-	public BigDecimal getIdenetityIntId() {
-		return idenetityIntId;
-	}
-	public void setIdenetityIntId(BigDecimal idenetityIntId) {
-		this.idenetityIntId = idenetityIntId;
-	}
-	public String getIdenetityInt() {
-		return idenetityInt;
-	}
-	public void setIdenetityInt(String idenetityInt) {
-		this.idenetityInt = idenetityInt;
-	}
-	public Date getIdentityExpiryDate() {
-		return identityExpiryDate;
-	}
-	public void setIdentityExpiryDate(Date identityExpiryDate) {
-		this.identityExpiryDate = identityExpiryDate;
-	}
-	public byte[] getImage() {
+	}	
+	public String getImage() {
 		return image;
 	}
-	public void setImage(byte[] image) {
+	public void setImage(String image) {
 		this.image = image;
 	}
 	@Override
 	public String toString() {
-		return "ImageSubmissionRequest [customerId=" + customerId + ", idenetityIntId=" + idenetityIntId
-				+ ", idenetityInt=" + idenetityInt + ", identityExpiryDate=" + identityExpiryDate + ", image="
-				+ Arrays.toString(image) + "]";
+		return "ImageSubmissionRequest [customerId=" + customerId + ", image=" + image + "]";
 	}
 	
-	
-	
-	
-
 }

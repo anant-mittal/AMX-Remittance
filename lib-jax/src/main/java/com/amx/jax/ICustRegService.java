@@ -1,11 +1,14 @@
 package com.amx.jax;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Map;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
@@ -56,5 +59,8 @@ public interface ICustRegService {
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 	
 	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
+	
+	AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+			throws ParseException;
 
 }

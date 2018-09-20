@@ -1,6 +1,7 @@
 package com.amx.jax.client;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
@@ -212,6 +214,22 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.error("exception in saveCustomerInfo : ", e);
 			throw new JaxSystemError();
 		} // end of try-catch
+	}
+
+	
+	@Override
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+			throws ParseException {
+		try {
+			LOGGER.info("Save customer KYC Document");
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";			
+			return restService.ajax(url).filter(metaFilter).post(modelData).asApiResponse(String.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveCustomerInfo : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch}
 	}
 
 }

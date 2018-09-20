@@ -6,6 +6,7 @@ package com.amx.jax.client;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
@@ -15,6 +16,7 @@ import com.amx.jax.scope.TenantContextHolder;
  * @author Prashant
  *
  */
+@ActiveProfiles("test")
 public abstract class AbstractTestClient {
 
 	@Autowired

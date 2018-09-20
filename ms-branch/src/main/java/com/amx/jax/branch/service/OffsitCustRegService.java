@@ -1,6 +1,5 @@
 package com.amx.jax.branch.service;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -163,9 +162,9 @@ public class OffsitCustRegService implements ICustRegService {
 	@Autowired
 	IDMSAppMappingRepository idmsAppMappingRepository;
 
-	@Autowired	
+	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
-	
+
 	@Autowired
 	CountryMetaValidation countryMetaValidation;
 
@@ -414,8 +413,8 @@ public class OffsitCustRegService implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
-		// revalidateOtp(model.getOtpData());		
-		Customer customer = commitCustomer(model.getCustomerPersonalDetail(), model.getCustomerEmploymentDetails());		
+		// revalidateOtp(model.getOtpData());
+		Customer customer = commitCustomer(model.getCustomerPersonalDetail(), model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer);
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);
 		commitOnlineCustomerIdProof(model, customer);
@@ -515,8 +514,10 @@ public class OffsitCustRegService implements ICustRegService {
 		customer = new Customer();
 		tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
-		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
-		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
+		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
+				customerPersonalDetail.getMobile());
+		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
+				customerPersonalDetail.getMobile());
 		jaxUtil.convert(customerPersonalDetail, customer);
 		BigDecimal customerReference = customerDao.generateCustomerReference();
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerPersonalDetail.getTitle());
@@ -589,26 +590,35 @@ public class OffsitCustRegService implements ICustRegService {
 		customerIdProofRepository.save(custProof);
 	}
 
-	public AmxApiResponse<BigDecimal, Object> saveCustomeKycDocument(ImageSubmissionRequest model)
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
 			throws ParseException {
+		if (modelData != null && !modelData.isEmpty()) {
+			for (ImageSubmissionRequest model : modelData) {
+				if (model.getImage() == null) {
+					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+							new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
+					throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
+				}
 
-		if (model.getImage() == null) {
-			auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-					new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
-			throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
+				if (model.getCustomerId() == null) {
+					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+							new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
+					throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
+				}
+				Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),Constants.NO);
+				if(customer == null)
+				{
+					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+							new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
+					throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
+				}
+				DmsApplMapping mappingData = getDmsApplMappingData(customer);
+				idmsAppMappingRepository.save(mappingData);
+				DocBlobUpload documentDetails = getDocumentUploadDetails(model, mappingData);
+				docblobRepository.save(documentDetails);
+			}
 		}
-		
-		if (model.getCustomerId() == null) {		
-			auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-					new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
-			throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
-		}
-		DmsApplMapping mappingData = getDmsApplMappingData(model);
-		idmsAppMappingRepository.save(mappingData);
-		DocBlobUpload documentDetails = getDocumentUploadDetails(model, mappingData);
-		docblobRepository.save(documentDetails);
-		return AmxApiResponse.build(new BigDecimal(1));
-
+		return AmxApiResponse.build("Document Uploaded Successfully");
 	}
 
 	private DocBlobUpload getDocumentUploadDetails(ImageSubmissionRequest model, DmsApplMapping mappingData) {
@@ -617,13 +627,13 @@ public class OffsitCustRegService implements ICustRegService {
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		documentDetails.setDocContent(model.getImage());
+		documentDetails.setDocContent(model.getImage().getBytes());
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(ImageSubmissionRequest model) throws ParseException {
+	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {		
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -631,11 +641,11 @@ public class OffsitCustRegService implements ICustRegService {
 		mappingData.setApplicationCountryId(applCountryId);
 		mappingData.setCustomerId(model.getCustomerId());
 		mappingData.setDocBlobId(docBlobId); // need to change value
-		mappingData.setDocFormat(null);
+		mappingData.setDocFormat("JPG");
 		mappingData.setFinancialYear(financialYear);
-		mappingData.setIdentityExpiryDate(model.getIdentityExpiryDate());
-		mappingData.setIdentityInt(model.getIdenetityInt());
-		mappingData.setIdentityIntId(model.getIdenetityIntId());
+		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
+		mappingData.setIdentityInt(model.getIdentityInt());
+		mappingData.setIdentityIntId(model.getIdentityTypeId());
 		mappingData.setCreatedBy(metaData.getCustomerId().toString());
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
