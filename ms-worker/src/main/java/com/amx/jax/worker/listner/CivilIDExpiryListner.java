@@ -15,10 +15,11 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, integrity = true)
+@TunnelEvent(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
 public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 
 	@Autowired

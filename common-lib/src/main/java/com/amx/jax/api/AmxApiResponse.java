@@ -10,8 +10,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * The Class AmxApiResponse.
  *
- * @param <T> the generic type
- * @param <M> the generic type
+ * @param <T>
+ *            the generic type
+ * @param <M>
+ *            the generic type
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
@@ -37,7 +39,8 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList the result list
+	 * @param resultList
+	 *            the result list
 	 */
 	public AmxApiResponse(List<T> resultList) {
 		super();
@@ -48,8 +51,10 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Instantiates a new amx api response.
 	 *
-	 * @param resultList the result list
-	 * @param meta the meta
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
 	 */
 	public AmxApiResponse(List<T> resultList, M meta) {
 		super();
@@ -89,7 +94,8 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Sets the results.
 	 *
-	 * @param results the new results
+	 * @param results
+	 *            the new results
 	 */
 	public void setResults(List<T> results) {
 		this.results = results;
@@ -111,17 +117,25 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Adds the result.
 	 *
-	 * @param result the result
+	 * @param result
+	 *            the result
 	 */
 	public void addResult(T result) {
 		this.results.add(result);
 	}
 
+	public static <TS> AmxApiResponse<TS, Object> build() {
+		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
+		return resp;
+	}
+
 	/**
 	 * Builds the.
 	 *
-	 * @param <TS> the generic type
-	 * @param result the result
+	 * @param <TS>
+	 *            the generic type
+	 * @param result
+	 *            the result
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
@@ -133,10 +147,14 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Builds the.
 	 *
-	 * @param <TS> the generic type
-	 * @param <MS> the generic type
-	 * @param result the result
-	 * @param meta the meta
+	 * @param <TS>
+	 *            the generic type
+	 * @param <MS>
+	 *            the generic type
+	 * @param result
+	 *            the result
+	 * @param meta
+	 *            the meta
 	 * @return the amx api response
 	 */
 	public static <TS, MS> AmxApiResponse<TS, MS> build(TS result, MS meta) {
@@ -149,8 +167,10 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS> the generic type
-	 * @param resultList the result list
+	 * @param <TS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
@@ -160,10 +180,14 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	/**
 	 * Builds the list.
 	 *
-	 * @param <TS> the generic type
-	 * @param <MS> the generic type
-	 * @param resultList the result list
-	 * @param meta the meta
+	 * @param <TS>
+	 *            the generic type
+	 * @param <MS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
 	 * @return the amx api response
 	 */
 	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {

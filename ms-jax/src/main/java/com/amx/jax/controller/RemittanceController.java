@@ -24,8 +24,10 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.services.CustomerRatingService;
 import com.amx.jax.services.PurposeOfTransactionService;
 import com.amx.jax.services.RemittanceTransactionService;
 import com.amx.jax.services.ReportManagerService;
@@ -63,6 +65,9 @@ public class RemittanceController {
 
 	@Autowired
 	MetaData metaData;
+	
+	@Autowired
+	CustomerRatingService customerRatingService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
@@ -197,4 +202,11 @@ public class RemittanceController {
 		return response;
 	}
 
+	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
+	public ApiResponse saveCustomerRating(@RequestBody CustomerRating customerRating) {
+
+		logger.info("In save customer rating :" + customerRating.toString());
+		ApiResponse response = customerRatingService.saveCustomerRating(customerRating);
+		return response;
+	}
 }
