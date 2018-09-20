@@ -205,7 +205,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		try {
 			LOGGER.info("Save customer info");
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerInfo/";
 			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
 			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(BigDecimal.class);
 		} catch (AbstractJaxException ae) {
@@ -222,7 +222,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 			throws ParseException {
 		try {
 			LOGGER.info("Save customer KYC Document");
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";			
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerKYCDoc/";			
 			return restService.ajax(url).filter(metaFilter).post(modelData).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
