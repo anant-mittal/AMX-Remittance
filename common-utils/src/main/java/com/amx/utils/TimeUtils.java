@@ -17,6 +17,6 @@ public class TimeUtils {
 	}
 
 	public static boolean isDead(long timeThen, long maxAge) {
-		return (System.currentTimeMillis() - timeThen) < maxAge;
+		return (System.currentTimeMillis() - timeThen) > maxAge;
 	}
 }
