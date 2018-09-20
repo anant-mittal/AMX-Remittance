@@ -69,7 +69,7 @@ public class BrokerService {
 				logger.info("------------------ Event Data to push to Message Queue --------------------");
 				logger.info(event.toString());
 
-				tunnelService.send(current_event_record.getEvent_code(), event);
+				tunnelService.task(current_event_record.getEvent_code(), event);
 
 				// Mark event record as success
 				EventNotificationEntity temp_event_record = eventNotificationDao
