@@ -20,7 +20,7 @@ public class PromotionHeader {
 	PromotionHeaderPK promotionHeaderPK;
 
 	@Column(name = "FUDESC")
-	BigDecimal descrition;
+	String descrition;
 
 	@Column(name = "FRMDAT")
 	Date fromDate;
@@ -37,14 +37,6 @@ public class PromotionHeader {
 
 	public void setPromotionHeaderPK(PromotionHeaderPK promotionHeaderPK) {
 		this.promotionHeaderPK = promotionHeaderPK;
-	}
-
-	public BigDecimal getDescrition() {
-		return descrition;
-	}
-
-	public void setDescrition(BigDecimal descrition) {
-		this.descrition = descrition;
 	}
 
 	public Date getFromDate() {
@@ -69,5 +61,13 @@ public class PromotionHeader {
 
 	public void setLocationCode(BigDecimal locationCode) {
 		this.locationCode = locationCode;
+	}
+
+	public String getDescrition() {
+		return descrition;
+	}
+
+	public void setDescrition(String descrition) {
+		this.descrition = descrition;
 	}
 }

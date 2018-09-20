@@ -32,6 +32,22 @@ public class PromotionLocationPK implements Serializable {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	public BigDecimal getDocFinYear() {
+		return docFinYear;
+	}
+
+	public void setDocFinYear(BigDecimal docFinYear) {
+		this.docFinYear = docFinYear;
+	}
+
+	public BigDecimal getLocCode() {
+		return locCode;
+	}
+
+	public void setLocCode(BigDecimal locCode) {
+		this.locCode = locCode;
+	}
 	
 	
 

@@ -3,6 +3,7 @@ package com.amx.jax.dbmodel.promotion;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 
@@ -17,7 +18,10 @@ public class PromotionHeaderPK implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	@Column(name="DOCNO")
 	protected BigDecimal docNo;
+	@Column(name="DOCFYR")
 	protected BigDecimal docFinYear;
 
 	public PromotionHeaderPK(BigDecimal docNo, BigDecimal docFinYear) {

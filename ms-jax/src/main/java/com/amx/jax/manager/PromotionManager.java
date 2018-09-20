@@ -5,6 +5,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -24,6 +26,8 @@ import com.amx.jax.service.FinancialService;
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class PromotionManager {
+
+	Logger logger = LoggerFactory.getLogger(PromotionManager.class);
 
 	@Autowired
 	PromotionDao promotionDao;
@@ -46,32 +50,41 @@ public class PromotionManager {
 				.checkforLocationHeader(userFinancialYear.getFinancialYear(), branchId);
 		// fetch first one
 		return promotionDao.getPromotionHeader(userFinancialYear.getFinancialYear(),
-				promoLocations.get(0).getLocCode());
+				promoLocations.get(0).getDocumentNo());
 	}
 
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
-		PromotionDto dto = null;
-		List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
-		if (models != null && models.size() > 0) {
-			dto = new PromotionDto();
-			dto.setPrize(models.get(0).getPrize());
-			dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
-		} else {
-			PromotionHeader promoHeader = getPromotionHeader();
-			Date now = Calendar.getInstance().getTime();
-			if (now.after(promoHeader.getFromDate()) && now.before(promoHeader.getToDate())) {
+		try {
+			PromotionDto dto = null;
+			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
+			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
-				dto.setPrize("CHICKEN KING/SAGAR VOUCHER");
-				dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
+				dto.setPrize(models.get(0).getPrize());
+				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
+			} else {
+				PromotionHeader promoHeader = getPromotionHeader();
+				Date now = Calendar.getInstance().getTime();
+				if (now.after(promoHeader.getFromDate()) && now.before(promoHeader.getToDate())) {
+					dto = new PromotionDto();
+					dto.setPrize("CHICKEN KING/SAGAR VOUCHER");
+					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
+				}
 			}
+			return dto;
+		} catch (Exception e) {
+			return null;
 		}
-		return dto;
 	}
 
 	public PromotionDto promotionWinnerCheck(BigDecimal documentNoRemit, BigDecimal documentFinYearRemit) {
-		BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
-				.getBranchId();
-		promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
-		return getPromotionDto(documentNoRemit, documentFinYearRemit);
+		try {
+			BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
+					.getBranchId();
+			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
+			return getPromotionDto(documentNoRemit, documentFinYearRemit);
+		} catch (Exception e) {
+			logger.error("error in promotionWinnerCheck", e);
+			return null;
+		}
 	}
 }

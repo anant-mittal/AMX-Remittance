@@ -48,7 +48,8 @@ public class PromotionDao {
 
 	public String callGetPromotionPrize(BigDecimal documentNoRemit, BigDecimal documentFinYearRemit,
 			BigDecimal branchId) {
-
+		LOGGER.info("callGetPromotionPrize Input Parameters: documentNoRemit:{}, documentFinYearRemit:{}, branchId:{}",
+				documentNoRemit, documentFinYearRemit, branchId);
 		Map<String, Object> output;
 		String prizeMessage = null;
 		try {
@@ -75,13 +76,10 @@ public class PromotionDao {
 			String errorMessage = (String) output.get("P_ERROR");
 			if (prizeMessage != null) {
 				LOGGER.info("Prize message:" + prizeMessage);
-				LOGGER.info("Input Parameters: documentNoRemit:{}, documentFinYearRemit:{}, branchId:{}",
-						documentNoRemit, documentFinYearRemit, branchId);
+
 			}
 			if (errorMessage != null) {
 				LOGGER.error("Error occured calling GET_PROMOTION_PRIZE, error message: {}", errorMessage);
-				LOGGER.error("Input Parameters: documentNoRemit:{}, documentFinYearRemit:{}, branchId:{}",
-						documentNoRemit, documentFinYearRemit, branchId);
 			}
 
 		} catch (Exception e) {
@@ -140,15 +138,15 @@ public class PromotionDao {
 
 	public List<PromotionDetailModel> getPromotionDetailModel(BigDecimal finYearRemit, BigDecimal docNoRemit) {
 		List<PromotionDetailModel> promoDetails = jdbcTemplate.query(
-				"SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE" + "       FROM   PROMOTION_HD A,PROMOTION_DT B"
-						+ "       WHERE  A.COMCOD = B.COMCOD" + "       AND    A.DOCCOD = B.DOCCOD"
-						+ "       AND    A.DOCFYR = B.DOCFYR" + "       AND    A.DOCNO  = B.DOCNO"
-						+ "       AND    A.COMCOD = (SELECT DEF_COMPANY" + "        FROM   APP_SETT)"
-						+ "       AND    A.DOCCOD = 72" + "      AND    NVL(B.TRNREF,0)     <> 0"
+				"SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE, B.DOCNO, B.DOCNO, B.DOCFYR  " + "       FROM   PROMOTION_HD A,PROMOTION_DT B"
+						+ "       WHERE  A.COMCOD = B.COMCOD " + "       AND    A.DOCCOD = B.DOCCOD"
+						+ "       AND    A.DOCFYR = B.DOCFYR " + "       AND    A.DOCNO  = B.DOCNO"
+						+ "       AND    A.COMCOD = (SELECT DEF_COMPANY " + "        FROM   APP_SETT)"
+						+ "       AND    A.DOCCOD = 72 " + "      AND    NVL(B.TRNREF,0)     <> 0"
 						+ "       AND    NVL(A.RECSTS,' ')    = ' ' " + "       AND    NVL(A.UTLZ_FLAG,' ') = 'U'"
-						+ "       AND    TRNFYR = ?" + "       AND    TRNREF = ? ",
+						+ "       AND    TRNFYR = ? " + "       AND    TRNREF = ? ",
 				new PromotionDetailRowMapper(), finYearRemit, docNoRemit);
-		
+
 		return promoDetails;
 	}
 }

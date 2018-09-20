@@ -22,9 +22,9 @@ public class PromotionLocation {
 	@Column(name = "COMCOD")
 	BigDecimal comCode;
 	
-	@Column(name = "LOCCOD")
-	BigDecimal locCode;
-
+	@Column(name = "DOCNO")
+	BigDecimal documentNo;
+	
 	public PromotionLocationPK getPromotionLocationPK() {
 		return promotionLocationPK;
 	}
@@ -41,12 +41,12 @@ public class PromotionLocation {
 		this.comCode = comCode;
 	}
 
-	public BigDecimal getLocCode() {
-		return locCode;
+	public BigDecimal getDocumentNo() {
+		return documentNo;
 	}
 
-	public void setLocCode(BigDecimal locCode) {
-		this.locCode = locCode;
+	public void setDocumentNo(BigDecimal documentNo) {
+		this.documentNo = documentNo;
 	}
 
 }
