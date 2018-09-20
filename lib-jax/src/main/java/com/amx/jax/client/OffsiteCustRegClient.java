@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import com.amx.jax.AppConfig;
@@ -67,8 +66,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the FieldList");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/new-field-list/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
-			return restService.ajax(url).post(requestEntity)
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
+			return restService.ajax(url).post()
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -131,10 +130,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		try {
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-validate-otp/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(offsiteCustRegModel, getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(offsiteCustRegModel, getHeader());
+			return restService.ajax(url).filter(metaFilter).post(offsiteCustRegModel).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -148,10 +145,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Employment List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/employmentTypeList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -165,10 +160,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Profession List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/professionList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -196,10 +189,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
-			return restService.ajax(url).post(requestEntity)	
-					.as(new ParameterizedTypeReference<AmxApiResponse<List, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
+			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail).asApiResponse(List.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -213,10 +204,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Save customer info");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<BigDecimal, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
+			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(BigDecimal.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {

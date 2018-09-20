@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.scope.TenantContextHolder;

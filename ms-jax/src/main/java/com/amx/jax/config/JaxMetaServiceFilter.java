@@ -11,10 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.AppConstants;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
