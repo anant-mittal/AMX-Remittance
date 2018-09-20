@@ -530,7 +530,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			if (BigDecimal.ZERO.equals(languageId)) {
 				languageId = new BigDecimal(1);
 			}
-			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/";
+			String url = this.getBaseUrl() + META_API_ENDPOINT + "/statelist/"+countryId+"/";
 			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewStateDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;

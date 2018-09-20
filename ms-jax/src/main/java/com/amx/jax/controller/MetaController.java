@@ -316,9 +316,9 @@ public class MetaController {
 		return stateService.getState(countryId, stateId, languageId);
 	}
 	
-	@RequestMapping(value = "/statelist", method = RequestMethod.GET)
-	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(){
-		return stateService.getStateAll(metaData.getCountryId(),metaData.getLanguageId());
+	@RequestMapping(value = "/statelist/{countryId}/", method = RequestMethod.GET)
+	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(@PathVariable("countryId") BigDecimal countryId){
+		return stateService.getStateAll(countryId,metaData.getLanguageId());
 	}
 	
 	@RequestMapping(value = "/citylist/{districtId}/", method = RequestMethod.GET)

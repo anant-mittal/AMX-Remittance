@@ -121,7 +121,7 @@ public class ImageCheckDao {
 			}
 		}, declareInAndOutputParameters);	
 		System.out.println(output);
-		return null;
+		return new BigDecimal(output.get("docBlobId").toString());
 }
 	
 }

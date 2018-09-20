@@ -1,11 +1,16 @@
 package com.amx.jax.model.request;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
-public class ImageSubmissionRequest {
+public class ImageSubmissionRequest implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
 	private BigDecimal idenetityIntId;
 	private String idenetityInt;

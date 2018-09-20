@@ -128,7 +128,7 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-send-otp/", method = { RequestMethod.POST })
-	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 
 		logger.info(
 				"Send Otp for Email and Mobile request called for country id : " + customerPersonalDetail.getCountryId()

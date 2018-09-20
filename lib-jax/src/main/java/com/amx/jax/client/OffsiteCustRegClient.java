@@ -10,7 +10,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-
 import com.amx.jax.AppConfig;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
@@ -27,6 +26,7 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.rest.RestService;
 import com.amx.jax.scope.TenantContextHolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,6 +42,9 @@ public class OffsiteCustRegClient implements ICustRegService {
 	@Autowired
 	AppConfig appConfig;
 
+	@Autowired(required = false)
+	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
+
 	protected HttpHeaders getHeader() {
 
 		HttpHeaders headers = new HttpHeaders();
@@ -49,7 +52,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 			JaxMetaInfo metaInfo = new JaxMetaInfo();
 			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-			metaInfo.setTenant(TenantContextHolder.currentSite());			
+			metaInfo.setTenant(TenantContextHolder.currentSite());
 			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
 		} catch (JsonProcessingException e) {
 			LOGGER.error("error in getheader of jaxclient", e);
@@ -82,10 +85,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the Income Range Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/incomeRangeList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeRangeDto, Object>>() {
-					});
+			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(IncomeRangeDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -100,10 +100,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the Designation List Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/designationList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleDetailsDescDto, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
+			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(ArticleDetailsDescDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -118,10 +116,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the Article List Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/articleList/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleMasterDescDto, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ArticleMasterDescDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -186,10 +182,8 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Id Type List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/send-id-types/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {
-					});
+			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
+			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -203,7 +197,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).post(requestEntity)	
 					.as(new ParameterizedTypeReference<AmxApiResponse<List, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
