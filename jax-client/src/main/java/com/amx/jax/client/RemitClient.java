@@ -69,6 +69,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 	}
 
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
+		return this.report(transactionHistroyDTO, false);
+	}
+
+	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
+			Boolean promotion) {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
@@ -148,7 +153,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
 		try {
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();

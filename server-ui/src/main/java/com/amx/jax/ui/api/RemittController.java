@@ -187,9 +187,14 @@ public class RemittController {
 	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
 			@RequestParam(required = false) Boolean duplicate, @RequestParam(required = false) Boolean skipd)
 			throws IOException, PostManException {
-		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		// : true;
+
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
+				.report(tranxDTO, !duplicate.booleanValue()).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
@@ -230,7 +235,9 @@ public class RemittController {
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
 			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
 
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		// : true;
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
@@ -238,7 +245,8 @@ public class RemittController {
 		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
 		tranxDTO.setCustomerReference(customerReference);
 
-		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
+				.report(tranxDTO, !duplicate.booleanValue()).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
