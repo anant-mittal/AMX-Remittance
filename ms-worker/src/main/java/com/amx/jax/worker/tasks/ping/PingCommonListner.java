@@ -1,4 +1,4 @@
-package com.amx.jax.worker.ping.listner;
+package com.amx.jax.worker.tasks.ping;
 
 import java.math.BigDecimal;
 import java.util.HashMap;

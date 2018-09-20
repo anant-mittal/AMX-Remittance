@@ -17,10 +17,12 @@ public enum Templates {
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("BranchTemplate"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("branch-template"), BRANCH_FEEDBACK_JSON(
+			"json/branch-template"),
 
-	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"), PARTIAL_REGISTRATION_EMAIL(
-			"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
+	CIVILID_EXPIRY_JSON("json/civilexpiry"), CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED(
+			"civilexpired"), PARTIAL_REGISTRATION_EMAIL(
+					"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
 

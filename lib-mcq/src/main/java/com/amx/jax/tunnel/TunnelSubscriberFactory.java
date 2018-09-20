@@ -19,6 +19,8 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
+import com.amx.utils.TimeUtils;
+
 import java.lang.annotation.Annotation;
 
 @Service
@@ -30,6 +32,7 @@ public class TunnelSubscriberFactory {
 
 	public static final String STATUS_WORKING = "W";
 	public static final String STATUS_DONE = "D";
+	public static long TIME_TO_EXPIRE_MILLIS = TIME_TO_EXPIRE * 60 * 1000;
 
 	@Autowired
 	AppConfig appConfig;
@@ -142,7 +145,7 @@ public class TunnelSubscriberFactory {
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
 						.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topicName));
 				TunnelMessage<M> msg2 = eventAltQueue.poll();
-				if (msg2 != null) {
+				if (msg2 != null && !TimeUtils.isDead(msg2.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					tryMessage(channel, msg2);
 				}
 			}
@@ -185,7 +188,7 @@ public class TunnelSubscriberFactory {
 				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
 						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
 				TunnelMessage<M> msg = topicMessageQueue.poll();
-				if (msg != null) {
+				if (msg != null && !TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					AppContext context = msg.getContext();
 					AppContextUtil.setContext(context);
 					AppContextUtil.init();
