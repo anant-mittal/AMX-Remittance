@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.jax.AppConstants;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dbmodel.CountryBranch;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
 import com.amx.jax.meta.MetaData;
