@@ -68,6 +68,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	@Deprecated
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
 		return this.report(transactionHistroyDTO, false);
 	}
@@ -220,13 +221,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 	 * year
 	 */
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
-			RemittanceTransactionStatusRequestModel request)
+			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
 			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
 		} catch (AbstractJaxException ae) {

@@ -426,7 +426,7 @@ public class RemittController {
 	public ResponseWrapper<RemittanceTransactionStatusResponseModel> appStatus(
 			@RequestBody RemittanceTransactionStatusRequestModel request) {
 		ResponseWrapper<RemittanceTransactionStatusResponseModel> wrapper = new ResponseWrapper<RemittanceTransactionStatusResponseModel>();
-		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResult());
+		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request, true).getResult());
 		return wrapper;
 	}
 }
