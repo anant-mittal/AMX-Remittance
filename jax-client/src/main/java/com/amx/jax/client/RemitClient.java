@@ -82,11 +82,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 			transactionHistroyDTO.setCompanyId(companyId);
 			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
 			transactionHistroyDTO.setCustomerId(customerId);
-			LOGGER.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
+			LOGGER.debug("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
 					getHeader());
 			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
-			return restService.ajax(sendOtpUrl).post(requestEntity)
+			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
 		} catch (AbstractJaxException ae) {
