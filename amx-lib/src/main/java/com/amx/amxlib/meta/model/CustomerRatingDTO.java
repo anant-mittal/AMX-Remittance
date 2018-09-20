@@ -7,6 +7,7 @@ import com.amx.jax.model.AbstractModel;
 
 public class CustomerRatingDTO extends AbstractModel {
 	
+	private static final long serialVersionUID = -254755940678862078L;
 	private BigDecimal customerId;
 	private BigDecimal ratingId;
 	private BigDecimal applicationCountryId;
