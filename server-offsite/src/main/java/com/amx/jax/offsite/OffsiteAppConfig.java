@@ -29,6 +29,7 @@ public class OffsiteAppConfig {
 	@TenantValue("${app.meta.country.branch.id}")
 	BigDecimal countrybranchId;
 
+	
 	public BigDecimal getCountryId() {
 		return countryId;
 	}
