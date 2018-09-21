@@ -239,7 +239,7 @@ public class OffsitCustRegService implements ICustRegService {
 		} finally {
 			customerRegistrationManager.saveOtpData(otpData);
 		}
-		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfull");
+		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfully");
 		obj.setMessageKey("AUTH_SUCCESS");
 		auditService.log(new JaxAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel));
 		return obj;
