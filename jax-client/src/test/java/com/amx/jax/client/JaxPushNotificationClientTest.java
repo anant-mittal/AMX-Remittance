@@ -3,6 +3,7 @@ package com.amx.jax.client;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.model.PushNotificationRecordDTO;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
@@ -31,9 +32,9 @@ public class JaxPushNotificationClientTest {
 
 	@Test
 	public void testGetPushNotification() throws IOException, ResourceNotFoundException, InvalidInputException {
-		ApiResponse<PushNotificationRecordDTO> response = null;
+		ApiResponse<CustomerNotificationDTO> response = null;
 
-		String customerId = "5218";
+		BigDecimal customerId = new BigDecimal("5218");
 
 		response = client.getJaxPushNotification(customerId);
 		assertNotNull("Response is null", response);
