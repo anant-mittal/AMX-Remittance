@@ -1,5 +1,6 @@
 package com.amx.jax.admin.controller;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.BranchesBHR;
 import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
@@ -32,6 +35,9 @@ public class AdminPushController {
 	@Autowired
 	FBPushClient fbPushClient;
 
+	@Autowired
+	JaxPushNotificationClient notificationClient;
+
 	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
 		return Arrays.asList(Tenant.values());
@@ -51,7 +57,6 @@ public class AdminPushController {
 		} else {
 			return Arrays.asList(BranchesKWT.values());
 		}
-
 	}
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
@@ -62,6 +67,12 @@ public class AdminPushController {
 		msg.setMessage(message);
 		msg.setSubject(title);
 		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+
+		CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+		customerNotification.setMessage(message);
+		customerNotification.setTitle(title);
+		notificationClient.save(customerNotification);
+
 		return fbPushClient.sendDirect(msg);
 	}
 
@@ -74,12 +85,20 @@ public class AdminPushController {
 		msg.setMessage(message);
 		msg.setSubject(title);
 
+		CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+		customerNotification.setMessage(message);
+		customerNotification.setTitle(title);
+
 		if (nationality == Nations.ALL) {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
+			customerNotification.setCountryId(tenant.getBDCode());
 		} else {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
+			customerNotification.setNationalityId(new BigDecimal(nationality.getCode()));
 		}
+		notificationClient.save(customerNotification);
+
 		return fbPushClient.sendDirect(msg);
 	}
 
