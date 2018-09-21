@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.postman.FBPushService;
@@ -138,6 +140,8 @@ public class HotPointService {
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	@Autowired
+	JaxPushNotificationClient notificationClient;
 	/**
 	 * Notify.
 	 *
@@ -149,7 +153,7 @@ public class HotPointService {
 	 * @throws PostManException
 	 *             the post man exception
 	 */
-	// @Async
+	@Async
 	public List<String> notify(BigDecimal customerId, String token, HotPoints hotpoint) throws PostManException {
 
 		List<String> messages = new ArrayList<>();

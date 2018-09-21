@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.PushNotificationRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IJaxPushNotificationDao;
@@ -24,10 +23,8 @@ public class JaxPushNotificationService extends AbstractService {
 	@Autowired
 	IJaxPushNotificationDao jaxPushNotificationDao;
 
-	public ApiResponse<CustomerNotificationDTO> getJaxNotification(BigDecimal customerId, BigDecimal nationalityId,
+	public AmxApiResponse<CustomerNotificationDTO, ?> get(BigDecimal customerId, BigDecimal nationalityId,
 			BigDecimal countryId) {
-
-		ApiResponse<CustomerNotificationDTO> response = getBlackApiResponse();
 
 		List<PushNotificationRecord> notificationList = null;
 		List<CustomerNotificationDTO> notificationDtoList = new ArrayList<CustomerNotificationDTO>();
@@ -36,6 +33,7 @@ public class JaxPushNotificationService extends AbstractService {
 			notificationList = jaxPushNotificationDao.getJaxNotification(customerId, nationalityId, countryId);
 
 			if (!notificationList.isEmpty()) {
+
 				for (PushNotificationRecord notification : notificationList) {
 					CustomerNotificationDTO notificationDto = new CustomerNotificationDTO();
 
@@ -50,44 +48,25 @@ public class JaxPushNotificationService extends AbstractService {
 
 					notificationDtoList.add(notificationDto);
 				}
-
 				logger.info("In GET Jax Push Notification Service ------ ");
-				response.setResponseStatus(ResponseStatus.OK);
-				response.getData().setType("jax-push-notification");
 			}
-
 		} catch (Exception e) {
-			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while fetching Notification List ", e);
 		}
-
-		response.getData().getValues().addAll(notificationDtoList);
-		return response;
+		return AmxApiResponse.buildList(notificationDtoList);
 	}
 
-	public ApiResponse saveJaxPushNotification(PushNotificationRecord jaxPushNotification) {
-		ApiResponse response = getBlackApiResponse();
+	public AmxApiResponse<Object, Object> save(List<PushNotificationRecord> jaxPushNotifications) {
 
 		try {
-
-			jaxPushNotification.setNotificationDate(new Date());
-			jaxPushNotificationDao.save(jaxPushNotification);
-			response.setResponseStatus(ResponseStatus.OK);
-
+			for (PushNotificationRecord jaxPushNotification : jaxPushNotifications) {
+				jaxPushNotification.setNotificationDate(new Date());
+				jaxPushNotificationDao.save(jaxPushNotification);
+			}
 		} catch (Exception e) {
-			response.setResponseStatus(ResponseStatus.INTERNAL_ERROR);
 			logger.error("Error while saving Push Notification.", e);
 		}
-
-		logger.info(" ------ Notification saved successfully ------ ");
-
-		return response;
-	}
-
-	@Override
-	public String getModelType() {
-		// TODO Auto-generated method stub
-		return null;
+		return AmxApiResponse.build();
 	}
 
 }
