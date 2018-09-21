@@ -1,6 +1,7 @@
 package com.amx.jax.postman.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import com.amx.jax.postman.model.Message.Status;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.postman.service.WhatsAppService;
 import com.amx.utils.ArgUtil;
-import java.util.List;
 
 @RestController
 public class WhatsAppController {

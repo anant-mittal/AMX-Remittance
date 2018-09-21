@@ -1,5 +1,6 @@
 package com.amx.jax.tunnel;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -20,8 +21,6 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.utils.TimeUtils;
-
-import java.lang.annotation.Annotation;
 
 @Service
 public class TunnelSubscriberFactory {
