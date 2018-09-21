@@ -45,5 +45,7 @@ public class ApiEndpoint {
     public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
     
     public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
+    
+    public static final String JAX_NOTIFICATION_ENDPOINT = "/jax-notification";
 
 }

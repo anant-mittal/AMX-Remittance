@@ -68,6 +68,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
@@ -141,6 +142,9 @@ public class UserService extends AbstractUserService {
 	
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
+	
+	@Autowired
+	private CustomerRepository repo;
 
 	@Override
 	public ApiResponse registerUser(AbstractUserModel userModel) {
@@ -875,5 +879,9 @@ public class UserService extends AbstractUserService {
 	        response.setResponseStatus(ResponseStatus.OK);
 	        return response;
 	    }
+	   
+	   public Customer getCustById(BigDecimal id) {
+			return repo.findOne(id);
+		}
 
 }
