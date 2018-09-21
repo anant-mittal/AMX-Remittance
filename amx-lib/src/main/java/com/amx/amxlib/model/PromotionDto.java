@@ -4,6 +4,8 @@ public class PromotionDto {
 
 	String prize;
 	String prizeMessage;
+	String transactionReference;
+	
 	public String getPrize() {
 		return prize;
 	}
@@ -16,4 +18,11 @@ public class PromotionDto {
 	public void setPrizeMessage(String prizeMessage) {
 		this.prizeMessage = prizeMessage;
 	}
+	public String getTransactionReference() {
+		return transactionReference;
+	}
+	public void setTransactionReference(String transactionReference) {
+		this.transactionReference = transactionReference;
+	}
+	
 }

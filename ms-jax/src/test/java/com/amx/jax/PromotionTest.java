@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.manager.PromotionManager;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.multitenant.TenantContext;
 
 @RunWith(SpringRunner.class)
@@ -26,6 +27,8 @@ public class PromotionTest {
 
 	@Autowired
 	PromotionManager promotionManager;
+	@Autowired
+	MetaData metaData;
 
 	@Before
 	public void contextLoads() {
@@ -34,6 +37,8 @@ public class PromotionTest {
 
 	@Test
 	public void testDocLocDataForCustomerReference() {
-		promotionManager.getPromotionHeader();
+		metaData.setCountryBranchId(new BigDecimal(78));
+		metaData.setCountryId(new BigDecimal(91));
+		promotionManager.promotionWinnerCheck(new BigDecimal(10143), new BigDecimal(2018));
 	}
 }

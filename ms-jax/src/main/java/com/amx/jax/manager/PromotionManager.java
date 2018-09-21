@@ -1,5 +1,7 @@
 package com.amx.jax.manager;
 
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
@@ -22,8 +25,13 @@ import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionLocation;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.Templates;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
+import com.amx.jax.userservice.service.UserService;
+import com.amx.jax.util.DateUtil;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -41,6 +49,10 @@ public class PromotionManager {
 	FinancialService financialService;
 	@Autowired
 	RemittanceApplicationDao remittanceApplicationDao;
+	@Autowired
+	PostManService postManService;
+	@Autowired
+	UserService userService;
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
@@ -60,6 +72,9 @@ public class PromotionManager {
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
 		try {
 			PromotionDto dto = null;
+			RemittanceTransaction remittanceTransaction = remittanceApplicationDao
+					.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
+
 			List<PromotionDetailModel> models = promotionDao.getPromotionDetailModel(docFinyear, docNoRemit);
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
@@ -67,8 +82,6 @@ public class PromotionManager {
 				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
 			} else {
 				PromotionHeader promoHeader = getPromotionHeader();
-				RemittanceTransaction remittanceTransaction = remittanceApplicationDao
-						.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 				Date transactionDate = remittanceTransaction.getCreatedDate();
 				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
 						&& transactionDate.before(promoHeader.getToDate())) {
@@ -76,6 +89,10 @@ public class PromotionManager {
 					dto.setPrize("CHICKEN KING SAGAR VOUCHER");
 					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
 				}
+			}
+			if (dto != null && remittanceTransaction.getApplicationDocumentNo() != null) {
+				dto.setTransactionReference(remittanceTransaction.getApplicationDocumentNo().toString()
+						+ remittanceTransaction.getApplicationdocumentFinancialyear().toString());
 			}
 			return dto;
 		} catch (Exception e) {
@@ -88,7 +105,28 @@ public class PromotionManager {
 			BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
 					.getBranchId();
 			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
-			return getPromotionDto(documentNoRemit, documentFinYearRemit);
+			PromotionDto promotDto = getPromotionDto(documentNoRemit, documentFinYearRemit);
+			if (promotDto != null) {
+				logger.info("Sending promo winner Email to helpdesk : ");
+				try {
+					RemittanceTransaction remittanceApplication = remittanceApplicationDao
+							.getRemittanceTransactionByRemitDocNo(documentNoRemit, documentFinYearRemit);
+					PersonInfo personInfo = userService.getPersonInfo(remittanceApplication.getCustomerId());
+					Email email = new Email();
+					email.setSubject(
+							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
+					email.addTo("online@almullaexchange.com");
+					email.addTo("huzefa.abbasi@almullaexchange.com");
+					email.setTemplate(Templates.PROMOTION_WINNER);
+					email.setHtml(true);
+					email.getModel().put(RESP_DATA_KEY, personInfo);
+					email.getModel().put("promotDto", promotDto);
+					postManService.sendEmailAsync(email);
+				} catch (Exception e) {
+					logger.error("error in promotionWinnerCheck", e);
+				}
+			}
+			return promotDto;
 		} catch (Exception e) {
 			logger.error("error in promotionWinnerCheck", e);
 			return null;

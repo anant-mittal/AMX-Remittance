@@ -41,7 +41,8 @@ public enum Templates {
 	CIVILID_EXPIRY("civilexpiry"),
 	CIVILID_EXPIRED("civilexpired"),
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"),
-	TRANSACTION_FAILURE("TransactionFailure");
+	TRANSACTION_FAILURE("TransactionFailure"),
+	PROMOTION_WINNER("PromotionWinner");
 	
 	String fileName;
 	PDFConverter converter;
