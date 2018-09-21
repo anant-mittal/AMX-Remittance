@@ -68,12 +68,12 @@ public class PromotionManager {
 			} else {
 				PromotionHeader promoHeader = getPromotionHeader();
 				RemittanceTransaction remittanceTransaction = remittanceApplicationDao
-						.getRemittanceTransaction(docNoRemit, docFinyear);
+						.getRemittanceTransactionByRemitDocNo(docNoRemit, docFinyear);
 				Date transactionDate = remittanceTransaction.getCreatedDate();
 				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
 						&& transactionDate.before(promoHeader.getToDate())) {
 					dto = new PromotionDto();
-					dto.setPrize("CHICKEN KING/SAGAR VOUCHER");
+					dto.setPrize("CHICKEN KING SAGAR VOUCHER");
 					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
 				}
 			}

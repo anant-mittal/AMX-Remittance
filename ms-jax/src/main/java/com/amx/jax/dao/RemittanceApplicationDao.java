@@ -76,6 +76,13 @@ public class RemittanceApplicationDao {
 		return remittanceTransactionView;
 	}
 	
+	public RemittanceTransaction getRemittanceTransactionByRemitDocNo(BigDecimal remittanceDocumentNumber,
+			BigDecimal remittanceFinYear) {
+		RemittanceTransaction remittanceTransactionView = remittanceTransactionRepository
+				.findByDocumentNoAndDocumentFinancialyear(remittanceDocumentNumber, remittanceFinYear);
+		return remittanceTransactionView;
+	}
+	
 	public List<FlexFiledView> getFlexFields() {
 		return (List<FlexFiledView>) IFlexFiledView.findAll();
 	}
