@@ -7,40 +7,51 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value="classpath:/test/po/placeorderLoadTest.properties")
+@PropertySource(value = "classpath:/test/po/placeorderLoadTest.properties")
 public class PlaceOrderProperties {
 
-	@Value("${jax.placeorder.no_of_po}")
-	String noOfPlaceOrders;
+	@Value("${no_of_po}")
+	BigDecimal noOfPlaceOrders;
 
-	@Value("${jax.placeorder.currency_id}")
-	String currencyId;
+	@Value("${currency_id}")
+	BigDecimal currencyId;
 
-	@Value("${jax.placeorder.rate_to_change}")
-	String rateToChange;
+	@Value("${rate_to_change}")
+	BigDecimal rateToChange;
 
-	public String getNoOfPlaceOrders() {
+	@Value("${customer_id}")
+	BigDecimal customerId;
+
+	public BigDecimal getNoOfPlaceOrders() {
 		return noOfPlaceOrders;
 	}
 
-	public void setNoOfPlaceOrders(String noOfPlaceOrders) {
+	public void setNoOfPlaceOrders(BigDecimal noOfPlaceOrders) {
 		this.noOfPlaceOrders = noOfPlaceOrders;
 	}
 
-	public String getCurrencyId() {
+	public BigDecimal getCurrencyId() {
 		return currencyId;
 	}
 
-	public void setCurrencyId(String currencyId) {
+	public void setCurrencyId(BigDecimal currencyId) {
 		this.currencyId = currencyId;
 	}
 
-	public String getRateToChange() {
+	public BigDecimal getRateToChange() {
 		return rateToChange;
 	}
 
-	public void setRateToChange(String rateToChange) {
+	public void setRateToChange(BigDecimal rateToChange) {
 		this.rateToChange = rateToChange;
+	}
+
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
 	}
 
 }
