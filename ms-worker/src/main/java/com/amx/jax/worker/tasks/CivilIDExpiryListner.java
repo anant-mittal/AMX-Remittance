@@ -1,5 +1,8 @@
-package com.amx.jax.worker.listner;
+package com.amx.jax.worker.tasks;
 
+import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
+
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,24 +14,31 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, integrity = true)
+@TunnelEvent(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
 public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 
 	@Autowired
 	PostManClient postManClient;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static final String EMAIL = "EMAIL";
 	public static final String MOBILE = "MOBILE";
 	public static final String CUST_NAME = "CUST_NAME";
+	private static final String CUST_ID = "CUST_ID";
 	public static final String EXP_DATE = "EXP_DATE";
 	public static final String LANG_ID = "LANG_ID";
 	public static final String TEMPLATE = "TEMPLATE";
@@ -45,6 +55,7 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
 		String custNname = ArgUtil.parseAsString(event.getData().get(CUST_NAME));
+		BigDecimal custId = ArgUtil.parseAsBigDecimal(event.getData().get(CUST_ID));
 		String expDate = ArgUtil.parseAsString(event.getData().get(EXP_DATE));
 		String expired = ArgUtil.parseAsString(event.getData().get(EXPIRED));
 
@@ -54,25 +65,37 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 		modeldata.put("customer", custNname);
 		modeldata.put("date", expDate);
 		wrapper.put("data", modeldata);
-		Email email = new Email();
-		if ("2".equals(langId)) {
-			email.setLang(Language.AR);
-			modeldata.put("languageid", Language.AR);
-		} else {
-			email.setLang(Language.EN);
-			modeldata.put("languageid", Language.EN);
-		}
-		email.setModel(wrapper);
-		email.addTo(emailId);
-		email.setHtml(true);
 
-		if (ArgUtil.areEqual(expired, "0")) {
-			email.setTemplate(Templates.CIVILID_EXPIRY);
-			email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
-		} else {
-			email.setSubject("Civil ID has been expired"); // Given by Umesh
-			email.setTemplate(Templates.CIVILID_EXPIRED);
+		if (!ArgUtil.isEmpty(emailId)) {
+			Email email = new Email();
+			if ("2".equals(langId)) {
+				email.setLang(Language.AR);
+				modeldata.put("languageid", Language.AR);
+			} else {
+				email.setLang(Language.EN);
+				modeldata.put("languageid", Language.EN);
+			}
+			email.setModel(wrapper);
+			email.addTo(emailId);
+			email.setHtml(true);
+
+			if (ArgUtil.areEqual(expired, "0")) {
+				email.setTemplate(Templates.CIVILID_EXPIRY);
+				email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
+			} else {
+				email.setSubject("Civil ID has been expired"); // Given by Umesh
+				email.setTemplate(Templates.CIVILID_EXPIRED);
+			}
+			postManClient.sendEmailAsync(email);
 		}
-		postManClient.sendEmailAsync(email);
+
+		if (!ArgUtil.isEmpty(custId)) {
+			PushMessage pushMessage = new PushMessage();
+			pushMessage.setTemplate(Templates.CIVILID_EXPIRY_JSON);
+			pushMessage.addToUser(custId);
+			pushMessage.setModel(wrapper);
+			pushNotifyClient.send(pushMessage);
+		}
+
 	}
 }

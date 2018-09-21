@@ -9,6 +9,7 @@ public class TunnelMessage<M> implements Serializable {
 
 	private static final long serialVersionUID = -638169239630153108L;
 
+	long timestamp;
 	String id;
 	String topic;
 	AppContext context;
@@ -17,12 +18,12 @@ public class TunnelMessage<M> implements Serializable {
 
 	TunnelMessage(M data) {
 		this.id = UniqueID.generateString();
+		this.timestamp = System.currentTimeMillis();
 		this.data = data;
 	}
 
 	TunnelMessage(M data, AppContext context) {
-		this.id = UniqueID.generateString();
-		this.data = data;
+		this(data);
 		this.context = context;
 	}
 
@@ -56,6 +57,14 @@ public class TunnelMessage<M> implements Serializable {
 
 	public void setData(M data) {
 		this.data = data;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

@@ -16,6 +16,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.HttpUtils;
 
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
@@ -36,14 +37,7 @@ public class HttpService {
 	private AppConfig appConfig;
 
 	public String getIPAddress() {
-		String remoteAddr = null;
-		if (request != null) {
-			remoteAddr = request.getHeader("X-FORWARDED-FOR");
-			if (remoteAddr == null || "".equals(remoteAddr)) {
-				remoteAddr = request.getRemoteAddr();
-			}
-		}
-		return remoteAddr;
+		return HttpUtils.getIPAddress(request);
 	}
 
 	public Language getLanguage() {

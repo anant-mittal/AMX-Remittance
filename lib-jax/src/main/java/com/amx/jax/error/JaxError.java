@@ -117,6 +117,8 @@ public enum JaxError implements IExceptionEnum {
 	/*place order*/
 	PLACE_ORDER_ID_NOT_FOUND,
 	PLACE_ORDER_EXPIRED,
+	PO_BOTH_PAY_RECEIVED_AMT_NULL,
+	PO_BOTH_PAY_RECEIVED_AMT_VALUE,
 	
 	INVALID_MOBILE_NUMBER,
 	BLACK_LISTED_EXISTING_CIVIL_ID,
@@ -151,6 +153,6 @@ public enum JaxError implements IExceptionEnum {
 	@Override
 	public int getStatusCode() {
 		return 6000 + this.ordinal();
-    }
+	}
 
 }

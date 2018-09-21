@@ -10,6 +10,7 @@ import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.filter.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -60,6 +61,11 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY));
 	}
 
+	public static RequestType getRequestType() {
+		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
+				RequestType.DEFAULT);
+	}
+
 	public static final Pattern pattern = Pattern.compile("^([A-Z]{3})-([\\w]+)-(\\w+)$");
 
 	public static String getSessionIdFromTraceId() {
@@ -99,6 +105,10 @@ public class AppContextUtil {
 
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
+	}
+
+	public static void setRequestType(RequestType reqType) {
+		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
 	}
 
 	public static void init() {

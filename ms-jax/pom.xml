@@ -85,6 +85,12 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-ehcache</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-monitor</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -48,7 +48,7 @@ public class PlaceOrderController {
 		
 		BigDecimal customerId = metaData.getCustomerId();
 		dto.setCustomerId(customerId);
-				
+		placeOrderService.validatePlaceOrderDto(dto);		
 		ApiResponse response = null;
 		response = placeOrderService.savePlaceOrder(dto);
 		return response;
@@ -125,6 +125,7 @@ public class PlaceOrderController {
 		BigDecimal customerId = metaData.getCustomerId();
 		
 		dto.setCustomerId(customerId);
+		placeOrderService.validatePlaceOrderDto(dto);
 		ApiResponse response = null;
 		response = placeOrderService.updatePlaceOrder(dto);
 		

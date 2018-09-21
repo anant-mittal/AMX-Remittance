@@ -74,6 +74,7 @@ public class CacheRedisConfiguration
 			if (redisProperties.getPassword() != null) {
 				singleServerConfig.setPassword(redisProperties.getPassword());
 			}
+			singleServerConfig.setIdleConnectionTimeout(2 * 60 * 1000);
 		}
 		config.setCodec(new org.redisson.codec.FstCodec());
 		return Redisson.create(config);

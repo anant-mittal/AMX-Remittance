@@ -1,4 +1,4 @@
-package com.amx.jax.worker.listner;
+package com.amx.jax.worker.tasks;
 
 import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
 
@@ -22,10 +22,11 @@ import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, integrity = true)
+@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
 public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

@@ -53,14 +53,17 @@ public class WebAuthFilter implements Filter {
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
 		} else {
+
 			String referrer = req.getParameter(UIConstants.REFERRER);
 			if (referrer != null) {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
 
-			AppContextUtil
-					.setActorId(new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+			if (!AppContextUtil.getRequestType().isTrack()) {
+				AppContextUtil.setActorId(
+						new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
 							: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
+			}
 			chain.doFilter(req, resp);
 		}
 

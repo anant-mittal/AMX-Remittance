@@ -98,6 +98,9 @@ public class PostManControllerDb {
 
 		email.setTemplate(template);
 		postManService.sendEmailAsync(email);
+		
+		
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("msg", String.format("Email is send to %s and Ref NO. is %s", customer, refno));

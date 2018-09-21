@@ -12,7 +12,6 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -29,7 +28,6 @@ import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
-import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
@@ -53,49 +51,6 @@ public class EmailService {
 	/** The file service. */
 	@Autowired
 	private FileService fileService;
-
-	/** The mail from. */
-	@TenantValue("${spring.mail.from}")
-	private String mailFrom;
-
-	@TenantValue("${spring.mail.from.title}")
-	private String mailFromTitle;
-
-	/** The mail host. */
-	@TenantValue("${spring.mail.host}")
-	private String mailHost;
-
-	/** The mail port. */
-	@TenantValue("${spring.mail.port}")
-	private int mailPort;
-
-	/** The mail username. */
-	@TenantValue("${spring.mail.username}")
-	private String mailUsername;
-
-	/** The mail password. */
-	@TenantValue("${spring.mail.password}")
-	private String mailPassword;
-
-	/** The mail smtp auth. */
-	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
-	private Boolean mailSmtpAuth;
-
-	/** The mail smtp tls. */
-	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
-	private boolean mailSmtpTls;
-
-	/** The mail protocol. */
-	@TenantValue("${spring.mail.protocol}")
-	private String mailProtocol;
-
-	/** The mail default encoding. */
-	@TenantValue("${spring.mail.defaultEncoding}")
-	private String mailDefaultEncoding;
-
-	/** The default sender. */
-	@Value("${spring.mail.from}")
-	private String defaultSender;
 
 	/** The mail sender. */
 	private JavaMailSender mailSender;
@@ -126,21 +81,21 @@ public class EmailService {
 			if (postManConfig.getTenant() != null) {
 				LOGGER.info("Using {} mailSender", postManConfig.getTenant());
 				JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-				javaMailSender.setHost(this.mailHost);
-				javaMailSender.setPort(this.mailPort);
-				javaMailSender.setUsername(this.mailUsername);
-				javaMailSender.setPassword(this.mailPassword);
+				javaMailSender.setHost(postManConfig.getMailHost());
+				javaMailSender.setPort(postManConfig.getMailPort());
+				javaMailSender.setUsername(postManConfig.getMailUsername());
+				javaMailSender.setPassword(postManConfig.getMailPassword());
 				Properties mailProp = new Properties();
-				mailProp.put("mail.smtp.auth", mailSmtpAuth);
-				mailProp.put("mail.smtp.starttls.enable", mailSmtpTls);
+				mailProp.put("mail.smtp.auth", postManConfig.isMailSmtpAuth());
+				mailProp.put("mail.smtp.starttls.enable", postManConfig.isMailSmtpTls());
 				javaMailSender.setJavaMailProperties(mailProp);
-				javaMailSender.setProtocol(this.mailProtocol);
-				javaMailSender.setDefaultEncoding(mailDefaultEncoding);
+				javaMailSender.setProtocol(postManConfig.getMailProtocol());
+				javaMailSender.setDefaultEncoding(postManConfig.getMailDefaultEncoding());
 				this.mailSender = javaMailSender;
 			} else {
 				LOGGER.info("Using Default mailSender");
 				this.mailSender = defaultMailSender;
-				this.mailFrom = defaultSender;
+				// this.mailFrom = postManConfig.getMailDefaultSender();
 			}
 		}
 		return this.mailSender;
@@ -239,7 +194,7 @@ public class EmailService {
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.DEFAULT_STRING.equals(eParams.getFrom())) {
-			eParams.setFrom(mailFrom);
+			eParams.setFrom(postManConfig.getMailFrom());
 		}
 
 		String fromEmail = null;
