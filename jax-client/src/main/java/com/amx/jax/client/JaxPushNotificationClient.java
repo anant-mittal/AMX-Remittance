@@ -1,19 +1,18 @@
 package com.amx.jax.client;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.constant.ApiEndpoint;
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.AppConfig;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -25,13 +24,11 @@ public class JaxPushNotificationClient extends AbstractJaxServiceClient {
 	@Autowired
 	AppConfig appConfig;
 
-	public ApiResponse<CustomerNotificationDTO> getJaxPushNotification(BigDecimal customerId) {
+	public AmxApiResponse<CustomerNotificationDTO, Object> get(BigDecimal customerId) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(ApiEndpoint.JAX_CUSTOMER_NOTIFICATION)
 					.queryParam("customerId", customerId).header(getHeader()).get()
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerNotificationDTO>>() {
-					});
-
+					.asApiResponse(CustomerNotificationDTO.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -39,15 +36,15 @@ public class JaxPushNotificationClient extends AbstractJaxServiceClient {
 		}
 
 	}
-	
-	
-	public ApiResponse<CustomerNotificationDTO> saveCustomerPushNotification(CustomerNotificationDTO customerNotificationDTO) {
+
+	public AmxApiResponse<Object, Object> save(CustomerNotificationDTO customerNotificationDTO) {
+		return save(Collections.singletonList(customerNotificationDTO));
+	}
+
+	public AmxApiResponse<Object, Object> save(List<CustomerNotificationDTO> customerNotificationDTOs) {
 		try {
-			HttpEntity<CustomerNotificationDTO> requestEntity = new HttpEntity<CustomerNotificationDTO>(customerNotificationDTO);
-			String url = this.getBaseUrl() + JAX_NOTIFICATION_ENDPOINT + "/jax/notification/save";
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerNotificationDTO>>() {
-					});
+			return restService.ajax(appConfig.getJaxURL()).path(ApiEndpoint.JAX_CUSTOMER_NOTIFICATION)
+					.post(customerNotificationDTOs).asApiResponse();
 		} catch (Exception e) {
 			if (e instanceof AbstractJaxException) {
 				throw e;

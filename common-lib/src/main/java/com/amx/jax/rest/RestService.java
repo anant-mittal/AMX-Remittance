@@ -235,6 +235,10 @@ public class RestService {
 			});
 		}
 
+		public AmxApiResponse<Object, Object> asApiResponse() {
+			return this.asApiResponse(Object.class);
+		}
+
 		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
 			});

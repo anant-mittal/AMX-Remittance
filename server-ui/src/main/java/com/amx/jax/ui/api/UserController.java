@@ -165,8 +165,7 @@ public class UserController {
 	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
 	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
-		return new ResponseWrapper<List<CustomerNotificationDTO>>(
-				notificationClient.getJaxPushNotification(customerId).getResults());
+		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**
