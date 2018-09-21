@@ -16,11 +16,9 @@ public class PlaceOrderProperties {
 	@Value("${currency_id}")
 	BigDecimal currencyId;
 
-	@Value("${rate_to_change}")
-	BigDecimal rateToChange;
+	@Value("${target_exchange_rate}")
+	BigDecimal targetExchangeRate;
 
-	@Value("${customer_id}")
-	BigDecimal customerId;
 
 	public BigDecimal getNoOfPlaceOrders() {
 		return noOfPlaceOrders;
@@ -38,20 +36,12 @@ public class PlaceOrderProperties {
 		this.currencyId = currencyId;
 	}
 
-	public BigDecimal getRateToChange() {
-		return rateToChange;
+	public BigDecimal getTargetExchangeRate() {
+		return targetExchangeRate;
 	}
 
-	public void setRateToChange(BigDecimal rateToChange) {
-		this.rateToChange = rateToChange;
-	}
-
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
+	public void setTargetExchangeRate(BigDecimal targetExchangeRate) {
+		this.targetExchangeRate = targetExchangeRate;
 	}
 
 }

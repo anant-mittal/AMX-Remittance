@@ -59,5 +59,8 @@ public interface IBeneficiaryOnlineDao extends JpaRepository<BenificiaryListView
 	
 	@Query("select bl from BenificiaryListView bl where bl.customerId=:customerId and orsStatus <> 0 and bl.beneficiaryRelationShipSeqId in (:beneficiaryRelationShipSeqIds)")
 	public List<BenificiaryListView> getBeneficiaryRelationShipSeqIds(@Param("customerId") BigDecimal customerId, @Param("beneficiaryRelationShipSeqIds") List<BigDecimal> beneficiaryRelationShipSeqIds);
+	
+	@Query(value= "select b1 from JAX_VW_LIST_BENEFICIARY b1 where b1.BANK_ID not in (select ROUTING_BANK_ID from ex_routing_header) and b1.CREATED_DATE > TO_DATE('01/01/2017', 'DD/mm/YYYY')", nativeQuery=true)
+	public List<BenificiaryListView> listBeneficiaryForPOloadTest();
 
 }

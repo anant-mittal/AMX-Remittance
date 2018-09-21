@@ -397,6 +397,10 @@ public class PlaceOrderService extends AbstractService {
 		return response;
 	}
 	
+	public void savePlaceOrder(List<PlaceOrder> placeOrders) {
+		placeOrderdao.save(placeOrders);
+	}
+	
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub

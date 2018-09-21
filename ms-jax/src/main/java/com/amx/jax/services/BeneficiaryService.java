@@ -966,6 +966,11 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
+    
+	public List<BenificiaryListView> listBeneficiaryForPOloadTest() {
+		return beneficiaryOnlineDao.listBeneficiaryForPOloadTest();
+	}
+    
  private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;
