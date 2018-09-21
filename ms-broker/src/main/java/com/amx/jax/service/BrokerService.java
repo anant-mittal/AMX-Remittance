@@ -22,6 +22,7 @@ import com.amx.jax.logger.LoggerService;
 import com.amx.jax.service.dao.EventNotificationDao;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
+import com.amx.utils.TimeUtils;
 import com.amx.utils.UniqueID;
 
 @Configuration
@@ -35,6 +36,9 @@ public class BrokerService {
 	@Autowired
 	private EventNotificationDao eventNotificationDao;
 
+	private long printDelay = 1000L;
+	private long printStamp = 0L;
+
 	@Autowired
 	TunnelService tunnelService;
 
@@ -43,9 +47,21 @@ public class BrokerService {
 
 		String sessionId = UniqueID.generateString();
 
-		logger.info("pushNewEventNotifications Job started ...");
-
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
+
+		int totalEvents = event_list.size();
+
+		// Increase Print Delay if its been long waiting for events
+		if (totalEvents == 0) {
+			printDelay = 2 * printDelay;
+		} else {
+			printDelay = 1000L;
+		}
+
+		if (TimeUtils.isDead(printStamp, printDelay)) {
+			logger.info("Total {} Events fetched from DB", totalEvents);
+			printStamp = System.currentTimeMillis();
+		}
 
 		for (EventNotificationView current_event_record : event_list) {
 			AppContextUtil.setTenant(Tenant.KWT);
@@ -53,8 +69,8 @@ public class BrokerService {
 			AppContextUtil.generateTraceId(true, true);
 			AppContextUtil.init();
 			try {
-				logger.info("------------------ current_event_record DB Data --------------------");
-				logger.info(current_event_record.toString());
+				logger.debug("------------------ current_event_record DB Data --------------------");
+				logger.debug(current_event_record.toString());
 
 				Map<String, String> event_data_map = StringUtils.getMapFromString(BrokerConstants.SPLITTER_CHAR,
 						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data());
@@ -66,8 +82,8 @@ public class BrokerService {
 				event.setData(event_data_map);
 				event.setDescription(current_event_record.getEvent_desc());
 
-				logger.info("------------------ Event Data to push to Message Queue --------------------");
-				logger.info(event.toString());
+				logger.debug("------------------ Event Data to push to Message Queue --------------------");
+				logger.debug(event.toString());
 
 				tunnelService.task(current_event_record.getEvent_code(), event);
 
@@ -96,7 +112,6 @@ public class BrokerService {
 	@Scheduled(fixedDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY, initialDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY)
 	public void cleanUpEventNotificationRecords() {
 		logger.info("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
-
 		try {
 			eventNotificationDao
 					.deleteEventNotificationRecordList(eventNotificationDao.getEventNotificationRecordsToDelete());

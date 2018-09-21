@@ -192,6 +192,13 @@ public class PMGaugeEvent extends AuditEvent {
 		return this;
 	}
 
+	public PMGaugeEvent set(SMS sms, String responseText) {
+		this.template = sms.getTemplate();
+		this.to = sms.getTo();
+		this.responseText = responseText;
+		return this;
+	}
+
 	/**
 	 * Fill detail.
 	 *
