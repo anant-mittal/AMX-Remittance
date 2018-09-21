@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.model.PushNotificationRecordDTO;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.PushNotificationRecord;
@@ -24,20 +24,20 @@ public class JaxPushNotificationService extends AbstractService {
 	@Autowired
 	IJaxPushNotificationDao jaxPushNotificationDao;
 
-	public ApiResponse<PushNotificationRecordDTO> getJaxNotification(BigDecimal customerId, BigDecimal nationalityId,
+	public ApiResponse<CustomerNotificationDTO> getJaxNotification(BigDecimal customerId, BigDecimal nationalityId,
 			BigDecimal countryId) {
 
-		ApiResponse<PushNotificationRecordDTO> response = getBlackApiResponse();
+		ApiResponse<CustomerNotificationDTO> response = getBlackApiResponse();
 
 		List<PushNotificationRecord> notificationList = null;
-		List<PushNotificationRecordDTO> notificationDtoList = new ArrayList<PushNotificationRecordDTO>();
+		List<CustomerNotificationDTO> notificationDtoList = new ArrayList<CustomerNotificationDTO>();
 
 		try {
 			notificationList = jaxPushNotificationDao.getJaxNotification(customerId, nationalityId, countryId);
 
 			if (!notificationList.isEmpty()) {
 				for (PushNotificationRecord notification : notificationList) {
-					PushNotificationRecordDTO notificationDto = new PushNotificationRecordDTO();
+					CustomerNotificationDTO notificationDto = new CustomerNotificationDTO();
 
 					notificationDto.setNotificationId(notification.getNotificationId());
 					notificationDto.setCustomerId(notification.getCustomerId());

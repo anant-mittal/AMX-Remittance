@@ -3,7 +3,7 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class PushNotificationRecordDTO {
+public class CustomerNotificationDTO {
 
 	private BigDecimal notificationId;
 	private BigDecimal customerId;

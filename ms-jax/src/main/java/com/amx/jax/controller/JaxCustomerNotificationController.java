@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.PushNotificationRecordDTO;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PushNotificationRecord;
