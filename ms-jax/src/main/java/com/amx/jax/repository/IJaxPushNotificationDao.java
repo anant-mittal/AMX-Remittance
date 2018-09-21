@@ -12,7 +12,8 @@ import com.amx.jax.dbmodel.PushNotificationRecord;
 
 public interface IJaxPushNotificationDao extends JpaRepository<PushNotificationRecord, Serializable> {
 
-	@Query("select n from PushNotificationRecord n where n.customerId=:customerId or n.nationalityId=:nationalityId or n.countryId=:countryId")
+	@Query("select n from PushNotificationRecord n where n.customerId=:customerId "
+			+ "or (n.customerId is null and (n.nationalityId=:nationalityId or (n.nationalityId is null and n.countryId=:countryId)))")
 	public List<PushNotificationRecord> getJaxNotification(@Param("customerId") BigDecimal customerId,
 			@Param("nationalityId") BigDecimal nationalityId, @Param("countryId") BigDecimal countryId);
 }
