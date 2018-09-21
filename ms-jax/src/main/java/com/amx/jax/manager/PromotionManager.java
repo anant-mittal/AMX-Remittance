@@ -15,10 +15,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.jax.dao.PromotionDao;
+import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionLocation;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
@@ -37,6 +39,8 @@ public class PromotionManager {
 	MetaData metaData;
 	@Autowired
 	FinancialService financialService;
+	@Autowired
+	RemittanceApplicationDao remittanceApplicationDao;
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
@@ -63,8 +67,11 @@ public class PromotionManager {
 				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
 			} else {
 				PromotionHeader promoHeader = getPromotionHeader();
-				Date now = Calendar.getInstance().getTime();
-				if (now.after(promoHeader.getFromDate()) && now.before(promoHeader.getToDate())) {
+				RemittanceTransaction remittanceTransaction = remittanceApplicationDao
+						.getRemittanceTransaction(docNoRemit, docFinyear);
+				Date transactionDate = remittanceTransaction.getCreatedDate();
+				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
+						&& transactionDate.before(promoHeader.getToDate())) {
 					dto = new PromotionDto();
 					dto.setPrize("CHICKEN KING/SAGAR VOUCHER");
 					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
