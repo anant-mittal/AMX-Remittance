@@ -43,4 +43,21 @@ public class JaxPushNotificationClient extends AbstractJaxServiceClient {
 		}
 
 	}
+	
+	
+	public ApiResponse<CustomerNotificationDTO> saveCustomerPushNotification(CustomerNotificationDTO customerNotificationDTO) {
+		try {
+			HttpEntity<CustomerNotificationDTO> requestEntity = new HttpEntity<CustomerNotificationDTO>(customerNotificationDTO);
+			String url = this.getBaseUrl() + JAX_NOTIFICATION_ENDPOINT + "/jax/notification/save";
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<CustomerNotificationDTO>>() {
+					});
+		} catch (Exception e) {
+			if (e instanceof AbstractJaxException) {
+				throw e;
+			} else {
+				throw new JaxSystemError();
+			}
+		}
+	}
 }
