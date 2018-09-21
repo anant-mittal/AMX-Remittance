@@ -2,9 +2,8 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
-import java.io.IOException;
+
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,6 @@ import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
@@ -63,9 +61,6 @@ public class OffsiteCustRegController implements ICustRegService {
 	ViewStateService stateService;
 
 	@Autowired
-	private CustomerRegistrationService customerRegistrationService;
-
-	@Autowired
 	ViewDistrictService districtService;
 
 	@Autowired
@@ -76,7 +71,8 @@ public class OffsiteCustRegController implements ICustRegService {
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		return offsiteCustRegService.sendIdTypes();
 	}
-
+	
+	@ApiJaxStatus({JaxError.ALREADY_EXIST_EMAIL,JaxError.INVALID_MOBILE_NUMBER})
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
@@ -137,12 +133,13 @@ public class OffsiteCustRegController implements ICustRegService {
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 	
+	@ApiJaxStatus({JaxError.IMAGE_NOT_AVAILABLE,JaxError.NULL_CUSTOMER_ID})
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody List<ImageSubmissionRequest> model) throws ParseException{		
 		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 
-	
+	@ApiJaxStatus({JaxError.SIGNATURE_NOT_AVAILABLE,JaxError.NULL_CUSTOMER_ID})
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {		
 		return offsiteCustRegService.saveCustomerSignature(model);
