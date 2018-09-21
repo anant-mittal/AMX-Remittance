@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -187,12 +188,12 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail) {
 		try {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
 			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
-			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail).asApiResponse(List.class);
+			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail).asApiResponse(SendOtpModel.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -221,9 +222,25 @@ public class OffsiteCustRegClient implements ICustRegService {
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
 			throws ParseException {
 		try {
-			LOGGER.info("Save customer KYC Document");
+			LOGGER.debug("Save customer KYC Document");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerKYCDoc/";			
 			return restService.ajax(url).filter(metaFilter).post(modelData).asApiResponse(String.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in saveCustomerInfo : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch}
+	}
+
+	
+	
+	@Override
+	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
+		try {
+			LOGGER.debug("Save customer Signature");
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerSignature/";			
+			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {

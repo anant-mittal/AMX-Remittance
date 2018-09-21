@@ -49,7 +49,8 @@ public class JaxAuditEvent extends AuditEvent {
 		DESIGNATION_LIST,
 		INCOME_RANGE,
 		CUST_INFO,
-		KYC_DOC;
+		KYC_DOC,
+		SIGNATURE;
 
 		@Override
 		public EventMarker marker() {

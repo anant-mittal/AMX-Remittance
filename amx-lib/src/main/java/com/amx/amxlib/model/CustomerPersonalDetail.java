@@ -82,6 +82,8 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private Date expiryDate;
 	
 	private Date dateOfBirth;
+	
+	private BigDecimal identityTypeId;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -185,6 +187,22 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	public void setExpiryDate(Date expiryDate) {
 		this.expiryDate = expiryDate;
+	}	
+
+	public Date getDateOfBirth() {
+		return dateOfBirth;
+	}
+
+	public void setDateOfBirth(Date dateOfBirth) {
+		this.dateOfBirth = dateOfBirth;
+	}
+
+	public BigDecimal getIdentityTypeId() {
+		return identityTypeId;
+	}
+
+	public void setIdentityTypeId(BigDecimal identityTypeId) {
+		this.identityTypeId = identityTypeId;
 	}
 
 	@Override
@@ -193,8 +211,10 @@ public class CustomerPersonalDetail extends AbstractModel {
 				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
 				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
-				+ ", dateOfBirth=" + dateOfBirth + "]";
+				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + "]";
 	}
+
+	
 
 	
 

@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -106,7 +107,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 			model.setNationalityId(new BigDecimal(91));
 			model.setTelPrefix("965");
 			model.setTitle("181");
-			AmxApiResponse<List, Object> response = null;
+			AmxApiResponse<SendOtpModel, Object> response = null;
 			response = offsiteClient.sendOtpForEmailAndMobile(model);
 			assertNotNull("Response is null", response);
 			assertNotNull(response.getResult());

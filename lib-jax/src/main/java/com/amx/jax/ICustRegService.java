@@ -33,6 +33,7 @@ public interface ICustRegService {
 		public static final String GET_PROFESSION_LIST = "/professionList";
 		public static final String SAVE_CUST_INFO = "/saveCustomerInfo";
 		public static final String SAVE_KYC_DOC = "/saveCustomerKYCDoc";
+		public static final String SAVE_SIGNATURE = "/saveCustomerSignature";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -62,5 +63,7 @@ public interface ICustRegService {
 	
 	AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
 			throws ParseException;
-
+	
+	AmxApiResponse<String,Object> saveCustomerSignature(ImageSubmissionRequest model);
+	
 }

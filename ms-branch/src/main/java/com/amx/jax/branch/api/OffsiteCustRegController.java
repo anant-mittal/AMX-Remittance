@@ -26,6 +26,7 @@ import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
@@ -77,12 +78,13 @@ public class OffsiteCustRegController implements ICustRegService {
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);
 		LOGGER.info("send otp request: " + customerPersonalDetail);
-		return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+		//return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 	}
 
 	@ApiJaxStatus({JaxError.MISSING_OTP,JaxError.VALIDATE_OTP_LIMIT_EXCEEDED})
@@ -138,6 +140,12 @@ public class OffsiteCustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody List<ImageSubmissionRequest> model) throws ParseException{		
 		return offsiteCustRegService.saveCustomeKycDocument(model);
+	}
+
+	
+	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
+	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {		
+		return offsiteCustRegService.saveCustomerSignature(model);
 	}
 
 }

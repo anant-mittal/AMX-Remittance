@@ -1,8 +1,7 @@
 package com.amx.jax.offsite.controller;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.request.CustomerInfoRequest;
@@ -132,7 +131,7 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-send-otp/", method = { RequestMethod.POST })
-	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 
 		logger.info(
 				"Send Otp for Email and Mobile request called for country id : " + customerPersonalDetail.getCountryId()
