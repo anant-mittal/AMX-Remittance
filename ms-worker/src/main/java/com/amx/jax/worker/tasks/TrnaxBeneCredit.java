@@ -1,7 +1,5 @@
 package com.amx.jax.worker.tasks;
 
-import static com.amx.amxlib.constant.NotificationConstants.RESP_DATA_KEY;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
