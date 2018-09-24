@@ -3,7 +3,6 @@ package com.amx.jax.offsite.controller;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +11,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.amx.jax.model.dto.SendOtpModel;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -90,13 +90,13 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody List<ImageSubmissionRequest> modelData)
 			throws ParseException {
 		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
 		return offsiteCustRegClient.saveCustomerInfo(model);
 	}
 
