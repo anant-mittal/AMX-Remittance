@@ -92,4 +92,11 @@ public class AdminController {
 		return response;
 	}
 
+	@RequestMapping(value = "/exrate/placeorder", method = RequestMethod.POST)
+	public ApiResponse<BooleanResponse> setOnlineExchangeRatesPlaceorder(
+			@ApiParam(required = true, allowableValues = "INR, AED, AUD, BDT, BAM, GBP, EURO, PKR, USD, ZAR, LKR,BHD,CAD,EGP,MUR,NPR,OMR,SAR", value = "Select quote", name = "quoteName") @RequestParam(required = true) String quoteName,
+			@RequestParam BigDecimal bankId,@RequestParam BigDecimal value) {
+		ApiResponse<BooleanResponse> response = exchangeRateClient.setExchangeRatePlaceorder(quoteName, bankId, value);
+		return response;
+	}
 }

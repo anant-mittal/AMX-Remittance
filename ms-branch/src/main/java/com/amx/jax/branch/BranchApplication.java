@@ -18,9 +18,4 @@ public class BranchApplication {
 		SpringApplication.run(BranchApplication.class, args);
 	}
 
-	@Bean
-	public RestTemplate restTemplate(RestTemplateBuilder builder) {
-		RestTemplate restTemplate = builder.build();
-		return restTemplate;
-	}
 }

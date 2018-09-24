@@ -51,6 +51,9 @@ public class RequestLogFilter implements Filter {
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
+		if (req.getRequestURI().contains(AppParamController.PARAM_URL)) {
+			return true;
+		}
 		if (StringUtils.isEmpty(authToken)
 				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
 			return false;
@@ -112,18 +115,18 @@ public class RequestLogFilter implements Filter {
 					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
-				traceId = ContextUtil.getTraceId(true, sessionID);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+
 				AppContextUtil.setSessionId(sessionID);
+				traceId = AppContextUtil.getTraceId();
+				AppContextUtil.init();
+
 				if (session != null) {
 					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {
-				ContextUtil.setTraceId(traceId);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+				AppContextUtil.setTranceId(traceId);
+				AppContextUtil.init();
 			}
 
 			// Actual Request Handling
@@ -144,8 +147,7 @@ public class RequestLogFilter implements Filter {
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
-			MDC.clear();
-			ContextUtil.clear();
+			AppContextUtil.clear();
 		}
 	}
 

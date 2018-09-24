@@ -315,10 +315,9 @@ public class BeneficiaryController {
 
 	}
 	
-   @RequestMapping(value = "/pobene/", method = RequestMethod.POST)
+   @RequestMapping(value = "/pobene/", method = RequestMethod.GET)
     public ApiResponse poBeneficiary(@RequestParam(required=false,value="placeOrderId") BigDecimal placeOrderId) {
         ApiResponse response=null;
-        try {
             
         BigDecimal customerId = metaData.getCustomerId();
         BigDecimal applicationCountryId = metaData.getCountryId();
@@ -328,9 +327,7 @@ public class BeneficiaryController {
         LOGGER.info("applicationCountryId  :" + applicationCountryId);
         
         response= beneService.getPlaceOrderBeneficiary(customerId, applicationCountryId, placeOrderId);
-        }catch(Exception e) {
-            LOGGER.error("exception in defaultBeneficiary : ",e);
-        }
+       
         return response;
     }
 	    

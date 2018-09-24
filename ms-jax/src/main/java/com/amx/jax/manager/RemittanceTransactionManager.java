@@ -239,7 +239,7 @@ public class RemittanceTransactionManager {
 				+ routingBankId + "\t serviceMasterId :" + serviceMasterId);
 		List<ExchangeRateApprovalDetModel> exchangeRates = exchangeRateDao.getExchangeRatesForRoutingBank(currencyId,
 				meta.getCountryBranchId(), rountingCountryId, applicationCountryId, routingBankId, serviceMasterId);
-		if (exchangeRates == null || exchangeRates.isEmpty()) {
+		if (!jaxProperties.getExrateBestRateLogicEnable() && (exchangeRates == null || exchangeRates.isEmpty())) {
 			throw new GlobalException("No exchange rate found for bank- " + routingBankId,
 					REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL);
 		}
@@ -252,9 +252,12 @@ public class RemittanceTransactionManager {
 		List<BankCharges> charges = appliedRule.getBankCharges();
 		BankCharges bankCharge = getApplicableCharge(charges);
 		BigDecimal commission = bankCharge.getChargeAmount();
+		if (newCommission != null) {
+			commission = newCommission;
+		}
 		ExchangeRateBreakup breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
 		remitApplParametersMap.put("P_CALCULATED_FC_AMOUNT", breakup.getConvertedFCAmount());
-		
+		remitApplParametersMap.put("P_CALCULATED_LC_AMOUNT", breakup.getConvertedLCAmount());
 
 		if (model.isAvailLoyalityPoints()) {
 			validateLoyalityPointsBalance(customer.getLoyaltyPoints());
@@ -262,9 +265,6 @@ public class RemittanceTransactionManager {
 
 		logger.info("rountingCountryId: " + rountingCountryId + " serviceMasterId: " + serviceMasterId);
 	
-		if (newCommission != null) {
-			commission = newCommission;
-		}
 		
 		applyRoudingLogic(breakup);
 		breakup = getExchangeRateBreakup(exchangeRates, model, responseModel, commission);
@@ -862,12 +862,13 @@ public class RemittanceTransactionManager {
 		}
 
 		CivilIdOtpModel otpMmodel = null;
+		BigDecimal localAmount = (BigDecimal) remitApplParametersMap.get("P_CALCULATED_LC_AMOUNT");
 		if (((meta.getChannel().equals(JaxChannel.ONLINE)) && (WEB.equals(meta.getAppType()))
-				&& (model.getLocalAmount().compareTo(onlineLimit) >= 0)) ||
+				&& (localAmount.compareTo(onlineLimit) >= 0)) ||
 
-				(IOS.equals(meta.getAppType()) && model.getLocalAmount().compareTo(iosLimit) >= 0) ||
+				(IOS.equals(meta.getAppType()) && localAmount.compareTo(iosLimit) >= 0) ||
 
-				(ANDROID.equals(meta.getAppType()) && model.getLocalAmount().compareTo(androidLimit) >= 0)) {
+				(ANDROID.equals(meta.getAppType()) && localAmount.compareTo(androidLimit) >= 0)) {
 
 			List<CommunicationChannel> channel = new ArrayList<>();
 			channel.add(CommunicationChannel.EMAIL_AS_MOBILE);

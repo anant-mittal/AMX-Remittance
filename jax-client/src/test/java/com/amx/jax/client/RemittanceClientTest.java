@@ -64,7 +64,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -78,7 +78,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+	@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -88,12 +88,12 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312621));
-		request.setLocalAmount(new BigDecimal(10));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(163));
-		request.setSrlId(new BigDecimal(697));
+		request.setBeneId(new BigDecimal(4709181));
+		request.setLocalAmount(new BigDecimal(2));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+		request.setSrlId(new BigDecimal(22));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(162.7074520013));
+		exRateBreakup.setRate(new BigDecimal(472));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);

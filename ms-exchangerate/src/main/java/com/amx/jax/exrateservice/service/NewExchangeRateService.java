@@ -2,11 +2,8 @@ package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -62,7 +59,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
 
-			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, lcAmount, meta.getCountryBranchId());
+			List<BankMasterDTO> bankWiseRates = chooseBankWiseRates(toCurrency, lcAmount, meta.getCountryBranchId(), validBankIds);
 			if (bankWiseRates == null || bankWiseRates.isEmpty()) {
 				throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
 			}
@@ -87,7 +84,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, lcAmount, meta.getCountryBranchId(), bankId);
 		}
 		if (fcAmount != null) {
-			pips = pipsDao.getPipsMasterForLocalAmount(toCurrency, fcAmount, meta.getCountryBranchId(), bankId);
+			pips = pipsDao.getPipsMasterForForeignAmount(toCurrency, fcAmount, meta.getCountryBranchId(), bankId);
 		}
 		if (pips == null || pips.isEmpty()) {
 			throw new GlobalException("No exchange data found", JaxError.EXCHANGE_RATE_NOT_FOUND);
@@ -110,10 +107,10 @@ public class NewExchangeRateService extends ExchangeRateService {
 	 * 
 	 */
 	private List<BankMasterDTO> chooseBankWiseRates(BigDecimal toCurrency, BigDecimal lcAmount,
-			BigDecimal countryBranchId) {
+			BigDecimal countryBranchId, List<BigDecimal> validBankIds) {
 		List<BankMasterDTO> bankMasterDto = new ArrayList<>();
 
-		List<PipsMaster> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId);
+		List<PipsMaster> pips = pipsDao.getPipsMaster(toCurrency, lcAmount, countryBranchId, validBankIds);
 		pips.forEach(i -> {
 			BankMasterDTO dto = bankMasterService.convert(i.getBankMaster());
 			bankMasterDto.add(dto);
@@ -122,7 +119,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		});
 		return bankMasterDto;
 	}
-	
+
 	public ExchangeRateBreakup getExchangeRateBreakup(BigDecimal toCurrencyId, BigDecimal localAmount,
 			BigDecimal routingBankId) {
 		ApiResponse<ExchangeRateResponseModel> apiResponse = getExchangeRatesForOnline(meta.getDefaultCurrencyId(),

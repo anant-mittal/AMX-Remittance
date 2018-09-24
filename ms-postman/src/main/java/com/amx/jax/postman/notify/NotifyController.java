@@ -17,7 +17,7 @@ import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 
 import io.swagger.annotations.Api;
@@ -35,7 +35,7 @@ public class NotifyController {
 
 	/** The fb push client. */
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
 
 	/**
 	 * List of tenants.
@@ -115,7 +115,7 @@ public class NotifyController {
 		msg.setMessage(message);
 		msg.setSubject(title);
 		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class NotifyController {
 			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
 					nationality.getCode()));
 		}
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 }

@@ -17,6 +17,8 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.utils.ArgUtil;
 
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 
 @Component
@@ -93,7 +95,7 @@ public class HttpService {
 	}
 
 	public UserAgent getUserAgent() {
-		UserAgent agent = new UserAgent();
+		UserAgent agent = new UserAgent(OperatingSystem.UNKNOWN, Browser.UNKNOWN);
 		if (request != null) {
 			String browserDetails = request.getHeader("User-Agent");
 			return UserAgent.parseUserAgentString(browserDetails);
