@@ -1814,7 +1814,7 @@
                     <!--##################Payment Mode END####################-->
  					<!--##################Payment Mode START####################-->
                     <frame>
-                        <reportElement x="5" y="710" width="585" height="30"/>
+                        <reportElement x="5" y="705" width="585" height="30"/>
                         <staticText>
                             <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "18" backcolor = "#FFFFFF" />
                             <textElement />
@@ -1839,7 +1839,7 @@
 
                     <!--##################FOOTER START####################-->
                     <frame>
-                        <reportElement x="0" y="740" width="595" height="70"
+                        <reportElement x="0" y="730" width="595" height="70"
                                        forecolor="blue"/>
 
                         <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
@@ -1847,7 +1847,7 @@
                                     x="0"
                                     y="0"
                                     width="595"
-                                    height="100"
+                                    height="90"
                                     key="image-1"
                                     stretchType="NoStretch"/>
                             <graphicElement/>
