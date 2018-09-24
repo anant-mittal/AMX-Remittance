@@ -32,7 +32,7 @@ public class PromotionTest {
 
 	@Before
 	public void contextLoads() {
-		TenantContext.setCurrentTenant(Tenant.KWT.toString());
+		TenantContext.setCurrentTenant(Tenant.KWT2.toString());
 	}
 
 	@Test

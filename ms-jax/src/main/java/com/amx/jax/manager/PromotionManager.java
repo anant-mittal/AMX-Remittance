@@ -17,6 +17,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.UserFinancialYear;
@@ -86,7 +87,7 @@ public class PromotionManager {
 				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
 						&& transactionDate.before(promoHeader.getToDate())) {
 					dto = new PromotionDto();
-					dto.setPrize("CHICKEN KING SAGAR VOUCHER");
+					dto.setPrize(ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR);
 					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
 				}
 			}
@@ -122,6 +123,17 @@ public class PromotionManager {
 					email.getModel().put(RESP_DATA_KEY, personInfo);
 					email.getModel().put("promotDto", promotDto);
 					postManService.sendEmailAsync(email);
+
+					if (ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR.equals(promotDto.getPrize())) {
+						// voucher mail to customer
+						logger.info("Sending promo voucher Email to customer : ");
+						Email voucherEmail = new Email();
+						voucherEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+						voucherEmail.addTo(personInfo.getEmail());
+						voucherEmail.setTemplate(Templates.PROMOTION_COUPON);
+						voucherEmail.setHtml(true);
+						postManService.sendEmailAsync(voucherEmail);
+					}
 				} catch (Exception e) {
 					logger.error("error in promotionWinnerCheck", e);
 				}
