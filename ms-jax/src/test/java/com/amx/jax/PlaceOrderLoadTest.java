@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import org.junit.Before;
@@ -43,15 +44,16 @@ public class PlaceOrderLoadTest {
 		TenantContext.setCurrentTenant(Tenant.KWT.toString());
 	}
 
-	
 	@Test
 	public void loadTestPlaceOrder() {
+		TenantContext.setCurrentTenant(Tenant.KWT.toString());
 		logger.info("in loadTestPlaceOrder with params: ");
 		logger.info("currency id: " + placeOrderProperties.getCurrencyId());
 		logger.info("No of place orders: " + placeOrderProperties.getNoOfPlaceOrders());
 		logger.info("rate target: " + placeOrderProperties.getTargetExchangeRate());
 		// find routing bank id to route place orders thr for given currency
-		List<BenificiaryListView> beneList = beneficiaryService.listBeneficiaryForPOloadTest();
+		List<BenificiaryListView> beneList = beneficiaryService
+				.listBeneficiaryForPOloadTest(placeOrderProperties.getNoOfPlaceOrders().intValue());
 		List<PlaceOrder> placeOrders = new ArrayList<>();
 		beneList.stream().limit(placeOrderProperties.getNoOfPlaceOrders().intValue()).forEach(bene -> {
 			PlaceOrderDTO dto = new PlaceOrderDTO();
@@ -75,7 +77,14 @@ public class PlaceOrderLoadTest {
 			dto.setBankId(bene.getBankId());
 			dto.setCountryId(bene.getCountryId());
 			dto.setCurrencyId(bene.getCurrencyId());
-			placeOrders.add(PlaceOrderUtil.getPlaceOrderModel(dto));
+			PlaceOrder placeOrderModel = PlaceOrderUtil.getPlaceOrderModel(dto);
+			placeOrderModel.setCreatedDate(new Date());
+			placeOrderModel.setIsActive("Y");
+
+			placeOrderModel.setBankId(dto.getBankId());
+			placeOrderModel.setCountryId(dto.getCountryId());
+			placeOrderModel.setCurrencyId(dto.getCurrencyId());
+			placeOrders.add(placeOrderModel);
 		});
 		placeOrderService.savePlaceOrder(placeOrders);
 		// save or update place orders
