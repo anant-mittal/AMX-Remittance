@@ -12,7 +12,8 @@ public class ImageSubmissionRequest implements Serializable{
 	 */
 	private static final long serialVersionUID = 1L;
 	private BigDecimal customerId;
-	private String image;	
+	private String image;
+	private String politicallyExposed;
 	
 	public BigDecimal getCustomerId() {
 		return customerId;
@@ -25,10 +26,20 @@ public class ImageSubmissionRequest implements Serializable{
 	}
 	public void setImage(String image) {
 		this.image = image;
+	}	
+	
+	public String getPoliticallyExposed() {
+		return politicallyExposed;
+	}
+	public void setPoliticallyExposed(String politicallyExposed) {
+		this.politicallyExposed = politicallyExposed;
 	}
 	@Override
 	public String toString() {
-		return "ImageSubmissionRequest [customerId=" + customerId + ", image=" + image + "]";
+		return "ImageSubmissionRequest [customerId=" + customerId + ", image=" + image + ", politicallyExposed="
+				+ politicallyExposed + "]";
 	}
+	
+	
 	
 }

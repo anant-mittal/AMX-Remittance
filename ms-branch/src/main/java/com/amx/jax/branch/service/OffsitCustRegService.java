@@ -714,6 +714,7 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
 		}
 		customer.setSignatureSpecimenClob(model.getImage());
+		customer.setPepsIndicator(model.getPoliticallyExposed());
 		customerRepository.save(customer);
 		return AmxApiResponse.build("Signature Uploaded Successfully");
 	}
