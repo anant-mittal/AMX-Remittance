@@ -72,7 +72,6 @@ public class OffsiteController {
 	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
 	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		return offsiteService.getFieldList(model);
-
 	}
 
 	@RequestMapping(value = "/income_range/list", method = { RequestMethod.POST })
@@ -94,6 +93,11 @@ public class OffsiteController {
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
 			throws ParseException {
 		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
+	}
+
+	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+		return offsiteCustRegClient.saveCustomerInfo(model);
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })
@@ -123,17 +127,6 @@ public class OffsiteController {
 						+ customerPersonalDetail.getTelPrefix());
 
 		return offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail);
-	}
-
-	@RequestMapping(value = "/offsite-cust-reg/saveCustomerInfo/", method = { RequestMethod.POST })
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
-
-		logger.info("Save Customer Details request called for Customer Employee Details : "
-				+ model.getCustomerEmploymentDetails() + " , article details id : " + model.getCustomerPersonalDetail()
-				+ " and country id : " + model.getHomeAddressDestails() + " and country id : "
-				+ model.getLocalAddressDetails());
-
-		return offsiteCustRegClient.saveCustomerInfo(model);
 	}
 
 }
