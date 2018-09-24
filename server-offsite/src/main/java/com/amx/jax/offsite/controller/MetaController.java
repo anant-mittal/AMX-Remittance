@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,7 +17,12 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.request.EmploymentDetailsRequest;
+import com.amx.jax.model.response.ArticleDetailsDescDto;
+import com.amx.jax.model.response.ArticleMasterDescDto;
+import com.amx.jax.model.response.ComponentDataDto;
 
 import io.swagger.annotations.Api;
 
@@ -24,13 +30,16 @@ import io.swagger.annotations.Api;
  * The Class MetaController.
  */
 @RestController
-@Api(value = "Meta APIs")
+@Api(value = "Customer Meta APIs")
 public class MetaController {
 
 	private static final Logger LOGGER = LoggerService.getLogger(MetaController.class);
 
 	@Autowired
 	MetaClient metaClient;
+
+	@Autowired
+	private OffsiteCustRegClient offsiteCustRegClient;
 
 	/**
 	 *

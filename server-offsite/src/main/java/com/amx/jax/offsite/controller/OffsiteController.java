@@ -36,13 +36,14 @@ import io.swagger.annotations.ApiOperation;
  *
  */
 @RestController
+@RequestMapping("/api/customer/reg")
 public class OffsiteController {
 
 	private Logger logger = Logger.getLogger(OffsiteController.class);
 
 	@Autowired
 	private OffsiteCustRegClient offsiteCustRegClient;
-	
+
 	@Autowired
 	private OffsiteService offsiteService;
 
@@ -52,47 +53,47 @@ public class OffsiteController {
 		return "index";
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/new-field-list/", method = { RequestMethod.POST })
-	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
-
-		logger.info("field list request called for tenant : " + model.getTenant() + " , nationality : "
-				+ model.getNationality() + " and component : " + model.getComponent() + " and component Data Id : " 
-				+ model.getComponentDataId() + " and component Data Desc : " + model.getComponentDataDesc());
-		
-		AmxApiResponse<FieldListDto, Object> finalResponse =  offsiteService.getFieldList(model);
-		
-		return finalResponse;
-
+	@RequestMapping(value = "/professions/list", method = { RequestMethod.GET })
+	public AmxApiResponse<ComponentDataDto, Object> getProfessionList() {
+		return offsiteCustRegClient.sendProfessionList();
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/incomeRangeList/", method = { RequestMethod.POST })
-	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
-
-		logger.info("Income range request called for article id : " + model.getArticleId() + " , article details id : "
-				+ model.getArticleDetailsId() + " and country id : " + model.getCountryId());
-
-		return offsiteCustRegClient.getIncomeRangeResponse(model);
+	@RequestMapping(value = "/article/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleList() {
+		return offsiteCustRegClient.getArticleListResponse();
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/designationList/", method = { RequestMethod.POST })
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
+	@RequestMapping(value = "/designation/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList(
 			@RequestBody EmploymentDetailsRequest model) {
-
-		logger.info(
-				"Designation list request called for article id : " + model.getArticleId() + " , article details id : "
-						+ model.getArticleDetailsId() + " and country id : " + model.getCountryId());
-
 		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/articleList/", method = { RequestMethod.POST })
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
+	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
+	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+		return offsiteService.getFieldList(model);
 
-		/*logger.info("Artcile list request called for country id : " + model.getCountryId() + " , state id : "
-				+ model.getStateId() + " and district id : " + model.getDistrictId() + " and city id : "
-				+ model.getCityId() + " and nationality id : " + model.getNationalityId());*/
+	}
 
-		return offsiteCustRegClient.getArticleListResponse();
+	@RequestMapping(value = "/income_range/list", method = { RequestMethod.POST })
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
+		return offsiteCustRegClient.getIncomeRangeResponse(model);
+	}
+
+	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ComponentDataDto, Object> getEmploymentTypeList() {
+		return offsiteCustRegClient.sendEmploymentTypeList();
+	}
+
+	@RequestMapping(value = "/id_type/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
+		return offsiteCustRegClient.sendIdTypes();
+	}
+
+	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+			throws ParseException {
+		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })
@@ -108,32 +109,9 @@ public class OffsiteController {
 		return offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/employmentTypeList/", method = { RequestMethod.POST })
-	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
-
-		logger.info("Employee Type list request");
-
-		return offsiteCustRegClient.sendEmploymentTypeList();
-	}
-
-	@RequestMapping(value = "/offsite-cust-reg/professionList/", method = { RequestMethod.POST })
-	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
-
-		logger.info("Profession list request");
-
-		return offsiteCustRegClient.sendProfessionList();
-	}
-
-	@RequestMapping(value = "/offsite-cust-reg/send-id-types/", method = { RequestMethod.POST })
-	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
-
-		logger.info("send id type request");
-
-		return offsiteCustRegClient.sendIdTypes();
-	}
-
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-send-otp/", method = { RequestMethod.POST })
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
+			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 
 		logger.info(
 				"Send Otp for Email and Mobile request called for country id : " + customerPersonalDetail.getCountryId()
@@ -146,23 +124,16 @@ public class OffsiteController {
 
 		return offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail);
 	}
-	
+
 	@RequestMapping(value = "/offsite-cust-reg/saveCustomerInfo/", method = { RequestMethod.POST })
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
 
-		logger.info(
-				"Save Customer Details request called for Customer Employee Details : " + model.getCustomerEmploymentDetails() + " , article details id : "
-						+ model.getCustomerPersonalDetail() + " and country id : " + model.getHomeAddressDestails() + " and country id : " + model.getLocalAddressDetails());
+		logger.info("Save Customer Details request called for Customer Employee Details : "
+				+ model.getCustomerEmploymentDetails() + " , article details id : " + model.getCustomerPersonalDetail()
+				+ " and country id : " + model.getHomeAddressDestails() + " and country id : "
+				+ model.getLocalAddressDetails());
 
 		return offsiteCustRegClient.saveCustomerInfo(model);
-	}
-	
-	@RequestMapping(value = "/offsite-cust-reg/saveCustomerKYCDoc/", method = { RequestMethod.POST })
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData) throws ParseException {
-
-		logger.info("Save Customer KYC request called for ImageSubmissionRequest : " + modelData );
-
-		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
 }
