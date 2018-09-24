@@ -69,6 +69,11 @@
 				"logoPath": null,
 				"purchageAmount": null,
 				"subReport": null,
+				"promotDto": {
+					"prize": "TRAVEL VOUCHER",
+					"prizeMessage": "CONGRATULATIONS! YOU WON TRAVEL VOUCHER",
+					"transactionReference": "101902018"
+				},
 				"collectionDetailList": [
 					{
 						"applicationNo": null,
@@ -1174,6 +1179,6 @@
 		"subReport": null,
 		"fcsaleApplicationCheck": null,
 		"remittanceReceiptCheck": true,
-		"label1":"بيانات الراسل"
+		"label1": "بيانات الراسل"
 	}
 }
