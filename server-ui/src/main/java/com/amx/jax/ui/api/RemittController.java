@@ -197,6 +197,7 @@ public class RemittController {
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
 				.report(tranxDTO, !duplicate.booleanValue()).getResult();
+		logger.info("promotdto=" +JsonUtil.toJson(rspt.getRemittanceApplList().get(0).getPromotionDto()));
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 
 		File file = null;
@@ -250,7 +251,6 @@ public class RemittController {
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
 				.report(tranxDTO, !duplicate.booleanValue()).getResult();
-		System.out.println("promotdto=" +JsonUtil.toJson(rspt.getRemittanceApplList().get(0).getPromotionDto()));
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
