@@ -37,7 +37,6 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.payment.PayGService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -96,8 +95,6 @@ public class RemittController {
 	@Autowired
 	private SessionService sessionService;
 	
-	Logger logger = LoggerService.getLogger(getClass());
-
 	/**
 	 * Tranxhistory.
 	 *
@@ -197,7 +194,6 @@ public class RemittController {
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
 				.report(tranxDTO, !duplicate.booleanValue()).getResult();
-		logger.info("promotdto=" +JsonUtil.toJson(rspt.getRemittanceApplList().get(0).getPromotionDto()));
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 
 		File file = null;
