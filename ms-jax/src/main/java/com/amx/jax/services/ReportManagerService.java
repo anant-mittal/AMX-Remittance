@@ -487,7 +487,7 @@ public class ReportManagerService extends AbstractService{
 		if (Boolean.TRUE.equals(promotion)) {
 			PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
 					transactionHistroyDTO.getDocumentFinanceYear());
-			remittanceReceiptSubreportList.get(0).setPromotionDto(promotionDto);
+			remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
 		}
 		response.getData().getValues().addAll(remittanceReceiptSubreportList);
 		response.setResponseStatus(ResponseStatus.OK);

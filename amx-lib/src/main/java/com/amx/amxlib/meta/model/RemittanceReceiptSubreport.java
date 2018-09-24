@@ -24,7 +24,6 @@ public class RemittanceReceiptSubreport {
 	
 	private Boolean remittanceReceiptCheck;
 	
-	private PromotionDto promotionDto;
 	
 	public Boolean getWaterMarkCheck() {
 		return waterMarkCheck;
@@ -103,21 +102,6 @@ public class RemittanceReceiptSubreport {
 		this.collectionAppList = collectionAppList;
 	}
 
-	public PromotionDto getPromotionDto() {
-		return promotionDto;
-	}
-
-	public void setPromotionDto(PromotionDto promotionDto) {
-		this.promotionDto = promotionDto;
-	}
-
-
-
-
-
-
-
-	
 	
 	
 	
