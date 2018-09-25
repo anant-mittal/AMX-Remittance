@@ -740,8 +740,7 @@ public class RemittanceReportBean {
 	}
 
 	public void setPromotionDto(PromotionDto promotionDto) {
-		// TODO Auto-generated method stub
-		
+		this.promotionDto = promotionDto;
 	}
 
 	public PromotionDto getPromotionDto() {
