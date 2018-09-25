@@ -62,8 +62,8 @@ public class PromotionDao {
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
 					String proc = "{call GET_PROMOTION_PRIZE (?,?,?,?,?)}";
 					CallableStatement cs = con.prepareCall(proc);
-					cs.setBigDecimal(1, documentNoRemit);
-					cs.setBigDecimal(2, documentFinYearRemit);
+					cs.setBigDecimal(1, documentFinYearRemit);
+					cs.setBigDecimal(2, documentNoRemit);
 					cs.setBigDecimal(3, branchId);
 					cs.registerOutParameter(4, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(5, java.sql.Types.VARCHAR);
