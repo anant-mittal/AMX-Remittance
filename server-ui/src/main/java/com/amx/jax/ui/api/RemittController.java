@@ -197,7 +197,7 @@ public class RemittController {
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
 				.report(tranxDTO, !duplicate.booleanValue()).getResult();
-		logger.info("rspt=" + rspt);
+		logger.info("rspt=" + JsonUtil.toJson(rspt));
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 
 		File file = null;
