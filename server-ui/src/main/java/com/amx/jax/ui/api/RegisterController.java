@@ -120,7 +120,7 @@ public class RegisterController {
 	 *            the e otp
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regPhising(@RequestParam String imageUrl, @RequestParam String caption,
 			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);

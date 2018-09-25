@@ -6,13 +6,16 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.ListRequestModel;
+import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
@@ -27,8 +30,6 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.offsite.service.OffsiteService;
-
-import io.swagger.annotations.ApiOperation;
 
 /**
  * 
@@ -47,10 +48,17 @@ public class OffsiteController {
 	@Autowired
 	private OffsiteService offsiteService;
 
-	@ApiOperation(value = "Index page")
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(Model model) {
-		return "index";
+	@Autowired
+	private MetaClient metaClient;
+
+	@RequestMapping(value = "/id_type/list", method = { RequestMethod.POST })
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
+		return offsiteCustRegClient.sendIdTypes();
+	}
+
+	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
+	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+		return offsiteService.getFieldList(model);
 	}
 
 	@RequestMapping(value = "/professions/list", method = { RequestMethod.GET })
@@ -69,11 +77,6 @@ public class OffsiteController {
 		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
 
-	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
-	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
-		return offsiteService.getFieldList(model);
-	}
-
 	@RequestMapping(value = "/income_range/list", method = { RequestMethod.POST })
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegClient.getIncomeRangeResponse(model);
@@ -82,11 +85,6 @@ public class OffsiteController {
 	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> getEmploymentTypeList() {
 		return offsiteCustRegClient.sendEmploymentTypeList();
-	}
-
-	@RequestMapping(value = "/id_type/list", method = { RequestMethod.POST })
-	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
-		return offsiteCustRegClient.sendIdTypes();
 	}
 
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
@@ -98,6 +96,23 @@ public class OffsiteController {
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
 	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
 		return offsiteCustRegClient.saveCustomerInfo(model);
+	}
+
+	@RequestMapping(value = "/secques/list", method = { RequestMethod.GET })
+	public AmxApiResponse<QuestModelDTO, Object> getSecQues() {
+		return metaClient.getSequrityQuestion();
+	}
+
+	@RequestMapping(value = "/secques/set", method = { RequestMethod.POST })
+	public AmxApiResponse<SecurityQuestionModel, Object> setSecQues(
+			@RequestBody ListRequestModel<SecurityQuestionModel> req) {
+		return AmxApiResponse.buildList(req.getValues());
+	}
+	
+	@RequestMapping(value = "/phising/set", method = { RequestMethod.POST })
+	public AmxApiResponse<SecurityQuestionModel, Object> setSecQues(
+			@RequestBody ListRequestModel<SecurityQuestionModel> req) {
+		return AmxApiResponse.buildList(req.getValues());
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })
