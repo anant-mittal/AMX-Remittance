@@ -1,33 +1,13 @@
 package com.amx.amxlib.model.response;
 
-import com.amx.jax.model.AbstractModel;
+import com.amx.jax.api.BoolRespModel;
 
-public class BooleanResponse extends AbstractModel {
-
-	private boolean success;
-	
-	
-
-	public BooleanResponse() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+@Deprecated
+public class BooleanResponse extends BoolRespModel {
+	private static final long serialVersionUID = -7761028175728771365L;
 
 	public BooleanResponse(boolean success) {
-		super();
-		this.success = success;
+		super(true);
 	}
 
-	@Override
-	public String getModelType() {
-		return "boolean_response";
-	}
-
-	public boolean isSuccess() {
-		return success;
-	}
-
-	public void setSuccess(boolean success) {
-		this.success = success;
-	}
 }

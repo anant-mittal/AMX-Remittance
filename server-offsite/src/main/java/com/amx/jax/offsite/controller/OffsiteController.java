@@ -13,12 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
+import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
+import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
-import com.amx.jax.client.UserClient;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -112,12 +114,17 @@ public class OffsiteController {
 	}
 
 	@Autowired
-	private UserClient userclient;
-	
+	CustomerRegistrationClient customerRegistrationClient;
+
 	@RequestMapping(value = "/phising/set", method = { RequestMethod.POST })
-	public AmxApiResponse<SecurityQuestionModel, Object> setPhising(@RequestParam String imageUrl,
+	public AmxApiResponse<BoolRespModel, Object> setPhising(@RequestParam String imageUrl,
 			@RequestParam String caption) {
-		return AmxApiResponse.buildList(req.getValues());
+		return AmxApiResponse.build(customerRegistrationClient.savePhishiingImage(caption, imageUrl).getResult());
+	}
+
+	@RequestMapping(value = "/creds/set", method = { RequestMethod.POST })
+	public AmxApiResponse<BoolRespModel, Object> setPhising(@RequestBody CustomerCredential req) {
+		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
 	}
 
 	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })
