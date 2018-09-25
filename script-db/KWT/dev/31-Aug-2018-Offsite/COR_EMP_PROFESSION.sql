@@ -44,3 +44,24 @@ AS SELECT A.Component_Data_Id,A.Component_Id,A.Component_Code,B.Data_Desc,B.Lang
  And A.Component_Id in (67) 
  and B.Language_Id = 1
 And A.Active = 'Y';
+
+alter table FS_BIZ_COMPONENT_DATA_DESC add SHORT_CODE VARCHAR2(10);
+
+
+update FS_BIZ_COMPONENT_DATA_DESC set SHORT_CODE = 'BEDID' where COMPONENT_DATA_ID = '197' and LANGUAGE_ID = 1;
+update FS_BIZ_COMPONENT_DATA_DESC set SHORT_CODE = 'CIVID' where COMPONENT_DATA_ID = '198' and LANGUAGE_ID = 1;
+update FS_BIZ_COMPONENT_DATA_DESC set SHORT_CODE = 'GCCID' where COMPONENT_DATA_ID = '201' and LANGUAGE_ID = 1;
+update FS_BIZ_COMPONENT_DATA_DESC set SHORT_CODE = 'PASS' where COMPONENT_DATA_ID = '204' and LANGUAGE_ID = 1;
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -199,7 +199,7 @@ public class OffsitCustRegService implements ICustRegService {
 			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
 			if (idType.equalsIgnoreCase("I")) {
 				list.add(
-						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC")));
+						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC"),(String) row.get("SHORT_CODE")));
 			}
 		}
 		if (tempList.isEmpty()) {
