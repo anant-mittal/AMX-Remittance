@@ -27,7 +27,7 @@ public class ContactCleanerService {
 		for (int e = 0; e < appTestEmails.size(); e++) {
 			String emailId = appTestEmails.get(e);
 			if (!ArgUtil.isEmpty(emailId)) {
-				mapEmails.put(String.valueOf(e), emailId);
+				mapEmails.put(String.valueOf(totaltEmails), emailId);
 				mapEmails.put(emailId, emailId);
 				totaltEmails++;
 			}
@@ -36,16 +36,18 @@ public class ContactCleanerService {
 		for (int m = 0; m < appTestMobile.size(); m++) {
 			String mobileId = appTestMobile.get(m);
 			if (!ArgUtil.isEmpty(mobileId)) {
-				mapMobiles.put(String.valueOf(m), mobileId);
+				mapMobiles.put(String.valueOf(totaltMobiles), mobileId);
 				mapMobiles.put(mobileId, mobileId);
+				totaltMobiles++;
 			}
 		}
 		totaltWhatsApp = 0;
 		for (int w = 0; w < appTestWhatsApp.size(); w++) {
 			String waId = appTestWhatsApp.get(w);
 			if (!ArgUtil.isEmpty(waId)) {
-				mapWhatsApp.put(String.valueOf(w), waId);
+				mapWhatsApp.put(String.valueOf(totaltWhatsApp), waId);
 				mapWhatsApp.put(waId, waId);
+				totaltWhatsApp++;
 			}
 		}
 	}
