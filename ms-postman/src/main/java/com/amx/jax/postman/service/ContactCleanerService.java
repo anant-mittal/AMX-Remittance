@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.amx.utils.ArgUtil;
 import com.amx.utils.StringUtils;
 
 @Component
@@ -22,20 +23,30 @@ public class ContactCleanerService {
 	public ContactCleanerService(@Value("${app.test.email}") List<String> appTestEmails,
 			@Value("${app.test.mobile}") List<String> appTestMobile,
 			@Value("${app.test.whatsapp}") List<String> appTestWhatsApp) {
-		totaltEmails = appTestEmails.size();
-		for (int e = 0; e < totaltEmails; e++) {
-			mapEmails.put(String.valueOf(e), appTestEmails.get(e));
-			mapEmails.put(appTestEmails.get(e), appTestEmails.get(e));
+		totaltEmails = 0;
+		for (int e = 0; e < appTestEmails.size(); e++) {
+			String emailId = appTestEmails.get(e);
+			if (!ArgUtil.isEmpty(emailId)) {
+				mapEmails.put(String.valueOf(e), emailId);
+				mapEmails.put(emailId, emailId);
+				totaltEmails++;
+			}
 		}
-		totaltMobiles = appTestMobile.size();
-		for (int m = 0; m < totaltMobiles; m++) {
-			mapMobiles.put(String.valueOf(m), appTestMobile.get(m));
-			mapMobiles.put(appTestMobile.get(m), appTestMobile.get(m));
+		totaltMobiles = 0;
+		for (int m = 0; m < appTestMobile.size(); m++) {
+			String mobileId = appTestMobile.get(m);
+			if (!ArgUtil.isEmpty(mobileId)) {
+				mapMobiles.put(String.valueOf(m), mobileId);
+				mapMobiles.put(mobileId, mobileId);
+			}
 		}
-		totaltWhatsApp = appTestWhatsApp.size();
-		for (int w = 0; w < totaltWhatsApp; w++) {
-			mapMobiles.put(String.valueOf(w), appTestWhatsApp.get(w));
-			mapMobiles.put(appTestWhatsApp.get(w), appTestWhatsApp.get(w));
+		totaltWhatsApp = 0;
+		for (int w = 0; w < appTestWhatsApp.size(); w++) {
+			String waId = appTestWhatsApp.get(w);
+			if (!ArgUtil.isEmpty(waId)) {
+				mapWhatsApp.put(String.valueOf(w), waId);
+				mapWhatsApp.put(waId, waId);
+			}
 		}
 	}
 
