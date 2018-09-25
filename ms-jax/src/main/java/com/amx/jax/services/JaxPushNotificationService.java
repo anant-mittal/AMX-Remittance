@@ -14,6 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.PushNotificationRecord;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IJaxPushNotificationDao;
+import com.amx.jax.util.DateUtil;
 
 @Service
 public class JaxPushNotificationService extends AbstractService {
@@ -22,6 +23,9 @@ public class JaxPushNotificationService extends AbstractService {
 
 	@Autowired
 	IJaxPushNotificationDao jaxPushNotificationDao;
+	
+	@Autowired
+	DateUtil dateUtil;
 
 	public AmxApiResponse<CustomerNotificationDTO, ?> get(BigDecimal customerId, BigDecimal nationalityId,
 			BigDecimal countryId) {
@@ -30,7 +34,7 @@ public class JaxPushNotificationService extends AbstractService {
 		List<CustomerNotificationDTO> notificationDtoList = new ArrayList<CustomerNotificationDTO>();
 
 		try {
-			notificationList = jaxPushNotificationDao.getJaxNotification(customerId, nationalityId, countryId);
+			notificationList = jaxPushNotificationDao.getJaxNotification(customerId, nationalityId, countryId, dateUtil.getMidnightToday());
 
 			if (!notificationList.isEmpty()) {
 
@@ -63,6 +67,7 @@ public class JaxPushNotificationService extends AbstractService {
 				jaxPushNotification.setNotificationDate(new Date());
 				jaxPushNotificationDao.save(jaxPushNotification);
 			}
+			logger.info("In SAVE Push Notification Service Data Added ------ ");
 		} catch (Exception e) {
 			logger.error("Error while saving Push Notification.", e);
 		}
