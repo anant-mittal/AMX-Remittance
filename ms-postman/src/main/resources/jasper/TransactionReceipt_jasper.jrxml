@@ -1830,7 +1830,7 @@
                                       pdfFontName="fonts/all/arialbd.ttf"/>
                             </textElement>
                             <textFieldExpression class="java.lang.String">
-                                <![CDATA[$F{tranx}.get("/promotDto/prizeMessage")]]>
+                                <![CDATA[$F{tranx}.get("/promotionDto/prizeMessage")]]>
                             </textFieldExpression>
                         </textField>
 

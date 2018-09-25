@@ -69,7 +69,7 @@
 				"logoPath": null,
 				"purchageAmount": null,
 				"subReport": null,
-				"promotDto": {
+				"promotionDto": {
 					"prize": "TRAVEL VOUCHER",
 					"prizeMessage": "CONGRATULATIONS! YOU WON TRAVEL VOUCHER",
 					"transactionReference": "101902018"
