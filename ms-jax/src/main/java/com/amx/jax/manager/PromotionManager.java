@@ -33,6 +33,7 @@ import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
+import com.amx.jax.repository.employee.AmgEmployeeRepository;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -54,6 +55,8 @@ public class PromotionManager {
 	PostManService postManService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	AmgEmployeeRepository amgEmployeeRepository;
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
