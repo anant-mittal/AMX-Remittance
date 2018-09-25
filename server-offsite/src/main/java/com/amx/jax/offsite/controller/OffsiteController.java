@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -17,6 +18,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.OffsiteCustRegClient;
+import com.amx.jax.client.UserClient;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -108,10 +110,13 @@ public class OffsiteController {
 			@RequestBody ListRequestModel<SecurityQuestionModel> req) {
 		return AmxApiResponse.buildList(req.getValues());
 	}
+
+	@Autowired
+	private UserClient userclient;
 	
 	@RequestMapping(value = "/phising/set", method = { RequestMethod.POST })
-	public AmxApiResponse<SecurityQuestionModel, Object> setSecQues(
-			@RequestBody ListRequestModel<SecurityQuestionModel> req) {
+	public AmxApiResponse<SecurityQuestionModel, Object> setPhising(@RequestParam String imageUrl,
+			@RequestParam String caption) {
 		return AmxApiResponse.buildList(req.getValues());
 	}
 

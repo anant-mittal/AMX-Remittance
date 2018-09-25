@@ -73,5 +73,5 @@ public class ArticleDao {
 	public IncomeRangeMaster getIncomeRangeMasterByIncomeRangeId(BigDecimal id)
 	{
 		return iIncomeRangeRepository.getIncomeRangeMasterByIncomeRangeId(id);
-	}
+		}
 }

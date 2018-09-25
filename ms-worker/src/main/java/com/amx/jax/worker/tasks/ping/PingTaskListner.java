@@ -1,4 +1,4 @@
-package com.amx.jax.worker.ping.listner;
+package com.amx.jax.worker.tasks.ping;
 
 import com.amx.jax.event.AmxTunnelEvents;
 import com.amx.jax.tunnel.TunnelEvent;

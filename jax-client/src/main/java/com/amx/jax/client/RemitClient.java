@@ -31,6 +31,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.rest.RestService;
 
@@ -260,8 +261,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
-	
-	public ApiResponse saveCustomerRating(@RequestBody CustomerRatingDTO customerRatingDTO) 
+	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
 		throws RemittanceTransactionValidationException, LimitExeededException {
 		
 		try {
@@ -270,9 +270,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
 			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
-			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<CustomerRatingDTO>>() {
-					});
+			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
