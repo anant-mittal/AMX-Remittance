@@ -1,5 +1,7 @@
 package com.amx.amxlib.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class PromotionDto {
 
 	String prize;
@@ -30,6 +32,7 @@ public class PromotionDto {
 		this.transactionReference = transactionReference;
 	}
 
+	@JsonIgnore
 	public boolean isChichenVoucher() {
 		if ("CHICKEN KING SAGAR VOUCHER".equals(this.prize)) {
 			return true;
