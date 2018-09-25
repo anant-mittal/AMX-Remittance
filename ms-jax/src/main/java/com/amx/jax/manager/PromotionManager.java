@@ -80,7 +80,8 @@ public class PromotionManager {
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
 				dto.setPrize(models.get(0).getPrize());
-				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
+				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize()
+						+ ". Kindly contact 22057194 to claim prize");
 			} else {
 				PromotionHeader promoHeader = getPromotionHeader();
 				Date transactionDate = remittanceTransaction.getCreatedDate();
@@ -88,7 +89,8 @@ public class PromotionManager {
 						&& transactionDate.before(promoHeader.getToDate())) {
 					dto = new PromotionDto();
 					dto.setPrize(ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR);
-					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
+					dto.setPrizeMessage(
+							"CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER. Kindly contact 22057194 to claim prize");
 				}
 			}
 			if (dto != null && remittanceTransaction.getApplicationDocumentNo() != null) {
