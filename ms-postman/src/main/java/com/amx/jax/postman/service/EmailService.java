@@ -63,6 +63,9 @@ public class EmailService {
 	@Autowired
 	private PostManConfig postManConfig;
 
+	@Autowired
+	ContactCleanerService contactService;
+
 	/** The slack service. */
 	@Autowired
 	SlackService slackService;
@@ -116,7 +119,9 @@ public class EmailService {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
 		try {
-			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+			}
 
 			to = email.getTo() != null ? email.getTo().get(0) : null;
 
@@ -190,7 +195,9 @@ public class EmailService {
 
 		MimeMessage message = getMailSender().createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
+
+		helper.setTo(contactService.getEmail(eParams.getTo()));
+		// helper.setTo(emailsTo.toArray(new String[emailsTo.size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.DEFAULT_STRING.equals(eParams.getFrom())) {
