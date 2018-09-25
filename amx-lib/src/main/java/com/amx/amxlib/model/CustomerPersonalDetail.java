@@ -84,6 +84,12 @@ public class CustomerPersonalDetail extends AbstractModel {
 	private Date dateOfBirth;
 	
 	private BigDecimal identityTypeId;
+	
+	private String insurance;
+	
+	private String watsAppTelePrefix;
+	
+	private String watsAppMobileNo;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -203,6 +209,30 @@ public class CustomerPersonalDetail extends AbstractModel {
 
 	public void setIdentityTypeId(BigDecimal identityTypeId) {
 		this.identityTypeId = identityTypeId;
+	}	
+	
+	public String getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(String insurance) {
+		this.insurance = insurance;
+	}
+
+	public String getWatsAppTelePrefix() {
+		return watsAppTelePrefix;
+	}
+
+	public void setWatsAppTelePrefix(String watsAppTelePrefix) {
+		this.watsAppTelePrefix = watsAppTelePrefix;
+	}
+
+	public String getWatsAppMobileNo() {
+		return watsAppMobileNo;
+	}
+
+	public void setWatsAppMobileNo(String watsAppMobileNo) {
+		this.watsAppMobileNo = watsAppMobileNo;
 	}
 
 	@Override
@@ -211,8 +241,11 @@ public class CustomerPersonalDetail extends AbstractModel {
 				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
 				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
-				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + "]";
+				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
+				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + "]";
 	}
+
+	
 
 	
 

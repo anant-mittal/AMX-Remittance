@@ -440,8 +440,8 @@ public class OffsitCustRegService implements ICustRegService {
 		com.amx.jax.model.request.CustomerPersonalDetail customerDetails = new com.amx.jax.model.request.CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(),customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
-		commitCustomerLocalContact(model.getLocalAddressDetails(), customer);
-		commitCustomerHomeContact(model.getHomeAddressDestails(), customer);
+		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
+		commitCustomerHomeContact(model.getHomeAddressDestails(), customer,customerDetails.getWatsAppMobileNo());
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer);
 		auditService.log(new JaxAuditEvent(Type.CUST_INFO, model));
@@ -476,7 +476,7 @@ public class OffsitCustRegService implements ICustRegService {
 
 	}
 
-	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer) {
+	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer, String watsAppMobileNo) {
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
@@ -492,6 +492,7 @@ public class OffsitCustRegService implements ICustRegService {
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getCustomerId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
+			contactDetail.setWatsAppNo(watsAppMobileNo);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(49));
@@ -500,7 +501,7 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 	}
 
-	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer) {
+	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer, String watsAppMobileNo) {
 		if (homeAddressDestails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
@@ -514,6 +515,7 @@ public class OffsitCustRegService implements ICustRegService {
 			contactDetail.setLanguageId(customer.getLanguageId());
 			contactDetail.setCreatedBy(metaData.getCustomerId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
+			contactDetail.setWatsAppNo(watsAppMobileNo);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
@@ -568,6 +570,7 @@ public class OffsitCustRegService implements ICustRegService {
 		customer.setFirstNameLocal(customerDetails.getFirstNameLocal());
 		customer.setLastNameLocal(customerDetails.getLastNameLocal());
 		customer.setDateOfBirth(customerDetails.getDateOfBirth());
+		customer.setMedicalInsuranceInd(customerDetails.getInsurance());
 		if (customerDetails.getIdentityTypeId().toString().equals("204")) {
 			customer.setIdentityExpiredDate(null);
 			customer.setExpiryDate(customerDetails.getExpiryDate());
