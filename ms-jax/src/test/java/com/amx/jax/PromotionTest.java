@@ -14,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.amx.jax.branch.dao.EmployeeDao;
+import com.amx.jax.dao.EmployeeDao;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.meta.MetaData;
