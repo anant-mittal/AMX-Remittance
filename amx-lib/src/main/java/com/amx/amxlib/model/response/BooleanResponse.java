@@ -10,4 +10,8 @@ public class BooleanResponse extends BoolRespModel {
 		super(true);
 	}
 
+	public BooleanResponse() {
+		super();
+	}
+
 }
