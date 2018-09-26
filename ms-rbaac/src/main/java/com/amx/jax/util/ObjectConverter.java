@@ -60,8 +60,6 @@ public final class ObjectConverter {
 			empDetail.setIsActive(Boolean.FALSE);
 		}
 
-		empDetail.setRoleId(new BigDecimal("1"));
-
 		return empDetail;
 	}
 

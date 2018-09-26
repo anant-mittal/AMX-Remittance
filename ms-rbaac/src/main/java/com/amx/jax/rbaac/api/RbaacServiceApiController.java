@@ -168,14 +168,14 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
-			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddr,
+			@RequestParam(required=true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddress,
 			@RequestParam String deviceId) {
 
-		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddr
+		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddress
 				+ " from device Id: " + deviceId);
 
 		UserRoleMappingsResponseDTO urMappingsResponseDTO = userRoleService
-				.getUserRoleMappingsForBranch(countryBranchId, ipAddr, deviceId);
+				.getUserRoleMappingsForBranch(countryBranchId, ipAddress, deviceId);
 
 		return AmxApiResponse.build(urMappingsResponseDTO);
 	}

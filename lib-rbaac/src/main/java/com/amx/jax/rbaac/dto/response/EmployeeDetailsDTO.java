@@ -25,10 +25,6 @@ public class EmployeeDetailsDTO implements Serializable {
 	private Boolean isActive;
 	private Boolean isLocked;
 
-	// TODO: To Be removed
-	private BigDecimal roleId;
-	private List<RoleDefinitionDataTable> roleDef;
-
 	public BigDecimal getEmployeeId() {
 		return employeeId;
 	}
@@ -141,20 +137,5 @@ public class EmployeeDetailsDTO implements Serializable {
 		this.isLocked = isLocked;
 	}
 
-	public BigDecimal getRoleId() {
-		return roleId;
-	}
-
-	public void setRoleId(BigDecimal roleId) {
-		this.roleId = roleId;
-	}
-
-	public List<RoleDefinitionDataTable> getRoleDef() {
-		return roleDef;
-	}
-
-	public void setRoleDef(List<RoleDefinitionDataTable> roleDef) {
-		this.roleDef = roleDef;
-	}
 
 }
