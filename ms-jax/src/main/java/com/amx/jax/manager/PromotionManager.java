@@ -96,9 +96,9 @@ public class PromotionManager {
 							"CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER. Kindly contact 22057194 to claim prize");
 				}
 			}
-			if (dto != null && remittanceTransaction.getApplicationDocumentNo() != null) {
-				dto.setTransactionReference(remittanceTransaction.getApplicationDocumentNo().toString()
-						+ remittanceTransaction.getApplicationdocumentFinancialyear().toString());
+			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
+				dto.setTransactionReference(remittanceTransaction.getDocumentNo().toString() + " / "
+						+ remittanceTransaction.getDocumentFinancialyear().toString());
 			}
 			return dto;
 		} catch (Exception e) {
