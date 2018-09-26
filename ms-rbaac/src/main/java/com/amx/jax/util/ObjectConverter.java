@@ -99,14 +99,14 @@ public final class ObjectConverter {
 
 		UserRoleMappingDTO userRoleMappingDTO = new UserRoleMappingDTO();
 
-		userRoleMapping.setId(userRoleMapping.getId());
-		userRoleMapping.setEmployeeId(userRoleMapping.getEmployeeId());
-		userRoleMapping.setRoleId(userRoleMapping.getRoleId());
-		userRoleMapping.setSuspended(userRoleMapping.getSuspended());
-		userRoleMapping.setFlags(userRoleMapping.getFlags());
-		userRoleMapping.setInfo(userRoleMapping.getInfo());
-		userRoleMapping.setCreatedDate(userRoleMapping.getCreatedDate());
-		userRoleMapping.setUpdatedDate(userRoleMapping.getUpdatedDate());
+		userRoleMappingDTO.setId(userRoleMapping.getId());
+		userRoleMappingDTO.setEmployeeId(userRoleMapping.getEmployeeId());
+		userRoleMappingDTO.setRoleId(userRoleMapping.getRoleId());
+		userRoleMappingDTO.setSuspended(userRoleMapping.getSuspended());
+		userRoleMappingDTO.setFlags(userRoleMapping.getFlags());
+		userRoleMappingDTO.setInfo(userRoleMapping.getInfo());
+		userRoleMappingDTO.setCreatedDate(userRoleMapping.getCreatedDate());
+		userRoleMappingDTO.setUpdatedDate(userRoleMapping.getUpdatedDate());
 
 		return userRoleMappingDTO;
 

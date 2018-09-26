@@ -56,23 +56,27 @@ public class UserAccountService {
 					boolean isDirty = false;
 
 					// Check if Active Info is changed.
-					if (empDetailsDTO.getIsActive()) {
-						if (!employee.getIsActive().equalsIgnoreCase("Y")
-								|| !employee.getIsActive().equalsIgnoreCase("YES")) {
+					if (empDetailsDTO.getIsActive() != null) {
 
-							employee.setIsActive("Y");
-							isDirty = true;
-						}
-					} else {
-						if (employee.getIsActive().equalsIgnoreCase("Y")
-								|| employee.getIsActive().equalsIgnoreCase("YES")) {
+						if (empDetailsDTO.getIsActive()) {
+							if (!employee.getIsActive().equalsIgnoreCase("Y")
+									|| !employee.getIsActive().equalsIgnoreCase("YES")) {
 
-							employee.setIsActive("N");
-							isDirty = true;
+								employee.setIsActive("Y");
+								isDirty = true;
+							}
+						} else {
+							if (employee.getIsActive().equalsIgnoreCase("Y")
+									|| employee.getIsActive().equalsIgnoreCase("YES")) {
+
+								employee.setIsActive("N");
+								isDirty = true;
+							}
 						}
+
 					}
 
-					if (!empDetailsDTO.getIsLocked()) {
+					if (empDetailsDTO.getIsLocked() != null && !empDetailsDTO.getIsLocked()) {
 						employee.setLockCount(new BigDecimal(0));
 						isDirty = true;
 					}

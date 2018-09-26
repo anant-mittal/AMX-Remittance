@@ -6,6 +6,8 @@ package com.amx.jax.rbaac.api;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import com.amx.jax.rbaac.service.RespTestService;
 import com.amx.jax.rbaac.service.UserAccountService;
 import com.amx.jax.rbaac.service.UserAuthService;
 import com.amx.jax.rbaac.service.UserRoleService;
+import com.amx.utils.ContextUtil;
 
 /**
  * The Class RbaacServiceApiController.
@@ -62,6 +65,9 @@ public class RbaacServiceApiController implements RbaacService {
 	@Autowired
 	UserAccountService userAccountService;
 
+	@Autowired
+	HttpServletRequest request;
+
 	/**
 	 * Init User Authentication.
 	 *
@@ -75,7 +81,8 @@ public class RbaacServiceApiController implements RbaacService {
 			@RequestBody UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		LOGGER.info("Begin Init Auth for User: " + userAuthInitReqDTO.getEmployeeNo() + " from Ip Address: "
-				+ userAuthInitReqDTO.getIpAddress());
+				+ userAuthInitReqDTO.getIpAddress() + " from device Id: " + userAuthInitReqDTO.getDeviceId()
+				+ " TraceId: " + ContextUtil.getTraceId());
 		UserAuthInitResponseDTO userAuthInitResponseDTO = userAuthService.verifyUserDetails(userAuthInitReqDTO);
 
 		return AmxApiResponse.build(userAuthInitResponseDTO);
@@ -93,7 +100,8 @@ public class RbaacServiceApiController implements RbaacService {
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestBody UserAuthorisationReqDTO reqDto) {
 
 		LOGGER.info("Received request for authorising User Access : " + reqDto.getEmployeeNo() + " from Ip Address: "
-				+ reqDto.getIpAddress() + " from device Id: " + reqDto.getDeviceId());
+				+ reqDto.getIpAddress() + " from device Id: " + reqDto.getDeviceId() + " TraceId: "
+				+ ContextUtil.getTraceId());
 
 		EmployeeDetailsDTO employeeDetailsDTO = userAuthService.authoriseUser(reqDto);
 
@@ -110,10 +118,10 @@ public class RbaacServiceApiController implements RbaacService {
 	@PostMapping(value = ApiEndPoints.PERMS_GET)
 	@ResponseBody
 	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(
-			@RequestParam(required = true) String ipAddress, @RequestParam String deviceId) {
+			@RequestParam(required = true) String ipAddress, @RequestParam(required = false) String deviceId) {
 
 		LOGGER.info("Received request for Get Permissions " + " from Ip Address: " + ipAddress + " from device Id: "
-				+ deviceId);
+				+ deviceId + " TraceId: " + ContextUtil.getTraceId());
 
 		List<PermissionResposeDTO> permissionsResposeDTOList = userRoleService.getAllPermissions(ipAddress, deviceId);
 
@@ -130,10 +138,10 @@ public class RbaacServiceApiController implements RbaacService {
 	@ResponseBody
 	@PostMapping(value = ApiEndPoints.ROLES_GET)
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(@RequestParam(required = true) String ipAddress,
-			@RequestParam String deviceId) {
+			@RequestParam(required = false) String deviceId) {
 
-		LOGGER.info(
-				"Received request for Get Roles " + " from Ip Address: " + ipAddress + " from device Id: " + deviceId);
+		LOGGER.info("Received request for Get Roles " + " from Ip Address: " + ipAddress + " from device Id: "
+				+ deviceId + " TraceId: " + ContextUtil.getTraceId());
 
 		List<RoleResponseDTO> rolesResponseDTOList = userRoleService.getAllRoles(ipAddress, deviceId);
 
@@ -152,7 +160,7 @@ public class RbaacServiceApiController implements RbaacService {
 			@RequestBody(required = true) RoleRequestDTO roleRequestDTO) {
 
 		LOGGER.info("Received request for Save Roles " + " from Ip Address: " + roleRequestDTO.getIpAddr()
-				+ " from device Id: " + roleRequestDTO.getDeviceId());
+				+ " from device Id: " + roleRequestDTO.getDeviceId() + " TraceId: " + ContextUtil.getTraceId());
 
 		RoleResponseDTO rolesResponseDTO = userRoleService.saveRole(roleRequestDTO);
 
@@ -168,11 +176,11 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_GET_FOR_BRANCH, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(
-			@RequestParam(required=true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddress,
-			@RequestParam String deviceId) {
+			@RequestParam(required = true) BigDecimal countryBranchId, @RequestParam(required = true) String ipAddress,
+			@RequestParam(required = false) String deviceId) {
 
 		LOGGER.info("Received request for Get Role Allocations for Branch Users  " + " from Ip Address: " + ipAddress
-				+ " from device Id: " + deviceId);
+				+ " from device Id: " + deviceId + " TraceId: " + ContextUtil.getTraceId());
 
 		UserRoleMappingsResponseDTO urMappingsResponseDTO = userRoleService
 				.getUserRoleMappingsForBranch(countryBranchId, ipAddress, deviceId);
@@ -192,8 +200,9 @@ public class RbaacServiceApiController implements RbaacService {
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(
 			@RequestBody(required = true) UserRoleMappingsRequestDTO urmRequestDTO) {
 
-		LOGGER.info("Received request for Update User Role Allocations " + " from Ip Address: "
-				+ urmRequestDTO.getIpAddr() + " from device Id: " + urmRequestDTO.getDeviceId());
+		LOGGER.info(
+				"Received request for Update User Role Allocations " + " from Ip Address: " + urmRequestDTO.getIpAddr()
+						+ " from device Id: " + urmRequestDTO.getDeviceId() + " TraceId: " + ContextUtil.getTraceId());
 
 		List<UserRoleMappingDTO> urmDtoList = userRoleService.updateUserRoleMappings(urmRequestDTO);
 
@@ -213,8 +222,9 @@ public class RbaacServiceApiController implements RbaacService {
 	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
 			@RequestBody(required = true) EmployeeDetailsRequestDTO edRequestDTO) {
 
-		LOGGER.info("Received request for Update User Account Details " + " from Ip Address: "
-				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId());
+		LOGGER.info(
+				"Received request for Update User Account Details " + " from Ip Address: " + edRequestDTO.getIpAddr()
+						+ " from device Id: " + edRequestDTO.getDeviceId() + " TraceId: " + ContextUtil.getTraceId());
 
 		List<EmployeeDetailsDTO> employeeDetailsDTOList = userAccountService.updateEmployee(edRequestDTO);
 
