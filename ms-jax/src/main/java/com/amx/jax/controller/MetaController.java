@@ -188,9 +188,9 @@ public class MetaController {
 		return applicationCountryService.getApplicationCountryResponse(companyId, countryId);
 	}	
 	
-	@RequestMapping(value = "/quest/{languageId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse(@PathVariable("languageId") BigDecimal languageId,@PathVariable("countryId") BigDecimal countryId){
-		return questionAnswerService.findAllQuestion(languageId, countryId);
+	@RequestMapping(value = "/quest/list", method = RequestMethod.GET)
+	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse(){
+		return questionAnswerService.findAllQuestion(metaData.getLanguageId(), metaData.getCountryId());
 	}
 		
 	@RequestMapping(value = "/quest/{languageId}/{countryId}/{questId}", method = RequestMethod.GET)
@@ -228,7 +228,6 @@ public class MetaController {
 	public AmxApiResponse<UserFinancialYear, Object> getFinancialYearResponse(){
 		return financialService.getFinancialYear();
 	}
-	
 	
 	@RequestMapping(value = "/contacttime", method = RequestMethod.GET)
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactTimeResponse(){
@@ -377,7 +376,7 @@ public class MetaController {
 	public AmxApiResponse<PrefixModel, Object> getPrefixList() {
 		return prefixService.getPrefixListResponse();
 	}
-	
+
 	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
 	public AmxApiResponse<BranchDetailModel, Object> getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();

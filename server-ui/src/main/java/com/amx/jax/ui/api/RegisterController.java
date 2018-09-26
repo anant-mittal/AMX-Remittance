@@ -229,7 +229,7 @@ public class RegisterController {
 	 *            the caption
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regNewPhising(@RequestParam String imageUrl, @RequestParam String caption) {
 		transactions.track();
 		return partialRegService.updatePhising(imageUrl, caption);
@@ -242,7 +242,7 @@ public class RegisterController {
 	 *            the customer credential
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regNewLoginIdAndPassword(
 			@RequestBody CustomerCredential customerCredential) {
 		transactions.track();

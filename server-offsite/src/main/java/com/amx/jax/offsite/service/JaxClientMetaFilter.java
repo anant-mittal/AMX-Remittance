@@ -15,6 +15,9 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
 
+	@Autowired
+	CustomerSession customerSession;
+
 	@Override
 	public JaxMetaInfo exportMeta() {
 		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
@@ -26,6 +29,7 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 		jaxMetaInfo.setCompanyId(offsiteAppConfig.getCompanyId());
 		jaxMetaInfo.setLanguageId(offsiteAppConfig.getLanguageId());
 		jaxMetaInfo.setCountryBranchId(offsiteAppConfig.getCountrybranchId());
+		jaxMetaInfo.setCustomerId(customerSession.getCustomerId());
 
 		return jaxMetaInfo;
 	}

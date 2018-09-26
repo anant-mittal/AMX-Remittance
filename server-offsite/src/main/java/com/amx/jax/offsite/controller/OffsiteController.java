@@ -3,6 +3,7 @@ package com.amx.jax.offsite.controller;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
-import com.amx.jax.offsite.service.OffsiteService;
+import com.amx.jax.offsite.service.CustomerSession;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class OffsiteController {
 	private OffsiteCustRegClient offsiteCustRegClient;
 
 	@Autowired
-	private OffsiteService offsiteService;
+	private CustomerSession customerSession;
 
 	@Autowired
 	private MetaClient metaClient;
@@ -61,8 +62,9 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
-	public AmxApiResponse<FieldListDto, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
-		return offsiteService.getFieldList(model);
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
+		customerSession.clear();
+		return offsiteCustRegClient.getFieldList(model);
 	}
 
 	@RequestMapping(value = "/professions/list", method = { RequestMethod.GET })
