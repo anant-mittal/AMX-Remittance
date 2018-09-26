@@ -275,7 +275,7 @@ a {
 							<td class="alert alert-warning" align="center" bgcolor="#000000"><img th:attr="src=${'cid:' + _tu.prop('company.logo.path')}" /></td>
 						</tr>
 						<tr>
-							<td align="center"><h2 style='color:#000; margin-top:15px'>Transaction Failure</h2></td>
+							<td align="center"><h2 style='color:#000; margin-top:15px'>Prize and Winner Details</h2></td>
 						</tr>
 						<tr>
 							<td class="content-wrap">
@@ -290,6 +290,10 @@ a {
 											<tr>
 												<td>Customer Name</td>
 												<td><span th:text="${data.firstName}"></span>  <span th:text="${data.middleName}"></span>  <span th:text="${data.lastName}"></span></td>
+											</tr>
+											<tr>
+												<td>Civil ID</td>
+												<td th:text="${data.identityInt}"></td>
 											</tr>
 											<tr>
 												<td>Customer Contact</td>
