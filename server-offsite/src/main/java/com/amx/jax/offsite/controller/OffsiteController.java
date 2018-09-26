@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,6 +36,7 @@ import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.offsite.service.CustomerSession;
+import com.amx.utils.ArgUtil;
 
 /**
  * 
@@ -129,33 +131,27 @@ public class OffsiteController {
 		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
 	}
 
-	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-validate-otp/", method = { RequestMethod.POST })
-	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
-			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
+	@RequestMapping(value = "/personal/save", method = { RequestMethod.POST })
+	public AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> sendOtpForEmailAndMobile(
 
-		logger.info("Validate Otp for Email and Mobile request called for identity No : "
-				+ offsiteCustRegModel.getIdentityInt() + " , mOtp : " + offsiteCustRegModel.getmOtp() + " and eOtp : "
-				+ offsiteCustRegModel.geteOtp() + " and email : " + offsiteCustRegModel.getEmail() + " and mobile No : "
-				+ offsiteCustRegModel.getMobile() + " and country id : " + offsiteCustRegModel.getCountryId()
-				+ " and nationality id : " + offsiteCustRegModel.getNationalityId());
+			@RequestHeader(value = "mOtp", required = false) String mOtpHeader,
+			@RequestHeader(value = "eOtp", required = false) String eOtpHeader,
+			@RequestParam(required = false) String mOtp, @RequestParam(required = false) String eOtp,
 
-		return offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
-	}
-
-	@RequestMapping(value = "/offsite-cust-reg/customer-mobile-email-send-otp/", method = { RequestMethod.POST })
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
-
-		logger.info(
-				"Send Otp for Email and Mobile request called for country id : " + customerPersonalDetail.getCountryId()
-						+ " , nationality id : " + customerPersonalDetail.getNationalityId() + " and identity No : "
-						+ customerPersonalDetail.getIdentityInt() + " and title : " + customerPersonalDetail.getTitle()
-						+ " and first Name : " + customerPersonalDetail.getFirstName() + " and last Name : "
-						+ customerPersonalDetail.getLastName() + " and email id : " + customerPersonalDetail.getEmail()
-						+ " and mobile No : " + customerPersonalDetail.getMobile() + " and tel prefix : "
-						+ customerPersonalDetail.getTelPrefix());
-
-		return offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail);
+		mOtp = ArgUtil.ifNotEmpty(mOtp, mOtpHeader);
+		eOtp = ArgUtil.ifNotEmpty(eOtp, eOtpHeader);
+		SendOtpModel otpmodel = null;
+		OffsiteCustomerRegistrationRequest req = null;
+		if (mOtp == null && eOtp == null) {
+			otpmodel = offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail).getResult();
+		} else {
+			OffsiteCustomerRegistrationRequest offsiteCustRegModel = new OffsiteCustomerRegistrationRequest();
+			offsiteCustRegModel.setEmail(customerPersonalDetail.getEmail());
+			offsiteCustRegModel.setMobile(customerPersonalDetail.getMobile());
+			offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
+		}
+		return AmxApiResponse.build(req, otpmodel);
 	}
 
 }

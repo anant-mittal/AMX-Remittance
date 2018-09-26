@@ -8,8 +8,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
+
 import com.amx.jax.AppConfig;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
@@ -30,9 +30,6 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.scope.TenantContextHolder;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class OffsiteCustRegClient implements ICustRegService {
