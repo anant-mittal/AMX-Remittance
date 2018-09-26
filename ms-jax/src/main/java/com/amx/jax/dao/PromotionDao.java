@@ -67,7 +67,6 @@ public class PromotionDao {
 					cs.setBigDecimal(3, branchId);
 					cs.registerOutParameter(4, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(5, java.sql.Types.VARCHAR);
-					cs.executeQuery();
 					return cs;
 				}
 
