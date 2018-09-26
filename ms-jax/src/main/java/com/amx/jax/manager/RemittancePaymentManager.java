@@ -24,7 +24,7 @@ import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
-import com.amx.jax.dao.EmployeeDao;
+import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
@@ -82,7 +82,7 @@ public class RemittancePaymentManager extends AbstractService{
 	@Autowired
 	PromotionManager promotionManager;
 	@Autowired
-	EmployeeDao employeeDao;
+	JaxEmployeeDao employeeDao;
 	
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {

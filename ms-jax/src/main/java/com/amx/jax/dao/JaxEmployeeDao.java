@@ -11,7 +11,7 @@ import com.amx.jax.dbmodel.employee.AmgEmployee;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 
 @Component
-public class EmployeeDao {
+public class JaxEmployeeDao {
 
 	@Autowired
 	AmgEmployeeRepository amgEmployeeRepository;
