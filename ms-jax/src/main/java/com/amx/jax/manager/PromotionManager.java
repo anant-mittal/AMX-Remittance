@@ -132,17 +132,6 @@ public class PromotionManager {
 					email.getModel().put(RESP_DATA_KEY, personInfo);
 					email.getModel().put("promotDto", promotDto);
 					postManService.sendEmailAsync(email);
-
-					if (ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR.equals(promotDto.getPrize())) {
-						// voucher mail to customer
-						logger.info("Sending promo voucher Email to customer : ");
-						Email voucherEmail = new Email();
-						voucherEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
-						voucherEmail.addTo(personInfo.getEmail());
-						voucherEmail.setTemplate(Templates.PROMOTION_COUPON);
-						voucherEmail.setHtml(true);
-						postManService.sendEmailAsync(voucherEmail);
-					}
 				} catch (Exception e) {
 					logger.error("error in promotionWinnerCheck", e);
 				}
@@ -151,6 +140,23 @@ public class PromotionManager {
 		} catch (Exception e) {
 			logger.error("error in promotionWinnerCheck", e);
 			return null;
+		}
+	}
+
+	public void sendVoucherEmail(PromotionDto promotDto, PersonInfo personInfo) {
+
+		try {
+			if (promotDto != null && ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR.equals(promotDto.getPrize())) {
+				// voucher mail to customer
+				logger.info("Sending promo voucher Email to customer : ");
+				Email voucherEmail = new Email();
+				voucherEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+				voucherEmail.addTo(personInfo.getEmail());
+				voucherEmail.setTemplate(Templates.PROMOTION_COUPON);
+				voucherEmail.setHtml(true);
+				postManService.sendEmailAsync(voucherEmail);
+			}
+		} catch (Exception e) {
 		}
 	}
 }

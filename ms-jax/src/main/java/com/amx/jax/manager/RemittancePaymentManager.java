@@ -42,6 +42,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 
 
@@ -83,6 +84,8 @@ public class RemittancePaymentManager extends AbstractService{
 	PromotionManager promotionManager;
 	@Autowired
 	JaxEmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 	
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
@@ -156,11 +159,14 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
+						PromotionDto promotDto = null;
 						// promotion check not for amg employee
 						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
-							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+							promotDto = promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
 									remittanceTransaction.getDocumentFinancialyear());
 						}
+						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
+						promotionManager.sendVoucherEmail(promotDto, personInfo);
 						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
