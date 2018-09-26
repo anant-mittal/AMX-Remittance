@@ -185,16 +185,15 @@ public class MetaController {
 		return applicationCountryService.getApplicationCountryResponse(companyId, countryId);
 	}
 
-	@RequestMapping(value = "/quest/list", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.SEQ_QUEST_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse() {
 		return questionAnswerService.findAllQuestion(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
-	@RequestMapping(value = "/quest/{languageId}/{countryId}/{questId}", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.SEQ_QUEST_BY_ID, method = RequestMethod.GET)
 	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse(
-			@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId,
-			@PathVariable("questId") BigDecimal questId) {
-		return questionAnswerService.getQuestionDescription(languageId, countryId, questId);
+			@PathVariable(MetaApi.PARAM_QUEST_ID) BigDecimal questId) {
+		return questionAnswerService.getQuestionDescription(metaData.getLanguageId(), metaData.getCountryId(), questId);
 	}
 
 	@RequestMapping(value = "/terms/{languageId}", method = RequestMethod.GET)

@@ -37,6 +37,7 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
+import com.amx.jax.AppConfig;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.rest.RestMetaRequestOutFilter;
@@ -59,6 +60,9 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	@Autowired
 	RestService restService;
+
+	@Autowired
+	AppConfig appConfig;
 
 	@Autowired
 	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
@@ -174,12 +178,10 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestion() {
 
 		try {
-			return restService.ajax(this.getBaseUrl()).path(MetaApi.SEQ_QUEST_LIST).filter(metaFilter).get()
-					.asApiResponse(QuestModelDTO.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getSequrityQuestion : ", e);
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_LIST)
+					.filter(metaFilter).get().asApiResponse(QuestModelDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestion : ", ae);
 			throw new JaxSystemError();
 		} // end of try-catch
 
@@ -188,26 +190,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestionById(String questionId) {
 
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (BigDecimal.ZERO.equals(languageId)) {
-				languageId = new BigDecimal(1);
-			}
-			LOGGER.info("Get all the applciation country " + languageId + "\t countryId :" + countryId);
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/quest/" + languageId + "/" + countryId + "/"
-					+ questionId;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
-					});
-
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getSequrityQuestionById : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_BY_ID)
+					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get()
+					.asApiResponse(QuestModelDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestionById : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 
 	}
 

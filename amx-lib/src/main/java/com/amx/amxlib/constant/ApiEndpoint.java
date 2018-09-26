@@ -18,7 +18,9 @@ public class ApiEndpoint {
 
 	public final class MetaApi {
 		public static final String PREFIX = "/meta";
-		public static final String SEQ_QUEST_LIST = PREFIX + "/quest/list";
+		public static final String PARAM_QUEST_ID = "questId";
+		public static final String SEQ_QUEST_LIST = "/quest/list";
+		public static final String SEQ_QUEST_BY_ID = "/quest/{questId}";
 	}
 
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
