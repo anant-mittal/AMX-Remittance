@@ -97,8 +97,8 @@ public class PromotionManager {
 				}
 			}
 			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
-				dto.setTransactionReference(remittanceTransaction.getDocumentNo().toString() + " / "
-						+ remittanceTransaction.getDocumentFinancialyear().toString());
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinancialyear().toString() + " / "
+						+ remittanceTransaction.getDocumentNo().toString());
 			}
 			return dto;
 		} catch (Exception e) {
