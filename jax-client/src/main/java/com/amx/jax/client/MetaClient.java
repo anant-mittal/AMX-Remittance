@@ -62,53 +62,33 @@ public class MetaClient extends AbstractJaxServiceClient {
 	RestService restService;
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
-
 		try {
-			LOGGER.info("Get all the applciation country ");
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/applcountry/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
-					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getApplicationCountry : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPLCOUNTRY)
+					.filter(metaFilter).get().asApiResponse(ApplicationSetupDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestionById : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}// end of try-catch
 	}
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryByCountryAndCompany() {
 		try {
-			BigDecimal countryId = jaxMetaInfo.getCountryId();
-			BigDecimal companyId = jaxMetaInfo.getCompanyId();
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/applcountry/" + countryId + "/" + companyId;
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
-					});
-
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ", e);
-			throw new JaxSystemError();
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY_COMP)
+					.filter(metaFilter).get().asApiResponse(ApplicationSetupDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestionById : ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 	}
 
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
 		try {
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/country/";
-			return restService.ajax(url).filter(metaFilter).get().asApiResponse(CountryMasterDTO.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getAllCountry : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY)
+					.filter(metaFilter).get().asApiResponse(CountryMasterDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestionById : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 	@Deprecated
@@ -283,19 +263,12 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactUsTime() {
 		try {
-			LOGGER.info("Contact Us time");
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/helpdtime/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
-					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getContactUsTime : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.HELP_DESK_TIME)
+					.filter(metaFilter).get().asApiResponse(AuthenticationLimitCheckDTO.class);
+		} catch (Exception ae) {
+			LOGGER.error("exception in getSequrityQuestionById : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}// end of try-catch
 	}
 
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getHelpDeskNo() {

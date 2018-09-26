@@ -17,10 +17,19 @@ public class ApiEndpoint {
 	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 
 	public final class MetaApi {
+		//Prefix
 		public static final String PREFIX = "/meta";
+		
+		//Params
 		public static final String PARAM_QUEST_ID = "questId";
+		
+		//Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
 		public static final String SEQ_QUEST_BY_ID = "/quest/{questId}";
+		public static final String APPLCOUNTRY = "/applcountry/";
+		public static final String HELP_DESK_TIME = "/helpdtime/";
+		public static final String APPL_COUNTRY_COMP = "/applcountrycomp/";
+		public static final String API_COUNTRY = "/country/";
 	}
 
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";

@@ -151,7 +151,7 @@ public class MetaController {
 	@Autowired
 	BranchDetailService branchDetailService;
 
-	@RequestMapping(value = "/country", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryListResponse() {
 		return countryService.getCountryListResponse();
 	}
@@ -174,15 +174,14 @@ public class MetaController {
 		return countryService.getBusinessCountryResponse(languageId);
 	}
 
-	@RequestMapping(value = "/applcountry", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.APPLCOUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse() {
 		return applicationCountryService.getApplicationCountryListResponse();
 	}
 
-	@RequestMapping(value = "/applcountry/{companyId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse(
-			@PathVariable("companyId") BigDecimal companyId, @PathVariable("countryId") BigDecimal countryId) {
-		return applicationCountryService.getApplicationCountryResponse(companyId, countryId);
+	@RequestMapping(value = MetaApi.APPL_COUNTRY_COMP, method = RequestMethod.GET)
+	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountrycompanyResponse() {
+		return applicationCountryService.getApplicationCountryResponse(metaData.getCompanyId(), metaData.getCountryId());
 	}
 
 	@RequestMapping(value = MetaApi.SEQ_QUEST_LIST, method = RequestMethod.GET)
@@ -233,7 +232,7 @@ public class MetaController {
 		return financialService.getFinancialYear();
 	}
 
-	@RequestMapping(value = "/contacttime", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.HELP_DESK_TIME, method = RequestMethod.GET)
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactTimeResponse() {
 		return parameterService.getContactUsTime();
 	}
