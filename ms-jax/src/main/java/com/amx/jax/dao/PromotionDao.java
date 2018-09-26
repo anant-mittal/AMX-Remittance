@@ -136,15 +136,15 @@ public class PromotionDao {
 	}
 
 	public List<PromotionDetailModel> getPromotionDetailModel(BigDecimal finYearRemit, BigDecimal docNoRemit) {
-		List<PromotionDetailModel> promoDetails = jdbcTemplate.query(
-				"SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE, B.DOCNO, B.DOCNO, B.DOCFYR  " + "       FROM   PROMOTION_HD A,PROMOTION_DT B"
-						+ "       WHERE  A.COMCOD = B.COMCOD " + "       AND    A.DOCCOD = B.DOCCOD"
-						+ "       AND    A.DOCFYR = B.DOCFYR " + "       AND    A.DOCNO  = B.DOCNO"
-						+ "       AND    A.COMCOD = (SELECT DEF_COMPANY " + "        FROM   APP_SETT)"
-						+ "       AND    A.DOCCOD = 72 " + "      AND    NVL(B.TRNREF,0)     <> 0"
-						+ "       AND    NVL(A.RECSTS,' ')    = ' ' " + "       AND    NVL(A.UTLZ_FLAG,' ') = 'U'"
-						+ "       AND    TRNFYR = ? " + "       AND    TRNREF = ? ",
-				new PromotionDetailRowMapper(), finYearRemit, docNoRemit);
+		List<PromotionDetailModel> promoDetails = jdbcTemplate
+				.query("SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE, B.DOCNO, B.DOCNO, B.DOCFYR  "
+						+ "       FROM   PROMOTION_HD A,PROMOTION_DT B" + "       WHERE  A.COMCOD = B.COMCOD "
+						+ "       AND    A.DOCCOD = B.DOCCOD" + "       AND    A.DOCFYR = B.DOCFYR "
+						+ "       AND    A.DOCNO  = B.DOCNO" + "       AND    A.COMCOD = (SELECT DEF_COMPANY "
+						+ "        FROM   APP_SETT)" + "       AND    A.DOCCOD = 72 "
+						+ "      AND    NVL(B.TRNREF,0)     <> 0" + "       AND    NVL(A.RECSTS,' ')    = ' ' "
+						+ "       AND    NVL(A.UTLZ_FLAG,' ') = 'U'" + "       AND    TRNFYR = ? "
+						+ "       AND    TRNREF = ? ", new PromotionDetailRowMapper(), finYearRemit, docNoRemit);
 
 		return promoDetails;
 	}
