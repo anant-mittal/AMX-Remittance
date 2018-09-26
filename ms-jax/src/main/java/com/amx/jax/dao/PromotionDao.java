@@ -104,7 +104,6 @@ public class PromotionDao {
 					cs.setBigDecimal(1, documentFinYearRemit);
 					cs.setBigDecimal(2, documentNoRemit);
 					cs.registerOutParameter(3, java.sql.Types.VARCHAR);
-					cs.executeQuery();
 					return cs;
 				}
 
