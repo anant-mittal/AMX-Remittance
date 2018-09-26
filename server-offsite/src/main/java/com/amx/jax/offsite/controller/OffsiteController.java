@@ -58,6 +58,9 @@ public class OffsiteController {
 	@Autowired
 	private MetaClient metaClient;
 
+	@Autowired
+	CustomerRegistrationClient customerRegistrationClient;
+
 	@RequestMapping(value = "/id_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegClient.sendIdTypes();
@@ -117,9 +120,6 @@ public class OffsiteController {
 		return AmxApiResponse.buildList(req.getValues());
 	}
 
-	@Autowired
-	CustomerRegistrationClient customerRegistrationClient;
-
 	@RequestMapping(value = "/phising/set", method = { RequestMethod.POST })
 	public AmxApiResponse<BoolRespModel, Object> setPhising(@RequestParam String imageUrl,
 			@RequestParam String caption) {
@@ -143,6 +143,7 @@ public class OffsiteController {
 		eOtp = ArgUtil.ifNotEmpty(eOtp, eOtpHeader);
 		SendOtpModel otpmodel = null;
 		OffsiteCustomerRegistrationRequest req = null;
+		customerSession.setTranxId(customerPersonalDetail.getIdentityInt());
 		if (mOtp == null && eOtp == null) {
 			otpmodel = offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail).getResult();
 		} else {
