@@ -156,8 +156,8 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						// promotion check
-						if (employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+						// promotion check not for amg employee
+						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
 							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
 									remittanceTransaction.getDocumentFinancialyear());
 						}

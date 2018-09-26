@@ -121,8 +121,12 @@ public class PromotionManager {
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
-					email.addTo("online@almullaexchange.com");
-					email.addTo("huzefa.abbasi@almullaexchange.com");
+					if (promotDto.isChichenVoucher()) {
+						email.addTo("App-support@almullaexchange.com");
+					} else {
+						email.addTo("online@almullaexchange.com");
+						email.addTo("huzefa.abbasi@almullaexchange.com");
+					}
 					email.setTemplate(Templates.PROMOTION_WINNER);
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);
