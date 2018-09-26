@@ -47,21 +47,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 	@Autowired(required = false)
 	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
 
-	protected HttpHeaders getHeader() {
-
-		HttpHeaders headers = new HttpHeaders();
-		try {
-
-			JaxMetaInfo metaInfo = new JaxMetaInfo();
-			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-			metaInfo.setTenant(TenantContextHolder.currentSite());
-			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
-		} catch (JsonProcessingException e) {
-			LOGGER.error("error in getheader of jaxclient", e);
-		}
-		return headers;
-	}
-
 	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
 
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
@@ -69,7 +54,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the FieldList");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/new-field-list/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
 			return restService.ajax(url).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
@@ -102,7 +86,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the Designation List Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/designationList/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
 			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(ArticleDetailsDescDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -118,7 +101,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get all the Article List Details");
 
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/articleList/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ArticleMasterDescDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -133,7 +115,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		try {
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-validate-otp/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(offsiteCustRegModel, getHeader());
 			return restService.ajax(url).filter(metaFilter).post(offsiteCustRegModel).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -148,7 +129,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Employment List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/employmentTypeList/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -163,7 +143,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Profession List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/professionList/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -178,7 +157,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Get all the Id Type List Details");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/send-id-types/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(url).filter(metaFilter).post().asApiResponse(ComponentDataDto.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -188,12 +166,13 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
+			CustomerPersonalDetail customerPersonalDetail) {
 		try {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
-			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail).asApiResponse(SendOtpModel.class);
+			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail)
+					.asApiResponse(SendOtpModel.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
 		} catch (Exception e) {
@@ -207,7 +186,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			LOGGER.info("Save customer info");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerInfo/";
-			//HttpEntity<Object> requestEntity = new HttpEntity<Object>(model, getHeader());
 			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(BigDecimal.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -217,13 +195,12 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
-	
 	@Override
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
 			throws ParseException {
 		try {
 			LOGGER.debug("Save customer KYC Document");
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerKYCDoc/";			
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerKYCDoc/";
 			return restService.ajax(url).filter(metaFilter).post(modelData).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;
@@ -233,13 +210,11 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch}
 	}
 
-	
-	
 	@Override
 	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
 		try {
 			LOGGER.debug("Save customer Signature");
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerSignature/";			
+			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/saveCustomerSignature/";
 			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(String.class);
 		} catch (AbstractJaxException ae) {
 			throw ae;

@@ -42,6 +42,7 @@ public class CustomerSession {
 
 	public void setTranxId(String tranxId) {
 		this.tranxId = tranxId;
+		AppContextUtil.setTranxId(tranxId);
 	}
 
 	public void clear() {
