@@ -59,7 +59,7 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	 @Test
+	// @Test
 	public void testgetBankBranchListByBankId() throws IOException, ResourceNotFoundException, InvalidInputException {
 		setDefaults();
 		ApiResponse<BankBranchDto> response = null;
@@ -190,7 +190,7 @@ public class MetaClientTest extends AbstractTestClient {
 	}
 	
 
-	// @Test
+	@Test
 	public void testGetAllBranchDetail() {
 		setDefaults();
 		ApiResponse<BranchDetailDTO> response = null;
