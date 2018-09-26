@@ -409,9 +409,9 @@ public class PlaceOrderService extends AbstractService {
 					JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL);
 		}
 		
-		if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {
+		/*if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {
 			throw new GlobalException("Either PayAmount or ReceivedAmount should have value ",
 					JaxError.PO_BOTH_PAY_RECEIVED_AMT_VALUE);
-		}
+		}*/
 	}
 }
