@@ -48,7 +48,11 @@ public abstract class ATransactionModel<T> {
 	}
 
 	public T get() {
-		return this.get(null);
+		T model = this.get(null);
+		if (model == null) {
+			return this.get(getDefault());
+		}
+		return model;
 	}
 
 	public T get(T defaultValue) {
@@ -58,6 +62,10 @@ public abstract class ATransactionModel<T> {
 	public abstract T init();
 
 	public abstract T commit();
+
+	public T getDefault() {
+		return null;
+	}
 
 	/**
 	 * Checks if transaction model is present if not then create new by calling init

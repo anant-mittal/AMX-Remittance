@@ -61,12 +61,6 @@ public class MetaClient extends AbstractJaxServiceClient {
 	@Autowired
 	RestService restService;
 
-	@Autowired
-	AppConfig appConfig;
-
-	@Autowired
-	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
-
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
 
 		try {

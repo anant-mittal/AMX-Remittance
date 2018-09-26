@@ -74,7 +74,14 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	@Autowired
 	BizcomponentDao bizcomponentDao;
 	@Autowired
-	UserService userService ;
+	UserService userService;
+
+	@Override
+	public CustomerRegistrationTrnxModel getDefault() {
+		CustomerRegistrationTrnxModel model = new CustomerRegistrationTrnxModel();
+		model.setOtpData(new OtpData());
+		return model;
+	}
 
 	/**
 	 * Initialization of trnx
@@ -83,8 +90,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	public CustomerRegistrationTrnxModel init() {
 		CustomerRegistrationTrnxModel model = get();
 		if (model == null) {
-			model = new CustomerRegistrationTrnxModel();
-			model.setOtpData(new OtpData());
+			model = getDefault();
 			save(model);
 		}
 		return model;
@@ -175,8 +181,8 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType()
-				: customerPersonalDetail.getIdentityInt());
+		customer.setCreatedBy(
+				jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType() : customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
@@ -191,7 +197,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setMobile(customerPersonalDetail.getMobile());
 		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
 		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
-		
+
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);

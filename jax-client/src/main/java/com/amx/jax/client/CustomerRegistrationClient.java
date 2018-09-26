@@ -19,6 +19,7 @@ import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.AppConfig;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.rest.RestService;
 
@@ -135,11 +136,8 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
 		try {
 			LOGGER.info("calling savePhishiingImage api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-phishing-image/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("caption", caption)
-					.queryParam("imageUrl", imageUrl);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-phishing-image/")
+					.queryParam("caption", caption).queryParam("imageUrl", imageUrl).filter(metaFilter).post()
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 		} catch (AbstractJaxException ae) {

@@ -3,6 +3,7 @@ package com.amx.jax.offsite.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.offsite.OffsiteAppConfig;
 import com.amx.jax.rest.RestMetaRequestOutFilter;
@@ -15,7 +16,7 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 	@Autowired
 	OffsiteAppConfig offsiteAppConfig;
 
-	@Autowired
+	@Autowired(required = false)
 	CustomerSession customerSession;
 
 	@Override
@@ -24,12 +25,15 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 
 		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
 		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
-
 		jaxMetaInfo.setCountryId(offsiteAppConfig.getCountryId());
 		jaxMetaInfo.setCompanyId(offsiteAppConfig.getCompanyId());
 		jaxMetaInfo.setLanguageId(offsiteAppConfig.getLanguageId());
 		jaxMetaInfo.setCountryBranchId(offsiteAppConfig.getCountrybranchId());
-		jaxMetaInfo.setCustomerId(customerSession.getCustomerId());
+
+		if (customerSession != null) {
+			jaxMetaInfo.setCustomerId(customerSession.getCustomerId());
+			AppContextUtil.setTranxId(customerSession.getTranxId());
+		}
 
 		return jaxMetaInfo;
 	}
