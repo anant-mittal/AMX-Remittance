@@ -26,3 +26,6 @@ D:\\payment-service.log
 *.orig
 logs/*.log
 *-*/logs/*.log
+logs/*.log
+*-*/target/*.*
+*-*/target/test-classes/*.*
