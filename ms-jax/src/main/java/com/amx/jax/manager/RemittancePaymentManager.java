@@ -20,6 +20,7 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
@@ -79,6 +80,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	private ReportManagerService reportManagerService;
+	@Autowired
+	PromotionManager promotionManager; 
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
@@ -160,7 +163,10 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+						// promotion check
+						promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+								remittanceTransaction.getDocumentFinancialyear());
+						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
 						PersonInfo personinfo = new PersonInfo();

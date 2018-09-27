@@ -202,7 +202,7 @@ public class RemittanceClientTest {
 		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
 		request.setApplicationDocumentNumber(new BigDecimal(27000545));
 		request.setDocumentFinancialYear(new BigDecimal(2017));
-		response = client.fetchTransactionDetails(request);
+		response = client.fetchTransactionDetails(request, true);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

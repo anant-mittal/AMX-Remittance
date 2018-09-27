@@ -25,7 +25,7 @@ public enum Templates {
 					"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
-
+	
 	String fileName;
 	PDFConverter converter;
 	String sampleJSON;
