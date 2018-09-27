@@ -10,6 +10,8 @@ public class HomeAddressDetails {
 	private BigDecimal cityId;
 	private String house;
 	private String flat;
+	private String street;
+	private String block;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -65,6 +67,22 @@ public class HomeAddressDetails {
 
 	public void setContactTypeId(BigDecimal contactTypeId) {
 		this.contactTypeId = contactTypeId;
+	}
+
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public String getBlock() {
+		return block;
+	}
+
+	public void setBlock(String block) {
+		this.block = block;
 	}
 
 }

@@ -510,6 +510,8 @@ public class OffsitCustRegService implements ICustRegService {
 			contactDetail.setFsCityMaster(new CityMaster(homeAddressDestails.getCityId()));
 			contactDetail.setBuildingNo(homeAddressDestails.getHouse());
 			contactDetail.setFlat(homeAddressDestails.getFlat());
+			contactDetail.setStreet(homeAddressDestails.getStreet());
+			contactDetail.setBlock(homeAddressDestails.getBlock());
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			contactDetail.setLanguageId(customer.getLanguageId());
