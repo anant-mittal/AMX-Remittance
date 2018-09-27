@@ -362,7 +362,7 @@ public class PlaceOrderService extends AbstractService {
 				for (PlaceOrder placeorder : placeOrderList) {
 
 					Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
-					logger.info("customer ID:" + placeorder.getCustomerId());
+					logger.debug("customer ID:" + placeorder.getCustomerId());
 					PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
 					placeorderNotDTO.setFirstName(cusotmer.getFirstName());
 					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
@@ -384,7 +384,7 @@ public class PlaceOrderService extends AbstractService {
 					placeOrderdao.save(placeorder);
 				}
 			}
-			logger.info("place Order for Notfication :" + dtoList.toString());
+			logger.debug("place Order for Notfication :" + dtoList.toString());
 
 			response.getData().getValues().addAll(dtoList);
 			response.setResponseStatus(ResponseStatus.OK);

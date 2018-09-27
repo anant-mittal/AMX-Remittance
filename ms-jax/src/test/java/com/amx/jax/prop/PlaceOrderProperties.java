@@ -19,6 +19,8 @@ public class PlaceOrderProperties {
 	@Value("${target_exchange_rate}")
 	BigDecimal targetExchangeRate;
 
+	@Value("${routing_bank_id}")
+	BigDecimal routingBankId;
 
 	public BigDecimal getNoOfPlaceOrders() {
 		return noOfPlaceOrders;
@@ -42,6 +44,14 @@ public class PlaceOrderProperties {
 
 	public void setTargetExchangeRate(BigDecimal targetExchangeRate) {
 		this.targetExchangeRate = targetExchangeRate;
+	}
+
+	public BigDecimal getRoutingBankId() {
+		return routingBankId;
+	}
+
+	public void setRoutingBankId(BigDecimal routingBankId) {
+		this.routingBankId = routingBankId;
 	}
 
 }

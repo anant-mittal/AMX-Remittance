@@ -15,11 +15,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.BenificiaryListView;
+import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.prop.PlaceOrderProperties;
 import com.amx.jax.services.BeneficiaryService;
@@ -38,6 +42,8 @@ public class PlaceOrderLoadTest {
 	PlaceOrderService placeOrderService;
 	@Autowired
 	PlaceOrderProperties placeOrderProperties;
+	@Autowired
+	PipsMasterDao pipsMasterDao;
 
 	@Before
 	public void contextLoads() {
@@ -53,7 +59,7 @@ public class PlaceOrderLoadTest {
 		logger.info("rate target: " + placeOrderProperties.getTargetExchangeRate());
 		// find routing bank id to route place orders thr for given currency
 		List<BenificiaryListView> beneList = beneficiaryService
-				.listBeneficiaryForPOloadTest(placeOrderProperties.getNoOfPlaceOrders().intValue());
+				.listBeneficiaryForPOloadTest(placeOrderProperties.getNoOfPlaceOrders().intValue(), null);
 		List<PlaceOrder> placeOrders = new ArrayList<>();
 		beneList.stream().limit(placeOrderProperties.getNoOfPlaceOrders().intValue()).forEach(bene -> {
 			PlaceOrderDTO dto = new PlaceOrderDTO();
@@ -66,11 +72,12 @@ public class PlaceOrderLoadTest {
 			dto.setForeignCurrencyQuote("INR");
 			dto.setIsActive("Y");
 			dto.setPayAmount(new BigDecimal(10));
+			dto.setReceiveAmount(new BigDecimal(2260));
 			dto.setSourceOfIncomeId(new BigDecimal(2));
 			dto.setSrlId(new BigDecimal(12));
 			dto.setTargetExchangeRate(placeOrderProperties.getTargetExchangeRate());
 			Calendar validToDate = Calendar.getInstance();
-			validToDate.add(Calendar.HOUR, 10);
+			validToDate.add(Calendar.HOUR, 2);
 			dto.setValidFromDate(Calendar.getInstance().getTime());
 			dto.setValidToDate(validToDate.getTime());
 			dto.setCustomerId(bene.getCustomerId());
@@ -87,10 +94,19 @@ public class PlaceOrderLoadTest {
 			placeOrders.add(placeOrderModel);
 		});
 		placeOrderService.savePlaceOrder(placeOrders);
-		// save or update place orders
-		// fetch affected place order ids
-		// record how many sent
-		// assert
+		// fetch pips master id
+		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForForeignAmount(placeOrderProperties.getCurrencyId(),
+				new BigDecimal(2260), new BigDecimal(78), placeOrderProperties.getRoutingBankId());
+		BigDecimal pipsMasterId = pips.get(0).getPipsMasterId();
+		logger.info("pips masterid: "+ pipsMasterId);
+		StopWatch watch = new StopWatch();
+		watch.start();
+		//ApiResponse<PlaceOrderDTO> apiResponse = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
+		watch.stop();
+		//int size = apiResponse.getResults().size();
+		//logger.info("Total size of matched place order= " + size);
+		long timetaken = watch.getLastTaskTimeMillis();
+		logger.info("Total time taken to fetch placeorders from db: " + timetaken / 1000 + " seconds");
 
 	}
 }
