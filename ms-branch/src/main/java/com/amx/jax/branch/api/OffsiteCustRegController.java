@@ -75,16 +75,13 @@ public class OffsiteCustRegController implements ICustRegService {
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(@RequestParam Boolean dummy,
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);
 		LOGGER.info("send otp request: " + customerPersonalDetail);
 		// return
 		// AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
-		if (!ArgUtil.isEmpty(dummy) && dummy.booleanValue()) {
-			return AmxApiResponse.build(new SendOtpModel());
-		}
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}

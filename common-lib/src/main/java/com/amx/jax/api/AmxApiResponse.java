@@ -174,7 +174,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	 * @return the amx api response
 	 */
 	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
-		return new AmxApiResponse<TS, Object>(resultList);
+		return buildList(resultList, new Object());
 	}
 
 	/**
@@ -191,7 +191,11 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	 * @return the amx api response
 	 */
 	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {
-		return new AmxApiResponse<TS, MS>(resultList, meta);
+		AmxApiResponse<TS, MS> resp = new AmxApiResponse<TS, MS>();
+		// ArrayList<TS> listOfStrings = new ArrayList<TS>(resultList.size());
+		// listOfStrings.addAll(resultList);
+		resp.setResults(resultList);
+		return resp;
 	}
 
 }

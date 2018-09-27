@@ -29,7 +29,6 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @Component
 public class RestService {
@@ -258,8 +257,7 @@ public class RestService {
 		}
 
 		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
-			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
-			});
+			return this.asApiResponse(resultType, Object.class);
 		}
 
 		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> resultType, Class<M> metaType) {

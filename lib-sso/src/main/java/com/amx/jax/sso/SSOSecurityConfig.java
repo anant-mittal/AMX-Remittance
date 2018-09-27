@@ -35,7 +35,7 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
 				// Login Forms
-				.and().formLogin().loginPage(SSOUtils.LOGIN_URL)
+				.and().formLogin().loginPage(SSOUtils.APP_LOGIN_URL)
 				.successHandler(successHandler()).permitAll().failureUrl("/sso/login?error").permitAll()
 				// Logout Pages
 				.and().logout().permitAll().logoutSuccessUrl("/sso/login?logout").deleteCookies("JSESSIONID")

@@ -2,7 +2,6 @@ package com.amx.jax.client;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -169,12 +168,11 @@ public class OffsiteCustRegClient implements ICustRegService {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
 			return restService.ajax(url).filter(metaFilter).post(customerPersonalDetail)
-					.asApiResponse(SendOtpModel.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
+					.as(new ParameterizedTypeReference<AmxApiResponse<SendOtpModel, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in sendIdTypes : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
 

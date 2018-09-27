@@ -197,7 +197,7 @@
 
 		<module>server-monitor</module>
 		<module>server-admin</module>
-		<!-- <module>server-sso</module> -->
+		<module>server-sso</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>
