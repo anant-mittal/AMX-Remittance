@@ -82,7 +82,7 @@ public class OffsiteCustRegController implements ICustRegService {
 		LOGGER.info("send otp request: " + customerPersonalDetail);
 		// return
 		// AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
-		if (ArgUtil.isEmpty(dummy) || !dummy) {
+		if (!ArgUtil.isEmpty(dummy) && dummy.booleanValue()) {
 			return AmxApiResponse.build(new SendOtpModel());
 		}
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
