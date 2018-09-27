@@ -2,7 +2,6 @@ package com.amx.jax.branch.api;
 
 import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
 
-
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.List;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
@@ -41,6 +41,7 @@ import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.utils.JaxContextUtil;
+import com.amx.utils.ArgUtil;
 
 @RestController
 @RequestMapping(OFFSITE_CUSTOMER_REG)
@@ -64,84 +65,90 @@ public class OffsiteCustRegController implements ICustRegService {
 	ViewDistrictService districtService;
 
 	@Autowired
-	MetaService metaService;	
+	MetaService metaService;
 
-	@ApiJaxStatus({JaxError.EMPTY_ID_TYPE_LIST})
+	@ApiJaxStatus({ JaxError.EMPTY_ID_TYPE_LIST })
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
 		return offsiteCustRegService.sendIdTypes();
 	}
-	
-	@ApiJaxStatus({JaxError.ALREADY_EXIST_EMAIL,JaxError.INVALID_MOBILE_NUMBER})
+
+	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(@RequestParam Boolean dummy,
 			@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);
 		LOGGER.info("send otp request: " + customerPersonalDetail);
-		//return AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+		// return
+		// AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
+		if (ArgUtil.isEmpty(dummy) || !dummy) {
+			return AmxApiResponse.build(new SendOtpModel());
+		}
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
+
 	}
 
-	@ApiJaxStatus({JaxError.MISSING_OTP,JaxError.VALIDATE_OTP_LIMIT_EXCEEDED})
+	@ApiJaxStatus({ JaxError.MISSING_OTP, JaxError.VALIDATE_OTP_LIMIT_EXCEEDED })
 	@RequestMapping(value = CustRegApiEndPoints.VALIDATE_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
-			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {	
+			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		return offsiteCustRegService.validateOtpForEmailAndMobile(offsiteCustRegModel);
 	}
-	
-	@ApiJaxStatus({JaxError.EMPTY_ARTICLE_LIST})
+
+	@ApiJaxStatus({ JaxError.EMPTY_ARTICLE_LIST })
 	@RequestMapping(value = CustRegApiEndPoints.GET_ARTICLE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {		
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 		return offsiteCustRegService.getArticleListResponse();
 	}
 
-	@ApiJaxStatus({JaxError.EMPTY_DESIGNATION_LIST})
+	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
 	@RequestMapping(value = CustRegApiEndPoints.GET_DESIGNATION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
-			@RequestBody EmploymentDetailsRequest model) {		
+			@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegService.getDesignationListResponse(model);
 	}
 
-	@ApiJaxStatus({JaxError.EMPTY_INCOME_RANGE})
+	@ApiJaxStatus({ JaxError.EMPTY_INCOME_RANGE })
 	@RequestMapping(value = CustRegApiEndPoints.GET_INCOME_RANGE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {		
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegService.getIncomeRangeResponse(model);
 	}
 
-	@ApiJaxStatus({JaxError.EMPTY_FIELD_CONDITION})
+	@ApiJaxStatus({ JaxError.EMPTY_FIELD_CONDITION })
 	@RequestMapping(value = CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
-	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {		
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		return offsiteCustRegService.getFieldList(model);
 	}
-	
-	@ApiJaxStatus({JaxError.EMPTY_EMPLOYMENT_TYPE})
+
+	@ApiJaxStatus({ JaxError.EMPTY_EMPLOYMENT_TYPE })
 	@RequestMapping(value = CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {		
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegService.sendEmploymentTypeList();
 	}
-	
-	@ApiJaxStatus({JaxError.EMPTY_PROFESSION_LIST})
+
+	@ApiJaxStatus({ JaxError.EMPTY_PROFESSION_LIST })
 	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {		
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
 		return offsiteCustRegService.sendProfessionList();
 	}
 
-	@ApiJaxStatus({JaxError.EXISTING_CIVIL_ID})
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID })
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_CUST_INFO, method = RequestMethod.POST)
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {		
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
-	
-	@ApiJaxStatus({JaxError.IMAGE_NOT_AVAILABLE,JaxError.NULL_CUSTOMER_ID})
+
+	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID })
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model) throws ParseException{		
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model)
+			throws ParseException {
 		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 
-	@ApiJaxStatus({JaxError.SIGNATURE_NOT_AVAILABLE,JaxError.NULL_CUSTOMER_ID})
+	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID })
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
-	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {		
+	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {
 		return offsiteCustRegService.saveCustomerSignature(model);
 	}
 
