@@ -632,8 +632,8 @@ public class OffsitCustRegService implements ICustRegService {
 					Constants.NO);
 			if (customer == null) {
 				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-						new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID));
-				throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
+						new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
+				throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 			}
 			if (model.getImage() == null) {
 				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
@@ -715,8 +715,8 @@ public class OffsitCustRegService implements ICustRegService {
 		if(customer == null)
 		{
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
-					new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID));
-			throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
+					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
+			throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 		}
 		customer.setSignatureSpecimenClob(model.getImage().get(0));
 		customer.setPepsIndicator(model.getPoliticallyExposed());
