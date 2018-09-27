@@ -120,7 +120,9 @@ public class RestService {
 		}
 
 		public Ajax queryParam(String paramKey, Object paramValue) {
-			builder.queryParam(paramKey, paramValue);
+			if (paramValue != null) {
+				builder.queryParam(paramKey, paramValue);
+			}
 			return this;
 		}
 
