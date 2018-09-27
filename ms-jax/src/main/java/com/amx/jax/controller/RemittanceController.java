@@ -107,7 +107,7 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCurrencyId());
 
 		ApiResponse response = reportManagerService
-				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, promotion);
+				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
 	}
 
