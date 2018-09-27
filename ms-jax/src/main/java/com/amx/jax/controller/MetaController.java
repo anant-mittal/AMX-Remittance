@@ -185,7 +185,7 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = MetaApi.SEQ_QUEST_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionResponse() {
+	public AmxApiResponse<QuestModelDTO, Object> getAllQuestionListResponse() {
 		return questionAnswerService.findAllQuestion(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
