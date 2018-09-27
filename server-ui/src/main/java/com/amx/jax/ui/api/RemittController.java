@@ -196,7 +196,7 @@ public class RemittController {
 		// : true;
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
-				.report(tranxDTO, !duplicate.booleanValue()).getResult();
+				.report(tranxDTO, true).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 
 		File file = null;
@@ -249,7 +249,7 @@ public class RemittController {
 		tranxDTO.setCustomerReference(customerReference);
 
 		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
-				.report(tranxDTO, !duplicate.booleanValue()).getResult();
+				.report(tranxDTO, true).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
