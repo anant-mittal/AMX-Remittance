@@ -4,11 +4,12 @@ import com.amx.jax.postman.model.File.PDFConverter;
 
 public enum Templates {
 
-	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP(
-			"health-server-up"), REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2(
-					"TransactionReceipt2"), REMIT_RECEIPT_JASPER("TransactionReceipt_jasper", PDFConverter.JASPER,
-							"TransactionReceipt.json"), REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper",
-									PDFConverter.JASPER, "TransactionReceipt.json"),
+	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP("health-server-up"),
+
+	REMIT_RECEIPT("TransactionReceipt"), REMIT_RECEIPT2("TransactionReceipt2"), REMIT_RECEIPT_JASPER(
+			"TransactionReceipt_jasper", PDFConverter.JASPER,
+			"TransactionReceipt.json"), REMIT_RECEIPT_COPY_JASPER("TransactionReceiptCopy_jasper", PDFConverter.JASPER,
+					"TransactionReceipt.json"), PROMOTION_WINNER("PromotionWinner"),
 
 	REMIT_RECEIPT_COPY("TransactionReceiptCopy"), REMIT_STATMENT("TransactionList"), REMIT_STATMENT_EMAIL(
 			"RemittanceStatmentEmail"), REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
@@ -25,7 +26,7 @@ public enum Templates {
 					"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
-	
+
 	String fileName;
 	PDFConverter converter;
 	String sampleJSON;
