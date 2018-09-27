@@ -146,7 +146,7 @@ public class OffsiteCustRegController implements ICustRegService {
 		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 
-	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID })
+	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID , JaxError.INVALID_CUSTOMER })
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {
 		return offsiteCustRegService.saveCustomerSignature(model);
