@@ -135,7 +135,7 @@ public class OffsiteCustRegController implements ICustRegService {
 	
 	@ApiJaxStatus({JaxError.IMAGE_NOT_AVAILABLE,JaxError.NULL_CUSTOMER_ID})
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody List<ImageSubmissionRequest> model) throws ParseException{		
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model) throws ParseException{		
 		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 

@@ -99,7 +99,7 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody List<ImageSubmissionRequest> modelData)
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest modelData)
 			throws ParseException {
 		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}

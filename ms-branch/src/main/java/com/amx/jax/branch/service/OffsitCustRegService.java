@@ -618,48 +618,48 @@ public class OffsitCustRegService implements ICustRegService {
 		customerIdProofRepository.save(custProof);
 	}
 
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model)
 			throws ParseException {
-		if (modelData != null) {
-			for (ImageSubmissionRequest model : modelData) {
-				if (model.getImage() == null) {
-					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-							new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
-					throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
-				}
-
-				if (model.getCustomerId() == null) {
-					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-							new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
-					throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
-				}
-				Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),Constants.NO);
-				if(customer == null)
-				{
-					auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
-							new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID));
-					throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
-				}
-				DmsApplMapping mappingData = getDmsApplMappingData(customer);
+		if (model != null) {
+			if (model.getCustomerId() == null) {
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+						new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
+				throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
+			}
+			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),
+					Constants.NO);
+			if (customer == null) {
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+						new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID));
+				throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
+			}
+			if (model.getImage() == null) {
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+						new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
+				throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
+			}
+			
+			for (String image : model.getImage()) {
+				DmsApplMapping mappingData = new DmsApplMapping();
+				mappingData =  getDmsApplMappingData(customer);
 				idmsAppMappingRepository.save(mappingData);
-				DocBlobUpload documentDetails = getDocumentUploadDetails(model, mappingData);
+				DocBlobUpload documentDetails = new DocBlobUpload();
+				documentDetails = getDocumentUploadDetails(image, mappingData);
 				docblobRepository.save(documentDetails);
 			}
-		}
-		else
-		{			
+		} else {
 			throw new GlobalException("Image data is not available", JaxError.IMAGE_NOT_AVAILABLE);
 		}
 		return AmxApiResponse.build("Document Uploaded Successfully");
 	}
 
-	private DocBlobUpload getDocumentUploadDetails(ImageSubmissionRequest model, DmsApplMapping mappingData) {
+	private DocBlobUpload getDocumentUploadDetails(String image, DmsApplMapping mappingData) {
 		DocBlobUpload documentDetails = new DocBlobUpload();
 		documentDetails.setCntryCd(mappingData.getApplicationCountryId());
 		documentDetails.setDocBlobID(mappingData.getDocBlobId());
 		documentDetails.setDocFinYear(mappingData.getFinancialYear());
 		documentDetails.setSeqNo(new BigDecimal(1));
-		documentDetails.setDocContent(model.getImage().getBytes());
+		documentDetails.setDocContent(image.getBytes());
 		documentDetails.setCreatedOn(new Date());
 		documentDetails.setCreatedBy(metaData.getCustomerId().toString());
 		return documentDetails;
@@ -716,7 +716,7 @@ public class OffsitCustRegService implements ICustRegService {
 					new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Customer is not exist", JaxError.NULL_CUSTOMER_ID);
 		}
-		customer.setSignatureSpecimenClob(model.getImage());
+		customer.setSignatureSpecimenClob(model.getImage().get(0));
 		customer.setPepsIndicator(model.getPoliticallyExposed());
 		customerRepository.save(customer);
 		return AmxApiResponse.build("Signature Uploaded Successfully");

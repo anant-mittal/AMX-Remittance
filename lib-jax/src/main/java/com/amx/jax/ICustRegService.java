@@ -61,7 +61,7 @@ public interface ICustRegService {
 	
 	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
 	
-	AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+	AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData)
 			throws ParseException;
 	
 	AmxApiResponse<String,Object> saveCustomerSignature(ImageSubmissionRequest model);

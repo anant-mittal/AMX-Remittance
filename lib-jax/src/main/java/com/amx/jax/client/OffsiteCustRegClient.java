@@ -193,7 +193,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(List<ImageSubmissionRequest> modelData)
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData)
 			throws ParseException {
 		try {
 			LOGGER.debug("Save customer KYC Document");
