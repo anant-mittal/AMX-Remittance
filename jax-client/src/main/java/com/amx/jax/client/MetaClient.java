@@ -64,7 +64,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPLCOUNTRY)
-					.filter(metaFilter).get().asApiResponse(ApplicationSetupDTO.class);
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -74,7 +75,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryByCountryAndCompany() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY_COMP)
-					.filter(metaFilter).get().asApiResponse(ApplicationSetupDTO.class);
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -84,7 +86,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY)
-					.filter(metaFilter).get().asApiResponse(CountryMasterDTO.class);
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -153,7 +156,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_LIST)
-					.filter(metaFilter).get().asApiResponse(QuestModelDTO.class);
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestion : ", ae);
 			throw new JaxSystemError();
@@ -165,8 +169,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_BY_ID)
-					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get()
-					.asApiResponse(QuestModelDTO.class);
+					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -264,7 +268,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactUsTime() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.HELP_DESK_TIME)
-					.filter(metaFilter).get().asApiResponse(AuthenticationLimitCheckDTO.class);
+					.filter(metaFilter).get().get().as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
+					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
