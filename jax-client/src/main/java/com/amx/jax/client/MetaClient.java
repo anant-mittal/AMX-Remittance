@@ -63,9 +63,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountry() {
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPLCOUNTRY)
-					.filter(metaFilter).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
@@ -75,9 +74,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryByCountryAndCompany() {
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY_COMP)
-					.filter(metaFilter).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
@@ -87,9 +85,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<CountryMasterDTO, Object> getAllCountry() {
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY)
-					.filter(metaFilter).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
@@ -158,9 +155,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestion() {
 
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_LIST)
-					.filter(metaFilter).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestion : ", ae);
@@ -172,9 +168,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestionById(String questionId) {
 
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_BY_ID)
-					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
+					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
@@ -272,9 +267,8 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactUsTime() {
 		try {
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.HELP_DESK_TIME)
-					.filter(metaFilter).get().get(requestEntity).as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
+					.filter(metaFilter).get().get().as(new ParameterizedTypeReference<AmxApiResponse<AuthenticationLimitCheckDTO, Object>>() {
 					}); 
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
