@@ -729,7 +729,7 @@ public class OffsitCustRegService implements ICustRegService {
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
 		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager
-				.init((com.amx.amxlib.model.CustomerPersonalDetail) customerPersonalDetail);
+				.init(customerPersonalDetail);
 		validate(trnxModel, errors);
 		SendOtpModel output = customerRegistrationOtpManager.generateOtpTokens(customerPersonalDetail.getIdentityInt());
 		customerRegistrationOtpManager.sendOtp();
