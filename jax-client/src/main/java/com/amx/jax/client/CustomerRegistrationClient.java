@@ -110,8 +110,9 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-security-questions/")
-					.post(securityquestions).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+					.path(CUSTOMER_REG_ENDPOINT + "/save-security-questions/").post(securityquestions)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);

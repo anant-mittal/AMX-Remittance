@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -51,7 +51,7 @@ public class OffsiteController {
 	private Logger logger = Logger.getLogger(OffsiteController.class);
 
 	@Autowired
-	private OffsiteCustRegClient offsiteCustRegClient;
+	private ICustRegService offsiteCustRegClient;
 
 	@Autowired
 	private CustomerSession customerSession;
@@ -117,24 +117,25 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/secques/list", method = { RequestMethod.GET })
-	public AmxApiResponse<QuestModelDTO, Object> getSecQues() {
+	public AmxApiResponse<QuestModelDTO, Object> getSequrityQuestion() {
 		return metaClient.getSequrityQuestion();
 	}
 
 	@RequestMapping(value = "/secques/set", method = { RequestMethod.POST })
 	public AmxApiResponse<SecurityQuestionModel, Object> setSecQues(
 			@RequestBody ListRequestModel<SecurityQuestionModel> req) {
+		customerRegistrationClient.saveSecurityQuestions(req.getValues());
 		return AmxApiResponse.buildList(req.getValues());
 	}
 
 	@RequestMapping(value = "/phising/set", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> setPhising(@RequestParam String imageUrl,
+	public AmxApiResponse<BoolRespModel, Object> savePhishiingImage(@RequestParam String imageUrl,
 			@RequestParam String caption) {
 		return AmxApiResponse.build(customerRegistrationClient.savePhishiingImage(caption, imageUrl).getResult());
 	}
 
 	@RequestMapping(value = "/creds/set", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> setPhising(@RequestBody CustomerCredential req) {
+	public AmxApiResponse<BoolRespModel, Object> saveLoginDetail(@RequestBody CustomerCredential req) {
 		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
 	}
 
@@ -154,7 +155,7 @@ public class OffsiteController {
 		customerSession.setTranxId(customerPersonalDetail.getIdentityInt());
 		AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> resp = new AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel>();
 		if (mOtp == null && eOtp == null) {
-			otpmodel = offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail).getResult();
+			otpmodel = offsiteCustRegClient.sendOtp(customerPersonalDetail).getResult();
 			resp.setMeta(otpmodel);
 			resp.setStatusEnum(OffsiteServerCodes.DOTP_REQUIRED);
 		} else {

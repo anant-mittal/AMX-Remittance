@@ -7,7 +7,9 @@ import java.util.Map;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.ImageSubmissionRequest;
@@ -44,27 +46,40 @@ public interface ICustRegService {
 		public void setMode(BigDecimal modeId);
 	}
 
+	@ApiJaxStatus({ JaxError.EMPTY_ID_TYPE_LIST })
 	AmxApiResponse<ComponentDataDto, Object> getIdTypes();
 
+	@ApiJaxStatus({ JaxError.EMPTY_FIELD_CONDITION })
 	AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model);
 
+	@ApiJaxStatus({ JaxError.EMPTY_INCOME_RANGE })
 	AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model);
 
+	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
 	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model);
 
+	@ApiJaxStatus({ JaxError.EMPTY_ARTICLE_LIST })
 	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse();
 
+	@ApiJaxStatus({ JaxError.MISSING_OTP, JaxError.VALIDATE_OTP_LIMIT_EXCEEDED })
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
 
+	@ApiJaxStatus({ JaxError.EMPTY_EMPLOYMENT_TYPE })
 	AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList();
 
+	@ApiJaxStatus({ JaxError.EMPTY_PROFESSION_LIST })
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID })
 	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData) throws ParseException;
 
+	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model);
+
+	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
+	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
 
 }

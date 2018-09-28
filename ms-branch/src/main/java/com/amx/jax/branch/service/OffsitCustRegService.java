@@ -25,7 +25,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
@@ -198,8 +198,8 @@ public class OffsitCustRegService implements ICustRegService {
 		for (Map row : tempList) {
 			String idType = bizcomponentDao.getIdentityTypeMaster((BigDecimal) row.get("COMPONENT_DATA_ID"));
 			if (idType.equalsIgnoreCase("I")) {
-				list.add(
-						new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC"),(String) row.get("SHORT_CODE")));
+				list.add(new ComponentDataDto((BigDecimal) row.get("COMPONENT_DATA_ID"), (String) row.get("DATA_DESC"),
+						(String) row.get("SHORT_CODE")));
 			}
 		}
 		if (tempList.isEmpty()) {
@@ -476,7 +476,8 @@ public class OffsitCustRegService implements ICustRegService {
 
 	}
 
-	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer, String watsAppMobileNo) {
+	private void commitCustomerLocalContact(LocalAddressDetails localAddressDetails, Customer customer,
+			String watsAppMobileNo) {
 		if (localAddressDetails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(localAddressDetails.getCountryId()));
@@ -501,7 +502,8 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 	}
 
-	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer, String watsAppMobileNo) {
+	private void commitCustomerHomeContact(HomeAddressDetails homeAddressDestails, Customer customer,
+			String watsAppMobileNo) {
 		if (homeAddressDestails != null) {
 			ContactDetail contactDetail = new ContactDetail();
 			contactDetail.setFsCountryMaster(new CountryMaster(homeAddressDestails.getCountryId()));
@@ -543,18 +545,15 @@ public class OffsitCustRegService implements ICustRegService {
 		customer = new Customer();
 		tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
-		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(),
-				customerDetails.getMobile());
-		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(),
-				customerDetails.getMobile());
+		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
+		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
 		jaxUtil.convert(customerDetails, customer);
 		BigDecimal customerReference = customerDao.generateCustomerReference();
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
-		customer.setCountryId(customerDetails.getCountryId());
-		customer.setCreatedBy(
-				metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
+		customer.setCountryId(metaData.getCountryId());
+		customer.setCreatedBy(metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
@@ -620,8 +619,8 @@ public class OffsitCustRegService implements ICustRegService {
 		customerIdProofRepository.save(custProof);
 	}
 
-	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model)
-			throws ParseException {
+	@Override
+	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 		if (model != null) {
 			if (model.getCustomerId() == null) {
 				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
@@ -694,10 +693,8 @@ public class OffsitCustRegService implements ICustRegService {
 		return financialYear;
 	}
 	
-	public AmxApiResponse<String,Object> saveCustomerSignature(ImageSubmissionRequest model)
-	{
-		if(model == null)
-		{
+	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
+		if (model == null) {
 			throw new GlobalException("Image data is not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
 		if (model.getCustomerId() == null) {
@@ -705,15 +702,13 @@ public class OffsitCustRegService implements ICustRegService {
 					new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
 		}
-		if(model.getImage() == null)
-		{
+		if (model.getImage() == null) {
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),Constants.NO);
-		if(customer == null)
-		{
+		if (customer == null) {
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
 			throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
@@ -724,12 +719,15 @@ public class OffsitCustRegService implements ICustRegService {
 		return AmxApiResponse.build("Signature Uploaded Successfully");
 	}
 	
-	
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
-		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,"customerPersonalDetail");
+	@Override
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(
+			com.amx.jax.model.request.CustomerPersonalDetail customerPersonalDetail) {
+		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
+				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
-		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager.init(customerPersonalDetail);
+		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager
+				.init((com.amx.amxlib.model.CustomerPersonalDetail) customerPersonalDetail);
 		validate(trnxModel, errors);		
 		SendOtpModel output = customerRegistrationOtpManager.generateOtpTokens(customerPersonalDetail.getIdentityInt());
 		customerRegistrationOtpManager.sendOtp();		
@@ -743,9 +741,12 @@ public class OffsitCustRegService implements ICustRegService {
 		if(customerPersonalDetail.getIdentityTypeId() == new BigDecimal(198))
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
-		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
-		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(), customerPersonalDetail.getMobile());
-		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(), JaxApiFlow.SIGNUP_DEFAULT);
+		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
+				customerPersonalDetail.getMobile());
+		countryMetaValidation.validateMobileNumberLength(customerPersonalDetail.getCountryId(),
+				customerPersonalDetail.getMobile());
+		userValidationService.validateNonActiveOrNonRegisteredCustomerStatus(customerPersonalDetail.getIdentityInt(),
+				JaxApiFlow.SIGNUP_DEFAULT);
 		validateCustomerBlackList(customerPersonalDetail);
 		OtpData otpData = customerRegistrationManager.get().getOtpData();
 		resetAttempts(otpData);

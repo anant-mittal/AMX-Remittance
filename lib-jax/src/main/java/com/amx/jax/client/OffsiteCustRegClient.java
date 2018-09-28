@@ -146,8 +146,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
-			CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.GET_CUSTOMER_OTP)
 					.post(customerPersonalDetail)
