@@ -156,25 +156,22 @@ public class MetaController {
 		return countryService.getCountryListResponse();
 	}
 
-	@RequestMapping(value = "/country/{languageId}", method = RequestMethod.GET)
-	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdResponse(
-			@PathVariable("languageId") BigDecimal languageId) {
-		return countryService.getCountryListByLanguageIdResponse(languageId);
+	@RequestMapping(value = MetaApi.API_COUNTRY_BY_lANG_ID, method = RequestMethod.GET)
+	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdResponse() {
+		return countryService.getCountryListByLanguageIdResponse(metaData.getLanguageId());
 	}
 
-	@RequestMapping(value = "/country/{languageId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse(
-			@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
-		return countryService.getCountryByLanguageIdAndCountryIdResponse(languageId, countryId);
+	@RequestMapping(value = MetaApi.API_COUNTRY_BY_lANG_COUNTRY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse() {
+		return countryService.getCountryByLanguageIdAndCountryIdResponse(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
-	@RequestMapping(value = "/country/bc/{languageId}", method = RequestMethod.GET)
-	public AmxApiResponse<CountryMasterView, Object> getBusinessCountryResponse(
-			@PathVariable("languageId") BigDecimal languageId) {
-		return countryService.getBusinessCountryResponse(languageId);
+	@RequestMapping(value = MetaApi.API_COUNTRY_BC, method = RequestMethod.GET)
+	public AmxApiResponse<CountryMasterView, Object> getBusinessCountryResponse() {
+		return countryService.getBusinessCountryResponse(metaData.getLanguageId());
 	}
 
-	@RequestMapping(value = MetaApi.APPLCOUNTRY, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.APPL_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryResponse() {
 		return applicationCountryService.getApplicationCountryListResponse();
 	}
@@ -195,22 +192,19 @@ public class MetaController {
 		return questionAnswerService.getQuestionDescription(metaData.getLanguageId(), metaData.getCountryId(), questId);
 	}
 
-	@RequestMapping(value = "/terms/{languageId}", method = RequestMethod.GET)
-	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionResponse(
-			@PathVariable("languageId") BigDecimal languageId) {
-		return termsAndConditionService.getTermsAndCondition(languageId);
+	@RequestMapping(value =MetaApi.API_TERMS_BY_lANG_ID, method = RequestMethod.GET)
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionResponse() {
+		return termsAndConditionService.getTermsAndCondition(metaData.getLanguageId());
 	}
 
-	@RequestMapping(value = "/terms/{languageId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponse(
-			@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
-		return termsAndConditionService.getTermsAndConditionAsPerCountry(languageId, countryId);
+	@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID, method = RequestMethod.GET)
+	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponse() {
+		return termsAndConditionService.getTermsAndConditionAsPerCountry(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
-	@RequestMapping(value = "/why/{languageId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInformationResponse(
-			@PathVariable("languageId") BigDecimal languageId, @PathVariable("countryId") BigDecimal countryId) {
-		return whyDoAskService.getWhyDoAskInformation(languageId, countryId);
+	@RequestMapping(value =  MetaApi.API_WHY, method = RequestMethod.GET)
+	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInformationResponse() {
+		return whyDoAskService.getWhyDoAskInformation(metaData.getLanguageId(), metaData.getCountryId());
 	}
 
 	@RequestMapping(value = "/emailcheck/{languageId}/{countryId}/{emailId}", method = RequestMethod.GET)
@@ -227,7 +221,7 @@ public class MetaController {
 		return emailMobileCheckService.checkMobile(languageId, countryId, mobile);
 	}
 
-	@RequestMapping(value = "/fyear", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_FYEAR , method = RequestMethod.GET)
 	public AmxApiResponse<UserFinancialYear, Object> getFinancialYearResponse() {
 		return financialService.getFinancialYear();
 	}
@@ -237,7 +231,7 @@ public class MetaController {
 		return parameterService.getContactUsTime();
 	}
 
-	@RequestMapping(value = "/contactnumber", method = RequestMethod.GET)
+	@RequestMapping(value =  MetaApi.API_HELP_NO, method = RequestMethod.GET)
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactNumberResponse() {
 		return parameterService.getContactPhoneNo();
 	}
@@ -382,7 +376,7 @@ public class MetaController {
 		return parameterService.getJaxMetaParameter();
 	}
 
-	@RequestMapping(value = "/prefix/", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_PREFIX, method = RequestMethod.GET)
 	public AmxApiResponse<PrefixModel, Object> getPrefixList() {
 		return prefixService.getPrefixListResponse();
 	}

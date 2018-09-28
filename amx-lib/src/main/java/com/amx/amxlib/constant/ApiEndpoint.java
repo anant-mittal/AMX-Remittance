@@ -22,14 +22,26 @@ public class ApiEndpoint {
 		
 		//Params
 		public static final String PARAM_QUEST_ID = "questId";
+		public static final String PARAM_EMAIL_ID = "emailId";
 		
 		//Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
 		public static final String SEQ_QUEST_BY_ID = "/quest/{questId}";
-		public static final String APPLCOUNTRY = "/applcountry/";
+		public static final String APPL_COUNTRY = "/applcountry/";
 		public static final String HELP_DESK_TIME = "/helpdtime/";
 		public static final String APPL_COUNTRY_COMP = "/applcountrycomp/";
 		public static final String API_COUNTRY = "/country/";
+		public static final String API_COUNTRY_BY_lANG_ID = "/country/lang";
+		public static final String API_COUNTRY_BY_lANG_COUNTRY_ID = "/country/langcountry";
+		public static final String API_COUNTRY_BC = "/country/bc/";
+		public static final String API_TERMS_BY_lANG_ID = "/terms/lang";
+		public static final String API_TERMS_BY_lANG_COUNTRY_ID = "/terms/langcountry";
+		public static final String API_WHY = "/why/";
+		public static final String EMAIL_CHECK = "/emailcheck/{emailId}";
+		public static final String API_FYEAR = "/fyear";
+		public static final String API_HELP_NO = "/helpdno/";
+		public static final String API_PREFIX= "/prefix/";
+		
 	}
 
 	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
