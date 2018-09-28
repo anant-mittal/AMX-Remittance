@@ -17,6 +17,7 @@ import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -71,7 +72,7 @@ public interface ICustRegService {
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 
 	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID })
-	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
+	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData) throws ParseException;

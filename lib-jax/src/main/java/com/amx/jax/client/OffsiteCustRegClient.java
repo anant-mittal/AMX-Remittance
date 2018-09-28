@@ -25,6 +25,7 @@ import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.rest.RestMetaRequestOutFilter;
@@ -159,10 +160,10 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.SAVE_CUST_INFO)
-					.post(model).as(new ParameterizedTypeReference<AmxApiResponse<BigDecimal, Object>>() {
+					.post(model).as(new ParameterizedTypeReference<AmxApiResponse<CustomerInfo, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveCustomerInfo : ", e);

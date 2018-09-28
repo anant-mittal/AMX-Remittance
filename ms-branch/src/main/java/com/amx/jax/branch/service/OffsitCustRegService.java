@@ -71,6 +71,7 @@ import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
 import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
+import com.amx.jax.model.response.CustomerInfo;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.amx.jax.repository.CountryMasterRepository;
@@ -435,7 +436,7 @@ public class OffsitCustRegService implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model) {
+	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		// revalidateOtp(model.getOtpData());
 		com.amx.jax.model.request.CustomerPersonalDetail customerDetails = new com.amx.jax.model.request.CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(),customerDetails);
@@ -445,7 +446,9 @@ public class OffsitCustRegService implements ICustRegService {
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer);
 		auditService.log(new JaxAuditEvent(Type.CUST_INFO, model));
-		return AmxApiResponse.build(customer.getCustomerId());
+		CustomerInfo info = new CustomerInfo();
+		info.setCustomerId(customer.getCustomerId());
+		return AmxApiResponse.build(info);
 	}
 
 	private void commitEmploymentDetails(CustomerEmploymentDetails customerEmploymentDetails, Customer customer) {
