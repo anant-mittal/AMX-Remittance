@@ -552,7 +552,7 @@ public class OffsitCustRegService implements ICustRegService {
 		PrefixEnum prefixEnum = PrefixEnum.getPrefixEnum(customerDetails.getTitle());
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
-		customer.setCountryId(metaData.getCountryId());
+		customer.setCountryId(customerDetails.getCountryId());
 		customer.setCreatedBy(
 				metaData.getAppType() != null ? metaData.getAppType() : customerDetails.getIdentityInt());
 		customer.setCreationDate(new Date());
