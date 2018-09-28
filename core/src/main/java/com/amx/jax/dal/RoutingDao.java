@@ -26,7 +26,8 @@ public class RoutingDao {
 
 	public List<BigDecimal> listAllRoutingBankIds() {
 		List<RoutingHeader> rh = (List<RoutingHeader>) routingHeaderRepository.findAll();
-		List<BigDecimal> allRoutingBanks = rh.stream().map(i -> i.getExRoutingBankId()).collect(Collectors.toList());
+		List<BigDecimal> allRoutingBanks = rh.stream().map(i -> i.getExRoutingBankId()).distinct()
+				.collect(Collectors.toList());
 		return allRoutingBanks;
 	}
 

@@ -53,7 +53,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.routingHeaderId = routingHeaderId;
 	}
 
-	@JoinColumn(name = "APPLICATION_COUNTRY_ID")
+	@Column(name = "APPLICATION_COUNTRY_ID")
 	public BigDecimal getExApplicationCountry() {
 		return exApplicationCountry;
 	}
@@ -62,7 +62,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exApplicationCountry = exApplicationCountry;
 	}
 
-	@JoinColumn(name = "COUNTRY_ID")
+	@Column(name = "COUNTRY_ID")
 	public BigDecimal getExCountryId() {
 		return exCountryId;
 	}
@@ -71,7 +71,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exCountryId = exCountryId;
 	}
 
-	@JoinColumn(name = "ROUTING_COUNTRY_ID")
+	@Column(name = "ROUTING_COUNTRY_ID")
 	public BigDecimal getExRoutingCountryId() {
 		return exRoutingCountryId;
 	}
@@ -80,7 +80,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exRoutingCountryId = exRoutingCountryId;
 	}
 
-	@JoinColumn(name = "ROUTING_BANK_ID")
+	@Column(name = "ROUTING_BANK_ID")
 	public BigDecimal getExRoutingBankId() {
 		return exRoutingBankId;
 	}
@@ -89,7 +89,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exRoutingBankId = exRoutingBankId;
 	}
 
-	@JoinColumn(name = "CURRENCY_ID")
+	@Column(name = "CURRENCY_ID")
 	public BigDecimal getExCurrenyId() {
 		return exCurrenyId;
 	}
@@ -98,7 +98,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exCurrenyId = exCurrenyId;
 	}
 
-	@JoinColumn(name = "SERVICE_MASTER_ID")
+	@Column(name = "SERVICE_MASTER_ID")
 	public BigDecimal getExServiceId() {
 		return exServiceId;
 	}
@@ -107,7 +107,7 @@ public class RoutingHeader implements java.io.Serializable {
 		this.exServiceId = exServiceId;
 	}
 
-	@JoinColumn(name = "DELIVERY_MODE_ID")
+	@Column(name = "DELIVERY_MODE_ID")
 	public BigDecimal getExDeliveryModeId() {
 		return exDeliveryModeId;
 	}

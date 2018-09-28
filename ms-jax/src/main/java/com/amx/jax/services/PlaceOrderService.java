@@ -13,6 +13,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.PlaceOrderDTO;
@@ -342,11 +343,16 @@ public class PlaceOrderService extends AbstractService {
 		List<PlaceOrderNotificationDTO> dtoList = new ArrayList<PlaceOrderNotificationDTO>();
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		try {
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
 			Set<PlaceOrder> placeOrderList = new HashSet<>();
 			Set<PlaceOrder> placeOrderList1 = placeOrderdao.getPlaceOrderAlertRate1(pipsMasterId);
 			placeOrderList.addAll(placeOrderList1);
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
 			placeOrderList.addAll(placeOrderList2);
+			stopWatch.stop();
+			logger.info("total time taken to run place order db query:{} seconds",
+					stopWatch.getLastTaskTimeMillis() / 1000);
 
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
