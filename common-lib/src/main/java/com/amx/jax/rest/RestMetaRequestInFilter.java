@@ -9,7 +9,6 @@ public abstract class RestMetaRequestInFilter<T> {
 	public abstract Class<T> getMetaClass();
 
 	public T export(String metaString) {
-		System.out.println("Hey" + metaString);
 		return JsonUtil.fromJson(metaString, getMetaClass());
 	}
 

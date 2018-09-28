@@ -1,10 +1,7 @@
 package com.amx.jax.branch.api;
 
-import static com.amx.amxlib.constant.ApiEndpoint.OFFSITE_CUSTOMER_REG;
-
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.CustomerPersonalDetail;
@@ -39,13 +35,10 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
-import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.utils.JaxContextUtil;
-import com.amx.utils.ArgUtil;
 
 @RestController
-@RequestMapping(OFFSITE_CUSTOMER_REG)
-public class OffsiteCustRegController implements ICustRegService {
+public class CustRegController implements ICustRegService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 
@@ -136,14 +129,14 @@ public class OffsiteCustRegController implements ICustRegService {
 		return offsiteCustRegService.saveCustomerInfo(model);
 	}
 
-	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
+	
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_KYC_DOC, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest model)
 			throws ParseException {
 		return offsiteCustRegService.saveCustomeKycDocument(model);
 	}
 
-	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID , JaxError.INVALID_CUSTOMER })
+	@ApiJaxStatus({ JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {
 		return offsiteCustRegService.saveCustomerSignature(model);
