@@ -117,7 +117,8 @@ public class PromotionManager {
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
 					email.addTo("online@almullaexchange.com");
 					email.addTo("huzefa.abbasi@almullaexchange.com");
-					email.setTemplate(Templates.PROMOTION_WINNER);
+					//Promotion has commented for test
+					/*email.setTemplate(Templates.PROMOTION_WINNER);*/
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);
 					email.getModel().put("promotDto", promotDto);
