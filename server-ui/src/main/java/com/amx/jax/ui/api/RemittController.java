@@ -95,9 +95,9 @@ public class RemittController {
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
-	
+
 	private Logger logger = LoggerService.getLogger(getClass());
-	
+
 	/**
 	 * Tranxhistory.
 	 *
@@ -233,6 +233,8 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal documentNumber,
+			@RequestParam(required = false) BigDecimal documentFinanceYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
@@ -244,6 +246,8 @@ public class RemittController {
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
+		tranxDTO.setDocumentNumber(documentNumber);
+		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
 		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
 		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
 		tranxDTO.setCustomerReference(customerReference);
