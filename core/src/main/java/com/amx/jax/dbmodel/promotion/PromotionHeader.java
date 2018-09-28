@@ -7,6 +7,8 @@ import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  * @author Prashant
@@ -23,13 +25,18 @@ public class PromotionHeader {
 	String descrition;
 
 	@Column(name = "FRMDAT")
+	@Temporal(TemporalType.DATE)
 	Date fromDate;
 
 	@Column(name = "TODAT")
+	@Temporal(TemporalType.DATE)
 	Date toDate;
 
 	@Column(name = "LOCCOD")
 	BigDecimal locationCode;
+
+	@Column(name = "RECSTS")
+	String recSts;
 
 	public PromotionHeaderPK getPromotionHeaderPK() {
 		return promotionHeaderPK;
@@ -69,5 +76,13 @@ public class PromotionHeader {
 
 	public void setDescrition(String descrition) {
 		this.descrition = descrition;
+	}
+
+	public String getRecSts() {
+		return recSts;
+	}
+
+	public void setRecSts(String recSts) {
+		this.recSts = recSts;
 	}
 }

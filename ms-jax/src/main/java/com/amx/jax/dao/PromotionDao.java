@@ -6,8 +6,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +19,19 @@ import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionDetailRowMapper;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionHeaderPK;
 import com.amx.jax.dbmodel.promotion.PromotionLocation;
+import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.promotion.PromotionLocationPK;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.promotion.PromotionHeaderRepository;
 import com.amx.jax.repository.promotion.PromotionLocationRepository;
+import com.amx.jax.repository.promotion.PromotionLocationRowMapper;
 
 /**
  * @author Prashant
@@ -41,8 +46,6 @@ public class PromotionDao {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	MetaData metaData;
-	@Autowired
-	PromotionLocationRepository promotionLocationRepository;
 	@Autowired
 	PromotionHeaderRepository promotionHeaderRepository;
 
@@ -124,14 +127,17 @@ public class PromotionDao {
 	 * @return list of promotionlocations
 	 * 
 	 */
-	public List<PromotionLocation> checkforLocationHeader(BigDecimal docFinYear, BigDecimal locCode) {
-		PromotionLocationPK promotionLocationPK = new PromotionLocationPK(docFinYear, locCode);
-		return promotionLocationRepository.findByPromotionLocationPK(promotionLocationPK);
+	public List<PromotionLocationModel> checkforLocationHeader(BigDecimal docFinYear, BigDecimal locCode) {
+		return jdbcTemplate.query(
+				"select * from promotion_locations where COMCOD=20 and doccod=72 and DOCFYR=? and LOCCOD=?",
+				new PromotionLocationRowMapper(), docFinYear, locCode);
 	}
 
-	public PromotionHeader getPromotionHeader(BigDecimal docFinYear, BigDecimal promoHeaderdocNo) {
-		PromotionHeaderPK promotionHeaderPK = new PromotionHeaderPK(promoHeaderdocNo, docFinYear);
-		return promotionHeaderRepository.findByPromotionHeaderPK(promotionHeaderPK);
+	public List<PromotionHeader> getPromotionHeader(BigDecimal docFinYear, List<PromotionLocationModel> promoLocations,
+			Date trnxDate) {
+		List<PromotionHeaderPK> promotHeaderPks = promoLocations.stream()
+				.map(pl -> new PromotionHeaderPK(pl.getDocumentNo(), pl.getDocFinYear())).collect(Collectors.toList());
+		return promotionHeaderRepository.findPromotioHeader(promotHeaderPks, trnxDate);
 	}
 
 	public List<PromotionDetailModel> getPromotionDetailModel(BigDecimal finYearRemit, BigDecimal docNoRemit) {

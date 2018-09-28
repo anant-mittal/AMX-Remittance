@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-
 /**
  * @author Prashant
  *
@@ -18,10 +17,10 @@ public class PromotionHeaderPK implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	@Column(name="DOCNO")
+
+	@Column(name = "DOCNO")
 	protected BigDecimal docNo;
-	@Column(name="DOCFYR")
+	@Column(name = "DOCFYR")
 	protected BigDecimal docFinYear;
 
 	public PromotionHeaderPK(BigDecimal docNo, BigDecimal docFinYear) {
@@ -64,6 +63,22 @@ public class PromotionHeaderPK implements Serializable {
 		} else if (!docNo.equals(other.docNo))
 			return false;
 		return true;
+	}
+
+	public BigDecimal getDocNo() {
+		return docNo;
+	}
+
+	public void setDocNo(BigDecimal docNo) {
+		this.docNo = docNo;
+	}
+
+	public BigDecimal getDocFinYear() {
+		return docFinYear;
+	}
+
+	public void setDocFinYear(BigDecimal docFinYear) {
+		this.docFinYear = docFinYear;
 	}
 
 }

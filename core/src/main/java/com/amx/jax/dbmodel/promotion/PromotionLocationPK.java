@@ -48,6 +48,37 @@ public class PromotionLocationPK implements Serializable {
 	public void setLocCode(BigDecimal locCode) {
 		this.locCode = locCode;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((docFinYear == null) ? 0 : docFinYear.hashCode());
+		result = prime * result + ((locCode == null) ? 0 : locCode.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PromotionLocationPK other = (PromotionLocationPK) obj;
+		if (docFinYear == null) {
+			if (other.docFinYear != null)
+				return false;
+		} else if (!docFinYear.equals(other.docFinYear))
+			return false;
+		if (locCode == null) {
+			if (other.locCode != null)
+				return false;
+		} else if (!locCode.equals(other.locCode))
+			return false;
+		return true;
+	}
 	
 	
 

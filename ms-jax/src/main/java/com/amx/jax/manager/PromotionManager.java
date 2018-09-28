@@ -24,6 +24,7 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionLocation;
+import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.PostManService;
@@ -62,15 +63,14 @@ public class PromotionManager {
 	 * @return gives the latest promotion header applicable for current branch
 	 * 
 	 */
-	public PromotionHeader getPromotionHeader() {
+	public List<PromotionHeader> getPromotionHeader(Date trnxDate) {
 		BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
 				.getBranchId();
 		UserFinancialYear userFinancialYear = financialService.getUserFinancialYear();
-		List<PromotionLocation> promoLocations = promotionDao
+		List<PromotionLocationModel> promoLocations = promotionDao
 				.checkforLocationHeader(userFinancialYear.getFinancialYear(), branchId);
 		// fetch first one
-		return promotionDao.getPromotionHeader(userFinancialYear.getFinancialYear(),
-				promoLocations.get(0).getDocumentNo());
+		return promotionDao.getPromotionHeader(userFinancialYear.getFinancialYear(), promoLocations, trnxDate);
 	}
 
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
@@ -86,10 +86,9 @@ public class PromotionManager {
 				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize()
 						+ ". Kindly contact 22057194 to claim prize");
 			} else {
-				PromotionHeader promoHeader = getPromotionHeader();
 				Date transactionDate = remittanceTransaction.getCreatedDate();
-				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
-						&& transactionDate.before(promoHeader.getToDate())) {
+				List<PromotionHeader> promoHeaders = getPromotionHeader(transactionDate);
+				if (isPromotionValid(promoHeaders)) {
 					dto = new PromotionDto();
 					dto.setPrize(ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR);
 					dto.setPrizeMessage(
@@ -104,6 +103,17 @@ public class PromotionManager {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	private boolean isPromotionValid(List<PromotionHeader> promoHeaders) {
+		if (promoHeaders != null && promoHeaders.size() > 0) {
+			for (PromotionHeader ph : promoHeaders) {
+				if (!ConstantDocument.Deleted.equals(ph.getRecSts())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public PromotionDto promotionWinnerCheck(BigDecimal documentNoRemit, BigDecimal documentFinYearRemit) {

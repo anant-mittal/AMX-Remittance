@@ -797,7 +797,7 @@ public class RemittanceTransactionManager {
 			model.setTransactionHistroyDTO(transactionHistoryDto);
 			if (Boolean.TRUE.equals(request.getPromotion())) {
 				PromotionDto promoDto = promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr);
-				if (!promoDto.isChichenVoucher()) {
+				if (promoDto != null && !promoDto.isChichenVoucher()) {
 					model.setPromotionDto(promotionManager.getPromotionDto(remittancedocNumber, remittancedocfyr));
 				}
 			}
