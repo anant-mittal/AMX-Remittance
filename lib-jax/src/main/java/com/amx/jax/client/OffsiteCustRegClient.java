@@ -47,45 +47,38 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
 		try {
-			LOGGER.info("Get all the FieldList");
-
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/new-field-list/";
-			return restService.ajax(url).post(model)
+			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_DYNAMIC_FIELDS).post(model)
 					.as(new ParameterizedTypeReference<AmxApiResponse<Map<String, FieldListDto>, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getFieldList : ", e);
 			return JaxSystemError.evaluate(e);
-		} // end of try-catch
+		}
 	}
 
 	@Override
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model) {
 		try {
-			LOGGER.info("Get all the Income Range Details");
-
-			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/incomeRangeList/";
-			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(IncomeRangeDto.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(appConfig.getJaxURL()).path(CustRegApiEndPoints.GET_INCOME_RANGE_LIST)
+					.filter(metaFilter).post(model)
+					.as(new ParameterizedTypeReference<AmxApiResponse<IncomeRangeDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getIncomeRangeResponse : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
 
 	@Override
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model) {
 		try {
-			LOGGER.info("Get all the Designation List Details");
-
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/designationList/";
-			return restService.ajax(url).filter(metaFilter).post(model).asApiResponse(ArticleDetailsDescDto.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
+			return restService.ajax(url).filter(metaFilter).post(model)
+					.as(new ParameterizedTypeReference<AmxApiResponse<ArticleDetailsDescDto, Object>>() {
+					});
 		} catch (Exception e) {
 			LOGGER.error("exception in getDesignationListResponse : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}
 

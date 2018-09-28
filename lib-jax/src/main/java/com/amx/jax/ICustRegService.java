@@ -2,8 +2,8 @@ package com.amx.jax;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
+
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 public interface ICustRegService {
 
 	public static class CustRegApiEndPoints {
-		public static final String GET_MODES = "/api/reg/modes";
-		public static final String GET_ID_FIELDS = "/api/reg/id/fields";
+		public static final String PREFIX = "/offsite-cust-reg";
 		public static final String GET_DYNAMIC_FIELDS = "/new-field-list";
 		public static final String GET_ID_TYPES = "/send-id-types";
 		public static final String GET_CUSTOMER_OTP = "/customer-mobile-email-send-otp";
@@ -42,28 +41,27 @@ public interface ICustRegService {
 
 		public void setMode(BigDecimal modeId);
 	}
-	
+
 	AmxApiResponse<ComponentDataDto, Object> sendIdTypes();
-	
+
 	AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model);
-	
+
 	AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model);
-	
+
 	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model);
-	
+
 	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse();
-	
+
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
-	
+
 	AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList();
-	
+
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
-	
+
 	AmxApiResponse<BigDecimal, Object> saveCustomerInfo(CustomerInfoRequest model);
-	
-	AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData)
-			throws ParseException;
-	
-	AmxApiResponse<String,Object> saveCustomerSignature(ImageSubmissionRequest model);
-	
+
+	AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest modelData) throws ParseException;
+
+	AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model);
+
 }
