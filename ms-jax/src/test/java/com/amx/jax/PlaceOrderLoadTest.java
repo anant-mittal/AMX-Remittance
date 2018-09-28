@@ -58,8 +58,8 @@ public class PlaceOrderLoadTest {
 		logger.info("No of place orders: " + placeOrderProperties.getNoOfPlaceOrders());
 		logger.info("rate target: " + placeOrderProperties.getTargetExchangeRate());
 		// find routing bank id to route place orders thr for given currency
-		List<BenificiaryListView> beneList = beneficiaryService
-				.listBeneficiaryForPOloadTest(placeOrderProperties.getNoOfPlaceOrders().intValue(), null);
+		List<BenificiaryListView> beneList = beneficiaryService.listBeneficiaryForPOloadTest(
+				placeOrderProperties.getNoOfPlaceOrders().intValue(), placeOrderProperties.getCurrencyId());
 		List<PlaceOrder> placeOrders = new ArrayList<>();
 		beneList.stream().limit(placeOrderProperties.getNoOfPlaceOrders().intValue()).forEach(bene -> {
 			PlaceOrderDTO dto = new PlaceOrderDTO();
@@ -98,13 +98,13 @@ public class PlaceOrderLoadTest {
 		List<PipsMaster> pips = pipsMasterDao.getPipsMasterForForeignAmount(placeOrderProperties.getCurrencyId(),
 				new BigDecimal(2260), new BigDecimal(78), placeOrderProperties.getRoutingBankId());
 		BigDecimal pipsMasterId = pips.get(0).getPipsMasterId();
-		logger.info("pips masterid: "+ pipsMasterId);
+		logger.info("pips masterid: " + pipsMasterId);
 		StopWatch watch = new StopWatch();
 		watch.start();
-		//ApiResponse<PlaceOrderDTO> apiResponse = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
+		ApiResponse<PlaceOrderDTO> apiResponse = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
 		watch.stop();
-		//int size = apiResponse.getResults().size();
-		//logger.info("Total size of matched place order= " + size);
+		int size = apiResponse.getResults().size();
+		logger.info("Total size of matched place order= " + size);
 		long timetaken = watch.getLastTaskTimeMillis();
 		logger.info("Total time taken to fetch placeorders from db: " + timetaken / 1000 + " seconds");
 

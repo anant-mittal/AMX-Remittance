@@ -973,9 +973,8 @@ public class BeneficiaryService extends AbstractService {
     }
     
 	public List<BenificiaryListView> listBeneficiaryForPOloadTest(int num, BigDecimal currencyId) {
-	/*	return beneficiaryOnlineDao.findByIsActiveAndBankIdNotInAndcurrencyId("Y", routingDao.listAllRoutingBankIds(),
-				currencyId, new PageRequest(0, num));*/
-		return null;
+		return beneficiaryOnlineDao.findByIsActiveAndCurrencyIdAndBankIdNotIn("Y", currencyId,
+				routingDao.listAllRoutingBankIds(), new PageRequest(0, num));
 	}
     
  private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
