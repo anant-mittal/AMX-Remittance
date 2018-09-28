@@ -147,6 +147,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
+	@Override
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.GET_CUSTOMER_OTP)
@@ -154,7 +155,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.as(new ParameterizedTypeReference<AmxApiResponse<SendOtpModel, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in sendIdTypes : ", e);
+			LOGGER.error("exception in sendOtp : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch
 	}

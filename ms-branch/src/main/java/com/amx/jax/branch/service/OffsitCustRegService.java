@@ -179,19 +179,19 @@ public class OffsitCustRegService implements ICustRegService {
 
 	@Autowired
 	CountryMetaValidation countryMetaValidation;
-	
+
 	@Autowired
 	UserValidationService userValidationService;
-	
+
 	@Autowired
 	BlackListDao blackListDao;
 
 	@Autowired
 	CustomerPersonalDetailValidator customerPersonalDetailValidator;
-	
+
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
-	
+
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
@@ -439,10 +439,10 @@ public class OffsitCustRegService implements ICustRegService {
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		// revalidateOtp(model.getOtpData());
 		com.amx.jax.model.request.CustomerPersonalDetail customerDetails = new com.amx.jax.model.request.CustomerPersonalDetail();
-		jaxUtil.convert(model.getCustomerPersonalDetail(),customerDetails);
+		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
-		commitCustomerHomeContact(model.getHomeAddressDestails(), customer,customerDetails.getWatsAppMobileNo());
+		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails.getWatsAppMobileNo());
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer);
 		auditService.log(new JaxAuditEvent(Type.CUST_INFO, model));
@@ -642,10 +642,10 @@ public class OffsitCustRegService implements ICustRegService {
 						new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
 				throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
 			}
-			
+
 			for (String image : model.getImage()) {
 				DmsApplMapping mappingData = new DmsApplMapping();
-				mappingData =  getDmsApplMappingData(customer);
+				mappingData = getDmsApplMappingData(customer);
 				idmsAppMappingRepository.save(mappingData);
 				DocBlobUpload documentDetails = new DocBlobUpload();
 				documentDetails = getDocumentUploadDetails(image, mappingData);
@@ -669,7 +669,7 @@ public class OffsitCustRegService implements ICustRegService {
 		return documentDetails;
 	}
 
-	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {		
+	private DmsApplMapping getDmsApplMappingData(Customer model) throws ParseException {
 		DmsApplMapping mappingData = new DmsApplMapping();
 		BigDecimal financialYear = getDealYearbyDate();
 		BigDecimal applCountryId = metaData.getCountryId();
@@ -695,7 +695,7 @@ public class OffsitCustRegService implements ICustRegService {
 		BigDecimal financialYear = list.getFinancialYear();
 		return financialYear;
 	}
-	
+
 	public AmxApiResponse<String, Object> saveCustomerSignature(ImageSubmissionRequest model) {
 		if (model == null) {
 			throw new GlobalException("Image data is not available", JaxError.SIGNATURE_NOT_AVAILABLE);
@@ -710,7 +710,7 @@ public class OffsitCustRegService implements ICustRegService {
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),Constants.NO);
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(), Constants.NO);
 		if (customer == null) {
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
@@ -721,27 +721,25 @@ public class OffsitCustRegService implements ICustRegService {
 		customerRepository.save(customer);
 		return AmxApiResponse.build("Signature Uploaded Successfully");
 	}
-	
+
 	@Override
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(
-			com.amx.jax.model.request.CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail) {
 		BeanPropertyBindingResult errors = new BeanPropertyBindingResult(customerPersonalDetail,
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
 		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager
 				.init((com.amx.amxlib.model.CustomerPersonalDetail) customerPersonalDetail);
-		validate(trnxModel, errors);		
+		validate(trnxModel, errors);
 		SendOtpModel output = customerRegistrationOtpManager.generateOtpTokens(customerPersonalDetail.getIdentityInt());
-		customerRegistrationOtpManager.sendOtp();		
+		customerRegistrationOtpManager.sendOtp();
 		return AmxApiResponse.build(output);
 	}
-	
-	
+
 	public void validate(Object target, Errors e) {
 		CustomerRegistrationTrnxModel beneficiaryTrnxModel = (CustomerRegistrationTrnxModel) target;
 		CustomerPersonalDetail customerPersonalDetail = beneficiaryTrnxModel.getCustomerPersonalDetail();
-		if(customerPersonalDetail.getIdentityTypeId() == new BigDecimal(198))
+		if (customerPersonalDetail.getIdentityTypeId() == new BigDecimal(198))
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
@@ -770,7 +768,7 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Customer is black listed", JaxError.BLACK_LISTED_CUSTOMER.getStatusKey());
 		}
 	}
-	
+
 	private void validateOtpSendCount(OtpData otpData) {
 		if (otpData.getSendOtpAttempts() >= otpSettings.getMaxSendOtpAttempts()) {
 			throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
