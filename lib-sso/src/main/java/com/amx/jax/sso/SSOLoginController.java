@@ -98,7 +98,7 @@ public class SSOLoginController {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.setLandingUrl(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+			builder.setPath(SSOUtils.SSO_LOGIN_URL_REDIRECT).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return REDIRECT + builder.getURL();
 		}
 		return REDIRECT + sSOTranx.get().getReturnUrl();
@@ -112,13 +112,13 @@ public class SSOLoginController {
 		return model;
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL + "/{html}", method = RequestMethod.GET)
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model, @PathVariable(required = false) String html) {
 		model = getSSOLoginUrl(model);
 		return SSOUtils.SSO_INDEX_PAGE;
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL + "/{json}", method = RequestMethod.GET, headers = {
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_JSON, method = RequestMethod.GET, headers = {
 			"Accept=application/json", "Accept=application/v0+json" })
 	@ResponseBody
 	public String authLoginJson(Model model, @PathVariable(required = false) String json) {
@@ -126,11 +126,11 @@ public class SSOLoginController {
 		return JsonUtil.toJson(model.asMap());
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = RequestMethod.POST)
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_JSON, method = RequestMethod.POST)
 	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model)
 			throws MalformedURLException, URISyntaxException {
 		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
-		model.addAttribute("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL);
+		model.addAttribute("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL_DO);
 		if (sSOConfig.getAdminuser().equals(username) && sSOConfig.getAdminpass().equals(password)) {
 			// UsernamePasswordAuthenticationToken token = new
 			// UsernamePasswordAuthenticationToken(username, password);
@@ -143,14 +143,14 @@ public class SSOLoginController {
 		return SSOUtils.SSO_INDEX_PAGE;
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL, method = { RequestMethod.POST }, headers = {
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_HTML, method = { RequestMethod.POST }, headers = {
 			"Accept=application/json", "Accept=application/v0+json" }, consumes = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata)
 			throws MalformedURLException, URISyntaxException, PostManException {
 		Map<String, String> model = new HashMap<String, String>();
 		model.put(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
-		model.put("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL);
+		model.put("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL_DO);
 		if (sSOTranx.get() == null) {
 			sSOTranx.init();
 		}
@@ -183,7 +183,7 @@ public class SSOLoginController {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.init();
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOUtils.SSO_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY,
+			builder.setPath(SSOUtils.SSO_LOGIN_URL_REDIRECT).addParameter(AppConstants.TRANX_ID_XKEY,
 					AppContextUtil.getTranxId());
 			return REDIRECT + builder.getURL();
 		}

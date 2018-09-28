@@ -1,6 +1,5 @@
 package com.amx.jax.offsite.controller;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -102,7 +101,9 @@ public class OffsiteController {
 
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
-		return offsiteCustRegClient.saveCustomerInfo(model);
+		AmxApiResponse<CustomerInfo, Object> info = offsiteCustRegClient.saveCustomerInfo(model);
+		customerSession.setCustomerId(info.getResult().getCustomerId());
+		return info;
 	}
 
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
