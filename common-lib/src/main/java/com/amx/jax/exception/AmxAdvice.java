@@ -33,6 +33,7 @@ public abstract class AmxAdvice {
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
 		error.setException(ex.getClass().getName());
+		error.setStatusEnum(ex.getError());
 		error.setMeta(ex.getMeta());
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);

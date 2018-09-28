@@ -46,7 +46,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 	public void testIdTypeList() {
 		setDefaults();
 		AmxApiResponse<ComponentDataDto, Object> response = null;
-		response = offsiteClient.sendIdTypes();
+		response = offsiteClient.getIdTypes();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

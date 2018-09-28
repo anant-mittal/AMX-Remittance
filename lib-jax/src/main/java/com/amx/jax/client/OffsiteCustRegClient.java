@@ -135,7 +135,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 	}
 
 	@Override
-	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.GET_ID_TYPES)
 					.post().as(new ParameterizedTypeReference<AmxApiResponse<ComponentDataDto, Object>>() {

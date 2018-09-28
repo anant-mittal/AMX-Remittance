@@ -2,7 +2,6 @@ package com.amx.jax.offsite.controller;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -35,6 +34,8 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
+import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
+import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.service.CustomerSession;
 import com.amx.utils.ArgUtil;
 
@@ -63,7 +64,7 @@ public class OffsiteController {
 
 	@RequestMapping(value = "/id_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
-		return offsiteCustRegClient.sendIdTypes();
+		return offsiteCustRegClient.getIdTypes();
 	}
 
 	@RequestMapping(value = "/dynamic_field/list", method = { RequestMethod.POST })
@@ -131,6 +132,7 @@ public class OffsiteController {
 		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
 	}
 
+	@ApiOffisteStatus({ OffsiteServerCodes.DOTP_REQUIRED })
 	@RequestMapping(value = "/personal/save", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> sendOtpForEmailAndMobile(
 
@@ -144,8 +146,11 @@ public class OffsiteController {
 		SendOtpModel otpmodel = null;
 		OffsiteCustomerRegistrationRequest req = null;
 		customerSession.setTranxId(customerPersonalDetail.getIdentityInt());
+		AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> resp = new AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel>();
 		if (mOtp == null && eOtp == null) {
 			otpmodel = offsiteCustRegClient.sendOtpForEmailAndMobile(customerPersonalDetail).getResult();
+			resp.setMeta(otpmodel);
+			resp.setStatusEnum(OffsiteServerCodes.DOTP_REQUIRED);
 		} else {
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel = new OffsiteCustomerRegistrationRequest();
 			offsiteCustRegModel.setEmail(customerPersonalDetail.getEmail());

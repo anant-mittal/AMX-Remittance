@@ -62,8 +62,8 @@ public class CustRegController implements ICustRegService {
 
 	@ApiJaxStatus({ JaxError.EMPTY_ID_TYPE_LIST })
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
-		return offsiteCustRegService.sendIdTypes();
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
+		return offsiteCustRegService.getIdTypes();
 	}
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })

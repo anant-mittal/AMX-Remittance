@@ -191,7 +191,7 @@ public class OffsitCustRegService implements ICustRegService {
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
 	
-	public AmxApiResponse<ComponentDataDto, Object> sendIdTypes() {
+	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
 				.getAllComponentComboDataForCustomer(metaData.getLanguageId());
 		List<ComponentDataDto> list = new ArrayList<>();
