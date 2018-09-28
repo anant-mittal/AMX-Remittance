@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.RbaacConstants;
@@ -28,7 +29,6 @@ import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
-import com.amx.utils.ContextUtil;
 
 /**
  * The Class UserAuthService.
@@ -142,7 +142,7 @@ public class UserAuthService {
 
 		userOtpManager.sendOtpSms(emp, otpData);
 
-		String transactionId = ContextUtil.getTraceId();
+		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
 

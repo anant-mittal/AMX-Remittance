@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +79,7 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.INIT_AUTH, method = RequestMethod.POST)
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(
-			@RequestBody UserAuthInitReqDTO userAuthInitReqDTO) {
+			@RequestBody @Valid UserAuthInitReqDTO userAuthInitReqDTO) {
 
 		LOGGER.info("Begin Init Auth for User: " + userAuthInitReqDTO.getEmployeeNo() + " from Ip Address: "
 				+ userAuthInitReqDTO.getIpAddress() + " from device Id: " + userAuthInitReqDTO.getDeviceId()
@@ -97,7 +98,8 @@ public class RbaacServiceApiController implements RbaacService {
 	 */
 	@Override
 	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
-	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(@RequestBody UserAuthorisationReqDTO reqDto) {
+	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(
+			@RequestBody @Valid UserAuthorisationReqDTO reqDto) {
 
 		LOGGER.info("Received request for authorising User Access : " + reqDto.getEmployeeNo() + " from Ip Address: "
 				+ reqDto.getIpAddress() + " from device Id: " + reqDto.getDeviceId() + " TraceId: "
@@ -157,7 +159,7 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.ROLES_SAVE, method = RequestMethod.POST)
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(
-			@RequestBody(required = true) RoleRequestDTO roleRequestDTO) {
+			@RequestBody(required = true) @Valid RoleRequestDTO roleRequestDTO) {
 
 		LOGGER.info("Received request for Save Roles " + " from Ip Address: " + roleRequestDTO.getIpAddr()
 				+ " from device Id: " + roleRequestDTO.getDeviceId() + " TraceId: " + AppContextUtil.getTraceId());
@@ -198,7 +200,7 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.RA_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(
-			@RequestBody(required = true) UserRoleMappingsRequestDTO urmRequestDTO) {
+			@RequestBody(required = true) @Valid UserRoleMappingsRequestDTO urmRequestDTO) {
 
 		LOGGER.info("Received request for Update User Role Allocations " + " from Ip Address: "
 				+ urmRequestDTO.getIpAddr() + " from device Id: " + urmRequestDTO.getDeviceId() + " TraceId: "
@@ -220,7 +222,7 @@ public class RbaacServiceApiController implements RbaacService {
 	@Override
 	@RequestMapping(value = ApiEndPoints.UAC_UPDATE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
-			@RequestBody(required = true) EmployeeDetailsRequestDTO edRequestDTO) {
+			@RequestBody(required = true) @Valid EmployeeDetailsRequestDTO edRequestDTO) {
 
 		LOGGER.info("Received request for Update User Account Details " + " from Ip Address: "
 				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId() + " TraceId: "
