@@ -41,7 +41,7 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 
 		@Override
 		public int getStatusCode() {
-			return this.ordinal();
+			return 8000 + this.ordinal();
 		}
 
 	}

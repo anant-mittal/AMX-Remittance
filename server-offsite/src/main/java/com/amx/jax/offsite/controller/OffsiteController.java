@@ -74,17 +74,17 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/professions/list", method = { RequestMethod.GET })
-	public AmxApiResponse<ComponentDataDto, Object> getProfessionList() {
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
 		return offsiteCustRegClient.sendProfessionList();
 	}
 
 	@RequestMapping(value = "/article/list", method = { RequestMethod.POST })
-	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleList() {
+	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 		return offsiteCustRegClient.getArticleListResponse();
 	}
 
 	@RequestMapping(value = "/designation/list", method = { RequestMethod.POST })
-	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationList(
+	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
 			@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
@@ -95,8 +95,13 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
-	public AmxApiResponse<ComponentDataDto, Object> getEmploymentTypeList() {
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegClient.sendEmploymentTypeList();
+	}
+
+	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
+	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
+		return offsiteCustRegClient.saveCustomerInfo(model);
 	}
 
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
@@ -105,9 +110,10 @@ public class OffsiteController {
 		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
-	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
-	public AmxApiResponse<BigDecimal, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
-		return offsiteCustRegClient.saveCustomerInfo(model);
+	@RequestMapping(value = "/signature/submit", method = { RequestMethod.POST })
+	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest modelData)
+			throws ParseException {
+		return offsiteCustRegClient.saveCustomerSignature(modelData);
 	}
 
 	@RequestMapping(value = "/secques/list", method = { RequestMethod.GET })
