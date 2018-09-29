@@ -1,5 +1,7 @@
 package com.amx.jax.offsite.service;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,9 @@ public class JaxClientMetaFilter extends RestMetaRequestOutFilter<JaxMetaInfo> {
 			jaxMetaInfo.setCustomerId(customerSession.getCustomerId());
 			AppContextUtil.setTranxId(customerSession.getTranxId());
 		}
+
+		// HardCoded
+		jaxMetaInfo.setEmployeeId(new BigDecimal(265));
 
 		return jaxMetaInfo;
 	}

@@ -471,7 +471,7 @@ public class OffsitCustRegService implements ICustRegService {
 			employeeModel.setFsCityMaster(customerEmploymentDetails.getCityId());
 			// employeeModel.setFsCompanyMaster(customerEmploymentDetails.getCompanyId());
 			employeeModel.setIsActive(ConstantDocument.Yes);
-			employeeModel.setCreatedBy(metaData.getAgentId().toString());
+			employeeModel.setCreatedBy(metaData.getEmployeeId().toString());
 			employeeModel.setCreationDate(new Date());
 			employeeModel.setFsCustomer(customer);
 			customerEmployeeDetailsRepository.save(employeeModel);
@@ -494,7 +494,7 @@ public class OffsitCustRegService implements ICustRegService {
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			contactDetail.setLanguageId(customer.getLanguageId());
-			contactDetail.setCreatedBy(metaData.getAgentId().toString());
+			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
 			contactDetail.setWatsAppNo(watsAppMobileNo);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
@@ -520,7 +520,7 @@ public class OffsitCustRegService implements ICustRegService {
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
 			contactDetail.setLanguageId(customer.getLanguageId());
-			contactDetail.setCreatedBy(metaData.getAgentId().toString());
+			contactDetail.setCreatedBy(metaData.getEmployeeId().toString());
 			contactDetail.setCreationDate(customer.getCreationDate());
 			contactDetail.setWatsAppNo(watsAppMobileNo);
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
@@ -682,7 +682,7 @@ public class OffsitCustRegService implements ICustRegService {
 		mappingData.setIdentityExpiryDate(model.getIdentityExpiredDate());
 		mappingData.setIdentityInt(model.getIdentityInt());
 		mappingData.setIdentityIntId(model.getIdentityTypeId());
-		mappingData.setCreatedBy(metaData.getAgentId().toString());
+		mappingData.setCreatedBy(metaData.getEmployeeId().toString());
 		mappingData.setCreatedOn(new Date());
 		return mappingData;
 	}

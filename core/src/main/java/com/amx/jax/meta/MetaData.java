@@ -45,7 +45,7 @@ public class MetaData implements IMetaData {
     private String referrer;
     private String deviceType;
     private String appType;
-    private BigDecimal agentId;
+    private BigDecimal employeeId;
 	/**
 	 * This returns service factory object depending on site country
 	 */
@@ -174,12 +174,14 @@ public class MetaData implements IMetaData {
 		this.appType = appType;
 	}
 
-	public BigDecimal getAgentId() {
-		return agentId;
+	public BigDecimal getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setAgentId(BigDecimal agentId) {
-		this.agentId = agentId;
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
 	}
+
+	
 
 }

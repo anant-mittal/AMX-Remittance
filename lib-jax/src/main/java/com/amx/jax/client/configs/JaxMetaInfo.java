@@ -21,7 +21,7 @@ public class JaxMetaInfo {
 
 	private String deviceType;
 	private String appType;
-	private BigDecimal agentId;
+	private BigDecimal employeeId;
 
 
 	public JaxMetaInfo copy() {
@@ -38,7 +38,7 @@ public class JaxMetaInfo {
 		info.setReferrer(this.getReferrer());
 		info.setDeviceType(this.getDeviceType());
 		info.setAppType(this.getAppType());
-		info.setAgentId(this.getAgentId());
+		info.setEmployeeId(this.getEmployeeId());
 		return info;
 	};
 
@@ -150,13 +150,15 @@ public class JaxMetaInfo {
 		this.countryBranchId = countryBranchId;
 	}
 
-	public BigDecimal getAgentId() {
-		return agentId;
+	public BigDecimal getEmployeeId() {
+		return employeeId;
 	}
 
-	public void setAgentId(BigDecimal agentId) {
-		this.agentId = agentId;
+	public void setEmployeeId(BigDecimal employeeId) {
+		this.employeeId = employeeId;
 	}
+
+	
 	
 	
 
