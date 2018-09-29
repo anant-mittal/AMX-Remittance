@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.PlaceOrderUtil;
+import com.google.common.collect.Lists;
 
 /**
  * @author Subodh Bhoir
@@ -359,15 +362,25 @@ public class PlaceOrderService extends AbstractService {
 
 			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("HH:MM a z");
 			String time = simpletimeFormat.format(new Date());
-			
-		    NumberFormat myFormat = NumberFormat.getInstance();
-		    myFormat.setGroupingUsed(true);
 
+			NumberFormat myFormat = NumberFormat.getInstance();
+			myFormat.setGroupingUsed(true);
+
+			List<BigDecimal> poCustomerIds = placeOrderList.stream().map(po -> po.getCustomerId()).distinct()
+					.collect(Collectors.toList());
+			String join = poCustomerIds.stream().map(i -> i.toString()).collect(Collectors.joining(","));
+			logger.info("sql query: select * from fs_customer where cusotmer_id in ({}) ", join);
+			stopWatch.start();
+			List<Customer> poCustomers = Lists.newArrayList(customerDao.getCustById(poCustomerIds));
+			stopWatch.stop();
+			logger.info("total time taken to run get customer query by id db query:{} seconds", stopWatch.getLastTaskTimeMillis() / 1000);
+			Map<BigDecimal, Customer> poCustomerMap = poCustomers.stream()
+					.collect(Collectors.toMap(x -> x.getCustomerId(), x -> x));
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
 
-					Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
+					Customer cusotmer = poCustomerMap.get(placeorder.getCustomerId());
 					logger.debug("customer ID:" + placeorder.getCustomerId());
 					PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
 					placeorderNotDTO.setFirstName(cusotmer.getFirstName());
@@ -387,8 +400,12 @@ public class PlaceOrderService extends AbstractService {
 
 					placeorder.setUpdatedDate(new Date());
 					placeorder.setNotificationDate(new Date());
-					placeOrderdao.save(placeorder);
 				}
+				stopWatch.start();
+				placeOrderdao.save(placeOrderList);
+				stopWatch.stop();
+				logger.info("total time taken to run save place order query query:{} seconds",
+						stopWatch.getLastTaskTimeMillis() / 1000);
 			}
 			logger.debug("place Order for Notfication :" + dtoList.toString());
 

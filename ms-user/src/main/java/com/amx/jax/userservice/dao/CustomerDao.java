@@ -82,6 +82,10 @@ public class CustomerDao {
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
 	}
+	
+	public Iterable<Customer> getCustById(List<BigDecimal> customerIds) {
+		return repo.findAll(customerIds);
+	}
 
 	@Transactional
 	public CustomerOnlineRegistration getOnlineCustByCustomerId(BigDecimal customerId) {

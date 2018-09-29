@@ -19,6 +19,7 @@ import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.controller.PlaceOrderController;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.PipsMaster;
 import com.amx.jax.dbmodel.PlaceOrder;
@@ -44,6 +45,8 @@ public class PlaceOrderLoadTest {
 	PlaceOrderProperties placeOrderProperties;
 	@Autowired
 	PipsMasterDao pipsMasterDao;
+	@Autowired
+	PlaceOrderController placeOrderController;
 
 	@Before
 	public void contextLoads() {
@@ -101,7 +104,7 @@ public class PlaceOrderLoadTest {
 		logger.info("pips masterid: " + pipsMasterId);
 		StopWatch watch = new StopWatch();
 		watch.start();
-		ApiResponse<PlaceOrderDTO> apiResponse = placeOrderService.rateAlertPlaceOrder(pipsMasterId);
+		ApiResponse apiResponse = placeOrderController.handleUrlPlaceOrderOnTrigger(pipsMasterId);
 		watch.stop();
 		int size = apiResponse.getResults().size();
 		logger.info("Total size of matched place order= " + size);
