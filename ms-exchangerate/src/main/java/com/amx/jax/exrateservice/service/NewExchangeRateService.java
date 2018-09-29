@@ -151,13 +151,14 @@ public class NewExchangeRateService extends ExchangeRateService {
 	public ExchangeRateBreakup calcEquivalentAmount(RemittanceTransactionRequestModel request, int fcDecimalNumber) {
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		int lcDecimalNumber = meta.getDefaultCurrencyId().intValue();
-		if (request.getForeignAmount() != null) {
-			BigDecimal convertedLCAmount = request.getForeignAmount().divide(request.getDomXRate(),lcDecimalNumber, RoundingMode.HALF_UP);
+		if (request.getForeignAmount() != null && request.getDomXRate() !=null) {
+			BigDecimal convertedLCAmount = request.getForeignAmount().divide(request.getDomXRate(), lcDecimalNumber,
+					RoundingMode.HALF_UP);
 			breakup.setConvertedLCAmount(RoundUtil.roundBigDecimal(convertedLCAmount, lcDecimalNumber));
 			breakup.setConvertedFCAmount(request.getForeignAmount());
 		}
 
-		if (request.getLocalAmount() != null) {
+		if (request.getLocalAmount() != null  && request.getDomXRate() !=null) {
 			BigDecimal convertedFCAmount = request.getDomXRate().multiply(request.getLocalAmount());
 			breakup.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(convertedFCAmount));
 			breakup.setConvertedFCAmount(RoundUtil.roundBigDecimal(convertedFCAmount, fcDecimalNumber));
