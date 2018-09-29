@@ -625,20 +625,20 @@ public class OffsitCustRegService implements ICustRegService {
 	@Override
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 		if (model != null) {
-			if (model.getCustomerId() == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+			if (metaData.getCustomerId() == null) {
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
 				throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
 			}
-			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(),
+			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 					Constants.NO);
 			if (customer == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
 				throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 			}
 			if (model.getImage() == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, model.getCustomerId()),
+				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
 				throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
 			}
@@ -675,7 +675,7 @@ public class OffsitCustRegService implements ICustRegService {
 		BigDecimal applCountryId = metaData.getCountryId();
 		BigDecimal docBlobId = imageCheckDao.callTogenerateBlobID(financialYear);
 		mappingData.setApplicationCountryId(applCountryId);
-		mappingData.setCustomerId(model.getCustomerId());
+		mappingData.setCustomerId(metaData.getCustomerId());
 		mappingData.setDocBlobId(docBlobId); // need to change value
 		mappingData.setDocFormat("JPG");
 		mappingData.setFinancialYear(financialYear);
@@ -700,19 +700,19 @@ public class OffsitCustRegService implements ICustRegService {
 		if (model == null) {
 			throw new GlobalException("Image data is not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
-		if (model.getCustomerId() == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
+		if (metaData.getCustomerId() == null) {
+			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
 		}
 		if (model.getImage() == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
+			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(model.getCustomerId(), Constants.NO);
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), Constants.NO);
 		if (customer == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, model.getCustomerId()),
+			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
 			throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 		}

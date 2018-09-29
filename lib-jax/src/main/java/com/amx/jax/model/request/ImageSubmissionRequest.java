@@ -15,20 +15,11 @@ public class ImageSubmissionRequest implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	@ApiModelProperty(example="931144")
-	private BigDecimal customerId;
+	
 	private List<String> image;
 	
 	@ApiModelProperty(example="Y")
-	private String politicallyExposed;
-
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
+	private String politicallyExposed;	
 
 	public List<String> getImage() {
 		return image;
@@ -44,12 +35,5 @@ public class ImageSubmissionRequest implements Serializable {
 
 	public void setPoliticallyExposed(String politicallyExposed) {
 		this.politicallyExposed = politicallyExposed;
-	}
-
-	@Override
-	public String toString() {
-		return "ImageSubmissionRequest [customerId=" + customerId + ", image=" + image + ", politicallyExposed="
-				+ politicallyExposed + "]";
-	}
-
+	}	
 }
