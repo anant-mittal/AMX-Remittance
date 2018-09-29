@@ -197,4 +197,10 @@ public class RemittanceController {
 		return response;
 	}
 
+	@RequestMapping(value = "/calc/", method = RequestMethod.POST)
+	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
+		logger.info("In calcEquivalentAmount with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.calcEquivalentAmount(model);
+		return response;
+	}
 }

@@ -98,4 +98,9 @@ public class ExchangeRateBreakup implements Comparable<ExchangeRateBreakup> {
 		return this.rate.compareTo(o.rate);
 	}
 
+	public String getModelType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
