@@ -164,8 +164,8 @@ public class OffsiteController {
 			resp.setStatusEnum(OffsiteServerCodes.DOTP_REQUIRED);
 		} else {
 			OffsiteCustomerRegistrationRequest offsiteCustRegModel = new OffsiteCustomerRegistrationRequest();
-			offsiteCustRegModel.setEmail(customerPersonalDetail.getEmail());
-			offsiteCustRegModel.setMobile(customerPersonalDetail.getMobile());
+			offsiteCustRegModel.seteOtp(eOtp);
+			offsiteCustRegModel.setmOtp(mOtp);
 			offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
 		}
 		return resp;

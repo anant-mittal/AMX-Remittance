@@ -5,8 +5,6 @@ package com.amx.jax.sso;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -106,6 +104,7 @@ public class SSOLoginController {
 			sSOTranx.init();
 		}
 		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
+		model.addAttribute("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL_DO);
 		return model;
 	}
 
@@ -144,11 +143,10 @@ public class SSOLoginController {
 			RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
 					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
-	public String loginJson(@RequestBody SSOLoginFormData formdata)
+	public String loginJson(Model model, @RequestBody SSOLoginFormData formdata)
 			throws MalformedURLException, URISyntaxException, PostManException {
-		Map<String, String> model = new HashMap<String, String>();
-		model.put(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
-		model.put("SSO_LOGIN_URL", SSOUtils.SSO_LOGIN_URL_DO);
+		model = getSSOLoginUrl(model);
+
 		if (sSOTranx.get() == null) {
 			sSOTranx.init();
 		}
@@ -161,11 +159,11 @@ public class SSOLoginController {
 				msg.addLine(String.format("OTP = %s-%s", prefix, motp));
 				msg.setChannel(Channel.NOTIPY);
 				postManService.notifySlack(msg);
-				model.put("motpPrefix", prefix);
+				model.addAttribute("motpPrefix", prefix);
 				sSOTranx.setMOtp(motp);
 			} else if ("submit".equalsIgnoreCase(formdata.getAction()) && sSOTranx.get().getMotp() != null
 					&& sSOTranx.get().getMotp().equals(formdata.getMotp())) {
-				model.put("redirect", Urly.parse(sSOTranx.get().getLandingUrl())
+				model.addAttribute("redirect", Urly.parse(sSOTranx.get().getLandingUrl())
 						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.addParameter("auth", SSOAuth.DONE).addParameter("sotp", sSOTranx.get().getSotp()).getURL());
 			}
