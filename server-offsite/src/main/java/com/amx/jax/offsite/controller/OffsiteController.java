@@ -21,6 +21,7 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -45,7 +46,8 @@ import com.amx.utils.ArgUtil;
  *
  */
 @RestController
-@RequestMapping("/api/customer/reg")
+@RequestMapping(value = "/api/customer/reg", produces = { CommonMediaType.APPLICATION_JSON_VALUE,
+		CommonMediaType.APPLICATION_V0_JSON_VALUE })
 public class OffsiteController {
 
 	private Logger logger = Logger.getLogger(OffsiteController.class);
@@ -166,7 +168,7 @@ public class OffsiteController {
 			offsiteCustRegModel.setMobile(customerPersonalDetail.getMobile());
 			offsiteCustRegClient.validateOtpForEmailAndMobile(offsiteCustRegModel);
 		}
-		return AmxApiResponse.build(req, otpmodel);
+		return resp;
 	}
 
 }

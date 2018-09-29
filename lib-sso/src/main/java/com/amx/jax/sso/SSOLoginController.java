@@ -30,11 +30,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
-import com.amx.jax.service.HttpService;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Random;
 import com.amx.utils.URLBuilder;
@@ -57,7 +58,7 @@ public class SSOLoginController {
 	private static final String REDIRECT = "redirect:";
 
 	@Autowired
-	HttpService httpService;
+	CommonHttpRequest httpService;
 
 	@Autowired
 	SSOAuthProvider authProvider;
@@ -82,15 +83,11 @@ public class SSOLoginController {
 		}
 
 		if (auth == SSOAuth.DONE && sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
-
 			LOGGER.debug("auth == SSOAuth.DONE");
-
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(tranxId, sotp);
 			token.setDetails(new WebAuthenticationDetails(request));
-
 			Authentication authentication = authProvider.authenticate(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
-
 			ssoUser.setAuthDone(true);
 		}
 
@@ -126,7 +123,7 @@ public class SSOLoginController {
 		return JsonUtil.toJson(model.asMap());
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_JSON, method = RequestMethod.POST)
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
 	public String sendOTP(@RequestParam String username, @RequestParam String password, Model model)
 			throws MalformedURLException, URISyntaxException {
 		model.addAttribute(AppConstants.TRANX_ID_XKEY_CLEAN, AppContextUtil.getTranxId());
@@ -143,8 +140,9 @@ public class SSOLoginController {
 		return SSOUtils.SSO_INDEX_PAGE;
 	}
 
-	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_HTML, method = { RequestMethod.POST }, headers = {
-			"Accept=application/json", "Accept=application/v0+json" }, consumes = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = SSOUtils.SSO_LOGIN_URL_JSON, method = {
+			RequestMethod.POST }, consumes = MediaType.APPLICATION_JSON_VALUE, produces = {
+					CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata)
 			throws MalformedURLException, URISyntaxException, PostManException {

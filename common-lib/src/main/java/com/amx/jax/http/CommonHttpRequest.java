@@ -1,4 +1,4 @@
-package com.amx.jax.service;
+package com.amx.jax.http;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.mobile.device.Device;
 import org.springframework.mobile.device.DeviceUtils;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,38 @@ import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 
 @Component
-public class HttpService {
+public class CommonHttpRequest {
+
+	public static class CommonMediaType extends MediaType {
+
+		private static final long serialVersionUID = -540693758487754320L;
+
+		/**
+		 * Public constant media type for {@code application/v0+json}.
+		 * 
+		 * @see #APPLICATION_JSON_UTF8
+		 */
+		public final static MediaType APPLICATION_V0_JSON;
+
+		/**
+		 * A String equivalent of {@link MediaType#APPLICATION_V0_JSON}.
+		 * 
+		 * @see #APPLICATION_JSON_UTF8_VALUE
+		 */
+		public final static String APPLICATION_V0_JSON_VALUE = "application/v0+json";
+
+		public CommonMediaType(String type, String subtype) {
+			super(type, subtype);
+		}
+
+		public final static String[] APPLICATION_JSON_VALUES = { MediaType.APPLICATION_JSON_VALUE,
+				APPLICATION_V0_JSON_VALUE };
+
+		static {
+			APPLICATION_V0_JSON = valueOf(APPLICATION_JSON_VALUE);
+		}
+
+	}
 
 	private static final PolicyFactory policy = new HtmlPolicyBuilder().allowStandardUrlProtocols().toFactory();
 

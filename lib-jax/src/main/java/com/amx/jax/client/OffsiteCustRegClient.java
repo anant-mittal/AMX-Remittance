@@ -1,6 +1,5 @@
 package com.amx.jax.client;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Map;
 
@@ -44,8 +43,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 	@Autowired(required = false)
 	RestMetaRequestOutFilter<JaxMetaInfo> metaFilter;
-
-	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
 
 	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model) {
 		try {

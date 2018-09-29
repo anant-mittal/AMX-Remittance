@@ -11,9 +11,9 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.open.model.EmployeeMetaData;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.user.UserDevice;
 
 import io.swagger.annotations.Api;
@@ -28,7 +28,7 @@ public class EmpUserController {
 	private static final Logger LOGGER = LoggerService.getLogger(EmpUserController.class);
 
 	@Autowired
-	private HttpService httpService;
+	private CommonHttpRequest httpService;
 
 	@Autowired
 	MetaClient metaClient;
