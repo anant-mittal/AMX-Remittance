@@ -2,10 +2,16 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class EmploymentDetailsRequest {
-	
+	@ApiModelProperty(example="2")
 	BigDecimal articleId;
+	
+	@ApiModelProperty(example="27")
 	BigDecimal articleDetailsId;
+	
+	@ApiModelProperty(example="91")
 	BigDecimal countryId;
 
 	public EmploymentDetailsRequest(BigDecimal articleId, BigDecimal articleDetailsId, BigDecimal countryId) {

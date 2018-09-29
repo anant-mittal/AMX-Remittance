@@ -6,14 +6,20 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class ImageSubmissionRequest implements Serializable {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	@ApiModelProperty(example="931144")
 	private BigDecimal customerId;
 	private List<String> image;
+	
+	@ApiModelProperty(example="Y")
 	private String politicallyExposed;
 
 	public BigDecimal getCustomerId() {

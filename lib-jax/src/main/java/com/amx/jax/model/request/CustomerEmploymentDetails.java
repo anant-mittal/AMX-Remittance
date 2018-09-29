@@ -2,22 +2,56 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class CustomerEmploymentDetails {
+	
+	@ApiModelProperty(example="188")
 	private BigDecimal employmentTypeId;
+	
+	@ApiModelProperty(example="262")
 	private BigDecimal professionId;
+	
+	@ApiModelProperty(example="MUSSA  SALEH")
 	private String employer;
+	
+	@ApiModelProperty(example="2")
 	private BigDecimal articleId;
+	
+	@ApiModelProperty(example="27")
 	private BigDecimal articleDetailsId;
+	
+	@ApiModelProperty(example="128")
 	private BigDecimal incomeRangeId;
+	
+	@ApiModelProperty(example="Powai")
 	private String area;
+	
+	@ApiModelProperty(example="1011")
 	private String block;
+	
+	@ApiModelProperty(example="Gandhi Road")
 	private String street;
+	
+	@ApiModelProperty(example="421 004")
 	private String postal;
+	
+	@ApiModelProperty(example="22694512")
 	private String officeTelephone;
+	
+	@ApiModelProperty(example="12760")
 	private BigDecimal cityId;
+	
+	@ApiModelProperty(example="4165")
 	private BigDecimal districtId;
+	
+	@ApiModelProperty(example="584")
 	private BigDecimal stateId;
+	
+	@ApiModelProperty(example="91")
 	private BigDecimal countryId;
+	
+	@ApiModelProperty(example="1")
 	private BigDecimal companyId;
 	
 	public BigDecimal getEmploymentTypeId() {

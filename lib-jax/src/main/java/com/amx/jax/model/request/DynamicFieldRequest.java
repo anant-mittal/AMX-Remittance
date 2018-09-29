@@ -2,11 +2,23 @@ package com.amx.jax.model.request;
 
 import java.math.BigDecimal;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class DynamicFieldRequest {
+	
+	@ApiModelProperty(example="KWT")
 	private String tenant;
+	
+	@ApiModelProperty(example="EGYPT")
 	private String nationality;
+	
+	@ApiModelProperty(example="REGISTRATION")
 	private String component;
+	
+	@ApiModelProperty(example="198")
 	private BigDecimal componentDataId;
+	
+	@ApiModelProperty(example="CIVIL ID")
 	private String componentDataDesc;
 
 	public String getTenant() {
