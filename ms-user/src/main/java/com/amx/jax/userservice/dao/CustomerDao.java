@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
@@ -27,6 +30,7 @@ import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.CryptoUtil;
+import com.google.common.collect.Lists;
 
 @Component
 public class CustomerDao {
@@ -83,8 +87,14 @@ public class CustomerDao {
 		return repo.findOne(id);
 	}
 	
-	public Iterable<Customer> getCustById(List<BigDecimal> customerIds) {
-		return repo.findAll(customerIds);
+	public List<PlaceOrderCustomer> getPersonInfoById(List<BigDecimal> customerIds) {
+		List<PlaceOrderCustomer> poCustomers = new ArrayList<>();
+		List<List<BigDecimal>> partitions = Lists.partition(customerIds, 999);
+		for (List<BigDecimal> partition : partitions) {
+			poCustomers.addAll(repo.findPOCustomersByIds(partition));
+		}
+
+		return poCustomers;
 	}
 
 	@Transactional

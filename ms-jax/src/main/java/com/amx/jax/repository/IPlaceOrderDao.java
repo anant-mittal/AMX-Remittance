@@ -2,10 +2,14 @@ package com.amx.jax.repository;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -64,5 +68,9 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 
 	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
 	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
-	
+
+	@Transactional
+	@Modifying
+	@Query("update PlaceOrder po set po.updatedDate = ?2 , po.notificationDate = ?2 where po.onlinePlaceOrderId in ( ?1 )")
+	public int updatePlaceOrdersForRateAlert(List<BigDecimal> placeOrderIds, Date now);
 }
