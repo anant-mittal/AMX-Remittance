@@ -453,67 +453,37 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<ViewCityDto, Object> getCitytList(BigDecimal districtId) {
 		try {
-			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-			if (BigDecimal.ZERO.equals(languageId)) {
-				languageId = new BigDecimal(1);
-			}
-			// StringBuffer sb = new StringBuffer();
-			// sb.append("districtId=").append(districtId);
-			// LOGGER.info("City Input :" + sb.toString());
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/citylist/" + districtId + "/";
-			return restService.ajax(url).filter(metaFilter).get().asApiResponse(ViewCityDto.class);
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getCitytList : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_CITY_LIST)
+					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
+						}); 
+		} catch (Exception ae) {
+			LOGGER.error("exception in getCitytList : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}// end of try-catch
 	}
 
 	public AmxApiResponse<ViewCityDto, Object> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
 		try {
-			BigDecimal languageId = jaxMetaInfo.getLanguageId();
-
-			if (BigDecimal.ZERO.equals(languageId)) {
-				languageId = new BigDecimal(1);
-			}
-			StringBuffer sb = new StringBuffer();
-			sb.append("?languageId=").append(languageId).append("&districtId=").append(districtId).append("&cityId=")
-					.append(cityId);
-			LOGGER.info("City Input :" + sb.toString());
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/citydesc/" + sb.toString();
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_CITY_DESC)
+					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).pathParam(MetaApi.PARAM_CITY_ID, cityId)
+					.filter(metaFilter).get().as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getCitytDesc : ", e);
-			throw new JaxSystemError();
+		} catch (Exception ae) {
+			LOGGER.error("exception in getCitytDesc : ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
-
 	}
 
 	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String ind) {
 		try {
-
-			LOGGER.info("In getOnlineConfig :");
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/onlineconfig/" + ind + "/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_ONLINE_CONFIG)
+					.pathParam(MetaApi.PARAM_IND, ind).filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<OnlineConfigurationDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getOnlineConfig : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
-
+		} catch (Exception ae) {
+			LOGGER.error("exception in getOnlineConfig : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 	/**
@@ -568,17 +538,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 */
 	public AmxApiResponse<JaxMetaParameter, Object> getJaxMetaParameter() {
 		try {
-			LOGGER.info("In getJaxMetaParameter :");
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/meta-parameter/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.META_PARAMETER)
+					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<JaxMetaParameter, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getJaxMetaParameter : ", e);
-			throw new JaxSystemError();
+		} catch (Exception ae) {
+			LOGGER.error("exception in getJaxMetaParameter : ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 	}
 
@@ -607,18 +573,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 
 	public AmxApiResponse<BranchDetailDTO, Object> getAllBranchDetail() {
 		try {
-			LOGGER.info("Get all the Branch Details ");
-
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/branchdetail/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_BRANCH_DETAIL)
+					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<BranchDetailDTO, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getAllBranchDetail : ", e);
-			throw new JaxSystemError();
+		} catch (Exception ae) {
+			LOGGER.error("exception in getAllBranchDetail : ", ae);
+			return JaxSystemError.evaluate(ae);
 		} // end of try-catch
 	}
 }

@@ -23,6 +23,13 @@ public class ApiEndpoint {
 		//Params
 		public static final String PARAM_QUEST_ID = "questId";
 		public static final String PARAM_EMAIL_ID = "emailId";
+		public static final String PARAM_BENE_COUNTRY_ID = "beneficiaryCountryId";
+		public static final String PARAM_SERVICE_GROUP_ID = "serviceGroupId";
+		public static final String PARAM_ROUTING_BANK_ID = "routingBankId";
+		public static final String PARAM_IND = "ind";
+		public static final String PARAM_DISTRICT_ID = "districtid";
+		public static final String PARAM_CITY_ID = "cityid";
+		public static final String PARAM_COUNTRY_ID = "countryId";
 		
 		//Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
@@ -42,6 +49,16 @@ public class ApiEndpoint {
 		public static final String API_HELP_NO = "/helpdno/";
 		public static final String API_PREFIX= "/prefix/";
 		public static final String SERVICE_GROUP = "/service-group/";
+		public static final String API_BRANCH_DETAIL = "/branchdetail/";
+		public static final String META_PARAMETER ="/meta-parameter/";
+		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
+		public static final String API_ONLINE_CONFIG = "/onlineconfig/";
+		public static final String API_CITY_DESC = "/citydesc/";
+		public static final String API_CITY_LIST = "/citylist/";
+		public static final String API_STATE_LIST = "/statelist/";
+		
+		
+		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
 		
 	}
 
