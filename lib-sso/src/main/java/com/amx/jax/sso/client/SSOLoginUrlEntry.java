@@ -1,4 +1,4 @@
-package com.amx.jax.sso;
+package com.amx.jax.sso.client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -18,6 +18,9 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.sso.SSOConstants;
+import com.amx.jax.sso.SSOTranx;
+import com.amx.jax.sso.SSOUser;
 import com.amx.utils.URLBuilder;
 
 @Component
@@ -26,25 +29,29 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SSOLoginUrlEntry.class);
 
 	@Autowired
-	SSOTranx sSOTranx;
+	private SSOTranx sSOTranx;
+
+	@Autowired
+	private SSOUser ssoUser;
 
 	@Autowired
 	public SSOLoginUrlEntry() {
-		super(SSOUtils.APP_LOGIN_URL);
+		super(SSOConstants.APP_LOGIN_URL);
 	}
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authenticationException) throws IOException, ServletException {
+		String tranxId = ssoUser.ssoTranxId();
 		RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 		sSOTranx.setReturnUrl(request.getServletPath());
 		URLBuilder builder = new URLBuilder();
-		builder.setPath(SSOUtils.APP_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId());
+		builder.setPath(SSOConstants.APP_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		try {
 			redirectStrategy.sendRedirect(request, response, builder.getRelativeURL());
 		} catch (URISyntaxException e) {
 			LOGGER.error("SSOLoginUrlEntry commence error", e);
-			redirectStrategy.sendRedirect(request, response, SSOUtils.APP_LOGIN_URL);
+			redirectStrategy.sendRedirect(request, response, SSOConstants.APP_LOGIN_URL);
 		}
 	}
 

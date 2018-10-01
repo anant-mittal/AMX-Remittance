@@ -1,8 +1,8 @@
 package com.amx.jax.sso;
 
-public class SSOUtils {
+public class SSOConstants {
 
-	private SSOUtils() {
+	private SSOConstants() {
 		// Not allowed
 	}
 
@@ -15,5 +15,15 @@ public class SSOUtils {
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/do";
 
 	public static final String SSO_INDEX_PAGE = "sso_index";
+	public static final String REDIRECT = "redirect:";
+
+	public static final String PARAM_REDIRECT = "redirect";
+	public static final String PARAM_SOTP = "sotp";
+	public static final String PARAM_AUTH = "auth";
+	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
+
+	public enum SSOAuth {
+		DONE, INIT, NONE
+	}
 
 }

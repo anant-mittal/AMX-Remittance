@@ -1,5 +1,5 @@
 
-package com.amx.jax.sso;
+package com.amx.jax.sso.client;
 
 import java.util.Collections;
 

@@ -1,4 +1,4 @@
-package com.amx.jax.sso;
+package com.amx.jax.sso.server;
 
 import java.util.HashMap;
 import java.util.Map;
