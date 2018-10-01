@@ -18,7 +18,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
