@@ -151,7 +151,7 @@ public class RemittanceTransactionService extends AbstractService {
 				fcDecimalNumber.intValue());
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(responseModel.getModelType());
+		response.getData().setType(model.getModelType());
 		return response;
 	}
 

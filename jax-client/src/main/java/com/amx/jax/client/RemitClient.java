@@ -276,4 +276,25 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
+	
+	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
+			RemittanceTransactionRequestModel request)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/calc/";
+			LOGGER.info(" Calling calcEquivalentAmount :");
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in calcEquivalentAmount : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+	}
+
 }

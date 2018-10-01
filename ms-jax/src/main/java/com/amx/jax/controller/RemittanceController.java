@@ -213,6 +213,7 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.calcEquivalentAmount(model);
 		return response;
 	}
+	
 	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
 		public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
 			return customerRatingService.saveCustomerRating(customerRating);
