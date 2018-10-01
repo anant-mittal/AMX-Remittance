@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
+import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidJsonInputException;
@@ -73,6 +74,7 @@ import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.userservice.dao.AbstractUserDao;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.SecurityQuestionsManager;
+import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.repository.LoginLogoutHistoryRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
 import com.amx.jax.util.CryptoUtil;
@@ -146,7 +148,10 @@ public class UserService extends AbstractUserService {
 	
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
-	
+
+	@Autowired
+	private CustomerRepository repo;
+
     @Autowired
     AuditService auditService;
 
@@ -241,7 +246,7 @@ public class UserService extends AbstractUserService {
 		response.getData().setType(outputModel.getModelType());
 		response.setResponseStatus(ResponseStatus.OK);
 		addMyProfileAuditLog(model);
-		
+
 		// this is to send email on OLD email id
 		if (model.getEmail() != null) {
 			model.setEmail(oldEmail);
@@ -561,8 +566,8 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(new BigDecimal(customerId));
 		ApiResponse response = getBlackApiResponse();
 		try {
-			List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
-			response.getData().getValues().addAll(result);
+		List<QuestModelDTO> result = secQmanager.generateRandomQuestions(onlineCustomer, size, customerId);
+		response.getData().getValues().addAll(result);
 		}catch(GlobalException e) {
 		    auditService.log (createUserServiceEvent(new BigDecimal(customerId), JaxUserAuditEvent.Type.SEC_QUE_GENERATE_EXCEPTION));
 		    throw e;
@@ -592,7 +597,7 @@ public class UserService extends AbstractUserService {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(model.getCustomerId());
 		ApiResponse response = getBlackApiResponse();
 		try {
-		    userValidationService.validateCustomerLockCount(onlineCustomer);
+		userValidationService.validateCustomerLockCount(onlineCustomer);
 		}catch(GlobalException e) {
             auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_USER_LOGIN_ATTEMPT_EXCEEDED));
             throw e;
@@ -600,7 +605,7 @@ public class UserService extends AbstractUserService {
 		//commented trailing s and special characters removal
 		simplifyAnswers(model.getSecurityquestions());
 		try {
-		    userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
+		userValidationService.validateCustomerSecurityQuestions(model.getSecurityquestions(), onlineCustomer);
 		}catch(GlobalException e) {
 	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.SEC_QUE_VALIDATE_INCORRECT_ANS));
 		    throw e;
@@ -622,7 +627,7 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
 		}
 		try {
-		    userValidationService.validateOtpFlow(model);
+		userValidationService.validateOtpFlow(model);
 		}catch (InvalidOtpException e) {
 	        auditService.log (createUserServiceEvent(model, JaxUserAuditEvent.Type.CUSTOMER_PASSWORD_UPDATE_INVALID_OTP));
 		    throw e;
@@ -920,7 +925,7 @@ public class UserService extends AbstractUserService {
 	        auditService.log (createUserServiceEvent(customerModel,JaxUserAuditEvent.Type.CUSTOMER_LOGIN_SUCCESS));
 	        return response;
 	    }
-	   
+
 		private void addMyProfileAuditLog(CustomerModel model) {
 		    List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
 		    if (!CollectionUtils.isEmpty(secQuestions)) {
@@ -956,4 +961,8 @@ public class UserService extends AbstractUserService {
             AuditEvent beneAuditEvent = new CustomerAuditEvent(type,customerId);
             return beneAuditEvent;
         }
+
+	   public Customer getCustById(BigDecimal id) {
+			return repo.findOne(id);
+		}
 }

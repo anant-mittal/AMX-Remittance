@@ -3,14 +3,18 @@ package com.amx.jax.ui.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
 import com.amx.jax.postman.PostManException;
@@ -67,14 +71,8 @@ public class HotPointService {
 		NEW_KHAITAN("29.2762099","47.9725432"),
 		WAFRA_BRANCH("28.5631419","48.0628015"),
 		SURRA_BRANCH("29.3138254","48.0022465"),
-		HASSAWI_BRANCH("29.2662336","47.9239427"),
-		
-		
-		//test Locations
-		AWFIS_CHEMTEX_LANE("19.119084", "72.913620"), POWAI_PLAZA("19.123392", "72.913109"), D_MART_POWAI("19.116531",
-				"72.910423"),
-		
-		SALMIYA2(" 29.331993", "48.061422"), MURGAB3("29.369429", "47.978551"), SALMIYA4(" 29.325602", "48.058039");
+		HASSAWI_BRANCH("29.2662336","47.9239427")
+		;
 
 		/** The latitude. */
 		private String latitude;
@@ -143,6 +141,9 @@ public class HotPointService {
 	@Autowired
 	private WebAppConfig webAppConfig;
 
+	@Autowired
+	JaxPushNotificationClient notificationClient;
+
 	/**
 	 * Notify.
 	 *
@@ -154,8 +155,8 @@ public class HotPointService {
 	 * @throws PostManException
 	 *             the post man exception
 	 */
-	// @Async
-	public List<String> notify(BigDecimal customerId, String token, GeoHotPoints hotpoint) throws PostManException {
+	@Async
+	public List<String> notify(BigDecimal customerId, String token, HotPoints hotpoint) throws PostManException {
 
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
@@ -164,6 +165,8 @@ public class HotPointService {
 				.getBeneficiaryList(new BigDecimal(0)).getResults();
 
 		PushMessage pushMessage = new PushMessage();
+		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
+		String customerNotificationTitle = String.format("Special rate @ %s", webAppConfig.getAppTitle());
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 			boolean toAdd = false;
 			for (BeneficiaryListDTO beneficiaryListDTO : benes) {
@@ -174,14 +177,20 @@ public class HotPointService {
 				}
 			}
 			if (toAdd) {
-				messages.add(String.format(
+				CustomerNotificationDTO customerNotification = new CustomerNotificationDTO();
+				String messageStr = String.format(
 						"Get more %s for your %s at %s. %s-%s Special rate in the "
 								+ "range of %.4f – %.4f for %s online and App users.",
 						minMaxExRateDTO.getToCurrency().getCurrencyName(),
 						minMaxExRateDTO.getFromCurrency().getCurrencyName(), webAppConfig.getAppTitle(),
 						minMaxExRateDTO.getFromCurrency().getQuoteName(),
 						minMaxExRateDTO.getToCurrency().getQuoteName(), minMaxExRateDTO.getMinExrate(),
-						minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle()));
+						minMaxExRateDTO.getMaxExrate(), webAppConfig.getAppTitle());
+				messages.add(messageStr);
+				customerNotification.setMessage(messageStr);
+				customerNotification.setTitle(customerNotificationTitle);
+				customerNotification.setCustomerId(customerId);
+				customerNotificationList.add(customerNotification);
 			}
 		}
 		CActivityEvent event = new CActivityEvent(CActivityEvent.Type.GEO_LOCATION);
@@ -191,13 +200,14 @@ public class HotPointService {
 		data.put("messages", messages);
 		event.setData(data);
 
-		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
+		pushMessage.setSubject(customerNotificationTitle);
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
 
 		if (webAppConfig.isNotifyGeoEnabled()) {
 			auditService.log(event);
 			pushNotifyClient.sendDirect(pushMessage);
+			notificationClient.save(customerNotificationList);
 		}
 		return messages;
 	}

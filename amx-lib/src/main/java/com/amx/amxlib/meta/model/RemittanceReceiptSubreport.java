@@ -2,6 +2,8 @@ package com.amx.amxlib.meta.model;
 
 import java.util.List;
 
+import com.amx.amxlib.model.PromotionDto;
+
 public class RemittanceReceiptSubreport {
 
 	private List<RemittanceReportBean> remittanceApplList;
@@ -21,6 +23,7 @@ public class RemittanceReceiptSubreport {
 	private Boolean fcsaleApplicationCheck;
 	
 	private Boolean remittanceReceiptCheck;
+	
 	
 	public Boolean getWaterMarkCheck() {
 		return waterMarkCheck;
@@ -99,13 +102,6 @@ public class RemittanceReceiptSubreport {
 		this.collectionAppList = collectionAppList;
 	}
 
-
-
-
-
-
-
-	
 	
 	
 	

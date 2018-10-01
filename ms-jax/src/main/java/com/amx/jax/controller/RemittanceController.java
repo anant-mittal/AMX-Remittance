@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
@@ -25,6 +26,8 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.CustomerRating;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
@@ -68,13 +71,14 @@ public class RemittanceController {
 	MetaData metaData;
 
 	@Autowired
+	RemittanceApplicationDao remitAppDao;
+
+	@Autowired
 	CustomerRatingService customerRatingService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
-			@RequestParam(required = false, value = "docNumber") String docNumber,
-			@RequestParam(required = false, value = "fromDate") String fromDate,
-			@RequestParam(required = false, value = "toDate") String toDate) {
+	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
+			@RequestParam(required=false,value="fromDate") String fromDate, @RequestParam(required=false,value="toDate") String toDate) {
 
 		BigDecimal customerId = metaData.getCustomerId();
 
@@ -95,7 +99,8 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/remitReport/", method = RequestMethod.POST)
-	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO) {
+	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
+			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
@@ -108,7 +113,7 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCurrencyId());
 
 		ApiResponse response = reportManagerService
-				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
+				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
 	}
 
@@ -157,30 +162,30 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
-		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
-				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
-
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
+		
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		if (customerId != null) {
-			paymentResponse.setCustomerId(customerId);
-		} else {
-			paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
+		if(customerId!=null) {
+		paymentResponse.setCustomerId(customerId);
+		}else {
+		    paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
 		}
 		paymentResponse.setApplicationCountryId(applicationCountryId);
 		paymentResponse.setCompanyId(companyId);
-		logger.info("save-Remittance before payment capture :" + customerId + "\t country ID :" + applicationCountryId
-				+ "\t Compa Id:" + companyId);
-
+		logger.info("save-Remittance before payment capture :" + customerId+"\t country ID :"+applicationCountryId+"\t Compa Id:"+companyId);
+		
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;
 	}
 
 	@RequestMapping(value = "/status/", method = RequestMethod.POST)
-	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request) {
+	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request,
+			@RequestParam("promotion") Boolean promotion) {
 
 		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		request.setPromotion(promotion);
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
@@ -205,6 +210,20 @@ public class RemittanceController {
 
 		ApiResponse response = remittancePaymentManager.savePaymentId(paymentResponse);
 		return response;
+	}
+	
+	@RequestMapping(value = "/trnx/receipt", method = RequestMethod.POST)
+	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
+		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
+
+		BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
+		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
+		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
+
+		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
+				.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+		transactionHistoryDto.setApplicationCountryId(metaData.getCountryId());
+		return reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistoryDto, true);
 	}
 
 	@RequestMapping(value = "/calc/", method = RequestMethod.POST)

@@ -36,6 +36,7 @@ import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
@@ -243,7 +244,10 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			break;
 		case "place-order-not-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderNotificationDTO>>(){});
-			break;		
+			break;	
+		case "jax-push-notification":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>(){});
+			break;	
 	}
 		responseData.setValues(models);
 		return responseData;
