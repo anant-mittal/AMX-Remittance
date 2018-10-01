@@ -551,20 +551,13 @@ public class MetaClient extends AbstractJaxServiceClient {
 	 */
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroupList() {
 		try {
-
-			LOGGER.info("In getServiceGroupList :");
-			String url = this.getBaseUrl() + MetaApi.PREFIX + "/service-group/";
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			return restService.ajax(url).get(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<ServiceGroupMasterDescDto, Object>>() {
+			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SERVICE_GROUP).filter(metaFilter)
+					.get().as(new ParameterizedTypeReference<AmxApiResponse<ServiceGroupMasterDescDto, Object>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in getServiceGroupList : ", e);
-			throw new JaxSystemError();
-		} // end of try-catc
-
+		} catch (Exception ae) {
+			LOGGER.error("exception in getServiceGroupList : ", ae);
+			return JaxSystemError.evaluate(ae);
+		}
 	}
 
 	/**

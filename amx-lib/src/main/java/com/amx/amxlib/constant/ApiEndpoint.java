@@ -41,6 +41,7 @@ public class ApiEndpoint {
 		public static final String API_FYEAR = "/fyear";
 		public static final String API_HELP_NO = "/helpdno/";
 		public static final String API_PREFIX= "/prefix/";
+		public static final String SERVICE_GROUP = "/service-group/";
 		
 	}
 

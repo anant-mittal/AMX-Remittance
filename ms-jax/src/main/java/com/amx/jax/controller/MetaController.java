@@ -352,7 +352,7 @@ public class MetaController {
 		return apiResponse;
 	}
 
-	@RequestMapping(value = "/service-group/", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.SERVICE_GROUP, method = RequestMethod.GET)
 	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroup() {
 		return metaService.getServiceGroups();
 	}
