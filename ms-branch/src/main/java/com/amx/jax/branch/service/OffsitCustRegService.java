@@ -780,6 +780,6 @@ public class OffsitCustRegService implements ICustRegService {
 
 	@Override
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
-		return null;
+		return AmxApiResponse.build(cardDetail);
 	}
 }
