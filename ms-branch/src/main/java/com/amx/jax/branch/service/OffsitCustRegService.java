@@ -284,9 +284,9 @@ public class OffsitCustRegService implements ICustRegService {
 
 	private ArticleMasterDescDto convert(Map<String, Object> i) {
 		ArticleMasterDescDto dto = new ArticleMasterDescDto();
-		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID").toString()));
-		dto.setArticleDescription(i.get("ARTICLE_DESC").toString());
-		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID").toString()));
+		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString():null));
+		dto.setArticleDescription(i.get("ARTICLE_DESC") != null ? i.get("ARTICLE_DESC").toString():null);
+		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID") != null ? i.get("ARTICLE_ID").toString():null));
 		dto.setLanguageType(new BigDecimal(i.get("LANGUAGE_ID").toString()));
 		return dto;
 	}
@@ -315,12 +315,12 @@ public class OffsitCustRegService implements ICustRegService {
 
 	private ArticleDetailsDescDto convertDesignation(Map<String, Object> i) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
-		dto.setArticleDetailsDesc(i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : "");
+		dto.setArticleDetailsDesc(i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : null);
 		dto.setArticleDetailsDescId(new BigDecimal(
-				i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString() : ""));
+				i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString() : null));
 		dto.setArticleDetailsId(
-				new BigDecimal(i.get("ARTICLE_DETAILS_ID") != null ? i.get("ARTICLE_DETAILS_ID").toString() : ""));
-		dto.setLanguageId(new BigDecimal(i.get("LANGUAGE_ID") != null ? i.get("LANGUAGE_ID").toString() : ""));
+				new BigDecimal(i.get("ARTICLE_DETAILS_ID") != null ? i.get("ARTICLE_DETAILS_ID").toString() : null));
+		dto.setLanguageId(new BigDecimal(i.get("LANGUAGE_ID") != null ? i.get("LANGUAGE_ID").toString() : null));
 		return dto;
 	}
 
@@ -350,11 +350,11 @@ public class OffsitCustRegService implements ICustRegService {
 	private IncomeRangeDto convertIncomeRange(Map<String, Object> i) {
 		IncomeRangeDto dto = new IncomeRangeDto();
 		dto.setArticleDetailsId(
-				new BigDecimal(i.get("ARTICLE_DETAIL_ID") != null ? i.get("ARTICLE_DETAIL_ID").toString() : ""));
-		dto.setIncomeFrom(new BigDecimal(i.get("INCOME_FROM") != null ? i.get("INCOME_FROM").toString() : ""));
+				new BigDecimal(i.get("ARTICLE_DETAIL_ID") != null ? i.get("ARTICLE_DETAIL_ID").toString() :null));
+		dto.setIncomeFrom(new BigDecimal(i.get("INCOME_FROM") != null ? i.get("INCOME_FROM").toString() :null));
 		dto.setIncomeRangeId(
-				new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString() : ""));
-		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString() : ""));
+				new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString() :null));
+		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString() :null));
 		return dto;
 	}
 
