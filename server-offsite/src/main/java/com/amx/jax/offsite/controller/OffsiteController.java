@@ -21,8 +21,8 @@ import com.amx.jax.api.BoolRespModel;
 import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.dto.SendOtpModel;
@@ -96,24 +96,21 @@ public class OffsiteController {
 		return offsiteCustRegClient.getDesignationListResponse(model);
 	}
 
-	@ApiJaxStatus({ JaxError.EMPTY_INCOME_RANGE })
 	@RequestMapping(value = "/income_range/list", method = { RequestMethod.POST })
 	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegClient.getIncomeRangeResponse(model);
 	}
 
-	@ApiJaxStatus({ JaxError.EMPTY_EMPLOYMENT_TYPE })
 	@RequestMapping(value = "/employment_type/list", method = { RequestMethod.POST })
 	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegClient.sendEmploymentTypeList();
 	}
 
 	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
-	public AmxApiResponse<CardDetail, Object> cardRead(@RequestBody CardDetail cardDetail) {
+	public AmxApiResponse<CardDetail, Object> cardScan(@RequestBody CardDetail cardDetail) {
 		return offsiteCustRegClient.cardScan(cardDetail);
 	}
 
-	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID })
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
 		AmxApiResponse<CustomerInfo, Object> info = offsiteCustRegClient.saveCustomerInfo(model);
@@ -121,14 +118,12 @@ public class OffsiteController {
 		return info;
 	}
 
-	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	@RequestMapping(value = "/kycdoc/submit", method = { RequestMethod.POST })
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(@RequestBody ImageSubmissionRequest modelData)
 			throws ParseException {
 		return offsiteCustRegClient.saveCustomeKycDocument(modelData);
 	}
 
-	@ApiJaxStatus(value = { JaxError.SIGNATURE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })
 	@RequestMapping(value = "/signature/submit", method = { RequestMethod.POST })
 	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest modelData)
 			throws ParseException {
@@ -159,6 +154,7 @@ public class OffsiteController {
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DOTP_REQUIRED })
+	@ApiJaxStatus({ JaxError.MISSING_OTP, JaxError.VALIDATE_OTP_LIMIT_EXCEEDED })
 	@RequestMapping(value = "/personal/save", method = { RequestMethod.POST })
 	public AmxApiResponse<OffsiteCustomerRegistrationRequest, SendOtpModel> sendOtpForEmailAndMobile(
 
