@@ -152,7 +152,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
 		int lcDecimalNumber = meta.getDefaultCurrencyId().intValue();
 		if (request.getForeignAmount() != null && request.getDomXRate() !=null) {
-			BigDecimal convertedLCAmount = request.getForeignAmount().divide(request.getDomXRate(), lcDecimalNumber,
+			BigDecimal convertedLCAmount = request.getForeignAmount().divide(request.getDomXRate(), 2,
 					RoundingMode.HALF_UP);
 			breakup.setConvertedLCAmount(RoundUtil.roundBigDecimal(convertedLCAmount, lcDecimalNumber));
 			breakup.setConvertedFCAmount(request.getForeignAmount());
