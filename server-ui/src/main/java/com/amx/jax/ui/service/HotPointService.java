@@ -67,9 +67,8 @@ public class HotPointService {
 		NEW_KHAITAN("29.2762099","47.9725432"),
 		WAFRA_BRANCH("28.5631419","48.0628015"),
 		SURRA_BRANCH("29.3138254","48.0022465"),
-		HASSAWI_BRANCH("29.2662336","47.9239427"),
-		
-		SALMIYA2(" 29.331993", "48.061422"), MURGAB3("29.369429", "47.978551"), SALMIYA4(" 29.325602", "48.058039");
+		HASSAWI_BRANCH("29.2662336","47.9239427")
+		;
 
 		/** The latitude. */
 		private String latitude;
@@ -186,7 +185,7 @@ public class HotPointService {
 		data.put("messages", messages);
 		event.setData(data);
 
-		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
+		pushMessage.setSubject(String.format("Special rate @ %s", webAppConfig.getAppTitle()));
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
 
