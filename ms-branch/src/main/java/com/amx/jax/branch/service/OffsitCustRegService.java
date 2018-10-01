@@ -546,7 +546,8 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
 		}
 		customer = new Customer();
-		tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
+		if(customerDetails.getIdentityTypeId()== new BigDecimal(198))
+			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
