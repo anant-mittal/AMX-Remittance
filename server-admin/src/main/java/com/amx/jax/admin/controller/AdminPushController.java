@@ -20,7 +20,7 @@ import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
 
 import io.swagger.annotations.Api;
@@ -33,7 +33,7 @@ public class AdminPushController {
 	private Logger logger = Logger.getLogger(AdminPushController.class);
 
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	JaxPushNotificationClient notificationClient;
@@ -74,7 +74,7 @@ public class AdminPushController {
 		customerNotification.setTitle(title);
 		notificationClient.save(customerNotification);
 
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
@@ -100,13 +100,13 @@ public class AdminPushController {
 		}
 		notificationClient.save(customerNotification);
 
-		return fbPushClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg);
 	}
 
 	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.subscribe(token, topic);
+		pushNotifyClient.subscribe(token, topic);
 		return topic;
 	}
 

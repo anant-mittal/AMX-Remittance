@@ -17,7 +17,6 @@ import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.events.CActivityEvent;
-import com.amx.jax.postman.FBPushService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
@@ -133,7 +132,7 @@ public class HotPointService {
 
 	/** The b push service. */
 	@Autowired
-	FBPushService fBPushService;
+	PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	AuditService auditService;
@@ -167,7 +166,7 @@ public class HotPointService {
 
 		PushMessage pushMessage = new PushMessage();
 		List<CustomerNotificationDTO> customerNotificationList = new LinkedList<CustomerNotificationDTO>();
-		String customerNotificationTitle = String.format("Spceial rate @ %s", webAppConfig.getAppTitle());
+		String customerNotificationTitle = String.format("Special rate @ %s", webAppConfig.getAppTitle());
 		for (MinMaxExRateDTO minMaxExRateDTO : rates) {
 			boolean toAdd = false;
 			for (BeneficiaryListDTO beneficiaryListDTO : benes) {
@@ -207,7 +206,7 @@ public class HotPointService {
 
 		if (webAppConfig.isNotifyGeoEnabled()) {
 			auditService.log(event);
-			fBPushService.sendDirect(pushMessage);
+			pushNotifyClient.sendDirect(pushMessage);
 			notificationClient.save(customerNotificationList);
 		}
 		return messages;

@@ -5,7 +5,6 @@ import javax.validation.constraints.Pattern;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
-import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthDataInterface.AuthRequest;
 import com.amx.jax.model.AuthDataInterface.AuthResponse;
 
