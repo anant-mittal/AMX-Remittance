@@ -24,7 +24,6 @@ import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
-import com.amx.jax.dbmodel.promotion.PromotionLocation;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.PostManService;
@@ -86,7 +85,6 @@ public class PromotionManager {
 				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize()
 						+ ". Kindly contact 22057194 to claim prize");
 			} else {
-				PromotionHeader promoHeader = getPromotionHeader();
 				Date transactionDate = remittanceTransaction.getCreatedDate();
 				List<PromotionHeader> promoHeaders = getPromotionHeader(transactionDate);
 				if (isPromotionValid(promoHeaders)) {
@@ -135,8 +133,8 @@ public class PromotionManager {
 					if (promotDto.isChichenVoucher()) {
 						email.addTo("App-support@almullaexchange.com");
 					} else {
-					email.addTo("online@almullaexchange.com");
-					email.addTo("huzefa.abbasi@almullaexchange.com");
+						email.addTo("online@almullaexchange.com");
+						email.addTo("huzefa.abbasi@almullaexchange.com");
 					}
 					email.setTemplate(Templates.PROMOTION_WINNER);
 					email.setHtml(true);
