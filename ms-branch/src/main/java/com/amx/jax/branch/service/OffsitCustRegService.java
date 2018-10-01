@@ -542,9 +542,21 @@ public class OffsitCustRegService implements ICustRegService {
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = new Customer();
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
-				customerDetails.getCountryId());
+				customerDetails.getCountryId(),customerDetails.getIdentityTypeId());
 		if (customer != null) {
-			throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
+			if (customer.getIdentityTypeId().equals(new BigDecimal(198))) {
+				throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
+			}
+			if (customer.getIdentityTypeId().equals(new BigDecimal(204))) {
+				throw new GlobalException("Passport Number Already Exist", JaxError.EXISTING_PASSPORT);
+			}
+			if (customer.getIdentityTypeId().equals(new BigDecimal(201))) {
+				throw new GlobalException("GCC ID Already Exist", JaxError.EXISTING_GCC_ID);
+			}
+			if (customer.getIdentityTypeId().equals(new BigDecimal(197))) {
+				throw new GlobalException("BEDOUIN ID Already Exist", JaxError.EXISTING_BEDOUIN_ID);
+			}
+
 		}
 		customer = new Customer();
 		if (customerDetails.getIdentityTypeId() == new BigDecimal(198))
