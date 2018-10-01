@@ -16,6 +16,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.AbstractJaxException;
 import com.amx.jax.exception.JaxSystemError;
+import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
@@ -197,13 +198,14 @@ public class OffsiteCustRegClient implements ICustRegService {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<List, Object> sendOtpForEmailAndMobile(CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtpForEmailAndMobile(
+			CustomerPersonalDetail customerPersonalDetail) {
 		try {
 			LOGGER.info("Get OTP for email and mobile");
 			String url = appConfig.getJaxURL() + OFFSITE_CUSTOMER_REG + "/customer-mobile-email-send-otp/";
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerPersonalDetail, getHeader());
 			return restService.ajax(url).post(requestEntity)
-					.as(new ParameterizedTypeReference<AmxApiResponse<List, Object>>() {
+					.as(new ParameterizedTypeReference<AmxApiResponse<SendOtpModel, Object>>() {
 					});
 		} catch (AbstractJaxException ae) {
 			throw ae;
