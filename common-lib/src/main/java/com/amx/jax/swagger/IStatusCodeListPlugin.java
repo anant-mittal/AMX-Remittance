@@ -68,7 +68,6 @@ public abstract class IStatusCodeListPlugin<S extends IExceptionEnum, A extends 
 				Method methodThis = getMothod(clazz, methodName, methodParamCount);
 				if (methodThis != null) {
 					A ann = AnnotationUtils.findAnnotation(methodThis, getAnnotionClass());
-					A ann2 = methodThis.getAnnotation(getAnnotionClass());
 					if (ann != null) {
 						S[] value = getValues(ann);
 						for (S amxError : value) {
