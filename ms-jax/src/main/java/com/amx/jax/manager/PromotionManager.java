@@ -17,17 +17,20 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PromotionDto;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.PromotionDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
+import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.promotion.PromotionLocation;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.repository.employee.AmgEmployeeRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
@@ -53,20 +56,21 @@ public class PromotionManager {
 	PostManService postManService;
 	@Autowired
 	UserService userService;
+	@Autowired
+	AmgEmployeeRepository amgEmployeeRepository;
 
 	/**
 	 * @return gives the latest promotion header applicable for current branch
 	 * 
 	 */
-	public PromotionHeader getPromotionHeader() {
+	public List<PromotionHeader> getPromotionHeader(Date trnxDate) {
 		BigDecimal branchId = countryBranchService.getCountryBranchByCountryBranchId(metaData.getCountryBranchId())
 				.getBranchId();
 		UserFinancialYear userFinancialYear = financialService.getUserFinancialYear();
-		List<PromotionLocation> promoLocations = promotionDao
+		List<PromotionLocationModel> promoLocations = promotionDao
 				.checkforLocationHeader(userFinancialYear.getFinancialYear(), branchId);
 		// fetch first one
-		return promotionDao.getPromotionHeader(userFinancialYear.getFinancialYear(),
-				promoLocations.get(0).getDocumentNo());
+		return promotionDao.getPromotionHeader(userFinancialYear.getFinancialYear(), promoLocations, trnxDate);
 	}
 
 	public PromotionDto getPromotionDto(BigDecimal docNoRemit, BigDecimal docFinyear) {
@@ -79,25 +83,38 @@ public class PromotionManager {
 			if (models != null && models.size() > 0) {
 				dto = new PromotionDto();
 				dto.setPrize(models.get(0).getPrize());
-				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize());
+				dto.setPrizeMessage("CONGRATULATIONS! YOU WON " + models.get(0).getPrize()
+						+ ". Kindly contact 22057194 to claim prize");
 			} else {
 				PromotionHeader promoHeader = getPromotionHeader();
 				Date transactionDate = remittanceTransaction.getCreatedDate();
-				if (transactionDate != null && transactionDate.after(promoHeader.getFromDate())
-						&& transactionDate.before(promoHeader.getToDate())) {
+				List<PromotionHeader> promoHeaders = getPromotionHeader(transactionDate);
+				if (isPromotionValid(promoHeaders)) {
 					dto = new PromotionDto();
-					dto.setPrize("CHICKEN KING SAGAR VOUCHER");
-					dto.setPrizeMessage("CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER");
+					dto.setPrize(ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR);
+					dto.setPrizeMessage(
+							"CONGRATULATIONS! YOU WON CHICKEN KING/SAGAR VOUCHER. Kindly contact 22057194 to claim prize");
 				}
 			}
-			if (dto != null && remittanceTransaction.getApplicationDocumentNo() != null) {
-				dto.setTransactionReference(remittanceTransaction.getApplicationDocumentNo().toString()
-						+ remittanceTransaction.getApplicationdocumentFinancialyear().toString());
+			if (dto != null && remittanceTransaction.getDocumentNo() != null) {
+				dto.setTransactionReference(remittanceTransaction.getDocumentFinancialyear().toString() + " / "
+						+ remittanceTransaction.getDocumentNo().toString());
 			}
 			return dto;
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	private boolean isPromotionValid(List<PromotionHeader> promoHeaders) {
+		if (promoHeaders != null && promoHeaders.size() > 0) {
+			for (PromotionHeader ph : promoHeaders) {
+				if (!ConstantDocument.Deleted.equals(ph.getRecSts())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	public PromotionDto promotionWinnerCheck(BigDecimal documentNoRemit, BigDecimal documentFinYearRemit) {
@@ -115,10 +132,13 @@ public class PromotionManager {
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
+					if (promotDto.isChichenVoucher()) {
+						email.addTo("App-support@almullaexchange.com");
+					} else {
 					email.addTo("online@almullaexchange.com");
 					email.addTo("huzefa.abbasi@almullaexchange.com");
-					//Promotion has commented for test
-					/*email.setTemplate(Templates.PROMOTION_WINNER);*/
+					}
+					email.setTemplate(Templates.PROMOTION_WINNER);
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);
 					email.getModel().put("promotDto", promotDto);
@@ -131,6 +151,23 @@ public class PromotionManager {
 		} catch (Exception e) {
 			logger.error("error in promotionWinnerCheck", e);
 			return null;
+		}
+	}
+
+	public void sendVoucherEmail(PromotionDto promotDto, PersonInfo personInfo) {
+
+		try {
+			if (promotDto != null && ConstantDocument.VOUCHER_ONLINE_PROMOTION_STR.equals(promotDto.getPrize())) {
+				// voucher mail to customer
+				logger.info("Sending promo voucher Email to customer : ");
+				Email voucherEmail = new Email();
+				voucherEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
+				voucherEmail.addTo(personInfo.getEmail());
+				voucherEmail.setTemplate(Templates.PROMOTION_COUPON);
+				voucherEmail.setHtml(true);
+				postManService.sendEmailAsync(voucherEmail);
+			}
+		} catch (Exception e) {
 		}
 	}
 }

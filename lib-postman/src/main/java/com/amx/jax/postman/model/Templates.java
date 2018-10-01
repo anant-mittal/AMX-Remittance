@@ -15,6 +15,7 @@ public enum Templates {
 			"RemittanceStatmentEmail"), REMIT_STATMENT_EMAIL_FILE("TransactionStatementHistory"), REG_SUC(
 					"RegistrationSuccessEmail"), TXN_CRT_SUCC(
 							"TransactionCreationSuccess"), PROFILE_CHANGE("AccoutDetailsUpdate"),
+
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
 
@@ -24,6 +25,8 @@ public enum Templates {
 	CIVILID_EXPIRY_JSON("json/civilexpiry"), CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED(
 			"civilexpired"), PARTIAL_REGISTRATION_EMAIL(
 					"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
+
+	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
 

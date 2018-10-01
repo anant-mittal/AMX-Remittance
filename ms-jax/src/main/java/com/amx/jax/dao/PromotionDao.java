@@ -6,8 +6,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +23,11 @@ import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionDetailRowMapper;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionHeaderPK;
-import com.amx.jax.dbmodel.promotion.PromotionLocation;
-import com.amx.jax.dbmodel.promotion.PromotionLocationPK;
+import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.promotion.PromotionHeaderRepository;
-import com.amx.jax.repository.promotion.PromotionLocationRepository;
+import com.amx.jax.repository.promotion.PromotionLocationRowMapper;
 
 /**
  * @author Prashant
@@ -41,8 +42,6 @@ public class PromotionDao {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	MetaData metaData;
-	@Autowired
-	PromotionLocationRepository promotionLocationRepository;
 	@Autowired
 	PromotionHeaderRepository promotionHeaderRepository;
 
@@ -62,12 +61,11 @@ public class PromotionDao {
 				public CallableStatement createCallableStatement(Connection con) throws SQLException {
 					String proc = "{call GET_PROMOTION_PRIZE (?,?,?,?,?)}";
 					CallableStatement cs = con.prepareCall(proc);
-					cs.setBigDecimal(1, documentNoRemit);
-					cs.setBigDecimal(2, documentFinYearRemit);
+					cs.setBigDecimal(1, documentFinYearRemit);
+					cs.setBigDecimal(2, documentNoRemit);
 					cs.setBigDecimal(3, branchId);
 					cs.registerOutParameter(4, java.sql.Types.VARCHAR);
 					cs.registerOutParameter(5, java.sql.Types.VARCHAR);
-					cs.executeQuery();
 					return cs;
 				}
 
@@ -105,7 +103,6 @@ public class PromotionDao {
 					cs.setBigDecimal(1, documentFinYearRemit);
 					cs.setBigDecimal(2, documentNoRemit);
 					cs.registerOutParameter(3, java.sql.Types.VARCHAR);
-					cs.executeQuery();
 					return cs;
 				}
 
@@ -126,26 +123,29 @@ public class PromotionDao {
 	 * @return list of promotionlocations
 	 * 
 	 */
-	public List<PromotionLocation> checkforLocationHeader(BigDecimal docFinYear, BigDecimal locCode) {
-		PromotionLocationPK promotionLocationPK = new PromotionLocationPK(docFinYear, locCode);
-		return promotionLocationRepository.findByPromotionLocationPK(promotionLocationPK);
+	public List<PromotionLocationModel> checkforLocationHeader(BigDecimal docFinYear, BigDecimal locCode) {
+		return jdbcTemplate.query(
+				"select * from promotion_locations where COMCOD=20 and doccod=72 and DOCFYR=? and LOCCOD=?",
+				new PromotionLocationRowMapper(), docFinYear, locCode);
 	}
 
-	public PromotionHeader getPromotionHeader(BigDecimal docFinYear, BigDecimal promoHeaderdocNo) {
-		PromotionHeaderPK promotionHeaderPK = new PromotionHeaderPK(promoHeaderdocNo, docFinYear);
-		return promotionHeaderRepository.findByPromotionHeaderPK(promotionHeaderPK);
+	public List<PromotionHeader> getPromotionHeader(BigDecimal docFinYear, List<PromotionLocationModel> promoLocations,
+			Date trnxDate) {
+		List<PromotionHeaderPK> promotHeaderPks = promoLocations.stream()
+				.map(pl -> new PromotionHeaderPK(pl.getDocumentNo(), pl.getDocFinYear())).collect(Collectors.toList());
+		return promotionHeaderRepository.findPromotioHeader(promotHeaderPks, trnxDate);
 	}
 
 	public List<PromotionDetailModel> getPromotionDetailModel(BigDecimal finYearRemit, BigDecimal docNoRemit) {
-		List<PromotionDetailModel> promoDetails = jdbcTemplate.query(
-				"SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE, B.DOCNO, B.DOCNO, B.DOCFYR  " + "       FROM   PROMOTION_HD A,PROMOTION_DT B"
-						+ "       WHERE  A.COMCOD = B.COMCOD " + "       AND    A.DOCCOD = B.DOCCOD"
-						+ "       AND    A.DOCFYR = B.DOCFYR " + "       AND    A.DOCNO  = B.DOCNO"
-						+ "       AND    A.COMCOD = (SELECT DEF_COMPANY " + "        FROM   APP_SETT)"
-						+ "       AND    A.DOCCOD = 72 " + "      AND    NVL(B.TRNREF,0)     <> 0"
-						+ "       AND    NVL(A.RECSTS,' ')    = ' ' " + "       AND    NVL(A.UTLZ_FLAG,' ') = 'U'"
-						+ "       AND    TRNFYR = ? " + "       AND    TRNREF = ? ",
-				new PromotionDetailRowMapper(), finYearRemit, docNoRemit);
+		List<PromotionDetailModel> promoDetails = jdbcTemplate
+				.query("SELECT B.TRNREF,NVL(B.PRIZE,A.PRIZE) PRIZE, B.DOCNO, B.DOCNO, B.DOCFYR  "
+						+ "       FROM   PROMOTION_HD A,PROMOTION_DT B" + "       WHERE  A.COMCOD = B.COMCOD "
+						+ "       AND    A.DOCCOD = B.DOCCOD" + "       AND    A.DOCFYR = B.DOCFYR "
+						+ "       AND    A.DOCNO  = B.DOCNO" + "       AND    A.COMCOD = (SELECT DEF_COMPANY "
+						+ "        FROM   APP_SETT)" + "       AND    A.DOCCOD = 72 "
+						+ "      AND    NVL(B.TRNREF,0)     <> 0" + "       AND    NVL(A.RECSTS,' ')    = ' ' "
+						+ "       AND    NVL(A.UTLZ_FLAG,' ') = 'U'" + "       AND    TRNFYR = ? "
+						+ "       AND    TRNREF = ? ", new PromotionDetailRowMapper(), finYearRemit, docNoRemit);
 
 		return promoDetails;
 	}

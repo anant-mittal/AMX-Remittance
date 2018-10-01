@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
+import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
@@ -152,6 +156,15 @@ public class UserController {
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
+	}
+
+	@Autowired
+	JaxPushNotificationClient notificationClient;
+
+	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
+	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
+		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
+		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**

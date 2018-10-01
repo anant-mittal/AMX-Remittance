@@ -256,6 +256,10 @@ public class RestService {
 			});
 		}
 
+		public AmxApiResponse<Object, Object> asApiResponse() {
+			return this.asApiResponse(Object.class);
+		}
+
 		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
 			return this.asApiResponse(resultType, Object.class);
 		}
