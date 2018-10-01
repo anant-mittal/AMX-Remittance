@@ -7,6 +7,7 @@ import java.util.Map;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -38,6 +39,7 @@ public interface ICustRegService {
 		public static final String SAVE_CUST_INFO = PREFIX + "/saveCustomerInfo";
 		public static final String SAVE_KYC_DOC = PREFIX + "/saveCustomerKYCDoc";
 		public static final String SAVE_SIGNATURE = PREFIX + "/saveCustomerSignature";
+		public static final String SCAN_CARD = PREFIX + "/scan_card";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -70,6 +72,8 @@ public interface ICustRegService {
 
 	@ApiJaxStatus({ JaxError.EMPTY_PROFESSION_LIST })
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
+
+	AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail);
 
 	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID })
 	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);

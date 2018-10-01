@@ -58,6 +58,7 @@ import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
@@ -546,7 +547,7 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
 		}
 		customer = new Customer();
-		if(customerDetails.getIdentityTypeId()== new BigDecimal(198))
+		if (customerDetails.getIdentityTypeId() == new BigDecimal(198))
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
@@ -711,7 +712,8 @@ public class OffsitCustRegService implements ICustRegService {
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), Constants.NO);
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
+				Constants.NO);
 		if (customer == null) {
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
@@ -729,8 +731,7 @@ public class OffsitCustRegService implements ICustRegService {
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
-		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager
-				.init(customerPersonalDetail);
+		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager.init(customerPersonalDetail);
 		validate(trnxModel, errors);
 		SendOtpModel output = customerRegistrationOtpManager.generateOtpTokens(customerPersonalDetail.getIdentityInt());
 		customerRegistrationOtpManager.sendOtp();
@@ -775,5 +776,10 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 					JaxError.VALIDATE_OTP_LIMIT_EXCEEDED);
 		}
+	}
+
+	@Override
+	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
+		return null;
 	}
 }

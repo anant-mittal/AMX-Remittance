@@ -16,6 +16,7 @@ import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
+import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -125,6 +126,11 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SAVE_SIGNATURE, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> saveCustomerSignature(@RequestBody ImageSubmissionRequest model) {
 		return offsiteCustRegService.saveCustomerSignature(model);
+	}
+
+	@RequestMapping(value = CustRegApiEndPoints.SCAN_CARD, method = RequestMethod.POST)
+	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
+		return offsiteCustRegService.cardScan(cardDetail);
 	}
 
 }

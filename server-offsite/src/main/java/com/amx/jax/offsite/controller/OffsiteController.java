@@ -101,6 +101,13 @@ public class OffsiteController {
 		return offsiteCustRegClient.sendEmploymentTypeList();
 	}
 
+	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
+	public AmxApiResponse<CustomerInfo, Object> cardRead(@RequestBody CustomerInfoRequest model) {
+		AmxApiResponse<CustomerInfo, Object> info = offsiteCustRegClient.saveCustomerInfo(model);
+		customerSession.setCustomerId(info.getResult().getCustomerId());
+		return info;
+	}	
+
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
 		AmxApiResponse<CustomerInfo, Object> info = offsiteCustRegClient.saveCustomerInfo(model);

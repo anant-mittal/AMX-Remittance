@@ -14,6 +14,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.exception.JaxSystemError;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -190,6 +191,18 @@ public class OffsiteCustRegClient implements ICustRegService {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveCustomerInfo : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch}
+	}
+
+	@Override
+	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.SCAN_CARD)
+					.post(cardDetail).as(new ParameterizedTypeReference<AmxApiResponse<CardDetail, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in cardScan : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}
