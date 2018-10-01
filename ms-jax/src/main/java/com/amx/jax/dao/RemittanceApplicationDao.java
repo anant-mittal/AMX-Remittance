@@ -79,16 +79,22 @@ public class RemittanceApplicationDao {
 
 	public RemittanceTransaction getRemittanceTransaction(BigDecimal applicationDocumentNumber,
 			BigDecimal applicationfinYear) {
-		RemittanceTransaction remittanceTransactionView = remittanceTransactionRepository
-				.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
-						applicationfinYear);
+		RemittanceTransaction remittanceTransactionView = null;
+		if (applicationDocumentNumber != null && applicationfinYear != null) {
+			remittanceTransactionView = remittanceTransactionRepository
+					.findByapplicationDocumentNoAndApplicationdocumentFinancialyear(applicationDocumentNumber,
+							applicationfinYear);
+		}
 		return remittanceTransactionView;
 	}
 	
 	public RemittanceTransaction getRemittanceTransactionByRemitDocNo(BigDecimal remittanceDocumentNumber,
 			BigDecimal remittanceFinYear) {
-		RemittanceTransaction remittanceTransactionView = remittanceTransactionRepository
-				.findByDocumentNoAndDocumentFinancialyear(remittanceDocumentNumber, remittanceFinYear);
+		RemittanceTransaction remittanceTransactionView = null;
+		if (remittanceDocumentNumber != null && remittanceFinYear != null) {
+			remittanceTransactionView = remittanceTransactionRepository
+					.findByDocumentNoAndDocumentFinancialyear(remittanceDocumentNumber, remittanceFinYear);
+		}
 		return remittanceTransactionView;
 	}
 	
