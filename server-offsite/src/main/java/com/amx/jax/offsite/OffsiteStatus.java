@@ -110,13 +110,13 @@ public class OffsiteStatus extends IStatusCodeListPlugin<OffsiteServerCodes, Api
 	}
 
 	@Override
-	public Class<? extends Annotation> getAnnotionClass() {
+	public Class<ApiOffisteStatus> getAnnotionClass() {
 		return ApiOffisteStatus.class;
 	}
 
 	@Override
-	public OffsiteServerCodes[] getValues(Optional<ApiOffisteStatus> annotation) {
-		return annotation.get().value();
+	public OffsiteServerCodes[] getValues(ApiOffisteStatus annotation) {
+		return annotation.value();
 	}
 
 }
