@@ -22,6 +22,7 @@ import com.amx.jax.api.ListRequestModel;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
+import com.amx.jax.model.CardDetail;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
@@ -102,11 +103,9 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/card/read", method = { RequestMethod.POST })
-	public AmxApiResponse<CustomerInfo, Object> cardRead(@RequestBody CustomerInfoRequest model) {
-		AmxApiResponse<CustomerInfo, Object> info = offsiteCustRegClient.saveCustomerInfo(model);
-		customerSession.setCustomerId(info.getResult().getCustomerId());
-		return info;
-	}	
+	public AmxApiResponse<CardDetail, Object> cardRead(@RequestBody CardDetail cardDetail) {
+		return offsiteCustRegClient.cardScan(cardDetail);
+	}
 
 	@RequestMapping(value = "/customer_info/save", method = { RequestMethod.POST })
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(@RequestBody CustomerInfoRequest model) {
