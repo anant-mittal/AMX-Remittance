@@ -36,7 +36,7 @@ public abstract class AmxAdvice {
 		error.setStatusEnum(ex.getError());
 		error.setMeta(ex.getMeta());
 		alert(ex);
-		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
+		return new ResponseEntity<AmxApiError>(error, HttpStatus.OK);
 	}
 
 	private void alert(AmxApiException ex) {
