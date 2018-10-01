@@ -9,7 +9,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.logger.LoggerService;

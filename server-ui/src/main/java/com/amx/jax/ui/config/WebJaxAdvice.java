@@ -27,10 +27,10 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import com.amx.jax.api.AmxFieldError;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiException;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.response.WebResponseStatus;
@@ -118,7 +118,7 @@ public class WebJaxAdvice {
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(responseError.getPropertyPath().toString());
-			newError.setDescription(HttpService.sanitze(responseError.getMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
 		wrapper.setErrors(errors);
@@ -141,7 +141,7 @@ public class WebJaxAdvice {
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>();
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
-		newError.setDescription(HttpService.sanitze(exception.getMessage()));
+		newError.setDescription(CommonHttpRequest.sanitze(exception.getMessage()));
 		errors.add(newError);
 		wrapper.setErrors(errors);
 		wrapper.setStatus(WebResponseStatus.BAD_INPUT);
@@ -169,13 +169,13 @@ public class WebJaxAdvice {
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(error.getField());
-			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
-			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		return notValidArgument(ex, errors, request, response);
@@ -200,7 +200,7 @@ public class WebJaxAdvice {
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
 		newError.setField(ex.getName());
-		newError.setDescription(HttpService.sanitze(ex.getMessage()));
+		newError.setDescription(CommonHttpRequest.sanitze(ex.getMessage()));
 		errors.add(newError);
 		return notValidArgument(ex, errors, request, response);
 	}

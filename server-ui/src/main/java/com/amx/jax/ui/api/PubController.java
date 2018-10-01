@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AppConfig;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -26,7 +27,6 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
@@ -72,7 +72,7 @@ public class PubController {
 
 	/** The http service. */
 	@Autowired
-	private HttpService httpService;
+	private CommonHttpRequest httpService;
 
 	/** The user device. */
 	@Autowired

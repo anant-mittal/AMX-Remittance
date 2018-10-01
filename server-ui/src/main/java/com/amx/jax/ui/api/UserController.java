@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
@@ -66,7 +66,7 @@ public class UserController {
 
 	/** The http service. */
 	@Autowired
-	private HttpService httpService;
+	private CommonHttpRequest httpService;
 
 	/** The app config. */
 	@Autowired
