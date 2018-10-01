@@ -1,5 +1,7 @@
 package com.amx.jax.postman;
 
+import java.util.List;
+
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
@@ -29,5 +31,7 @@ public interface PostManService {
 	public SMS sendSMSAsync(SMS sms) throws PostManException;
 
 	public File processTemplate(File file) throws PostManException;
+
+	public PostManResponse sendEmailBulk(List<Email> emailList);
 
 }

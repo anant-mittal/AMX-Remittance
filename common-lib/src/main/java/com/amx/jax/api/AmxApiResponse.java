@@ -53,7 +53,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	@JsonIgnore
 	public T getResult() {
-		if (results == null) {
+		if (results != null) {
 			return results.get(0);
 		}
 		return null;

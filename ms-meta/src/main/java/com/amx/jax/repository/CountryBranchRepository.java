@@ -14,4 +14,6 @@ public interface CountryBranchRepository extends CrudRepository<CountryBranch, B
 	public CountryBranch findBybranchName(String branchName);
 	
 	public CountryBranch findByBranchId(BigDecimal branchId);
+	
+	public CountryBranch findByCountryBranchId(BigDecimal countryBranchId);
 }

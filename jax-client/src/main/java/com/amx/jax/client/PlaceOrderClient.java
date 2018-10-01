@@ -2,6 +2,8 @@ package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.PLACE_ORDER_ENDPOINT;
 
+import java.math.BigDecimal;
+
 import javax.validation.ValidationException;
 
 import org.apache.log4j.Logger;
@@ -12,8 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.JaxSystemError;
+import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.rest.RestService;
 
@@ -119,5 +124,24 @@ public class PlaceOrderClient extends AbstractJaxServiceClient {
 			}
 		}
 		return response.getBody();
+	}
+	
+	public ApiResponse<PlaceOrderNotificationDTO> getPlaceOrderOnTrigger(BigDecimal pipsMasterId) throws ResourceNotFoundException, InvalidInputException {
+		try {
+			String endpoint = PLACE_ORDER_ENDPOINT+"/get/placeorder/ontrigger";
+			StringBuilder sb = new StringBuilder();
+			sb.append("?").append("pipsMasterId=").append(pipsMasterId);
+			String getPlaceOrderRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			HttpEntity<PlaceOrderNotificationDTO> requestEntity = new HttpEntity<PlaceOrderNotificationDTO>(getHeader());
+			log.info("calling Place Order api: " + getPlaceOrderRateUrl);
+			return restService.ajax(getPlaceOrderRateUrl).get(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<PlaceOrderNotificationDTO>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			log.error("exception in place Order details :", e);
+			throw new JaxSystemError();
+		} 
 	}
 }

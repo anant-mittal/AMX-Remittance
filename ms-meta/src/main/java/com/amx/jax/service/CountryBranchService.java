@@ -18,4 +18,7 @@ public class CountryBranchService {
 		return repo.findByBranchId(new BigDecimal(90));
 	}
 
+	public CountryBranch getCountryBranchByCountryBranchId(BigDecimal countryBranchId) {
+		return repo.findByCountryBranchId(countryBranchId);
+	}
 }

@@ -26,9 +26,9 @@ import org.springframework.web.servlet.LocaleResolver;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
-import com.amx.jax.postman.client.FBPushClient;
 import com.amx.jax.postman.client.GeoLocationClient;
 import com.amx.jax.postman.client.PostManClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
 import com.amx.jax.postman.model.File;
@@ -63,7 +63,7 @@ public class PostManControllerTest {
 
 	/** The fb push client. */
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
 
 	/** The post man service impl. */
 	@Autowired
@@ -163,7 +163,7 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH, method = RequestMethod.POST)
 	public PushMessage fbPush(@RequestBody PushMessage msg)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.sendDirect(msg);
+		pushNotifyClient.sendDirect(msg);
 		return msg;
 	}
 
@@ -185,7 +185,7 @@ public class PostManControllerTest {
 	@RequestMapping(value = PostManUrls.NOTIFY_PUSH_SUBSCRIBE, method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.subscribe(token, topic);
+		pushNotifyClient.subscribe(token, topic);
 		return topic;
 	}
 

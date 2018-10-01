@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +15,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
@@ -49,6 +53,10 @@ public class PlaceOrderClientTest {
 		placeOrderDTO.setCreatedDate(new Date());
 		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
 		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-09"));
+		placeOrderDTO.setBaseCurrencyId(new BigDecimal(1));
+		placeOrderDTO.setBaseCurrencyQuote("KWD");
+		placeOrderDTO.setForeignCurrencyId(new BigDecimal(4));
+		placeOrderDTO.setForeignCurrencyQuote("INR");
 		
 		ApiResponse<PlaceOrderDTO> response = client.savePlaceOrder(placeOrderDTO);
 		assertNotNull("Response is null", response);
@@ -91,7 +99,7 @@ public class PlaceOrderClientTest {
 		assertNotNull("Response is null", response);
 	}
 	
-	@Test
+	//@Test
 	public void updatePlaceOrder() throws ParseException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -111,8 +119,25 @@ public class PlaceOrderClientTest {
 		placeOrderDTO.setCreatedDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-01"));
 		placeOrderDTO.setValidFromDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-02"));
 		placeOrderDTO.setValidToDate(new SimpleDateFormat("yyyy-MM-dd").parse("2018-06-11"));
+		placeOrderDTO.setBaseCurrencyId(new BigDecimal(1));
+		placeOrderDTO.setBaseCurrencyQuote("KWD");
+		placeOrderDTO.setForeignCurrencyId(new BigDecimal(4));
+		placeOrderDTO.setForeignCurrencyQuote("INR");
 		
 		ApiResponse<PlaceOrderDTO> response = client.updatePlaceOrder(placeOrderDTO);
 		assertNotNull("Response is null", response);
+	}
+	
+	@Test
+	public void rateAlertPlaceOrder() throws ParseException {
+		jaxMetaInfo.setCountryId(new BigDecimal(91));
+		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
+		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
+		ApiResponse<PlaceOrderNotificationDTO> response = null;
+		response = client.getPlaceOrderOnTrigger(new BigDecimal(1));
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		assertNotNull(response.getResult().getModelType());
 	}
 }

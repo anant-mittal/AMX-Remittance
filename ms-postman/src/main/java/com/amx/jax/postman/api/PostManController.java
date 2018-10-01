@@ -1,5 +1,6 @@
 package com.amx.jax.postman.api;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.ExceptionReport;
@@ -172,6 +174,20 @@ public class PostManController {
 			postManService.sendEmail(email);
 		}
 		return email;
+	}
+
+	@RequestMapping(value = PostManUrls.SEND_EMAIL_BULK, method = RequestMethod.POST)
+	public PostManResponse sendEmailBulk(@RequestBody List<Email> emailList) throws PostManException {
+
+		for (Email email : emailList) {
+			postManService.sendEmailAsync(email);
+		}
+
+		PostManResponse postManResponse = new PostManResponse();
+
+		postManResponse.getRespData().put("Status", "Success");
+
+		return postManResponse;
 	}
 
 	/**

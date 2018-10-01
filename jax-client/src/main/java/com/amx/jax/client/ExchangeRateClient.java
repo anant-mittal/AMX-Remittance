@@ -98,4 +98,28 @@ public class ExchangeRateClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		}
 	}
+	
+	public ApiResponse<BooleanResponse> setExchangeRatePlaceorder(String toCurrency, BigDecimal bankId, BigDecimal amount)
+			throws ResourceNotFoundException, InvalidInputException {
+		try {
+			String endpoint = EXCHANGE_RATE_ENDPOINT + "/online/placeorder";
+			StringBuilder sb = new StringBuilder();
+			sb.append("?").append("quoteName=").append(toCurrency);
+			sb.append("&").append("bankId=").append(bankId);
+			sb.append("&").append("value=").append(amount);
+
+			String getExchangeRateUrl = this.getBaseUrl() + endpoint + sb.toString();
+			HttpEntity<String> requestEntity = new HttpEntity<String>(getHeader());
+			LOGGER.info("calling getExchangeRate api: " + getExchangeRateUrl);
+			return restService.ajax(getExchangeRateUrl).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in setExchangeRate : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
 }

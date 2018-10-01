@@ -104,7 +104,8 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsEnumArray(propertyValue, componentType));
 						} else if (type instanceof Class && ((Class<?>) type).isEnum()) {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, type));
-						} else if (type instanceof Stringable) {
+						} else if (Stringable.class.isAssignableFrom((Class<?>) type)
+								|| ((Class<?>) type).isAssignableFrom(Stringable.class)) {
 							Class<?> cl = Class.forName(typeName);
 							Constructor<?> cons = cl.getConstructor();
 							Stringable o = (Stringable) cons.newInstance();

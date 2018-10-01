@@ -60,6 +60,11 @@
 			<artifactId>lib-postman</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-mcq</artifactId>
+		</dependency>
+
 		<!-- PDF FLYINSOC -->
 		<dependency>
 			<groupId>org.xhtmlrenderer</groupId>
@@ -184,11 +189,8 @@
 	</build>
 
 	<repositories>
-		<repository>
-			<id>itext</id>
-			<name>iText Repository - releases</name>
-			<url>https://repo.itextsupport.com/releases</url>
-		</repository>
+		<!-- <repository> <id>itext</id> <name>iText Repository - releases</name> 
+			<url>https://repo.itextsupport.com/releases</url> </repository> -->
 		<repository>
 			<id>Adobe</id>
 			<name>Adobe Repository - releases</name>

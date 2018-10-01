@@ -57,6 +57,7 @@ public class AdminPushController {
 		} else {
 			return Arrays.asList(BranchesKWT.values());
 		}
+
 	}
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
