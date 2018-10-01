@@ -184,7 +184,7 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
-
+	
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -207,8 +207,14 @@ public class RemittanceController {
 		return response;
 	}
 
+	@RequestMapping(value = "/calc/", method = RequestMethod.POST)
+	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
+		logger.info("In calcEquivalentAmount with parameters" + model.toString());
+		ApiResponse response = remittanceTransactionService.calcEquivalentAmount(model);
+		return response;
+	}
 	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
-		return customerRatingService.saveCustomerRating(customerRating);
+		public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
+			return customerRatingService.saveCustomerRating(customerRating);
 	}
 }
