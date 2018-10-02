@@ -2,9 +2,6 @@ package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.amx.jax.rbaac.dto.RoleDefinitionDataTable;
 
 public class EmployeeDetailsDTO implements Serializable {
 
@@ -24,6 +21,8 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String status;
 	private Boolean isActive;
 	private Boolean isLocked;
+
+	private RoleResponseDTO userRole;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -137,5 +136,12 @@ public class EmployeeDetailsDTO implements Serializable {
 		this.isLocked = isLocked;
 	}
 
+	public RoleResponseDTO getUserRole() {
+		return userRole;
+	}
+
+	public void setUserRole(RoleResponseDTO userRole) {
+		this.userRole = userRole;
+	}
 
 }

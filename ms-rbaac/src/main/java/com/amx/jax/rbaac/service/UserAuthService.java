@@ -19,9 +19,12 @@ import com.amx.jax.rbaac.RbaacConstants;
 import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.Role;
+import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -184,9 +187,9 @@ public class UserAuthService {
 
 		String employeeNo = reqDto.getEmployeeNo();
 		String mOtpHash = reqDto.getmOtpHash();
-		//String eOtpHash = reqDto.geteOtpHash();
+		// String eOtpHash = reqDto.geteOtpHash();
 		String ipAddress = reqDto.getIpAddress();
-		//String transactionId = reqDto.getTransactionId();
+		// String transactionId = reqDto.getTransactionId();
 		String deviceId = reqDto.getDeviceId();
 
 		/**
@@ -241,24 +244,32 @@ public class UserAuthService {
 
 		EmployeeDetailsDTO empDetail = ObjectConverter.convertEmployeeToEmpDetailsDTO(employee);
 
-		/*
-		empDetail.setCivilId(employee.getCivilId());
-		empDetail.setCountryId(employee.getCountryId());
-		empDetail.setDesignation(employee.getDesignation());
-		empDetail.setEmail(employee.getEmail());
-		empDetail.setEmployeeId(employee.getEmployeeId());
-		empDetail.setEmployeeName(employee.getEmployeeName());
-		empDetail.setEmployeeNumber(employee.getEmployeeNumber());
-		empDetail.setLocation(employee.getLocation());
-		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
-		empDetail.setUserName(employee.getUserName());
-		empDetail.setRoleId(new BigDecimal("1"));
-		 */
-		
+		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
+
+		empDetail.setUserRole(roleResponseDTO);
+
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
 
 		return empDetail;
+	}
+
+	private RoleResponseDTO getRoleForUser(BigDecimal userId) {
+
+		UserRoleMapping urm = rbaacDao.getUserRoleMappingByEmployeeId(userId);
+
+		if (urm == null) {
+			return new RoleResponseDTO();
+		}
+
+		Role role = rbaacDao.getRoleById(urm.getRoleId());
+
+		if (urm.getSuspended() != null
+				&& (urm.getSuspended().equalsIgnoreCase("Y") || urm.getSuspended().equalsIgnoreCase("YES"))) {
+			role.setSuspended("Y");
+		}
+
+		return ObjectConverter.convertRoleToRoleResponseDTO(role);
 	}
 
 	/**

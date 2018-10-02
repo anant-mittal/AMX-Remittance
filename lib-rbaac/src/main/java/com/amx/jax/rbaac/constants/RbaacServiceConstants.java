@@ -18,7 +18,30 @@ public final class RbaacServiceConstants {
 	}
 
 	public static enum SCOPE {
-		GLOBAL, COUNTRY, AREA, BRANCH;
+		GLOBAL(1), COUNTRY(2), AREA(3), BRANCH(4);
+
+		private int scopeIndex;
+
+		private SCOPE(int scopeIndex) {
+			this.scopeIndex = scopeIndex;
+		}
+
+		public int getScopeIndex() {
+			return scopeIndex;
+		}
+
+		public void setScopeIndex(int scopeIndex) {
+			this.scopeIndex = scopeIndex;
+		}
+
+		public boolean isWithinMyScope(SCOPE toScope) {
+			if (this.scopeIndex <= toScope.getScopeIndex()) {
+				return true;
+			}
+
+			return false;
+		}
+
 	}
 
 	public static enum PERM_KEY {
