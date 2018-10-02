@@ -7,14 +7,12 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.amx.utils.ArgExceptions.ArgException;
 
 /**
  * The Class ArgUtil.
@@ -97,224 +95,6 @@ public final class ArgUtil {
 		return list.toArray(new String[list.size()]);
 	}
 
-	/**
-	 * The Class ArgException.
-	 */
-	@SuppressWarnings("serial")
-	public static class ArgException extends RuntimeException {
-
-		/** The Constant CODE. */
-		public static final String CODE = "code";
-
-		/** The Constant DATA. */
-		public static final String DATA_KEY = "data";
-
-		/** The warn local. */
-		private static ThreadLocal<Set<String>> warnLocal = new ThreadLocal<Set<String>>() {
-			@Override
-			protected Set<String> initialValue() {
-				return new HashSet<String>();
-			}
-		};
-
-		/** The error code. */
-		private String errorCode;
-
-		/** The data. */
-		private Map<String, Object> data = new LinkedHashMap<String, Object>();
-
-		/**
-		 * Instantiates a new arg exception.
-		 */
-		public ArgException() {
-		}
-
-		/**
-		 * Instantiates a new arg exception.
-		 *
-		 * @param message
-		 *            the message
-		 */
-		public ArgException(String message) {
-			super(message);
-		}
-
-		/**
-		 * Instantiates a new arg exception.
-		 *
-		 * @param exp
-		 *            the exp
-		 */
-		public ArgException(Throwable exp) {
-			super(exp);
-		}
-
-		/**
-		 * Gets the error code.
-		 *
-		 * @return the error code
-		 */
-		public String getErrorCode() {
-			return this.errorCode;
-		}
-
-		/**
-		 * Sets the error code.
-		 *
-		 * @param errorCode
-		 *            the new error code
-		 */
-		public void setErrorCode(String errorCode) {
-			this.errorCode = errorCode;
-		}
-
-		/**
-		 * Gets the data.
-		 *
-		 * @return the data
-		 */
-		public Map<String, Object> getData() {
-			return this.data;
-		}
-
-		/**
-		 * Errors.
-		 *
-		 * @return the map
-		 */
-		public Map<String, Object> errors() {
-			Map<String, Object> innerMap = new LinkedHashMap<String, Object>();
-			innerMap.put(CODE, this.errorCode);
-			innerMap.put(DATA_KEY, this.data);
-			return innerMap;
-		}
-
-		/**
-		 * Warning.
-		 *
-		 * @param message
-		 *            the message
-		 */
-		public static void warning(String message) {
-			warnLocal.get().add(message);
-		}
-
-		/**
-		 * Warnings.
-		 *
-		 * @return the list
-		 */
-		public static List<String> warnings() {
-			List<String> app = new ArrayList<String>(warnLocal.get());
-			warnLocal.get().clear();
-			return app;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see java.lang.Throwable#getMessage()
-		 */
-		@Override
-		public String getMessage() {
-			return JsonUtil.toJson(errors());
-		}
-	}
-
-	/**
-	 * The Class ParameterException.
-	 */
-	@SuppressWarnings("serial")
-	public static class ParameterException extends ArgException {
-
-		/** The is missing. */
-		protected boolean isMissing;
-
-		/**
-		 * Instantiates a new parameter exception.
-		 *
-		 * @param isMissing
-		 *            the is missing
-		 */
-		public ParameterException(boolean isMissing) {
-			this.isMissing = isMissing;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.spamjs.utils.ArgUtil.ArgException#getMessage()
-		 */
-		@Override
-		public String getMessage() {
-			StringBuilder sb = new StringBuilder();
-			if (getData().get("key") != null) {
-				sb.append(getData().get("key")).append(":");
-			}
-			sb.append(getMessageOverride());
-			return sb.toString();
-		}
-
-		/**
-		 * Gets the message override.
-		 *
-		 * @return the message override
-		 */
-		public String getMessageOverride() {
-			return this.isMissing ? "parameter missing"
-					: "parameter invalid - requires type " + getData().get("valid_type");
-		}
-	}
-
-	/**
-	 * The Class EnumParameterException.
-	 */
-	@SuppressWarnings("serial")
-	public static class EnumParameterException extends ParameterException {
-
-		/** The enum value. */
-		private Enum enumValue;
-
-		/** The message override. */
-		private String messageOverride;
-
-		/**
-		 * Instantiates a new enum parameter exception.
-		 *
-		 * @param isMissing
-		 *            the is missing
-		 * @param enumValue
-		 *            the enum value
-		 */
-		public EnumParameterException(boolean isMissing, Enum enumValue) {
-			super(isMissing);
-			this.enumValue = enumValue;
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.spamjs.utils.ArgUtil.ParameterException#getMessageOverride()
-		 */
-		@Override
-		public String getMessageOverride() {
-			if (this.messageOverride == null) {
-				StringBuilder sb = new StringBuilder("[");
-				for (String element : getTypeEnum(this.enumValue)) {
-					if (sb.length() > 1) {
-						sb.append(",");
-					}
-					sb.append(element);
-				}
-				sb.append("]");
-
-				this.messageOverride = this.isMissing ? "parameter missing"
-						: "parameter invalid - requires one of " + sb.toString();
-
-			}
-			return this.messageOverride;
-		}
-	}
 
 	/**
 	 * Parse as T.
@@ -334,7 +114,7 @@ public final class ArgUtil {
 			if (!required) {
 				return defaultValue;
 			}
-			throw ArgExceptionFactory.paramMissingOrInvalid(null, null, defaultValue);
+			throw ArgExceptions.paramMissingOrInvalid(null, null, defaultValue);
 		}
 		Object ret = value;
 		if (defaultValue instanceof Boolean) {
@@ -364,7 +144,7 @@ public final class ArgUtil {
 			if (!required) {
 				return defaultValue;
 			}
-			throw ArgExceptionFactory.paramMissingOrInvalid(null, value, defaultValue);
+			throw ArgExceptions.paramMissingOrInvalid(null, value, defaultValue);
 		}
 		return (T) ret;
 	}
@@ -410,7 +190,7 @@ public final class ArgUtil {
 			if (!required) {
 				return defaultListValue;
 			}
-			throw ArgExceptionFactory.paramMissingOrInvalid(null, null, defaultValue);
+			throw ArgExceptions.paramMissingOrInvalid(null, null, defaultValue);
 
 		}
 		if (value instanceof Object[]) {
@@ -425,7 +205,7 @@ public final class ArgUtil {
 			}
 			return list;
 		}
-		throw ArgExceptionFactory.paramMissingOrInvalid(null, value, defaultValue);
+		throw ArgExceptions.paramMissingOrInvalid(null, value, defaultValue);
 	}
 
 	/**
@@ -451,7 +231,7 @@ public final class ArgUtil {
 			if (!required) {
 				return defaultListOfListValue;
 			}
-			throw ArgExceptionFactory.paramMissingOrInvalid(null, null, defaultValue);
+			throw ArgExceptions.paramMissingOrInvalid(null, null, defaultValue);
 		}
 		if (value instanceof List) {
 			List<List<T>> list = (List<List<T>>) value;
@@ -460,7 +240,7 @@ public final class ArgUtil {
 			}
 			return list;
 		}
-		throw ArgExceptionFactory.paramMissingOrInvalid(null, value, defaultValue);
+		throw ArgExceptions.paramMissingOrInvalid(null, value, defaultValue);
 	}
 
 	/**
@@ -488,7 +268,7 @@ public final class ArgUtil {
 			if (!required) {
 				return defaultListListOfListValue;
 			}
-			throw ArgExceptionFactory.paramMissingOrInvalid(null, null, defaultValue);
+			throw ArgExceptions.paramMissingOrInvalid(null, null, defaultValue);
 		}
 		if (value instanceof List) {
 			List<List<List<T>>> list = (List<List<List<T>>>) value;
@@ -498,7 +278,7 @@ public final class ArgUtil {
 			}
 			return list;
 		}
-		throw ArgExceptionFactory.paramMissingOrInvalid(null, value, defaultValue);
+		throw ArgExceptions.paramMissingOrInvalid(null, value, defaultValue);
 	}
 
 	/**

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import com.amx.utils.ArgExceptions.ParameterException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -376,7 +377,7 @@ public class JsonPath {
 			boolean required) {
 		try {
 			return ArgUtil.parseAsT(internalLoad(properties, refProperties), defaultValue, required);
-		} catch (ArgUtil.ParameterException e) {
+		} catch (ParameterException e) {
 			e.getData().put(KEY, this.reference);
 			throw e;
 		}
@@ -631,7 +632,7 @@ public class JsonPath {
 		try {
 			return ArgUtil.parseAsListOfT(internalLoad(properties, refProperties), defaultValue, defaultListValue,
 					required);
-		} catch (ArgUtil.ParameterException e) {
+		} catch (ParameterException e) {
 			e.getData().put(KEY, this.reference);
 			e.getData().put(VALID_TYPE, "array[" + e.getData().get(VALID_TYPE) + "]");
 			throw e;
@@ -819,7 +820,7 @@ public class JsonPath {
 		try {
 			return ArgUtil.parseAsListListOfT(internalLoad(properties, refProperties), defaultValue, defaultListValue,
 					defaultListOfListValue, required);
-		} catch (ArgUtil.ParameterException e) {
+		} catch (ParameterException e) {
 			e.getData().put(KEY, this.reference);
 			e.getData().put(VALID_TYPE, "array[array[" + e.getData().get(VALID_TYPE) + "]]");
 			throw e;

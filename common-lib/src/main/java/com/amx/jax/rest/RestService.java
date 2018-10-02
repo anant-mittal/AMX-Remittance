@@ -260,10 +260,26 @@ public class RestService {
 			return this.asApiResponse(Object.class);
 		}
 
+		/**
+		 * @deprecated use {@link #as(ParameterizedTypeReference)} directly, to have
+		 *             smooth casting of resultType
+		 * 
+		 * @param resultType
+		 * @return
+		 */
+		@Deprecated
 		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
 			return this.asApiResponse(resultType, Object.class);
 		}
 
+		/**
+		 * @deprecated use {@link #as(ParameterizedTypeReference)} directly, to have
+		 *             smooth casting of resultType
+		 * 
+		 * @param resultType
+		 * @return
+		 */
+		@Deprecated
 		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> resultType, Class<M> metaType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
 			});

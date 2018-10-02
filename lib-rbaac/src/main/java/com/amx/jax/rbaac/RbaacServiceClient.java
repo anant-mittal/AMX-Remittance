@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -60,7 +61,8 @@ public class RbaacServiceClient implements RbaacService {
 				AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
-				.asApiResponse(UserAuthInitResponseDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserAuthInitResponseDTO, Object>>() {
+				});
 
 	}
 
@@ -78,7 +80,8 @@ public class RbaacServiceClient implements RbaacService {
 				reqDTO.getEmployeeNo(), reqDTO.getIpAddress(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE).post(reqDTO)
-				.asApiResponse(EmployeeDetailsDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
+				});
 
 	}
 
@@ -95,7 +98,9 @@ public class RbaacServiceClient implements RbaacService {
 				ipAddress, deviceId, AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionResposeDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<PermissionResposeDTO, Object>>() {
+				});
 
 	}
 
@@ -112,7 +117,9 @@ public class RbaacServiceClient implements RbaacService {
 				deviceId, AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(RoleResponseDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoleResponseDTO, Object>>() {
+				});
 	}
 
 	/*
@@ -129,7 +136,8 @@ public class RbaacServiceClient implements RbaacService {
 				roleRequestDTO.getIpAddr(), roleRequestDTO.getDeviceId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_SAVE).post(roleRequestDTO)
-				.asApiResponse(RoleResponseDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoleResponseDTO, Object>>() {
+				});
 	}
 
 	/*
@@ -148,7 +156,9 @@ public class RbaacServiceClient implements RbaacService {
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_GET_FOR_BRANCH)
 				.queryParam("countryBranchId", countryBranchId).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(UserRoleMappingsResponseDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserRoleMappingsResponseDTO, Object>>() {
+				});
 	}
 
 	/*
@@ -166,7 +176,8 @@ public class RbaacServiceClient implements RbaacService {
 				+ AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_UPDATE).post(urmRequestDTO)
-				.asApiResponse(UserRoleMappingDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserRoleMappingDTO, Object>>() {
+				});
 
 	}
 
@@ -186,7 +197,8 @@ public class RbaacServiceClient implements RbaacService {
 				+ AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.UAC_UPDATE).post(edRequestDTO)
-				.asApiResponse(EmployeeDetailsDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
+				});
 	}
 
 	/*
@@ -196,7 +208,9 @@ public class RbaacServiceClient implements RbaacService {
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get().asApiResponse(String.class);
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+				});
 	}
 
 	/*
