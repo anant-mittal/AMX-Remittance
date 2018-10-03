@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
@@ -72,12 +73,14 @@ public class RemittanceController {
 	@Autowired
 	RemittanceApplicationDao remitAppDao;
 
-	@Autowired
+   	@Autowired
 	CustomerRatingService customerRatingService;
 
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
-	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
-			@RequestParam(required=false,value="fromDate") String fromDate, @RequestParam(required=false,value="toDate") String toDate) {
+	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required = false, value = "docfyr") BigDecimal docfyr,
+			@RequestParam(required = false, value = "docNumber") String docNumber,
+			@RequestParam(required = false, value = "fromDate") String fromDate,
+			@RequestParam(required = false, value = "toDate") String toDate) {
 
 		BigDecimal customerId = metaData.getCustomerId();
 
@@ -161,20 +164,22 @@ public class RemittanceController {
 	public ApiResponse saveRemittance(@RequestBody PaymentResponseDto paymentResponse) {
 		JaxContextUtil.setJaxEvent(JaxEvent.CREATE_REMITTANCE);
 		JaxContextUtil.setRequestModel(paymentResponse);
-		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId()+"\t country ID :"+paymentResponse.getApplicationCountryId()+"\t Compa Id:"+paymentResponse.getCompanyId());
-		
+		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
+				+ paymentResponse.getApplicationCountryId() + "\t Compa Id:" + paymentResponse.getCompanyId());
+
 		BigDecimal customerId = metaData.getCustomerId();
 		BigDecimal applicationCountryId = metaData.getCountryId();
 		BigDecimal companyId = metaData.getCompanyId();
-		if(customerId!=null) {
-		paymentResponse.setCustomerId(customerId);
-		}else {
-		    paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
+		if (customerId != null) {
+			paymentResponse.setCustomerId(customerId);
+		} else {
+			paymentResponse.setCustomerId(new BigDecimal(paymentResponse.getTrackId()));
 		}
 		paymentResponse.setApplicationCountryId(applicationCountryId);
 		paymentResponse.setCompanyId(companyId);
-		logger.info("save-Remittance before payment capture :" + customerId+"\t country ID :"+applicationCountryId+"\t Compa Id:"+companyId);
-		
+		logger.info("save-Remittance before payment capture :" + customerId + "\t country ID :" + applicationCountryId
+				+ "\t Compa Id:" + companyId);
+
 		ApiResponse response = remittancePaymentManager.paymentCapture(paymentResponse);
 		return response;
 	}
@@ -188,7 +193,7 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/save-payment-id/", method = RequestMethod.POST)
 	public ApiResponse savePaymentId(@RequestBody PaymentResponseDto paymentResponse) {
 		logger.info("save-Remittance Controller :" + paymentResponse.getCustomerId() + "\t country ID :"
@@ -231,9 +236,9 @@ public class RemittanceController {
 		ApiResponse response = remittanceTransactionService.calcEquivalentAmount(model);
 		return response;
 	}
-	
+
 	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
-		public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
-			return customerRatingService.saveCustomerRating(customerRating);
+	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
+		return customerRatingService.saveCustomerRating(customerRating);
 	}
 }
