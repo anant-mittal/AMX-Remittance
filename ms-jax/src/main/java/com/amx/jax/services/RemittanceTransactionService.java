@@ -145,13 +145,15 @@ public class RemittanceTransactionService extends AbstractService {
 	
 	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
 		ApiResponse response = getBlackApiResponse();
+		RemittanceTransactionResponsetModel respModel = new RemittanceTransactionResponsetModel();
 		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
 		BigDecimal fcDecimalNumber = currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber();
-		ExchangeRateBreakup responseModel = newExchangeRateService.calcEquivalentAmount(model,
+		ExchangeRateBreakup exRateBreakup = newExchangeRateService.calcEquivalentAmount(model,
 				fcDecimalNumber.intValue());
-		response.getData().getValues().add(responseModel);
+		respModel.setExRateBreakup(exRateBreakup);
+		response.getData().getValues().add(respModel);
 		response.setResponseStatus(ResponseStatus.OK);
-		response.getData().setType(model.getModelType());
+		response.getData().setType(respModel.getModelType());
 		return response;
 	}
 
