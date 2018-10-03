@@ -104,6 +104,9 @@ public class UserValidationService {
 
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
+	
+	@Autowired
+	private UserValidationService userValidationService;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -590,6 +593,9 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
 		}
+		
+		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
 		}
