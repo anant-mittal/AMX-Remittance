@@ -70,7 +70,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	@Deprecated
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
+		return this.report(transactionHistroyDTO, false);
+	}
+
+	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
+			Boolean promotion) {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
@@ -79,11 +85,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 			transactionHistroyDTO.setCompanyId(companyId);
 			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
 			transactionHistroyDTO.setCustomerId(customerId);
-			LOGGER.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
+			LOGGER.debug("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
 					getHeader());
 			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
-			return restService.ajax(sendOtpUrl).post(requestEntity)
+			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -217,13 +223,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 	 * year
 	 */
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
-			RemittanceTransactionStatusRequestModel request)
+			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
 			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
 		} catch (AbstractJaxException ae) {

@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,7 @@ import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.payment.PayGService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -94,6 +96,8 @@ public class RemittController {
 	/** The session service. */
 	@Autowired
 	private SessionService sessionService;
+
+	private Logger logger = LoggerService.getLogger(getClass());
 
 	/**
 	 * Tranxhistory.
@@ -188,9 +192,14 @@ public class RemittController {
 	public String tranxreport(@RequestBody TransactionHistroyDTO tranxDTO,
 			@RequestParam(required = false) Boolean duplicate, @RequestParam(required = false) Boolean skipd)
 			throws IOException, PostManException {
-		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		// : true;
+
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
+				.report(tranxDTO, !duplicate.booleanValue()).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
 
 		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
@@ -227,20 +236,27 @@ public class RemittController {
 	@ApiOperation(value = "Returns transaction reciept:")
 	@RequestMapping(value = "/api/user/tranx/report.{ext}", method = { RequestMethod.GET })
 	public @ResponseBody String tranxreportExt(@RequestParam(required = false) BigDecimal collectionDocumentNo,
+			@RequestParam(required = false) BigDecimal documentNumber,
+			@RequestParam(required = false) BigDecimal documentFinanceYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentFinYear,
 			@RequestParam(required = false) BigDecimal collectionDocumentCode,
 			@RequestParam(required = false) BigDecimal customerReference, @PathVariable("ext") String ext,
 			@RequestParam(required = false) Boolean duplicate) throws PostManException, IOException {
 
-		duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false : true;
+		duplicate = ArgUtil.parseAsBoolean(duplicate, false);
+		// duplicate = (duplicate == null || duplicate.booleanValue() == false) ? false
+		// : true;
 
 		TransactionHistroyDTO tranxDTO = new TransactionHistroyDTO();
 		tranxDTO.setCollectionDocumentNo(collectionDocumentNo);
+		tranxDTO.setDocumentNumber(documentNumber);
+		tranxDTO.setDocumentFinanceYear(documentFinanceYear);
 		tranxDTO.setCollectionDocumentFinYear(collectionDocumentFinYear);
 		tranxDTO.setCollectionDocumentCode(collectionDocumentCode);
 		tranxDTO.setCustomerReference(customerReference);
 
-		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient().report(tranxDTO).getResult();
+		RemittanceReceiptSubreport rspt = jaxService.setDefaults().getRemitClient()
+				.report(tranxDTO, !duplicate.booleanValue()).getResult();
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
@@ -422,7 +438,7 @@ public class RemittController {
 	public ResponseWrapper<RemittanceTransactionStatusResponseModel> appStatus(
 			@RequestBody RemittanceTransactionStatusRequestModel request) {
 		ResponseWrapper<RemittanceTransactionStatusResponseModel> wrapper = new ResponseWrapper<RemittanceTransactionStatusResponseModel>();
-		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request).getResult());
+		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request, true).getResult());
 		return wrapper;
 	}
 
