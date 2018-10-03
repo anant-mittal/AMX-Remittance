@@ -136,13 +136,12 @@ public class PaymentService {
 			}
 		}
 		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
-		if (dto!=null) {
-			errorCategory = dto.getErrorCategory();	
-		}else {
+		if (dto != null) {
+			errorCategory = dto.getErrorCategory();
+		} else {
 			LOGGER.info("Default ResponseError Message");
-			errorCategory="TXN_AUTH_PIN";
+			errorCategory = "TXN_AUTH_PIN";
 		}
-		
 		return errorCategory;
 	}
 }
