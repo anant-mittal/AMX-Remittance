@@ -166,5 +166,6 @@ public class NewExchangeRateService extends ExchangeRateService {
 		}
 		breakup.setRate(request.getDomXRate());
 		return breakup;
+	
 	}
 }
