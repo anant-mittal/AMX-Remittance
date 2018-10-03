@@ -4,6 +4,7 @@ package com.amx.jax.ui.api;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +76,6 @@ public class HomeController {
 	/** The post man service. */
 	@Autowired
 	private RestService restService;
-	
 
 	/**
 	 * Gets the version.
@@ -194,8 +194,10 @@ public class HomeController {
 
 	@RequestMapping(value = { "/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String applejson(Model model) {
+	public String applejson(Model model, HttpServletResponse response) {
 		model.addAttribute("appid", webAppConfig.getIosAppId());
+		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+		response.setCharacterEncoding("utf-8");
 		return "json/apple-app-site-association";
 	}
 }
