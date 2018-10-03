@@ -33,6 +33,12 @@ import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.util.ConverterUtil;
 import com.amx.jax.util.JaxContextUtil;
 
+import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.services.CustomerRatingService;
+import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
+
 @RestController
 @RequestMapping(REMIT_API_ENDPOINT)
 @SuppressWarnings("rawtypes")
