@@ -9,6 +9,11 @@ package com.amx.jax.rbaac.constants;
  */
 public final class RbaacServiceConstants {
 
+	private RbaacServiceConstants() {
+		// Not Allowed
+		super();
+	}
+
 	public static enum DEVICE_TYPE {
 		MOBILE, PC;
 	}
@@ -20,6 +25,7 @@ public final class RbaacServiceConstants {
 	public static enum SCOPE {
 		GLOBAL(1), COUNTRY(2), AREA(3), BRANCH(4);
 
+		// Custom Ordinal
 		private int scopeIndex;
 
 		private SCOPE(int scopeIndex) {
@@ -28,10 +34,6 @@ public final class RbaacServiceConstants {
 
 		public int getScopeIndex() {
 			return scopeIndex;
-		}
-
-		public void setScopeIndex(int scopeIndex) {
-			this.scopeIndex = scopeIndex;
 		}
 
 		public boolean isWithinMyScope(SCOPE toScope) {
