@@ -22,6 +22,9 @@ public enum Templates {
 	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"), PARTIAL_REGISTRATION_EMAIL(
 			"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
+	PROMOTION_WINNER("PromotionWinner"),
+ 	PROMOTION_COUPON("PromotionCoupon"),
+
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
 	
 	String fileName;
