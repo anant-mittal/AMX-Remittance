@@ -373,8 +373,11 @@ public class PlaceOrderService extends AbstractService {
 					.collect(Collectors.toList());
 			List<BigDecimal> poIds = placeOrderList.stream().map(po -> po.getOnlinePlaceOrderId()).distinct()
 					.collect(Collectors.toList());
-			String join = poCustomerIds.stream().map(i -> i.toString()).collect(Collectors.joining(","));
-			logger.info("sql query: select * from fs_customer where cusotmer_id in ({}) ", join);
+			stopWatch.start();
+			updatePlaceOrdersForNotification(poIds);
+			stopWatch.stop();
+			logger.info("total time taken to run save place order query query:{} seconds",
+					stopWatch.getLastTaskTimeMillis() / 1000);
 			stopWatch.start();
 			List<PlaceOrderCustomer> poCustomers = customerDao.getPersonInfoById(poCustomerIds);
 			stopWatch.stop();
@@ -406,12 +409,6 @@ public class PlaceOrderService extends AbstractService {
 					placeorder.setUpdatedDate(new Date());
 					placeorder.setNotificationDate(new Date());
 				}
-				stopWatch.start();
-				updatePlaceOrdersForNotification(poIds);
-				
-				stopWatch.stop();
-				logger.info("total time taken to run save place order query query:{} seconds",
-						stopWatch.getLastTaskTimeMillis() / 1000);
 			}
 			logger.debug("place Order for Notfication :" + dtoList.toString());
 
