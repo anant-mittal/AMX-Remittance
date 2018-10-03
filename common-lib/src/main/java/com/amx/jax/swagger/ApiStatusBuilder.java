@@ -1,5 +1,10 @@
 package com.amx.jax.swagger;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +18,8 @@ import springfox.documentation.swagger.common.SwaggerPluginSupport;
 @Order(SwaggerPluginSupport.SWAGGER_PLUGIN_ORDER + 1000)
 public class ApiStatusBuilder extends IStatusCodeListPlugin<AmxStatus, ApiStatus> {
 
-	@ApiStatusService
+	@Target(ElementType.METHOD)
+	@Retention(RetentionPolicy.RUNTIME)
 	public @interface ApiStatus {
 		AmxStatus[] value() default { AmxStatus.SUCCESS };
 
