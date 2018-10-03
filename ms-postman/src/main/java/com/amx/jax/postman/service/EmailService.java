@@ -43,6 +43,8 @@ public class EmailService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
 	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
+	public static final Pattern PATTERN_CID = Pattern.compile("src=\"cid:(.*?)\"");
+	public static final Pattern PATTERN_SUBJECT = Pattern.compile("<title>(.*?)</title>");
 
 	/** The template utils. */
 	@Autowired
@@ -223,7 +225,17 @@ public class EmailService {
 		helper.setFrom(new InternetAddress(fromEmail, fromTitle));
 		helper.setReplyTo(eParams.getReplyTo());
 
-		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();
+		String messageStr = eParams.getMessage();
+
+		String subject = eParams.getSubject();
+		if (ArgUtil.isEmptyString(subject)) {
+			Matcher mtitle = PATTERN_SUBJECT.matcher(messageStr);
+
+			if (mtitle.find()) {
+				subject = mtitle.group(1);
+			}
+			subject = ArgUtil.isEmptyString(subject) ? "No Subject" : subject;
+		}
 		helper.setSubject(subject);
 		helper.setText(eParams.getMessage(), isHtml);
 
@@ -231,10 +243,7 @@ public class EmailService {
 			helper.setCc(eParams.getCc().toArray(new String[eParams.getCc().size()]));
 		}
 
-		String str = eParams.getMessage();
-		Pattern p = Pattern.compile("src=\"cid:(.*?)\"");
-		Matcher m = p.matcher(str);
-
+		Matcher m = PATTERN_CID.matcher(messageStr);
 		while (m.find()) {
 			String contentId = m.group(1);
 			helper.addInline(contentId, templateUtils.readAsResource(contentId));

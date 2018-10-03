@@ -89,7 +89,11 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.CIVILID_EXPIRY_JSON);
+			if (ArgUtil.areEqual(expired, "0")) {
+				pushMessage.setTemplate(Templates.CIVILID_EXPIRY);
+			} else {
+				pushMessage.setTemplate(Templates.CIVILID_EXPIRED);
+			}
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

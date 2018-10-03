@@ -31,7 +31,6 @@ import com.amx.jax.model.response.ArticleMasterDescDto;
 import com.amx.jax.model.response.ComponentDataDto;
 import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
-import com.amx.jax.offsite.service.OffsiteService;
 
 
 /**
@@ -47,9 +46,6 @@ public class OffsiteController {
 
 	@Autowired
 	private OffsiteCustRegClient offsiteCustRegClient;
-
-	@Autowired
-	private OffsiteService offsiteService;
 
 	@Autowired
 	private MetaClient metaClient;
