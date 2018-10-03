@@ -20,6 +20,7 @@ public final class PostManUrls {
 	public static final String PROCESS_TEMPLATE = "/postman/template/process";
 	public static final String PROCESS_TEMPLATE_FILE = "/postman/template/file";
 	public static final String WHATS_APP_SEND = "/postman/whatsapp/send";
+	public static final String WHATS_APP_SEND_BULK = "/postman/whatsapp/send_bulk";
 	public static final String WHATS_APP_RESEND = "/postman/whatsapp/resend";
 	public static final String WHATS_APP_STATUS = "/postman/whatsapp/status";
 	public static final String WHATS_APP_STATS = "/postman/whatsapp/stats";

@@ -19,6 +19,7 @@ import org.springframework.util.MultiValueMap;
 import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.HttpUtils;
 
 public class RequestTrackEvent extends AuditEvent {
 
@@ -37,6 +38,7 @@ public class RequestTrackEvent extends AuditEvent {
 	private MultiValueMap<String, String> header;
 	private AppContext context;
 	private long responseTime;
+	private String ip;
 
 	public MultiValueMap<String, String> getHeader() {
 		return header;
@@ -105,6 +107,7 @@ public class RequestTrackEvent extends AuditEvent {
 				header.add(headerName, headerValue);
 			}
 		}
+		this.ip = HttpUtils.getIPAddress(request);
 		return this;
 	}
 
@@ -139,6 +142,14 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public void setContext(AppContext context) {
 		this.context = context;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 }

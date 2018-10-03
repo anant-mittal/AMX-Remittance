@@ -2,6 +2,7 @@
 <configuration>
 	<property resource="application.properties" />
 	<property name="AUDIT" value="AUDIT" />
+	<springProperty scope="context" name="logfile" source="logging.debug-file" />
 	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<layout class="ch.qos.logback.classic.PatternLayout">

@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +33,6 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -109,7 +107,6 @@ public class HomeController {
 	 * @return the string
 	 */
 	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
-	@Timed
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
 	public String loginPing(HttpServletRequest request) {
@@ -131,7 +128,6 @@ public class HomeController {
 	 *            the model
 	 * @return the string
 	 */
-	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
 		LOGGER.debug("This is debug Statment");

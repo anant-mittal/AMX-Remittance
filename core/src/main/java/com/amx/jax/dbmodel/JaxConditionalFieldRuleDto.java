@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.amx.amxlib.constant.JaxFieldEntity;
-import com.amx.jax.dbmodel.JaxField;
-import com.amx.jax.dbmodel.PrefixModel;
 
 public class JaxConditionalFieldRuleDto {
 	

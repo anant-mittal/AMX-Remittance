@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
@@ -16,15 +17,18 @@ import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.SourceOfIncomeView;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.repository.IRemittanceTransactionDao;
 import com.amx.jax.repository.ISourceOfIncomeDao;
+import com.amx.jax.service.CurrencyMasterService;
 
 @Service
 @SuppressWarnings("rawtypes")
@@ -39,6 +43,12 @@ public class RemittanceTransactionService extends AbstractService {
 
 	@Autowired
 	ISourceOfIncomeDao sourceOfIncomeDao;
+	@Autowired
+	BeneficiaryService beneficiaryService; 
+	@Autowired
+	CurrencyMasterService currencyMasterService ; 
+	@Autowired
+	NewExchangeRateService newExchangeRateService;  
 	
 	public ApiResponse getRemittanceTransactionDetails(BigDecimal collectionDocumentNo, BigDecimal fYear,
 			BigDecimal collectionDocumentCode) {
@@ -125,6 +135,18 @@ public class RemittanceTransactionService extends AbstractService {
 	public ApiResponse getTransactionStatus(RemittanceTransactionStatusRequestModel request) {
 		ApiResponse response = getBlackApiResponse();
 		RemittanceTransactionStatusResponseModel responseModel = remittanceTxnManger.getTransactionStatus(request);
+		response.getData().getValues().add(responseModel);
+		response.setResponseStatus(ResponseStatus.OK);
+		response.getData().setType(responseModel.getModelType());
+		return response;
+	}
+	
+	public ApiResponse calcEquivalentAmount(@RequestBody RemittanceTransactionRequestModel model) {
+		ApiResponse response = getBlackApiResponse();
+		BigDecimal fcCurrencyId = beneficiaryService.getBeneByIdNo(model.getBeneId()).getCurrencyId();
+		BigDecimal fcDecimalNumber = currencyMasterService.getCurrencyMasterById(fcCurrencyId).getDecinalNumber();
+		ExchangeRateBreakup responseModel = newExchangeRateService.calcEquivalentAmount(model,
+				fcDecimalNumber.intValue());
 		response.getData().getValues().add(responseModel);
 		response.setResponseStatus(ResponseStatus.OK);
 		response.getData().setType(responseModel.getModelType());

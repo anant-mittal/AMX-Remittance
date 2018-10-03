@@ -235,12 +235,16 @@ public class RestService {
 			});
 		}
 
-		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
+		public AmxApiResponse<Object, Object> asApiResponse() {
+			return this.asApiResponse(Object.class);
+		}
+
+		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
 			});
 		}
 
-		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> responseType, Class<M> modelType) {
+		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> resultType, Class<M> metaType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
 			});
 		}

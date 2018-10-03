@@ -1,7 +1,6 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,9 +27,10 @@ import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
@@ -442,5 +442,18 @@ public class PlaceOrderService extends AbstractService {
 	public String getModelType() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void validatePlaceOrderDto(PlaceOrderDTO dto) {
+		// both foreign and domestic amounts should not be null
+		if(dto.getPayAmount() == null && dto.getReceiveAmount() == null) {
+			throw new GlobalException("Both PayAmount and ReceivedAmount should not be null ",
+					JaxError.PO_BOTH_PAY_RECEIVED_AMT_NULL);
+		}
+		
+		/*if(dto.getPayAmount() != null && dto.getReceiveAmount() != null) {
+			throw new GlobalException("Either PayAmount or ReceivedAmount should have value ",
+					JaxError.PO_BOTH_PAY_RECEIVED_AMT_VALUE);
+		}*/
 	}
 }
