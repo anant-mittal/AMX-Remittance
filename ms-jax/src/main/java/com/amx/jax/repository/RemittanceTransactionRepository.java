@@ -13,4 +13,7 @@ public interface RemittanceTransactionRepository extends CrudRepository<Remittan
 
 	RemittanceTransaction findByapplicationDocumentNoAndApplicationdocumentFinancialyear(BigDecimal docNo,
 			BigDecimal finYear);
+
+	RemittanceTransaction findByDocumentNoAndDocumentFinancialyear(BigDecimal documentNo, BigDecimal docFinYear);
+
 }

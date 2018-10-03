@@ -1,0 +1,25 @@
+{
+	"data": {
+		"title": "181",
+		"firstName": "KEVYN",
+		"middleName": "ISIDOR",
+		"lastName": "JOVY SIMOES",
+		"titleLocal": "السيد",
+		"firstNameLocal": "كيفين",
+		"middleNameLocal": "ايسيادور",
+		"lastNameLocal": "جوفى سيموس",
+		"gender": "Male",
+		"dateOfBirth": 342642600000,
+		"alterEmailId": null,
+		"mobile": "65824231",
+		"email": "kev.simoes10@gmail.com",
+		"nationalityId": 95,
+		"lastLoginTime": null,
+		"identityInt": "280111000088"
+	},
+	"promotDto": {
+		"prize": "TRAVEL VOUCHER",
+		"prizeMessage": "CONGRATULATIONS! YOU WON TRAVEL VOUCHER",
+		"transactionReference": "101902018"
+	}
+}

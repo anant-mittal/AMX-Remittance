@@ -1,29 +1,20 @@
-package com.amx.jax.branch.dao;
+package com.amx.jax.dao;
 
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.employee.AmgEmployee;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 
 @Component
-public class EmployeeDao {
-
-	@Autowired
-	private EmployeeRepository repo;
+public class JaxEmployeeDao {
 
 	@Autowired
 	AmgEmployeeRepository amgEmployeeRepository;
-
-	public Employee getEmployeeDetails(String civilId, BigDecimal ecNumber) {
-
-		return repo.getEmployeeDetails(civilId, ecNumber, ConstantDocument.Deleted);
-	}
 
 	/**
 	 * @param civilId
