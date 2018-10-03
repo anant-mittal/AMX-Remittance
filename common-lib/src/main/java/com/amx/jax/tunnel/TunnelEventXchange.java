@@ -4,13 +4,15 @@ public enum TunnelEventXchange {
 	/**
 	 * Event will be delivered to Only Component
 	 */
-	SHOUT_LISTNER("SG"),
+	SHOUT_LISTNER("SD"),
 
-	SEND_LISTNER("SG"),
+	SEND_LISTNER("SH"),
+
+	TASK_WORKER("TW"),
 	/**
 	 * For Audit purpose only
 	 */
-	AUDIT("AUDIT");
+	AUDIT("AD");
 
 	String queuePrefix;
 

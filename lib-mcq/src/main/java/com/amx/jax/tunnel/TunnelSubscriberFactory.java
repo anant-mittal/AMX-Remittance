@@ -1,5 +1,6 @@
 package com.amx.jax.tunnel;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -19,7 +20,7 @@ import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
-import java.lang.annotation.Annotation;
+import com.amx.utils.TimeUtils;
 
 @Service
 public class TunnelSubscriberFactory {
@@ -30,6 +31,7 @@ public class TunnelSubscriberFactory {
 
 	public static final String STATUS_WORKING = "W";
 	public static final String STATUS_DONE = "D";
+	public static long TIME_TO_EXPIRE_MILLIS = TIME_TO_EXPIRE * 60 * 1000;
 
 	@Autowired
 	AppConfig appConfig;
@@ -51,18 +53,19 @@ public class TunnelSubscriberFactory {
 			LOGGER.warn("Redisson Not avaiable for {} Listeners", listeners.size());
 		} else {
 			for (ITunnelSubscriber listener : listeners) {
-				Class<?> c = listener.getClass();
-				TunnelEvent tunnelEvent = getAnnotationProxyReady(AopProxyUtils.ultimateTargetClass(listener),
-						TunnelEvent.class);
+				Class<?> c = AopProxyUtils.ultimateTargetClass(listener);
+				TunnelEvent tunnelEvent = getAnnotationProxyReady(c, TunnelEvent.class);
 				String eventTopic = tunnelEvent.topic();
 				boolean integrity = tunnelEvent.integrity();
 				TunnelEventXchange scheme = tunnelEvent.scheme();
-				if (scheme == TunnelEventXchange.AUDIT) {
-					this.addAuditListener(eventTopic, redisson, listener, integrity);
+				if (scheme == TunnelEventXchange.TASK_WORKER) {
+					this.addTaskWorker(eventTopic, redisson, listener, integrity, c.getClass().getName());
+				} else if (scheme == TunnelEventXchange.AUDIT) {
+					this.addAuditListener(eventTopic, redisson, listener, integrity, c.getClass().getName());
 				} else if (scheme == TunnelEventXchange.SEND_LISTNER) {
-					this.addQueuedListener(eventTopic, redisson, listener, integrity);
+					this.addQueuedListener(eventTopic, redisson, listener, integrity, c.getClass().getName());
 				} else {
-					this.addListener(eventTopic, redisson, listener, integrity);
+					this.addShoutListener(eventTopic, redisson, listener, integrity, c.getClass().getName());
 				}
 			}
 		}
@@ -95,9 +98,9 @@ public class TunnelSubscriberFactory {
 
 	}
 
-	public <M> void addListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
-			boolean integrity) {
-		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(topic);
+	public <M> void addShoutListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			boolean integrity, String listentName) {
+		RTopic<TunnelMessage<M>> topicQueue = redisson.getTopic(TunnelEventXchange.SHOUT_LISTNER.getTopic(topic));
 		topicQueue.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
 			public void onMessage(String channel, TunnelMessage<M> msg) {
@@ -105,9 +108,9 @@ public class TunnelSubscriberFactory {
 				AppContextUtil.setContext(context);
 				AppContextUtil.init();
 				if (this.integrity) {
-					RMapCache<String, String> map = redisson.getMapCache(channel);
-					String integrityKey = appConfig.getAppEnv() + "#" + appConfig.getAppName() + "#"
-							+ listener.getClass().getName() + "#" + msg.getId();
+					RMapCache<String, String> map = redisson
+							.getMapCache(TunnelEventXchange.SHOUT_LISTNER.getStatusMap(topic));
+					String integrityKey = appConfig.getAppName() + "#" + listentName + "#" + msg.getId();
 					String prevObject = map.put(integrityKey, msg.getId(), TIME_TO_EXPIRE, UNIT_OF_TIME);
 					if (prevObject == null) { // Hey I got it first :) OR it doesn't matter
 						this.doMessage(channel, msg);
@@ -132,7 +135,7 @@ public class TunnelSubscriberFactory {
 	}
 
 	public <M> void addQueuedListener(String topicName, RedissonClient redisson, ITunnelSubscriber<M> listener,
-			boolean integrity) {
+			boolean integrity, String listentName) {
 		RTopic<TunnelMessage<M>> eventTopic = redisson.getTopic(TunnelEventXchange.SEND_LISTNER.getTopic(topicName));
 		eventTopic.addListener(new WrapperML<M>(listener, integrity) {
 			@Override
@@ -141,7 +144,7 @@ public class TunnelSubscriberFactory {
 				RQueue<TunnelMessage<M>> eventAltQueue = redisson
 						.getQueue(TunnelEventXchange.SEND_LISTNER.getQueue(topicName));
 				TunnelMessage<M> msg2 = eventAltQueue.poll();
-				if (msg2 != null) {
+				if (msg2 != null && !TimeUtils.isDead(msg2.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
 					tryMessage(channel, msg2);
 				}
 			}
@@ -149,7 +152,7 @@ public class TunnelSubscriberFactory {
 			public boolean tryMessage(String channel, TunnelMessage<M> msg) {
 				RMapCache<String, String> map = redisson
 						.getMapCache(TunnelEventXchange.SEND_LISTNER.getStatusMap(topicName));
-				String integrityKey = appConfig.getAppEnv() + "#" + listener.getClass().getName() + "#" + msg.getId();
+				String integrityKey = appConfig.getAppEnv() + "#" + listentName + "#" + msg.getId();
 				String prevObject = map.put(integrityKey, STATUS_WORKING, TIME_TO_EXPIRE, UNIT_OF_TIME);
 				LOGGER.debug("tryMessage {} {}", integrityKey, prevObject);
 				if (prevObject == null) { // Hey I got it first
@@ -175,8 +178,32 @@ public class TunnelSubscriberFactory {
 		});
 	}
 
+	public <M> void addTaskWorker(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
+			boolean integrity, String listentName) {
+		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.TASK_WORKER.getTopic(topic));
+		topicQueue.addListener(new MessageListener<String>() {
+			@Override
+			public void onMessage(String channel, String msgId) {
+				RQueue<TunnelMessage<M>> topicMessageQueue = redisson
+						.getQueue(TunnelEventXchange.TASK_WORKER.getQueue(topic));
+				TunnelMessage<M> msg = topicMessageQueue.poll();
+				if (msg != null && !TimeUtils.isDead(msg.getTimestamp(), TIME_TO_EXPIRE_MILLIS)) {
+					AppContext context = msg.getContext();
+					AppContextUtil.setContext(context);
+					AppContextUtil.init();
+					AuditServiceClient.trackStatic(new RequestTrackEvent(RequestTrackEvent.Type.SUB_IN, msg));
+					try {
+						listener.onMessage(channel, msg.getData());
+					} catch (Exception e) {
+						LOGGER.error("EXCEPTION EVENT " + channel + " : " + msg.getId(), e);
+					}
+				}
+			}
+		});
+	}
+
 	public <M> void addAuditListener(String topic, RedissonClient redisson, ITunnelSubscriber<M> listener,
-			boolean integrity) {
+			boolean integrity, String listentName) {
 		RTopic<String> topicQueue = redisson.getTopic(TunnelEventXchange.AUDIT.getTopic(topic));
 		topicQueue.addListener(new MessageListener<String>() {
 			@Override

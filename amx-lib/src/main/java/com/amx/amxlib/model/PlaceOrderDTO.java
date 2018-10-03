@@ -45,11 +45,9 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 	
 	@NotNull(message="validFromDate may not be null")
 	private Date validFromDate;
-	
-	@NotNull(message="payAmount may not be null")
+
 	private BigDecimal payAmount;
 	
-	@NotNull(message="receiveAmount may not be null")
 	private BigDecimal receiveAmount;
 	
 	@NotNull(message="baseCurrencyId may not be null")

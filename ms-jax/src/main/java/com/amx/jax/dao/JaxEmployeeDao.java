@@ -1,12 +1,8 @@
 package com.amx.jax.dao;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.constant.ConstantDocument;
-import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.dbmodel.employee.AmgEmployee;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 

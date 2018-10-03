@@ -883,7 +883,7 @@ public class BeneficiaryService extends AbstractService {
             
             if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
-                
+                poDto.setReceiveAmount(null);
                 Boolean isExpired = false;
                 
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -907,7 +907,7 @@ public class BeneficiaryService extends AbstractService {
                 remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
                 
             }else {
-		auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
+            	auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
                 throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
             }
             

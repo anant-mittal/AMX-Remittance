@@ -16,7 +16,8 @@ import com.amx.jax.types.WritersPnum;
 public class AppParamController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AppParamController.class);
-	public static final String PARAM_URL = "/pub/amx/params";
+	public static final String PUB_AMX_PREFIX = "/pub/amx";
+	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	static {
 		// Pnum.readEnums();

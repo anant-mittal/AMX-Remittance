@@ -6,8 +6,8 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
-import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.AbstractEvent.EventMarker;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.Counter;
