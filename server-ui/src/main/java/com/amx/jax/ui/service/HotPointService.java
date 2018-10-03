@@ -184,7 +184,7 @@ public class HotPointService {
 		data.put("messages", messages);
 		event.setData(data);
 
-		pushMessage.setSubject(String.format("Special rate @ %s", webAppConfig.getAppTitle()));
+		pushMessage.setSubject(String.format("Spceial rate @ %s", webAppConfig.getAppTitle()));
 		pushMessage.setLines(messages);
 		pushMessage.addToUser(customerId);
 

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.PaymentResponseDto;
@@ -24,6 +25,8 @@ import com.amx.amxlib.model.request.RemittanceTransactionStatusRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
+import com.amx.jax.dao.RemittanceApplicationDao;
+import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.manager.RemittancePaymentManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.PurposeOfTransactionService;
@@ -64,6 +67,9 @@ public class RemittanceController {
 	@Autowired
 	MetaData metaData;
 
+	@Autowired
+	RemittanceApplicationDao remitAppDao;
+
 	@RequestMapping(value = "/trnxHist/", method = RequestMethod.GET)
 	public ApiResponse getTrnxHistroyDetailResponse(@RequestParam(required=false, value="docfyr") BigDecimal docfyr, @RequestParam(required=false,value="docNumber") String docNumber,
 			@RequestParam(required=false,value="fromDate") String fromDate, @RequestParam(required=false,value="toDate") String toDate) {
@@ -87,7 +93,8 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/remitReport/", method = RequestMethod.POST)
-	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO) {
+	public ApiResponse getRemittanceDetailForReport(@RequestBody String jsonTransactionHistroyDTO,
+			@RequestParam("promotion") Boolean promotion) {
 		logger.info("getRemittanceDetailForReport Trnx Report:");
 		TransactionHistroyDTO transactionHistroyDTO = (TransactionHistroyDTO) converterUtil
 				.unmarshall(jsonTransactionHistroyDTO, TransactionHistroyDTO.class);
@@ -100,7 +107,7 @@ public class RemittanceController {
 				+ transactionHistroyDTO.getCurrencyId());
 
 		ApiResponse response = reportManagerService
-				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO);
+				.generatePersonalRemittanceReceiptReportDetails(transactionHistroyDTO, Boolean.TRUE);
 		return response;
 	}
 
@@ -168,9 +175,11 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/status/", method = RequestMethod.POST)
-	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request) {
+	public ApiResponse getTransactionStatus(@RequestBody RemittanceTransactionStatusRequestModel request,
+			@RequestParam("promotion") Boolean promotion) {
 
 		logger.info("In getTransactionStatus with param, :  " + request.toString());
+		request.setPromotion(promotion);
 		ApiResponse response = remittanceTransactionService.getTransactionStatus(request);
 		return response;
 	}
@@ -195,6 +204,20 @@ public class RemittanceController {
 
 		ApiResponse response = remittancePaymentManager.savePaymentId(paymentResponse);
 		return response;
+	}
+	
+	@RequestMapping(value = "/trnx/receipt", method = RequestMethod.POST)
+	public ApiResponse getReceiptJson(@RequestParam BigDecimal appDocNo, @RequestParam BigDecimal appDocFinYear) {
+		RemittanceTransaction remittanceTransaction = remitAppDao.getRemittanceTransaction(appDocNo, appDocFinYear);
+
+		BigDecimal cutomerReference = remittanceTransaction.getCustomerId();
+		BigDecimal remittancedocfyr = remittanceTransaction.getDocumentFinancialyear();
+		BigDecimal remittancedocNumber = remittanceTransaction.getDocumentNo();
+
+		TransactionHistroyDTO transactionHistoryDto = transactionHistroyService
+				.getTransactionHistoryDto(cutomerReference, remittancedocfyr, remittancedocNumber);
+		transactionHistoryDto.setApplicationCountryId(metaData.getCountryId());
+		return reportManagerService.generatePersonalRemittanceReceiptReportDetails(transactionHistoryDto, true);
 	}
 
 }
