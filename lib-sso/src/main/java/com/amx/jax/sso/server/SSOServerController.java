@@ -102,11 +102,13 @@ public class SSOServerController {
 			if ("send_otp".equalsIgnoreCase(formdata.getAction())) {
 				String prefix = Random.randomAlpha(3);
 				String motp = Random.randomNumeric(6);
+
 				Notipy msg = new Notipy();
 				msg.setMessage("SSO LOGIN");
 				msg.addLine(String.format("OTP = %s-%s", prefix, motp));
 				msg.setChannel(Channel.NOTIPY);
 				postManService.notifySlack(msg);
+
 				model.put("motpPrefix", prefix);
 				sSOTranx.setMOtp(motp);
 			} else if ("submit".equalsIgnoreCase(formdata.getAction()) && sSOTranx.get().getMotp() != null
