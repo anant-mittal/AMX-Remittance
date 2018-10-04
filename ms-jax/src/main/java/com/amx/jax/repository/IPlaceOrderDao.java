@@ -64,5 +64,8 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable>{
 
 	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
 	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
+	
+	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceTransactionId and isActive='C' ")
+	public PlaceOrder getPlaceOrderForRemittanceTransactionId(@Param("remittanceTransactionId") BigDecimal remittanceTransactionId);
 
 }
