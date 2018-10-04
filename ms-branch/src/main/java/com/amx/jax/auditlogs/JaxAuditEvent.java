@@ -7,7 +7,6 @@ import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.model.request.CustomerInfoRequest;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
-import com.amx.jax.model.request.ImageSubmissionRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 
 public class JaxAuditEvent extends AuditEvent {

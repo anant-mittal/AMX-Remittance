@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.annotation.SessionScope;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.jax.dict.Language;

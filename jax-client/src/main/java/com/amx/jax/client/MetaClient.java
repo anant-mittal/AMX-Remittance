@@ -1,7 +1,6 @@
 package com.amx.jax.client;
 
 import static com.amx.amxlib.constant.ApiEndpoint.BANK_MASTER_BY_COUNTRY_API_ENDPOINT;
-import static com.amx.amxlib.constant.ApiEndpoint.MetaApi.PREFIX;
 
 import java.math.BigDecimal;
 

@@ -1,8 +1,6 @@
 package com.amx.jax.dbmodel;
 
-import java.io.File;
 import java.math.BigDecimal;
-import java.sql.Blob;
 import java.util.Date;
 
 import javax.persistence.Column;

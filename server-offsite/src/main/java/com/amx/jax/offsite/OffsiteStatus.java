@@ -1,6 +1,5 @@
 package com.amx.jax.offsite;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,7 +16,6 @@ import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.offsite.OffsiteStatus.ApiOffisteStatus;
 import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.swagger.IStatusCodeListPlugin;
-import com.google.common.base.Optional;
 
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 

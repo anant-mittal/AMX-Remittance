@@ -17,7 +17,6 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
-import com.amx.jax.AppContextUtil;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;

@@ -9,9 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
@@ -30,8 +27,8 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.rest.RestService;
 

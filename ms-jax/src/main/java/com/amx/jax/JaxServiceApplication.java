@@ -9,8 +9,8 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.context.WebApplicationContext;
-import com.amx.jax.client.configs.JaxMetaInfo;
 
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.def.MockParamBuilder;
 import com.amx.jax.def.MockParamBuilder.MockParam;
 

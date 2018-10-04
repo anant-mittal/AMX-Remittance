@@ -25,7 +25,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
@@ -63,6 +62,7 @@ import com.amx.jax.model.OtpData;
 import com.amx.jax.model.dto.SendOtpModel;
 import com.amx.jax.model.request.CustomerEmploymentDetails;
 import com.amx.jax.model.request.CustomerInfoRequest;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.HomeAddressDetails;
