@@ -9,10 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.exception.LimitExeededException;
+import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.ui.response.ResponseWrapper;
+import com.amx.jax.ui.response.WebResponseStatus;
 import com.amx.jax.ui.service.JaxService;
 
 import io.swagger.annotations.Api;
@@ -92,16 +95,20 @@ public class PlaceOrderController {
 
 	/**
 	 * 
-	 * @param placeOrderDTO
+	 * @param remitTranxnReqModel
 	 * @return
 	 */
 	@RequestMapping(value = "/api/po/calc", method = { RequestMethod.POST })
 	public ResponseWrapper<RemittanceTransactionResponsetModel> calculate(
-			@RequestBody RemittanceTransactionRequestModel placeOrderDTO) {
+			@RequestBody RemittanceTransactionRequestModel remitTranxnReqModel) {
+
 		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
-		RemittanceTransactionResponsetModel results = jaxService.setDefaults().getRemitClient()
-				.calcEquivalentAmount(placeOrderDTO).getResult();
-		wrapper.setData(results);
+		RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
+				.calcEquivalentAmount(remitTranxnReqModel).getResult();
+		wrapper.setData(respTxMdl);
+		wrapper.setMeta(
+				jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(remitTranxnReqModel).getResults());
 		return wrapper;
+
 	}
 }
