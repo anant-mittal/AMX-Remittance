@@ -156,6 +156,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 					RoundingMode.HALF_UP);
 			breakup.setConvertedLCAmount(RoundUtil.roundBigDecimal(convertedLCAmount, lcDecimalNumber));
 			breakup.setConvertedFCAmount(request.getForeignAmount());
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
 		}
 
 		if (request.getLocalAmount() != null  && request.getDomXRate() !=null) {
@@ -163,6 +164,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			breakup.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(convertedFCAmount));
 			breakup.setConvertedFCAmount(RoundUtil.roundBigDecimal(convertedFCAmount, fcDecimalNumber));
 			breakup.setConvertedLCAmount(request.getLocalAmount());
+			breakup.setNetAmount(breakup.getConvertedLCAmount());
 		}
 		breakup.setRate(request.getDomXRate());
 		return breakup;
