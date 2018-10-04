@@ -71,8 +71,10 @@ public abstract class AResponse<T> {
 
 	@JsonIgnore
 	public void setStatusEnum(IExceptionEnum status) {
-		this.statusKey = status.getStatusKey();
-		this.status = ArgUtil.parseAsString(status.getStatusCode());
+		if (!ArgUtil.isEmpty(status)) {
+			this.statusKey = status.getStatusKey();
+			this.status = ArgUtil.parseAsString(status.getStatusCode());
+		}
 	}
 
 	/**

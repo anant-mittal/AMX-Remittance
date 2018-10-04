@@ -20,6 +20,7 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
+import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.utils.URLBuilder;
 
 @Component
@@ -45,7 +46,8 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 		RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 		sSOTranx.setReturnUrl(request.getServletPath());
 		URLBuilder builder = new URLBuilder();
-		builder.setPath(SSOConstants.APP_LOGIN_URL).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+		builder.setPath(SSOConstants.APP_LOGIN_URL).addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
+				.addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		try {
 			redirectStrategy.sendRedirect(request, response, builder.getRelativeURL());
 		} catch (URISyntaxException e) {

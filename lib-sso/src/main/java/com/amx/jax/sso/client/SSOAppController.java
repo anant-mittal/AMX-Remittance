@@ -22,7 +22,7 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.sso.SSOConstants;
-import com.amx.jax.sso.SSOConstants.SSOAuth;
+import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.ArgUtil;
@@ -47,15 +47,15 @@ public class SSOAppController {
 	private AppConfig appConfig;
 
 	@RequestMapping(value = SSOConstants.APP_LOGIN_URL, method = { RequestMethod.GET })
-	public String loginJPage(@RequestParam(required = false) SSOAuth auth, @RequestParam(required = false) String sotp,
-			Model model, HttpServletRequest request, HttpServletResponse response)
-			throws MalformedURLException, URISyntaxException {
+	public String loginJPage(@RequestParam(required = false) SSOAuthStep step,
+			@RequestParam(required = false) String sotp, Model model, HttpServletRequest request,
+			HttpServletResponse response) throws MalformedURLException, URISyntaxException {
 
 		String tranxId = ssoUser.ssoTranxId();
 
-		auth = (SSOAuth) ArgUtil.parseAsEnum(auth, SSOAuth.NONE);
+		step = (SSOAuthStep) ArgUtil.parseAsEnum(step, SSOAuthStep.CHECK);
 
-		if (auth == SSOAuth.DONE && sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
+		if (step == SSOAuthStep.DONE && sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
 			LOGGER.debug("auth == SSOAuth.DONE");
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(tranxId, sotp);
 			token.setDetails(new WebAuthenticationDetails(request));
@@ -68,7 +68,7 @@ public class SSOAppController {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.setLandingUrl(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOConstants.SSO_LOGIN_URL_REDIRECT).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
+			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return SSOConstants.REDIRECT + builder.getURL();
 		}
 
@@ -82,7 +82,7 @@ public class SSOAppController {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
 			sSOTranx.init();
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
-			builder.setPath(SSOConstants.SSO_LOGIN_URL_REDIRECT).addParameter(AppConstants.TRANX_ID_XKEY,
+			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY,
 					AppContextUtil.getTranxId());
 			return SSOConstants.REDIRECT + builder.getURL();
 		}
