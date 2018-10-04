@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.AppParam;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
@@ -180,6 +182,7 @@ public class SMService {
 			params.put("username", username);
 			params.put("password", password);
 			params.put("secret", secret);
+			params.put("traceid", AppContextUtil.getTraceId());
 
 			String responseText = restService.ajax(this.smsReqUrl).build(smsReqType, smsReqQuery, smsReqFields, params)
 					.asString();
