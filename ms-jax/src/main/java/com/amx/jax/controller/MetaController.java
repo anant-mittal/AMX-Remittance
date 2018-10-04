@@ -163,7 +163,8 @@ public class MetaController {
 
 	@RequestMapping(value = MetaApi.API_COUNTRY_BY_lANG_COUNTRY_ID, method = RequestMethod.GET)
 	public AmxApiResponse<CountryMasterView, Object> getCountryByLanguageIdAndCountryIdResponse() {
-		return countryService.getCountryByLanguageIdAndCountryIdResponse(metaData.getLanguageId(), metaData.getCountryId());
+		return countryService.getCountryByLanguageIdAndCountryIdResponse(metaData.getLanguageId(),
+				metaData.getCountryId());
 	}
 
 	@RequestMapping(value = MetaApi.API_COUNTRY_BC, method = RequestMethod.GET)
@@ -178,7 +179,8 @@ public class MetaController {
 
 	@RequestMapping(value = MetaApi.APPL_COUNTRY_COMP, method = RequestMethod.GET)
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountrycompanyResponse() {
-		return applicationCountryService.getApplicationCountryResponse(metaData.getCompanyId(), metaData.getCountryId());
+		return applicationCountryService.getApplicationCountryResponse(metaData.getCompanyId(),
+				metaData.getCountryId());
 	}
 
 	@RequestMapping(value = MetaApi.SEQ_QUEST_LIST, method = RequestMethod.GET)
@@ -199,7 +201,8 @@ public class MetaController {
 
 	@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_COUNTRY_ID, method = RequestMethod.GET)
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionAsPerCountryResponse() {
-		return termsAndConditionService.getTermsAndConditionAsPerCountry(metaData.getLanguageId(), metaData.getCountryId());
+		return termsAndConditionService.getTermsAndConditionAsPerCountry(metaData.getLanguageId(),
+				metaData.getCountryId());
 	}
 
 	@RequestMapping(value =  MetaApi.API_WHY, method = RequestMethod.GET)
@@ -248,13 +251,13 @@ public class MetaController {
 		return currencyMasterService.getCurrencyDetails(currencyId);
 	}
 
-	@RequestMapping(value = "/currency/online/", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.CURRENCY_ONLINE, method = RequestMethod.GET)
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllOnlineCurrencyDetails() {
 		return currencyMasterService.getAllOnlineCurrencyDetails();
 	}
 
 	// added by chetan 30/04/2018 list the country for currency.
-	@RequestMapping(value = "/exchange-rate-currency/list/", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.EXCHANGE_RATE_CURRENCY_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<CurrencyMasterDTO, Object> getAllExchangeRateCurrencyDetails() {
 		return currencyMasterService.getAllExchangeRateCurrencyList();
 	}
@@ -289,7 +292,7 @@ public class MetaController {
 				documentFinancialYear, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
 
-	@RequestMapping(value = "/multicountry/", method = RequestMethod.GET)
+	@RequestMapping(value =  MetaApi.MULTI_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountry() {
 		return multiCountryService.getMultiCountryList();
 	}
@@ -300,33 +303,35 @@ public class MetaController {
 		return bankMasterService.getBanksApiResponseByCountryId(countryId);
 	}
 
-	@RequestMapping(value = "/districtdesc/{languageId}/{stateId}/{districtId}", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_DISTRICTDESC, method = RequestMethod.GET)
 	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(
-			@PathVariable("languageId") BigDecimal languageId, @PathVariable("stateId") BigDecimal stateId,
-			@PathVariable("districtId") BigDecimal districtId) {
-		return districtService.getDistrict(stateId, districtId, languageId);
+			@PathVariable(MetaApi.PARAM_STATE_ID) BigDecimal stateId,
+			@PathVariable(MetaApi.PARAM_DISTRICT_ID) BigDecimal districtId) {
+		return districtService.getDistrict(stateId, districtId, metaData.getLanguageId());
 	}
 
-	@RequestMapping(value = "/districtlist/{stateId}/", method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_DISTRICTLIST, method = RequestMethod.GET)
 	public AmxApiResponse<ViewDistrictDto, Object> getDistrictNameResponse(
-			@PathVariable("stateId") BigDecimal stateId) {
+			@PathVariable(MetaApi.PARAM_STATE_ID) BigDecimal stateId) {
 		return districtService.getAllDistrict(stateId, metaData.getLanguageId());
 	}
 
-	@RequestMapping(value = "/statedesc/{languageId}/{stateId}/{countryId}", method = RequestMethod.GET)
-	public AmxApiResponse<ViewStateDto, Object> getStateNameResponse(@PathVariable("languageId") BigDecimal languageId,
-			@PathVariable("stateId") BigDecimal stateId, @PathVariable("countryId") BigDecimal countryId) {
-		return stateService.getState(countryId, stateId, languageId);
+	@RequestMapping(value = MetaApi.API_STATE_DESC, method = RequestMethod.GET)
+	public AmxApiResponse<ViewStateDto, Object> getStateNameResponse(
+			@PathVariable(MetaApi.PARAM_COUNTRY_ID) BigDecimal countryId,
+			@PathVariable(MetaApi.PARAM_STATE_ID) BigDecimal stateId) {
+		return stateService.getState(countryId, stateId, metaData.getLanguageId());
 	}
 
 	@RequestMapping(value = MetaApi.API_STATE_LIST, method = RequestMethod.GET)
 	public AmxApiResponse<ViewStateDto, Object> getStateNameListResponse(
-			@PathVariable("countryId") BigDecimal countryId) {
+			@PathVariable(MetaApi.PARAM_COUNTRY_ID) BigDecimal countryId) {
 		return stateService.getStateAll(countryId, metaData.getLanguageId());
 	}
 
-	@RequestMapping(value =  MetaApi.API_CITY_LIST, method = RequestMethod.GET)
-	public AmxApiResponse<ViewCityDto, Object> getCityListResponse(@PathVariable(MetaApi.PARAM_DISTRICT_ID) BigDecimal districtId) {
+	@RequestMapping(value = MetaApi.API_CITY_LIST, method = RequestMethod.GET)
+	public AmxApiResponse<ViewCityDto, Object> getCityListResponse(
+			@PathVariable(MetaApi.PARAM_DISTRICT_ID) BigDecimal districtId) {
 		return metaService.getDistrictCity(districtId, metaData.getLanguageId());
 	}
 
@@ -338,7 +343,8 @@ public class MetaController {
 	}
 
 	@RequestMapping(value = MetaApi.API_ONLINE_CONFIG, method = RequestMethod.GET)
-	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(@PathVariable(MetaApi.PARAM_IND) String applInd) {
+	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(
+			@PathVariable(MetaApi.PARAM_IND) String applInd) {
 		return metaService.getOnlineConfig(applInd);
 	}
 

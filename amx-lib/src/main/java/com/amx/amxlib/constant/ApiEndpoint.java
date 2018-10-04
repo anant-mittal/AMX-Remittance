@@ -27,9 +27,11 @@ public class ApiEndpoint {
 		public static final String PARAM_SERVICE_GROUP_ID = "serviceGroupId";
 		public static final String PARAM_ROUTING_BANK_ID = "routingBankId";
 		public static final String PARAM_IND = "ind";
-		public static final String PARAM_DISTRICT_ID = "districtid";
-		public static final String PARAM_CITY_ID = "cityid";
+		public static final String PARAM_DISTRICT_ID = "districtId";
+		public static final String PARAM_CITY_ID = "cityId";
 		public static final String PARAM_COUNTRY_ID = "countryId";
+		public static final String PARAM_STATE_ID = "stateId";
+		
 		
 		//Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
@@ -53,9 +55,15 @@ public class ApiEndpoint {
 		public static final String META_PARAMETER ="/meta-parameter/";
 		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
 		public static final String API_ONLINE_CONFIG = "/onlineconfig/";
-		public static final String API_CITY_DESC = "/citydesc/";
-		public static final String API_CITY_LIST = "/citylist/";
-		public static final String API_STATE_LIST = "/statelist/";
+		public static final String API_CITY_DESC = "/citydesc/{stateId}/{districtId}";
+		public static final String API_CITY_LIST = "/citylist/{districtId}";
+		public static final String API_STATE_LIST = "/statelist/{countryId}";
+		public static final String API_STATE_DESC =  "/statedesc/{countryId}/{stateId}";
+		public static final String API_DISTRICTLIST = "/districtlist/{stateId}";
+		public static final String API_DISTRICTDESC = "/districtdesc/{stateId}/{districtId}";
+		public static final String MULTI_COUNTRY = "/multicountry/";
+		public static final String EXCHANGE_RATE_CURRENCY_LIST = "/exchange-rate-currency/list/";
+		public static final String CURRENCY_ONLINE = "/currency/online/";
 		
 		
 		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
