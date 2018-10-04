@@ -13,26 +13,26 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.amx.jax.interceptor.HeaderInterceptor;
+import com.amx.jax.filter.AppRequestInterceptor;
 import com.amx.jax.interceptor.TenantInterceptor;
 
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
-	private HeaderInterceptor interceptor;
+	private AppRequestInterceptor appRequestInterceptor;
 
 	@Autowired
 	private TenantInterceptor tenantInterceptor;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(appRequestInterceptor);
 		registry.addInterceptor(tenantInterceptor);
-		registry.addInterceptor(interceptor);
 	}
-	
-	@Bean(autowire=Autowire.BY_NAME)
-	//@Qualifier("remitApplParametersMap")
+
+	@Bean(autowire = Autowire.BY_NAME)
+	// @Qualifier("remitApplParametersMap")
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public Map<String, Object> remitApplParametersMap() {
 		return new HashMap<String, Object>();

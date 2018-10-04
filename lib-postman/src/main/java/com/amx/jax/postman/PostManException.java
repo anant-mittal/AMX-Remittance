@@ -9,10 +9,15 @@ public class PostManException extends AmxApiException {
 	private static final long serialVersionUID = -4630097170366238398L;
 
 	public enum ErrorCode implements IExceptionEnum {
-		NO_RECIPIENT_DEFINED, NO_TENANT_DEFINED, NO_CHANNEL_DEFINED;
+		NO_RECIPIENT_DEFINED, NO_TENANT_DEFINED, NO_CHANNEL_DEFINED, NO_TOPIC_DEFINED;
 		@Override
-		public String getCode() {
+		public String getStatusKey() {
 			return this.toString();
+		}
+
+		@Override
+		public int getStatusCode() {
+			return this.ordinal();
 		}
 	}
 

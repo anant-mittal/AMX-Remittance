@@ -6,11 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
@@ -51,10 +48,4 @@ public class JaxConfig {
 		return restTemplate;
 	}
 
-	@Bean
-	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public com.amx.jax.amxlib.model.JaxMetaInfo JaxMetaInfo() {
-		com.amx.jax.amxlib.model.JaxMetaInfo metaInfo = new com.amx.jax.amxlib.model.JaxMetaInfo();
-		return metaInfo;
-	}
 }

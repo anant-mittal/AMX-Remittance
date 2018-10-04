@@ -16,7 +16,59 @@ public class ApiEndpoint {
 
     public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 
-    public static final String META_API_ENDPOINT = "/meta";
+	public final class MetaApi {
+		//Prefix
+		public static final String PREFIX = "/meta";
+		
+		//Params
+		public static final String PARAM_QUEST_ID = "questId";
+		public static final String PARAM_EMAIL_ID = "emailId";
+		public static final String PARAM_BENE_COUNTRY_ID = "beneficiaryCountryId";
+		public static final String PARAM_SERVICE_GROUP_ID = "serviceGroupId";
+		public static final String PARAM_ROUTING_BANK_ID = "routingBankId";
+		public static final String PARAM_IND = "ind";
+		public static final String PARAM_DISTRICT_ID = "districtId";
+		public static final String PARAM_CITY_ID = "cityId";
+		public static final String PARAM_COUNTRY_ID = "countryId";
+		public static final String PARAM_STATE_ID = "stateId";
+		
+		
+		//Paths
+		public static final String SEQ_QUEST_LIST = "/quest/list";
+		public static final String SEQ_QUEST_BY_ID = "/quest/{questId}";
+		public static final String APPL_COUNTRY = "/applcountry/";
+		public static final String HELP_DESK_TIME = "/helpdtime/";
+		public static final String APPL_COUNTRY_COMP = "/applcountrycomp/";
+		public static final String API_COUNTRY = "/country/";
+		public static final String API_COUNTRY_BY_lANG_ID = "/country/lang";
+		public static final String API_COUNTRY_BY_lANG_COUNTRY_ID = "/country/langcountry";
+		public static final String API_COUNTRY_BC = "/country/bc/";
+		public static final String API_TERMS_BY_lANG_ID = "/terms/lang";
+		public static final String API_TERMS_BY_lANG_COUNTRY_ID = "/terms/langcountry";
+		public static final String API_WHY = "/why/";
+		public static final String EMAIL_CHECK = "/emailcheck/{emailId}";
+		public static final String API_FYEAR = "/fyear";
+		public static final String API_HELP_NO = "/helpdno/";
+		public static final String API_PREFIX= "/prefix/";
+		public static final String SERVICE_GROUP = "/service-group/";
+		public static final String API_BRANCH_DETAIL = "/branchdetail/";
+		public static final String META_PARAMETER ="/meta-parameter/";
+		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
+		public static final String API_ONLINE_CONFIG = "/onlineconfig/";
+		public static final String API_CITY_DESC = "/citydesc/{stateId}/{districtId}";
+		public static final String API_CITY_LIST = "/citylist/{districtId}";
+		public static final String API_STATE_LIST = "/statelist/{countryId}";
+		public static final String API_STATE_DESC =  "/statedesc/{countryId}/{stateId}";
+		public static final String API_DISTRICTLIST = "/districtlist/{stateId}";
+		public static final String API_DISTRICTDESC = "/districtdesc/{stateId}/{districtId}";
+		public static final String MULTI_COUNTRY = "/multicountry/";
+		public static final String EXCHANGE_RATE_CURRENCY_LIST = "/exchange-rate-currency/list/";
+		public static final String CURRENCY_ONLINE = "/currency/online/";
+		
+		
+		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
+		
+	}
 
     public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
 
@@ -45,6 +97,10 @@ public class ApiEndpoint {
     public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
     
     public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
+    
+    public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
+	public static final String JAX_NOTIFICATION_ENDPOINT = "/jax-notification";
+	public static final String JAX_CUSTOMER_NOTIFICATION = "/jax/notifications";
 
     public static final String LOGIN_ENDPOINT = "/login";
     

@@ -23,3 +23,10 @@ D:\\payment-service.log
 */target/maven-*
 */.mvn/
 */target/*.class
+*.orig
+logs/*.log
+*-*/logs/*.log
+*-*/target/*
+logs/*.log
+*-*/target/*.*
+*-*/target/test-classes/*.*

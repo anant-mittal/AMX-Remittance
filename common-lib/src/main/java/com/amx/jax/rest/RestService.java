@@ -9,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
@@ -22,9 +24,11 @@ import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
+import com.amx.utils.JsonUtil;
 
 @Component
 public class RestService {
@@ -63,7 +67,7 @@ public class RestService {
 	}
 
 	public static class Ajax {
-		public static final Pattern pattern = Pattern.compile("^\\{(.*)\\}$");
+		public static final Pattern pattern = Pattern.compile("^.*\\{(.*)\\}.*$");
 
 		public static enum RestMethod {
 			POST, FORM, GET
@@ -75,7 +79,8 @@ public class RestService {
 		Map<String, String> uriParams = new HashMap<String, String>();
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<String, String>();
 		RestTemplate restTemplate;
-		HttpHeaders headers = new HttpHeaders();
+		private HttpHeaders headers = new HttpHeaders();
+		Map<String, String> headersMeta = new HashMap<String, String>();
 		boolean isForm = false;
 
 		public Ajax(RestTemplate restTemplate, String url) {
@@ -86,6 +91,11 @@ public class RestService {
 		public Ajax(RestTemplate restTemplate, URI uri) {
 			this.restTemplate = restTemplate;
 			builder = UriComponentsBuilder.fromUriString(uri.toString());
+		}
+
+		public <T> Ajax filter(RestMetaRequestOutFilter<T> restMetaServiceFilter) {
+			RestService.exportMetaToStatic(restMetaServiceFilter, this.header());
+			return this;
 		}
 
 		public Ajax path(String path) {
@@ -109,7 +119,9 @@ public class RestService {
 		}
 
 		public Ajax queryParam(String paramKey, Object paramValue) {
-			builder.queryParam(paramKey, paramValue);
+			if (paramValue != null) {
+				builder.queryParam(paramKey, paramValue);
+			}
 			return this;
 		}
 
@@ -124,15 +136,20 @@ public class RestService {
 				String value = entry.getValue();
 				Matcher match = pattern.matcher(value);
 				if (match.find() && params.containsKey(match.group(1))) {
-					value = params.get(match.group(1));
+					value = value.replace("{" + match.group(1) + "}", params.get(match.group(1)));
 				}
-				this.field(entry.getKey(), entry.getValue());
+				this.field(entry.getKey(), value);
 			}
 			return this;
 		}
 
 		public Ajax header(String paramKey, String paramValue) {
 			headers.add(paramKey, paramValue);
+			return this;
+		}
+
+		public Ajax meta(String metaKey, String metaValue) {
+			headers.add(AppConstants.META_XKEY, String.format("%s=%s", metaKey, metaValue));
 			return this;
 		}
 
@@ -149,6 +166,10 @@ public class RestService {
 		public Ajax header(HttpHeaders header) {
 			this.headers = header;
 			return this;
+		}
+
+		public HttpHeaders header() {
+			return this.headers;
 		}
 
 		public Ajax post(HttpEntity<?> requestEntity) {
@@ -235,12 +256,31 @@ public class RestService {
 			});
 		}
 
-		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
-			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
-			});
+		public AmxApiResponse<Object, Object> asApiResponse() {
+			return this.asApiResponse(Object.class);
 		}
 
-		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> responseType, Class<M> modelType) {
+		/**
+		 * @deprecated use {@link #as(ParameterizedTypeReference)} directly, to have
+		 *             smooth casting of resultType
+		 * 
+		 * @param resultType
+		 * @return
+		 */
+		@Deprecated
+		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
+			return this.asApiResponse(resultType, Object.class);
+		}
+
+		/**
+		 * @deprecated use {@link #as(ParameterizedTypeReference)} directly, to have
+		 *             smooth casting of resultType
+		 * 
+		 * @param resultType
+		 * @return
+		 */
+		@Deprecated
+		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> resultType, Class<M> metaType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
 			});
 		}
@@ -249,25 +289,39 @@ public class RestService {
 			return this.asObject();
 		}
 
-		public Ajax build(RestMethod smsReqType, String smsReqQuery, RestQuery smsReqFields, Map<String, String> params)
+		public Ajax build(RestMethod reqType, String reqQuery, RestQuery reqFields, Map<String, String> paramValues)
 				throws UnsupportedEncodingException {
-			if (!ArgUtil.isEmpty(smsReqQuery)) {
-				this.query(smsReqQuery);
+			if (!ArgUtil.isEmpty(reqQuery)) {
+				this.query(reqQuery);
 			}
-			if (!ArgUtil.isEmpty(params)) {
-				this.params(params);
-			}
-
-			if (!ArgUtil.isEmpty(smsReqFields)) {
-				this.params(smsReqFields.toMap());
+			if (!ArgUtil.isEmpty(paramValues)) {
+				this.params(paramValues);
 			}
 
-			if (!ArgUtil.isEmpty(smsReqFields)) {
-				this.field(smsReqFields, params);
+			if (!ArgUtil.isEmpty(reqFields)) {
+				this.params(reqFields.toMap());
 			}
-			return this.call(smsReqType);
+
+			if (!ArgUtil.isEmpty(reqFields)) {
+				this.field(reqFields, paramValues);
+			}
+			return this.call(reqType);
 		}
 
 	}
 
+	public static <T> void exportMetaToStatic(RestMetaRequestOutFilter<T> restMetaFilter, HttpHeaders httpHeaders) {
+		if (restMetaFilter != null) {
+			T meta = restMetaFilter.exportMeta();
+			httpHeaders.add(AppConstants.META_XKEY, JsonUtil.toJson(meta));
+		}
+	}
+
+	public static <T> void importMetaFromStatic(RestMetaRequestInFilter<T> restMetaFilter, HttpServletRequest req)
+			throws Exception {
+		if (restMetaFilter != null) {
+			String metaValueString = req.getHeader(AppConstants.META_XKEY);
+			restMetaFilter.importMeta(restMetaFilter.export(metaValueString), req);
+		}
+	}
 }

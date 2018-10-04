@@ -28,8 +28,8 @@ public class ContactDetail implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private BigDecimal contactDetailId;
 	private Customer fsCustomer;
-	/*private LanguageType fsLanguageType;
-	 */
+	private BigDecimal languageId;
+	 
 	private BizComponentData fsBizComponentDataByContactTypeId;
 	
 	private CountryMaster fsCountryMaster;
@@ -53,6 +53,7 @@ public class ContactDetail implements java.io.Serializable {
 	private String telephoneCode;
 	//private BigDecimal customerId;
 	//private BigDecimal contactTypeId;
+	private String watsAppNo;
 
 	public ContactDetail() {
 	}
@@ -63,7 +64,7 @@ public class ContactDetail implements java.io.Serializable {
 
 
 	public ContactDetail(BigDecimal contactDetailId, Customer fsCustomer, LanguageType fsLanguageType, BizComponentData fsBizComponentDataByContactTypeId, CountryMaster fsCountryMaster, DistrictMaster fsDistrictMaster, StateMaster fsStateMaster, CityMaster fsCityMaster, String alterEmailId, String area, String block, String street, String flat, String telephone, String mobile, String approved, String createdBy, String updatedBy, Date creationDate, Date lastUpdated, String activeStatus,
-			String buildingNo,String telephoneCode) {
+			String buildingNo,String telephoneCode,String watsAppNo) {
 		this.contactDetailId = contactDetailId;
 		//this.fsCustomer = fsCustomer;
 		/*this.fsLanguageType = fsLanguageType;
@@ -87,6 +88,7 @@ public class ContactDetail implements java.io.Serializable {
 		this.activeStatus = activeStatus;
 		this.buildingNo = buildingNo;
 		this.telephoneCode = telephoneCode;
+		this.watsAppNo = watsAppNo;
 	}
 
 	@Id
@@ -110,17 +112,7 @@ public class ContactDetail implements java.io.Serializable {
 	public void setFsCustomer(Customer fsCustomer) {
 		this.fsCustomer = fsCustomer;
 	}
-/*
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "LANGUAGE_ID")
-	public LanguageType getFsLanguageType() {
-		return this.fsLanguageType;
-	}
-
-	public void setFsLanguageType(LanguageType fsLanguageType) {
-		this.fsLanguageType = fsLanguageType;
-	}
-*/
+	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CONTACT_TYPE_ID")
@@ -309,6 +301,24 @@ public class ContactDetail implements java.io.Serializable {
 
 	public void setTelephoneCode(String telephoneCode) {
 		this.telephoneCode = telephoneCode;
+	}
+
+	@Column(name = "LANGUAGE_ID")
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(BigDecimal languageId) {
+		this.languageId = languageId;
+	}
+
+	@Column(name = "IS_WHATSAPP_NUMBER")
+	public String getWatsAppNo() {
+		return watsAppNo;
+	}
+
+	public void setWatsAppNo(String watsAppNo) {
+		this.watsAppNo = watsAppNo;
 	}
 
 	/*@Column(name="CUSTOMER_ID")

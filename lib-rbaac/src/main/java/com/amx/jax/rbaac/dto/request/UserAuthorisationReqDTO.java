@@ -5,6 +5,8 @@ package com.amx.jax.rbaac.dto.request;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * The Class UserAuthorisationReqDTO.
  *
@@ -16,15 +18,18 @@ public class UserAuthorisationReqDTO implements Serializable {
 	private static final long serialVersionUID = 4920057845794220028L;
 
 	/** The employee no. */
+	@NotBlank(message = "Employee Number Can not be Null or Empty")
 	private String employeeNo;
 	
 	/** The m otp hash. */
+	@NotBlank(message = "M-Otp Hash Can not be Null or Empty")
 	private String mOtpHash;
 	
 	/** The e otp hash. */
 	private String eOtpHash;
 	
 	/** The ip address. */
+	@NotBlank(message = "Ip Address Can not be Null or Empty")
 	private String ipAddress;
 	
 	/** The device id. */

@@ -13,8 +13,8 @@ import org.springframework.mobile.device.DeviceType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.user.UserDevice;
 import com.amx.utils.ArgUtil;
@@ -37,7 +37,7 @@ public class UserDeviceBean extends UserDevice {
 	private transient Logger logger = LoggerService.getLogger(getClass());
 
 	@Autowired
-	private transient HttpService httpService;
+	private transient CommonHttpRequest httpService;
 
 	/**
 	 * Resolve.

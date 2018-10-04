@@ -1,7 +1,10 @@
 package com.amx.jax.model.dto;
 
-public class SendOtpModel {
+import com.amx.jax.model.AbstractModel;
 
+public class SendOtpModel extends AbstractModel {
+
+	private static final long serialVersionUID = 9200894928151652022L;
 	private String mOtpPrefix;
 	private String eOtpPrefix;
 

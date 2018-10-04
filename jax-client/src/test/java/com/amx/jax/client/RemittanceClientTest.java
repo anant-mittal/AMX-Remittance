@@ -30,7 +30,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.utils.JsonUtil;
 
@@ -64,7 +64,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 	
-	@Test
+	//@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -78,7 +78,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -88,12 +88,12 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setTenant(Tenant.KWT);
 		ApiResponse<RemittanceApplicationResponseModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
-		request.setBeneId(new BigDecimal(4312621));
-		request.setLocalAmount(new BigDecimal(10));
-		request.setAdditionalBankRuleFiledId(new BigDecimal(163));
-		request.setSrlId(new BigDecimal(697));
+		request.setBeneId(new BigDecimal(4709181));
+		request.setLocalAmount(new BigDecimal(2));
+		request.setAdditionalBankRuleFiledId(new BigDecimal(101));
+		request.setSrlId(new BigDecimal(22));
 		ExchangeRateBreakup exRateBreakup = new ExchangeRateBreakup();
-		exRateBreakup.setRate(new BigDecimal(162.7074520013));
+		exRateBreakup.setRate(new BigDecimal(472));
 		request.setExRateBreakup(exRateBreakup);
 		try {
 			response = client.saveTransaction(request);
@@ -109,21 +109,23 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
-		
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
+			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+
 		Map<String, String> flexFields = new HashMap<>();
 		list.forEach(i -> {
-			if(i.getField().getType().equals("select")) {
-				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
-			}else if(i.getField().getType().equals("date")) {
+			if (i.getField().getType().equals("select")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
+						JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			} else if (i.getField().getType().equals("date")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
-			}else {
+			} else {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
 			}
 		});
 		request.setFlexFields(flexFields);
 		return client.saveTransaction(request);
-		
+
 	}
 
 	// @Test
@@ -166,7 +168,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -202,7 +204,7 @@ public class RemittanceClientTest {
 		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
 		request.setApplicationDocumentNumber(new BigDecimal(27000545));
 		request.setDocumentFinancialYear(new BigDecimal(2017));
-		response = client.fetchTransactionDetails(request);
+		response = client.fetchTransactionDetails(request, true);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

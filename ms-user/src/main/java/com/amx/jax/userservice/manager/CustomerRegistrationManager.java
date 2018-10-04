@@ -15,11 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.CustomerTransactionModel;
@@ -34,8 +32,10 @@ import com.amx.jax.dbmodel.CustomerIdProof;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.StateMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.ContactDetailsRepository;
@@ -74,7 +74,14 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	@Autowired
 	BizcomponentDao bizcomponentDao;
 	@Autowired
-	UserService userService ;
+	UserService userService;
+
+	@Override
+	public CustomerRegistrationTrnxModel getDefault() {
+		CustomerRegistrationTrnxModel model = new CustomerRegistrationTrnxModel();
+		model.setOtpData(new OtpData());
+		return model;
+	}
 
 	/**
 	 * Initialization of trnx
@@ -83,8 +90,7 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 	public CustomerRegistrationTrnxModel init() {
 		CustomerRegistrationTrnxModel model = get();
 		if (model == null) {
-			model = new CustomerRegistrationTrnxModel();
-			model.setOtpData(new OtpData());
+			model = getDefault();
 			save(model);
 		}
 		return model;
@@ -156,6 +162,9 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 			contactDetail.setMobile(customerHomeAddress.getMobile());
 			contactDetail.setFsCustomer(customer);
 			contactDetail.setActiveStatus(ConstantDocument.Yes);
+			contactDetail.setLanguageId(customer.getLanguageId());
+			contactDetail.setCreatedBy(customer.getCreatedBy());
+			contactDetail.setCreationDate(customer.getCreationDate());
 			BizComponentData fsBizComponentDataByContactTypeId = new BizComponentData();
 			// home type contact
 			fsBizComponentDataByContactTypeId.setComponentDataId(new BigDecimal(50));
@@ -172,13 +181,23 @@ public class CustomerRegistrationManager extends CustomerTransactionModel<Custom
 		customer.setCustomerReference(customerReference);
 		customer.setIsActive(ConstantDocument.No);
 		customer.setCountryId(jaxMetaInfo.getCountryId());
-		customer.setCreatedBy(jaxMetaInfo.getDeviceType() != null ? jaxMetaInfo.getDeviceType()
-				: customerPersonalDetail.getIdentityInt());
+		customer.setCreatedBy(
+				jaxMetaInfo.getAppType() != null ? jaxMetaInfo.getAppType() : customerPersonalDetail.getIdentityInt());
 		customer.setCreationDate(new Date());
 		customer.setIsOnlineUser(ConstantDocument.Yes);
 		customer.setGender(prefixEnum.getGender());
 		customer.setTitleLocal(getTitleLocal(prefixEnum.getTitleLocal()));
 		customer.setLoyaltyPoints(BigDecimal.ZERO);
+		customer.setCompanyId(jaxMetaInfo.getCompanyId());
+		customer.setCustomerTypeId(
+				bizcomponentDao.getBizComponentDataByComponmentCode(ConstantDocument.Individual).getComponentDataId());
+		customer.setLanguageId(jaxMetaInfo.getLanguageId());
+		customer.setBranchCode(jaxMetaInfo.getCountryBranchId());
+		customer.setNationalityId(customerPersonalDetail.getNationalityId());
+		customer.setMobile(customerPersonalDetail.getMobile());
+		customer.setIdentityFor(ConstantDocument.IDENTITY_FOR_ID_PROOF);
+		customer.setIdentityTypeId(ConstantDocument.BIZ_COMPONENT_ID_CIVIL_ID);
+
 		LOGGER.info("generated customer ref: {}", customerReference);
 		LOGGER.info("Createing new customer record, civil id- {}", customerPersonalDetail.getIdentityInt());
 		customerRepository.save(customer);

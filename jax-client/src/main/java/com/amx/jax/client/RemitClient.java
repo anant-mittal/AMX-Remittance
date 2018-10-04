@@ -14,6 +14,7 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
@@ -26,7 +27,8 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 import com.amx.jax.rest.RestService;
 
@@ -68,7 +70,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	@Deprecated
 	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO) {
+		return this.report(transactionHistroyDTO, false);
+	}
+
+	public ApiResponse<RemittanceReceiptSubreport> report(TransactionHistroyDTO transactionHistroyDTO,
+			Boolean promotion) {
 		try {
 			BigDecimal countryId = jaxMetaInfo.getCountryId();
 			BigDecimal companyId = jaxMetaInfo.getCompanyId();
@@ -77,11 +85,11 @@ public class RemitClient extends AbstractJaxServiceClient {
 			transactionHistroyDTO.setCompanyId(companyId);
 			transactionHistroyDTO.setLanguageId(new BigDecimal(1));
 			transactionHistroyDTO.setCustomerId(customerId);
-			LOGGER.info("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
+			LOGGER.debug("Remit Client :" + countryId + "\t companyId :" + companyId + "\t customerId :" + customerId);
 			HttpEntity<String> requestEntity = new HttpEntity<String>(util.marshall(transactionHistroyDTO),
 					getHeader());
 			String sendOtpUrl = this.getBaseUrl() + REMIT_API_ENDPOINT + "/remitReport/";
-			return restService.ajax(sendOtpUrl).post(requestEntity)
+			return restService.ajax(sendOtpUrl).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceReceiptSubreport>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -148,7 +156,7 @@ public class RemitClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 
 	}
-	
+
 	public ApiResponse<PurposeOfTransactionModel> getPurposeOfTransactions(BigDecimal beneId) {
 		try {
 			RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
@@ -215,13 +223,13 @@ public class RemitClient extends AbstractJaxServiceClient {
 	 * year
 	 */
 	public ApiResponse<RemittanceTransactionStatusResponseModel> fetchTransactionDetails(
-			RemittanceTransactionStatusRequestModel request)
+			RemittanceTransactionStatusRequestModel request, Boolean promotion)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 		try {
 			HttpEntity<RemittanceTransactionStatusRequestModel> requestEntity = new HttpEntity<RemittanceTransactionStatusRequestModel>(
 					request, getHeader());
 			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/status/";
-			return restService.ajax(url).post(requestEntity)
+			return restService.ajax(url).queryParam("promotion", promotion).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionStatusResponseModel>>() {
 					});
 		} catch (AbstractJaxException ae) {
@@ -256,4 +264,22 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
+		throws RemittanceTransactionValidationException, LimitExeededException {
+		
+		try {
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
+			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
+			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
 }

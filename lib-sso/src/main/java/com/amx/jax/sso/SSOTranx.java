@@ -57,8 +57,13 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		return this.save(new SSOModel());
 	}
 
+	@Override
+	public SSOModel getDefault() {
+		return new SSOModel();
+	}
+
 	public SSOModel setReturnUrl(String returnUrl) {
-		SSOModel msg = this.save(new SSOModel());
+		SSOModel msg = this.get();
 		msg.setReturnUrl(returnUrl);
 		return msg;
 	}

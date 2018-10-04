@@ -1,5 +1,7 @@
 package com.amx.jax.ui;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,17 @@ import com.amx.jax.ui.UIConstants.Features;
 @Component
 public class WebAppConfig {
 
+	/** The clean CDN url. */
+	@Value("${jax.cdn.url}")
+	private String cleanCDNUrl;
+
+	/** The fcm sender id. */
+	@Value("${fcm.senderid}")
+	private String fcmSenderId;
+
+	@TenantValue("${ui.ios.appid}")
+	private String iosAppId;
+
 	/** The features. */
 	@TenantValue("${ui.features}")
 	private Features[] features;
@@ -23,18 +36,18 @@ public class WebAppConfig {
 	private String appTitle;
 
 	/** The notification gap. */
-	@Value("${notification.sleep.gap}")
+	@TenantValue("${notification.sleep.gap}")
 	private String notificationGap;
 
 	/** The notify range long. */
-	@Value("${notification.range.long}")
+	@TenantValue("${notification.range.long}")
 	private String notifyRangeLong;
 
 	/** The notify range short. */
-	@Value("${notification.range.short}")
+	@TenantValue("${notification.range.short}")
 	private String notifyRangeShort;
 
-	@Value("${notification.geo.enabled}")
+	@TenantValue("${notification.geo.enabled}")
 	private boolean notifyGeoEnabled;
 
 	/**
@@ -84,6 +97,46 @@ public class WebAppConfig {
 
 	public boolean isNotifyGeoEnabled() {
 		return notifyGeoEnabled;
+	}
+
+	public String getCleanCDNUrl() {
+		return cleanCDNUrl;
+	}
+
+	public String getFcmSenderId() {
+		return fcmSenderId;
+	}
+
+	public String getIosAppId() {
+		return iosAppId;
+	}
+
+	@TenantValue("${app.meta.country.id}")
+	BigDecimal countryId;
+
+	@TenantValue("${app.meta.company.id}")
+	BigDecimal companyId;
+
+	@TenantValue("${app.meta.lang.id}")
+	BigDecimal languageId;
+
+	@TenantValue("${app.meta.country.branch.id}")
+	BigDecimal countrybranchId;
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public BigDecimal getCountrybranchId() {
+		return countrybranchId;
 	}
 
 }

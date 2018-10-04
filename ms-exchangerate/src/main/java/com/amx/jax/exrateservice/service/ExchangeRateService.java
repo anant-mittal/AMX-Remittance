@@ -22,7 +22,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
@@ -33,12 +32,14 @@ import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.CurrencyMasterDao;
 import com.amx.jax.dbmodel.BankMasterModel;
 import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.ExchangeRateApprovalDetModel;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.meta.MetaData;
@@ -235,11 +236,24 @@ public class ExchangeRateService extends AbstractService {
 		return createBreakUp(exrate, lcAmount);
 	}
 
-	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal amount) {
+	ExchangeRateBreakup createBreakUp(BigDecimal exrate, BigDecimal lcAmount) {
 		ExchangeRateBreakup breakup = null;
 		if (exrate != null) {
 			breakup = new ExchangeRateBreakup();
-			breakup.setConvertedFCAmount(amount.divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setInverseRate(exrate);
+			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
+			breakup.setConvertedFCAmount(breakup.getRate().multiply(lcAmount));
+			breakup.setConvertedLCAmount(lcAmount);
+		}
+		return breakup;
+	}
+	
+	ExchangeRateBreakup createBreakUpFromForeignCurrency(BigDecimal exrate, BigDecimal fcAmount) {
+		ExchangeRateBreakup breakup = null;
+		if (exrate != null) {
+			breakup = new ExchangeRateBreakup();
+			breakup.setConvertedLCAmount(fcAmount.multiply(exrate));
+			breakup.setConvertedFCAmount(fcAmount);
 			breakup.setInverseRate(exrate);
 			breakup.setRate(new BigDecimal(1).divide(exrate, 10, RoundingMode.HALF_UP));
 		}
@@ -351,14 +365,14 @@ public class ExchangeRateService extends AbstractService {
 		ApiResponse<MinMaxExRateDTO> apiResponse = getBlackApiResponse();
 	
 		BigDecimal languageId = meta.getLanguageId();
-		ApiResponse responseFromCur = companyService.getCompanyDetails(languageId);
-		List listFromCur = responseFromCur.getData().getValues();
+		AmxApiResponse<ViewCompanyDetailDTO, Object> responseFromCur = companyService.getCompanyDetails(languageId);
+		List listFromCur = responseFromCur.getResults();
 		ViewCompanyDetailDTO dtoFromCur = (ViewCompanyDetailDTO)listFromCur.get(0);
 		BigDecimal fromCurrency = dtoFromCur.getCurrencyId();
 		
 		CurrencyMasterModel getFromCurrencyData = currencyMasterService.getCurrencyMasterById(fromCurrency);
 		
-		ApiResponse responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
+		AmxApiResponse<CurrencyMasterDTO, Object> responseToCur = currencyMasterService.getAllOnlineCurrencyDetails();
 		List<CurrencyMasterDTO> listToCur = responseToCur.getResults();
 		listToCur.add(currencyMasterService.convertModel(getFromCurrencyData));
 		List dtoList = getMinMaxData(listToCur, fromCurrency);
@@ -403,5 +417,17 @@ public class ExchangeRateService extends AbstractService {
 		}
 		return dtoList;
 	}
-
+	
+	public ApiResponse setOnlineExchangeRatesPlaceorder(String quoteName,BigDecimal bankId, BigDecimal value) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		value  = BigDecimal.ONE.divide(value, 5, RoundingMode.HALF_UP);
+		BigDecimal toCurrency = currencyMasterDao.getCurrencyMasterByQuote(quoteName).getCurrencyId();
+		List<ExchangeRateApprovalDetModel> exRateModel =  exchangeRateDao.getExchangeRatesPlaceorder(toCurrency, bankId);
+		for(ExchangeRateApprovalDetModel exRate : exRateModel) {
+		exRate.setSellRateMax(value);
+		exchangeRateDao.saveOrUpdate(exRate);
+		}
+		apiResponse.getData().getValues().add(new BooleanResponse(true));
+		return apiResponse;
+	}
 }

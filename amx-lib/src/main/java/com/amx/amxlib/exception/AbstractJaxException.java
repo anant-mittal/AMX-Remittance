@@ -4,12 +4,12 @@ import java.lang.reflect.Constructor;
 
 import org.apache.log4j.Logger;
 
-import com.amx.amxlib.error.JaxError;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 import com.amx.jax.exception.AmxApiException;
 import com.amx.jax.exception.IExceptionEnum;
 
-public abstract class AbstractJaxException extends AmxApiException {
+public abstract class AbstractJaxException extends com.amx.jax.exception.AbstractJaxException {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger(AbstractJaxException.class);

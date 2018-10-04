@@ -20,7 +20,9 @@ public abstract class AbstractService {
 		return response;
 	}
 
-	public abstract String getModelType();
+	public String getModelType() {
+		return null;
+	};
 
 	public Class<?> getModelClass() {
 		return this.getClass();
