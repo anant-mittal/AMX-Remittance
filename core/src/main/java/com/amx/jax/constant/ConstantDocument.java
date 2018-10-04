@@ -58,6 +58,8 @@ public class ConstantDocument {
 	public static final String MM_DD_YYYY_DATE_FORMAT = "MM/dd/yyyy";
 	
 	public static final BigDecimal SERVICE_MASTER_ID_TT = new BigDecimal(102);
+	
+	public static final String VOUCHER_ONLINE_PROMOTION_STR = "CHICKEN KING SAGAR VOUCHER";
 	public static final BigDecimal IDENTITY_FOR_ID_PROOF = new BigDecimal(48);
 	public static final BigDecimal BIZ_COMPONENT_ID_CIVIL_ID = new BigDecimal(198);
 

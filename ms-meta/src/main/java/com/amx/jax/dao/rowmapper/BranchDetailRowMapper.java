@@ -20,12 +20,22 @@ public class BranchDetailRowMapper implements RowMapper<BranchDetailModel>
 	@Override
 	public BranchDetailModel mapRow(ResultSet rs, int rowNum) throws SQLException {
 		BranchDetailModel bdModel = new BranchDetailModel();
-		bdModel.setArea(rs.getString("GOV_NAME"));
-		bdModel.setContactNumber(rs.getBigDecimal("TELEPHONE_NUMBER"));
+		bdModel.setArea(rs.getString("AREA"));
+		bdModel.setContactNumber(rs.getBigDecimal("CONTACT_NUMBER"));
 		bdModel.setBranchName(rs.getString("BRANCH_NAME"));
 		bdModel.setBranchAddress(rs.getString("ADDRESS"));
 		bdModel.setLatitude(rs.getBigDecimal("LATITUDE"));
 		bdModel.setLongitude(rs.getBigDecimal("LONGITUDE"));
+		
+		bdModel.setGovName(rs.getString("GOV_NAME"));
+		bdModel.setBranches(rs.getString("BRANCHES"));
+		bdModel.setBranchWebsiteName(rs.getString("BRANCH_WEBSITE_NAME"));
+		bdModel.setAddressLine1(rs.getString("ADDRESS_LINE_1"));
+		bdModel.setAddressLine2(rs.getString("ADDRESS_LINE_2"));
+		bdModel.setCity(rs.getString("CITY"));
+		bdModel.setCountry(rs.getString("COUNTRY"));
+		bdModel.setPostalCode(rs.getString("PC"));
+		bdModel.setBranchTiming(rs.getString("BRANCH_TIMING"));
 		
 		return bdModel;
 	}

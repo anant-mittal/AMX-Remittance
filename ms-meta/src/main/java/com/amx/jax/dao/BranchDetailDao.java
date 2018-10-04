@@ -20,17 +20,17 @@ public class BranchDetailDao {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
+	public static final String QUERY_BRANCH_LIST = "SELECT * from EX_COUNTRY_BRANCH  WHERE ISACTIVE='Y' AND "
+			+ "COUNTRY_ID=?  and CORPORATE_STATUS='N' and branch_name != 'ONLINE' and HEAD_OFFICE_INDICATOR=0  and "
+			+ " ADDRESS IS NOT NULL AND LATITUDE IS NOT NULL AND LONGITUDE IS NOT NULL ORDER BY BRANCH_NAME ASC";
+
 	/**
 	 * @param countryId
 	 * @return get branch detail
 	 */
 	public List<BranchDetailModel> getBranchDetailList(BigDecimal countryId) {
 
-		List<BranchDetailModel> branchDetail = jdbcTemplate.query(
-				"SELECT BRANCH_NAME, GOV_NAME, TELEPHONE_NUMBER, ADDRESS, LATITUDE, LONGITUDE from EX_COUNTRY_BRANCH  WHERE ISACTIVE='Y' AND "
-						+ "COUNTRY_ID=?  and CORPORATE_STATUS='N' and branch_name != 'ONLINE' and HEAD_OFFICE_INDICATOR=0  and "
-						+ " ADDRESS IS NOT NULL AND LATITUDE IS NOT NULL AND LONGITUDE IS NOT NULL ORDER BY BRANCH_NAME ASC",
-				new BranchDetailRowMapper(), countryId);
+		List<BranchDetailModel> branchDetail = jdbcTemplate.query(QUERY_BRANCH_LIST, new BranchDetailRowMapper(), countryId);
 
 		return branchDetail;
 	}

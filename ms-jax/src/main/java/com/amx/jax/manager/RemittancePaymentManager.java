@@ -20,9 +20,11 @@ import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
@@ -42,6 +44,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 
 
@@ -79,6 +82,12 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	private ReportManagerService reportManagerService;
+	@Autowired
+	PromotionManager promotionManager;
+	@Autowired
+	JaxEmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
@@ -162,7 +171,16 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+						// promotion check not for amg employee
+						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+									remittanceTransaction.getDocumentFinancialyear());
+						}
+						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
+								remittanceTransaction.getDocumentFinancialyear());
+						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
+						promotionManager.sendVoucherEmail(promotDto, personInfo);
+						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
 						PersonInfo personinfo = new PersonInfo();
