@@ -3,22 +3,16 @@ package com.amx.jax.sso.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.amx.jax.sso.SSOConstants.SSOAuthStep;
+
 public class SSOLoginFormData {
 
-	String action = null;
+	SSOAuthStep step = null;
 	String ecnumber = null;
 	String motp = null;
 	String identity = null;
 
 	Map<String, Object> cardata = new HashMap<String, Object>();
-
-	public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
 
 	public String getEcnumber() {
 		return ecnumber;
@@ -50,5 +44,13 @@ public class SSOLoginFormData {
 
 	public void setCardata(Map<String, Object> cardata) {
 		this.cardata = cardata;
+	}
+
+	public SSOAuthStep getStep() {
+		return step;
+	}
+
+	public void setStep(SSOAuthStep step) {
+		this.step = step;
 	}
 }

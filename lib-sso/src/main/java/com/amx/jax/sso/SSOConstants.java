@@ -27,7 +27,7 @@ public class SSOConstants {
 	public static final String PARAM_SSO_LOGIN_URL = "SSO_LOGIN_URL";
 
 	public enum SSOAuthStep {
-		DO, DONE, REQUIRED, CHECK
+		DO, DONE, REQUIRED, CHECK, CREDS, OTP
 	}
 
 }

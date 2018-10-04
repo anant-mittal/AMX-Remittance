@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
@@ -68,7 +69,7 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String authLoginJson(Model model, @PathVariable(required = false) SSOAuthStep json) {
-		return JsonUtil.toJson(getModelMap());
+		return JsonUtil.toJson(AmxApiResponse.build(new Object(), getModelMap()));
 	}
 
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
@@ -99,7 +100,7 @@ public class SSOServerController {
 			sSOTranx.init();
 		}
 		if (sSOTranx.get() != null) {
-			if ("send_otp".equalsIgnoreCase(formdata.getAction())) {
+			if (SSOAuthStep.CREDS == formdata.getStep()) {
 				String prefix = Random.randomAlpha(3);
 				String motp = Random.randomNumeric(6);
 
@@ -109,9 +110,10 @@ public class SSOServerController {
 				msg.setChannel(Channel.NOTIPY);
 				postManService.notifySlack(msg);
 
-				model.put("motpPrefix", prefix);
+				model.put("mOtpPrefix", prefix);
+
 				sSOTranx.setMOtp(motp);
-			} else if ("submit".equalsIgnoreCase(formdata.getAction()) && sSOTranx.get().getMotp() != null
+			} else if ((SSOAuthStep.OTP == formdata.getStep()) && sSOTranx.get().getMotp() != null
 					&& sSOTranx.get().getMotp().equals(formdata.getMotp())) {
 				model.put(SSOConstants.PARAM_REDIRECT,
 						Urly.parse(sSOTranx.get().getLandingUrl())
@@ -120,8 +122,7 @@ public class SSOServerController {
 								.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getSotp()).getURL());
 			}
 		}
-
-		return JsonUtil.toJson(model);
+		return JsonUtil.toJson(AmxApiResponse.build(new Object(), model));
 	}
 
 }
