@@ -4,18 +4,24 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
+import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BenificiaryListView;
@@ -29,6 +35,7 @@ import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.util.PlaceOrderUtil;
+import com.google.common.collect.Lists;
 
 /**
  * @author Subodh Bhoir
@@ -342,27 +349,47 @@ public class PlaceOrderService extends AbstractService {
 		List<PlaceOrderNotificationDTO> dtoList = new ArrayList<PlaceOrderNotificationDTO>();
 		ApiResponse<PlaceOrderDTO> response = getBlackApiResponse();
 		try {
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
 			Set<PlaceOrder> placeOrderList = new HashSet<>();
 			Set<PlaceOrder> placeOrderList1 = placeOrderdao.getPlaceOrderAlertRate1(pipsMasterId);
 			placeOrderList.addAll(placeOrderList1);
 			Set<PlaceOrder> placeOrderList2 = placeOrderdao.getPlaceOrderAlertRate2(pipsMasterId);
 			placeOrderList.addAll(placeOrderList2);
+			stopWatch.stop();
+			logger.info("total time taken to run place order db query:{} seconds",
+					stopWatch.getLastTaskTimeMillis() / 1000);
 
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
 
 			SimpleDateFormat simpletimeFormat = new SimpleDateFormat("HH:MM a z");
 			String time = simpletimeFormat.format(new Date());
-			
-		    NumberFormat myFormat = NumberFormat.getInstance();
-		    myFormat.setGroupingUsed(true);
 
+			NumberFormat myFormat = NumberFormat.getInstance();
+			myFormat.setGroupingUsed(true);
+
+			List<BigDecimal> poCustomerIds = placeOrderList.stream().map(po -> po.getCustomerId()).distinct()
+					.collect(Collectors.toList());
+			List<BigDecimal> poIds = placeOrderList.stream().map(po -> po.getOnlinePlaceOrderId()).distinct()
+					.collect(Collectors.toList());
+			stopWatch.start();
+			updatePlaceOrdersForNotification(poIds);
+			stopWatch.stop();
+			logger.info("total time taken to run save place order query query:{} seconds",
+					stopWatch.getLastTaskTimeMillis() / 1000);
+			stopWatch.start();
+			List<PlaceOrderCustomer> poCustomers = customerDao.getPersonInfoById(poCustomerIds);
+			stopWatch.stop();
+			logger.info("total time taken to run get customer query by id db query:{} seconds", stopWatch.getLastTaskTimeMillis() / 1000);
+			Map<BigDecimal, PlaceOrderCustomer> poCustomerMap = poCustomers.stream()
+					.collect(Collectors.toMap(x -> x.getCustomerId(), x -> x));
 
 			if (placeOrderList != null && !placeOrderList.isEmpty()) {
 				for (PlaceOrder placeorder : placeOrderList) {
 
-					Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
-					logger.info("customer ID:" + placeorder.getCustomerId());
+					PlaceOrderCustomer cusotmer = poCustomerMap.get(placeorder.getCustomerId());
+					logger.debug("customer ID:" + placeorder.getCustomerId());
 					PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
 					placeorderNotDTO.setFirstName(cusotmer.getFirstName());
 					placeorderNotDTO.setMiddleName(cusotmer.getMiddleName());
@@ -381,10 +408,9 @@ public class PlaceOrderService extends AbstractService {
 
 					placeorder.setUpdatedDate(new Date());
 					placeorder.setNotificationDate(new Date());
-					placeOrderdao.save(placeorder);
 				}
 			}
-			logger.info("place Order for Notfication :" + dtoList.toString());
+			logger.debug("place Order for Notfication :" + dtoList.toString());
 
 			response.getData().getValues().addAll(dtoList);
 			response.setResponseStatus(ResponseStatus.OK);
@@ -395,6 +421,18 @@ public class PlaceOrderService extends AbstractService {
 			logger.error("Error while fetching Place Order List by Trigger Exchange Rate", e);
 		}
 		return response;
+	}
+	
+	private void updatePlaceOrdersForNotification(List<BigDecimal> poIds) {
+
+		List<List<BigDecimal>> partitions = Lists.partition(poIds, 999);
+		for (List<BigDecimal> parition : partitions) {
+			placeOrderdao.updatePlaceOrdersForRateAlert(parition, Calendar.getInstance().getTime());
+		}
+	}
+
+	public void savePlaceOrder(List<PlaceOrder> placeOrders) {
+		placeOrderdao.save(placeOrders);
 	}
 	
 	@Override

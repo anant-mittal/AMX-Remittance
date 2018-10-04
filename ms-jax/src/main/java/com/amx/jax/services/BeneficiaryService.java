@@ -50,6 +50,7 @@ import com.amx.jax.auditlog.BeneficiaryAuditEvent;
 import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
 import com.amx.jax.dbmodel.AgentMasterModel;
@@ -66,6 +67,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dbmodel.routing.RoutingHeader;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
@@ -80,6 +82,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
+import com.amx.jax.repository.routing.RoutingHeaderRepository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
@@ -159,6 +162,8 @@ public class BeneficiaryService extends AbstractService {
    	AuditService auditService;
 	@Autowired
 	ICurrencyDao currencyDao;
+	@Autowired
+	RoutingDao routingDao;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -966,6 +971,12 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
+    
+	public List<BenificiaryListView> listBeneficiaryForPOloadTest(int num, BigDecimal currencyId) {
+		return beneficiaryOnlineDao.findByIsActiveAndCurrencyIdAndBankIdNotIn("Y", currencyId,
+				routingDao.listAllRoutingBankIds(), new PageRequest(0, num));
+	}
+    
  private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;

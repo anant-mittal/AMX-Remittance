@@ -164,6 +164,8 @@ public class NewExchangeRateService extends ExchangeRateService {
 			breakup.setConvertedFCAmount(RoundUtil.roundBigDecimal(convertedFCAmount, fcDecimalNumber));
 			breakup.setConvertedLCAmount(request.getLocalAmount());
 		}
+		breakup.setNetAmount(breakup.getConvertedLCAmount());
+		breakup.setNetAmountWithoutLoyality(breakup.getConvertedLCAmount());
 		breakup.setRate(request.getDomXRate());
 		return breakup;
 	
