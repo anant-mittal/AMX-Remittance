@@ -1,6 +1,3 @@
-/**  AlMulla Exchange
-  *  
-  */
 package com.amx.jax.sso.server;
 
 import java.io.IOException;
