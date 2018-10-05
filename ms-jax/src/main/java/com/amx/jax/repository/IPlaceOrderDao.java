@@ -55,7 +55,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable> 
 	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y'")
 	public List<PlaceOrder> getPlaceOrderDelete(@Param("onlinePlaceOrderId") BigDecimal onlinePlaceOrderId);
 
-	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y' ")
+	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and p.isActive='Y' and trunc(sysdate) >= trunc(p.validFromDate) and trunc(sysdate) <= trunc(p.validToDate) ")
 	public List<PlaceOrder> getPlaceOrderForId(@Param("onlinePlaceOrderId") BigDecimal onlinePlaceOrderId);
 
 	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y'")
