@@ -95,6 +95,10 @@ public class TemplateService {
 		return rawStr;
 	}
 
+	public String processJson(Templates template, Context context) {
+		return templateEngine.process(template.getJsonFileName(), context);
+	}
+
 	/**
 	 * Gets the local.
 	 *
@@ -132,7 +136,12 @@ public class TemplateService {
 
 		context.setVariables(file.getModel());
 		if (file.getTemplate().isThymleaf()) {
-			String content = this.processHtml(file.getTemplate(), context);
+			String content;
+			if (file.getType() == File.Type.JSON) {
+				content = this.processJson(file.getTemplate(), context);
+			} else {
+				content = this.processHtml(file.getTemplate(), context);
+			}
 			file.setContent(content);
 		}
 		return file;

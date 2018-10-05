@@ -18,12 +18,14 @@ public enum Templates {
 	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
 	RATE_ALERT_COMPLETION("RateAlertCompletion"),
 
-	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("branch-template"), BRANCH_FEEDBACK_JSON(
-			"json/branch-template"),
+	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), BRANCH_FEEDBACK_JSON(
+			"json/trnx-feedback"),
 
-	CIVILID_EXPIRY_JSON("json/civilexpiry"), CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED(
-			"civilexpired"), PARTIAL_REGISTRATION_EMAIL(
-					"PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
+	CIVILID_EXPIRY_JSON("json/civilexpiry"), CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
+
+	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
+
+	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
 	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
 
@@ -35,6 +37,10 @@ public enum Templates {
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	public String getJsonFileName() {
+		return "json/" + fileName;
 	}
 
 	Templates(String fileName, PDFConverter converter, String sampleJSON) {

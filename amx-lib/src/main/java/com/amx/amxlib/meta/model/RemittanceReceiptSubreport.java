@@ -22,6 +22,7 @@ public class RemittanceReceiptSubreport {
 	
 	private Boolean remittanceReceiptCheck;
 	
+	
 	public Boolean getWaterMarkCheck() {
 		return waterMarkCheck;
 	}
@@ -99,13 +100,6 @@ public class RemittanceReceiptSubreport {
 		this.collectionAppList = collectionAppList;
 	}
 
-
-
-
-
-
-
-	
 	
 	
 	

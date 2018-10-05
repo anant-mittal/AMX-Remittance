@@ -63,7 +63,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
+
 	//@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -109,21 +109,23 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
-		
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
+			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+
 		Map<String, String> flexFields = new HashMap<>();
 		list.forEach(i -> {
-			if(i.getField().getType().equals("select")) {
-				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
-			}else if(i.getField().getType().equals("date")) {
+			if (i.getField().getType().equals("select")) {
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
+						JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+			} else if (i.getField().getType().equals("date")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
-			}else {
+			} else {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
 			}
 		});
 		request.setFlexFields(flexFields);
 		return client.saveTransaction(request);
-		
+
 	}
 
 	// @Test
@@ -166,7 +168,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+
+	// @Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -202,7 +205,7 @@ public class RemittanceClientTest {
 		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
 		request.setApplicationDocumentNumber(new BigDecimal(27000545));
 		request.setDocumentFinancialYear(new BigDecimal(2017));
-		response = client.fetchTransactionDetails(request);
+		response = client.fetchTransactionDetails(request, true);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

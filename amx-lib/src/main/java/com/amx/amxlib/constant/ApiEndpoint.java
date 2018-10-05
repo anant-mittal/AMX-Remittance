@@ -47,5 +47,7 @@ public class ApiEndpoint {
     public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
     
     public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
+	public static final String JAX_NOTIFICATION_ENDPOINT = "/jax-notification";
+	public static final String JAX_CUSTOMER_NOTIFICATION = "/jax/notifications";
 
 }

@@ -18,6 +18,16 @@ public class BranchDetailDTO implements Serializable {
 	private String branchAddress;
 	private BigDecimal latitude;
 	private BigDecimal longitude;
+	
+	private String govName;
+	private String branches;
+	private String branchWebsiteName;
+	private String addressLine1;
+	private String addressLine2;
+	private String city;
+	private String country;
+	private String postalCode;
+	private String branchTiming;
 
 	public BranchDetailDTO() {
 		super();
@@ -69,6 +79,78 @@ public class BranchDetailDTO implements Serializable {
 
 	public void setLongitude(BigDecimal longitude) {
 		this.longitude = longitude;
+	}
+
+	public String getGovName() {
+		return govName;
+	}
+
+	public void setGovName(String govName) {
+		this.govName = govName;
+	}
+
+	public String getBranches() {
+		return branches;
+	}
+
+	public void setBranches(String branches) {
+		this.branches = branches;
+	}
+
+	public String getBranchWebsiteName() {
+		return branchWebsiteName;
+	}
+
+	public void setBranchWebsiteName(String branchWebsiteName) {
+		this.branchWebsiteName = branchWebsiteName;
+	}
+
+	public String getAddressLine1() {
+		return addressLine1;
+	}
+
+	public void setAddressLine1(String addressLine1) {
+		this.addressLine1 = addressLine1;
+	}
+
+	public String getAddressLine2() {
+		return addressLine2;
+	}
+
+	public void setAddressLine2(String addressLine2) {
+		this.addressLine2 = addressLine2;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getCountry() {
+		return country;
+	}
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+	public String getPostalCode() {
+		return postalCode;
+	}
+
+	public void setPostalCode(String postalCode) {
+		this.postalCode = postalCode;
+	}
+
+	public String getBranchTiming() {
+		return branchTiming;
+	}
+
+	public void setBranchTiming(String branchTiming) {
+		this.branchTiming = branchTiming;
 	}
 	
 }
