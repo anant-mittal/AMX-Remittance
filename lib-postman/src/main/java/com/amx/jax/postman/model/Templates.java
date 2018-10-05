@@ -16,6 +16,7 @@ public enum Templates {
 							"TransactionCreationSuccess"), PROFILE_CHANGE("AccoutDetailsUpdate"),
 	// Rate Alert, PlaceOrder
 	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
+	RATE_ALERT_COMPLETION("RateAlertCompletion"),
 
 	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("branch-template"), BRANCH_FEEDBACK_JSON(
 			"json/branch-template"),

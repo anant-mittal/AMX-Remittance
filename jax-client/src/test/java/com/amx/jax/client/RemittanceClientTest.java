@@ -35,7 +35,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -78,7 +78,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	@Test
+	//@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -166,7 +166,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -176,8 +176,8 @@ public class RemittanceClientTest {
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
 		request.setAuth_appNo("471504");
-		request.setPaymentId("6948171111380180");
-		request.setUdf3("27000545");
+		request.setPaymentId("3082792411163290");
+		request.setUdf3("3082792411163290");
 		request.setResultCode("CAPTURED");
 		request.setTrackId("309945");
 		request.setReferenceId("801813658796");

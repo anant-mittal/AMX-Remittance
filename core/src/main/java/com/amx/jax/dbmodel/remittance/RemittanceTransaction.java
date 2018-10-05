@@ -28,6 +28,8 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal collectionDocumentFinancialyear;
 	private BigDecimal collectionDocumentNo;
 	private BigDecimal customerId;
+	private BigDecimal exchangeRateApplied;
+
 
 	@Id
 	@Column(name = "REMITTANCE_TRANSACTION_ID")
@@ -102,4 +104,12 @@ public class RemittanceTransaction implements Serializable {
 		this.customerId = customerId;
 	}
 
+	@Column(name = "EXCHANGE_RATE_APPLIED")
+	public BigDecimal getExchangeRateApplied() {
+		return exchangeRateApplied;
+	}
+
+	public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+		this.exchangeRateApplied = exchangeRateApplied;
+	}
 }
