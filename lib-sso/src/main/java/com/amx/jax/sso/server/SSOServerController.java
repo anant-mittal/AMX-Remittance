@@ -13,8 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +32,8 @@ import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
+import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
+import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.JsonUtil;
@@ -67,6 +67,7 @@ public class SSOServerController {
 		return map;
 	}
 
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.GET)
 	public String authLoginView(Model model,
 			@PathVariable(required = false, value = "htmlstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep html) {
@@ -74,13 +75,14 @@ public class SSOServerController {
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = RequestMethod.GET, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String authLoginJson(Model model,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "REQUIRED") SSOAuthStep json) {
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(getModelMap());
-		result.setStatusKey("AUTH_REQIURED");
+		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 		return JsonUtil.toJson(result);
 	}
 
@@ -90,10 +92,6 @@ public class SSOServerController {
 			throws MalformedURLException, URISyntaxException {
 		model.addAllAttributes(getModelMap());
 		if (sSOConfig.getAdminuser().equals(username) && sSOConfig.getAdminpass().equals(password)) {
-			// UsernamePasswordAuthenticationToken token = new
-			// UsernamePasswordAuthenticationToken(username, password);
-			// token.setDetails(new WebAuthenticationDetails(request));
-			// SecurityContextHolder.getContext().setAuthentication(token);
 			return SSOConstants.REDIRECT + Urly.parse(sSOTranx.get().getAppUrl())
 					.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 					.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
@@ -102,6 +100,7 @@ public class SSOServerController {
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
 
+	@ApiSSOStatus({ SSOServerCodes.AUTH_REQUIRED, SSOServerCodes.AUTH_DONE, SSOServerCodes.OTP_REQUIRED })
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_JSON, method = { RequestMethod.POST }, produces = {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
@@ -120,6 +119,8 @@ public class SSOServerController {
 			sSOTranx.init();
 		}
 		AmxApiResponse<Object, Map<String, Object>> result = AmxApiResponse.buildMeta(model);
+		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
+
 		if (sSOTranx.get() != null) {
 			if (SSOAuthStep.CREDS == json) {
 				String prefix = Random.randomAlpha(3);
@@ -134,6 +135,9 @@ public class SSOServerController {
 				model.put("mOtpPrefix", prefix);
 
 				sSOTranx.setMOtp(motp);
+
+				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
+
 			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null
 					&& sSOTranx.get().getMotp().equals(formdata.getMotp())) {
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
@@ -142,7 +146,7 @@ public class SSOServerController {
 						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getSotp()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				// resp.sendRedirect(redirectUrl);
-
+				result.setStatusEnum(SSOServerCodes.AUTH_DONE);
 				resp.setHeader("Location", redirectUrl);
 				resp.setStatus(302);
 			}

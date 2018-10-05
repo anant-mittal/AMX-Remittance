@@ -1,26 +1,26 @@
 package com.amx.amxlib.constant;
 
 public class ApiEndpoint {
-    
-    private ApiEndpoint() {
-        
-    }
 
-    public static final String USER_API_ENDPOINT = "/user";
+	private ApiEndpoint() {
 
-    public static final String CUSTOMER_ENDPOINT = "/customer";
-    
-    public static final String CUSTOMER_REG_ENDPOINT = "/customer-reg";
+	}
 
-    public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
+	public static final String USER_API_ENDPOINT = "/user";
 
-    public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
+	public static final String CUSTOMER_ENDPOINT = "/customer";
+
+	public static final String CUSTOMER_REG_ENDPOINT = "/customer-reg";
+
+	public static final String EXCHANGE_RATE_ENDPOINT = "/exchange-rate";
+
+	public static final String ONLINE_CUSTOMER_VALIDATE_URL = "/nationality-id/{nationality-id}/validate";
 
 	public final class MetaApi {
-		//Prefix
+		// Prefix
 		public static final String PREFIX = "/meta";
-		
-		//Params
+
+		// Params
 		public static final String PARAM_QUEST_ID = "questId";
 		public static final String PARAM_EMAIL_ID = "emailId";
 		public static final String PARAM_BENE_COUNTRY_ID = "beneficiaryCountryId";
@@ -31,9 +31,8 @@ public class ApiEndpoint {
 		public static final String PARAM_CITY_ID = "cityId";
 		public static final String PARAM_COUNTRY_ID = "countryId";
 		public static final String PARAM_STATE_ID = "stateId";
-		
-		
-		//Paths
+
+		// Paths
 		public static final String SEQ_QUEST_LIST = "/quest/list";
 		public static final String SEQ_QUEST_BY_ID = "/quest/{questId}";
 		public static final String APPL_COUNTRY = "/applcountry/";
@@ -49,81 +48,80 @@ public class ApiEndpoint {
 		public static final String EMAIL_CHECK = "/emailcheck/{emailId}";
 		public static final String API_FYEAR = "/fyear";
 		public static final String API_HELP_NO = "/helpdno/";
-		public static final String API_PREFIX= "/prefix/";
+		public static final String API_PREFIX = "/prefix/";
 		public static final String SERVICE_GROUP = "/service-group/";
 		public static final String API_BRANCH_DETAIL = "/branchdetail/";
-		public static final String META_PARAMETER ="/meta-parameter/";
+		public static final String META_PARAMETER = "/meta-parameter/";
 		public static final String CURRENCY_BENE_SERVICE = "/currency/beneservice/";
 		public static final String API_ONLINE_CONFIG = "/onlineconfig/";
-		public static final String API_CITY_DESC = "/citydesc/{stateId}/{districtId}";
-		public static final String API_CITY_LIST = "/citylist/{districtId}";
-		public static final String API_STATE_LIST = "/statelist/{countryId}";
-		public static final String API_STATE_DESC =  "/statedesc/{countryId}/{stateId}";
-		public static final String API_DISTRICTLIST = "/districtlist/{stateId}";
-		public static final String API_DISTRICTDESC = "/districtdesc/{stateId}/{districtId}";
+		public static final String API_CITY_DESC = "/citydesc/{stateId}/{districtId}/";
+		public static final String API_CITY_LIST = "/citylist/{districtId}/";
+		public static final String API_STATE_LIST = "/statelist/{countryId}/";
+		public static final String API_STATE_DESC = "/statedesc/{countryId}/{stateId}/";
+		public static final String API_DISTRICTLIST = "/districtlist/{stateId}/";
+		public static final String API_DISTRICTDESC = "/districtdesc/{stateId}/{districtId}/";
 		public static final String MULTI_COUNTRY = "/multicountry/";
 		public static final String EXCHANGE_RATE_CURRENCY_LIST = "/exchange-rate-currency/list/";
 		public static final String CURRENCY_ONLINE = "/currency/online/";
-		
-		
+
 		public static final String API_BANK_BRANCH_GET = "/bankbranch/get/";
-		
+
 	}
 
-    public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
+	public static final String UPDATE_CUSTOMER_PASSWORD_ENDPOINT = "/password/";
 
-    public static final String BENE_API_ENDPOINT = "/bene";
+	public static final String BENE_API_ENDPOINT = "/bene";
 
-    public static final String REMIT_API_ENDPOINT = "/remit";
+	public static final String REMIT_API_ENDPOINT = "/remit";
 
-    public static final String BANK_MASTER_BY_COUNTRY_API_ENDPOINT = "/bank/{country-id}";
+	public static final String BANK_MASTER_BY_COUNTRY_API_ENDPOINT = "/bank/{country-id}";
 
-    public static final String RATE_ALERT_ENDPOINT = "/rate-alert/";
-    
-    public static final String JAX_FIELD_ENDPOINT = "/jax-field/";
-    
-    public static final String VALIDATE_OTP_ENDPOINT = "/validate-otp/";
-    
-    public static final String SEND_OTP_ENDPOINT = "/send-otp/";
-    
-    public static final String UPDAE_STATUS_ENDPOINT = "/update-status/";
-    
-    public static final String GET_SERVICE_PROVIDER_ENDPOINT = "/service-provider/";
-    
-    public static final String GET_AGENT_MASTER_ENDPOINT = "/agent-master/";
-    
-    public static final String GET_AGENT_BRANCH_ENDPOINT = "/agent-branch/";
-    
-    public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
-    
-    public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
-    
-    public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
+	public static final String RATE_ALERT_ENDPOINT = "/rate-alert/";
+
+	public static final String JAX_FIELD_ENDPOINT = "/jax-field/";
+
+	public static final String VALIDATE_OTP_ENDPOINT = "/validate-otp/";
+
+	public static final String SEND_OTP_ENDPOINT = "/send-otp/";
+
+	public static final String UPDAE_STATUS_ENDPOINT = "/update-status/";
+
+	public static final String GET_SERVICE_PROVIDER_ENDPOINT = "/service-provider/";
+
+	public static final String GET_AGENT_MASTER_ENDPOINT = "/agent-master/";
+
+	public static final String GET_AGENT_BRANCH_ENDPOINT = "/agent-branch/";
+
+	public static final String ACCOUNT_TYPE_ENDPOINT = "/accounttype/";
+
+	public static final String PLACE_ORDER_ENDPOINT = "/place-order/";
+
+	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
 	public static final String JAX_NOTIFICATION_ENDPOINT = "/jax-notification";
 	public static final String JAX_CUSTOMER_NOTIFICATION = "/jax/notifications";
 
-    public static final String LOGIN_ENDPOINT = "/login";
-    
-    public static final String VALIDATE_USER_ENDPOINT = "/validate-user/";
-    
-    public static final String VALIDATE_EMPNO_ENDPOINT = "/validate-ecno/";
-    
-    public static final String GET_USER_MENU_ENDPOINT = "/user-menu/";
-    
-    public static final String VALIDATE_USER_MENU_ENDPOINT = "/validate-user-menu/";
-    
-    public static final String SYNC_ENUMS_ENDPOINT = "/api/sync/perms/";
-    
-    public static final String VALIDATE_AUTH_USER_ENDPOINT = "/api/user/validate/";
-    
-    public static final String VALIDATE_USER_DETAIL_ENDPOINT = "/api/user/auth/";
-    
-    public static final String SAVE_ROLE_ENDPOINT = "/api/role/";
-    
-    public static final String SAVE_PERM_ENDPOINT = "/api/role/perm/";
-    
-    public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
-    
-    public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
-    
+	public static final String LOGIN_ENDPOINT = "/login";
+
+	public static final String VALIDATE_USER_ENDPOINT = "/validate-user/";
+
+	public static final String VALIDATE_EMPNO_ENDPOINT = "/validate-ecno/";
+
+	public static final String GET_USER_MENU_ENDPOINT = "/user-menu/";
+
+	public static final String VALIDATE_USER_MENU_ENDPOINT = "/validate-user-menu/";
+
+	public static final String SYNC_ENUMS_ENDPOINT = "/api/sync/perms/";
+
+	public static final String VALIDATE_AUTH_USER_ENDPOINT = "/api/user/validate/";
+
+	public static final String VALIDATE_USER_DETAIL_ENDPOINT = "/api/user/auth/";
+
+	public static final String SAVE_ROLE_ENDPOINT = "/api/role/";
+
+	public static final String SAVE_PERM_ENDPOINT = "/api/role/perm/";
+
+	public static final String SAVE_USER_ROLE_ENDPOINT = "/api/user/role/";
+
+	public static final String SAVE_USER_PERM_ENDPOINT = "/api/user/perms/";
+
 }
