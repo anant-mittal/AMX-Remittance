@@ -91,6 +91,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
+	@Autowired
+	RemittanceManager remittanceManager;
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -187,6 +189,7 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						remittanceManager.afterRemittanceSteps(remittanceTransaction);
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
