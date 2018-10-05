@@ -107,6 +107,12 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		return resp;
 	}
 
+	public static <MS> AmxApiResponse<Object, MS> buildMeta(MS meta) {
+		AmxApiResponse<Object, MS> resp = new AmxApiResponse<Object, MS>();
+		resp.setMeta(meta);
+		return resp;
+	}
+
 	/**
 	 * Builds the list.
 	 *

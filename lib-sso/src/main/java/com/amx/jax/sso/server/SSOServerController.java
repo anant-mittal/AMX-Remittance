@@ -69,7 +69,7 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String authLoginJson(Model model, @PathVariable(required = false) SSOAuthStep json) {
-		return JsonUtil.toJson(AmxApiResponse.build(new Object(), getModelMap()));
+		return JsonUtil.toJson(AmxApiResponse.buildMeta(getModelMap()));
 	}
 
 	@RequestMapping(value = SSOConstants.SSO_LOGIN_URL_HTML, method = RequestMethod.POST)
