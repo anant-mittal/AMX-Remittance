@@ -122,7 +122,7 @@ public class SSOServerController {
 								.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getSotp()).getURL());
 			}
 		}
-		return JsonUtil.toJson(AmxApiResponse.build(new Object(), model));
+		return JsonUtil.toJson(AmxApiResponse.buildMeta(model));
 	}
 
 }
