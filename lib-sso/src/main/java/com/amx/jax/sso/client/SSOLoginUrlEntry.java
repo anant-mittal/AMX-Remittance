@@ -36,7 +36,7 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 
 	@Autowired
 	public SSOLoginUrlEntry() {
-		super(SSOConstants.APP_LOGIN_URL);
+		super(SSOConstants.APP_LOGIN_URL_CHECK);
 	}
 
 	@Override
@@ -46,13 +46,13 @@ public class SSOLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 		RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 		sSOTranx.setReturnUrl(request.getServletPath());
 		URLBuilder builder = new URLBuilder();
-		builder.setPath(SSOConstants.APP_LOGIN_URL).addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
+		builder.setPath(SSOConstants.APP_LOGIN_URL_CHECK).addPathVariable(SSOConstants.PARAM_STEP, SSOAuthStep.CHECK)
 				.addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 		try {
 			redirectStrategy.sendRedirect(request, response, builder.getRelativeURL());
 		} catch (URISyntaxException e) {
 			LOGGER.error("SSOLoginUrlEntry commence error", e);
-			redirectStrategy.sendRedirect(request, response, SSOConstants.APP_LOGIN_URL);
+			redirectStrategy.sendRedirect(request, response, SSOConstants.APP_LOGIN_URL_CHECK);
 		}
 	}
 

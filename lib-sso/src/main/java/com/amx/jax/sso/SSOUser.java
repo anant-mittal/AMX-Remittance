@@ -40,7 +40,7 @@ public class SSOUser implements Serializable {
 			tranxId = this.getTranxId();
 			AppContextUtil.setTranxId(tranxId);
 		} else {
-			tranxId = AppContextUtil.getTranxId();
+			tranxId = AppContextUtil.getTranxId(true);
 			this.setTranxId(tranxId);
 		}
 		return tranxId;

@@ -6,15 +6,19 @@ public class SSOConstants {
 		// Not allowed
 	}
 
-	public static final String APP_LOGGEDIN_URL = "/sso/loggedin";
+	public static final String APP_LOGGEDIN_URL = "/sso/loggedin/default";
+	public static final String APP_LOGGEDIN_URL_JSON = "/sso/loggedin/{json}";
+	public static final String APP_LOGGEDIN_URL_HTML = "/sso/loggedin/{html}";
 
 	public static final String APP_LOGIN_URL = "/sso/login";
-	public static final String APP_LOGIN_URL_DONE = APP_LOGIN_URL + "?step=DONE";
-	public static final String APP_LOGIN_URL_CHECK = APP_LOGIN_URL + "?step=CHECK";
+	public static final String APP_LOGIN_URL_JSON = "/sso/login/{jsonstep}";
+	public static final String APP_LOGIN_URL_HTML = "/sso/login/{htmlstep}";
+	public static final String APP_LOGIN_URL_DONE = APP_LOGIN_URL + "/DONE";
+	public static final String APP_LOGIN_URL_CHECK = APP_LOGIN_URL + "/CHECK";
 
 	public static final String SSO_LOGIN_URL = "/sso/auth/login";
-	public static final String SSO_LOGIN_URL_JSON = SSO_LOGIN_URL + "/{json}";
-	public static final String SSO_LOGIN_URL_HTML = SSO_LOGIN_URL + "/{html}";
+	public static final String SSO_LOGIN_URL_JSON = SSO_LOGIN_URL + "/{jsonstep}";
+	public static final String SSO_LOGIN_URL_HTML = SSO_LOGIN_URL + "/{htmlstep}";
 	public static final String SSO_LOGIN_URL_REQUIRED = SSO_LOGIN_URL + "/REQUIRED";
 	public static final String SSO_LOGIN_URL_DO = SSO_LOGIN_URL + "/DO";
 

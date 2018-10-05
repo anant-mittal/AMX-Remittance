@@ -13,8 +13,8 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
 
-		private String landingUrl = null;
-		private String returnUrl = null;
+		private String appUrl = null;
+		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
 		private String sotp = null;
 		private String motp = null;
 
@@ -26,12 +26,12 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.returnUrl = returnUrl;
 		}
 
-		public String getLandingUrl() {
-			return landingUrl;
+		public String getAppUrl() {
+			return appUrl;
 		}
 
-		public void setLandingUrl(String landingUrl) {
-			this.landingUrl = landingUrl;
+		public void setAppUrl(String appUrl) {
+			this.appUrl = appUrl;
 		}
 
 		public String getSotp() {
@@ -68,9 +68,9 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		return msg;
 	}
 
-	public SSOModel setLandingUrl(String landingUrl, String sotp) {
+	public SSOModel setAppUrl(String landingUrl, String sotp) {
 		SSOModel msg = this.get();
-		msg.setLandingUrl(landingUrl);
+		msg.setAppUrl(landingUrl);
 		msg.setSotp(sotp);
 		this.save(msg);
 		return msg;
