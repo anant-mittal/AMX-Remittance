@@ -15,8 +15,7 @@ public enum Templates {
 					"RegistrationSuccessEmail"), TXN_CRT_SUCC(
 							"TransactionCreationSuccess"), PROFILE_CHANGE("AccoutDetailsUpdate"),
 	// Rate Alert, PlaceOrder
-	RATE_ALERT("RateAlert"), RATE_ALERT_JOSN("json/place-order", "RateAlert.json"),
-	RATE_ALERT_COMPLETION("RateAlertCompletion"),
+	RATE_ALERT("place-order"), RATE_ALERT_COMPLETION("place-order-executed"),
 
 	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), BRANCH_FEEDBACK_JSON(
 			"json/trnx-feedback"),
