@@ -76,7 +76,7 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 			email.getModel().put(RESP_DATA_KEY, placeorderNot);
 			emailList.add(email);
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.RATE_ALERT_JOSN);
+			pushMessage.setTemplate(Templates.RATE_ALERT);
 			pushMessage.addToUser(placeorderNot.getCustomerId());
 			pushMessage.getModel().put(RESP_DATA_KEY, placeorderNot);
 			notificationsList.add(pushMessage);
