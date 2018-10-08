@@ -137,7 +137,7 @@ public class SSOServerController {
 
 			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null) {
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
-				auth.setmOtpHash(formdata.getMotp());
+				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
