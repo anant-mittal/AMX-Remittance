@@ -36,8 +36,8 @@ public interface RbaacService {
 		/** The Constant INIT_AUTH. */
 		public static final String INIT_AUTH = SERVICE_PREFIX + API_VERSION_V1 + "/auth/init-auth";
 
-		/** The Constant AUTHORISE. */
-		public static final String AUTHORISE = SERVICE_PREFIX + API_VERSION_V1 + "/auth/authorise";
+		/** The Constant AUTHORIZE. */
+		public static final String AUTHORIZE = SERVICE_PREFIX + API_VERSION_V1 + "/auth/authorize";
 
 		/** The Constant PERMS_GET. */
 		public static final String PERMS_GET = SERVICE_PREFIX + API_VERSION_V1 + "/perms/get";
