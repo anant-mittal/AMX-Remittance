@@ -61,7 +61,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	 */
 	@Override
 	@ApiOperation("User Authorisation")
-	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiEndPoints.AUTHORIZE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto) {
 		return rbaacServiceClient.authoriseUser(reqDto);
 	}

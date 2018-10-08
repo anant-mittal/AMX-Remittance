@@ -97,7 +97,7 @@ public class RbaacServiceApiController implements RbaacService {
 	 * UserAuthorisationReqDTO)
 	 */
 	@Override
-	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiEndPoints.AUTHORIZE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(
 			@RequestBody @Valid UserAuthorisationReqDTO reqDto) {
 

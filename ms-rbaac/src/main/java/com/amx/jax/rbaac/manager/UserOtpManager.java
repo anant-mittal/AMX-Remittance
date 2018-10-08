@@ -45,6 +45,15 @@ public class UserOtpManager {
 	/** The otp TTL. */
 	private long otpTTL = 10 * 60 * 1000;
 
+	
+	public static String getOtpHash(String otp) {
+		try {
+			return CryptoUtil.getSHA1Hash(otp);
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Generate otp tokens.
 	 *
@@ -57,12 +66,7 @@ public class UserOtpManager {
 		otpData.setmOtp(Random.randomNumeric(6));
 		otpData.setmOtpPrefix(Random.randomAlpha(3));
 
-		try {
-			otpData.setHashedmOtp(CryptoUtil.getSHA1Hash(otpData.getmOtp()));
-		} catch (NoSuchAlgorithmException e) {
-			// Hash Can Not be generated
-			otpData.setHashedmOtp(null);
-		}
+		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
 		long initTime = System.currentTimeMillis();
 
@@ -121,7 +125,7 @@ public class UserOtpManager {
 
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-				sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
+				// sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
 			}
 
 		} catch (PostManException e) {
@@ -129,6 +133,5 @@ public class UserOtpManager {
 			throw new AuthServiceException(e);
 		}
 	}
-
 
 }

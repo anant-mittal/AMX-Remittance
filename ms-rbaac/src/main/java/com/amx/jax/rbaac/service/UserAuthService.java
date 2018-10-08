@@ -186,7 +186,7 @@ public class UserAuthService {
 	public EmployeeDetailsDTO authoriseUser(UserAuthorisationReqDTO reqDto) {
 
 		String employeeNo = reqDto.getEmployeeNo();
-		String mOtpHash = reqDto.getmOtpHash();
+		String mOtp = reqDto.getmOtp();
 		// String eOtpHash = reqDto.geteOtpHash();
 		String ipAddress = reqDto.getIpAddress();
 		// String transactionId = reqDto.getTransactionId();
@@ -195,8 +195,8 @@ public class UserAuthService {
 		/**
 		 * Input -> Invalid
 		 */
-		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtpHash) || StringUtils.isBlank(ipAddress)) {
-			throw new AuthServiceException("Employee Number, Otp Hash & IP Address are Manadatory",
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtp) || StringUtils.isBlank(ipAddress)) {
+			throw new AuthServiceException("Employee Number, Otp & IP Address are Manadatory",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
@@ -212,6 +212,8 @@ public class UserAuthService {
 		}
 
 		Employee employee = userOtpData.getEmployee();
+
+		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 
 		// Validate User OTP hash
 		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {

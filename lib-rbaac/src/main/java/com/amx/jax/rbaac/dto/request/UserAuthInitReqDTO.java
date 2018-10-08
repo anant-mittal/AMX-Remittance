@@ -5,6 +5,8 @@ package com.amx.jax.rbaac.dto.request;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
@@ -35,7 +37,7 @@ public class UserAuthInitReqDTO implements Serializable {
 	private String deviceId;
 
 	/** The device type. */
-	@NotBlank(message = "Device Type Can not be Null or Empty")
+	@NotNull(message = "Device Type Can not be Null or Empty")
 	private RbaacServiceConstants.DEVICE_TYPE deviceType;
 
 	/**
