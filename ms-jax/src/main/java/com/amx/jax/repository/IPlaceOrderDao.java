@@ -55,7 +55,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable> 
 	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y'")
 	public List<PlaceOrder> getPlaceOrderDelete(@Param("onlinePlaceOrderId") BigDecimal onlinePlaceOrderId);
 
-	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y' ")
+	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and p.isActive='Y' and trunc(sysdate) >= trunc(p.validFromDate) and trunc(sysdate) <= trunc(p.validToDate) ")
 	public List<PlaceOrder> getPlaceOrderForId(@Param("onlinePlaceOrderId") BigDecimal onlinePlaceOrderId);
 
 	@Query("select p from PlaceOrder p where p.onlinePlaceOrderId=:onlinePlaceOrderId and isActive='Y'")
@@ -70,7 +70,7 @@ public interface IPlaceOrderDao extends JpaRepository<PlaceOrder, Serializable> 
 	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceApplicationId and isActive='Y' ")
 	public List<PlaceOrder> getPlaceOrderForRemittanceApplicationId(@Param("remittanceApplicationId") BigDecimal remittanceApplicationId);
 	
-	@Query("select p from PlaceOrder p where p.remittanceApplicationId=:remittanceTransactionId and isActive='C' ")
+	@Query("select p from PlaceOrder p where p.remittanceTransactionId=:remittanceTransactionId and isActive='C' ")
 	public PlaceOrder getPlaceOrderForRemittanceTransactionId(@Param("remittanceTransactionId") BigDecimal remittanceTransactionId);
 
 	@Transactional
