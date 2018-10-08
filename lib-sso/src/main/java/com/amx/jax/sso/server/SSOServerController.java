@@ -24,8 +24,11 @@ import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.rbaac.RbaacServiceClient;
+import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
+import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.sso.SSOConfig;
 import com.amx.jax.sso.SSOConstants;
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
@@ -34,7 +37,6 @@ import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
 import com.amx.utils.JsonUtil;
-import com.amx.utils.Random;
 import com.amx.utils.Urly;
 
 import io.swagger.annotations.ApiParam;
@@ -55,6 +57,9 @@ public class SSOServerController {
 
 	@Autowired
 	private PostManService postManService;
+
+	@Autowired
+	RbaacServiceClient rbaacServiceClient;
 
 	private Map<String, Object> getModelMap() {
 		ssoUser.ssoTranxId();
@@ -92,7 +97,7 @@ public class SSOServerController {
 			return SSOConstants.REDIRECT + Urly.parse(sSOTranx.get().getAppUrl())
 					.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 					.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-					.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getSotp()).getURL();
+					.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 		}
 		return SSOConstants.SSO_INDEX_PAGE;
 	}
@@ -120,27 +125,25 @@ public class SSOServerController {
 
 		if (sSOTranx.get() != null) {
 			if (SSOAuthStep.CREDS == json) {
-				String prefix = Random.randomAlpha(3);
-				String motp = Random.randomNumeric(6);
 
-				Notipy msg = new Notipy();
-				msg.setMessage("SSO LOGIN");
-				msg.addLine(String.format("OTP = %s-%s", prefix, motp));
-				msg.setChannel(Channel.NOTIPY);
-				postManService.notifySlack(msg);
+				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
+				init.setEmployeeNo(formdata.getEcnumber());
+				init.setIdentity(formdata.getIdentity());
+				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
-				model.put("mOtpPrefix", prefix);
-
-				sSOTranx.setMOtp(motp);
+				model.put("mOtpPrefix", initResp.geteOtpPrefix());
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
-			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null
-					&& sSOTranx.get().getMotp().equals(formdata.getMotp())) {
+			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null) {
+				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
+				auth.setmOtpHash(formdata.getMotp());
+				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
+				sSOTranx.setUserDetails(empDto);
 				String redirectUrl = Urly.parse(sSOTranx.get().getAppUrl())
 						.addParameter(AppConstants.TRANX_ID_XKEY, AppContextUtil.getTranxId())
 						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
-						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getSotp()).getURL();
+						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
 				// resp.sendRedirect(redirectUrl);
 				result.setStatusEnum(SSOServerCodes.AUTH_DONE);

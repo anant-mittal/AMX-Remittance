@@ -64,17 +64,19 @@ public class SSOAppController {
 		String tranxId = ssoUser.ssoTranxId();
 		step = (SSOAuthStep) ArgUtil.parseAsEnum(step, SSOAuthStep.CHECK);
 
-		if (sotp != null && sotp.equals(sSOTranx.get().getSotp())) {
+		if (sotp != null && sotp.equals(sSOTranx.get().getAppToken()) && sSOTranx.get().getUserDetails() != null) {
 			LOGGER.debug("auth == SSOAuth.DONE");
 			UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(tranxId, sotp);
 			token.setDetails(new WebAuthenticationDetails(request));
 			Authentication authentication = authProvider.authenticate(token);
 			SecurityContextHolder.getContext().setAuthentication(authentication);
 			ssoUser.setAuthDone(true);
+			ssoUser.setUserDetails(sSOTranx.get().getUserDetails());
 		}
+
 		if (!ssoUser.isAuthDone()) {
 			LOGGER.debug("ssoUser.isAuthDone() is false");
-			sSOTranx.setAppUrl(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
+			sSOTranx.setAppReturnDetails(request.getRequestURL().toString(), Random.randomAlphaNumeric(6));
 			URLBuilder builder = new URLBuilder(appConfig.getSsoURL());
 			builder.setPath(SSOConstants.SSO_LOGIN_URL_REQUIRED).addParameter(AppConstants.TRANX_ID_XKEY, tranxId);
 			return SSOConstants.REDIRECT + builder.getURL();
