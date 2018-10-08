@@ -16,11 +16,11 @@ import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
 
 /**
- * The Interface RbaacService.
+ * The Interface IRbaacService.
  *
  * @author abhijeet
  */
-public interface RbaacService {
+public interface IRbaacService {
 
 	/**
 	 * The Class ApiEndPoints.
