@@ -79,7 +79,7 @@ public class RbaacServiceClient implements RbaacService {
 		LOGGER.info("Authorisation Request called for Employee No: {}, from IP address: {}, with TraceId: {}",
 				reqDTO.getEmployeeNo(), reqDTO.getIpAddress(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE).post(reqDTO)
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORIZE).post(reqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
 				});
 
