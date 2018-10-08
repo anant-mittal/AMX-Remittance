@@ -20,6 +20,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
 import com.amx.jax.dbmodel.ApplicationSetup;
@@ -27,11 +28,13 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
+import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.scope.TenantContextHolder;
@@ -42,6 +45,9 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
+	
+	@Autowired
+    private PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	private AppConfig appConfig;
@@ -254,7 +260,7 @@ public class JaxNotificationService {
 			logger.error("error in sendErrormail", e);
 		}
 		
-		
+
 	}
 
 

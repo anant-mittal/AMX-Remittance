@@ -522,7 +522,7 @@ public class UserService extends AbstractUserService {
 			throw new GlobalException("User with userId: " + userId + " is not registered",JaxError.USER_NOT_REGISTERED);
 		}
 		Customer customer = custDao.getCustById(onlineCustomer.getCustomerId());
-		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		//userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("User with userId: " + userId + " is not registered or not active",JaxError.USER_NOT_REGISTERED);
 		}

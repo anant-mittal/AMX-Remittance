@@ -91,6 +91,8 @@ public class RemittancePaymentManager extends AbstractService{
 	
     @Autowired
     IPlaceOrderDao placeOrderdao;
+	@Autowired
+	RemittanceManager remittanceManager;
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -118,7 +120,7 @@ public class RemittancePaymentManager extends AbstractService{
 				
 				lstPayIdDetails = applicationDao.fetchRemitApplTrnxRecordsByCustomerPayId(paymentResponse.getUdf3(),new Customer(paymentResponse.getCustomerId()));
 				
-				logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
+			//	logger.info("Appl :"+lstPayIdDetails.get(0).getRemittanceApplicationId()+"\n Company Id :"+lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
 				
 				paymentResponse.setCompanyId(lstPayIdDetails.get(0).getFsCompanyMaster().getCompanyId());
 				
@@ -126,7 +128,7 @@ public class RemittancePaymentManager extends AbstractService{
 				/** Calling stored procedure  insertRemittanceOnline **/
 				remitanceMap = remittanceApplicationService.saveRemittance(paymentResponse);
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-				
+				errorMsg= null;
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
 					
 					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
@@ -187,6 +189,7 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						/*remittanceManager.afterRemittanceSteps(remittanceTransaction);*/
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}

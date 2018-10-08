@@ -50,6 +50,7 @@ import com.amx.jax.auditlog.BeneficiaryAuditEvent;
 import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
 import com.amx.jax.dbmodel.AgentMasterModel;
@@ -66,6 +67,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.dbmodel.routing.RoutingHeader;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
@@ -80,6 +82,7 @@ import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
+import com.amx.jax.repository.routing.RoutingHeaderRepository;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.RelationsRepository;
@@ -159,6 +162,8 @@ public class BeneficiaryService extends AbstractService {
    	AuditService auditService;
 	@Autowired
 	ICurrencyDao currencyDao;
+	@Autowired
+	RoutingDao routingDao;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -880,36 +885,37 @@ public class BeneficiaryService extends AbstractService {
             PlaceOrderDTO poDto = null;
 
             ApiResponse<PlaceOrderDTO> poResponse = placeOrderService.getPlaceOrderForId(placeOrderId);
-            
-            if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
-                poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
-                poDto.setReceiveAmount(null);
-                Boolean isExpired = false;
-                
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                String sysdate = sdf.format(new Date());
-                String fromDate = sdf.format(poDto.getValidFromDate());
-                String toDate = sdf.format(poDto.getValidToDate());
-                                
-                if(sysdate.compareTo(fromDate) >=0 && sysdate.compareTo(toDate) <= 0) {
-                	isExpired = false;
-                }else {
-                	isExpired = true;
-                }
-                
-                if (isExpired) {
-            		throw new GlobalException("PO got expired for id : "+placeOrderId,JaxError.PLACE_ORDER_EXPIRED);
-            	}
-                
-                logger.info("PlaceOrderDTO --> "+poDto.toString());
-                remitPageDto.setPlaceOrderDTO(poDto);
-                remitPageDto.setForCur(getCurrencyDTO(poDto.getForeignCurrencyId()));
-                remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
-                
-            }else {
-            	auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
-                throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
-            }
+	
+			if (poResponse.getData() != null && (poResponse.getData().getValues().size() != 0)) {
+				poDto = (PlaceOrderDTO) poResponse.getData().getValues().get(0);
+				poDto.setReceiveAmount(null);
+				Boolean isExpired = false;
+	
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+				String sysdate = sdf.format(new Date());
+				String fromDate = sdf.format(poDto.getValidFromDate());
+				String toDate = sdf.format(poDto.getValidToDate());
+	
+				if (sysdate.compareTo(fromDate) >= 0 && sysdate.compareTo(toDate) <= 0) {
+					isExpired = false;
+				} else {
+					isExpired = true;
+				}
+	
+				if (isExpired) {
+					throw new GlobalException("PO got expired for id : " + placeOrderId, JaxError.PLACE_ORDER_EXPIRED);
+				}
+	
+				logger.info("PlaceOrderDTO --> " + poDto.toString());
+				remitPageDto.setPlaceOrderDTO(poDto);
+				remitPageDto.setForCur(getCurrencyDTO(poDto.getForeignCurrencyId()));
+				remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
+	
+			} else {
+				auditService.log(createBeneficiaryEvent(customerId, placeOrderId, Type.BENE_PO_NO_BENE_RECORD));
+				throw new GlobalException("Place Order not found for place_order_id:",
+						JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED);
+			}
             
             BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
             
@@ -966,6 +972,12 @@ public class BeneficiaryService extends AbstractService {
 		}
     	return dto;
     }
+    
+	public List<BenificiaryListView> listBeneficiaryForPOloadTest(int num, BigDecimal currencyId) {
+		return beneficiaryOnlineDao.findByIsActiveAndCurrencyIdAndBankIdNotIn("Y", currencyId,
+				routingDao.listAllRoutingBankIds(), new PageRequest(0, num));
+	}
+    
  private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
         AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
         return beneAuditEvent;

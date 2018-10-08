@@ -26,6 +26,30 @@ public class PersonInfo extends AbstractModel implements Cloneable {
 	private Timestamp lastLoginTime;
 	private String identityInt;
 
+	
+	
+	/**
+	 * 
+	 */
+	public PersonInfo() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @param firstName
+	 * @param middleName
+	 * @param lastName
+	 * @param email
+	 */
+	public PersonInfo(String firstName, String middleName, String lastName, String email) {
+		super();
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.email = email;
+	}
+
 	public String getIdentityInt() {
 		return identityInt;
 	}

@@ -245,7 +245,7 @@ public class PostManControllerTest {
 			file = resp.getResult();
 			if (email != null) {
 				Email eml = new Email();
-				eml.setSubject("Email Template : " + template);
+				//eml.setSubject("Email Template : " + template);
 				eml.setFrom("amxjax@gmail.com");
 				eml.addTo(email);
 				eml.setTemplate(template);
