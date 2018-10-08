@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,15 +53,16 @@ public class WebTenantFilter implements Filter {
 		if (siteId == null) {
 			siteId = Urly.getSubDomainName(request.getServerName());
 		}
+		HttpSession session = request.getSession(false);
 		/**
 		 * Not able to use session scoped bean here hence using typical session
 		 * attribute;
 		 */
-		if (siteId == null) {
-			siteId = ArgUtil.parseAsString(request.getSession().getAttribute(TenantContextHolder.TENANT));
+		if (siteId == null && session != null) {
+			siteId = ArgUtil.parseAsString(session.getAttribute(TenantContextHolder.TENANT));
 		}
 
-		if (siteId != null && !Constants.BLANK.equals(siteId)) {
+		if (siteId != null && !Constants.BLANK.equals(siteId) && session != null) {
 			request.getSession().setAttribute(TenantContextHolder.TENANT, siteId);
 			TenantContextHolder.setCurrent(siteId);
 		} else {

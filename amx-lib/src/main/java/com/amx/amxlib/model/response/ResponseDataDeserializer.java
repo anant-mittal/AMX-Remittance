@@ -36,10 +36,12 @@ import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
@@ -240,6 +242,12 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "min-max-exrate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});
+			break;
+		case "place-order-not-dto":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderNotificationDTO>>(){});
+			break;	
+		case "jax-push-notification":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>(){});
 			break;	
 		case "payg-error":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PaygErrorMasterDTO>>() {

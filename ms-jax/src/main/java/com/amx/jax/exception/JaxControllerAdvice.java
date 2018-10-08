@@ -33,11 +33,13 @@ public class JaxControllerAdvice extends AmxAdvice {
 	@ResponseBody
 	public ResponseEntity<AmxApiError> handle(AbstractJaxException ex, HttpServletRequest request,
 			HttpServletResponse response) {
+		logger.info("Inside AMX API Error handle --->"+ex);
 		AmxApiError error = ex.createAmxApiError();
 		error.setException(ex.getClass().getName());
 		error.setMeta(ex.getMeta());
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
+		logger.debug("Exception in controller", ex);
 		raiseAlert(ex);
 		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
 	}
@@ -68,7 +70,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 
 	private String processFieldErrors(BindingResult bindingResult) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(bindingResult.getFieldError().getField()).append(" ");
+		//sb.append(bindingResult.getFieldError().getField()).append(" ");
 		sb.append(bindingResult.getFieldError().getDefaultMessage());
 		return sb.toString();
 	}

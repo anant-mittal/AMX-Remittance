@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
@@ -76,7 +77,9 @@ public class TenantProperties {
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
 		try {
-			for (Field field : object.getClass().getDeclaredFields()) {
+			Class<?> clazz = AopProxyUtils.ultimateTargetClass(object);
+
+			for (Field field : clazz.getDeclaredFields()) {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
@@ -104,7 +107,8 @@ public class TenantProperties {
 							field.set(object, ArgUtil.parseAsEnumArray(propertyValue, componentType));
 						} else if (type instanceof Class && ((Class<?>) type).isEnum()) {
 							field.set(object, ArgUtil.parseAsEnum(propertyValue, type));
-						} else if (type instanceof Stringable) {
+						} else if (Stringable.class.isAssignableFrom((Class<?>) type)
+								|| ((Class<?>) type).isAssignableFrom(Stringable.class)) {
 							Class<?> cl = Class.forName(typeName);
 							Constructor<?> cons = cl.getConstructor();
 							Stringable o = (Stringable) cons.newInstance();

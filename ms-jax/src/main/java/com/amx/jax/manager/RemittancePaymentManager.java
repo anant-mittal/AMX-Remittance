@@ -15,22 +15,26 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dao.JaxEmployeeDao;
 import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
+import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 import com.amx.jax.service.FinancialService;
@@ -40,6 +44,7 @@ import com.amx.jax.services.RemittanceApplicationService;
 import com.amx.jax.services.ReportManagerService;
 import com.amx.jax.services.TransactionHistroyService;
 import com.amx.jax.userservice.dao.CustomerDao;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.JaxUtil;
 
 
@@ -77,7 +82,17 @@ public class RemittancePaymentManager extends AbstractService{
 	
 	@Autowired
 	private ReportManagerService reportManagerService;
+	@Autowired
+	PromotionManager promotionManager;
+	@Autowired
+	JaxEmployeeDao employeeDao;
+	@Autowired
+	UserService userService;
 	
+    @Autowired
+    IPlaceOrderDao placeOrderdao;
+	@Autowired
+	RemittanceManager remittanceManager;
 	
 	public ApiResponse paymentCapture(PaymentResponseDto paymentResponse) {
 		ApiResponse response = null;
@@ -115,6 +130,7 @@ public class RemittancePaymentManager extends AbstractService{
 				errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
 				
 				if(remitanceMap!=null && !remitanceMap.isEmpty() && StringUtils.isBlank(errorMsg)){
+					
 					collectionFinanceYear = (BigDecimal)remitanceMap.get("P_COLLECT_FINYR");
 					collectionDocumentNumber = (BigDecimal)remitanceMap.get("P_COLLECTION_NO");
 					collectionDocumentCode = (BigDecimal)remitanceMap.get("P_COLLECTION_DOCUMENT_CODE");
@@ -124,7 +140,12 @@ public class RemittancePaymentManager extends AbstractService{
 					logger.info("collectionDocumentNumber : " + collectionDocumentNumber);
 					logger.info("collectionDocumentCode : " + collectionDocumentCode);
 					logger.info("EX_INSERT_REMITTANCE_ONLINE errorMsg : " + errorMsg);
-				
+					
+					//Update remittance_transaction_id for place order method call
+					if (lstPayIdDetails.get(0) != null)	{	
+						updatePlaceOrderTransactionId(lstPayIdDetails.get(0),paymentResponse);
+					} 	
+					
 				/** Calling stored procedure  to move remittance to old emos **/
 				if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
 					paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
@@ -150,7 +171,16 @@ public class RemittancePaymentManager extends AbstractService{
 								remittanceTransaction.getDocumentNo());
 						Customer customer = customerDao.getCustById(remittanceTransaction.getCustomerId());
 						setMetaInfo(trxnDto, paymentResponse);
-						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto);
+						// promotion check not for amg employee
+						if (!employeeDao.isAmgEmployee(customer.getIdentityInt())) {
+							promotionManager.promotionWinnerCheck(remittanceTransaction.getDocumentNo(),
+									remittanceTransaction.getDocumentFinancialyear());
+						}
+						PromotionDto promotDto = promotionManager.getPromotionDto(remittanceTransaction.getDocumentNo(),
+								remittanceTransaction.getDocumentFinancialyear());
+						PersonInfo personInfo = userService.getPersonInfo(customer.getCustomerId());
+						promotionManager.sendVoucherEmail(promotDto, personInfo);
+						reportManagerService.generatePersonalRemittanceReceiptReportDetails(trxnDto, Boolean.TRUE);
 						List<RemittanceReceiptSubreport> rrsrl = reportManagerService
 								.getRemittanceReceiptSubreportList();
 						PersonInfo personinfo = new PersonInfo();
@@ -159,6 +189,7 @@ public class RemittancePaymentManager extends AbstractService{
 						} catch (Exception e) {
 						}
 						notificationService.sendTransactionNotification(rrsrl.get(0), personinfo);
+						remittanceManager.afterRemittanceSteps(remittanceTransaction);
 					} catch (Exception e) {
 						logger.error("error while sending transaction notification", e);
 					}
@@ -236,5 +267,21 @@ public class RemittancePaymentManager extends AbstractService{
 		response.getData().setType("pg_remit_response");
 		return response;
 	}
+	
+	//Update remittance_transaction_id for place order
+    public void updatePlaceOrderTransactionId(RemittanceApplication remittanceApplication,PaymentResponseDto paymentResponse) {
+    	List<PlaceOrder> poList = placeOrderdao.getPlaceOrderForRemittanceApplicationId(remittanceApplication.getRemittanceApplicationId());
+    	PlaceOrder po =null;
+    	if (poList!=null && poList.size()!=0) {
+    		po=poList.get(0);
+        	logger.info(String.format("Place Order id : %s found for remittance_application_id : %s ", po.getOnlinePlaceOrderId(),remittanceApplication.getRemittanceApplicationId()));
+        	po.setRemittanceTransactionId(new BigDecimal(paymentResponse.getTransactionId()));
+        	po.setIsActive("C");
+        	placeOrderdao.save(po);
+    	}else {
+    		logger.info("Place Order not found for remittance_application_id: " + remittanceApplication.getRemittanceApplicationId());
+    	}
+       
+    }
 
 }

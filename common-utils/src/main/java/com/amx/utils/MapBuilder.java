@@ -117,6 +117,10 @@ public class MapBuilder {
 			return map;
 		}
 
+		public Map<String, Object> build() {
+			return map;
+		}
+
 		/**
 		 * To json node.
 		 *

@@ -1,7 +1,7 @@
 package com.amx.amxlib.exception.jax;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.AbstractJaxException;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exception.AmxApiError;
 
 public class JaxFieldValidationException extends AbstractJaxException {
@@ -16,7 +16,7 @@ public class JaxFieldValidationException extends AbstractJaxException {
 	}
 
 	public JaxFieldValidationException(String errorMessage) {
-		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getCode());
+		super(errorMessage, JaxError.JAX_FIELD_VALIDATION_FAILURE.getStatusKey());
 	}
 
 }

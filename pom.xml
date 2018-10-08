@@ -42,6 +42,11 @@
 				<version>${amx.version}</version>
 				<type>pom</type>
 			</dependency>
+			<dependency>
+              		<groupId>com.amx.jax</groupId>
+                     <artifactId>lib-ext-jar</artifactId>
+                     <version>${amx.version}</version>
+             </dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -54,19 +59,34 @@
 				<artifactId>lib-mcq</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
+			
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-jax</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
+			
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
+			</dependency>	
+			
+			<dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-monitor</artifactId>
+				<version>${amx.version}</version>
 			</dependency>
+					
 		</dependencies>
-	</dependencyManagement>
+
+	 </dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -77,7 +97,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -134,6 +154,7 @@
 		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
 		</repositories> -->
 
+	<!--
 	<pluginRepositories>
 		<pluginRepository>
 			<id>sonatype-snapshots</id>
@@ -141,6 +162,8 @@
 			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
+
+	-->
 
 	<modules>
 		<module>common-utils</module>
@@ -154,7 +177,6 @@
 		<module>lib-sso</module>
 		<module>lib-jax</module>
 
-		<module>ms-logger</module>
 		<module>lib-postman</module>
 		<module>ms-postman</module>
 
@@ -163,20 +185,20 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<!-- <module>ms-branch</module> -->
+		<module>ms-branch</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
-
-		<module>ms-scheduler</module>
+		<module>ms-worker</module>
 
 		<module>server-payg</module>
-
 		<module>server-ui</module>
-		<!-- <module>server-stomp</module> -->
-
 		<!-- <module>server-offsite</module> -->
+		<module>server-staff</module>
+		<!-- <module>server-stomp</module> -->
+		
+		<module>server-monitor</module>
 		<module>server-admin</module>
 		<!-- <module>server-sso</module> -->
 		<!-- <module>server-kiosk</module> -->

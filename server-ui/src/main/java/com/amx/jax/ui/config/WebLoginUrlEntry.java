@@ -1,6 +1,7 @@
 package com.amx.jax.ui.config;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,8 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.ui.session.GuestSession;
+import com.amx.utils.ArgUtil;
+import com.amx.utils.URLBuilder;
 
 /**
  * The Class WebLoginUrlEntry.
@@ -53,10 +56,18 @@ public class WebLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authenticationException) throws IOException, ServletException {
 		RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-		String returnPath = request.getServletPath();
-		if (returnPath.startsWith("/app")) {
-			guestSession.setReturnUrl(request.getServletPath());
+		URLBuilder builder = new URLBuilder();
+
+		String returnPath = null;
+		try {
+			returnPath = builder.setPath(request.getRequestURI()).addParameter(request.getQueryString()).getRelativeURL();
+			if (!ArgUtil.isEmpty(returnPath) && returnPath.startsWith("/app")) {
+				guestSession.setReturnUrl(returnPath);
+			}
+		} catch (URISyntaxException e) {
+			LOGGER.error("REDIRECT URL CPATURE ERROR", e);
 		}
+
 		redirectStrategy.sendRedirect(request, response, LOGIN_URL);
 	}
 

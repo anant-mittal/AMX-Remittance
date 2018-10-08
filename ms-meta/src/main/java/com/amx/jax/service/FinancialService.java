@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.repository.IFinanceYearRespository;
 import com.amx.jax.services.AbstractService;
@@ -26,17 +26,12 @@ public class FinancialService  extends AbstractService{
 	
 	
 	
-	public ApiResponse getFinancialYear() {
+	public AmxApiResponse<UserFinancialYear, Object> getFinancialYear() {
 		List<UserFinancialYear> financialList = financialYearRepository.getFinancialYear();
-		ApiResponse response = getBlackApiResponse();
 		if(financialList.isEmpty()) {
 			throw new GlobalException(ResponseStatus.NOT_FOUND.toString());
-		}else {
-		response.getData().getValues().addAll(financialList);
-		response.setResponseStatus(ResponseStatus.OK);
 		}
-		response.getData().setType("fyear");
-		return response;
+		return AmxApiResponse.buildList(financialList);
 	}
 	
 	

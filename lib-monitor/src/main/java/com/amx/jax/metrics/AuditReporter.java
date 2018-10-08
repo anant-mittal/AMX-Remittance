@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 
+import com.amx.jax.logger.AbstractEvent.EventMarker;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.codahale.metrics.ConsoleReporter;
@@ -24,7 +25,7 @@ import com.codahale.metrics.Timer;
  */
 public class AuditReporter extends ScheduledReporter {
 
-	private static final Marker metermarker = MarkerFactory.getMarker("METER");
+	private static final Marker metermarker = MarkerFactory.getMarker(EventMarker.METER.toString());
 
 	/**
 	 * Returns a new {@link Builder} for {@link ConsoleReporter}.

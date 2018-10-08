@@ -16,7 +16,10 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.HttpUtils;
 
 public class RequestTrackEvent extends AuditEvent {
 
@@ -24,7 +27,7 @@ public class RequestTrackEvent extends AuditEvent {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RequestTrackEvent.class);
 
 	public static enum Type implements EventType {
-		REQT_IN, RESP_OUT, REQT_OUT, RESP_IN;
+		REQT_IN, RESP_OUT, REQT_OUT, RESP_IN, PUB_OUT, SUB_IN;
 
 		@Override
 		public EventMarker marker() {
@@ -33,7 +36,9 @@ public class RequestTrackEvent extends AuditEvent {
 	}
 
 	private MultiValueMap<String, String> header;
+	private AppContext context;
 	private long responseTime;
+	private String ip;
 
 	public MultiValueMap<String, String> getHeader() {
 		return header;
@@ -45,6 +50,12 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public RequestTrackEvent(Type type) {
 		super(type);
+	}
+
+	public <T> RequestTrackEvent(Type type, TunnelMessage<T> message) {
+		super(type);
+		this.description = String.format("%s %s", this.type, message.getTopic());
+		this.context = message.getContext();
 	}
 
 	public RequestTrackEvent(HttpRequest request) {
@@ -96,6 +107,7 @@ public class RequestTrackEvent extends AuditEvent {
 				header.add(headerName, headerValue);
 			}
 		}
+		this.ip = HttpUtils.getIPAddress(request);
 		return this;
 	}
 
@@ -122,6 +134,22 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public void setResponseTime(long responseTime) {
 		this.responseTime = responseTime;
+	}
+
+	public AppContext getContext() {
+		return context;
+	}
+
+	public void setContext(AppContext context) {
+		this.context = context;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 
 }

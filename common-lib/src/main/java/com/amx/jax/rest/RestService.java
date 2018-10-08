@@ -63,7 +63,7 @@ public class RestService {
 	}
 
 	public static class Ajax {
-		public static final Pattern pattern = Pattern.compile("^\\{(.*)\\}$");
+		public static final Pattern pattern = Pattern.compile("^.*\\{(.*)\\}.*$");
 
 		public static enum RestMethod {
 			POST, FORM, GET
@@ -124,9 +124,9 @@ public class RestService {
 				String value = entry.getValue();
 				Matcher match = pattern.matcher(value);
 				if (match.find() && params.containsKey(match.group(1))) {
-					value = params.get(match.group(1));
+					value = value.replace("{" + match.group(1) + "}", params.get(match.group(1)));
 				}
-				this.field(entry.getKey(), entry.getValue());
+				this.field(entry.getKey(), value);
 			}
 			return this;
 		}
@@ -235,12 +235,16 @@ public class RestService {
 			});
 		}
 
-		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> responseType) {
+		public AmxApiResponse<Object, Object> asApiResponse() {
+			return this.asApiResponse(Object.class);
+		}
+
+		public <T> AmxApiResponse<T, Object> asApiResponse(Class<T> resultType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, Object>>() {
 			});
 		}
 
-		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> responseType, Class<M> modelType) {
+		public <T, M> AmxApiResponse<T, M> asApiResponse(Class<T> resultType, Class<M> metaType) {
 			return this.as(new ParameterizedTypeReference<AmxApiResponse<T, M>>() {
 			});
 		}
@@ -249,23 +253,23 @@ public class RestService {
 			return this.asObject();
 		}
 
-		public Ajax build(RestMethod smsReqType, String smsReqQuery, RestQuery smsReqFields, Map<String, String> params)
+		public Ajax build(RestMethod reqType, String reqQuery, RestQuery reqFields, Map<String, String> paramValues)
 				throws UnsupportedEncodingException {
-			if (!ArgUtil.isEmpty(smsReqQuery)) {
-				this.query(smsReqQuery);
+			if (!ArgUtil.isEmpty(reqQuery)) {
+				this.query(reqQuery);
 			}
-			if (!ArgUtil.isEmpty(params)) {
-				this.params(params);
-			}
-
-			if (!ArgUtil.isEmpty(smsReqFields)) {
-				this.params(smsReqFields.toMap());
+			if (!ArgUtil.isEmpty(paramValues)) {
+				this.params(paramValues);
 			}
 
-			if (!ArgUtil.isEmpty(smsReqFields)) {
-				this.field(smsReqFields, params);
+			if (!ArgUtil.isEmpty(reqFields)) {
+				this.params(reqFields.toMap());
 			}
-			return this.call(smsReqType);
+
+			if (!ArgUtil.isEmpty(reqFields)) {
+				this.field(reqFields, paramValues);
+			}
+			return this.call(reqType);
 		}
 
 	}

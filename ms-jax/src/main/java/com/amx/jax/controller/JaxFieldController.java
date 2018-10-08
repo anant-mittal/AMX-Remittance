@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.GetJaxFieldRequest;
 import com.amx.amxlib.model.request.AddJaxFieldRequest;
-import com.amx.amxlib.model.request.GetJaxFieldRequest;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.services.JaxFieldService;
