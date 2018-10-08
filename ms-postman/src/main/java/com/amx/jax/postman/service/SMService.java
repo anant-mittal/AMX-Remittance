@@ -188,6 +188,5 @@ public class SMService {
 			throw new PostManException(PostManException.ErrorCode.NO_TENANT_DEFINED);
 		}
 
-		return sms;
 	}
 }
