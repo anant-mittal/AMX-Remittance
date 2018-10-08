@@ -26,7 +26,7 @@ public enum Templates {
 
 	PROMOTION_WINNER("PromotionWinner"), PROMOTION_COUPON("PromotionCoupon"),
 
-	SERVER_PING_JSON("json/server-ping"), SERVER_PING("server-ping");
+	SERVER_PING("server-ping");
 
 	String fileName;
 	PDFConverter converter;

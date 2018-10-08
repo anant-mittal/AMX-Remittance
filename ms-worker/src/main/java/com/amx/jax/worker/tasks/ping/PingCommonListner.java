@@ -62,7 +62,7 @@ public class PingCommonListner implements ITunnelSubscriber<Event> {
 
 		if (customerId != null) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.SERVER_PING_JSON);
+			pushMessage.setTemplate(Templates.SERVER_PING);
 			pushMessage.addToUser(customerId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
