@@ -14,6 +14,8 @@ import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingDTO;
 import com.amx.jax.rbaac.dto.response.UserRoleMappingsResponseDTO;
+import com.amx.jax.rbaac.error.RbaacApiStatusBuilder.RbaacApiStatus;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 
 /**
  * The Interface IRbaacService.
@@ -73,6 +75,9 @@ public interface IRbaacService {
 	 *            the user auth init req DTO
 	 * @return the amx api response
 	 */
+	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_USER_DETAILS,
+			RbaacServiceError.MULTIPLE_USERS, RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED,
+			RbaacServiceError.USER_ACCOUNT_LOCKED })
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO);
 
 	/**
@@ -82,6 +87,8 @@ public interface IRbaacService {
 	 *            the req dto
 	 * @return the amx api response
 	 */
+	@RbaacApiStatus({ RbaacServiceError.INVALID_OR_MISSING_DATA, RbaacServiceError.INVALID_OTP,
+			RbaacServiceError.USER_ACCOUNT_LOCKED })
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto);
 
 	/**
@@ -93,6 +100,7 @@ public interface IRbaacService {
 	 *            the device id
 	 * @return the all permissions
 	 */
+	@RbaacApiStatus({ RbaacServiceError.INCOMPATIBLE_DATA_TYPE })
 	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddr, String deviceId);
 
 	/**
@@ -104,6 +112,7 @@ public interface IRbaacService {
 	 *            the device id
 	 * @return the all roles
 	 */
+	@RbaacApiStatus({})
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddr, String deviceId);
 
 	/**
@@ -113,6 +122,9 @@ public interface IRbaacService {
 	 *            the role request DTO
 	 * @return the amx api response
 	 */
+	@RbaacApiStatus({ RbaacServiceError.INVALID_ROLE, RbaacServiceError.DUPLICATE_ROLE,
+			RbaacServiceError.INVALID_ROLE_DEFINITION, RbaacServiceError.INVALID_ACCESS_TYPE_SCOPE,
+			RbaacServiceError.INVALID_PERMISSION })
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(RoleRequestDTO roleRequestDTO);
 
 	/**
@@ -126,6 +138,7 @@ public interface IRbaacService {
 	 *            the device id
 	 * @return the user role mappings for branch
 	 */
+	@RbaacApiStatus({})
 	public AmxApiResponse<UserRoleMappingsResponseDTO, Object> getUserRoleMappingsForBranch(BigDecimal countryBranchId,
 			String ipAddr, String deviceId);
 
@@ -136,6 +149,8 @@ public interface IRbaacService {
 	 *            the urm request DTO
 	 * @return the amx api response
 	 */
+	@RbaacApiStatus({ RbaacServiceError.INVALID_USER_ROLE_MAPPINGS,
+			RbaacServiceError.ILLEGAL_USER_ROLE_MAPPING_MODIFICATION })
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO);
 
 	/**
@@ -145,6 +160,7 @@ public interface IRbaacService {
 	 *            the employee DTO
 	 * @return the amx api response
 	 */
+	@RbaacApiStatus({})
 	public AmxApiResponse<EmployeeDetailsDTO, Object> updateEmployeeAccountDetails(
 			EmployeeDetailsRequestDTO edRequestDTO);
 
