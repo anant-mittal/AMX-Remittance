@@ -1,5 +1,7 @@
 package com.amx.jax.ui;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -107,6 +109,34 @@ public class WebAppConfig {
 
 	public String getIosAppId() {
 		return iosAppId;
+	}
+
+	@TenantValue("${app.meta.country.id}")
+	BigDecimal countryId;
+
+	@TenantValue("${app.meta.company.id}")
+	BigDecimal companyId;
+
+	@TenantValue("${app.meta.lang.id}")
+	BigDecimal languageId;
+
+	@TenantValue("${app.meta.country.branch.id}")
+	BigDecimal countrybranchId;
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public BigDecimal getCompanyId() {
+		return companyId;
+	}
+
+	public BigDecimal getLanguageId() {
+		return languageId;
+	}
+
+	public BigDecimal getCountrybranchId() {
+		return countrybranchId;
 	}
 
 }

@@ -79,6 +79,7 @@
 		padding: 0 10px;
 		font-size: 16px;
 		font-weight: 700;
+		cursor: default;
 		
 	}
 	.button, .button.inline:hover{
@@ -473,7 +474,7 @@
 		<div class="form">
 			<form class="login-form" action="/sso/auth/login" method="post">
 				<input type="text" placeholder="Username" name="username"/>
-				<input type="password"
+				<input type="hidden" th:value="${x_tranx_id}" name="x-tranx-id" /><input type="password"
 					placeholder="password" name="password" />
 				<button type="submit">Login</button>
 				<p class="message" hidden="hidden">

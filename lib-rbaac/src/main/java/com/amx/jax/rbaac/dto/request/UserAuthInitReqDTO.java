@@ -5,6 +5,10 @@ package com.amx.jax.rbaac.dto.request;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotBlank;
+
 import com.amx.jax.rbaac.constants.RbaacServiceConstants;
 
 /**
@@ -18,18 +22,22 @@ public class UserAuthInitReqDTO implements Serializable {
 	private static final long serialVersionUID = -2594412775985894857L;
 
 	/** The employee no. */
+	@NotBlank(message = "Employee Number Can not be Null or Empty")
 	private String employeeNo;
 
 	/** The identity. */
+	@NotBlank(message = "Employee Identity Can not be Null or Empty")
 	private String identity;
 
 	/** The ip address. */
+	@NotBlank(message = "Ip Address Can not be Null or Empty")
 	private String ipAddress;
 
 	/** The device id. */
 	private String deviceId;
 
 	/** The device type. */
+	@NotNull(message = "Device Type Can not be Null or Empty")
 	private RbaacServiceConstants.DEVICE_TYPE deviceType;
 
 	/**

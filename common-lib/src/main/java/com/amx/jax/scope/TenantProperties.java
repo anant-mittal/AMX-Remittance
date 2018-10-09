@@ -116,6 +116,7 @@ public class TenantProperties {
 							field.set(object, o);
 						} else {
 							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
+							field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue));
 						}
 					}
 				}

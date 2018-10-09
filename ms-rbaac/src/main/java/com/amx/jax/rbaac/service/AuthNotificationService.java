@@ -15,6 +15,9 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
+import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.rbaac.models.EmployeeInfo;
+import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.Templates;
 import com.amx.jax.rbaac.models.EmployeeInfo;
 
@@ -51,7 +54,7 @@ public class AuthNotificationService {
 		SMS sms = new SMS();
 		sms.addTo(einfo.getTelephoneNumber());
 		sms.setModelData(model);
-		sms.setTemplate(Templates.RESET_OTP_SMS);
+		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
 
 		try {
 

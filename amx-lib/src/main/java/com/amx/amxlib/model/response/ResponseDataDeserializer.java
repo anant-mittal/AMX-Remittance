@@ -15,6 +15,7 @@ import com.amx.amxlib.meta.model.BranchDetailDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.PrefixDTO;
@@ -26,6 +27,7 @@ import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.meta.model.UserDetailsDTO;
 import com.amx.amxlib.meta.model.UserFinancialYearDTO;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
@@ -35,6 +37,7 @@ import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BeneRelationsDescriptionDto;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
@@ -245,10 +248,21 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "place-order-not-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderNotificationDTO>>(){});
 			break;	
+		case "jax-push-notification":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>(){});
+			break;	
+		case "employee-detail":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<EmployeeDetailsDTO>>() {
+			});
+			break;
+		case "user-detail":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
+			});
+			break;	
 		case "payg-error":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PaygErrorMasterDTO>>() {
 			});
-			break;	
+			break;		
 	}
 		responseData.setValues(models);
 		return responseData;

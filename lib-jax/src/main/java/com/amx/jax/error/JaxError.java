@@ -116,6 +116,7 @@ public enum JaxError implements IExceptionEnum {
     
 	/*place order*/
 	PLACE_ORDER_ID_NOT_FOUND,
+	PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED,
 	PLACE_ORDER_EXPIRED,
 	PO_BOTH_PAY_RECEIVED_AMT_NULL,
 	PO_BOTH_PAY_RECEIVED_AMT_VALUE,
@@ -137,7 +138,16 @@ public enum JaxError implements IExceptionEnum {
 	EMPTY_DESIGNATION_LIST,
 	EMPTY_INCOME_RANGE,
 	EMPTY_EMPLOYMENT_TYPE,
-	EMPTY_PROFESSION_LIST;
+	EMPTY_PROFESSION_LIST,
+	EXISTING_CIVIL_ID,
+	IMAGE_NOT_AVAILABLE,
+	CITY_NOT_AVAILABLE,
+	SIGNATURE_NOT_AVAILABLE,
+	INVALID_CUSTOMER,
+	EXISTING_PASSPORT,
+	EXISTING_GCC_ID,
+	EXISTING_BEDOUIN_ID,
+	INVALID_LANGUAGE_ID;
 
 
 	@Deprecated
@@ -152,7 +162,7 @@ public enum JaxError implements IExceptionEnum {
 
 	@Override
 	public int getStatusCode() {
-		return 6000 + this.ordinal();
+		return 1000 + this.ordinal();
 	}
 
 }

@@ -30,12 +30,12 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -109,12 +109,14 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
+			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 		
-		Map<String, Object> flexFields = new HashMap<>();
+		Map<String, String> flexFields = new HashMap<>();
 		list.forEach(i -> {
 			if(i.getField().getType().equals("select")) {
-				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
+				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
+						JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
 			}else if(i.getField().getType().equals("date")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
 			}else {
@@ -165,7 +167,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
+
 	//@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
@@ -176,8 +178,8 @@ public class RemittanceClientTest {
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
 		request.setAuth_appNo("471504");
-		request.setPaymentId("6948171111380180");
-		request.setUdf3("27000545");
+		request.setPaymentId("3082792411163290");
+		request.setUdf3("3082792411163290");
 		request.setResultCode("CAPTURED");
 		request.setTrackId("309945");
 		request.setReferenceId("801813658796");
@@ -202,13 +204,13 @@ public class RemittanceClientTest {
 		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
 		request.setApplicationDocumentNumber(new BigDecimal(27000545));
 		request.setDocumentFinancialYear(new BigDecimal(2017));
-		response = client.fetchTransactionDetails(request);
+		response = client.fetchTransactionDetails(request, true);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
 
-//@Test
+	// @Test
 	public void testTransactionHistroy() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		ApiResponse<TransactionHistroyDTO> response = null;

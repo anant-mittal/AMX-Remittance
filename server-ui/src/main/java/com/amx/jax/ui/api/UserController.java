@@ -2,6 +2,7 @@
 package com.amx.jax.ui.api;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -12,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.CustomerDto;
+import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PushNotifyClient;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponse;
 import com.amx.jax.ui.model.AuthDataInterface.UserUpdateRequest;
@@ -32,7 +36,6 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
-import com.amx.jax.ui.session.UserDeviceBean;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -66,7 +69,7 @@ public class UserController {
 
 	/** The http service. */
 	@Autowired
-	private HttpService httpService;
+	private CommonHttpRequest httpService;
 
 	/** The app config. */
 	@Autowired
@@ -94,7 +97,7 @@ public class UserController {
 	 * @return the meta
 	 */
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
+	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 
@@ -152,6 +155,15 @@ public class UserController {
 			throws PostManException {
 		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
 		return new ResponseWrapper<Object>(hotPointService.notify(customerId, token, hotpoint));
+	}
+
+	@Autowired
+	JaxPushNotificationClient notificationClient;
+
+	@RequestMapping(value = "/pub/user/notifications", method = { RequestMethod.GET })
+	public ResponseWrapper<List<CustomerNotificationDTO>> getNotifications(@RequestParam BigDecimal customerId) {
+		AppContextUtil.setActorId(new AuditActor(AuditActor.ActorType.GUEST, customerId));
+		return new ResponseWrapper<List<CustomerNotificationDTO>>(notificationClient.get(customerId).getResults());
 	}
 
 	/**

@@ -121,6 +121,7 @@ public class AuditServiceClient implements AuditService {
 
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
 		event.setComponent(APP_NAME);
+		event.clean();
 		String json = JsonUtil.toJson(event);
 
 		String marketName = marker.getName();

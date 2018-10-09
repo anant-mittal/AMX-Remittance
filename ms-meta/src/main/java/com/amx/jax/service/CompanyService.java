@@ -15,6 +15,7 @@ import com.amx.amxlib.meta.model.ViewCompanyDetailDTO;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICompanyDAO;
 import com.amx.jax.services.AbstractService;
@@ -41,6 +42,10 @@ public class CompanyService extends AbstractService {
 	
 	public ViewCompanyDetails getCompanyDetail(BigDecimal languageId) {
 		List<ViewCompanyDetails> companyDetails = companyDao.getCompanyDetails(languageId);
+		if(companyDetails.isEmpty())
+		{
+			throw new GlobalException("Language Id is invalid",JaxError.INVALID_LANGUAGE_ID);
+		}
 		return companyDetails.get(0);
 	}
 	

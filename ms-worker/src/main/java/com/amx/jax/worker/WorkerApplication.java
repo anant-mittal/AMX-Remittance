@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 
 @SpringBootApplication
 @EnableTransactionManagement
@@ -29,7 +29,7 @@ public class WorkerApplication {
 	@Bean
 	@Scope(value = "thread", proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {
-		return new com.amx.jax.amxlib.model.JaxMetaInfo();
+		return new JaxMetaInfo();
 	}
 
 	@Bean

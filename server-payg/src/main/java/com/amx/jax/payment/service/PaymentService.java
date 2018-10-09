@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.PaygErrorMasterDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.gateway.PayGConfig;
@@ -35,7 +35,7 @@ public class PaymentService {
 
 	@Autowired
 	private JaxMetaInfo jaxMetaInfo;
-	
+
 	@Autowired
 	MetaClient metaClient;
 	
@@ -104,7 +104,7 @@ public class PaymentService {
 		paymentResponseDto.setError(payGServiceResponse.getError());
 		return paymentResponseDto;
 	}
-	
+
 	public String getPaygErrorCategory(String resultReponse) {
 		String errorCategory = null;
 		Map<String, PaygErrorMasterDTO> errorMap = payGConfig.getErrorCodeMap();

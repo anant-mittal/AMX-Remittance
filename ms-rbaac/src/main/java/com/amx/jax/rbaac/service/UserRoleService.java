@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,6 +138,10 @@ public class UserRoleService {
 
 			Role role;
 			Date today = new Date();
+
+			if (StringUtils.isEmpty(roleRequestDTO.getRole())) {
+				throw new AuthServiceException("Role Can Not be null or Empty", RbaacServiceError.INVALID_ROLE);
+			}
 
 			/**
 			 * Case New Role is Defined.
@@ -375,7 +380,6 @@ public class UserRoleService {
 		return respUrmDtoList;
 	}
 
-	
 	/**
 	 * Validate perms.
 	 *

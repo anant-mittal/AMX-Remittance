@@ -71,7 +71,7 @@ public class CurrencyMasterService extends AbstractService {
 		List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
-		}
+		} 
 		return AmxApiResponse.buildList(currencyList);
 
 	}
@@ -108,7 +108,7 @@ public class CurrencyMasterService extends AbstractService {
 		if (currencyList.isEmpty()) {
 			throw new GlobalException("Currency details not avaliable");
 		}
-		return AmxApiResponse.buildList(convert(currencyList));
+			return AmxApiResponse.buildList(convert(currencyList));
 	}
 	
 	// added by chetan 30/04/2018 list the country for currency.

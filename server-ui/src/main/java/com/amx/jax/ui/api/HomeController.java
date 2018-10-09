@@ -1,9 +1,11 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.ServerStatus;
@@ -64,7 +68,7 @@ public class HomeController {
 
 	/** The http service. */
 	@Autowired
-	HttpService httpService;
+	CommonHttpRequest httpService;
 
 	/** The check time. */
 	private long checkTime = 0L;
@@ -75,7 +79,6 @@ public class HomeController {
 	/** The post man service. */
 	@Autowired
 	private RestService restService;
-	
 
 	/**
 	 * Gets the version.
@@ -117,7 +120,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -192,10 +195,16 @@ public class HomeController {
 		return "terms";
 	}
 
+	@Autowired
+	private SpringTemplateEngine templateEngine;
+
 	@RequestMapping(value = { "/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String applejson(Model model) {
+	@ResponseBody
+	public String applejson(Model model, HttpServletResponse response, Locale locale) {
 		model.addAttribute("appid", webAppConfig.getIosAppId());
-		return "json/apple-app-site-association";
+		Context context = new Context(locale);
+		context.setVariables(model.asMap());
+		return templateEngine.process("json/apple-app-site-association", context);
 	}
 }
