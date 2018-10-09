@@ -1,6 +1,7 @@
 package com.amx.amxlib.model.response;
 
 import java.math.BigDecimal;
+
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.model.AbstractModel;

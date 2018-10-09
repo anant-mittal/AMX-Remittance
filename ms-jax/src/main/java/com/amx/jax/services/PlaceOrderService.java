@@ -1,7 +1,6 @@
 package com.amx.jax.services;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,20 +18,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
-import com.amx.jax.logger.LoggerService;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.userservice.dao.CustomerDao;

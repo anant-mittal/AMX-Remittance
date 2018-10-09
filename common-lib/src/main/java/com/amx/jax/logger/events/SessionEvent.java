@@ -1,8 +1,5 @@
 package com.amx.jax.logger.events;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.model.UserDevice;
 

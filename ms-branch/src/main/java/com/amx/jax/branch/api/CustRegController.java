@@ -10,13 +10,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.branch.service.OffsitCustRegService;
 import com.amx.jax.constants.JaxEvent;
-import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
-import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -64,30 +61,29 @@ public class CustRegController implements ICustRegService {
 	ViewDistrictService districtService;
 
 	@Autowired
-	MetaService metaService;	
+	MetaService metaService;
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_ID_TYPES, method = RequestMethod.POST)
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		return offsiteCustRegService.getIdTypes();
 	}
 
+	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);
 		LOGGER.info("send otp request: " + customerPersonalDetail);
-		// return
-		// AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.VALIDATE_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<String, Object> validateOtpForEmailAndMobile(
-			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {	
+			@RequestBody OffsiteCustomerRegistrationRequest offsiteCustRegModel) {
 		return offsiteCustRegService.validateOtpForEmailAndMobile(offsiteCustRegModel);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_ARTICLE_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse() {
 		return offsiteCustRegService.getArticleListResponse();
@@ -95,27 +91,27 @@ public class CustRegController implements ICustRegService {
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_DESIGNATION_LIST, method = RequestMethod.POST)
 	public AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(
-			@RequestBody EmploymentDetailsRequest model) {		
+			@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegService.getDesignationListResponse(model);
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_INCOME_RANGE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {		
+	public AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(@RequestBody EmploymentDetailsRequest model) {
 		return offsiteCustRegService.getIncomeRangeResponse(model);
 	}
 
 	@RequestMapping(value = CustRegApiEndPoints.GET_DYNAMIC_FIELDS, method = RequestMethod.POST)
-	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {		
+	public AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(@RequestBody DynamicFieldRequest model) {
 		return offsiteCustRegService.getFieldList(model);
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_EMPLOYMENT_TYPE_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {		
+	public AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList() {
 		return offsiteCustRegService.sendEmploymentTypeList();
 	}
-	
+
 	@RequestMapping(value = CustRegApiEndPoints.GET_PROFESSION_LIST, method = RequestMethod.POST)
-	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {		
+	public AmxApiResponse<ComponentDataDto, Object> sendProfessionList() {
 		return offsiteCustRegService.sendProfessionList();
 	}
 

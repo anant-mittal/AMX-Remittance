@@ -17,9 +17,6 @@ import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.models.EmployeeInfo;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
-import com.amx.jax.rbaac.models.EmployeeInfo;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

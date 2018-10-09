@@ -35,7 +35,7 @@ import com.amx.jax.dict.Tenant;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=JaxServiceClientApplication.class)
+@SpringBootTest(classes = JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -63,8 +63,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-	//@Test
+
+	// @Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -111,21 +111,21 @@ public class RemittanceClientTest {
 
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
 			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
-		
-		Map<String, String> flexFields = new HashMap<>();
+
+		Map<String, Object> flexFields = new HashMap<>();
 		list.forEach(i -> {
-			if(i.getField().getType().equals("select")) {
+			if (i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
 						JsonUtil.toJson(i.getField().getPossibleValues().get(0).getValue()));
-			}else if(i.getField().getType().equals("date")) {
+			} else if (i.getField().getType().equals("date")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "07/20/2018");
-			}else {
+			} else {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""), "nnn");
 			}
 		});
 		request.setFlexFields(flexFields);
 		return client.saveTransaction(request);
-		
+
 	}
 
 	// @Test
@@ -168,7 +168,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));

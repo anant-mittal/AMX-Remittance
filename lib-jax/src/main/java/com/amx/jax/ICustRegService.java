@@ -48,34 +48,35 @@ public interface ICustRegService {
 
 		public void setMode(BigDecimal modeId);
 	}
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_ID_TYPE_LIST })
 	AmxApiResponse<ComponentDataDto, Object> getIdTypes();
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_FIELD_CONDITION })
 	AmxApiResponse<Map<String, FieldListDto>, Object> getFieldList(DynamicFieldRequest model);
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_INCOME_RANGE })
 	AmxApiResponse<IncomeRangeDto, Object> getIncomeRangeResponse(EmploymentDetailsRequest model);
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_DESIGNATION_LIST })
 	AmxApiResponse<ArticleDetailsDescDto, Object> getDesignationListResponse(EmploymentDetailsRequest model);
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_ARTICLE_LIST })
 	AmxApiResponse<ArticleMasterDescDto, Object> getArticleListResponse();
-	
+
 	@ApiJaxStatus({ JaxError.MISSING_OTP, JaxError.VALIDATE_OTP_LIMIT_EXCEEDED })
 	AmxApiResponse<String, Object> validateOtpForEmailAndMobile(OffsiteCustomerRegistrationRequest offsiteCustRegModel);
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_EMPLOYMENT_TYPE })
 	AmxApiResponse<ComponentDataDto, Object> sendEmploymentTypeList();
-	
+
 	@ApiJaxStatus({ JaxError.EMPTY_PROFESSION_LIST })
 	AmxApiResponse<ComponentDataDto, Object> sendProfessionList();
 
 	AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail);
 
-	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID , JaxError.EXISTING_BEDOUIN_ID,JaxError.EXISTING_GCC_ID,JaxError.EXISTING_PASSPORT,JaxError.INVALID_CIVIL_ID})
+	@ApiJaxStatus({ JaxError.EXISTING_CIVIL_ID, JaxError.EXISTING_BEDOUIN_ID, JaxError.EXISTING_GCC_ID,
+			JaxError.EXISTING_PASSPORT, JaxError.INVALID_CIVIL_ID })
 	AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model);
 
 	@ApiJaxStatus({ JaxError.IMAGE_NOT_AVAILABLE, JaxError.NULL_CUSTOMER_ID, JaxError.INVALID_CUSTOMER })

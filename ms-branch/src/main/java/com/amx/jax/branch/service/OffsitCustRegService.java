@@ -284,9 +284,10 @@ public class OffsitCustRegService implements ICustRegService {
 
 	private ArticleMasterDescDto convert(Map<String, Object> i) {
 		ArticleMasterDescDto dto = new ArticleMasterDescDto();
-		dto.setArticleDescId(new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString():null));
-		dto.setArticleDescription(i.get("ARTICLE_DESC") != null ? i.get("ARTICLE_DESC").toString():null);
-		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID") != null ? i.get("ARTICLE_ID").toString():null));
+		dto.setArticleDescId(
+				new BigDecimal(i.get("ARTICLE_DESC_ID") != null ? i.get("ARTICLE_DESC_ID").toString() : null));
+		dto.setArticleDescription(i.get("ARTICLE_DESC") != null ? i.get("ARTICLE_DESC").toString() : null);
+		dto.setArticleId(new BigDecimal(i.get("ARTICLE_ID") != null ? i.get("ARTICLE_ID").toString() : null));
 		dto.setLanguageType(new BigDecimal(i.get("LANGUAGE_ID").toString()));
 		return dto;
 	}
@@ -315,7 +316,8 @@ public class OffsitCustRegService implements ICustRegService {
 
 	private ArticleDetailsDescDto convertDesignation(Map<String, Object> i) {
 		ArticleDetailsDescDto dto = new ArticleDetailsDescDto();
-		dto.setArticleDetailsDesc(i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : null);
+		dto.setArticleDetailsDesc(
+				i.get("ARTICLE_DETAIL_DESC") != null ? i.get("ARTICLE_DETAIL_DESC").toString() : null);
 		dto.setArticleDetailsDescId(new BigDecimal(
 				i.get("ARTICLE_DETAILS_DESC_ID") != null ? i.get("ARTICLE_DETAILS_DESC_ID").toString() : null));
 		dto.setArticleDetailsId(
@@ -350,11 +352,11 @@ public class OffsitCustRegService implements ICustRegService {
 	private IncomeRangeDto convertIncomeRange(Map<String, Object> i) {
 		IncomeRangeDto dto = new IncomeRangeDto();
 		dto.setArticleDetailsId(
-				new BigDecimal(i.get("ARTICLE_DETAIL_ID") != null ? i.get("ARTICLE_DETAIL_ID").toString() :null));
-		dto.setIncomeFrom(new BigDecimal(i.get("INCOME_FROM") != null ? i.get("INCOME_FROM").toString() :null));
+				new BigDecimal(i.get("ARTICLE_DETAIL_ID") != null ? i.get("ARTICLE_DETAIL_ID").toString() : null));
+		dto.setIncomeFrom(new BigDecimal(i.get("INCOME_FROM") != null ? i.get("INCOME_FROM").toString() : null));
 		dto.setIncomeRangeId(
-				new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString() :null));
-		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString() :null));
+				new BigDecimal(i.get("INCOME_RANGE_ID") != null ? i.get("INCOME_RANGE_ID").toString() : null));
+		dto.setIncomeTo(new BigDecimal(i.get("INCOME_TO") != null ? i.get("INCOME_TO").toString() : null));
 		return dto;
 	}
 
@@ -542,7 +544,7 @@ public class OffsitCustRegService implements ICustRegService {
 			CustomerEmploymentDetails customerEmploymentDetails) {
 		Customer customer = new Customer();
 		customer = customerRepository.getCustomerByCivilIdAndIsActive(customerDetails.getIdentityInt(),
-				customerDetails.getCountryId(),customerDetails.getIdentityTypeId());
+				customerDetails.getCountryId(), customerDetails.getIdentityTypeId());
 		if (customer != null) {
 			if (customer.getIdentityTypeId().equals(new BigDecimal(198))) {
 				throw new GlobalException("Customer Civil Id Already Exist", JaxError.EXISTING_CIVIL_ID);
@@ -559,10 +561,9 @@ public class OffsitCustRegService implements ICustRegService {
 
 		}
 		customer = new Customer();
-		if(customerDetails.getIdentityTypeId().equals(new BigDecimal(198)))
-		{
+		if (customerDetails.getIdentityTypeId().equals(new BigDecimal(198))) {
 			tenantContext.get().validateCivilId(customerDetails.getIdentityInt());
-		}			
+		}
 		tenantContext.get().validateEmailId(customerDetails.getEmail());
 		countryMetaValidation.validateMobileNumber(customerDetails.getCountryId(), customerDetails.getMobile());
 		countryMetaValidation.validateMobileNumberLength(customerDetails.getCountryId(), customerDetails.getMobile());
@@ -726,7 +727,8 @@ public class OffsitCustRegService implements ICustRegService {
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
-		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(), Constants.NO);
+		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
+				Constants.NO);
 		if (customer == null) {
 			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
@@ -744,8 +746,7 @@ public class OffsitCustRegService implements ICustRegService {
 				"customerPersonalDetail");
 		customerRegistrationManager.setIdentityInt(customerPersonalDetail.getIdentityInt());
 		// initiate transaction
-		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager
-				.init(customerPersonalDetail);
+		CustomerRegistrationTrnxModel trnxModel = customerRegistrationManager.init(customerPersonalDetail);
 		validate(trnxModel, errors);
 		SendOtpModel output = customerRegistrationOtpManager.generateOtpTokens(customerPersonalDetail.getIdentityInt());
 		customerRegistrationOtpManager.sendOtp();
@@ -755,10 +756,9 @@ public class OffsitCustRegService implements ICustRegService {
 	public void validate(Object target, Errors e) {
 		CustomerRegistrationTrnxModel beneficiaryTrnxModel = (CustomerRegistrationTrnxModel) target;
 		CustomerPersonalDetail customerPersonalDetail = beneficiaryTrnxModel.getCustomerPersonalDetail();
-		if (customerPersonalDetail.getIdentityTypeId().equals(new BigDecimal(198)))
-		{
+		if (customerPersonalDetail.getIdentityTypeId().equals(new BigDecimal(198))) {
 			tenantContext.get().validateCivilId(customerPersonalDetail.getIdentityInt());
-		}			
+		}
 		tenantContext.get().validateEmailId(customerPersonalDetail.getEmail());
 		countryMetaValidation.validateMobileNumber(customerPersonalDetail.getCountryId(),
 				customerPersonalDetail.getMobile());
