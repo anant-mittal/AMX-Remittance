@@ -22,6 +22,7 @@ public class PayGResponse {
 	String countryId = null;
 	String errorText = null;
 	String error = null;
+	String errorCategory = null;
 	
 	String collectionFinYear;
 	String collectionDocNumber;
@@ -195,6 +196,13 @@ public class PayGResponse {
 		this.error = error;
 	}
 
+	public String getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
+	}
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

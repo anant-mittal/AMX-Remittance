@@ -17,6 +17,7 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
+import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
@@ -257,7 +258,11 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "user-detail":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
-			break;
+			break;	
+		case "payg-error":
+			models = new ObjectMapper().readValue(values, new TypeReference<List<PaygErrorMasterDTO>>() {
+			});
+			break;	
 	}
 		responseData.setValues(models);
 		return responseData;

@@ -147,6 +147,9 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
+		String resultResponse = request.getParameter("Error");
+		String responseCode = request.getParameter("responsecode");
+		String resultCode = request.getParameter("result");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
@@ -164,8 +167,6 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 		gatewayResponse.setError(request.getParameter("Error"));
 
-		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
-
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));
@@ -176,6 +177,20 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
+
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultCode));
+		} else if (resultResponse == null) {
+			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(responseCode));
+			gatewayResponse.setError(responseCode);
+		} else {
+			LOGGER.info("resultResponse ---> " + resultResponse);
+			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultResponse));
+			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			gatewayResponse.setError(resultResponse);
+		}
+		
+		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 
