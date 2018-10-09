@@ -11,10 +11,10 @@ import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
+import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.open.model.EmployeeMetaData;
-import com.amx.jax.user.UserDevice;
 
 import io.swagger.annotations.Api;
 
@@ -37,7 +37,7 @@ public class EmpUserController {
 	AppConfig appConfig;
 
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public AmxApiResponse<EmployeeMetaData, ?> getMeta(@RequestParam(required = false) UserDevice.AppType appType,
+	public AmxApiResponse<EmployeeMetaData, ?> getMeta(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion) {
 		EmployeeMetaData empMeta = new EmployeeMetaData();
 		empMeta.setTenant(AppContextUtil.getTenant());

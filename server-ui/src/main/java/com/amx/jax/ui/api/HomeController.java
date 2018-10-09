@@ -120,7 +120,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 

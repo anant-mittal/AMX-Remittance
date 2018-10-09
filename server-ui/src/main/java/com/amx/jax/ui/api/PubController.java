@@ -151,7 +151,7 @@ public class PubController {
 		wrapper.getData().setRemoteAddr(request.getRemoteAddr());
 		wrapper.getData().setLocalAddress(request.getLocalAddr());
 		wrapper.getData().setScheme(request.getScheme());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
 		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());

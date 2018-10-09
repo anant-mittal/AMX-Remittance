@@ -17,6 +17,7 @@ import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.jax.AppConfig;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.dict.UserClient.AppType;
 import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.AuditActor;
 import com.amx.jax.postman.PostManException;
@@ -35,7 +36,6 @@ import com.amx.jax.ui.service.LoginService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.service.TenantService;
 import com.amx.jax.ui.service.UserService;
-import com.amx.jax.ui.session.UserDeviceBean;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -97,7 +97,7 @@ public class UserController {
 	 * @return the meta
 	 */
 	@RequestMapping(value = "/pub/user/meta", method = { RequestMethod.POST, RequestMethod.GET })
-	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) UserDeviceBean.AppType appType,
+	public ResponseWrapper<UserMetaData> getMeta(@RequestParam(required = false) AppType appType,
 			@RequestParam(required = false) String appVersion) {
 		ResponseWrapper<UserMetaData> wrapper = new ResponseWrapper<UserMetaData>(new UserMetaData());
 

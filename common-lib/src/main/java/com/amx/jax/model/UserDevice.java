@@ -1,13 +1,12 @@
-package com.amx.jax.user;
+package com.amx.jax.model;
 
 import java.io.Serializable;
 
-import org.springframework.mobile.device.DevicePlatform;
-import org.springframework.mobile.device.DeviceType;
+import com.amx.jax.dict.UserClient.AppType;
+import com.amx.jax.dict.UserClient.DevicePlatform;
+import com.amx.jax.dict.UserClient.DeviceType;
 
-import eu.bitwalker.useragentutils.Browser;
-import eu.bitwalker.useragentutils.OperatingSystem;
-import eu.bitwalker.useragentutils.Version;
+import eu.bitwalker.useragentutils.UserAgent;
 
 /**
  * 
@@ -18,10 +17,6 @@ public class UserDevice implements Serializable {
 
 	private static final long serialVersionUID = 4015555971724271185L;
 
-	public enum AppType {
-		WEB, ANDROID, IOS;
-	}
-
 	protected String fingerprint = null;
 	protected String ip = null;
 	protected String id = null;
@@ -30,9 +25,8 @@ public class UserDevice implements Serializable {
 
 	protected DeviceType type = null;
 	protected DevicePlatform platform = null;
-	protected OperatingSystem operatingSystem = null;
-	protected Browser browser = null;
-	protected Version browserVersion = null;
+
+	protected UserAgent userAgent = null;
 
 	/**
 	 * THis is unique id sent by device, in case of mobiles it is device id, in case
@@ -125,42 +119,20 @@ public class UserDevice implements Serializable {
 	}
 
 	/**
-	 * @see eu.bitwalker.useragentutils.OperatingSystem
-	 */
-	public OperatingSystem getOperatingSystem() {
-		return operatingSystem;
-	}
-
-	public void setOperatingSystem(OperatingSystem operatingSystem) {
-		this.operatingSystem = operatingSystem;
-	}
-
-	/**
-	 * @see eu.bitwalker.useragentutils.Browser
-	 */
-	public Browser getBrowser() {
-		return browser;
-	}
-
-	public void setBrowser(Browser browser) {
-		this.browser = browser;
-	}
-
-	public Version getBrowserVersion() {
-		return browserVersion;
-	}
-
-	public void setBrowserVersion(Version browserVersion) {
-		this.browserVersion = browserVersion;
-	}
-
-	/**
 	 * Get IP Address of user deivce
 	 * 
 	 * @return
 	 */
 	public String getIp() {
 		return ip;
+	}
+
+	public UserAgent getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(UserAgent userAgent) {
+		this.userAgent = userAgent;
 	}
 
 }

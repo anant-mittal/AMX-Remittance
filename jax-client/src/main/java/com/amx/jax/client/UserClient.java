@@ -32,8 +32,8 @@ import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.user.UserDevice;
 
 @Component
 public class UserClient extends AbstractJaxServiceClient {

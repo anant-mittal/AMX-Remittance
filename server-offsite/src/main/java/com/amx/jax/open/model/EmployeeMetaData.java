@@ -8,7 +8,7 @@ import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.model.AbstractModel;
 import com.amx.jax.model.AuthState;
-import com.amx.jax.user.UserDevice;
+import com.amx.jax.model.UserDevice;
 
 /**
  * The Class UserMetaData.
