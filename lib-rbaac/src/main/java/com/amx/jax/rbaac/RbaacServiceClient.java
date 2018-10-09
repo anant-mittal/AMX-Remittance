@@ -33,7 +33,7 @@ import com.amx.jax.rest.RestService;
  * @author abhijeet
  */
 @Component
-public class RbaacServiceClient implements RbaacService {
+public class RbaacServiceClient implements IRbaacService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceClient.class);
@@ -50,7 +50,7 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthInitReqDTO)
 	 */
 	@Override
@@ -70,7 +70,7 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthorisationReqDTO)
 	 */
 	@Override
@@ -79,7 +79,7 @@ public class RbaacServiceClient implements RbaacService {
 		LOGGER.info("Authorisation Request called for Employee No: {}, from IP address: {}, with TraceId: {}",
 				reqDTO.getEmployeeNo(), reqDTO.getIpAddress(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE).post(reqDTO)
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORIZE).post(reqDTO)
 				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
 				});
 
@@ -88,7 +88,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllPermissions(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -107,7 +107,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllRoles(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -125,7 +125,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#saveRole(com.amx.jax.rbaac.dto.request.
+	 * @see com.amx.jax.rbaac.IRbaacService#saveRole(com.amx.jax.rbaac.dto.request.
 	 * RoleRequestDTO)
 	 * 
 	 */
@@ -143,7 +143,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getUserRoleMappingsForBranch(java.math.
+	 * @see com.amx.jax.rbaac.IRbaacService#getUserRoleMappingsForBranch(java.math.
 	 * BigDecimal, java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -165,7 +165,7 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
+	 * com.amx.jax.rbaac.IRbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
 	 * request.UserRoleMappingsRequestDTO)
 	 */
 	@Override
@@ -185,7 +185,7 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
 	 * .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
@@ -204,7 +204,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testGet()
+	 * @see com.amx.jax.rbaac.IRbaacService#testGet()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
@@ -216,7 +216,7 @@ public class RbaacServiceClient implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testPost()
+	 * @see com.amx.jax.rbaac.IRbaacService#testPost()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testPost() {

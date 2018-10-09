@@ -32,7 +32,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes=JaxServiceClientApplication.class)
 public class MetaClientTest extends AbstractTestClient {
 
 	@Autowired

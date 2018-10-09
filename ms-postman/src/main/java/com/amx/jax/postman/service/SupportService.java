@@ -9,7 +9,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.MessageType;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;
 import com.amx.utils.Utils;
@@ -65,7 +65,7 @@ public class SupportService {
 		email.addAllTo(supportContactTo);
 		email.getModel().put("data", map);
 		email.setSubject(supportContactSubject);
-		email.setTemplate(Templates.CONTACT_US);
+		email.setITemplate(TemplatesMX.CONTACT_US);
 		email.setHtml(true);
 
 		return email;

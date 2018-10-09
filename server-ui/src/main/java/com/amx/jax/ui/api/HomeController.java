@@ -1,9 +1,11 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
@@ -75,7 +79,6 @@ public class HomeController {
 	/** The post man service. */
 	@Autowired
 	private RestService restService;
-	
 
 	/**
 	 * Gets the version.
@@ -192,10 +195,16 @@ public class HomeController {
 		return "terms";
 	}
 
+	@Autowired
+	private SpringTemplateEngine templateEngine;
+
 	@RequestMapping(value = { "/apple-app-site-association" }, method = {
 			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public String applejson(Model model) {
+	@ResponseBody
+	public String applejson(Model model, HttpServletResponse response, Locale locale) {
 		model.addAttribute("appid", webAppConfig.getIosAppId());
-		return "json/apple-app-site-association";
+		Context context = new Context(locale);
+		context.setVariables(model.asMap());
+		return templateEngine.process("json/apple-app-site-association", context);
 	}
 }

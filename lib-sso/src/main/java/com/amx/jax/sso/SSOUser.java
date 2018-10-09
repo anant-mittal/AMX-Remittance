@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.utils.ArgUtil;
 
 @Component
@@ -17,6 +18,7 @@ public class SSOUser implements Serializable {
 
 	private boolean authDone = false;
 	private String tranxId;
+	private EmployeeDetailsDTO userDetails = null;
 
 	public boolean isAuthDone() {
 		return authDone;
@@ -44,6 +46,14 @@ public class SSOUser implements Serializable {
 			this.setTranxId(tranxId);
 		}
 		return tranxId;
+	}
+
+	public void setUserDetails(EmployeeDetailsDTO userDetails) {
+		this.userDetails = userDetails;
+	}
+
+	public EmployeeDetailsDTO getUserDetails() {
+		return userDetails;
 	}
 
 }

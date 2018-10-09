@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.amx.jax.dict.Language;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,7 +25,7 @@ public class Message implements Serializable {
 	protected String subject;
 	protected String message = null;
 	protected List<String> to = null;
-	private Templates template = null;
+	private String template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 	private MessageType messageType = null;
 	private Status status = null;
@@ -73,12 +74,22 @@ public class Message implements Serializable {
 		this.message = text;
 	}
 
-	public Templates getTemplate() {
+	public String getTemplate() {
 		return template;
 	}
 
-	public void setTemplate(Templates template) {
+	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	@JsonIgnore
+	public void setITemplate(ITemplate template) {
+		this.template = template.toString();
+	}
+
+	@JsonIgnore
+	public ITemplate getITemplate() {
+		return ITemplates.getTemplate(this.template);
 	}
 
 	public Language getLang() {

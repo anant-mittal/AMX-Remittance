@@ -18,9 +18,9 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.sso.SSOConstants;
+import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
-import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 import com.amx.utils.URLBuilder;
 
 @Component

@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.cache.TransactionModel;
+import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
 import com.amx.jax.sso.SSOTranx.SSOModel;
 
 @Component
@@ -15,8 +16,9 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 
 		private String appUrl = null;
 		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
-		private String sotp = null;
+		private String appToken = null;
 		private String motp = null;
+		private EmployeeDetailsDTO userDetails = null;
 
 		public String getReturnUrl() {
 			return returnUrl;
@@ -34,12 +36,12 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 			this.appUrl = appUrl;
 		}
 
-		public String getSotp() {
-			return sotp;
+		public String getAppToken() {
+			return appToken;
 		}
 
-		public void setSotp(String sotp) {
-			this.sotp = sotp;
+		public void setAppToken(String appToken) {
+			this.appToken = appToken;
 		}
 
 		public String getMotp() {
@@ -48,6 +50,14 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 
 		public void setMotp(String motp) {
 			this.motp = motp;
+		}
+
+		public EmployeeDetailsDTO getUserDetails() {
+			return userDetails;
+		}
+
+		public void setUserDetails(EmployeeDetailsDTO userDetails) {
+			this.userDetails = userDetails;
 		}
 
 	}
@@ -68,14 +78,22 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 		return msg;
 	}
 
-	public SSOModel setAppUrl(String landingUrl, String sotp) {
+	public SSOModel setAppReturnDetails(String landingUrl, String appToken) {
 		SSOModel msg = this.get();
 		msg.setAppUrl(landingUrl);
-		msg.setSotp(sotp);
+		msg.setAppToken(appToken);
 		this.save(msg);
 		return msg;
 	}
 
+	public SSOModel setUserDetails(EmployeeDetailsDTO userDetail) {
+		SSOModel msg = this.get();
+		msg.setUserDetails(userDetail);
+		this.save(msg);
+		return msg;
+	}
+
+	@Deprecated
 	public SSOModel setMOtp(String motp) {
 		SSOModel msg = this.get();
 		msg.setMotp(motp);
