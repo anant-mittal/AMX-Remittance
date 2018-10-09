@@ -151,6 +151,7 @@ public class KnetClient implements PayGClient {
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
+		String resultResponse = request.getParameter("result");	
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
@@ -168,6 +169,12 @@ public class KnetClient implements PayGClient {
 		
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
 
+		LOGGER.info("resultResponse ---> " + resultResponse);
+		gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultResponse));
+		
+		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+		gatewayResponse.setError(resultResponse);
+		
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response
 		gatewayResponse.setCollectionFinYear(resdto.getCollectionFinanceYear().toString());

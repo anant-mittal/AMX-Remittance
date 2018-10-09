@@ -58,6 +58,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgAuthCode(paymentResponse.getAuth_appNo());
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);
@@ -97,7 +98,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			appl.setPaymentId(paymentResponse.getPaymentId());
 			appl.setPgReferenceId(paymentResponse.getReferenceId());
 			appl.setPgTransactionId(paymentResponse.getTransactionId());
-			appl.setResultCode(paymentResponse.getResultCode());
+			appl.setErrorCategory(paymentResponse.getErrorCategory());
 			appl.setPayToken(null);
 			appl.setApplicaitonStatus(null);
 			appl.setIsactive("D");

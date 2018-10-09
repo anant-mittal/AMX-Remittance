@@ -19,6 +19,7 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	TransactionHistroyDTO transactionHistroyDTO;
 	String transactionReference;
 	String errorMessage;
+	String errorCategory;
 	PromotionDto promotionDto; 
 
 	public JaxTransactionStatus getStatus() {
@@ -66,6 +67,14 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 		this.errorMessage = errorMessage;
 	}
 
+	public String getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
+	}
+	
 	public PromotionDto getPromotionDto() {
 		return promotionDto;
 	}
@@ -73,6 +82,5 @@ public class RemittanceTransactionStatusResponseModel extends AbstractModel {
 	public void setPromotionDto(PromotionDto promotionDto) {
 		this.promotionDto = promotionDto;
 	}
-	
 
 }
