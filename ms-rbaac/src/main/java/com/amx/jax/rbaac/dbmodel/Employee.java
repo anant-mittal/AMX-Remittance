@@ -50,9 +50,10 @@ public class Employee implements java.io.Serializable {
 	private BigDecimal lockCount;
 	private Date lockDate;
 
-	//TODO: Add Unlock Info
-	
+	// TODO: Add Unlock Info
+
 	private String deviceId;
+	private Date lastLogin;
 
 	@Id
 	@GeneratedValue(generator = "fs_employee_seq", strategy = GenerationType.SEQUENCE)
@@ -307,6 +308,15 @@ public class Employee implements java.io.Serializable {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	@Column(name = "LAST_LOGIN")
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
 	}
 
 }

@@ -250,6 +250,9 @@ public class UserAuthService {
 
 		empDetail.setUserRole(roleResponseDTO);
 
+		// Set Last Successful Login Date as Current Date
+		updateLastLogin(employee);
+
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
 
@@ -282,6 +285,16 @@ public class UserAuthService {
 		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
+
+		rbaacDao.saveEmployee(destEmp);
+
+		return true;
+	}
+
+	private boolean updateLastLogin(Employee srcEmp) {
+
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		destEmp.setLastLogin(new Date());
 
 		rbaacDao.saveEmployee(destEmp);
 

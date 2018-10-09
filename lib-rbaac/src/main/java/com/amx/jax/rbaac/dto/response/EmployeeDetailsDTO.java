@@ -2,6 +2,7 @@ package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 public class EmployeeDetailsDTO implements Serializable {
 
@@ -21,6 +22,7 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String status;
 	private Boolean isActive;
 	private Boolean isLocked;
+	private Date lastLoginDate;
 
 	private RoleResponseDTO userRole;
 
@@ -142,6 +144,14 @@ public class EmployeeDetailsDTO implements Serializable {
 
 	public void setUserRole(RoleResponseDTO userRole) {
 		this.userRole = userRole;
+	}
+
+	public Date getLastLoginDate() {
+		return lastLoginDate;
+	}
+
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
 	}
 
 }

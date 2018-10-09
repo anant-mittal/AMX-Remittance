@@ -60,6 +60,12 @@ public final class ObjectConverter {
 			empDetail.setIsActive(Boolean.FALSE);
 		}
 
+		if (employee.getLastLogin() == null) {
+			empDetail.setLastLoginDate(new Date());
+		} else {
+			empDetail.setLastLoginDate(employee.getLastLogin());
+		}
+
 		return empDetail;
 	}
 
