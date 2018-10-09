@@ -134,7 +134,7 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(new Locale(sms.getLang().toString()));
 				context.setVariables(sms.getModel());
-				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
+				sms.setMessage(templateService.processHtml(sms.getITemplate(), context));
 			}
 
 			if (ArgUtil.isEmpty(to)) {

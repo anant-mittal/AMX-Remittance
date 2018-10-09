@@ -28,7 +28,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.employee.AmgEmployeeRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
@@ -137,7 +137,7 @@ public class PromotionManager {
 						email.addTo("online@almullaexchange.com");
 						email.addTo("huzefa.abbasi@almullaexchange.com");
 					}
-					email.setTemplate(Templates.PROMOTION_WINNER);
+					email.setITemplate(TemplatesMX.PROMOTION_WINNER);
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);
 					email.getModel().put("promotDto", promotDto);
@@ -162,7 +162,7 @@ public class PromotionManager {
 				Email voucherEmail = new Email();
 				voucherEmail.setSubject("Congratulations! You have got a coupon from Al Mulla Exchange.");
 				voucherEmail.addTo(personInfo.getEmail());
-				voucherEmail.setTemplate(Templates.PROMOTION_COUPON);
+				voucherEmail.setITemplate(TemplatesMX.PROMOTION_COUPON);
 				voucherEmail.setHtml(true);
 				postManService.sendEmailAsync(voucherEmail);
 			}

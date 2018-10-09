@@ -23,7 +23,7 @@ import com.amx.jax.postman.model.File.Type;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.SMS;
 import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 
 /**
  * The Class PostManServiceImpl.
@@ -113,9 +113,9 @@ public class PostManServiceImpl implements PostManService {
 	 *            the file type
 	 * @return the file
 	 */
-	public File processTemplate(Templates template, Map<String, Object> map, Type fileType) {
+	public File processTemplate(TemplatesMX template, Map<String, Object> map, Type fileType) {
 		File file = new File();
-		file.setTemplate(template);
+		file.setITemplate(template);
 		file.setType(fileType);
 		file.setModel(map);
 		return this.processTemplate(file).getResult();

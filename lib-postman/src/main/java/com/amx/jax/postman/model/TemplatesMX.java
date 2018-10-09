@@ -1,8 +1,9 @@
 package com.amx.jax.postman.model;
 
 import com.amx.jax.postman.model.File.PDFConverter;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
 
-public enum Templates implements ITemplate {
+public enum TemplatesMX implements ITemplate {
 
 	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP("health-server-up"),
 
@@ -44,7 +45,7 @@ public enum Templates implements ITemplate {
 		return "json/" + fileName;
 	}
 
-	Templates(String fileName, PDFConverter converter, String sampleJSON) {
+	TemplatesMX(String fileName, PDFConverter converter, String sampleJSON) {
 		this.fileName = fileName;
 		this.converter = converter;
 		this.sampleJSON = sampleJSON;
@@ -56,15 +57,15 @@ public enum Templates implements ITemplate {
 		}
 	}
 
-	Templates(String fileName, PDFConverter converter) {
+	TemplatesMX(String fileName, PDFConverter converter) {
 		this(fileName, converter, null);
 	}
 
-	Templates(String fileName, String sampleJSON) {
+	TemplatesMX(String fileName, String sampleJSON) {
 		this(fileName, null, sampleJSON);
 	}
 
-	Templates(String fileName) {
+	TemplatesMX(String fileName) {
 		this(fileName, null, null);
 	}
 
@@ -89,6 +90,10 @@ public enum Templates implements ITemplate {
 	@Override
 	public boolean isThymleafJson() {
 		return thymleafJson;
+	}
+
+	public String toString() {
+		return this.name();
 	}
 
 }
