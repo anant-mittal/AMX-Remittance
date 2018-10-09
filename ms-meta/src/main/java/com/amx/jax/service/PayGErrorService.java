@@ -8,9 +8,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dao.PayGErrorDao;
 import com.amx.jax.dbmodel.meta.PaygErrorMaster;
 import com.amx.jax.meta.MetaData;
@@ -26,26 +24,16 @@ public class PayGErrorService extends AbstractService {
 
 	@Autowired
 	MetaData meta;
-	
+
 	@Autowired
 	PayGErrorDao paygErrorDao;
-	
-	public ApiResponse getPaygErrorResponse() {
-		
-		List<PaygErrorMaster> paygErrorList = paygErrorDao.getPaygErrorList();
-		
-		ApiResponse response = getBlackApiResponse();
 
-		if (paygErrorList.isEmpty()) {
-			throw new GlobalException("PayG Error are not available");
-		} else {
-			response.getData().getValues().addAll(paygErrorList);
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("payg-error");
-		return response;
+	@Deprecated
+	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorResponse() {
+		List<PaygErrorMaster> paygErrorList = paygErrorDao.getPaygErrorList();
+		return AmxApiResponse.buildList(paygErrorList);
 	}
-	
+
 	@Override
 	public String getModelType() {
 		// TODO Auto-generated method stub
