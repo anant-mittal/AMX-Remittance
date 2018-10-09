@@ -42,7 +42,6 @@ import com.amx.amxlib.model.CustomerNotificationDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.amxlib.model.PaygErrorMasterDTO;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.RateAlertDTO;

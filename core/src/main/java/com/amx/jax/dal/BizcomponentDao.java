@@ -1,24 +1,12 @@
 package com.amx.jax.dal;
 
 import java.math.BigDecimal;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.apache.log4j.Logger;
-import org.hibernate.FetchMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.criterion.Subqueries;
-import org.hibernate.sql.JoinType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -28,7 +16,6 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BizComponentDataDesc;
-import com.amx.jax.dbmodel.BizComponentDataRef;
 import com.amx.jax.dbmodel.LanguageType;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IBizComponentDataDescDaoRepository;

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
-import com.amx.jax.dict.Project;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
 import com.amx.jax.scope.TenantValue;

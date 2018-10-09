@@ -30,7 +30,6 @@ import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.meta.model.WhyDoAskInformationDTO;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
@@ -67,7 +66,6 @@ import com.amx.jax.service.TermsAndConditionService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.service.WhyDoAskService;
-import com.amx.jax.services.PayGErrorService;
 import com.amx.jax.util.JaxContextUtil;
 import com.amx.jax.validation.BankBranchSearchRequestlValidator;
 

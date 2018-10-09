@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;

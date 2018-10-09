@@ -8,7 +8,6 @@ import javax.transaction.Transactional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.dbmodel.Customer;
 
