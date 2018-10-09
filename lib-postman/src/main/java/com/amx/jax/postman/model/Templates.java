@@ -2,7 +2,7 @@ package com.amx.jax.postman.model;
 
 import com.amx.jax.postman.model.File.PDFConverter;
 
-public enum Templates {
+public enum Templates implements ITemplate {
 
 	CONTACT_US("ContactForm"), RESET_OTP("reset-otp"), RESET_OTP_SMS("reset-otp-sms"), SERVER_UP("health-server-up"),
 
@@ -34,10 +34,12 @@ public enum Templates {
 	boolean thymleaf = true;
 	boolean thymleafJson = false;
 
+	@Override
 	public String getFileName() {
 		return fileName;
 	}
 
+	@Override
 	public String getJsonFileName() {
 		return "json/" + fileName;
 	}
@@ -66,10 +68,12 @@ public enum Templates {
 		this(fileName, null, null);
 	}
 
+	@Override
 	public PDFConverter getConverter() {
 		return converter;
 	}
 
+	@Override
 	public String getSampleJSON() {
 		if (sampleJSON == null) {
 			return this.fileName + ".json";
@@ -77,10 +81,12 @@ public enum Templates {
 		return sampleJSON;
 	}
 
+	@Override
 	public boolean isThymleaf() {
 		return thymleaf;
 	}
 
+	@Override
 	public boolean isThymleafJson() {
 		return thymleafJson;
 	}
