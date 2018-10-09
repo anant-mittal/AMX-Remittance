@@ -6,7 +6,7 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import org.springframework.data.repository.CrudRepository;
-import com.amx.jax.dbmodel.PaygErrorMaster;
+import com.amx.jax.dbmodel.meta.PaygErrorMaster;
 
 @Transactional
 public interface IPayGErrorRepository extends CrudRepository<PaygErrorMaster, BigDecimal>{

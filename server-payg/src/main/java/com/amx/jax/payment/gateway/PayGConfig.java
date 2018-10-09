@@ -4,8 +4,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.amx.amxlib.model.PaygErrorMasterDTO;
+import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
 
 @Component
 public class PayGConfig {
@@ -25,5 +24,5 @@ public class PayGConfig {
 
     public void setErrorCodeMap(Map<String, PaygErrorMasterDTO> errorCodeMap) {
         this.errorCodeMap = errorCodeMap;
-    }
+	}
 }

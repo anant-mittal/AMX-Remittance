@@ -20,6 +20,7 @@ import com.amx.jax.client.RemitClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
 
 /**
  * @author Viki Sangani 14-Dec-2017
@@ -102,6 +103,7 @@ public class PaymentService {
 		paymentResponseDto.setPaymentId(payGServiceResponse.getPaymentId());
 		paymentResponseDto.setErrorText(payGServiceResponse.getErrorText());
 		paymentResponseDto.setError(payGServiceResponse.getError());
+		paymentResponseDto.setErrorCategory(payGServiceResponse.getErrorCategory());
 		return paymentResponseDto;
 	}
 
@@ -135,13 +137,12 @@ public class PaymentService {
 			}
 		}
 		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
-		if (dto!=null) {
-			errorCategory = dto.getErrorCategory();	
-		}else {
-			LOGGER.info("Default ErrorResponse Message");
-			errorCategory="TXN_AUTH_PIN";
+		if (dto != null) {
+			errorCategory = dto.getErrorCategory();
+		} else {
+			LOGGER.info("Default ResponseError Message");
+			errorCategory = "TXN_AUTH_PIN";
 		}
-		
 		return errorCategory;
 	}
 }

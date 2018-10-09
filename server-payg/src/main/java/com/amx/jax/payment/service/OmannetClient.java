@@ -181,8 +181,9 @@ public class OmannetClient implements PayGClient {
 			}
 	
 			LOGGER.info("resultResponse ---> " + resultResponse);
-			gatewayResponse.setResult(paymentService.getPaygErrorCategory(resultResponse));
-			LOGGER.info("Result from response Values ---> " + gatewayResponse.getResult());
+			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultResponse));
+			
+			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
 		 
