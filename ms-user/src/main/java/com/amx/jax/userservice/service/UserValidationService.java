@@ -582,10 +582,10 @@ public class UserValidationService {
 		} else {
 			customers = custDao.getCustomerByIdentityInt(identityInt);
 		}
-		if (customers == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
 		}
-		if (customers == null && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
 			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
 		}
 		if (customers != null && customers.size() > 1) {
