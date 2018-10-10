@@ -583,8 +583,8 @@ public class UserValidationService {
 			customers = custDao.getCustomerByIdentityInt(identityInt);
 		}
 		if (customers != null && customers.size() > 1) {
-			throw new GlobalException("Customer not active in branch, go to branch ",
-					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException("Customer not active in branch, please visit branch",
+					JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH);
 		}
 		switch (apiFlow) {
 		case SIGNUP_ONLINE:
