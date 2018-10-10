@@ -177,7 +177,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
-
+		
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
 			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultCode));
 		} else if (resultResponse == null) {

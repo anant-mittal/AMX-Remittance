@@ -93,7 +93,6 @@ public final class ArgUtil {
 		return list.toArray(new String[list.size()]);
 	}
 
-
 	/**
 	 * Parse as T.
 	 *
@@ -303,7 +302,6 @@ public final class ArgUtil {
 		}
 		return null;
 	}
-	
 
 	/**
 	 * Parses the as boolean.
