@@ -7,7 +7,15 @@ public enum KnetCodes implements IPayGCode {
 
 	CAPTURED(CodeCategory.TXN_SUCCESS, "Transaction was approved"),
 
-	UNKNOWN(CodeCategory.UNKNOWN);
+	UNKNOWN(CodeCategory.UNKNOWN),
+	
+	VOIDED(CodeCategory.TXN_DATA,"Transaction was voided"),
+	
+	NOT_CAPTURED(CodeCategory.TXN_AUTH,"Transaction was not approved"),
+	
+	CANCELED(CodeCategory.TXN_CANCEL_SUCC,"Canceled Transaction"),
+
+	GENERIC_ERROR(CodeCategory.TXN_DATA);
 
 	CodeCategory category;
 	String description;
