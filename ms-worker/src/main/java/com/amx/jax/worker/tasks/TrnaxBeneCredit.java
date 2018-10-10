@@ -1,6 +1,7 @@
 package com.amx.jax.worker.tasks;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +45,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 	private static final String TRNDATE = "TRNDATE";
 	private static final String LANG_ID = "LANG_ID";
 	private static final String TENANT = "TENANT";
+	private static final String CURNAME = "CURNAME";
 
 	@Override
 	public void onMessage(String channel, Event event) {
@@ -57,15 +59,21 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 		String trnxRef = ArgUtil.parseAsString(event.getData().get(TRNREF));
 		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
+		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 
+		NumberFormat myFormat = NumberFormat.getInstance();
+		myFormat.setGroupingUsed(true);
+		String trnxAmountval = myFormat.format(trnxAmount);
+				
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custNname);
-		modeldata.put("amount", trnxAmount);
+		modeldata.put("amount", trnxAmountval);
 		modeldata.put("loyaltypoints", loyality);
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
+		modeldata.put("currency", curName);
 		wrapper.put("data", modeldata);
 
 		if (!ArgUtil.isEmpty(emailId)) {
@@ -82,7 +90,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			email.setSubject("Feedback Email"); // Given by Umesh
+			email.setSubject("Transaction Credit Notification"); // changed as per BA
 			email.setTemplate(Templates.BRANCH_FEEDBACK);
 			postManClient.sendEmailAsync(email);
 		}
