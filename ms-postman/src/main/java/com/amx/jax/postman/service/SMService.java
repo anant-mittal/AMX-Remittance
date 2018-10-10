@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContext;
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.AppParam;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -144,6 +147,7 @@ public class SMService {
 			auditService.gauge(pMGaugeEvent.set(sms, responseText));
 		} catch (PostManException e) {
 			auditService.gauge(pMGaugeEvent.set(sms).set(Result.FAIL));
+
 		} catch (Exception e) {
 			auditService.excep(pMGaugeEvent.set(sms), LOGGER, e);
 			slackService.sendException(to, e);
@@ -165,17 +169,20 @@ public class SMService {
 		String phone = contactService.getMobile(sms.getTo().get(0));
 
 		if (!appConfig.isProdMode() && (phone != null && phone.length() == 10)) {
+
 			Map<String, Object> map = MapBuilder.map().put("sender", senderId).put("route", route).put("country", "91")
 					.put(messagePath, sms.toText()).put(toPath, sms.getTo().get(0)).toMap();
 			return restService.ajax(remoteUrl).header("authkey", authKey).header("content-type", "application/json")
 					.post(JsonUtil.toJson(map)).asString();
 		} else if (phone != null) {
+
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("mobile", phone);
 			params.put("text", sms.toText());
 			params.put("username", username);
 			params.put("password", password);
 			params.put("secret", secret);
+			params.put("traceid", AppContextUtil.getTraceId());
 			return restService.ajax(this.smsReqUrl).build(smsReqType, smsReqQuery, smsReqFields, params).asString();
 		} else {
 			throw new PostManException(PostManException.ErrorCode.NO_TENANT_DEFINED);

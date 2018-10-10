@@ -96,7 +96,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.BRANCH_FEEDBACK_JSON);
+			pushMessage.setTemplate(Templates.BRANCH_FEEDBACK);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

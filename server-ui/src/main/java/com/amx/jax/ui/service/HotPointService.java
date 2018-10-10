@@ -24,7 +24,6 @@ import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.amx.jax.ui.service.GeoHotPoints;
 
 /**
  * The Class HotPointService.
