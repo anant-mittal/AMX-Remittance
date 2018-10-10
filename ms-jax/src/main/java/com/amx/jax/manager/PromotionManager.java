@@ -122,7 +122,7 @@ public class PromotionManager {
 					.getBranchId();
 			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
 			PromotionDto promotDto = getPromotionDto(documentNoRemit, documentFinYearRemit);
-			if (promotDto != null) {
+			if (promotDto != null && !promotDto.isChichenVoucher()) {
 				logger.info("Sending promo winner Email to helpdesk : ");
 				try {
 					RemittanceTransaction remittanceApplication = remittanceApplicationDao
@@ -131,12 +131,8 @@ public class PromotionManager {
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
-					if (promotDto.isChichenVoucher()) {
-						email.addTo("App-support@almullaexchange.com");
-					} else {
-						email.addTo("online@almullaexchange.com");
-						email.addTo("huzefa.abbasi@almullaexchange.com");
-					}
+					email.addTo("online@almullaexchange.com");
+					email.addTo("huzefa.abbasi@almullaexchange.com");
 					email.setTemplate(Templates.PROMOTION_WINNER);
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);
