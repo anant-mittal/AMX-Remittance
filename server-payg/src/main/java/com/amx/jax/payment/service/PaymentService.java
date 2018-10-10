@@ -11,15 +11,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.MetaClient;
 import com.amx.jax.client.RemitClient;
+import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.payg.PaygErrorMasterDTO;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.scope.TenantContextHolder;
-import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
 
 /**
  * @author Viki Sangani 14-Dec-2017
@@ -38,7 +38,7 @@ public class PaymentService {
 
 	@Autowired
 	MetaClient metaClient;
-	
+
 	@Autowired
 	PayGConfig payGConfig;
 
@@ -135,6 +135,7 @@ public class PaymentService {
 				}
 			}
 		}
+
 		PaygErrorMasterDTO dto = (PaygErrorMasterDTO) errorMap.get(resultReponse);
 		if (dto != null) {
 			errorCategory = dto.getErrorCategory();

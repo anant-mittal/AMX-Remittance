@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -82,8 +82,8 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		configMap.put("action", benefitAction);
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
-		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/"
+				+ payGParams.getTenant() + "/" + payGParams.getChannel() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -189,7 +189,7 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}
-		
+
 		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);

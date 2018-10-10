@@ -1,4 +1,4 @@
-package com.amx.amxlib.meta.model;
+package com.amx.jax.payg;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

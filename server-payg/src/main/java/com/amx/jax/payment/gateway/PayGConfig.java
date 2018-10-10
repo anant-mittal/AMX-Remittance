@@ -4,7 +4,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.amx.amxlib.meta.model.PaygErrorMasterDTO;
+
+import com.amx.jax.payg.PaygErrorMasterDTO;
 
 @Component
 public class PayGConfig {
