@@ -3,6 +3,7 @@ package com.bootloaderjs;
 import java.util.regex.Pattern;
 
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.StringUtils;
 
 public class App { // Noncompliant
 
@@ -14,13 +15,15 @@ public class App { // Noncompliant
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println();
-		generate();
+		String lalit = "lalit.tanwar07@gmail.com";
+		String amit = "amitt.n.tanwar07@gmail.com";
+		System.out.println("HASH=" + StringUtils.hash(lalit, 99));
+		System.out.println("HASH=" + StringUtils.hash(amit, 99));
 
 	}
 
 	public static void generate() {
-		System.out.println(CryptoUtil.generateHMAC("appd-kwt.amxremit.com"));
+		System.out.println(CryptoUtil.generateHMAC("appd-kwt.amxremit.com", "traceId"));
 	}
 
 }

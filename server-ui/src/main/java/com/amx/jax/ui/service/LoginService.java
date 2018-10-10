@@ -15,10 +15,11 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.AuditService;
-import com.amx.jax.ui.auth.AuthState;
-import com.amx.jax.ui.auth.AuthState.AuthStep;
-import com.amx.jax.ui.auth.CAuthEvent;
+import com.amx.jax.model.AuthState;
+import com.amx.jax.model.AuthState.AuthStep;
+import com.amx.jax.ui.audit.CAuthEvent;
 import com.amx.jax.ui.config.HttpUnauthorizedException;
 import com.amx.jax.ui.config.UIServerError;
 import com.amx.jax.ui.model.AuthData;
@@ -158,25 +159,30 @@ public class LoginService {
 			wrapper.getData().setState(sessionService.getGuestSession().getState());
 
 		} catch (GlobalException e) {
-			customerModel = sessionService.getGuestSession().getCustomerModel();
+			if (e.getError() == JaxError.INCORRECT_SECURITY_QUESTION_ANSWER) {
+				customerModel = sessionService.getGuestSession().getCustomerModel();
 
-			ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
-					customerModel.getSecurityquestions());
+				ListManager<SecurityQuestionModel> listmgr = new ListManager<SecurityQuestionModel>(
+						customerModel.getSecurityquestions());
 
-			SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
-			sessionService.getGuestSession().nextQuesIndex();
+				SecurityQuestionModel answer = listmgr.pickNext(sessionService.getGuestSession().getQuesIndex());
+				sessionService.getGuestSession().nextQuesIndex();
 
-			List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
+				List<QuestModelDTO> questModel = jaxService.getMetaClient().getSequrityQuestion().getResults();
 
-			for (QuestModelDTO questModelDTO : questModel) {
-				if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
-					wrapper.getData().setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
-					wrapper.getData().setQues(questModelDTO);
+				for (QuestModelDTO questModelDTO : questModel) {
+					if (questModelDTO.getQuestNumber().equals(answer.getQuestionSrNo())) {
+						wrapper.getData().setQuestion(questModelDTO.getDescription()); // TODO:- TO be removed
+						wrapper.getData().setQues(questModelDTO);
+					}
 				}
+				wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
+				auditService.log(new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL,
+						e.getError()));
+			} else {
+				UIServerError.evaluate(e);
 			}
-			wrapper.setMessage(WebResponseStatus.AUTH_FAILED, e);
-			auditService.log(
-					new CAuthEvent(sessionService.getGuestSession().getState(), CAuthEvent.Result.FAIL, e.getError()));
+
 		} catch (Exception e) {
 			UIServerError.evaluate(e);
 		}

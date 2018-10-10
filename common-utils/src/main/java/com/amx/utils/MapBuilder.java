@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-
 /**
  * The Class MapBuilder.
  */
@@ -22,18 +21,20 @@ public class MapBuilder {
 	 * The Class MapItem.
 	 */
 	public static class MapItem {
-		
+
 		/** The key. */
 		String key;
-		
+
 		/** The value. */
 		Object value;
 
 		/**
 		 * Instantiates a new map item.
 		 *
-		 * @param key the key
-		 * @param value the value
+		 * @param key
+		 *            the key
+		 * @param value
+		 *            the value
 		 */
 		MapItem(String key, Object value) {
 			this.key = key;
@@ -63,14 +64,15 @@ public class MapBuilder {
 	 * The Class BuilderMap.
 	 */
 	public static class BuilderMap {
-		
+
 		/** The map. */
 		private Map<String, Object> map = new HashMap<String, Object>();
 
 		/**
 		 * Instantiates a new builder map.
 		 *
-		 * @param items the items
+		 * @param items
+		 *            the items
 		 */
 		public BuilderMap(MapItem... items) {
 			for (MapItem item : items) {
@@ -81,8 +83,10 @@ public class MapBuilder {
 		/**
 		 * Put.
 		 *
-		 * @param key the key
-		 * @param value the value
+		 * @param key
+		 *            the key
+		 * @param value
+		 *            the value
 		 * @return the builder map
 		 */
 		public BuilderMap put(String key, Object value) {
@@ -93,8 +97,10 @@ public class MapBuilder {
 		/**
 		 * Put.
 		 *
-		 * @param jsonPath the json path
-		 * @param value the value
+		 * @param jsonPath
+		 *            the json path
+		 * @param value
+		 *            the value
 		 * @return the builder map
 		 */
 		public BuilderMap put(JsonPath jsonPath, Object value) {
@@ -108,6 +114,10 @@ public class MapBuilder {
 		 * @return the map
 		 */
 		public Map<String, Object> toMap() {
+			return map;
+		}
+
+		public Map<String, Object> build() {
 			return map;
 		}
 

@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ByteArrayResource;
@@ -14,11 +15,13 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.utils.IoUtils;
 
 /**
@@ -36,11 +39,12 @@ public class TemplateService {
 
 	/** The template engine. */
 	@Autowired
-	private TemplateEngine templateEngine;
+	@Qualifier("messageTemplateEngine")
+	private SpringTemplateEngine templateEngine;
 
 	/** The text template engine. */
 	@Autowired
-	private TemplateEngine textTemplateEngine;
+	private SpringTemplateEngine textTemplateEngine;
 
 	/** The message source. */
 	@Autowired
@@ -74,7 +78,7 @@ public class TemplateService {
 	 *            the context
 	 * @return the string
 	 */
-	public String processHtml(Templates template, Context context) {
+	public String processHtml(ITemplate template, Context context) {
 		String rawStr = templateEngine.process(template.getFileName(), context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
@@ -90,6 +94,10 @@ public class TemplateService {
 		}
 
 		return rawStr;
+	}
+
+	public String processJson(ITemplate template, Context context) {
+		return templateEngine.process(template.getJsonFileName(), context);
 	}
 
 	/**
@@ -108,7 +116,7 @@ public class TemplateService {
 
 	/**
 	 * Parses file.template and creates content;
-	 *
+	 * 
 	 * @param file
 	 *            the file
 	 * @return the file
@@ -128,8 +136,13 @@ public class TemplateService {
 		context.setVariable("_tu", templateUtils);
 
 		context.setVariables(file.getModel());
-		if (file.getTemplate().isThymleaf()) {
-			String content = this.processHtml(file.getTemplate(), context);
+		if (file.getITemplate().isThymleaf()) {
+			String content;
+			if (file.getType() == File.Type.JSON) {
+				content = this.processJson(file.getITemplate(), context);
+			} else {
+				content = this.processHtml(file.getITemplate(), context);
+			}
 			file.setContent(content);
 		}
 		return file;
@@ -144,7 +157,7 @@ public class TemplateService {
 	 *            the context
 	 * @return the string
 	 */
-	public String processText(Templates template, Context context) {
+	public String processText(TemplatesMX template, Context context) {
 		return textTemplateEngine.process(template.getFileName(), context);
 	}
 

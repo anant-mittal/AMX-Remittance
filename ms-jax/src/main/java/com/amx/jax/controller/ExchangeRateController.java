@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.exrateservice.service.ExchangeRateService;
+import com.amx.jax.exrateservice.service.NewExchangeRateService;
 
 @RestController
 @RequestMapping(EXCHANGE_RATE_ENDPOINT)
@@ -23,7 +23,7 @@ public class ExchangeRateController {
 	private Logger logger = LoggerFactory.getLogger(getClass());
 
 	@Autowired
-	ExchangeRateService service;
+	NewExchangeRateService service;
 
 	@RequestMapping(value = "/online/", method = RequestMethod.GET)
 	public ApiResponse getOnlineExchangeRates(BigDecimal fromCurrency, BigDecimal toCurrency, BigDecimal amount,
@@ -45,6 +45,13 @@ public class ExchangeRateController {
 	public ApiResponse getMinMaxExrate() {
 		logger.info("In min Max Exchange rate...");
 		ApiResponse response = service.getMinMaxExrate();
+		return response;
+	}
+	
+	@RequestMapping(value = "/online/placeorder", method = RequestMethod.POST)
+	public ApiResponse setOnlineExchangeRatesPlaceorder(@RequestParam(required = true) String quoteName,@RequestParam BigDecimal bankId,
+			@RequestParam BigDecimal value) {
+		ApiResponse response = service.setOnlineExchangeRatesPlaceorder(quoteName, bankId, value);
 		return response;
 	}
 }

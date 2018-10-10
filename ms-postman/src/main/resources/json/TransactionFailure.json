@@ -1,0 +1,15 @@
+{
+	"data": {
+		"customerReference" : "2065177",
+		"customerName" : "RABIL UDDIN MIR",
+		"customerContact" : "985634",
+		"beneficiaryName" : "MIR RABIL UDDIN",
+		"transactionAmount" : "300",
+		"beneficiaryBank" : "STATE BANK OF INDIA",
+		"beneficiaryBranch" : "FORT, MUMBAI",
+		"beneficiaryAccountNo" : "345678233434",
+		"service" : "TT/OTHERS",
+		"currencyQuoteName" : "KWD",
+		"exceptionMessage" : "Transaction fail reason"
+ 	}
+}

@@ -48,19 +48,22 @@ public class WebAuthFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
 			throws IOException, ServletException {
 
-		if (!sessionService.validateSessionUnique() || !sessionService.getAppDevice().validate()) {
+		if (!sessionService.isRequestAuthorized()) {
 			HttpServletResponse response = ((HttpServletResponse) resp);
 			response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
 			response.setHeader("Location", "/logout");
 		} else {
+
 			String referrer = req.getParameter(UIConstants.REFERRER);
 			if (referrer != null) {
 				sessionService.getUserSession().setReferrer(referrer);
 			}
 
-			AppContextUtil
-					.setActorId(new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
-							: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
+			if (!AppContextUtil.getRequestType().isTrack()) {
+				AppContextUtil.setActorId(
+						new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
+								: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
+			}
 			chain.doFilter(req, resp);
 		}
 

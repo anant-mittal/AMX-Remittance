@@ -4,22 +4,24 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.springframework.web.bind.annotation.PathVariable;
 
 /**
  * The Class URLBuilder.
  */
 public class URLBuilder {
-	
+
 	/** The params. */
 	private StringBuilder folders, params;
-	
+
 	/** The host. */
 	private String connType, host;
 
 	/**
 	 * Sets the connection type.
 	 *
-	 * @param conn the new connection type
+	 * @param conn
+	 *            the new connection type
 	 */
 	void setConnectionType(String conn) {
 		connType = conn;
@@ -36,7 +38,8 @@ public class URLBuilder {
 	/**
 	 * Instantiates a new URL builder.
 	 *
-	 * @param host the host
+	 * @param host
+	 *            the host
 	 */
 	public URLBuilder(String host) {
 		this();
@@ -46,7 +49,8 @@ public class URLBuilder {
 	/**
 	 * Sets the path.
 	 *
-	 * @param folder the folder
+	 * @param folder
+	 *            the folder
 	 * @return the URL builder
 	 */
 	public URLBuilder setPath(String folder) {
@@ -58,7 +62,8 @@ public class URLBuilder {
 	/**
 	 * Adds the parameter.
 	 *
-	 * @param query the query
+	 * @param query
+	 *            the query
 	 * @return the URL builder
 	 */
 	public URLBuilder addParameter(String query) {
@@ -74,8 +79,10 @@ public class URLBuilder {
 	/**
 	 * Adds the parameter.
 	 *
-	 * @param parameter the parameter
-	 * @param value the value
+	 * @param parameter
+	 *            the parameter
+	 * @param value
+	 *            the value
 	 * @return the URL builder
 	 */
 	public URLBuilder addParameter(String parameter, Object value) {
@@ -89,12 +96,22 @@ public class URLBuilder {
 		return this;
 	}
 
+	public URLBuilder addPathVariable(String parameter, Object value) {
+		String valueStr = ArgUtil.parseAsString(value, "");
+		String path = folders.toString();
+		path.replace("{" + parameter + "}", valueStr);
+		folders = new StringBuilder(path);
+		return this;
+	}
+
 	/**
 	 * Gets the url.
 	 *
 	 * @return the url
-	 * @throws URISyntaxException the URI syntax exception
-	 * @throws MalformedURLException the malformed URL exception
+	 * @throws URISyntaxException
+	 *             the URI syntax exception
+	 * @throws MalformedURLException
+	 *             the malformed URL exception
 	 */
 	public String getURL() throws URISyntaxException, MalformedURLException {
 		URI uri;
@@ -111,8 +128,10 @@ public class URLBuilder {
 	 * Gets the relative URL.
 	 *
 	 * @return the relative URL
-	 * @throws URISyntaxException the URI syntax exception
-	 * @throws MalformedURLException the malformed URL exception
+	 * @throws URISyntaxException
+	 *             the URI syntax exception
+	 * @throws MalformedURLException
+	 *             the malformed URL exception
 	 */
 	public String getRelativeURL() throws URISyntaxException, MalformedURLException {
 		URI uri = new URI(null, null, folders.toString().replaceAll("/+", "/"), params.toString(), null);

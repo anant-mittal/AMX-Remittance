@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -13,11 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 
 @Service
@@ -35,7 +37,7 @@ public class RemittanceApplicationService {
 	@Autowired
 	RemittanceProcedureDao remitDao;
 	
-	
+	Logger logger = LoggerFactory.getLogger(RemittanceApplicationService.class);
 	
 	
 	/**
@@ -48,7 +50,6 @@ public class RemittanceApplicationService {
 		try {
 			for (RemittanceApplication shoppingCartDataTableBean : lstPayIdDetails) {
 				RemittanceApplication remittanceApplication =  remittanceApplicationRepository.findOne(shoppingCartDataTableBean.getRemittanceApplicationId());
-				System.out.println("Update paymnetId :"+paymentResponse.toString());
 				if(remittanceApplication != null && !StringUtils.isBlank(paymentResponse.getPaymentId())){
 					remittanceApplication.setPaymentId(paymentResponse.getPaymentId());
 					remittanceApplication.setResultCode(paymentResponse.getResultCode());
@@ -57,6 +58,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgAuthCode(paymentResponse.getAuth_appNo());
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);
@@ -96,7 +98,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			appl.setPaymentId(paymentResponse.getPaymentId());
 			appl.setPgReferenceId(paymentResponse.getReferenceId());
 			appl.setPgTransactionId(paymentResponse.getTransactionId());
-			appl.setResultCode(paymentResponse.getResultCode());
+			appl.setErrorCategory(paymentResponse.getErrorCategory());
 			appl.setPayToken(null);
 			appl.setApplicaitonStatus(null);
 			appl.setIsactive("D");
@@ -136,7 +138,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 	 */
 	public Map<String, Object> saveRemittance(PaymentResponseDto paymentResponse) {
 		String result = null;
-		System.out.println("Payment ID :"+paymentResponse.getPaymentId());
+		logger.info("Payment ID :" + paymentResponse.getPaymentId());
 		Map<String, Object> resultMap =null;
 		try {
 			HashMap<String, Object> inputValues = new HashMap<>();
@@ -152,9 +154,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			//resultMap = applRemitDao.insertRemittanceOnlineProcedure(inputValues);
 			resultMap = remitDao.insertRemittanceForOnline(inputValues);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("Message :"+e.getMessage());
+			logger.error("error occured in save remittance", e);
 		}
 		return resultMap;
 	}

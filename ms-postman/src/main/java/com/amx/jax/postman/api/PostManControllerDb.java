@@ -8,29 +8,20 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.jax.AppParam;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.ExceptionReport;
-import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Message;
-import com.amx.jax.postman.model.Notipy;
-import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.SupportEmail;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 @RestController
 @RequestMapping(PostManUrls.SEND_EMAIL_DB)
@@ -67,7 +58,7 @@ public class PostManControllerDb {
 	public Map<String, Object> sendEmailGet(@RequestParam Tenant tnt, @RequestParam(required = false) Language language,
 			@RequestParam String to, @RequestParam String customer, @RequestParam String amount,
 			@RequestParam String loyaltypoints, @RequestParam String refno, @RequestParam String date,
-			@RequestParam(required = false) String languageid, @RequestParam Templates template)
+			@RequestParam(required = false) String languageid, @RequestParam TemplatesMX template)
 			throws PostManException {
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
@@ -94,8 +85,9 @@ public class PostManControllerDb {
 		email.setHtml(true);
 		email.setSubject("Feedback Email"); // Given by Umesh
 
-		email.setTemplate(template);
+		email.setITemplate(template);
 		postManService.sendEmailAsync(email);
+
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("msg", String.format("Email is send to %s and Ref NO. is %s", customer, refno));
@@ -120,7 +112,7 @@ public class PostManControllerDb {
 	public Map<String, Object> sendCivilExpiryEmailGet(@RequestParam Tenant tnt,
 			@RequestParam(required = false) Language language, @RequestParam String to, @RequestParam String customer,
 			@RequestParam String date, @RequestParam(required = false) String languageid,
-			@RequestParam Templates template) throws PostManException {
+			@RequestParam TemplatesMX template) throws PostManException {
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -142,13 +134,13 @@ public class PostManControllerDb {
 		email.addTo(to);
 		email.setHtml(true);
 
-		if (template == Templates.CIVILID_EXPIRY) {
+		if (template == TemplatesMX.CIVILID_EXPIRY) {
 			email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
 		} else {
 			email.setSubject("Civil ID has been expired"); // Given by Umesh
 		}
 
-		email.setTemplate(template);
+		email.setITemplate(template);
 		postManService.sendEmailAsync(email);
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, String> data = new HashMap<String, String>();

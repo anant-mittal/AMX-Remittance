@@ -110,18 +110,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
 		try {
-			LOGGER.info("calling saveSecurityQuestions api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(securityquestions, getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-security-questions/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+					.path(CUSTOMER_REG_ENDPOINT + "/save-security-questions/").post(securityquestions)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -134,19 +129,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
 		try {
-			LOGGER.info("calling savePhishiingImage api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-phishing-image/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("caption", caption)
-					.queryParam("imageUrl", imageUrl);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-phishing-image/")
+					.queryParam("caption", caption).queryParam("imageUrl", imageUrl).filter(metaFilter).post()
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in savePhishiingImage : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -159,18 +148,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
 		try {
-			LOGGER.info("calling saveLoginDetail api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerCredential, getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-login-detail/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/")
+					.filter(metaFilter).post(customerCredential)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetail : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 }

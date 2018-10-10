@@ -12,20 +12,22 @@ import javax.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import com.amx.jax.async.ExecutorConfig;
+import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.scope.TenantScoped;
-import com.amx.jax.scope.TenantValue;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.Utils;
@@ -41,6 +43,8 @@ public class EmailService {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EmailService.class);
 
 	public static final Pattern pattern = Pattern.compile("^(.*)<(.*)>$");
+	public static final Pattern PATTERN_CID = Pattern.compile("src=\"cid:(.*?)\"");
+	public static final Pattern PATTERN_SUBJECT = Pattern.compile("<title>(.*?)</title>");
 
 	/** The template utils. */
 	@Autowired
@@ -49,49 +53,6 @@ public class EmailService {
 	/** The file service. */
 	@Autowired
 	private FileService fileService;
-
-	/** The mail from. */
-	@TenantValue("${spring.mail.from}")
-	private String mailFrom;
-
-	@TenantValue("${spring.mail.from.title}")
-	private String mailFromTitle;
-
-	/** The mail host. */
-	@TenantValue("${spring.mail.host}")
-	private String mailHost;
-
-	/** The mail port. */
-	@TenantValue("${spring.mail.port}")
-	private int mailPort;
-
-	/** The mail username. */
-	@TenantValue("${spring.mail.username}")
-	private String mailUsername;
-
-	/** The mail password. */
-	@TenantValue("${spring.mail.password}")
-	private String mailPassword;
-
-	/** The mail smtp auth. */
-	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
-	private Boolean mailSmtpAuth;
-
-	/** The mail smtp tls. */
-	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
-	private boolean mailSmtpTls;
-
-	/** The mail protocol. */
-	@TenantValue("${spring.mail.protocol}")
-	private String mailProtocol;
-
-	/** The mail default encoding. */
-	@TenantValue("${spring.mail.defaultEncoding}")
-	private String mailDefaultEncoding;
-
-	/** The default sender. */
-	@Value("${spring.mail.from}")
-	private String defaultSender;
 
 	/** The mail sender. */
 	private JavaMailSender mailSender;
@@ -103,6 +64,9 @@ public class EmailService {
 	/** The post man config. */
 	@Autowired
 	private PostManConfig postManConfig;
+
+	@Autowired
+	ContactCleanerService contactService;
 
 	/** The slack service. */
 	@Autowired
@@ -122,21 +86,21 @@ public class EmailService {
 			if (postManConfig.getTenant() != null) {
 				LOGGER.info("Using {} mailSender", postManConfig.getTenant());
 				JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-				javaMailSender.setHost(this.mailHost);
-				javaMailSender.setPort(this.mailPort);
-				javaMailSender.setUsername(this.mailUsername);
-				javaMailSender.setPassword(this.mailPassword);
+				javaMailSender.setHost(postManConfig.getMailHost());
+				javaMailSender.setPort(postManConfig.getMailPort());
+				javaMailSender.setUsername(postManConfig.getMailUsername());
+				javaMailSender.setPassword(postManConfig.getMailPassword());
 				Properties mailProp = new Properties();
-				mailProp.put("mail.smtp.auth", mailSmtpAuth);
-				mailProp.put("mail.smtp.starttls.enable", mailSmtpTls);
+				mailProp.put("mail.smtp.auth", postManConfig.isMailSmtpAuth());
+				mailProp.put("mail.smtp.starttls.enable", postManConfig.isMailSmtpTls());
 				javaMailSender.setJavaMailProperties(mailProp);
-				javaMailSender.setProtocol(this.mailProtocol);
-				javaMailSender.setDefaultEncoding(mailDefaultEncoding);
+				javaMailSender.setProtocol(postManConfig.getMailProtocol());
+				javaMailSender.setDefaultEncoding(postManConfig.getMailDefaultEncoding());
 				this.mailSender = javaMailSender;
 			} else {
 				LOGGER.info("Using Default mailSender");
 				this.mailSender = defaultMailSender;
-				this.mailFrom = defaultSender;
+				// this.mailFrom = postManConfig.getMailDefaultSender();
 			}
 		}
 		return this.mailSender;
@@ -151,11 +115,15 @@ public class EmailService {
 	 * @throws PostManException
 	 *             the post man exception
 	 */
+	@Async(ExecutorConfig.EXECUTER_GOLD)
 	public Email sendEmail(Email email) throws PostManException {
 
+		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.SEND_EMAIL);
 		String to = null;
 		try {
-			LOGGER.info("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug("Sending {} Email to {}", email.getTemplate(), Utils.commaConcat(email.getTo()));
+			}
 
 			to = email.getTo() != null ? email.getTo().get(0) : null;
 
@@ -182,11 +150,12 @@ public class EmailService {
 			}
 			if (!ArgUtil.isEmpty(to)) {
 				this.send(email);
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.DONE).set(email));
 			} else {
-				auditService.gauge(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_NOT, email));
+				auditService.log(pMGaugeEvent.set(AuditEvent.Result.FAIL).set(email));
 			}
 		} catch (Exception e) {
-			auditService.excep(new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_ERROR, email), LOGGER, e);
+			auditService.excep(pMGaugeEvent.set(email), LOGGER, e);
 			slackService.sendException(to, e);
 		}
 		return email;
@@ -203,14 +172,12 @@ public class EmailService {
 	 * @throws IOException
 	 *             Signals that an I/O exception has occurred.
 	 */
-	public Email send(Email eParams) throws MessagingException, IOException {
-		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.EMAIL_SENT_SUCCESS, eParams);
+	private Email send(Email eParams) throws MessagingException, IOException {
 		if (eParams.isHtml()) {
 			sendHtmlMail(eParams);
 		} else {
 			sendPlainTextMail(eParams);
 		}
-		auditService.gauge(pMGaugeEvent);
 		return eParams;
 	}
 
@@ -230,11 +197,13 @@ public class EmailService {
 
 		MimeMessage message = getMailSender().createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-		helper.setTo(eParams.getTo().toArray(new String[eParams.getTo().size()]));
+
+		helper.setTo(contactService.getEmail(eParams.getTo()));
+		// helper.setTo(emailsTo.toArray(new String[emailsTo.size()]));
 		// helper.setReplyTo(eParams.getFrom());
 
 		if (eParams.getFrom() == null || Constants.DEFAULT_STRING.equals(eParams.getFrom())) {
-			eParams.setFrom(mailFrom);
+			eParams.setFrom(postManConfig.getMailFrom());
 		}
 
 		String fromEmail = null;
@@ -256,7 +225,17 @@ public class EmailService {
 		helper.setFrom(new InternetAddress(fromEmail, fromTitle));
 		helper.setReplyTo(eParams.getReplyTo());
 
-		String subject = ArgUtil.isEmptyString(eParams.getSubject()) ? "No Subject" : eParams.getSubject();
+		String messageStr = eParams.getMessage();
+
+		String subject = eParams.getSubject();
+		if (ArgUtil.isEmptyString(subject)) {
+			Matcher mtitle = PATTERN_SUBJECT.matcher(messageStr);
+
+			if (mtitle.find()) {
+				subject = mtitle.group(1);
+			}
+			subject = ArgUtil.isEmptyString(subject) ? "No Subject" : subject;
+		}
 		helper.setSubject(subject);
 		helper.setText(eParams.getMessage(), isHtml);
 
@@ -264,10 +243,7 @@ public class EmailService {
 			helper.setCc(eParams.getCc().toArray(new String[eParams.getCc().size()]));
 		}
 
-		String str = eParams.getMessage();
-		Pattern p = Pattern.compile("src=\"cid:(.*?)\"");
-		Matcher m = p.matcher(str);
-
+		Matcher m = PATTERN_CID.matcher(messageStr);
 		while (m.find()) {
 			String contentId = m.group(1);
 			helper.addInline(contentId, templateUtils.readAsResource(contentId));

@@ -111,4 +111,32 @@ public class RateAlertNotificationDTO {
 	public void setOutputAmount(BigDecimal outputAmount) {
 		this.outputAmount = outputAmount;
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("RateAlertNotificationDTO [rate=");
+		builder.append(rate);
+		builder.append(", firstName=");
+		builder.append(firstName);
+		builder.append(", middleName=");
+		builder.append(middleName);
+		builder.append(", lastName=");
+		builder.append(lastName);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", inputCur=");
+		builder.append(inputCur);
+		builder.append(", outputCur=");
+		builder.append(outputCur);
+		builder.append(", inputAmount=");
+		builder.append(inputAmount);
+		builder.append(", outputAmount=");
+		builder.append(outputAmount);
+		builder.append(", date=");
+		builder.append(date);
+		builder.append("]");
+		return builder.toString();
+	}
+	
 }

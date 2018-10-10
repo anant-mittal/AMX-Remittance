@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.model.BeneAccountModel;
 import com.amx.amxlib.model.BenePersonalDetailModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.AccountTypeService;
 import com.amx.jax.services.BeneficiaryService;
@@ -315,10 +315,9 @@ public class BeneficiaryController {
 
 	}
 	
-   @RequestMapping(value = "/pobene/", method = RequestMethod.POST)
+   @RequestMapping(value = "/pobene/", method = RequestMethod.GET)
     public ApiResponse poBeneficiary(@RequestParam(required=false,value="placeOrderId") BigDecimal placeOrderId) {
         ApiResponse response=null;
-        try {
             
         BigDecimal customerId = metaData.getCustomerId();
         BigDecimal applicationCountryId = metaData.getCountryId();
@@ -328,9 +327,7 @@ public class BeneficiaryController {
         LOGGER.info("applicationCountryId  :" + applicationCountryId);
         
         response= beneService.getPlaceOrderBeneficiary(customerId, applicationCountryId, placeOrderId);
-        }catch(Exception e) {
-            LOGGER.error("exception in defaultBeneficiary : ",e);
-        }
+       
         return response;
     }
 	    

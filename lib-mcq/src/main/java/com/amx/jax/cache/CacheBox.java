@@ -28,13 +28,10 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
-
-		if (cache == null) {
-			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
-		}
-		return cache;
-
-
+			if (cache == null) {
+				cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
+			}
+			return cache;
 		}
 		return null;
 	}

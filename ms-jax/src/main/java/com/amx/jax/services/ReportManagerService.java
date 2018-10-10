@@ -18,12 +18,12 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.PurposeOfRemittanceReportBean;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.RemittanceReportBean;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
+import com.amx.amxlib.model.PromotionDto;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.constant.ConstantDocument;
@@ -33,6 +33,8 @@ import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.RemittanceTransactionView;
 import com.amx.jax.dbmodel.ViewCompanyDetails;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.manager.PromotionManager;
 import com.amx.jax.repository.ICollectionDetailViewDao;
 import com.amx.jax.repository.ICollectionPaymentDetailsViewDao;
 import com.amx.jax.repository.ICompanyDAO;
@@ -73,7 +75,8 @@ public class ReportManagerService extends AbstractService{
 	
 	
 	private List<RemittanceReceiptSubreport> remittanceReceiptSubreportList;
-	
+	@Autowired
+	PromotionManager promotionManager; 
 
 	
 	
@@ -96,7 +99,8 @@ public class ReportManagerService extends AbstractService{
 	 * @param transactionHistroyDTO
 	 * @return
 	 */
-	public ApiResponse generatePersonalRemittanceReceiptReportDetails(TransactionHistroyDTO transactionHistroyDTO){
+	public ApiResponse generatePersonalRemittanceReceiptReportDetails(TransactionHistroyDTO transactionHistroyDTO, 
+			Boolean promotion){
 		
 		ApiResponse response = null;
 		try {
@@ -110,19 +114,19 @@ public class ReportManagerService extends AbstractService{
 		BigDecimal financeYear = transactionHistroyDTO.getCollectionDocumentFinYear();
 		BigDecimal collectionDocumentCode = transactionHistroyDTO.getCollectionDocumentCode();
 		customerRefernce =transactionHistroyDTO.getCustomerReference(); 
-		
+		logger.info("companyId : "+companyId+ " languageId : "+languageId);
 		 if (customerId == null) {
-				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+				throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getStatusKey());
 			}
 		
 		 if (applicationCountryId == null) {
-				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getCode());
+				throw new GlobalException("Null applicationCountryId  passed ", JaxError.NULL_APPLICATION_COUNTRY_ID.getStatusKey());
 		  } 
 		
 		if(!currencyDao.getCurrencyListByCountryId(applicationCountryId).isEmpty()) {
 			currencyId = currencyDao.getCurrencyListByCountryId(applicationCountryId).get(0).getCurrencyId();
 		}else {
-			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getCode());
+			throw new GlobalException("Null local currency id passed ", JaxError.NULL_CURRENCY_ID.getStatusKey());
 			
 		  }
 		
@@ -402,7 +406,7 @@ public class ReportManagerService extends AbstractService{
 				if(view.getCustomerSignatureClob()!=null) {
 					obj.setSignature(view.getCustomerSignatureClob());
 				}
-				
+				logger.info("companyId : "+companyId+ " languageId : "+languageId);
 					List<ViewCompanyDetails> companyMaster = iCompanyDao.getCompanyDetailsByCompanyId(languageId, companyId);
 			
 					StringBuffer engCompanyInfo = null;
@@ -480,7 +484,13 @@ public class ReportManagerService extends AbstractService{
 			
 		
 		}
-		
+		if (Boolean.TRUE.equals(promotion)) {
+			PromotionDto promotionDto = promotionManager.getPromotionDto(transactionHistroyDTO.getDocumentNumber(),
+					transactionHistroyDTO.getDocumentFinanceYear());
+				if (promotionDto != null && !promotionDto.isChichenVoucher()) {
+					remittanceReceiptSubreportList.get(0).getRemittanceApplList().get(0).setPromotionDto(promotionDto);
+				}
+		}
 		response.getData().getValues().addAll(remittanceReceiptSubreportList);
 		response.setResponseStatus(ResponseStatus.OK);
 	    response.getData().setType("remitReport");

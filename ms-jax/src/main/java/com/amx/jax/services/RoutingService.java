@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
@@ -19,6 +18,7 @@ import com.amx.jax.dal.RoutingProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.routing.IRoutingLogic;
 import com.amx.jax.service.MetaService;
 
@@ -39,7 +39,7 @@ public class RoutingService {
 	@Autowired
 	JaxProperties jaxProperties;
 
-	public Map<String, Object> getRoutingDetails(HashMap<String, Object> inputValue) {
+	public Map<String, Object> getRoutingDetails(Map<String, Object> inputValue) {
 		Map<String, Object> output;
 		String serviceGroupCode = inputValue.get("P_SERVICE_GROUP_CODE").toString();
 		BigDecimal beneAccountSeqId = (BigDecimal) inputValue.get("P_BENEFICARY_ACCOUNT_SEQ_ID");
@@ -55,17 +55,14 @@ public class RoutingService {
 			BigDecimal routingBankBranchId = routingProcedureDao.getRoutingBankBranchIdForCash(inputValue);
 			if (routingBankBranchId != null) {
 				output.put("P_ROUTING_BANK_BRANCH_ID", routingBankBranchId);
+				inputValue.put("P_ROUTING_BANK_BRANCH_ID", routingBankBranchId);
 			}
 			output.put("P_REMITTANCE_MODE_ID", routingProcedureDao.getRemittanceModeIdForCash(inputValue));
 			inputValue.putAll(output);
 			output.put("P_DELIVERY_MODE_ID", routingProcedureDao.getDeliveryModeIdForCash(inputValue));
 		} else {
 			// banking
-			if (jaxProperties.getRoutingProcOthDisable()) {
-				output = applicationProcedureDao.getRoutingDetails(inputValue);
-			} else {
-				output = applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
-			}
+			output = getRoutingDetail(inputValue);
 			inputValue.putAll(output);
 		}
 		inputValue.putAll(output);
@@ -73,7 +70,17 @@ public class RoutingService {
 		return output;
 	}
 
-	private void checkRemittanceAndDeliveryMode(HashMap<String, Object> inputValue) {
+	public Map<String, Object> getRoutingDetail(Map<String, Object> inputValue) {
+		if (jaxProperties.getRoutingProcOthDisable()) {
+			return applicationProcedureDao.getRoutingDetails(inputValue);
+		} else if (jaxProperties.getExrateBestRateLogicEnable()) {
+			return applicationProcedureDao.getRoutingDetailFromOthRateProcedure(inputValue);
+		} else {
+			return applicationProcedureDao.getRoutingDetailFromOthProcedure(inputValue);
+		}
+	}
+
+	private void checkRemittanceAndDeliveryMode(Map<String, Object> inputValue) {
 		if (inputValue.get("P_REMITTANCE_MODE_ID") == null) {
 			throw new GlobalException("Service not available", JaxError.REMITTANCE_SERVICE_NOT_AVAILABLE);
 		}

@@ -16,6 +16,7 @@ import org.thymeleaf.exceptions.TemplateInputException;
 
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.audit.PMGaugeEvent;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.File.Type;
 import com.amx.utils.ArgUtil;
@@ -75,9 +76,11 @@ public class FileService {
 
 			if (file.getName() == null) {
 				if (file.getType() == Type.PDF) {
-					file.setName(file.getTemplate().getFileName() + ".pdf");
+					file.setName(file.getITemplate().getFileName() + ".pdf");
+				} else if (file.getType() == Type.JSON) {
+					file.setName(file.getITemplate().getFileName() + ".json");
 				} else {
-					file.setName(file.getTemplate().getFileName() + ".html");
+					file.setName(file.getITemplate().getFileName() + ".html");
 				}
 			}
 		}
@@ -86,12 +89,12 @@ public class FileService {
 			/**
 			 * From string to File type
 			 */
-			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent();
+			PMGaugeEvent pmGaugeEvent = new PMGaugeEvent(PMGaugeEvent.Type.CREATE_PDF, file);
 			try {
 				pdfService.convert(file);
-				auditService.gauge(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_CREATED, file));
+				auditService.gauge(pmGaugeEvent);
 			} catch (JRException e) {
-				auditService.excep(pmGaugeEvent.fillDetail(PMGaugeEvent.Type.PDF_ERROR, file), LOGGER, e);
+				auditService.excep(pmGaugeEvent, LOGGER, e);
 			}
 
 		}

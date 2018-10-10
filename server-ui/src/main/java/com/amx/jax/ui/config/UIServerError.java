@@ -10,9 +10,15 @@ public class UIServerError extends AmxApiException {
 
 	public enum UIServerCodes implements IExceptionEnum {
 		UI_SERVER_ERROR;
+
 		@Override
-		public String getCode() {
+		public String getStatusKey() {
 			return this.toString();
+		}
+
+		@Override
+		public int getStatusCode() {
+			return this.ordinal();
 		}
 
 	}
@@ -43,7 +49,7 @@ public class UIServerError extends AmxApiException {
 		return UIServerCodes.UI_SERVER_ERROR;
 	}
 
-	public static void evaluate(Exception e) throws JaxSystemError {
+	public static <T> T evaluate(Exception e) {
 		if (e instanceof JaxSystemError) {
 			throw (JaxSystemError) e;
 		} else if (e instanceof AbstractJaxException) {

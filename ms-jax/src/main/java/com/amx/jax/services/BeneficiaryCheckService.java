@@ -15,10 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BanksView;
@@ -27,11 +26,13 @@ import com.amx.jax.dbmodel.CountryMasterView;
 import com.amx.jax.dbmodel.ServiceApplicabilityRule;
 import com.amx.jax.dbmodel.ViewCity;
 import com.amx.jax.dbmodel.ViewDistrict;
+import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.bene.BankAccountLength;
 import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBankAccountLengthDao;
 import com.amx.jax.repository.IBankMasterFromViewDao;
@@ -40,7 +41,6 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryAccountDao;
 import com.amx.jax.repository.IBeneficiaryMasterDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
-import com.amx.jax.repository.IBlackMasterRepository;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.repository.IViewCityDao;
 import com.amx.jax.repository.IViewDistrictDAO;
@@ -112,7 +112,7 @@ public class BeneficiaryCheckService extends AbstractService {
 		BeneficiaryErrorStatusDto errorStatusDto = null;
 		String errorDesc = null;
 
-		System.out.println("beneDto :" + beneDto.isUpdateNeeded());
+		logger.debug("beneDto :" + beneDto.isUpdateNeeded());
 		if (!JaxUtil.isNullZeroBigDecimalCheck(beneDto.getLanguageId())) {
 			beneDto.setLanguageId(new BigDecimal(1));
 		}
@@ -123,6 +123,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
+				beneDto.setUpdateNeeded(true);
 				errorDesc = "English name Of beneficary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
@@ -133,6 +134,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
+				beneDto.setUpdateNeeded(true);
 				errorDesc = "Arabic name Of beneficary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
@@ -194,7 +196,7 @@ public class BeneficiaryCheckService extends AbstractService {
 					} else if (JaxUtil.isNullZeroBigDecimalCheck(beneContactList.get(0).getMobileNumber())) {
 						benePhoneLength = beneContactList.get(0).getMobileNumber().toString().length();
 					}
-					System.out.println("benePhoneLength :" + benePhoneLength);
+					logger.debug("benePhoneLength :" + benePhoneLength);
 				}
 			}
 
@@ -341,7 +343,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			errorListDto.add(errorStatusDto);
 		}
 
-		/*if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
+		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getStateId())) {
 			List<ViewState> stateList = viewStateDao.getState(beneDto.getCountryId(), beneDto.getStateId(),
 					beneDto.getLanguageId());
 			if (stateList.isEmpty()) {
@@ -354,10 +356,11 @@ public class BeneficiaryCheckService extends AbstractService {
 			}
 		} else {
 			isUpdateNeeded = true;
+			beneDto.setUpdateNeeded(true);
 			errorDesc = "Invalid beneficiary state";
 			errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_STATE.toString(), errorDesc);
 			errorListDto.add(errorStatusDto);
-		}*/
+		}
 
 		if (JaxUtil.isNullZeroBigDecimalCheck(beneDto.getDistrictId())) {
 			List<ViewDistrict> districtList = viewDistrictDao.getDistrict(beneDto.getStateId(), beneDto.getDistrictId(),
@@ -389,13 +392,12 @@ public class BeneficiaryCheckService extends AbstractService {
 				errorListDto.add(errorStatusDto);
 
 			}
-		} /*
-			 * else { beneDto.setUpdateNeeded(true); errorDesc = "Invalid beneficiary city";
-			 * errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(),
-			 * errorDesc); errorListDto.add(errorStatusDto);
-			 * 
-			 * }
-			 */
+		} /*else {
+					beneDto.setUpdateNeeded(true); errorDesc = "Invalid beneficiary city";
+					errorStatusDto = this.setBeneError(JaxError.INVALID_BENE_CITY.toString(),
+							errorDesc); errorListDto.add(errorStatusDto);
+				}*/
+			 
 
 		List<ServiceApplicabilityRule> serviceAppList = serviceApplicabilityRuleDao.getBeneTelServiceApplicabilityRule(
 				beneDto.getApplicationCountryId(), beneDto.getCountryId(), beneDto.getCurrencyId());

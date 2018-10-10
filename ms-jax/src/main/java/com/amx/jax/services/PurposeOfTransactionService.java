@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +22,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.AddAdditionalBankDataDto;
 import com.amx.amxlib.meta.model.AddDynamicLabel;
 import com.amx.amxlib.meta.model.AdditionalBankDetailsViewDto;
+import com.amx.amxlib.model.request.IRemitTransReqPurpose;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.PurposeOfTransactionModel;
@@ -29,6 +32,7 @@ import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.remittance.AdditionalBankDetailsViewx;
 import com.amx.jax.dbmodel.remittance.AdditionalBankRuleMap;
 import com.amx.jax.dbmodel.remittance.AdditionalDataDisplayView;
+import com.amx.jax.manager.RemittanceTransactionManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.IAdditionalBankDetailsDao;
 import com.amx.jax.repository.IAdditionalBankRuleMapDao;
@@ -59,12 +63,14 @@ public class PurposeOfTransactionService extends AbstractService {
 	@Autowired
 	private IBeneficiaryOnlineDao beneficiaryOnlineDao;
 	@Autowired
-	RoutingService routingService ;
+	RemittanceTransactionManager remittanceTxnManger;
+	@Resource
+	public Map<String, Object> remitApplParametersMap;
 	
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
-		logger.info(
+		logger.debug(
 				"in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
 				applicationCountryId, countryId, currencyId, remittanceModeId, deliveryModeId, bankId);
 		List<AddAdditionalBankDataDto> listAdditionalBankDataTable = null;
@@ -123,13 +129,13 @@ public class PurposeOfTransactionService extends AbstractService {
 			for (AddDynamicLabel dyamicLabel : listDynamicLabel) {
 				AddAdditionalBankDataDto adddata = new AddAdditionalBankDataDto();
 				if (dyamicLabel.getValidation() != null && dyamicLabel.getValidation().equalsIgnoreCase("Y")) {
-					logger.info("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
+					logger.debug("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
 				
 					List<AdditionalBankRuleMap> listAdditinalBankfield = additionalBankRuleMapDao
 							.getDynamicLevelMatch(routingCountry, dyamicLabel.getFlexiField());
 					if (!listAdditinalBankfield.isEmpty()) {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
-							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
+							logger.debug("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
 									routingCountry, dyamicLabel.getFlexiField());
 							List<AdditionalBankDetailsViewx> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
@@ -160,14 +166,6 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
-									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
-											+ lst.getAmieceDescription());
-
-								}
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
 						}
@@ -262,12 +260,16 @@ public class PurposeOfTransactionService extends AbstractService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public ApiResponse getPurposeOfTransaction(RemittanceTransactionRequestModel model) {
-		logger.info("in getPurposeOfTransaction with params: "+ model.toString());
+	public ApiResponse getPurposeOfTransaction(IRemitTransReqPurpose request) {
+		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) request;
+		logger.debug("in getPurposeOfTransaction with params: " + model.toString());
 		ApiResponse response = getBlackApiResponse();
+		if (model.getLocalAmount() == null && model.getForeignAmount() == null) {
+			model.setLocalAmount(BigDecimal.ONE);
+		}
 		BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
-		HashMap<String, Object> beneBankDetails = getBeneBankDetails(beneficiary);
-		Map<String, Object> routingDetails = routingService.getRoutingDetails(beneBankDetails);
+		remittanceTxnManger.validateTransactionData(model);
+		Map<String, Object> routingDetails = remitApplParametersMap;
 		BigDecimal applicationCountryId = beneficiary.getApplicationCountryId();
 		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal rountingCountry = (BigDecimal) routingDetails.get("P_ROUTING_COUNTRY_ID");

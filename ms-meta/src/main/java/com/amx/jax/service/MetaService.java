@@ -23,8 +23,7 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.ResponseStatus;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.OnlineConfiguration;
@@ -34,6 +33,7 @@ import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
@@ -89,30 +89,20 @@ public class MetaService extends AbstractService {
 	@Autowired
 	JaxProperties jaxProperties;
 
-	public ApiResponse getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
+	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if (cityList.isEmpty()) {
-			throw new GlobalException("city not avaliable");
-		} else {
-			response.getData().getValues().addAll(convertCityDto(cityList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("city");
-		return response;
+			throw new GlobalException("city not avaliable", JaxError.CITY_NOT_AVAILABLE);
+		} 
+		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
-	public ApiResponse getCityDescription(BigDecimal districtId, BigDecimal languageId, BigDecimal cityId) {
+	public AmxApiResponse<ViewCityDto, Object> getCityDescription(BigDecimal districtId, BigDecimal languageId, BigDecimal cityId) {
 		List<ViewCity> cityList = cityDao.getCityDescription(districtId, cityId, languageId);
-		ApiResponse response = getBlackApiResponse();
 		if (cityList.isEmpty()) {
 			throw new GlobalException("city not avaliable");
-		} else {
-			response.getData().getValues().addAll(convertCityDto(cityList));
-			response.setResponseStatus(ResponseStatus.OK);
-		}
-		response.getData().setType("city");
-		return response;
+		} 
+		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}
 
 	private List<ViewCityDto> convertCityDto(List<ViewCity> cityList) {
@@ -131,26 +121,23 @@ public class MetaService extends AbstractService {
 		return dto;
 	}
 
-	public ApiResponse getOnlineConfig(String applInd) {
-		ApiResponse response = getBlackApiResponse();
+	public AmxApiResponse<OnlineConfigurationDto, Object> getOnlineConfig(String applInd) {		
 		List<OnlineConfiguration> output = onlineConfigurationRepository.findByappInd(applInd);
 		OnlineConfigurationDto dto = new OnlineConfigurationDto();
 		try {
 			BeanUtils.copyProperties(dto, output.get(0));
 		} catch (IllegalAccessException | InvocationTargetException e) {
 			logger.error("unable to convert OnlineConfigurationDto", e);
-		}
-		response.getData().setType("online-config");
-		response.getData().getValues().add(dto);
-		return response;
+		}		
+		return AmxApiResponse.build(dto);
 	}
 	
-	public ApiResponse getServiceGroups() {
-		ApiResponse response = getBlackApiResponse();
-		response.getData().setType("service-group-model");
+	public AmxApiResponse<ServiceGroupMasterDescDto, Object> getServiceGroups() {
+		/*ApiResponse response = getBlackApiResponse();
+		response.getData().setType("service-group-model");*/
 		List<ServiceGroupMasterDescDto> outputDto = getServiceGroupDto();
-		response.getData().getValues().addAll(outputDto);
-		return response;
+		/*response.getData().getValues().addAll(outputDto);*/
+		return AmxApiResponse.buildList(outputDto);
 	}
 
 	private List<ServiceGroupMasterDescDto> getServiceGroupDto() {

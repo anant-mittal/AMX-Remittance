@@ -2,6 +2,7 @@ package com.amx.jax.dbmodel.remittance;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,6 +29,8 @@ public class RemittanceTransaction implements Serializable {
 	private BigDecimal collectionDocumentFinancialyear;
 	private BigDecimal collectionDocumentNo;
 	private BigDecimal customerId;
+	private BigDecimal exchangeRateApplied;
+	private Date createdDate;
 
 	@Id
 	@Column(name = "REMITTANCE_TRANSACTION_ID")
@@ -100,6 +103,24 @@ public class RemittanceTransaction implements Serializable {
 
 	public void setCustomerId(BigDecimal customerId) {
 		this.customerId = customerId;
+	}
+
+	@Column(name = "EXCHANGE_RATE_APPLIED")
+	public BigDecimal getExchangeRateApplied() {
+		return exchangeRateApplied;
+	}
+
+	public void setExchangeRateApplied(BigDecimal exchangeRateApplied) {
+		this.exchangeRateApplied = exchangeRateApplied;
+	}
+	
+	@Column(name="CREATED_DATE")
+	public Date getCreatedDate() {
+		return createdDate;
+	}
+
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
 
 }

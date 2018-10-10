@@ -1,10 +1,13 @@
 package com.amx.jax.model.dto;
 
-public class SendOtpModel {
+import com.amx.jax.model.AbstractModel;
 
+public class SendOtpModel extends AbstractModel {
+
+	private static final long serialVersionUID = 9200894928151652022L;
 	private String mOtpPrefix;
 	private String eOtpPrefix;
-	
+
 	private String mOtp;
 	private String eOtp;
 
@@ -39,4 +42,10 @@ public class SendOtpModel {
 	public void seteOtp(String eOtp) {
 		this.eOtp = eOtp;
 	}
+
+	@Override
+	public String toString() {
+		return "M-OTP: " + mOtpPrefix + "-" + mOtp + " || E-OTP: " + eOtpPrefix + "-" + eOtp;
+	}
+
 }

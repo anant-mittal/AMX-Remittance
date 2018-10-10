@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.amxlib.model.JaxMetaInfo;
-import com.amx.jax.client.AbstractJaxServiceClient;
 import com.amx.jax.client.BeneClient;
 import com.amx.jax.client.CustomerRegistrationClient;
 import com.amx.jax.client.ExchangeRateClient;
@@ -18,7 +16,10 @@ import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.client.RateAlertClient;
 import com.amx.jax.client.RemitClient;
 import com.amx.jax.client.UserClient;
+import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.rest.RestMetaRequestOutFilter;
 import com.amx.jax.scope.TenantContextHolder;
+import com.amx.jax.ui.WebAppConfig;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
 
@@ -26,7 +27,7 @@ import com.amx.utils.ContextUtil;
  * The Class JaxService.
  */
 @Component
-public class JaxService extends AbstractJaxServiceClient {
+public class JaxService extends RestMetaRequestOutFilter<JaxMetaInfo> {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 
@@ -148,13 +149,19 @@ public class JaxService extends AbstractJaxServiceClient {
 	@Autowired
 	private MetaClient metaClient;
 
-	/**
-	 * Jax meta.
-	 *
-	 * @return the jax meta info
-	 */
-	public JaxMetaInfo jaxMeta() {
-		return jaxMetaInfo;
+	@Autowired
+	protected JaxMetaInfo jaxMetaInfo;
+
+	@Autowired
+	protected WebAppConfig webAppConfig;
+
+	private void populateCommon(JaxMetaInfo jaxMetaInfo) {
+		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
+		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
+		jaxMetaInfo.setCountryId(webAppConfig.getCountryId());
+		jaxMetaInfo.setCompanyId(webAppConfig.getCompanyId());
+		jaxMetaInfo.setLanguageId(webAppConfig.getLanguageId());
+		jaxMetaInfo.setCountryBranchId(webAppConfig.getCountrybranchId());
 	}
 
 	/**
@@ -165,19 +172,14 @@ public class JaxService extends AbstractJaxServiceClient {
 	 * @return the jax service
 	 */
 	public JaxService setDefaults(BigDecimal customerId) {
-		jaxMetaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-		jaxMetaInfo.setTenant(TenantContextHolder.currentSite());
-		jaxMetaInfo.setLanguageId(sessionService.getGuestSession().getLanguage().getBDCode());
 
-		jaxMetaInfo.setCompanyId(new BigDecimal(JaxService.DEFAULT_COMPANY_ID));
-		jaxMetaInfo.setCountryBranchId(new BigDecimal(JaxService.DEFAULT_COUNTRY_BRANCH_ID));
-		jaxMetaInfo.setTraceId(ContextUtil.getTraceId());
+		populateCommon(jaxMetaInfo);
+
 		jaxMetaInfo.setReferrer(sessionService.getUserSession().getReferrer());
 		jaxMetaInfo.setDeviceId(sessionService.getAppDevice().getFingerprint());
 		jaxMetaInfo.setDeviceIp(sessionService.getAppDevice().getIp());
 		jaxMetaInfo.setDeviceType(ArgUtil.parseAsString(sessionService.getAppDevice().getType()));
 		jaxMetaInfo.setAppType(ArgUtil.parseAsString(sessionService.getAppDevice().getAppType()));
-		log.info("referrer = {} ", sessionService.getUserSession().getReferrer());
 
 		jaxMetaInfo.setCustomerId(customerId);
 
@@ -196,6 +198,13 @@ public class JaxService extends AbstractJaxServiceClient {
 			return this.setDefaults(sessionService.getGuestSession().getCustomerModel().getCustomerId());
 		}
 		return this.setDefaults(null);
+	}
+
+	@Override
+	public JaxMetaInfo exportMeta() {
+		JaxMetaInfo jaxMetaInfo = new JaxMetaInfo();
+		populateCommon(jaxMetaInfo);
+		return jaxMetaInfo;
 	}
 
 }

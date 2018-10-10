@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 
 public class CustomerRegistrationTrnxModel implements Serializable {
 

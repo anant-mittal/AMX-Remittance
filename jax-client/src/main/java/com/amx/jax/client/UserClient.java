@@ -31,9 +31,9 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.user.UserDevice;
 
 @Component
 public class UserClient extends AbstractJaxServiceClient {
@@ -171,12 +171,9 @@ public class UserClient extends AbstractJaxServiceClient {
 			return restService.ajax(sendOtpUrl).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<CustomerModel>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
-		} catch (Exception e) {
-			LOGGER.error("exception in saveSecurityQuestions : ", e);
-			throw new JaxSystemError();
-		} // end of try-catch
+		} catch (Exception ae) {
+			return JaxSystemError.evaluate(ae);
+		}
 
 	}
 

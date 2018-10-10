@@ -20,7 +20,9 @@ public abstract class AbstractService {
 		return response;
 	}
 
-	public abstract String getModelType();
+	public String getModelType() {
+		return null;
+	};
 
 	public Class<?> getModelClass() {
 		return this.getClass();
@@ -29,6 +31,14 @@ public abstract class AbstractService {
 	public ApiResponse getBooleanResponse() {
 		ApiResponse apiResponse = getBlackApiResponse();
 		BooleanResponse output = new BooleanResponse(true);
+		apiResponse.getData().getValues().add(output);
+		apiResponse.getData().setType("boolean_response");
+		return apiResponse;
+	}
+	
+	public ApiResponse getBooleanResponse(boolean status) {
+		ApiResponse apiResponse = getBlackApiResponse();
+		BooleanResponse output = new BooleanResponse(status);
 		apiResponse.getData().getValues().add(output);
 		apiResponse.getData().setType("boolean_response");
 		return apiResponse;

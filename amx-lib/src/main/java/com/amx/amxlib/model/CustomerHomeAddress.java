@@ -3,12 +3,9 @@ package com.amx.amxlib.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
-
-import org.springframework.format.annotation.NumberFormat;
 
 /** THis model represents customer's home address */
 public class CustomerHomeAddress implements Serializable {
@@ -18,23 +15,23 @@ public class CustomerHomeAddress implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
+	@NotNull(message="Country Id may not be null")
 	private BigDecimal countryId;
 
-	@NotNull
+	@NotNull(message="State Id may not be null")
 	private BigDecimal stateId;
 
-	@NotNull
+	@NotNull(message="District Id may not be null")
 	private BigDecimal districtId;
 
-	@NotNull
+	@NotNull(message="Mobile may not be null")
 	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Mobile No")
 	@Size(min = 1)	
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull
-	@Pattern(regexp = "[\\s]*[0-9]*[1-9]+",message="Invalid Tele Prefix")
+	@NotNull(message="telPrefix may not be null")
+	@Pattern(regexp = "^[1-9]\\d*$",message="Invalid Tele Prefix")
 	private String telPrefix;
 
 	public BigDecimal getCountryId() {

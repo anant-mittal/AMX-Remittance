@@ -3,7 +3,10 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+
 import com.amx.jax.model.AbstractModel;
+
 
 /**
  * @author Subodh Bhoir
@@ -12,23 +15,56 @@ import com.amx.jax.model.AbstractModel;
 public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 
 	private static final long serialVersionUID = 1L;
+	
 	private BigDecimal placeOrderId;
+
 	private BigDecimal customerId;
+	
+	@NotNull(message="beneficiaryRelationshipSeqId may not be null")
 	private BigDecimal beneficiaryRelationshipSeqId;
+	
+	@NotNull(message="targetExchangeRate may not be null")
 	private BigDecimal targetExchangeRate;
+	
+	@NotNull(message="bankRuleFieldId may not be null")
 	private BigDecimal bankRuleFieldId;
+	
+	@NotNull(message="srlId may not be null")
 	private BigDecimal srlId;
+	
+	@NotNull(message="sourceOfIncomeId may not be null")
 	private BigDecimal sourceOfIncomeId;
+	
+	@NotNull(message="isActive may not be null")
 	private String isActive;
+	
 	private Date createdDate;
+	
+	@NotNull(message="validToDate may not be null")
 	private Date validToDate;
+	
+	@NotNull(message="validFromDate may not be null")
 	private Date validFromDate;
+
 	private BigDecimal payAmount;
+	
 	private BigDecimal receiveAmount;
+	
+	@NotNull(message="baseCurrencyId may not be null")
 	private BigDecimal baseCurrencyId;
+	
+	@NotNull(message="baseCurrencyQuote may not be null")
 	private String baseCurrencyQuote;
+	
+	@NotNull(message="foreignCurrencyId may not be null")
 	private BigDecimal foreignCurrencyId;
+	
+	@NotNull(message="foreignCurrencyQuote may not be null")
 	private String foreignCurrencyQuote;
+	
+	private BigDecimal currencyId;
+	private BigDecimal bankId;
+	private BigDecimal countryId;
 
 	public BigDecimal getPlaceOrderId() {
 		return placeOrderId;
@@ -166,6 +202,30 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		this.foreignCurrencyQuote = foreignCurrencyQuote;
 	}
 
+	public BigDecimal getCurrencyId() {
+		return currencyId;
+	}
+
+	public void setCurrencyId(BigDecimal currencyId) {
+		this.currencyId = currencyId;
+	}
+
+	public BigDecimal getBankId() {
+		return bankId;
+	}
+
+	public void setBankId(BigDecimal bankId) {
+		this.bankId = bankId;
+	}
+
+	public BigDecimal getCountryId() {
+		return countryId;
+	}
+
+	public void setCountryId(BigDecimal countryId) {
+		this.countryId = countryId;
+	}
+
 	@Override
 	public String getModelType() {
 		return "place-order-dto";
@@ -181,7 +241,7 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 				+ ", validToDate=" + validToDate + ", validFromDate=" + validFromDate + ", payAmount=" + payAmount
 				+ ", receiveAmount=" + receiveAmount + ", baseCurrencyId=" + baseCurrencyId + ", baseCurrencyQuote="
 				+ baseCurrencyQuote + ", foreignCurrencyId=" + foreignCurrencyId + ", foreignCurrencyQuote="
-				+ foreignCurrencyQuote + "]";
+				+ foreignCurrencyQuote + ", currencyId=" + currencyId + ", bankId=" + bankId + ", countryId=" + countryId + "]";
 	}
 
 	@Override
@@ -192,26 +252,4 @@ public class PlaceOrderDTO extends AbstractModel implements Cloneable {
 		return result;
 	}
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		PlaceOrderDTO other = (PlaceOrderDTO) obj;
-		if (placeOrderId == null) {
-			if (other.placeOrderId != null)
-				return false;
-		} else if (!placeOrderId.equals(other.placeOrderId))
-			return false;
-		return true;
-	}
-
-	@Override
-	public Object clone() throws CloneNotSupportedException {
-		return super.clone();
-	}
 }

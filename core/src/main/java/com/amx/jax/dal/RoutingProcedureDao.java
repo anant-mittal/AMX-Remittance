@@ -2,7 +2,6 @@ package com.amx.jax.dal;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +89,7 @@ public class RoutingProcedureDao {
 		return branchApplicability;
 	}
 
-	public BigDecimal getRemittanceModeIdForCash(HashMap<String, Object> inputValues) {
+	public BigDecimal getRemittanceModeIdForCash(Map<String, Object> inputValues) {
 
 		LOGGER.info("in getRemittanceModeIdForCash,input values: {}", inputValues);
 		String sql = "SELECT REMITTANCE_MODE_ID FROM ( SELECT DISTINCT F.REMITTANCE_MODE_ID "
@@ -122,7 +121,7 @@ public class RoutingProcedureDao {
 		return remittanceModeId;
 	}
 
-	public Object getDeliveryModeIdForCash(HashMap<String, Object> inputValues) {
+	public Object getDeliveryModeIdForCash(Map<String, Object> inputValues) {
 
 		LOGGER.info("in getDeliveryModeIdForCash,input values: {}", inputValues);
 		String sql = "SELECT DELIVERY_MODE_ID FROM ( SELECT DISTINCT F.DELIVERY_MODE_ID "

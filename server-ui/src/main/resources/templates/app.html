@@ -13,13 +13,13 @@
 window.CONST = {
 	    dev: false,
 	    remoteServerUrl: '',
-	    remoteJsUrl: '<div th:text="${cdnUrl}" th:remove="tag"></div>', //
-	    remoteJsVersion: '<div th:text="${CDN_VERSION}" th:remove="tag"></div>', //
+	    remoteJsUrl: '[[${cdnUrl}]]', //
+	    remoteJsVersion: '[[${CDN_VERSION}]]', //
 	    dummyApi: false,
-	    fpath : '<div th:text="${cdnUrl}" th:remove="tag"></div>/dist/fingerprint.js',
-	    did : '<div th:text="${did}" th:remove="tag"></div>',
-	    lang : '<div th:text="${lang}" th:remove="tag"></div>',
-	    fcmSenderId: '<div th:text="${fcmSenderId}" th:remove="tag"></div>'
+	    fpath : '[[${cdnUrl}]]/dist/fingerprint.js',
+	    did : '[[${did}]]',
+	    lang : '[[${lang}]]',
+	    fcmSenderId: '[[${fcmSenderId}]]'
 	  };
 </script>
 	<script th:if="${did==null}">

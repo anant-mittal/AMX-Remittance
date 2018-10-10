@@ -11,11 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -164,7 +163,7 @@ public class OmannetClient implements PayGClient {
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
 			
-			String resultReponse = pipe.getResult();
+			String resultResponse = pipe.getResult();
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -172,7 +171,7 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
+			if(resultResponse.equals("CAPTURED")) {
 				gatewayResponse.setError(pipe.getError());
 				gatewayResponse.setErrorText(pipe.getError_text());
 			}else {
@@ -180,13 +179,11 @@ public class OmannetClient implements PayGClient {
 				gatewayResponse.setErrorText(pipe.getResult());
 			}
 	
-	    	for(ResponseCode res : ResponseCode.values()) {
-				if(resultReponse.contains(res.getResponseCode()))
-				{
-					gatewayResponse.setResult(res.toString());
-					break;
-				}
-			}
+			LOGGER.info("resultResponse ---> " + resultResponse);
+			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultResponse));
+			
+			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			gatewayResponse.setError(resultResponse);
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
@@ -208,14 +205,5 @@ public class OmannetClient implements PayGClient {
 		}
 		return gatewayResponse;
 	}
-
-    /* (non-Javadoc)
-     * @see com.amx.jax.payment.gateway.PayGClient#capture(com.amx.jax.payment.gateway.PayGResponse)
-     */
-    @Override
-    public PayGResponse capture(PayGResponse payGResponse) {
-        // TODO Auto-generated method stub
-        return null;
-    }
 	
 }
