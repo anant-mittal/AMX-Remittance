@@ -68,13 +68,13 @@ public class CustomerDao {
 		return cust;
 	}
 	
-	/*public Customer getCustomerByIdentityInt(String identityInt) {
+	public List<Customer> getCustomersForLogin(String identityInt) {
 		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
-	}*/
+	}
 	
 	@Transactional
-	public Customer getCustomerByIdentityInt(String identityInt) {
-		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
+	public List<Customer> getCustomerByIdentityInt(String identityInt) {
+		return repo.getCustomerByIdentityInt(identityInt);
 	}
 
 	@Transactional
