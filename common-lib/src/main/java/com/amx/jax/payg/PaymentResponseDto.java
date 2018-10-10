@@ -3,6 +3,7 @@ package com.amx.jax.payg;
 import java.math.BigDecimal;
 
 import com.amx.jax.api.ARespModel;
+import com.amx.jax.payg.PayGCodes.CodeCategory;
 
 public class PaymentResponseDto extends ARespModel {
 
@@ -29,7 +30,7 @@ public class PaymentResponseDto extends ARespModel {
 	BigDecimal collectionDocumentNumber;
 	BigDecimal collectionDocumentCode;
 	String error = null;
-	String errorCategory = null;
+	CodeCategory errorCategory = null;
 
 	public String getPaymentId() {
 		return paymentId;
@@ -207,11 +208,11 @@ public class PaymentResponseDto extends ARespModel {
 		this.error = error;
 	}
 
-	public String getErrorCategory() {
+	public CodeCategory getErrorCategory() {
 		return errorCategory;
 	}
 
-	public void setErrorCategory(String errorCategory) {
+	public void setErrorCategory(CodeCategory errorCategory) {
 		this.errorCategory = errorCategory;
 	}
 

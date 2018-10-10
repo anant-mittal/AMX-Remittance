@@ -17,7 +17,9 @@ import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -177,15 +179,20 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
-		
+
+		BenefitCodes statusCode;
+
 		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
-			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultCode));
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
 		} else if (resultResponse == null) {
-			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(responseCode));
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
 			gatewayResponse.setError(responseCode);
 		} else {
 			LOGGER.info("resultResponse ---> " + resultResponse);
-			gatewayResponse.setErrorCategory(paymentService.getPaygErrorCategory(resultResponse));
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
 			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 			gatewayResponse.setError(resultResponse);
 		}

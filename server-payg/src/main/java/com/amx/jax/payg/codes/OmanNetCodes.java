@@ -3,7 +3,7 @@ package com.amx.jax.payg.codes;
 import com.amx.jax.payg.PayGCodes.CodeCategory;
 import com.amx.jax.payg.PayGCodes.IPayGCode;
 
-public enum KnetCodes implements IPayGCode {
+public enum OmanNetCodes implements IPayGCode {
 
 	CAPTURED(CodeCategory.TXN_SUCCESS, "Transaction was approved"),
 
@@ -18,12 +18,12 @@ public enum KnetCodes implements IPayGCode {
 	CodeCategory category;
 	String description;
 
-	KnetCodes(CodeCategory category, String description) {
+	OmanNetCodes(CodeCategory category, String description) {
 		this.category = category;
 		this.description = description;
 	}
 
-	KnetCodes(CodeCategory category) {
+	OmanNetCodes(CodeCategory category) {
 		this.category = category;
 	}
 

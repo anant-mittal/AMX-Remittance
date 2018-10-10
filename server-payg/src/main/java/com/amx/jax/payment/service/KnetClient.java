@@ -25,7 +25,6 @@ import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
 import com.amx.jax.payment.gateway.PayGResponse;
 import com.amx.jax.payment.gateway.PayGResponse.PayGStatus;
-import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 /**
@@ -175,7 +174,7 @@ public class KnetClient implements PayGClient {
 		KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
 
 		LOGGER.info("resultResponse ---> " + resultResponse);
-		gatewayResponse.setErrorCategory(knetCodes.getCategory().toString());
+		gatewayResponse.setErrorCategory(knetCodes.getCategory());
 
 		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
 		gatewayResponse.setError(resultResponse);

@@ -1,6 +1,6 @@
 package com.amx.jax.payment.gateway;
 
-import com.amx.jax.payg.PayGCodes.IPayGCode;
+import com.amx.jax.payg.PayGCodes.CodeCategory;
 
 public class PayGResponse {
 
@@ -24,7 +24,7 @@ public class PayGResponse {
 	String countryId = null;
 	String errorText = null;
 	String error = null;
-	String errorCategory = null;
+	CodeCategory errorCategory = null;
 
 	String collectionFinYear;
 	String collectionDocNumber;
@@ -199,12 +199,12 @@ public class PayGResponse {
 		this.error = error;
 	}
 
-	public String getErrorCategory() {
+	public CodeCategory getErrorCategory() {
 		return errorCategory;
 	}
 
-	public void setErrorCategory(String errorCategory) {
-		this.errorCategory = errorCategory;
+	public void setErrorCategory(CodeCategory codeCategory) {
+		this.errorCategory = codeCategory;
 	}
 
 	/*
