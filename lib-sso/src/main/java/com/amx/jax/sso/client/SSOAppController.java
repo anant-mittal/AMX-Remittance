@@ -109,6 +109,6 @@ public class SSOAppController {
 			RequestMethod.POST }, produces = { CommonMediaType.APPLICATION_JSON_VALUE,
 					CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	public String loggedinJson() throws MalformedURLException, URISyntaxException {
-		return JsonUtil.toJson(AmxApiResponse.build());
+		return JsonUtil.toJson(AmxApiResponse.build(ssoUser.getUserDetails()));
 	}
 }
