@@ -69,7 +69,7 @@ public class CustomerRegistrationService extends AbstractService {
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	IApplicationCountryRepository applicationSetup;
-
+	
 	/**
 	 * Sends otp initiating trnx
 	 */
@@ -135,7 +135,7 @@ public class CustomerRegistrationService extends AbstractService {
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
+		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
