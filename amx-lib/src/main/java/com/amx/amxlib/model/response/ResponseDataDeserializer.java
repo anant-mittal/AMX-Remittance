@@ -47,7 +47,6 @@ import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.model.dto.SendOtpModel;
-import com.amx.jax.payg.PaygErrorMasterDTO;
 import com.amx.jax.payg.PaymentResponseDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -259,10 +258,6 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
 			break;	
-		case "payg-error":
-			models = new ObjectMapper().readValue(values, new TypeReference<List<PaygErrorMasterDTO>>() {
-			});
-			break;
 	}
 		responseData.setValues(models);
 		return responseData;
