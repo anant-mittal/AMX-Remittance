@@ -91,7 +91,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			email.setTemplate(TemplatesMX.BRANCH_FEEDBACK);
+			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			postManClient.sendEmailAsync(email);
 		}
 
