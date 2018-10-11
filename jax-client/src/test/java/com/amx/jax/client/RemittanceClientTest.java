@@ -19,7 +19,6 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
@@ -32,6 +31,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)

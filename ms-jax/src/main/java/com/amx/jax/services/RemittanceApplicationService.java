@@ -15,11 +15,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dao.ApplicationProcedureDao;
 import com.amx.jax.dao.RemittanceProcedureDao;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.RemittanceApplicationRepository;
 
 @Service
@@ -58,7 +58,7 @@ public class RemittanceApplicationService {
 					remittanceApplication.setPgAuthCode(paymentResponse.getAuth_appNo());
 					remittanceApplication.setPgErrorText(paymentResponse.getErrorText());
 					remittanceApplication.setPgReceiptDate(paymentResponse.getPostDate());
-					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory());
+					remittanceApplication.setErrorCategory(paymentResponse.getErrorCategory().name());
 					remittanceApplication.setApplicaitonStatus("S");
 				}
 				remittanceApplicationRepository.save(remittanceApplication);
@@ -98,7 +98,7 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 			appl.setPaymentId(paymentResponse.getPaymentId());
 			appl.setPgReferenceId(paymentResponse.getReferenceId());
 			appl.setPgTransactionId(paymentResponse.getTransactionId());
-			appl.setErrorCategory(paymentResponse.getErrorCategory());
+			appl.setErrorCategory(paymentResponse.getErrorCategory().name());
 			appl.setPayToken(null);
 			appl.setApplicaitonStatus(null);
 			appl.setIsactive("D");
@@ -196,6 +196,5 @@ public void updatePayTokenNull(List<RemittanceApplication> lstPayIdDetails,Payme
 		}
 		return resultMap;
 	}
-	
-	
+
 }
