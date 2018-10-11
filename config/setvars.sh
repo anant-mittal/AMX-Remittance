@@ -8,5 +8,5 @@ if [ -f ~/config/vars.sh ]
 then
         source ~/config/vars.sh
 else
-	echo "CONFIG FILE NOT FOUND"
+        echo "CONFIG FILE NOT FOUND"
 fi
