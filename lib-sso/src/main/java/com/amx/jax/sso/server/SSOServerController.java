@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.postman.PostManService;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -56,7 +57,7 @@ public class SSOServerController {
 	private SSOUser ssoUser;
 
 	@Autowired
-	private PostManService postManService;
+	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
@@ -124,11 +125,16 @@ public class SSOServerController {
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 
 		if (sSOTranx.get() != null) {
+			UserDevice userDevice = commonHttpRequest.getUserDevice();
+
 			if (SSOAuthStep.CREDS == json) {
 
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
+				init.setIpAddress(userDevice.getIp());
+				init.setDeviceId(userDevice.getFingerprint());
+				init.setDeviceType(userDevice.getType());
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
 				model.put("mOtpPrefix", initResp.geteOtpPrefix());
