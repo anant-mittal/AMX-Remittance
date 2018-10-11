@@ -147,14 +147,31 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
+		return saveLoginDetail(customerCredential, Boolean.FALSE);
+	}
+	
+	/**
+	 * @param loginId
+	 *            - login id
+	 * @param password
+	 *            - password
+	 * @return BooleanResponse - return success or failure
+	 */
+	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential, Boolean isPartialReg) {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/")
-					.filter(metaFilter).post(customerCredential)
+			LOGGER.info("calling saveLoginDetail api: ");
+			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerCredential, getHeader());
+			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-login-detail/";
+			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+			builder.queryParam("isPartialReg", isPartialReg);
+			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetail : ", e);
-			return JaxSystemError.evaluate(e);
+			throw new JaxSystemError();
 		}
 	}
 }
