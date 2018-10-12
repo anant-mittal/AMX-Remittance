@@ -5,12 +5,19 @@ import java.util.Map;
 
 import com.amx.jax.sso.SSOConstants.SSOAuthStep;
 
+import io.swagger.annotations.ApiModelProperty;
+
 public class SSOLoginFormData {
 
 	SSOAuthStep step = null;
+
+	@ApiModelProperty(example = "235474")
 	String ecnumber = null;
-	String motp = null;
+	
+	@ApiModelProperty(example = "282102202584")
 	String identity = null;
+	
+	String motp = null;
 
 	Map<String, Object> cardata = new HashMap<String, Object>();
 

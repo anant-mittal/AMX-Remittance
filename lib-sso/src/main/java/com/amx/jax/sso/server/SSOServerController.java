@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -108,7 +109,8 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
-			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "DO") SSOAuthStep json,
+			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
+			@ApiParam(defaultValue = "64a098c4c08d9ec2") @RequestHeader(value = AppConstants.DEVICE_ID_XKEY, required = false) String did,
 			HttpServletResponse resp) throws URISyntaxException, IOException {
 
 		if (json == SSOAuthStep.DO) {
