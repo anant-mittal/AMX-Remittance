@@ -441,7 +441,7 @@ public class OffsitCustRegService implements ICustRegService {
 	@Override
 	public AmxApiResponse<CustomerInfo, Object> saveCustomerInfo(CustomerInfoRequest model) {
 		// revalidateOtp(model.getOtpData());
-		com.amx.jax.model.request.CustomerPersonalDetail customerDetails = new com.amx.jax.model.request.CustomerPersonalDetail();
+		CustomerPersonalDetail customerDetails = new CustomerPersonalDetail();
 		jaxUtil.convert(model.getCustomerPersonalDetail(), customerDetails);
 		Customer customer = commitCustomer(customerDetails, model.getCustomerEmploymentDetails());
 		commitCustomerLocalContact(model.getLocalAddressDetails(), customer, customerDetails.getWatsAppMobileNo());
