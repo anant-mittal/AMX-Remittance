@@ -74,7 +74,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>ms-branch</artifactId>
+			<artifactId>ms-jax-customer</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>

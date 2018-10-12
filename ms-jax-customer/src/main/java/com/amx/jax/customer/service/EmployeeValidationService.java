@@ -1,4 +1,4 @@
-package com.amx.jax.branch.service;
+package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -14,7 +14,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.amxlib.config.OtpSettings;
-import com.amx.jax.branch.repository.EmployeeRepository;
+import com.amx.jax.customer.repository.EmployeeRepository;
 import com.amx.jax.dbmodel.Employee;
 import com.amx.jax.error.JaxError;
 

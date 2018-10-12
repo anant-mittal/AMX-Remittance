@@ -1,4 +1,4 @@
-package com.amx.jax.auditlogs;
+package com.amx.jax.customer;
 
 import java.math.BigDecimal;
 
@@ -9,7 +9,7 @@ import com.amx.jax.model.request.DynamicFieldRequest;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.request.OffsiteCustomerRegistrationRequest;
 
-public class JaxAuditEvent extends AuditEvent {
+public class CustomerAuditEvent extends AuditEvent {
 
 	private static final long serialVersionUID = 7451732272992078549L;
 
@@ -48,31 +48,31 @@ public class JaxAuditEvent extends AuditEvent {
 		}
 	}
 
-	public JaxAuditEvent(EventType type) {
+	public CustomerAuditEvent(EventType type) {
 		super(type);
 	}
 
-	public JaxAuditEvent(Type type, OffsiteCustomerRegistrationRequest offsiteRequest) {
+	public CustomerAuditEvent(Type type, OffsiteCustomerRegistrationRequest offsiteRequest) {
 		super(type);
 		this.model = offsiteRequest;
 	}
 
-	public JaxAuditEvent(Type type, EmploymentDetailsRequest employeeDetailsRequest) {
+	public CustomerAuditEvent(Type type, EmploymentDetailsRequest employeeDetailsRequest) {
 		super(type);
 		this.employeeDetailsRequest = employeeDetailsRequest;
 	}
 
-	public JaxAuditEvent(Type type, DynamicFieldRequest dynamicFieldRequest) {
+	public CustomerAuditEvent(Type type, DynamicFieldRequest dynamicFieldRequest) {
 		super(type);
 		this.dynamicFieldRequest = dynamicFieldRequest;
 	}
 
-	public JaxAuditEvent(Type type, CustomerInfoRequest customerInfoRequest) {
+	public CustomerAuditEvent(Type type, CustomerInfoRequest customerInfoRequest) {
 		super(type);
 		this.customerInfoRequest = customerInfoRequest;
 	}
 
-	public JaxAuditEvent(Type type, BigDecimal customerId) {
+	public CustomerAuditEvent(Type type, BigDecimal customerId) {
 		super(type);
 		this.customerId = customerId;
 	}

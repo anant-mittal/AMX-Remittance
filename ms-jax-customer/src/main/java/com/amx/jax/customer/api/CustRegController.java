@@ -1,4 +1,4 @@
-package com.amx.jax.branch.api;
+package com.amx.jax.customer.api;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.branch.service.OffsitCustRegService;
-import com.amx.jax.constants.JaxEvent;
+import com.amx.jax.customer.service.OffsitCustRegService;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.CardDetail;
@@ -35,7 +34,6 @@ import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
-import com.amx.jax.utils.JaxContextUtil;
 
 @RestController
 public class CustRegController implements ICustRegService {
@@ -71,9 +69,6 @@ public class CustRegController implements ICustRegService {
 	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
-		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
-		JaxContextUtil.setRequestModel(customerPersonalDetail);
-		LOGGER.info("send otp request: " + customerPersonalDetail);
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}

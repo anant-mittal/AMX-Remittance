@@ -189,7 +189,7 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-branch</module>
+		<module>ms-jax-customer</module>
 		<module>ms-jax</module>
 		<module>jax-client</module>
 		<module>ms-rbaac</module>

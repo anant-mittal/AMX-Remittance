@@ -1,4 +1,4 @@
-package com.amx.jax.branch.repository;
+package com.amx.jax.customer.repository;
 
 import java.math.BigDecimal;
 

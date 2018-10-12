@@ -1,4 +1,4 @@
-package com.amx.jax.branch.service;
+package com.amx.jax.customer.service;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
@@ -28,10 +28,10 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.auditlogs.JaxAuditEvent;
-import com.amx.jax.auditlogs.JaxAuditEvent.Type;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxApiFlow;
+import com.amx.jax.customer.CustomerAuditEvent;
+import com.amx.jax.customer.CustomerAuditEvent.Type;
 import com.amx.jax.dal.ArticleDao;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
@@ -217,13 +217,13 @@ public class OffsitCustRegService implements ICustRegService {
 		try {
 			if (StringUtils.isBlank(offsiteCustRegModel.geteOtp())
 					|| StringUtils.isBlank(offsiteCustRegModel.getmOtp())) {
-				auditService.excep(new JaxAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
+				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
 						new GlobalException("Otp field is required", JaxError.MISSING_OTP));
 				throw new GlobalException("Otp field is required", JaxError.MISSING_OTP);
 			}
 			resetAttempts(otpData);
 			if (otpData.getValidateOtpAttempts() >= otpSettings.getMaxValidateOtpAttempts()) {
-				auditService.excep(new JaxAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
+				auditService.excep(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel),
 						new GlobalException(
 								"Sorry, you cannot proceed to register. Please try to register after 12 midnight",
 								JaxError.VALIDATE_OTP_LIMIT_EXCEEDED));
@@ -243,7 +243,7 @@ public class OffsitCustRegService implements ICustRegService {
 		}
 		AmxApiResponse<String, Object> obj = AmxApiResponse.build("Customer Email And Mobile Validation Successfully");
 		obj.setMessageKey("AUTH_SUCCESS");
-		auditService.log(new JaxAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel));
+		auditService.log(new CustomerAuditEvent(Type.VALIDATE_OTP, offsiteCustRegModel));
 		return obj;
 
 	}
@@ -297,12 +297,12 @@ public class OffsitCustRegService implements ICustRegService {
 		List<Map<String, Object>> designationList = articleDao.getDesignationData(articleId, metaData.getLanguageId());
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(articleId, null, null);
 		if (designationList == null || designationList.isEmpty()) {
-			auditService.excep(new JaxAuditEvent(Type.DESIGNATION_LIST, details),
+			auditService.excep(new CustomerAuditEvent(Type.DESIGNATION_LIST, details),
 					new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST));
 			throw new GlobalException("Designation List Is Empty ", JaxError.EMPTY_DESIGNATION_LIST);
 		}
 		List<ArticleDetailsDescDto> designationDataList = convertDesignation(designationList);
-		auditService.log(new JaxAuditEvent(Type.DESIGNATION_LIST, details));
+		auditService.log(new CustomerAuditEvent(Type.DESIGNATION_LIST, details));
 		return AmxApiResponse.buildList(designationDataList);
 	}
 
@@ -332,12 +332,12 @@ public class OffsitCustRegService implements ICustRegService {
 		List<Map<String, Object>> incomeRangeList = articleDao.getIncomeRange(countryId, articleDetailsId);
 		EmploymentDetailsRequest details = new EmploymentDetailsRequest(null, articleDetailsId, countryId);
 		if (incomeRangeList == null || incomeRangeList.isEmpty()) {
-			auditService.excep(new JaxAuditEvent(Type.INCOME_RANGE, details),
+			auditService.excep(new CustomerAuditEvent(Type.INCOME_RANGE, details),
 					new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE));
 			throw new GlobalException("Income Range List Is Empty ", JaxError.EMPTY_INCOME_RANGE);
 		}
 		List<IncomeRangeDto> incomeRangeDataList = convertIncomeRange(incomeRangeList);
-		auditService.log(new JaxAuditEvent(Type.INCOME_RANGE, details));
+		auditService.log(new CustomerAuditEvent(Type.INCOME_RANGE, details));
 		return AmxApiResponse.buildList(incomeRangeDataList);
 	}
 
@@ -383,11 +383,11 @@ public class OffsitCustRegService implements ICustRegService {
 			}
 		}
 		if (map == null || map.isEmpty()) {
-			auditService.excep(new JaxAuditEvent(Type.FIELD_LIST, model),
+			auditService.excep(new CustomerAuditEvent(Type.FIELD_LIST, model),
 					new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION));
 			throw new GlobalException("Field Condition is Empty ", JaxError.EMPTY_FIELD_CONDITION);
 		}
-		auditService.log(new JaxAuditEvent(Type.FIELD_LIST, model));
+		auditService.log(new CustomerAuditEvent(Type.FIELD_LIST, model));
 		return AmxApiResponse.build(map);
 	}
 
@@ -448,7 +448,7 @@ public class OffsitCustRegService implements ICustRegService {
 		commitCustomerHomeContact(model.getHomeAddressDestails(), customer, customerDetails.getWatsAppMobileNo());
 		commitOnlineCustomerIdProof(model, customer);
 		commitEmploymentDetails(model.getCustomerEmploymentDetails(), customer);
-		auditService.log(new JaxAuditEvent(Type.CUST_INFO, model));
+		auditService.log(new CustomerAuditEvent(Type.CUST_INFO, model));
 		CustomerInfo info = new CustomerInfo();
 		info.setCustomerId(customer.getCustomerId());
 		return AmxApiResponse.build(info);
@@ -643,19 +643,19 @@ public class OffsitCustRegService implements ICustRegService {
 	public AmxApiResponse<String, Object> saveCustomeKycDocument(ImageSubmissionRequest model) throws ParseException {
 		if (model != null) {
 			if (metaData.getCustomerId() == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
+				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
 				throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
 			}
 			Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 					Constants.NO);
 			if (customer == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
+				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
 				throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 			}
 			if (model.getImage() == null) {
-				auditService.excep(new JaxAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
+				auditService.excep(new CustomerAuditEvent(Type.KYC_DOC, metaData.getCustomerId()),
 						new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE));
 				throw new GlobalException("Image is not available", JaxError.IMAGE_NOT_AVAILABLE);
 			}
@@ -718,19 +718,19 @@ public class OffsitCustRegService implements ICustRegService {
 			throw new GlobalException("Image data is not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
 		if (metaData.getCustomerId() == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
+			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Customer Id is not available", JaxError.NULL_CUSTOMER_ID);
 		}
 		if (model.getImage() == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
+			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Signature not available for this customer", JaxError.NULL_CUSTOMER_ID));
 			throw new GlobalException("Signature not available", JaxError.SIGNATURE_NOT_AVAILABLE);
 		}
 		Customer customer = customerRepository.getCustomerByCustomerIdAndIsActive(metaData.getCustomerId(),
 				Constants.NO);
 		if (customer == null) {
-			auditService.excep(new JaxAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
+			auditService.excep(new CustomerAuditEvent(Type.SIGNATURE, metaData.getCustomerId()),
 					new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER));
 			throw new GlobalException("Customer is Invalid", JaxError.INVALID_CUSTOMER);
 		}
