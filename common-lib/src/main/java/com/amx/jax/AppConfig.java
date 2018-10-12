@@ -31,6 +31,7 @@ public class AppConfig {
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
+	public static final String APP_LOGGER = "${app.logger}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
@@ -79,6 +80,10 @@ public class AppConfig {
 	@Value(APP_DEBUG)
 	@AppParamKey(AppParam.APP_DEBUG)
 	private Boolean debug;
+	
+	@Value(APP_LOGGER)
+	@AppParamKey(AppParam.APP_LOGGER)
+	private boolean logger;
 
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
@@ -128,6 +133,12 @@ public class AppConfig {
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
+
+	@Value("${app.audit.file.print}")
+	String[] printableAuditMarkers;
+
+	@Value("${app.audit.file.skip}")
+	String[] skipAuditMarkers;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -260,6 +271,18 @@ public class AppConfig {
 
 	public String getAppId() {
 		return appId;
+	}
+
+	public String[] getPrintableAuditMarkers() {
+		return printableAuditMarkers;
+	}
+
+	public String[] getSkipAuditMarkers() {
+		return skipAuditMarkers;
+	}
+
+	public boolean isLogger() {
+		return logger;
 	}
 
 }

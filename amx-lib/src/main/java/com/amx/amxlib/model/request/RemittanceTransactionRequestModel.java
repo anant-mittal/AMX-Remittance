@@ -36,6 +36,15 @@ public class RemittanceTransactionRequestModel extends AbstractModel implements 
 	private Map<String, String> flexFields;
 	private Map<String, FlexFieldDto> flexFieldDtoMap;
 	private BigDecimal placeOrderId;
+	private BigDecimal domXRate;
+
+	public BigDecimal getDomXRate() {
+		return domXRate;
+	}
+
+	public void setDomXRate(BigDecimal domXRate) {
+		this.domXRate = domXRate;
+	}
 
 	/*
 	 * (non-Javadoc)

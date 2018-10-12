@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * The Class PostManApplication.
  */
 @SpringBootApplication
-@ComponentScan(basePackages = { "com.amx.jax", "com.bootloaderjs" })
+@ComponentScan(basePackages = { "com.amx.jax" })
 @EnableAsync(proxyTargetClass = true)
 public class PostManApplication {
 

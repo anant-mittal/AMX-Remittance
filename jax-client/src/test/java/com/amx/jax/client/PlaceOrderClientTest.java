@@ -6,7 +6,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,8 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.jax.amxlib.model.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)

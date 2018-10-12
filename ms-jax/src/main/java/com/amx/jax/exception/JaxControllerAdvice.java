@@ -39,6 +39,7 @@ public class JaxControllerAdvice extends AmxAdvice {
 		error.setMeta(ex.getMeta());
 		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
 				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
+		logger.debug("Exception in controller", ex);
 		raiseAlert(ex);
 		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
 	}

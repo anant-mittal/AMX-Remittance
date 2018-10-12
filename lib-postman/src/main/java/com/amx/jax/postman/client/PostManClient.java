@@ -6,13 +6,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
@@ -47,46 +46,43 @@ public class PostManClient implements PostManService {
 		return ArgUtil.parseAsString(ContextUtil.map().get(PARAM_LANG));
 	}
 
-	public SMS sendSMS(SMS sms, Boolean async) throws PostManException {
-		LOGGER.info("Sending SMS to {} ", sms.getTo().get(0));
-
+	public AmxApiResponse<SMS, Object> sendSMS(SMS sms, Boolean async) throws PostManException {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_SMS)
-					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(new HttpEntity<SMS>(sms))
-					.as(SMS.class);
+					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(sms)
+					.asApiResponse(SMS.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
 
 	@Override
-	public SMS sendSMS(SMS sms) throws PostManException {
+	public AmxApiResponse<SMS, Object> sendSMS(SMS sms) throws PostManException {
 		return sendSMS(sms, Boolean.FALSE);
 	}
 
 	@Override
-	public SMS sendSMSAsync(SMS sms) throws PostManException {
+	public AmxApiResponse<SMS, Object> sendSMSAsync(SMS sms) throws PostManException {
 		return sendSMS(sms, Boolean.TRUE);
 	}
 
-	public Email sendEmail(Email email, Boolean async) throws PostManException {
-		LOGGER.info("Sending email to {} ", email.getTo().get(0));
+	public AmxApiResponse<Email, Object> sendEmail(Email email, Boolean async) throws PostManException {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL)
-					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(new HttpEntity<Email>(email))
-					.as(Email.class);
+					.queryParam(PARAM_LANG, getLang()).queryParam(PARAM_ASYNC, async).post(email)
+					.asApiResponse(Email.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
 
 	@Override
-	public Email sendEmail(Email email) throws PostManException {
+	public AmxApiResponse<Email, Object> sendEmail(Email email) throws PostManException {
 		return sendEmail(email, Boolean.FALSE);
 	}
 
 	@Override
-	public Email sendEmailAsync(Email email) throws PostManException {
+	public AmxApiResponse<Email, Object> sendEmailAsync(Email email) throws PostManException {
 		return sendEmail(email, Boolean.TRUE);
 	}
 
@@ -97,22 +93,22 @@ public class PostManClient implements PostManService {
 	 * @see
 	 * com.amx.jax.postman.PostManService#sendEmailBulkForTemplate(java.util.List)
 	 */
-	public PostManResponse sendEmailBulk(List<Email> emailList) {
+	public AmxApiResponse<Email, Object> sendEmailBulk(List<Email> emailList) {
 		LOGGER.info("Sending bulk Email for Notification Service ");
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_BULK).post(emailList)
-					.as(PostManResponse.class);
+					.asApiResponse(Email.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
 
 	@Override
-	public Email sendEmailToSupprt(SupportEmail email) throws PostManException {
+	public AmxApiResponse<Email, Object> sendEmailToSupprt(SupportEmail email) throws PostManException {
 		LOGGER.info("Sending support email from {}", email.getVisitorName());
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.SEND_EMAIL_SUPPORT)
-					.queryParam(PARAM_LANG, getLang()).post(new HttpEntity<SupportEmail>(email)).as(Email.class);
+					.queryParam(PARAM_LANG, getLang()).post(email).asApiResponse(Email.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
@@ -120,20 +116,21 @@ public class PostManClient implements PostManService {
 
 	@Override
 	@Async
-	public Notipy notifySlack(Notipy msg) throws PostManException {
+	public AmxApiResponse<Notipy, Object> notifySlack(Notipy msg) throws PostManException {
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK)
-					.queryParam(PARAM_LANG, getLang()).post(new HttpEntity<Notipy>(msg)).as(Notipy.class);
+					.queryParam(PARAM_LANG, getLang()).post(msg).asApiResponse(Notipy.class);
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
 	}
 
 	@Override
-	public File processTemplate(File file) throws PostManException {
+	public AmxApiResponse<File, Object> processTemplate(File file) throws PostManException {
 		try {
-			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.PROCESS_TEMPLATE_FILE)
-					.queryParam(PARAM_LANG, getLang()).contentTypeJson().acceptJson().post(file).as(File.class);
+			return AmxApiResponse.build(restService.ajax(appConfig.getPostmapURL())
+					.path(PostManUrls.PROCESS_TEMPLATE_FILE).queryParam(PARAM_LANG, getLang()).contentTypeJson()
+					.acceptJson().post(file).as(File.class));
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}
@@ -142,22 +139,21 @@ public class PostManClient implements PostManService {
 
 	@Override
 	@Async
-	public ExceptionReport notifyException(ExceptionReport e) {
+	public AmxApiResponse<ExceptionReport, Object> notifyException(ExceptionReport e) {
 		LOGGER.info("Sending exception = {} : {}", e.getTitle(), e.getClass().getName());
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_SLACK_EXCEP_REPORT)
 					.contentTypeJson().queryParam("appname", appConfig.getAppName()).queryParam("title", e.getTitle())
-					.queryParam("exception", e.getException()).post(e).as(ExceptionReport.class);
-
+					.queryParam("exception", e.getException()).post(e).asApiResponse(ExceptionReport.class);
 		} catch (Exception e1) {
 			LOGGER.error("Exception while sending title={}", e.getTitle(), e1);
 		}
-		return e;
+		return null;
 	}
 
 	@Override
 	@Async
-	public ExceptionReport notifyException(String title, Exception exc) {
+	public AmxApiResponse<ExceptionReport, Object> notifyException(String title, Exception exc) {
 		return this.notifyException(new ExceptionReport(title, exc));
 	}
 

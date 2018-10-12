@@ -1,13 +1,13 @@
 package com.amx.jax.manager;
 
-import static com.amx.amxlib.error.JaxError.BLACK_LISTED_CUSTOMER;
-import static com.amx.amxlib.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.amxlib.error.JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED;
-import static com.amx.amxlib.error.JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL;
-import static com.amx.amxlib.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
-import static com.amx.amxlib.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
-import static com.amx.amxlib.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
-import static com.amx.amxlib.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
+import static com.amx.jax.error.JaxError.BLACK_LISTED_CUSTOMER;
+import static com.amx.jax.error.JaxError.COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.NO_OF_TRANSACTION_LIMIT_EXCEEDED;
+import static com.amx.jax.error.JaxError.REMITTANCE_TRANSACTION_DATA_VALIDATION_FAIL;
+import static com.amx.jax.error.JaxError.TOO_MANY_COMISSION_NOT_DEFINED_FOR_ROUTING_BANK;
+import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED;
+import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_NEW_BENE;
+import static com.amx.jax.error.JaxError.TRANSACTION_MAX_ALLOWED_LIMIT_EXCEED_PER_BENE;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -34,7 +34,6 @@ import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.constant.JaxTransactionStatus;
 import com.amx.amxlib.constant.LoyalityPointState;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -47,6 +46,7 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.auditlog.JaxTransactionEvent;
 import com.amx.jax.config.JaxProperties;
+import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.ExchangeRateProcedureDao;
 import com.amx.jax.dao.ApplicationProcedureDao;
@@ -69,6 +69,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceAppBenificiary;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ViewTransfer;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.exrateservice.dao.ExchangeRateDao;
 import com.amx.jax.exrateservice.dao.PipsMasterDao;
 import com.amx.jax.exrateservice.service.NewExchangeRateService;
@@ -232,7 +233,6 @@ public class RemittanceTransactionManager {
 		BigDecimal remittanceMode = new BigDecimal(remitApplParametersMap.get("P_REMITTANCE_MODE_ID").toString());
 		BigDecimal deliveryMode = new BigDecimal(remitApplParametersMap.get("P_DELIVERY_MODE_ID").toString());
 		BigDecimal currencyId = beneficiary.getCurrencyId();
-		BigDecimal countryId = beneficiary.getCountryId();
 		BigDecimal applicationCountryId = meta.getCountryId();
 		
 		
@@ -660,13 +660,13 @@ public class RemittanceTransactionManager {
 		List<BlackListModel> blist = blistDao.getBlackByName(beneficiary.getBenificaryName());
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("The beneficiary you have selected has been black-listed by CBK ",
-					BLACK_LISTED_CUSTOMER.getCode());
+					BLACK_LISTED_CUSTOMER.getStatusKey());
 		}
 		if (beneficiary.getArbenificaryName() != null) {
 			blist = blistDao.getBlackByName(beneficiary.getArbenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Beneficiary local name found matching with black list ",
-						BLACK_LISTED_CUSTOMER.getCode());
+						BLACK_LISTED_CUSTOMER.getStatusKey());
 			}
 		}
 	}
@@ -722,7 +722,7 @@ public class RemittanceTransactionManager {
 		RemittanceApplicationResponseModel remiteAppModel = new RemittanceApplicationResponseModel();
 		deactivatePreviousApplications();
 		validateAdditionalCheck();
-		validateAdditionalBeneDetails();
+		validateAdditionalBeneDetails(model);
 		RemittanceApplication remittanceApplication = remitAppManager.createRemittanceApplication(model,
 				validatedObjects, validationResults, remitApplParametersMap);
 		RemittanceAppBenificiary remittanceAppBeneficairy = remitAppBeneManager
@@ -735,6 +735,7 @@ public class RemittanceTransactionManager {
 			additionalInstrumentData = oldRemittanceApplicationAdditionalDataManager.createAdditionalInstnData(remittanceApplication);
 		}
 		remitAppDao.saveAllApplicationData(remittanceApplication, remittanceAppBeneficairy, additionalInstrumentData);
+		remitAppDao.updatePlaceOrder(model,remittanceApplication);
 		remiteAppModel.setRemittanceAppId(remittanceApplication.getRemittanceApplicationId());
 		remiteAppModel.setNetPayableAmount(netAmountPayable);
 		remiteAppModel.setDocumentIdForPayment(remittanceApplication.getPaymentId());
@@ -771,10 +772,17 @@ public class RemittanceTransactionManager {
 		remittanceApplicationService.deActivateApplication(customerId);
 	}
 
-	private void validateAdditionalBeneDetails() {
+	private void validateAdditionalBeneDetails(RemittanceTransactionRequestModel model) {
 		Map<String, Object> output = applicationProcedureDao
 				.toFetchDetilaFromAddtionalBenficiaryDetails(remitApplParametersMap);
 		remitApplParametersMap.putAll(output);
+		if (isSaveRemittanceFlow) {
+			BenificiaryListView beneficiary = beneficiaryOnlineDao.findOne(model.getBeneId());
+			if (!ConstantDocument.Yes.equals(beneficiary.getIsActive())) {
+				throw new GlobalException(
+						"The selected beneficiary is deactivated. Please activate the beneficiary to proceed with the transaction.");
+			}
+		}
 	}
 
 	private void validateAdditionalCheck() {

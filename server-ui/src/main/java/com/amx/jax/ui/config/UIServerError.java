@@ -10,9 +10,15 @@ public class UIServerError extends AmxApiException {
 
 	public enum UIServerCodes implements IExceptionEnum {
 		UI_SERVER_ERROR;
+
 		@Override
-		public String getCode() {
+		public String getStatusKey() {
 			return this.toString();
+		}
+
+		@Override
+		public int getStatusCode() {
+			return this.ordinal();
 		}
 
 	}

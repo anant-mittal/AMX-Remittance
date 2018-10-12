@@ -2,6 +2,7 @@ package com.amx.jax.postman;
 
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
@@ -67,6 +68,93 @@ public class PostManConfig {
 	 */
 	public String getExceptionChannelCode() {
 		return exceptionChannelCode;
+	}
+
+	/** The mail from. */
+	@TenantValue("${spring.mail.from}")
+	private String mailFrom;
+
+	@TenantValue("${spring.mail.from.title}")
+	private String mailFromTitle;
+
+	/** The mail host. */
+	@TenantValue("${spring.mail.host}")
+	private String mailHost;
+
+	/** The mail port. */
+	@TenantValue("${spring.mail.port}")
+	private int mailPort;
+
+	/** The mail username. */
+	@TenantValue("${spring.mail.username}")
+	private String mailUsername;
+
+	/** The mail password. */
+	@TenantValue("${spring.mail.password}")
+	private String mailPassword;
+
+	/** The mail smtp auth. */
+	@TenantValue("${spring.mail.properties.mail.smtp.auth}")
+	private boolean mailSmtpAuth;
+
+	/** The mail smtp tls. */
+	@TenantValue("${spring.mail.properties.mail.smtp.starttls.enable}")
+	private boolean mailSmtpTls;
+
+	/** The mail protocol. */
+	@TenantValue("${spring.mail.protocol}")
+	private String mailProtocol;
+
+	/** The mail default encoding. */
+	@TenantValue("${spring.mail.defaultEncoding}")
+	private String mailDefaultEncoding;
+
+	/** The default sender. */
+	@Value("${spring.mail.from}")
+	private String mailDefaultSender;
+
+	public String getMailFrom() {
+		return mailFrom;
+	}
+
+	public String getMailFromTitle() {
+		return mailFromTitle;
+	}
+
+	public String getMailHost() {
+		return mailHost;
+	}
+
+	public int getMailPort() {
+		return mailPort;
+	}
+
+	public String getMailUsername() {
+		return mailUsername;
+	}
+
+	public String getMailPassword() {
+		return mailPassword;
+	}
+
+	public boolean isMailSmtpAuth() {
+		return mailSmtpAuth;
+	}
+
+	public boolean isMailSmtpTls() {
+		return mailSmtpTls;
+	}
+
+	public String getMailProtocol() {
+		return mailProtocol;
+	}
+
+	public String getMailDefaultEncoding() {
+		return mailDefaultEncoding;
+	}
+
+	public String getMailDefaultSender() {
+		return mailDefaultSender;
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.amx.jax.postman.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,17 +9,20 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.postman.IPushNotifyService;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.PostManResponse;
+import com.amx.jax.postman.audit.PMGaugeEvent;
+import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.rest.RestService;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.Constants;
 import com.amx.utils.JsonPath;
+import com.amx.utils.JsonUtil;
 import com.amx.utils.MapBuilder;
 import com.amx.utils.MapBuilder.BuilderMap;
 
@@ -45,6 +49,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	/** The audit service client. */
 	@Autowired
 	AuditServiceClient auditServiceClient;
+
+	@Autowired
+	private FileService fileService;
 
 	/** The Constant MAIN_TOPIC. */
 	private static final JsonPath MAIN_TOPIC = new JsonPath("/to");
@@ -84,8 +91,45 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * PushMessage)
 	 */
 	@Async
-	public PushMessage sendDirect(PushMessage msg) {
-		if (msg.getTo() != null) {
+	@Override
+	public AmxApiResponse<PushMessage, Object> sendDirect(PushMessage msg) {
+		try {
+
+			if (msg.getTo() == null) {
+				throw new PostManException(PostManException.ErrorCode.NO_RECIPIENT_DEFINED);
+			}
+
+			if (msg.getTemplate() != null) {
+				File file = new File();
+				file.setTemplate(msg.getTemplate());
+				file.setModel(msg.getModel());
+				file.setLang(msg.getLang());
+				file.setType(File.Type.JSON);
+
+				@SuppressWarnings("unchecked")
+				Map<String, Object> map = JsonUtil.fromJson(fileService.create(file).getContent(), Map.class);
+				msg.setModel(map);
+
+				String message = ArgUtil.parseAsString(map.get("_message"));
+				if (!ArgUtil.isEmptyString(message)) {
+					msg.setMessage(message);
+					map.remove("_message");
+				}
+
+				String subject = ArgUtil.parseAsString(map.get("_subject"));
+				if (!ArgUtil.isEmptyString(subject)) {
+					msg.setSubject(subject);
+					map.remove("_subject");
+				}
+
+				String image = ArgUtil.parseAsString(map.get("_image"));
+				if (!ArgUtil.isEmptyString(image)) {
+					msg.setImage(image);
+					map.remove("_image");
+				}
+
+			}
+
 			String topic = msg.getTo().get(0);
 			StringBuilder androidTopic = new StringBuilder();
 			StringBuilder iosTopic = new StringBuilder();
@@ -123,10 +167,15 @@ public class FBPushServiceImpl implements IPushNotifyService {
 					}
 				}
 			}
-
+		} catch (PostManException e) {
+			auditServiceClient.log(
+					new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(Result.FAIL).set(msg, msg.getMessage(), null));
+		} catch (Exception e) {
+			auditServiceClient.excep(new PMGaugeEvent(PMGaugeEvent.Type.NOTIFCATION).set(msg, msg.getMessage(), null),
+					LOGGER, e);
 		}
 
-		return msg;
+		return AmxApiResponse.build(msg);
 	}
 
 	/**
@@ -155,9 +204,9 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			} else {
 				throw new PostManException(PostManException.ErrorCode.NO_CHANNEL_DEFINED);
 			}
-			auditServiceClient.gauge(pMGaugeEvent.set(Result.DONE).set(msg, message, response));
+			auditServiceClient.log(pMGaugeEvent.set(Result.DONE).set(msg, message, response));
 		} catch (PostManException e) {
-			auditServiceClient.gauge(pMGaugeEvent.set(Result.FAIL).set(msg, message, null));
+			auditServiceClient.log(pMGaugeEvent.set(Result.FAIL).set(msg, message, null));
 		} catch (Exception e) {
 			auditServiceClient.excep(pMGaugeEvent.set(msg, message, null), LOGGER, e);
 		}
@@ -176,8 +225,10 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * @return the string
 	 */
 	private String sendAndroid(String topic, PushMessage msg, String message) {
-		BuilderMap fields = MapBuilder.map().put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject())
-				.put(DATA_MESSAGE, message).put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
+		BuilderMap fields = MapBuilder.map()
+
+				.put(DATA_IS_BG, true).put(DATA_TITLE, msg.getSubject()).put(DATA_MESSAGE, message)
+				.put(DATA_IMAGE, msg.getImage()).put(DATA_PAYLOAD, msg.getModel())
 				.put(DATA_TIMESTAMP, System.currentTimeMillis());
 
 		fields.put(msg.isCondition() ? MAIN_CONDITION : MAIN_TOPIC, topic);
@@ -245,7 +296,8 @@ public class FBPushServiceImpl implements IPushNotifyService {
 	 * @see com.amx.jax.postman.FBPushService#subscribe(java.lang.String,
 	 * java.lang.String)
 	 */
-	public PostManResponse subscribe(String token, String topic) {
+	@Override
+	public AmxApiResponse<String, Object> subscribe(String token, String topic) {
 		PMGaugeEvent pMGaugeEvent = new PMGaugeEvent();
 		pMGaugeEvent.setType(PMGaugeEvent.Type.NOTIFCATION_SUBSCRIPTION);
 		try {
@@ -258,12 +310,12 @@ public class FBPushServiceImpl implements IPushNotifyService {
 			auditServiceClient.excep(pMGaugeEvent, LOGGER, e);
 			slackService.sendException(topic, e);
 		}
-		return new PostManResponse();
+		return AmxApiResponse.build(token);
 	}
 
 	@Override
-	public PostManResponse send(List<PushMessage> msgs) throws PostManException {
-		return new PostManResponse();
+	public AmxApiResponse<PushMessage, Object> send(List<PushMessage> msgs) throws PostManException {
+		return AmxApiResponse.buildList(msgs);
 	}
 
 }

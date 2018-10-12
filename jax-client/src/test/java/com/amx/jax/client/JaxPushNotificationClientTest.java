@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.api.AmxApiResponse;
 
 @RunWith(SpringRunner.class)

@@ -19,18 +19,14 @@ import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Component;
 
-import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionDetailRowMapper;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
 import com.amx.jax.dbmodel.promotion.PromotionHeaderPK;
-import com.amx.jax.dbmodel.promotion.PromotionLocation;
 import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
-import com.amx.jax.dbmodel.promotion.PromotionLocationPK;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.promotion.PromotionHeaderRepository;
-import com.amx.jax.repository.promotion.PromotionLocationRepository;
 import com.amx.jax.repository.promotion.PromotionLocationRowMapper;
 
 /**

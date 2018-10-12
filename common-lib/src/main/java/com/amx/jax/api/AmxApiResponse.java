@@ -25,6 +25,33 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 	}
 
 	/**
+	 * Instantiates a new amx api response.
+	 *
+	 * @param resultList
+	 *            the result list
+	 */
+	public AmxApiResponse(List<T> resultList) {
+		super();
+		this.data = null;
+		this.results = resultList;
+	}
+
+	/**
+	 * Instantiates a new amx api response.
+	 *
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
+	 */
+	public AmxApiResponse(List<T> resultList, M meta) {
+		super();
+		this.data = null;
+		this.results = resultList;
+		this.meta = meta;
+	}
+
+	/**
 	 * Gets the data.
 	 *
 	 * @return the data
@@ -53,7 +80,7 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 
 	@JsonIgnore
 	public T getResult() {
-		if (results != null) {
+		if (results != null && !results.isEmpty()) {
 			return results.get(0);
 		}
 		return null;
@@ -67,12 +94,6 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		return new AmxApiResponse<TS, Object>();
 	}
 
-	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> results) {
-		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
-		resp.setResults(results);
-		return resp;
-	}
-
 	public static <TS> AmxApiResponse<TS, Object> build(TS result) {
 		AmxApiResponse<TS, Object> resp = new AmxApiResponse<TS, Object>();
 		resp.addResult(result);
@@ -84,6 +105,36 @@ public class AmxApiResponse<T, M> extends AResponse<M> implements Serializable {
 		resp.addResult(result);
 		resp.setMeta(meta);
 		return resp;
+	}
+
+	/**
+	 * Builds the list.
+	 *
+	 * @param <TS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
+	 * @return the amx api response
+	 */
+	public static <TS> AmxApiResponse<TS, Object> buildList(List<TS> resultList) {
+		return new AmxApiResponse<TS, Object>(resultList);
+	}
+
+	/**
+	 * Builds the list.
+	 *
+	 * @param <TS>
+	 *            the generic type
+	 * @param <MS>
+	 *            the generic type
+	 * @param resultList
+	 *            the result list
+	 * @param meta
+	 *            the meta
+	 * @return the amx api response
+	 */
+	public static <TS, MS> AmxApiResponse<TS, MS> buildList(List<TS> resultList, MS meta) {
+		return new AmxApiResponse<TS, MS>(resultList, meta);
 	}
 
 }

@@ -26,6 +26,7 @@ import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
 import com.amx.amxlib.meta.model.CurrencyMasterDTO;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -165,7 +166,8 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF));
+		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF))
+				.getResult();
 		file.create(response, true);
 		return wrapper;
 	}
@@ -203,7 +205,8 @@ public class RemittController {
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, true);
 		}
 		return JsonUtil.toJson(file);
@@ -258,12 +261,14 @@ public class RemittController {
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
 					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF));
+							File.Type.PDF))
+					.getResult();
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
 			File file = postManService.processTemplate(new File(
-					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null));
+					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null))
+					.getResult();
 			return file.getContent();
 		} else {
 			return JsonUtil.toJson(wrapper);
@@ -435,5 +440,10 @@ public class RemittController {
 		ResponseWrapper<RemittanceTransactionStatusResponseModel> wrapper = new ResponseWrapper<RemittanceTransactionStatusResponseModel>();
 		wrapper.setData(jaxService.setDefaults().getRemitClient().fetchTransactionDetails(request, true).getResult());
 		return wrapper;
+	}
+
+	@RequestMapping(value = "/api/remitt/tranx/rating", method = { RequestMethod.POST })
+	public ResponseWrapper<CustomerRatingDTO> appStatus(@RequestBody CustomerRatingDTO customerRatingDTO) {
+		return ResponseWrapper.build(jaxService.setDefaults().getRemitClient().saveCustomerRating(customerRatingDTO));
 	}
 }

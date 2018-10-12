@@ -23,18 +23,17 @@ import com.amx.jax.dao.RemittanceApplicationDao;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.promotion.PromotionDetailModel;
 import com.amx.jax.dbmodel.promotion.PromotionHeader;
-import com.amx.jax.dbmodel.promotion.PromotionLocation;
 import com.amx.jax.dbmodel.promotion.PromotionLocationModel;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.repository.employee.AmgEmployeeRepository;
 import com.amx.jax.service.CountryBranchService;
 import com.amx.jax.service.FinancialService;
 import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.util.DateUtil;
-import com.amx.jax.repository.employee.AmgEmployeeRepository;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -101,6 +100,7 @@ public class PromotionManager {
 			}
 			return dto;
 		} catch (Exception e) {
+			logger.error("error occured in get promo dto", e);
 			return null;
 		}
 	}
@@ -122,7 +122,7 @@ public class PromotionManager {
 					.getBranchId();
 			promotionDao.callGetPromotionPrize(documentNoRemit, documentFinYearRemit, branchId);
 			PromotionDto promotDto = getPromotionDto(documentNoRemit, documentFinYearRemit);
-			if (promotDto != null) {
+			if (promotDto != null && !promotDto.isChichenVoucher()) {
 				logger.info("Sending promo winner Email to helpdesk : ");
 				try {
 					RemittanceTransaction remittanceApplication = remittanceApplicationDao
@@ -131,12 +131,8 @@ public class PromotionManager {
 					Email email = new Email();
 					email.setSubject(
 							"Today's winner " + DateUtil.todaysDateWithDDMMYY(Calendar.getInstance().getTime(), ""));
-					if (promotDto.isChichenVoucher()) {
-						email.addTo("App-support@almullaexchange.com");
-					} else {
-						email.addTo("online@almullaexchange.com");
-						email.addTo("huzefa.abbasi@almullaexchange.com");
-					}
+					email.addTo("online@almullaexchange.com");
+					email.addTo("huzefa.abbasi@almullaexchange.com");
 					email.setTemplate(Templates.PROMOTION_WINNER);
 					email.setHtml(true);
 					email.getModel().put(RESP_DATA_KEY, personInfo);

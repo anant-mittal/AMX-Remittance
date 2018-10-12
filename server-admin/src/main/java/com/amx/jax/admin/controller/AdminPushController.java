@@ -74,7 +74,7 @@ public class AdminPushController {
 		customerNotification.setTitle(title);
 		notificationClient.save(customerNotification);
 
-		return pushNotifyClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg).getResult();
 	}
 
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
@@ -100,7 +100,7 @@ public class AdminPushController {
 		}
 		notificationClient.save(customerNotification);
 
-		return pushNotifyClient.sendDirect(msg);
+		return pushNotifyClient.sendDirect(msg).getResult();
 	}
 
 	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)

@@ -71,8 +71,10 @@ public class HotPointService {
 		NEW_KHAITAN("29.2762099","47.9725432"),
 		WAFRA_BRANCH("28.5631419","48.0628015"),
 		SURRA_BRANCH("29.3138254","48.0022465"),
-		HASSAWI_BRANCH("29.2662336","47.9239427")
-		;
+		HASSAWI_BRANCH("29.2662336","47.9239427"),
+
+		AWFIS_CHEMTEX_LANE("19.119084", "72.913620"), POWAI_PLAZA("19.123392", "72.913109"), D_MART_POWAI("19.116531",
+				"72.910423");
 
 		/** The latitude. */
 		private String latitude;
@@ -156,7 +158,7 @@ public class HotPointService {
 	 *             the post man exception
 	 */
 	@Async
-	public List<String> notify(BigDecimal customerId, String token, HotPoints hotpoint) throws PostManException {
+	public List<String> notify(BigDecimal customerId, String token, GeoHotPoints hotpoint) throws PostManException {
 
 		List<String> messages = new ArrayList<>();
 		List<MinMaxExRateDTO> rates = jaxService.setDefaults(customerId).getxRateClient().getMinMaxExchangeRate()
