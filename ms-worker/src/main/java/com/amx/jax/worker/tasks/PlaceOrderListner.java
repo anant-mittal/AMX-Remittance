@@ -20,21 +20,22 @@ import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
-public class PlaceOrderListner implements ITunnelSubscriber<Event> {
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
+public class PlaceOrderListner implements ITunnelSubscriber<ITunnelEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
-	public void onMessage(String channel, Event event) {
+	public void onMessage(String channel, ITunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
 		this.rateAlertPlaceOrder(pipsMasterId);
