@@ -45,6 +45,7 @@ public class PostManControllerDb {
 		return lang;
 	}
 
+	
 	/**
 	 * @param tnt
 	 * @param lang
@@ -87,7 +88,9 @@ public class PostManControllerDb {
 
 		email.setITemplate(template);
 		postManService.sendEmailAsync(email);
-
+		
+		
+		
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, String> data = new HashMap<String, String>();
 		data.put("msg", String.format("Email is send to %s and Ref NO. is %s", customer, refno));

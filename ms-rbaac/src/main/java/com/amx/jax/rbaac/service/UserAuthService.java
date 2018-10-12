@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.RbaacConstants;
-import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.dbmodel.Role;
@@ -79,7 +79,7 @@ public class UserAuthService {
 		String identity = userAuthInitReqDTO.getIdentity();
 		String ipAddress = userAuthInitReqDTO.getIpAddress();
 		String deviceId = userAuthInitReqDTO.getDeviceId();
-		DEVICE_TYPE deviceType = userAuthInitReqDTO.getDeviceType();
+		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
 
 		/**
 		 * Input -> Invalid
@@ -90,14 +90,14 @@ public class UserAuthService {
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
+		if (DeviceType.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
 			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		List<Employee> employees;
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
+		if (DeviceType.MOBILE.equals(deviceType)) {
 			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
 			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
@@ -250,6 +250,9 @@ public class UserAuthService {
 
 		empDetail.setUserRole(roleResponseDTO);
 
+		// Set Last Successful Login Date as Current Date
+		updateLastLogin(employee);
+
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
 
@@ -282,6 +285,16 @@ public class UserAuthService {
 		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
+
+		rbaacDao.saveEmployee(destEmp);
+
+		return true;
+	}
+
+	private boolean updateLastLogin(Employee srcEmp) {
+
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		destEmp.setLastLogin(new Date());
 
 		rbaacDao.saveEmployee(destEmp);
 

@@ -125,6 +125,7 @@ public enum JaxError implements IExceptionEnum {
 	BLACK_LISTED_EXISTING_CIVIL_ID,
 	EXCHANGE_RATE_CHANGED,
 	ADDTIONAL_FLEX_FIELD_REQUIRED,
+	//Offsite customer
 	BLANK_CIVIL_ID,
 	BLANK_EMPLOYEE_ID,
 	INVALID_EMPLOYEE,
@@ -162,6 +163,6 @@ public enum JaxError implements IExceptionEnum {
 	@Override
 	public int getStatusCode() {
 		return 1000 + this.ordinal();
-    }
+	}
 
 }

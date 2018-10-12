@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,8 +23,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.amx.jax.AppConstants;
 import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.http.CommonHttpRequest.CommonMediaType;
-import com.amx.jax.postman.PostManService;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
@@ -56,7 +58,7 @@ public class SSOServerController {
 	private SSOUser ssoUser;
 
 	@Autowired
-	private PostManService postManService;
+	private CommonHttpRequest commonHttpRequest;
 
 	@Autowired
 	RbaacServiceClient rbaacServiceClient;
@@ -107,7 +109,7 @@ public class SSOServerController {
 			CommonMediaType.APPLICATION_JSON_VALUE, CommonMediaType.APPLICATION_V0_JSON_VALUE })
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
-			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "DO") SSOAuthStep json,
+			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
 			HttpServletResponse resp) throws URISyntaxException, IOException {
 
 		if (json == SSOAuthStep.DO) {
@@ -124,19 +126,27 @@ public class SSOServerController {
 		result.setStatusEnum(SSOServerCodes.AUTH_REQUIRED);
 
 		if (sSOTranx.get() != null) {
+			UserDevice userDevice = commonHttpRequest.getUserDevice();
+
 			if (SSOAuthStep.CREDS == json) {
 
 				UserAuthInitReqDTO init = new UserAuthInitReqDTO();
 				init.setEmployeeNo(formdata.getEcnumber());
 				init.setIdentity(formdata.getIdentity());
+				init.setIpAddress(userDevice.getIp());
+				init.setDeviceId(userDevice.getFingerprint());
+				init.setDeviceType(userDevice.getType());
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
-				model.put("mOtpPrefix", initResp.geteOtpPrefix());
+				model.put("mOtpPrefix", initResp.getmOtpPrefix());
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
-			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null) {
+			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
+				auth.setEmployeeNo(formdata.getEcnumber());
+				auth.setIpAddress(userDevice.getIp());
+				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);

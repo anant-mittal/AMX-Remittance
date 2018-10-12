@@ -54,7 +54,7 @@ public class CustomerRegistrationClientTest extends AbstractTestClient {
 		client.savePhishiingImage("test", "5");
 		
 		CustomerCredential customerCredential = new CustomerCredential(personalDetail.getIdentityInt(), "Amx@1234");
-		response = client.saveLoginDetail(customerCredential);
+		response = client.saveLoginDetail(customerCredential, Boolean.TRUE);
 
 		trnxId = (String) ContextUtil.map().get(AppConstants.TRANX_ID_XKEY);
 		assertNotNull("Response is null", response);

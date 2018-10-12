@@ -3,7 +3,7 @@ package com.amx.jax.tunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@TunnelEvent(topic = SampleTunnelEvents.Names.TEST_TOPIC, queued = true)
+@TunnelEventMapping(topic = SampleTunnelEvents.Names.TEST_TOPIC, queued = true)
 public class SampleTunnelSubscriber implements ITunnelSubscriber<Object> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());

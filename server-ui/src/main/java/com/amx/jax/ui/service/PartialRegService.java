@@ -173,7 +173,7 @@ public class PartialRegService {
 		sessionService.getGuestSession().initStep(AuthStep.CREDS_SET);
 		ResponseWrapper<UserUpdateData> wrapper = new ResponseWrapper<UserUpdateData>(new UserUpdateData());
 
-		jaxClient.setDefaults().getCustRegClient().saveLoginDetail(customerCredential).getResult();
+		jaxClient.setDefaults().getCustRegClient().saveLoginDetail(customerCredential, Boolean.TRUE).getResult();
 
 		wrapper.setMessage(WebResponseStatus.USER_UPDATE_SUCCESS, "LoginId and Password updated");
 		sessionService.getGuestSession().endStep(AuthStep.CREDS_SET);

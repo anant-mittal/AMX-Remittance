@@ -158,9 +158,16 @@
 		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
 		</repositories> -->
 
-	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
-		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
-		</pluginRepository> </pluginRepositories> -->
+	<!--
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	-->
 
 	<modules>
 		<!-- Common Libs -->
@@ -203,7 +210,6 @@
 
 		<module>server-admin</module>
 		<module>server-branch</module>
-		<module>server-sso</module>
 		<!-- <module>server-kiosk</module> -->
 		<!-- <module>server-sample</module> -->
 	</modules>

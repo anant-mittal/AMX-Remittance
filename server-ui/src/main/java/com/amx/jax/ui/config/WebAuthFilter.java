@@ -62,7 +62,7 @@ public class WebAuthFilter implements Filter {
 			if (!AppContextUtil.getRequestType().isTrack()) {
 				AppContextUtil.setActorId(
 						new AuditActor(sessionService.getUserSession().isValid() ? AuditActor.ActorType.CUSTOMER
-								: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
+							: AuditActor.ActorType.GUEST, sessionService.getUserSession().getUserid()));
 			}
 			chain.doFilter(req, resp);
 		}

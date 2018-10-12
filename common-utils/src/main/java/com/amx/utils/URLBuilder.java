@@ -4,8 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.springframework.web.bind.annotation.PathVariable;
-
 /**
  * The Class URLBuilder.
  */
@@ -115,7 +113,10 @@ public class URLBuilder {
 	 */
 	public String getURL() throws URISyntaxException, MalformedURLException {
 		URI uri;
-		if (connType == null) {
+		if (host == null) {
+			// uri = new URI(null, null, folders.toString(), params.toString(), null);
+			return folders.toString().replaceAll("/+", "/") + "?" + params.toString();
+		} else if (connType == null) {
 			// uri = new URI(null, null, folders.toString(), params.toString(), null);
 			return host + folders.toString().replaceAll("/+", "/") + "?" + params.toString();
 		} else {

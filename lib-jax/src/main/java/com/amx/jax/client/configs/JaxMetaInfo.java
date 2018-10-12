@@ -3,26 +3,22 @@ package com.amx.jax.client.configs;
 import java.math.BigDecimal;
 
 import com.amx.jax.constants.JaxChannel;
-import com.amx.jax.dict.Tenant;
+import com.amx.jax.rest.RestMetaInfo;
 
-public class JaxMetaInfo {
+public class JaxMetaInfo extends RestMetaInfo {
 
-	private BigDecimal countryId;
-	private Tenant tenant = Tenant.DEFAULT;
+	public static final String DEFAULT_COMPANY_ID = "1";
 
-	private BigDecimal customerId;
-	private BigDecimal companyId;
-	private BigDecimal languageId;
+	public static final String DEFAULT_CURRENCY_ID = "1";
+
+	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78";
+
 	private BigDecimal countryBranchId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private String referrer = null;
-
 	private String deviceId;
 
-	private String deviceType;
-	private String appType;
 	private BigDecimal employeeId;
-
 
 	public JaxMetaInfo copy() {
 		JaxMetaInfo info = new JaxMetaInfo();
@@ -40,22 +36,6 @@ public class JaxMetaInfo {
 		info.setAppType(this.getAppType());
 		info.setEmployeeId(this.getEmployeeId());
 		return info;
-	};
-
-	public String getAppType() {
-		return appType;
-	}
-
-	public void setAppType(String appType) {
-		this.appType = appType;
-	}
-
-	public String getDeviceType() {
-		return deviceType;
-	}
-
-	public void setDeviceType(String deviceType) {
-		this.deviceType = deviceType;
 	}
 
 	public String getDeviceId() {
@@ -94,46 +74,6 @@ public class JaxMetaInfo {
 		this.traceId = traceId;
 	}
 
-	public BigDecimal getLanguageId() {
-		return languageId;
-	}
-
-	public void setLanguageId(BigDecimal languageId) {
-		this.languageId = languageId;
-	}
-
-	public BigDecimal getCustomerId() {
-		return customerId;
-	}
-
-	public void setCustomerId(BigDecimal customerId) {
-		this.customerId = customerId;
-	}
-
-	public BigDecimal getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(BigDecimal companyId) {
-		this.companyId = companyId;
-	}
-
-	public BigDecimal getCountryId() {
-		return countryId;
-	}
-
-	public void setCountryId(BigDecimal countryId) {
-		this.countryId = countryId;
-	}
-
-	public Tenant getTenant() {
-		return tenant;
-	}
-
-	public void setTenant(Tenant tenant) {
-		this.tenant = tenant;
-	}
-
 	public JaxChannel getChannel() {
 		return channel;
 	}
@@ -157,9 +97,5 @@ public class JaxMetaInfo {
 	public void setEmployeeId(BigDecimal employeeId) {
 		this.employeeId = employeeId;
 	}
-
-	
-	
-	
 
 }

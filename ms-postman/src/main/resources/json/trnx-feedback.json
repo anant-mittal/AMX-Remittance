@@ -1,0 +1,10 @@
+{
+	"data": {
+		"customer": "Riddhi",
+		"amount": "KD100",
+		"loyaltypoints" : "1000",
+		"refno" : "100/112",
+		"date" : "11/02/2018",
+		"currency" : "INR"
+	}
+}

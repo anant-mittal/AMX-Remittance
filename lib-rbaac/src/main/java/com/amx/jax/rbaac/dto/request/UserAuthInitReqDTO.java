@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.amx.jax.rbaac.constants.RbaacServiceConstants;
+import com.amx.jax.dict.UserClient.DeviceType;
 
 /**
  * The Class UserAuthInitReqDTO.
@@ -38,7 +38,7 @@ public class UserAuthInitReqDTO implements Serializable {
 
 	/** The device type. */
 	@NotNull(message = "Device Type Can not be Null or Empty")
-	private RbaacServiceConstants.DEVICE_TYPE deviceType;
+	private DeviceType deviceType;
 
 	/**
 	 * Gets the employee no.
@@ -97,7 +97,6 @@ public class UserAuthInitReqDTO implements Serializable {
 		this.ipAddress = ipAddress;
 	}
 
-
 	/**
 	 * Gets the device id.
 	 *
@@ -122,11 +121,11 @@ public class UserAuthInitReqDTO implements Serializable {
 	 *
 	 * @return the device type
 	 */
-	public RbaacServiceConstants.DEVICE_TYPE getDeviceType() {
+	public DeviceType getDeviceType() {
 		return deviceType;
 	}
 
-	public void setDeviceType(RbaacServiceConstants.DEVICE_TYPE deviceType) {
+	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
 

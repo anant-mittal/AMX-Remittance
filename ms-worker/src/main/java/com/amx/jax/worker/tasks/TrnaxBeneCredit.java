@@ -1,6 +1,7 @@
 package com.amx.jax.worker.tasks;
 
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,20 +11,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
-public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.TRNX_BENE_CREDIT, scheme = TunnelEventXchange.TASK_WORKER)
+public class TrnaxBeneCredit implements ITunnelSubscriber<ITunnelEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -44,9 +45,10 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 	private static final String TRNDATE = "TRNDATE";
 	private static final String LANG_ID = "LANG_ID";
 	private static final String TENANT = "TENANT";
+	private static final String CURNAME = "CURNAME";
 
 	@Override
-	public void onMessage(String channel, Event event) {
+	public void onMessage(String channel, ITunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String smsNo = ArgUtil.parseAsString(event.getData().get(MOBILE));
@@ -57,15 +59,21 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 		String trnxRef = ArgUtil.parseAsString(event.getData().get(TRNREF));
 		String trnxDate = ArgUtil.parseAsString(event.getData().get(TRNDATE));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
+		String curName = ArgUtil.parseAsString(event.getData().get(CURNAME));
 
+		NumberFormat myFormat = NumberFormat.getInstance();
+		myFormat.setGroupingUsed(true);
+		String trnxAmountval = myFormat.format(trnxAmount);
+				
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
 		modeldata.put("to", emailId);
 		modeldata.put("customer", custNname);
-		modeldata.put("amount", trnxAmount);
+		modeldata.put("amount", trnxAmountval);
 		modeldata.put("loyaltypoints", loyality);
 		modeldata.put("refno", trnxRef);
 		modeldata.put("date", trnxDate);
+		modeldata.put("currency", curName);
 		wrapper.put("data", modeldata);
 
 		if (!ArgUtil.isEmpty(emailId)) {
@@ -82,7 +90,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<Event> {
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			email.setSubject("Feedback Email"); // Given by Umesh
+			email.setSubject("Transaction Credit Notification"); // changed as per BA
 			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			postManClient.sendEmailAsync(email);
 		}

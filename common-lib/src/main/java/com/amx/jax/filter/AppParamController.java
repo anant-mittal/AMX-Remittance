@@ -2,12 +2,15 @@ package com.amx.jax.filter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.AppParam;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.model.UserDevice;
 import com.amx.jax.types.DigitsDnum;
 import com.amx.jax.types.Pnum;
 import com.amx.jax.types.WritersPnum;
@@ -24,6 +27,9 @@ public class AppParamController {
 		Pnum.init(WritersPnum.class);
 	}
 
+	@Autowired
+	CommonHttpRequest commonHttpRequest;
+
 	@RequestMapping(value = PARAM_URL, method = RequestMethod.GET)
 	public AppParam[] geoLocation(@RequestParam(required = false) AppParam id) {
 		if (id != null) {
@@ -31,6 +37,11 @@ public class AppParamController {
 			LOGGER.info("App Param {} changed to {}", id, id.isEnabled());
 		}
 		return AppParam.values();
+	}
+
+	@RequestMapping(value = "/pub/amx/device", method = RequestMethod.GET)
+	public UserDevice userDevice() {
+		return commonHttpRequest.getUserDevice();
 	}
 
 	@RequestMapping(value = "/pub/amx/pnum", method = RequestMethod.GET)

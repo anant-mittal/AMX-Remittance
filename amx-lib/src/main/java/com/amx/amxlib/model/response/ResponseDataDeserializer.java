@@ -17,7 +17,6 @@ import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.CustomerDto;
 import com.amx.amxlib.meta.model.EmployeeDetailsDTO;
 import com.amx.amxlib.meta.model.JaxMetaParameter;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
@@ -48,6 +47,7 @@ import com.amx.amxlib.model.UserModel;
 import com.amx.amxlib.model.UserVerificationCheckListDTO;
 import com.amx.amxlib.model.trnx.BeneficiaryTrnxModel;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -257,7 +257,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "user-detail":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
-			break;
+			break;	
 	}
 		responseData.setValues(models);
 		return responseData;
