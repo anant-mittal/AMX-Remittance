@@ -41,11 +41,6 @@
 				<version>${amx.version}</version>
 				<type>pom</type>
 			</dependency>
-			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-ext-jar</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -158,16 +153,9 @@
 		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
 		</repositories> -->
 
-	<!--
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sonatype-snapshots</id>
-			<name>Sonatype Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
-
-	-->
+	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
+		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
+		</pluginRepository> </pluginRepositories> -->
 
 	<modules>
 		<!-- Common Libs -->
@@ -197,7 +185,8 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-jax-customer</module>
+		<module>ms-jax/ms-jax-customer</module>
+
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
