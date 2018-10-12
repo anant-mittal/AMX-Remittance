@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 
 /**
  * The Class LoggerSubscriber.
  */
-@TunnelEvent(topic = AuditService.AUDIT_EVENT_TOPIC, scheme = TunnelEventXchange.AUDIT)
+@TunnelEventMapping(topic = AuditService.AUDIT_EVENT_TOPIC, scheme = TunnelEventXchange.AUDIT)
 public class LoggerSubscriber implements ITunnelSubscriber<Object> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(LoggerSubscriber.class);

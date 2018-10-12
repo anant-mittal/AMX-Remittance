@@ -7,6 +7,12 @@ import com.amx.jax.dict.Tenant;
 
 public class JaxMetaInfo {
 
+	public static final String DEFAULT_COMPANY_ID = "1";
+
+	public static final String DEFAULT_CURRENCY_ID = "1";
+
+	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78"; // online
+
 	private BigDecimal countryId;
 	private Tenant tenant = Tenant.DEFAULT;
 
@@ -21,7 +27,6 @@ public class JaxMetaInfo {
 
 	private String deviceType;
 	private String appType;
-
 
 	public JaxMetaInfo copy() {
 		JaxMetaInfo info = new JaxMetaInfo();

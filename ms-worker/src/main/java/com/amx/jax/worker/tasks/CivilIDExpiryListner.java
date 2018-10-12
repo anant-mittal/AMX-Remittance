@@ -10,20 +10,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.Templates;
+import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
-public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.CIVIL_ID_EXPIRY, scheme = TunnelEventXchange.TASK_WORKER)
+public class CivilIDExpiryListner implements ITunnelSubscriber<ITunnelEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -48,7 +48,7 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<Event> {
 	// {"FROMAMOUNT":"1","TOAMOUNT":"300000","CNTRYID":"94","CURRID":"4","BANKID":"1256","DRVSELLRATE":".004524"}}
 
 	@Override
-	public void onMessage(String channel, Event event) {
+	public void onMessage(String channel, ITunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String emailId = ArgUtil.parseAsString(event.getData().get(EMAIL));
 		String langId = ArgUtil.parseAsString(event.getData().get(LANG_ID));
