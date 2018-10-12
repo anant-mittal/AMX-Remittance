@@ -110,7 +110,6 @@ public class SSOServerController {
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
-			@ApiParam(defaultValue = "64a098c4c08d9ec2") @RequestHeader(value = AppConstants.DEVICE_ID_XKEY, required = false) String did,
 			HttpServletResponse resp) throws URISyntaxException, IOException {
 
 		if (json == SSOAuthStep.DO) {
@@ -139,7 +138,7 @@ public class SSOServerController {
 				init.setDeviceType(userDevice.getType());
 				UserAuthInitResponseDTO initResp = rbaacServiceClient.initAuthForUser(init).getResult();
 
-				model.put("mOtpPrefix", initResp.geteOtpPrefix());
+				model.put("mOtpPrefix", initResp.getmOtpPrefix());
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
