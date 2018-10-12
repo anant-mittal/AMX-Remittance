@@ -42,10 +42,10 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
-              		<groupId>com.amx.jax</groupId>
-                     <artifactId>lib-ext-jar</artifactId>
-                     <version>${amx.version}</version>
-             </dependency>
+				<groupId>com.amx.jax</groupId>
+				<artifactId>lib-ext-jar</artifactId>
+				<version>${amx.version}</version>
+			</dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -63,34 +63,34 @@
 				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-jax</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>jax-client</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
-			</dependency>	
-			
+			</dependency>
+
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-monitor</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-					
+
 		</dependencies>
 
-	 </dependencyManagement>
+	</dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -170,39 +170,44 @@
 	-->
 
 	<modules>
+		<!-- Common Libs -->
 		<module>common-utils</module>
 		<module>common-lib</module>
-		<module>common-amx</module>
 		<module>lib-ext-jar</module>
-		<module>lib-db</module>
 		<module>lib-mcq</module>
 		<module>lib-monitor</module>
+		<module>lib-postman</module>
+
+		<!-- Common Servers -->
+		<module>ms-postman</module>
+		<module>server-payg</module>
+		<module>server-monitor</module>
+
+		<!-- Exchange Libs -->
+		<module>common-amx</module>
+		<module>lib-db</module>
 		<module>lib-rbaac</module>
 		<module>lib-sso</module>
 		<module>lib-jax</module>
-
-		<module>lib-postman</module>
-		<module>ms-postman</module>
-
 		<module>amx-lib</module>
 		<module>core</module>
+		<module>jax-client</module>
+
+		<!-- Exchange Services -->
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
 		<module>ms-jax-customer</module>
 		<module>ms-jax</module>
-		<module>jax-client</module>
 		<module>ms-rbaac</module>
 		<module>ms-broker</module>
 		<module>ms-worker</module>
 
-		<module>server-payg</module>
 		<module>server-ui</module>
 		<module>server-offsite</module>
 		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
-		
-		<module>server-monitor</module>
+
 		<module>server-admin</module>
 		<module>server-branch</module>
 		<!-- <module>server-kiosk</module> -->
