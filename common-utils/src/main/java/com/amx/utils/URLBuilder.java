@@ -4,16 +4,14 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.springframework.web.bind.annotation.PathVariable;
-
 /**
  * The Class URLBuilder.
  */
 public class URLBuilder {
-
+	
 	/** The params. */
 	private StringBuilder folders, params;
-
+	
 	/** The host. */
 	private String connType, host;
 

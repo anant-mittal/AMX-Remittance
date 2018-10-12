@@ -42,10 +42,10 @@
 				<type>pom</type>
 			</dependency>
 			<dependency>
-				<groupId>com.amx.jax</groupId>
-				<artifactId>lib-ext-jar</artifactId>
-				<version>${amx.version}</version>
-			</dependency>
+              		<groupId>com.amx.jax</groupId>
+                     <artifactId>lib-ext-jar</artifactId>
+                     <version>${amx.version}</version>
+             </dependency>
 
 			<dependency>
 				<groupId>com.amx.jax</groupId>
@@ -63,34 +63,34 @@
 				<artifactId>lib-rbaac</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-jax</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>jax-client</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-postman</artifactId>
 				<version>${amx.version}</version>
-			</dependency>
-
+			</dependency>	
+			
 			<dependency>
 				<groupId>com.amx.jax</groupId>
 				<artifactId>lib-monitor</artifactId>
 				<version>${amx.version}</version>
 			</dependency>
-
+					
 		</dependencies>
 
-	</dependencyManagement>
+	 </dependencyManagement>
 
 	<dependencies>
 		<dependency>
@@ -101,7 +101,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -158,9 +158,16 @@
 		<url>https://gitlab.com/almullagroup/maven/mvn-amx/raw/master/</url> </repository> 
 		</repositories> -->
 
-	<!-- <pluginRepositories> <pluginRepository> <id>sonatype-snapshots</id> 
-		<name>Sonatype Snapshots</name> <url>https://oss.sonatype.org/content/repositories/snapshots/</url> 
-		</pluginRepository> </pluginRepositories> -->
+	<!--
+	<pluginRepositories>
+		<pluginRepository>
+			<id>sonatype-snapshots</id>
+			<name>Sonatype Snapshots</name>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	-->
 
 	<modules>
 		<module>common-utils</module>
@@ -194,7 +201,7 @@
 		<module>server-offsite</module>
 		<module>server-staff</module>
 		<!-- <module>server-stomp</module> -->
-
+		
 		<module>server-monitor</module>
 		<module>server-admin</module>
 		<module>server-branch</module>

@@ -30,8 +30,8 @@ public enum JaxTransactionStatus {
 	TXN_OTP_LIM,
 	TXN_OTP_VLDT,
 	// error category codes END
-	
-	//this is only for jax
+
+	//this is only for jax	
     PAYMENT_SUCCESS_APPLICATION_SUCCESS, PAYMENT_SUCCESS_APPLICATION_FAIL, PAYMENT_FAIL, PAYMENT_IN_PROCESS, APPLICATION_CREATED,
     PAYMENT_CANCELED_BY_USER;
 }

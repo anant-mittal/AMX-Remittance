@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,7 +35,7 @@ import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=JaxServiceClientApplication.class)
+@SpringBootTest(classes = JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -62,8 +63,8 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
-	//@Test
+
+	// @Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
@@ -77,7 +78,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	@Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -111,7 +112,7 @@ public class RemittanceClientTest {
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
 			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 
-		Map<String, String> flexFields = new HashMap<>();
+		Map<String, Object> flexFields = new HashMap<>();
 		list.forEach(i -> {
 			if (i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
@@ -166,7 +167,6 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-
 
 	// @Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,

@@ -155,7 +155,7 @@ public class KnetClient implements PayGClient {
 		// Capturing GateWay Response
 		String resultResponse = request.getParameter("result");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-		gatewayResponse.setResult(request.getParameter("result"));
+		gatewayResponse.setResult(resultResponse);
 		gatewayResponse.setAuth(request.getParameter("auth"));
 		gatewayResponse.setRef(request.getParameter("ref"));
 		gatewayResponse.setPostDate(request.getParameter("postdate"));

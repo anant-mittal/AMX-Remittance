@@ -8,8 +8,8 @@ import com.amx.amxlib.constant.PrefixEnum;
  * @author Subodh Bhoir
  *
  */
-
 public class PrefixModel implements java.io.Serializable {
+	private static final long serialVersionUID = 2381126548661383520L;
 	private String code;
 	private String value;
 	private BigDecimal componentDataId;

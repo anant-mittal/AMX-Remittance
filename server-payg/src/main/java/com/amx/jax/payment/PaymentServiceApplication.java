@@ -10,13 +10,13 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("com.amx.jax")
 public class PaymentServiceApplication extends SpringBootServletInitializer {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PaymentServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(PaymentServiceApplication.class, args);
+    }
 
-	@Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(PaymentServiceApplication.class);
-	}
-
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(PaymentServiceApplication.class);
+    }
+    
 }

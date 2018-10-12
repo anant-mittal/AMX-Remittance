@@ -169,6 +169,8 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		gatewayResponse.setErrorText(request.getParameter("ErrorText"));
 		gatewayResponse.setError(request.getParameter("Error"));
 
+		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
+
 		// to handle error scenario
 		if (gatewayResponse.getUdf3() == null) {
 			ContextUtil.map().put(AppConstants.TRANX_ID_XKEY, request.getParameter("paymentid"));

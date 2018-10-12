@@ -3,12 +3,12 @@ package com.amx.jax.auditlog.handlers;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import com.amx.jax.auditlogs.JaxAuditEvent;
 import com.amx.jax.logger.AuditService;
+import com.amx.jax.logger.LoggerService;
 
 public abstract class AbstractAuditHanlder implements IAuditHandler {
 
@@ -17,7 +17,7 @@ public abstract class AbstractAuditHanlder implements IAuditHandler {
 	@Autowired
 	AuditService auditService;
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractAuditHanlder.class);
+	private static final Logger logger = LoggerService.getLogger(AbstractAuditHanlder.class);
 
 	boolean getSuccess() {
 		if (response.getStatus() != HttpStatus.OK.value()) {

@@ -18,14 +18,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StopWatch;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.PlaceOrderDTO;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.dbmodel.BenificiaryListView;
-import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.logger.LoggerService;
@@ -143,6 +141,10 @@ public class PlaceOrderService extends AbstractService {
 					placeDTO.setBaseCurrencyQuote(rec.getBaseCurrencyQuote());
 					placeDTO.setForeignCurrencyId(rec.getForeignCurrencyId());
 					placeDTO.setForeignCurrencyQuote(rec.getForeignCurrencyQuote());
+					
+					placeDTO.setBankId(rec.getBankId());
+					placeDTO.setCountryId(rec.getCountryId());
+					placeDTO.setCurrencyId(rec.getCurrencyId());
 					
 					dtoList.add(placeDTO);
 				}

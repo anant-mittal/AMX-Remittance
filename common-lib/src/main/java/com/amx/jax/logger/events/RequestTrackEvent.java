@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,7 +21,6 @@ import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelMessage;
 import com.amx.utils.HttpUtils;
-import com.fasterxml.jackson.annotation.JsonGetter;
 
 public class RequestTrackEvent extends AuditEvent {
 

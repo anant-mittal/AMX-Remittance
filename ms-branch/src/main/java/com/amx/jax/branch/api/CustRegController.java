@@ -34,6 +34,7 @@ import com.amx.jax.service.CountryService;
 import com.amx.jax.service.MetaService;
 import com.amx.jax.service.ViewDistrictService;
 import com.amx.jax.service.ViewStateService;
+import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.utils.JaxContextUtil;
 
 @RestController
@@ -54,6 +55,9 @@ public class CustRegController implements ICustRegService {
 	ViewStateService stateService;
 
 	@Autowired
+	private CustomerRegistrationService customerRegistrationService;
+
+	@Autowired
 	ViewDistrictService districtService;
 
 	@Autowired
@@ -64,13 +68,12 @@ public class CustRegController implements ICustRegService {
 		return offsiteCustRegService.getIdTypes();
 	}
 
+	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
 	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
 		JaxContextUtil.setJaxEvent(JaxEvent.MOBILE_EMAIL_OTP);
 		JaxContextUtil.setRequestModel(customerPersonalDetail);
 		LOGGER.info("send otp request: " + customerPersonalDetail);
-		// return
-		// AmxApiResponse.build(customerRegistrationService.sendOtp(customerPersonalDetail).getResults());
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}

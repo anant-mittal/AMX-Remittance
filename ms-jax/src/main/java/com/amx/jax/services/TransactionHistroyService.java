@@ -157,8 +157,6 @@ public class TransactionHistroyService extends AbstractService {
 	            model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 	            model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 	            model.setTransactionReference(getTransactionReferece(hist));
-	            model.setCompanyId(metaData.getCompanyId());
-	            model.setLanguageId(metaData.getLanguageId());
 	            
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(
 					hist.getCustomerId(), metaData.getCountryId(), hist.getBeneficiaryRelationSeqId());
@@ -214,14 +212,15 @@ public class TransactionHistroyService extends AbstractService {
 			model.setLocalTrnxAmount(hist.getLocalTrnxAmount());
 			model.setSourceOfIncomeId(hist.getSourceOfIncomeId());
 			model.setTransactionReference(getTransactionReferece(hist));
-			model.setCompanyId(metaData.getCompanyId());
-			model.setLanguageId(metaData.getLanguageId());
-			if (!beneMap.isEmpty() && beneMap != null && model.getBeneficiaryRelationSeqId()!=null) {
+
+			if (beneMap!=null  && model.getBeneficiaryRelationSeqId()!=null) {
 				Boolean status = Boolean.FALSE;
-				if (beneMap.get(model.getBeneficiaryRelationSeqId()) != null && beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
-			      status = beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE;
-			    model.setBeneIsActive(status);
-			}			
+				if(beneMap.get(model.getBeneficiaryRelationSeqId()) != null) {
+				if (beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive()!= null)
+					status = beneMap.get(model.getBeneficiaryRelationSeqId()).getIsActive().equalsIgnoreCase("Y")?Boolean.TRUE:Boolean.FALSE;
+				 } 			  
+				model.setBeneIsActive(status);
+			}	
 			
 			BenificiaryListView beneViewModel = beneficiaryOnlineDao.getBeneficiaryByRelationshipId(hist.getCustomerId(),metaData.getCountryId(),hist.getBeneficiaryRelationSeqId());
 			if(beneViewModel!=null){

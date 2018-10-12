@@ -38,7 +38,6 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.payg.PaygErrorMasterDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -537,14 +536,4 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<PaygErrorMasterDTO, Object> getPaygErrorList() {
-		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + "/payg-error/").filter(metaFilter)
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<PaygErrorMasterDTO, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getPaygErrorList : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
-	}
 }

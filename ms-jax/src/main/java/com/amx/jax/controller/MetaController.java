@@ -199,7 +199,7 @@ public class MetaController {
 		return questionAnswerService.getQuestionDescription(metaData.getLanguageId(), metaData.getCountryId(), questId);
 	}
 
-	@RequestMapping(value = MetaApi.API_TERMS_BY_lANG_ID, method = RequestMethod.GET)
+	@RequestMapping(value =MetaApi.API_TERMS_BY_lANG_ID, method = RequestMethod.GET)
 	public AmxApiResponse<TermsAndConditionDTO, Object> getTermsAndConditionResponse() {
 		return termsAndConditionService.getTermsAndCondition(metaData.getLanguageId());
 	}
@@ -210,7 +210,7 @@ public class MetaController {
 				metaData.getCountryId());
 	}
 
-	@RequestMapping(value = MetaApi.API_WHY, method = RequestMethod.GET)
+	@RequestMapping(value =  MetaApi.API_WHY, method = RequestMethod.GET)
 	public AmxApiResponse<WhyDoAskInformationDTO, Object> getWhyAskInformationResponse() {
 		return whyDoAskService.getWhyDoAskInformation(metaData.getLanguageId(), metaData.getCountryId());
 	}
@@ -229,7 +229,7 @@ public class MetaController {
 		return emailMobileCheckService.checkMobile(languageId, countryId, mobile);
 	}
 
-	@RequestMapping(value = MetaApi.API_FYEAR, method = RequestMethod.GET)
+	@RequestMapping(value = MetaApi.API_FYEAR , method = RequestMethod.GET)
 	public AmxApiResponse<UserFinancialYear, Object> getFinancialYearResponse() {
 		return financialService.getFinancialYear();
 	}
@@ -239,7 +239,7 @@ public class MetaController {
 		return parameterService.getContactUsTime();
 	}
 
-	@RequestMapping(value = MetaApi.API_HELP_NO, method = RequestMethod.GET)
+	@RequestMapping(value =  MetaApi.API_HELP_NO, method = RequestMethod.GET)
 	public AmxApiResponse<AuthenticationLimitCheckDTO, Object> getContactNumberResponse() {
 		return parameterService.getContactPhoneNo();
 	}
@@ -297,7 +297,7 @@ public class MetaController {
 				documentFinancialYear, ConstantDocument.DOCUMENT_CODE_FOR_COLLECT_TRANSACTION);
 	}
 
-	@RequestMapping(value = MetaApi.MULTI_COUNTRY, method = RequestMethod.GET)
+	@RequestMapping(value =  MetaApi.MULTI_COUNTRY, method = RequestMethod.GET)
 	public AmxApiResponse<MultiCountryDTO, Object> getMultiCountry() {
 		return multiCountryService.getMultiCountryList();
 	}
