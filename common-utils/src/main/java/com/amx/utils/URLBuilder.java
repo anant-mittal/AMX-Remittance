@@ -8,10 +8,10 @@ import java.net.URISyntaxException;
  * The Class URLBuilder.
  */
 public class URLBuilder {
-	
+
 	/** The params. */
 	private StringBuilder folders, params;
-	
+
 	/** The host. */
 	private String connType, host;
 
@@ -113,7 +113,10 @@ public class URLBuilder {
 	 */
 	public String getURL() throws URISyntaxException, MalformedURLException {
 		URI uri;
-		if (connType == null) {
+		if (host == null) {
+			// uri = new URI(null, null, folders.toString(), params.toString(), null);
+			return folders.toString().replaceAll("/+", "/") + "?" + params.toString();
+		} else if (connType == null) {
 			// uri = new URI(null, null, folders.toString(), params.toString(), null);
 			return host + folders.toString().replaceAll("/+", "/") + "?" + params.toString();
 		} else {

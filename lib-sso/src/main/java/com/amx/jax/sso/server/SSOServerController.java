@@ -142,8 +142,11 @@ public class SSOServerController {
 
 				result.setStatusEnum(SSOServerCodes.OTP_REQUIRED);
 
-			} else if ((SSOAuthStep.OTP == json) && sSOTranx.get().getMotp() != null) {
+			} else if ((SSOAuthStep.OTP == json) && formdata.getMotp() != null) {
 				UserAuthorisationReqDTO auth = new UserAuthorisationReqDTO();
+				auth.setEmployeeNo(formdata.getEcnumber());
+				auth.setIpAddress(userDevice.getIp());
+				auth.setDeviceId(userDevice.getFingerprint());
 				auth.setmOtp(formdata.getMotp());
 				EmployeeDetailsDTO empDto = rbaacServiceClient.authoriseUser(auth).getResult();
 				sSOTranx.setUserDetails(empDto);

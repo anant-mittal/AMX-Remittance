@@ -14,7 +14,7 @@ public class SSOTranx extends TransactionModel<SSOModel> {
 	public static class SSOModel implements Serializable {
 		private static final long serialVersionUID = -2178734153442648084L;
 
-		private String appUrl = null;
+		private String appUrl = SSOConstants.APP_LOGIN_URL_DONE;
 		private String returnUrl = SSOConstants.APP_LOGGEDIN_URL;
 		private String appToken = null;
 		private String motp = null;
