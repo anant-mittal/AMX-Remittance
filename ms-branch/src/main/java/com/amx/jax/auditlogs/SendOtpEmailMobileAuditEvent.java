@@ -1,6 +1,6 @@
 package com.amx.jax.auditlogs;
 
-import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 
 public class SendOtpEmailMobileAuditEvent extends JaxAuditEvent{	
 

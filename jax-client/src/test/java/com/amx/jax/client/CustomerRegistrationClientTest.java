@@ -17,12 +17,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.AppConstants;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 

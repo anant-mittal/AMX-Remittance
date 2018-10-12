@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
-import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;

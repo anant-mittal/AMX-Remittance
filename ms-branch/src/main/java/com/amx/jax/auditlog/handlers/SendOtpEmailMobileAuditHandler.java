@@ -5,9 +5,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.auditlogs.JaxAuditEvent;
 import com.amx.jax.auditlogs.SendOtpEmailMobileAuditEvent;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.utils.JaxContextUtil;
 
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)

@@ -14,13 +14,13 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
