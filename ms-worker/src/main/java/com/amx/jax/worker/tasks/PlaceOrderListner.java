@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;

@@ -7,6 +7,12 @@ import com.amx.jax.rest.RestMetaInfo;
 
 public class JaxMetaInfo extends RestMetaInfo {
 
+	public static final String DEFAULT_COMPANY_ID = "1";
+
+	public static final String DEFAULT_CURRENCY_ID = "1";
+
+	public static final String DEFAULT_COUNTRY_BRANCH_ID = "78";
+
 	private BigDecimal countryBranchId;
 	private JaxChannel channel = JaxChannel.ONLINE; // default is online channel
 	private String referrer = null;
