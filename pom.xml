@@ -185,7 +185,7 @@
 		<module>ms-meta</module>
 		<module>ms-user</module>
 		<module>ms-exchangerate</module>
-		<module>ms-jax/ms-jax-customer</module>
+		<module>ms-jax-modules/ms-jax-customer</module>
 
 		<module>ms-jax</module>
 		<module>ms-rbaac</module>
