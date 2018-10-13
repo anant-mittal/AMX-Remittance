@@ -30,20 +30,20 @@ public class CustomerPersonalDetail extends AbstractModel {
 	 * Residence country
 	 */
 	@ApiModelProperty(example="91")
-	@NotNull
+	@NotNull(message="CountryId may not be null")
 	private BigDecimal countryId;
 
 	/**
 	 * nationality
 	 */
 	@ApiModelProperty(example="91")
-	@NotNull
+	@NotNull(message="NationalityId may not be null")
 	private BigDecimal nationalityId;
 
 	/**
 	 * Civil id
 	 */
-	@NotNull
+	@NotNull(message="IdentityInt may not be null")
 	@NumberFormat
 	@ApiModelProperty(example="268020406638")
 	private String identityInt;
@@ -51,35 +51,35 @@ public class CustomerPersonalDetail extends AbstractModel {
 	/**
 	 * Prefix/title
 	 */
-	@NotNull
+	@NotNull(message="Title may not be null")
 	@ApiModelProperty(example="180")
 	private String title;
 
-	@NotNull
+	@NotNull(message="FirstName may not be null")
 	@Size(min = 1)
 	@ApiModelProperty(example="Rakesh")
 	private String firstName;
 
-	@NotNull
+	@NotNull(message="LastName may not be null")
 	@Size(min = 1)
 	@ApiModelProperty(example="Parmar")
 	private String lastName;
 
 	/** email id */
-	@NotNull
+	@NotNull(message="Email may not be null")
 	@Email
 	@ApiModelProperty(example="rakesh@gmail.com")
 	private String email;
 
 	/** mobile without country tel prefix code */
-	@NotNull
+	@NotNull(message="Mobile may not be null")
 	@Size(min = 1)
 	@NumberFormat
 	@ApiModelProperty(example="98714345")
 	private String mobile;
 
 	/** country telephone prefix */
-	@NotNull
+	@NotNull(message="TelPrefix may not be null")
 	@NumberFormat
 	@ApiModelProperty(example="965")
 	private String telPrefix;

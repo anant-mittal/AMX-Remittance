@@ -3,6 +3,8 @@ package com.amx.jax.customer.api;
 import java.text.ParseException;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -68,7 +70,7 @@ public class CustRegController implements ICustRegService {
 
 	@Override
 	@RequestMapping(value = CustRegApiEndPoints.GET_CUSTOMER_OTP, method = RequestMethod.POST)
-	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody CustomerPersonalDetail customerPersonalDetail) {
+	public AmxApiResponse<SendOtpModel, Object> sendOtp(@RequestBody @Valid CustomerPersonalDetail customerPersonalDetail) {
 		return offsiteCustRegService.sendOtp(customerPersonalDetail);
 
 	}
