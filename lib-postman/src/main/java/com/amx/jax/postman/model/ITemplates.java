@@ -8,15 +8,15 @@ public class ITemplates {
 
 	public interface ITemplate {
 
-		boolean isThymleafJson();
-
 		boolean isThymleaf();
 
 		String getSampleJSON();
 
 		PDFConverter getConverter();
 
-		String getJsonFileName();
+		String getJsonFile();
+
+		String getHtmlFile();
 
 		String getFileName();
 

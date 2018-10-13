@@ -21,7 +21,7 @@ public enum TemplatesMX implements ITemplate {
 	BRANCH_SEARCH_EMPTY("BranchSearchEmpty"), TEST("test"), BRANCH_FEEDBACK("trnx-feedback"), BRANCH_FEEDBACK_JSON(
 			"json/trnx-feedback"),
 
-	CIVILID_EXPIRY_JSON("json/civilexpiry"), CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
+	CIVILID_EXPIRY("civilexpiry"), CIVILID_EXPIRED("civilexpired"),
 
 	PARTIAL_REGISTRATION_EMAIL("PartialRegistrationCompletionEMail"), TRANSACTION_FAILURE("TransactionFailure"),
 
@@ -33,7 +33,6 @@ public enum TemplatesMX implements ITemplate {
 	PDFConverter converter;
 	String sampleJSON;
 	boolean thymleaf = true;
-	boolean thymleafJson = false;
 
 	@Override
 	public String getFileName() {
@@ -41,7 +40,12 @@ public enum TemplatesMX implements ITemplate {
 	}
 
 	@Override
-	public String getJsonFileName() {
+	public String getHtmlFile() {
+		return "html/" + fileName;
+	}
+
+	@Override
+	public String getJsonFile() {
 		return "json/" + fileName;
 	}
 
@@ -49,9 +53,6 @@ public enum TemplatesMX implements ITemplate {
 		this.fileName = fileName;
 		this.converter = converter;
 		this.sampleJSON = sampleJSON;
-		if (this.fileName.startsWith("json/")) {
-			this.thymleafJson = true;
-		}
 		if (this.converter == PDFConverter.JASPER) {
 			this.thymleaf = false;
 		}
@@ -85,11 +86,6 @@ public enum TemplatesMX implements ITemplate {
 	@Override
 	public boolean isThymleaf() {
 		return thymleaf;
-	}
-
-	@Override
-	public boolean isThymleafJson() {
-		return thymleafJson;
 	}
 
 	public String toString() {
