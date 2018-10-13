@@ -79,7 +79,7 @@ public class TemplateService {
 	 * @return the string
 	 */
 	public String processHtml(ITemplate template, Context context) {
-		String rawStr = templateEngine.process(template.getFileName(), context);
+		String rawStr = templateEngine.process(template.getHtmlFile(), context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
 		Matcher m = p.matcher(rawStr);
@@ -97,7 +97,7 @@ public class TemplateService {
 	}
 
 	public String processJson(ITemplate template, Context context) {
-		return templateEngine.process(template.getJsonFileName(), context);
+		return templateEngine.process(template.getJsonFile(), context);
 	}
 
 	/**
