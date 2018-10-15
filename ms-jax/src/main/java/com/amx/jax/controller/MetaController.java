@@ -35,6 +35,7 @@ import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxEvent;
 import com.amx.jax.dbmodel.BranchDetailModel;
+import com.amx.jax.dbmodel.BranchSystemDetail;
 import com.amx.jax.dbmodel.CollectionDetailViewModel;
 import com.amx.jax.dbmodel.CollectionPaymentDetailsViewModel;
 import com.amx.jax.dbmodel.CountryMasterView;
@@ -381,5 +382,11 @@ public class MetaController {
 	@RequestMapping(value = "/branchdetail/", method = RequestMethod.GET)
 	public AmxApiResponse<BranchDetailModel, Object> getBranchDetail() {
 		return branchDetailService.getBracnchDetailResponse();
+	}
+
+	@RequestMapping(value = "/branch/{countryBranchId}/systeminfo", method = RequestMethod.GET)
+	public AmxApiResponse<BranchSystemDetail, Object> getBranchSystemList(
+			@PathVariable("countryBranchId") BigDecimal countryBranchId) {
+		return branchDetailService.getBranchSystemDetailResponse(countryBranchId);
 	}
 }
