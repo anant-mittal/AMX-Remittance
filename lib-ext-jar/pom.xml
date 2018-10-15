@@ -291,6 +291,54 @@
 						</configuration>
 					</execution>
 
+					<!-- Kuwait Card Library -->
+					<execution>
+						<id>kw-card-jna</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card</groupId>
+							<artifactId>jna</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card/jna.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>kw-card-paci-card-library</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card</groupId>
+							<artifactId>paci-card-library</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card/paci-card-library.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+<!-- 					<execution>
+						<id>kw-card-platform</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card</groupId>
+							<artifactId>platform</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card/platform.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution> -->
 				</executions>
 			</plugin>
 		</plugins>
