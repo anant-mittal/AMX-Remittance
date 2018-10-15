@@ -576,31 +576,90 @@ public class UserValidationService {
 	 */
 	@SuppressWarnings("unused")
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
-		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
-		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
+		List<Customer> customers = null;
+		if (apiFlow == JaxApiFlow.LOGIN) {
+			customers = custDao.getCustomersForLogin(identityInt);
+		} else {
+			customers = custDao.getCustomerByIdentityInt(identityInt);
+		}
+		if (CollectionUtils.isEmpty(customers) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
 		}
-		if (customer == null && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+		if (CollectionUtils.isEmpty(customers) && apiFlow != JaxApiFlow.SIGNUP_DEFAULT) {
+			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+		}
+		if (customers != null && customers.size() > 1) {
+			throw new GlobalException("Customer not active in branch, please visit branch",
+					JaxError.DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH);
+		}
+		switch (apiFlow) {
+		case SIGNUP_ONLINE:
+			validateCustomerForSignUpOnline(customers.get(0));
+			break;
+		// online partial reg
+		case SIGNUP_DEFAULT:
+			validateCustomerForSignUpDefault(customers.get(0));
+			break;
+		default:
+			validateCustomerDefault(customers.get(0));
+		}
+	}
+
+	private void validateCustomerDefault(Customer customer) {
+
+		if (customer == null) {
 			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
 		}
 		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
-			throw new GlobalException("Customer not active in branch, go to branch ", JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+			throw new GlobalException("Customer not active in branch, go to branch ",
+					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
 		}
-		if (apiFlow == JaxApiFlow.SIGNUP_ONLINE) {
-			return;
-		}
+
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
 		if (onlineCustomer == null) {
 			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
 		}
-		
+
 		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
-		
+
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
 		}
-		if (ConstantDocument.Yes.equals(customer.getIsActive()) && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
+	}
+
+	private void validateCustomerForSignUpDefault(Customer customer) {
+
+		if (customer == null) {
+			return;
+		}
+
+		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
+			throw new GlobalException("Customer not active in branch, go to branch ",
+					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
+		}
+
+		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(customer.getCustomerId());
+		if (onlineCustomer == null) {
+			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
+		}
+
+		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+
+		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
+			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
+		}
+		if (ConstantDocument.Yes.equals(customer.getIsActive())) {
 			throw new GlobalException("Customer active in branch", JaxError.CUSTOMER_ACTIVE_BRANCH);
+		}
+	}
+
+	private void validateCustomerForSignUpOnline(Customer customer) {
+		if (customer == null) {
+			throw new GlobalException("Customer not registered in branch ", JaxError.CUSTOMER_NOT_REGISTERED_BRANCH);
+		}
+		if (!ConstantDocument.Yes.equals(customer.getIsActive())) {
+			throw new GlobalException("Customer not active in branch, go to branch ",
+					JaxError.CUSTOMER_NOT_ACTIVE_BRANCH);
 		}
 	}
 
