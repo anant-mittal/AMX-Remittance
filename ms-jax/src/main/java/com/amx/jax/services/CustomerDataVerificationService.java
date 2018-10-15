@@ -13,7 +13,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.model.CivilIdOtpModel;
@@ -26,6 +25,7 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.repository.CustomerVerificationRepository;
@@ -70,7 +70,7 @@ public class CustomerDataVerificationService extends AbstractService {
 
 	public ApiResponse saveVerificationData(CustomerModel model) {
 		if (metaData.getCustomerId() == null) {
-			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getCode());
+			throw new GlobalException("Null customer id passed ", JaxError.NULL_CUSTOMER_ID.getStatusKey());
 		}
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustByCustomerId(metaData.getCustomerId());
 		ApiResponse response = getBlackApiResponse();

@@ -70,7 +70,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
-		logger.info(
+		logger.debug(
 				"in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
 				applicationCountryId, countryId, currencyId, remittanceModeId, deliveryModeId, bankId);
 		List<AddAdditionalBankDataDto> listAdditionalBankDataTable = null;
@@ -166,14 +166,7 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
-								logger.debug("listAdditionaView:" + listAdditionaView.size());
 
-								logger.debug("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
-									logger.debug("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
-											+ lst.getAmieceDescription());
-
-								}
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
 						}
@@ -270,7 +263,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	@SuppressWarnings("rawtypes")
 	public ApiResponse getPurposeOfTransaction(IRemitTransReqPurpose request) {
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) request;
-		logger.info("in getPurposeOfTransaction with params: " + model.toString());
+		logger.debug("in getPurposeOfTransaction with params: " + model.toString());
 		ApiResponse response = getBlackApiResponse();
 		if (model.getLocalAmount() == null && model.getForeignAmount() == null) {
 			model.setLocalAmount(BigDecimal.ONE);

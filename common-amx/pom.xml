@@ -24,18 +24,18 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>common-utils</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<type>pom</type>
 		</dependency>
 
 		<dependency>
@@ -71,6 +71,7 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 		</dependency>
+
 
 	</dependencies>
 

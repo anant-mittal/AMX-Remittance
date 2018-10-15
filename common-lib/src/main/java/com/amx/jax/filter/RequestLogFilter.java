@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.log4j.MDC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +28,6 @@ import com.amx.jax.logger.client.AuditServiceClient;
 import com.amx.jax.logger.events.RequestTrackEvent;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.ContextUtil;
 import com.amx.utils.CryptoUtil;
 import com.amx.utils.UniqueID;
 import com.amx.utils.Urly;
@@ -51,9 +49,6 @@ public class RequestLogFilter implements Filter {
 
 	private boolean doesTokenMatch(HttpServletRequest req, HttpServletResponse resp, String traceId) {
 		String authToken = req.getHeader(AppConstants.AUTH_KEY_XKEY);
-		if (req.getRequestURI().contains(AppParamController.PARAM_URL)) {
-			return true;
-		}
 		if (StringUtils.isEmpty(authToken)
 				|| (CryptoUtil.validateHMAC(appConfig.getAppAuthKey(), authToken, traceId) == false)) {
 			return false;
@@ -64,10 +59,13 @@ public class RequestLogFilter implements Filter {
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-			long startTime = System.currentTimeMillis();
-			HttpServletRequest req = ((HttpServletRequest) request);
-			HttpServletResponse resp = ((HttpServletResponse) response);
+		long startTime = System.currentTimeMillis();
+		HttpServletRequest req = ((HttpServletRequest) request);
+		HttpServletResponse resp = ((HttpServletResponse) response);
 		try {
+			RequestType reqType = RequestType.from(req);
+			AppContextUtil.setRequestType(reqType);
+
 			// Tenant Tracking
 			String siteId = req.getHeader(TenantContextHolder.TENANT);
 			if (StringUtils.isEmpty(siteId)) {
@@ -115,40 +113,42 @@ public class RequestLogFilter implements Filter {
 					sessionID = ArgUtil.parseAsString(session.getAttribute(AppConstants.SESSION_ID_XKEY),
 							UniqueID.generateString());
 				}
-				traceId = ContextUtil.getTraceId(true, sessionID);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+
 				AppContextUtil.setSessionId(sessionID);
+				traceId = AppContextUtil.getTraceId();
+				AppContextUtil.init();
+
 				if (session != null) {
 					req.getSession().setAttribute(AppConstants.SESSION_ID_XKEY, sessionID);
 					req.getSession().setAttribute(TenantContextHolder.TENANT, tnt);
 				}
 			} else {
-				ContextUtil.setTraceId(traceId);
-				MDC.put(ContextUtil.TRACE_ID, traceId);
-				MDC.put(TenantContextHolder.TENANT, tnt);
+				AppContextUtil.setTranceId(traceId);
+				AppContextUtil.init();
 			}
 
 			// Actual Request Handling
 			AppContextUtil.setTraceTime(startTime);
-			AuditServiceClient.trackStatic(new RequestTrackEvent(req));
-
-			try {
-			if (appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-				resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-			} else {
-				chain.doFilter(request, new AppResponseWrapper(resp));
+			if (reqType.isTrack()) {
+				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			}
+			try {
+				if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
+				} else {
+					chain.doFilter(request, new AppResponseWrapper(resp));
+				}
 			} finally {
-				AuditServiceClient
-						.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				if (reqType.isTrack()) {
+					AuditServiceClient
+							.trackStatic(new RequestTrackEvent(resp, req, System.currentTimeMillis() - startTime));
+				}
 			}
 
 		} finally {
 			// Tear down MDC data:
 			// ( Important! Cleans up the ThreadLocal data again )
-			MDC.clear();
-			ContextUtil.clear();
+			AppContextUtil.clear();
 		}
 	}
 

@@ -12,13 +12,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.CustomerNotificationDTO;
+import com.amx.jax.client.JaxPushNotificationClient;
 import com.amx.jax.dict.BranchesBHR;
 import com.amx.jax.dict.BranchesKWT;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
-import com.amx.jax.postman.client.FBPushClient;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.PushMessage;
+import com.amx.jax.task.events.PromoNotifyTask;
+import com.amx.jax.tunnel.TunnelService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiParam;
@@ -30,7 +34,10 @@ public class AdminPushController {
 	private Logger logger = Logger.getLogger(AdminPushController.class);
 
 	@Autowired
-	FBPushClient fbPushClient;
+	PushNotifyClient pushNotifyClient;
+
+	@Autowired
+	JaxPushNotificationClient notificationClient;
 
 	@RequestMapping(value = "/pub/list/tenant", method = RequestMethod.POST)
 	public List<Tenant> listOfTenants() throws PostManException, InterruptedException, ExecutionException {
@@ -55,38 +62,40 @@ public class AdminPushController {
 	}
 
 	@RequestMapping(value = "/api/notify/all", method = RequestMethod.POST)
-	public PushMessage notifyAll(
+	public PromoNotifyTask notifyAll(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam String message, @RequestParam String title) throws PostManException {
-		PushMessage msg = new PushMessage();
-		msg.setMessage(message);
-		msg.setSubject(title);
-		msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-		return fbPushClient.sendDirect(msg);
+
+		PromoNotifyTask task = new PromoNotifyTask();
+		task.setNationality(Nations.ALL);
+		task.setTitle(title);
+		task.setMessage(message);
+		tunnelService.task(task);
+		return task;
 	}
 
+	@Autowired
+	private TunnelService tunnelService;
+
 	@RequestMapping(value = "/api/notify/nationality", method = RequestMethod.POST)
-	public PushMessage notifyNational(
+	public PromoNotifyTask notifyNational(
 			@ApiParam(required = true, allowableValues = "KWT,BHR", value = "Select Tenant") @RequestParam Tenant tenant,
 			@RequestParam Nations nationality, @RequestParam String message, @RequestParam String title)
 			throws PostManException {
-		PushMessage msg = new PushMessage();
-		msg.setMessage(message);
-		msg.setSubject(title);
 
-		if (nationality == Nations.ALL) {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_ALL, tenant.toString().toLowerCase()));
-		} else {
-			msg.addTopic(String.format(PushMessage.FORMAT_TO_NATIONALITY, tenant.toString().toLowerCase(),
-					nationality.getCode()));
-		}
-		return fbPushClient.sendDirect(msg);
+		PromoNotifyTask task = new PromoNotifyTask();
+		task.setNationality(nationality);
+		task.setTitle(title);
+		task.setMessage(message);
+		tunnelService.task(task);
+
+		return task;
 	}
 
 	@RequestMapping(value = "/api/subscribe/{topic}", method = RequestMethod.POST)
 	public String fbPush(@RequestParam String token, @PathVariable String topic)
 			throws PostManException, InterruptedException, ExecutionException {
-		fbPushClient.subscribe(token, topic);
+		pushNotifyClient.subscribe(token, topic);
 		return topic;
 	}
 

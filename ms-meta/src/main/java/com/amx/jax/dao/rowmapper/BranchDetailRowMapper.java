@@ -27,6 +27,16 @@ public class BranchDetailRowMapper implements RowMapper<BranchDetailModel>
 		bdModel.setLatitude(rs.getBigDecimal("LATITUDE"));
 		bdModel.setLongitude(rs.getBigDecimal("LONGITUDE"));
 		
+		bdModel.setGovName(rs.getString("GOV_NAME"));
+		bdModel.setBranches(rs.getString("BRANCHES"));
+		bdModel.setBranchWebsiteName(rs.getString("BRANCH_WEBSITE_NAME"));
+		bdModel.setAddressLine1(rs.getString("ADDRESS_LINE_1"));
+		bdModel.setAddressLine2(rs.getString("ADDRESS_LINE_2"));
+		bdModel.setCity(rs.getString("CITY"));
+		bdModel.setCountry(rs.getString("COUNTRY"));
+		bdModel.setPostalCode(rs.getString("PC"));
+		bdModel.setBranchTiming(rs.getString("BRANCH_TIMING"));
+		
 		return bdModel;
 	}
 	

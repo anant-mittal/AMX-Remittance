@@ -3,6 +3,8 @@ package com.amx.amxlib.meta.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import com.amx.amxlib.model.PromotionDto;
+
 
 
 public class RemittanceReportBean {
@@ -98,7 +100,7 @@ public class RemittanceReportBean {
 	
 	private String lessLoyaltyEncasement;
 	private String amountPayable;
-	
+	private PromotionDto promotionDto;
 	
 	
 	public Boolean getDrawLine() {
@@ -735,6 +737,14 @@ public class RemittanceReportBean {
 
 	public void setLogoPath(String logoPath) {
 		this.logoPath = logoPath;
+	}
+
+	public void setPromotionDto(PromotionDto promotionDto) {
+		this.promotionDto = promotionDto;
+	}
+
+	public PromotionDto getPromotionDto() {
+		return promotionDto;
 	}
 
 }

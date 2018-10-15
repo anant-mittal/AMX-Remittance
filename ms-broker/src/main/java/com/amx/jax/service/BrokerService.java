@@ -12,14 +12,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.broker.BrokerConstants;
 import com.amx.jax.dbmodel.EventNotificationEntity;
 import com.amx.jax.dbmodel.EventNotificationView;
-import com.amx.jax.event.Event;
+import com.amx.jax.dict.Tenant;
+import com.amx.jax.event.DBEvents;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.service.dao.EventNotificationDao;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.utils.StringUtils;
+import com.amx.utils.TimeUtils;
+import com.amx.utils.UniqueID;
 
 @Configuration
 @EnableScheduling
@@ -32,35 +36,56 @@ public class BrokerService {
 	@Autowired
 	private EventNotificationDao eventNotificationDao;
 
+	private long printDelay = 1000L;
+	private long printStamp = 0L;
+
 	@Autowired
 	TunnelService tunnelService;
 
 	@Scheduled(fixedDelay = BrokerConstants.PUSH_NOTIFICATION_FREQUENCY)
 	public void pushNewEventNotifications() {
-		logger.info("pushNewEventNotifications Job started ...");
+
+		String sessionId = UniqueID.generateString();
 
 		List<EventNotificationView> event_list = eventNotificationDao.getNewlyInserted_EventNotificationRecords();
 
-		for (EventNotificationView current_event_record : event_list) {
+		int totalEvents = event_list.size();
 
+		// Increase Print Delay if its been long waiting for events
+		if (totalEvents == 0) {
+			printDelay = 2 * printDelay;
+		} else {
+			printDelay = 1000L;
+		}
+
+		if (TimeUtils.isDead(printStamp, printDelay)) {
+			logger.info("Total {} Events fetched from DB", totalEvents);
+			printStamp = System.currentTimeMillis();
+		}
+
+		for (EventNotificationView current_event_record : event_list) {
+			AppContextUtil.setTenant(Tenant.KWT);
+			AppContextUtil.setSessionId(sessionId);
+			AppContextUtil.generateTraceId(true, true);
+			AppContextUtil.init();
 			try {
-				logger.info("------------------ current_event_record DB Data --------------------");
-				logger.info(current_event_record.toString());
+				logger.debug("------------------ current_event_record DB Data --------------------");
+				logger.debug(current_event_record.toString());
 
 				Map<String, String> event_data_map = StringUtils.getMapFromString(BrokerConstants.SPLITTER_CHAR,
 						BrokerConstants.KEY_VALUE_SEPARATOR_CHAR, current_event_record.getEvent_data());
 
 				// Push to Message Queue
-				Event event = new Event();
-				event.setEvent_code(current_event_record.getEvent_code());
+				DBEvents event = new DBEvents();
+				event.setEventCode(current_event_record.getEvent_code());
 				event.setPriority(current_event_record.getEvent_priority());
 				event.setData(event_data_map);
 				event.setDescription(current_event_record.getEvent_desc());
 
-				logger.info("------------------ Event Data to push to Message Queue --------------------");
-				logger.info(event.toString());
+				logger.debug("------------------ Event Data to push to Message Queue --------------------");
+				logger.debug(event.toString());
 
-				tunnelService.send(current_event_record.getEvent_code(), event);
+				tunnelService.task(current_event_record.getEvent_code(), event);
 
 				// Mark event record as success
 				EventNotificationEntity temp_event_record = eventNotificationDao
@@ -78,6 +103,8 @@ public class BrokerService {
 				temp_event_record.setStatus(new BigDecimal(BrokerConstants.FAILURE_STATUS));
 
 				eventNotificationDao.saveEventNotificationRecordUpdates(temp_event_record);
+			} finally {
+				AppContextUtil.clear();
 			}
 		}
 	}
@@ -85,7 +112,6 @@ public class BrokerService {
 	@Scheduled(fixedDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY, initialDelay = BrokerConstants.DELETE_NOTIFICATION_FREQUENCY)
 	public void cleanUpEventNotificationRecords() {
 		logger.info("Delete proccess started on the table EX_EVENT_NOTIFICATION...");
-
 		try {
 			eventNotificationDao
 					.deleteEventNotificationRecordList(eventNotificationDao.getEventNotificationRecordsToDelete());

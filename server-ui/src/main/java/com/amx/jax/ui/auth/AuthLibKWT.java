@@ -3,6 +3,7 @@ package com.amx.jax.ui.auth;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.model.AuthState;
 import com.amx.jax.scope.TenantSpecific;
 import com.amx.jax.ui.auth.AuthLibContext.AuthLib;
 

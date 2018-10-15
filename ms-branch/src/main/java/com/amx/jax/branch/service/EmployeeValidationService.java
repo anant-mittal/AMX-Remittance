@@ -12,11 +12,11 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.branch.repository.EmployeeRepository;
 import com.amx.jax.dbmodel.Employee;
+import com.amx.jax.error.JaxError;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -69,7 +69,7 @@ public void validateTokenDate(Employee employeeDetails) {
 		long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 		long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 		if (tokenTimeinMins > otpValidTimeInMins) {
-			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
+			throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getStatusKey());
 		}
 	}
 }
@@ -78,6 +78,6 @@ public void validateTokenSentCount(Employee employeeDetails) {
 
 	Integer limit = otpSettings.getMaxSendOtpAttempts();
 	if (employeeDetails.getTokenSentCount() != null && employeeDetails.getTokenSentCount().intValue() >= limit) {
-		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+		throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey());
 	}
 }}
