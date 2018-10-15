@@ -96,6 +96,7 @@ public class PayGController {
 			payGSession.setCallback(callback);
 		}
 
+		LOGGER.info("call back ---->"+payGSession.getCallback());
 		LOGGER.info(String.format(
 				"Inside payment method with parameters --> TrackId: %s, amount: %s, docNo: %s, country: %s, pg: %s",
 				trckid, amount, docNo, tnt, pg));

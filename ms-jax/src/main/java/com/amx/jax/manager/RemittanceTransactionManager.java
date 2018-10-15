@@ -299,7 +299,7 @@ public class RemittanceTransactionManager {
 				.setLcDecimalNumber(currencyMasterService.getCurrencyMasterById(localCurrencyId).getDecinalNumber());
 
 		if (exRatebreakUp.getConvertedFCAmount() != null) {
-			logger.info("getConvertedFCAmount :"
+			logger.debug("getConvertedFCAmount :"
 					+ RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
 			exRatebreakUp
 					.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(exRatebreakUp.getConvertedFCAmount()));
@@ -320,16 +320,16 @@ public class RemittanceTransactionManager {
 	}
 
 	private BigDecimal reCalculateComission() {
-		logger.info("recalculating comission ");
+		logger.debug("recalculating comission ");
 		BigDecimal custtype = bizcomponentDao.findCustomerTypeId("I");
 		remitApplParametersMap.put("P_CUSTYPE_ID", custtype);
 		BigDecimal comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
-		logger.info("newCommission 95: " + comission);
+		logger.debug("newCommission 95: " + comission);
 		if (comission == null) {
 			remitApplParametersMap.put("P_CUSTYPE_ID", new BigDecimal(777));
 			comission = exchangeRateProcedureDao.getCommission(remitApplParametersMap);
 		}
-		logger.info("newCommission: " + comission);
+		logger.debug("newCommission: " + comission);
 		return comission;
 	}
 
@@ -393,7 +393,7 @@ public class RemittanceTransactionManager {
 		AuthenticationLimitCheckView beneficiaryPerDayLimit = parameterService.getPerCustomerPerBeneTrnxLimit();
 
 		Customer customer = custDao.getCustById(meta.getCustomerId());
-		logger.info("customer Id :" + customer.getCustomerReference() + "\t  beneficiary.getBankCode() :"
+		logger.debug("customer Id :" + customer.getCustomerReference() + "\t  beneficiary.getBankCode() :"
 				+ beneficiary.getBankCode() + "\t Acc No :" + beneficiary.getBankAccountNumber() + "\t Bene Name :"
 				+ beneficiary.getBenificaryName());
 
@@ -401,7 +401,7 @@ public class RemittanceTransactionManager {
 				beneficiary.getBankCode(),
 				beneficiary.getBankAccountNumber() == null ? "" : beneficiary.getBankAccountNumber(),
 				beneficiary.getBenificaryName(), new BigDecimal(90));
-		logger.info("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
+		logger.debug("in validateBeneficiaryTransactionLimit today bene with BeneficiaryRelationShipSeqId: "
 				+ beneficiary.getBeneficiaryRelationShipSeqId() + " and todays tnx are: " + transfers.size());
 		if (beneficiaryPerDayLimit != null && transfers != null
 				&& transfers.size() >= beneficiaryPerDayLimit.getAuthLimit().intValue()) {
@@ -426,7 +426,7 @@ public class RemittanceTransactionManager {
 		BigDecimal todaysLoyalityPointsEncashed = loyalityPointService.getTodaysLoyalityPointsEncashed();
 		int todaysLoyalityPointsEncashedInt = todaysLoyalityPointsEncashed == null ? 0
 				: todaysLoyalityPointsEncashed.intValue();
-		logger.info("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
+		logger.debug("Available loyalitypoint= " + availableLoyaltyPoints + " maxLoyalityPoints=" + maxLoyalityPoints
 				+ " todaysLoyalityPointsEncashed=" + todaysLoyalityPointsEncashed);
 		if (availableLoyaltyPoints.intValue() < maxLoyalityPoints.intValue()) {
 			throw new GlobalException("Insufficient loyality points. Available points- : " + availableLoyaltyPoints,
@@ -533,10 +533,10 @@ public class RemittanceTransactionManager {
 
 		for (AuthenticationLimitCheckView limitView : txnLimits) {
 
-			logger.info(" limitView.getAuthorizationType() :" + limitView.getAuthorizationType() + "\t Auth Limit :"
+			logger.debug(" limitView.getAuthorizationType() :" + limitView.getAuthorizationType() + "\t Auth Limit :"
 					+ limitView.getAuthLimit());
 			Integer txnCount = customerTxnAmounts.get(limitView.getAuthorizationType());
-			logger.info("Trnx Count for Limit Check :" + txnCount);
+			logger.debug("Trnx Count for Limit Check :" + txnCount);
 			if (txnCount >= limitView.getAuthLimit().intValue()) {
 				throw new GlobalException(limitView.getAuthMessage(), NO_OF_TRANSACTION_LIMIT_EXCEEDED);
 			}
@@ -698,7 +698,7 @@ public class RemittanceTransactionManager {
 				weeklyCount++;
 			}
 		}
-		logger.info("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount
+		logger.debug("getCustomerTransactionCounts CustomerId" + meta.getCustomerId() + "\t dailyCount" + dailyCount
 				+ "\t monthlyCount :" + monthlyCount + "\t weeklyCount" + weeklyCount);
 		output.put("10", dailyCount);
 		output.put("12", monthlyCount);
