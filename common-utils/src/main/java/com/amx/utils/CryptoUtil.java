@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public final class CryptoUtil {
 	private static final Logger LOGGER = LoggerFactory.getLogger(CryptoUtil.class);
 
-	private final static int interval = 30;
+	private final static int INTERVAL = 30;
 	private final static String ALGO_SHA1 = "SHA1";
 	private final static String PASS_DELIMITER = "#";
 	private final static String DEFAULT_ENCODING = "UTF-8";
@@ -30,7 +30,7 @@ public final class CryptoUtil {
 	/** The Constant SHA2. */
 	private static final String SHA2 = "SHA-256";
 
-	public static String generateHMAC(String publicKey, String message, long currentTime) {
+	public static String generateHMAC(long interval, String publicKey, String message, long currentTime) {
 		try {
 			Long epoch = Math.round(currentTime / 1000.0);
 			String elapsed = Long.toString(epoch / interval);
@@ -46,6 +46,12 @@ public final class CryptoUtil {
 		}
 		return null;
 	}
+	public static String generateHMAC(long interval,String publicKey, String message) {
+		return generateHMAC(interval, publicKey, message, System.currentTimeMillis());
+	}
+	public static String generateHMAC(String publicKey, String message, long currentTime) {
+		return generateHMAC(INTERVAL, publicKey, message, currentTime);
+	}
 
 	public static String generateHMAC(String publicKey, String message) {
 		return generateHMAC(publicKey, message, System.currentTimeMillis());
@@ -54,9 +60,9 @@ public final class CryptoUtil {
 	public static boolean validateHMAC(String publicKey, String publicToken, String message) {
 		if (generateHMAC(publicKey, message).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() - interval).equals(publicToken)) {
+		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() - INTERVAL).equals(publicToken)) {
 			return true;
-		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() + interval).equals(publicToken)) {
+		} else if (generateHMAC(publicKey, message, System.currentTimeMillis() + INTERVAL).equals(publicToken)) {
 			return true;
 		}
 		return false;
