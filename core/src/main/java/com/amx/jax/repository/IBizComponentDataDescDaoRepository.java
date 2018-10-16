@@ -16,4 +16,7 @@ public interface IBizComponentDataDescDaoRepository extends JpaRepository<BizCom
 
 	public List<BizComponentDataDesc> findByFsBizComponentDataAndFsLanguageType(BizComponentData bizComponentData,
 			LanguageType langId);
+	
+	@Query(value = "select a from BizComponentDataDesc a where a.fsBizComponentData in (198,201,204,197) and a.fsLanguageType = ?1")
+	public List<BizComponentDataDesc> findByFsBizComponentDataDesc(LanguageType langId);
 }

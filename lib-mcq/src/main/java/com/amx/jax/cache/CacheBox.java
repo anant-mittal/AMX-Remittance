@@ -34,8 +34,6 @@ public class CacheBox<T> implements ICacheBox<T> {
 			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
 		}
 		return cache;
-
-
 		}
 		return null;
 	}

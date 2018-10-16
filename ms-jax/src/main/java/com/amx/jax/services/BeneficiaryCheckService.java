@@ -15,10 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.AuthType;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.meta.model.BeneficiaryErrorStatusDto;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dao.BlackListDao;
 import com.amx.jax.dbmodel.AuthenticationLimitCheckView;
 import com.amx.jax.dbmodel.BanksView;
@@ -33,6 +32,7 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryMaster;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IBankAccountLengthDao;
 import com.amx.jax.repository.IBankMasterFromViewDao;
@@ -123,6 +123,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
+				beneDto.setUpdateNeeded(true);
 				errorDesc = "English name Of beneficary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 
@@ -133,6 +134,7 @@ public class BeneficiaryCheckService extends AbstractService {
 			List<BlackListModel> blist = blackListDao.getBlackByLocalName(beneDto.getBenificaryName());
 			if (blist != null && !blist.isEmpty()) {
 
+				beneDto.setUpdateNeeded(true);
 				errorDesc = "Arabic name Of beneficary matching with black listed customer";
 				errorStatusDto = this.setBeneError(JaxError.BLACK_LISTED_CUSTOMER.toString(), errorDesc);
 

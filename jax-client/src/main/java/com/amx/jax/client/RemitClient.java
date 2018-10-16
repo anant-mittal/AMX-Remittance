@@ -14,7 +14,7 @@ import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
+import com.amx.amxlib.meta.model.CustomerRatingDTO;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.SourceOfIncomeDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
@@ -26,8 +26,10 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.rest.RestService;
 
 @Component
@@ -260,6 +262,45 @@ public class RemitClient extends AbstractJaxServiceClient {
 			throw new JaxSystemError();
 		} // end of try-catch
 
+	}
+
+	public AmxApiResponse<CustomerRatingDTO, ?> saveCustomerRating(CustomerRatingDTO customerRatingDTO)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+
+		try {
+			HttpEntity<CustomerRatingDTO> requestEntity = new HttpEntity<CustomerRatingDTO>(customerRatingDTO,
+					getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/save-customer-rating/";
+			LOGGER.info(" Calling customer rating :" + customerRatingDTO.toString());
+			return restService.ajax(url).post(requestEntity).asApiResponse(CustomerRatingDTO.class);
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in customer rating : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
+
+	}
+
+	public ApiResponse<RemittanceTransactionResponsetModel> calcEquivalentAmount(
+			RemittanceTransactionRequestModel request)
+			throws RemittanceTransactionValidationException, LimitExeededException {
+		try {
+			HttpEntity<RemittanceTransactionRequestModel> requestEntity = new HttpEntity<RemittanceTransactionRequestModel>(
+					request, getHeader());
+
+			String url = this.getBaseUrl() + REMIT_API_ENDPOINT + "/calc/";
+			LOGGER.info(" Calling calcEquivalentAmount :");
+			return restService.ajax(url).post(requestEntity)
+					.as(new ParameterizedTypeReference<ApiResponse<RemittanceTransactionResponsetModel>>() {
+					});
+		} catch (AbstractJaxException ae) {
+			throw ae;
+		} catch (Exception e) {
+			LOGGER.error("exception in calcEquivalentAmount : ", e);
+			throw new JaxSystemError();
+		} // end of try-catch
 	}
 
 }

@@ -1,6 +1,7 @@
 package com.amx.jax.userservice.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dal.ApplicationCoreProcedureDao;
 import com.amx.jax.dbmodel.Customer;
@@ -27,6 +29,7 @@ import com.amx.jax.userservice.repository.OnlineCustomerRepository;
 import com.amx.jax.userservice.repository.UserVerificationCheckListModelRepository;
 import com.amx.jax.userservice.repository.ViewOnlineCustomerCheckRepository;
 import com.amx.jax.util.CryptoUtil;
+import com.google.common.collect.Lists;
 
 @Component
 public class CustomerDao {
@@ -64,11 +67,6 @@ public class CustomerDao {
 		return cust;
 	}
 	
-	/*public Customer getCustomerByIdentityInt(String identityInt) {
-		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
-	}*/
-	
-	@Transactional
 	public Customer getCustomerByIdentityInt(String identityInt) {
 		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
 	}
@@ -81,6 +79,16 @@ public class CustomerDao {
 	@Transactional
 	public Customer getCustById(BigDecimal id) {
 		return repo.findOne(id);
+	}
+	
+	public List<PlaceOrderCustomer> getPersonInfoById(List<BigDecimal> customerIds) {
+		List<PlaceOrderCustomer> poCustomers = new ArrayList<>();
+		List<List<BigDecimal>> partitions = Lists.partition(customerIds, 999);
+		for (List<BigDecimal> partition : partitions) {
+			poCustomers.addAll(repo.findPOCustomersByIds(partition));
+		}
+
+		return poCustomers;
 	}
 
 	@Transactional
@@ -149,7 +157,7 @@ public class CustomerDao {
 				cust.setMobile(model.getMobile());
 			}
 			if(cust.getUpdatedBy() == null)
-				cust.setUpdatedBy(cust.getCreatedBy());			
+				cust.setUpdatedBy(cust.getCreatedBy());		
 
 			customerRepo.save(cust);
 		}

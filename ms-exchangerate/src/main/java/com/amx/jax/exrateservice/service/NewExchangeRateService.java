@@ -1,6 +1,7 @@
 package com.amx.jax.exrateservice.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -11,15 +12,17 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BankMasterDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.ExchangeRateBreakup;
 import com.amx.amxlib.model.response.ExchangeRateResponseModel;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.dbmodel.PipsMaster;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.util.RoundUtil;
 
 /**
  * @author Prashant
@@ -45,7 +48,7 @@ public class NewExchangeRateService extends ExchangeRateService {
 			return super.getExchangeRatesForOnline(fromCurrency, toCurrency, lcAmount, bankId);
 		}
 		logger.info("In getExchangeRatesForOnline, parames- " + fromCurrency + " toCurrency " + toCurrency + " amount "
-				+ lcAmount);
+				+ lcAmount + " bankId: " + bankId);
 		ApiResponse<ExchangeRateResponseModel> response = getBlackApiResponse();
 		if (fromCurrency.equals(meta.getDefaultCurrencyId())) {
 			List<PipsMaster> pips = pipsDao.getPipsForOnline(toCurrency);
@@ -143,5 +146,28 @@ public class NewExchangeRateService extends ExchangeRateService {
 		ExchangeRateBreakup exRateBreakup = getExchangeRateBreakup(toCurrencyId, localAmount, routingBankId);
 		return exRateBreakup.getConvertedFCAmount();
 
+	}
+
+	public ExchangeRateBreakup calcEquivalentAmount(RemittanceTransactionRequestModel request, int fcDecimalNumber) {
+		ExchangeRateBreakup breakup = new ExchangeRateBreakup();
+		int lcDecimalNumber = meta.getDefaultCurrencyId().intValue();
+		if (request.getForeignAmount() != null && request.getDomXRate() !=null) {
+			BigDecimal convertedLCAmount = request.getForeignAmount().divide(request.getDomXRate(), 2,
+					RoundingMode.HALF_UP);
+			breakup.setConvertedLCAmount(RoundUtil.roundBigDecimal(convertedLCAmount, lcDecimalNumber));
+			breakup.setConvertedFCAmount(request.getForeignAmount());
+		}
+
+		if (request.getLocalAmount() != null  && request.getDomXRate() !=null) {
+			BigDecimal convertedFCAmount = request.getDomXRate().multiply(request.getLocalAmount());
+			breakup.setConvertedFCAmount(RoundUtil.roundToZeroDecimalPlaces(convertedFCAmount));
+			breakup.setConvertedFCAmount(RoundUtil.roundBigDecimal(convertedFCAmount, fcDecimalNumber));
+			breakup.setConvertedLCAmount(request.getLocalAmount());
+		}
+		breakup.setNetAmount(breakup.getConvertedLCAmount());
+		breakup.setNetAmountWithoutLoyality(breakup.getConvertedLCAmount());
+		breakup.setRate(request.getDomXRate());
+		return breakup;
+	
 	}
 }

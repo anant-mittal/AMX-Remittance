@@ -18,6 +18,7 @@ import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.model.BranchSearchNotificationModel;
 import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.EmployeeInfo;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
 import com.amx.jax.AppConfig;
@@ -26,13 +27,14 @@ import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
+import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.ChangeType;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.scope.TenantContextHolder;
 
 @Service
@@ -41,6 +43,9 @@ public class JaxNotificationService {
 
 	@Autowired
 	private PostManService postManService;
+
+	@Autowired
+	private PushNotifyClient pushNotifyClient;
 
 	@Autowired
 	private AppConfig appConfig;
@@ -53,22 +58,22 @@ public class JaxNotificationService {
 
 		logger.info("Sending txn notification to customer");
 		Email email = new Email();
-		
-		logger.info("Tenant is ----> "+TenantContextHolder.currentSite());
-		
+
+		logger.info("Tenant is ----> " + TenantContextHolder.currentSite());
+
 		if (TenantContextHolder.currentSite().equals(Tenant.KWT)) {
-		    email.setSubject("Your transaction on AMX is successful");
-		}else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
-		    email.setSubject("Your transaction on MEC is successful");
+			email.setSubject("Your transaction on AMX is successful");
+		} else if (TenantContextHolder.currentSite().equals(Tenant.BHR)) {
+			email.setSubject("Your transaction on MEC is successful");
 		}
-		
+
 		email.addTo(pinfo.getEmail());
-		email.setTemplate(Templates.TXN_CRT_SUCC);
+		email.setITemplate(TemplatesMX.TXN_CRT_SUCC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
 		File file = new File();
-		file.setTemplate(Templates.REMIT_RECEIPT_JASPER);
+		file.setITemplate(TemplatesMX.REMIT_RECEIPT_JASPER);
 		file.setType(File.Type.PDF);
 		file.getModel().put(RESP_DATA_KEY, remittanceReceiptSubreport);
 
@@ -110,7 +115,7 @@ public class JaxNotificationService {
 			emailToOld.setSubject(SUBJECT_ACCOUNT_UPDATE);
 			emailToOld.getModel().put("change_type", ChangeType.EMAIL_CHANGE);
 			emailToOld.addTo(customerModel.getEmail());
-			emailToOld.setTemplate(Templates.PROFILE_CHANGE);
+			emailToOld.setITemplate(TemplatesMX.PROFILE_CHANGE);
 			emailToOld.setHtml(true);
 
 			PersonInfo oldPinfo = null;
@@ -127,7 +132,7 @@ public class JaxNotificationService {
 		}
 
 		email.addTo(pinfo.getEmail());
-		email.setTemplate(Templates.PROFILE_CHANGE);
+		email.setITemplate(TemplatesMX.PROFILE_CHANGE);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 		logger.info("Email to - " + pinfo.getEmail() + " first name : " + pinfo.getFirstName());
@@ -142,7 +147,7 @@ public class JaxNotificationService {
 		SMS sms = new SMS();
 		sms.addTo(pinfo.getMobile());
 		sms.getModel().put(RESP_DATA_KEY, model);
-		sms.setTemplate(Templates.RESET_OTP_SMS);
+		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
 
 		try {
 			postManService.sendSMSAsync(sms);
@@ -161,7 +166,7 @@ public class JaxNotificationService {
 		Email email = new Email();
 		email.setSubject("OTP Email");
 		email.addTo(pinfo.getEmail());
-		email.setTemplate(Templates.RESET_OTP);
+		email.setITemplate(TemplatesMX.RESET_OTP);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, civilIdOtpModel);
 
@@ -178,7 +183,7 @@ public class JaxNotificationService {
 		Email email = new Email();
 		email.setSubject(REG_SUC);
 		email.addTo(pinfo.getEmail());
-		email.setTemplate(Templates.REG_SUC);
+		email.setITemplate(TemplatesMX.REG_SUC);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, pinfo);
 
@@ -210,49 +215,67 @@ public class JaxNotificationService {
 		Email email = new Email();
 		email.setSubject(BRANCH_SEARCH);
 		email.addTo(emailid);
-		email.setTemplate(Templates.BRANCH_SEARCH_EMPTY);
+		email.setITemplate(TemplatesMX.BRANCH_SEARCH_EMPTY);
 		email.setHtml(true);
 		email.getModel().put(RESP_DATA_KEY, model);
 
 		logger.info("Email to - " + emailid + " first name : " + model.getCustomerName());
 		sendEmail(email);
-	}	
-	
-	public void sendErrorEmail(RemittanceTransactionFailureAlertModel model, List<ExEmailNotification> emailNotification) {
-	  try {
-			for(ExEmailNotification emailNot : emailNotification )
-			{
-		    String emailid =emailNot.getEmailId();
-			Email email = new Email();
-			email.setSubject(BRANCH_SEARCH);
-			email.addTo(emailid);
-			email.setTemplate(Templates.TRANSACTION_FAILURE);
-			email.setHtml(true);
-			email.getModel().put(RESP_DATA_KEY, model);
-			sendEmail(email);
+	}
+
+	public void sendErrorEmail(RemittanceTransactionFailureAlertModel model,
+			List<ExEmailNotification> emailNotification) {
+		try {
+			for (ExEmailNotification emailNot : emailNotification) {
+				String emailid = emailNot.getEmailId();
+				Email email = new Email();
+				email.setSubject(BRANCH_SEARCH);
+				email.addTo(emailid);
+				email.setITemplate(TemplatesMX.TRANSACTION_FAILURE);
+				email.setHtml(true);
+				email.getModel().put(RESP_DATA_KEY, model);
+				sendEmail(email);
 			}
 		} catch (Exception e) {
 			logger.error("error in sendErrormail", e);
 		}
 	}
 
-	public void sendPartialRegistraionMail(PersonInfo personinfo, ApplicationSetup applicationSetup ) {
+	public void sendPartialRegistraionMail(PersonInfo personinfo, ApplicationSetup applicationSetup) {
 
 		logger.info("Sending Email to Team Of The Customer : " + personinfo.getFirstName());
-		try
-		{
-		Email email = new Email();
-		email.setSubject("New Customer Registration");
-		email.addTo(applicationSetup.getEmailId());
-		email.setTemplate(Templates.PARTIAL_REGISTRATION_EMAIL);
-		email.setHtml(true);
-		email.getModel().put(RESP_DATA_KEY, personinfo);		
-		sendEmail(email);
-		}
-		catch (Exception e) {
+		try {
+			Email email = new Email();
+			email.setSubject("New Customer Registration");
+			email.addTo(applicationSetup.getEmailId());
+			email.setITemplate(TemplatesMX.PARTIAL_REGISTRATION_EMAIL);
+			email.setHtml(true);
+			email.getModel().put(RESP_DATA_KEY, personinfo);
+			sendEmail(email);
+		} catch (Exception e) {
 			logger.error("error in sendErrormail", e);
 		}
-		
 
 	}
+
+	// employee otp to login
+	public void sendOtpSms(EmployeeInfo einfo, CivilIdOtpModel model) {
+
+		logger.info(String.format("Sending OTP SMS to customer :%s on mobile_no :%s  ", einfo.getEmployeeName(),
+				einfo.getTelephoneNumber()));
+
+		SMS sms = new SMS();
+		sms.addTo(einfo.getTelephoneNumber());
+		sms.getModel().put(RESP_DATA_KEY, model);
+		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
+
+		try {
+			postManService.sendSMSAsync(sms);
+			if (!appConfig.isProdMode()) {
+				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
+			}
+		} catch (PostManException e) {
+			logger.error("error in sendOtpSms", e);
+		}
+	} // end of sendOtpSms
 }

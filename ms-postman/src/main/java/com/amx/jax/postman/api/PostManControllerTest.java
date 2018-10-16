@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.LocaleResolver;
 
+import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
@@ -35,7 +36,7 @@ import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.Message;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.IoUtils;
 import com.amx.utils.JsonUtil;
@@ -211,7 +212,7 @@ public class PostManControllerTest {
 	 *             the post man exception
 	 */
 	@RequestMapping(value = PostManUrls.PROCESS_TEMPLATE + "/{template}.{ext}", method = RequestMethod.GET)
-	public String processTemplate(@PathVariable("template") Templates template, @PathVariable("ext") String ext,
+	public String processTemplate(@PathVariable("template") TemplatesMX template, @PathVariable("ext") String ext,
 			@RequestParam(name = "email", required = false) String email,
 			@RequestBody(required = false) Map<String, Object> data, @RequestParam(required = false) Tenant tnt,
 			@RequestParam(required = false) File.PDFConverter lib)
@@ -226,29 +227,34 @@ public class PostManControllerTest {
 
 		File file = new File();
 		file.setModel(map);
-		file.setTemplate(template);
+		file.setITemplate(template);
 		file.setConverter(lib);
 
 		if ("pdf".equals(ext)) {
 			file.setType(File.Type.PDF);
-			file = postManClient.processTemplate(file);
+			file = postManClient.processTemplate(file).getResult();
 			// file = postManClient.processTemplate(template, map, File.Type.PDF);
 			file.create(response, false);
 			return null;
+		} else if ("json".equals(ext)) {
+			file.setType(File.Type.JSON);
+			file = postManClient.processTemplate(file).getResult();
+			return file.getContent();
 		} else if ("html".equals(ext)) {
-			file = postManClient.processTemplate(file);
+			AmxApiResponse<File, Object> resp = postManClient.processTemplate(file);
+			file = resp.getResult();
 			if (email != null) {
 				Email eml = new Email();
-				eml.setSubject("Email Template : " + template);
+				// eml.setSubject("Email Template : " + template);
 				eml.setFrom("amxjax@gmail.com");
 				eml.addTo(email);
-				eml.setTemplate(template);
+				eml.setITemplate(template);
 				eml.setHtml(true);
 				eml.setModel(map);
 				// this.readImageWithObjectMapper(null);
 
 				File file2 = new File();
-				file2.setTemplate(template);
+				file2.setITemplate(template);
 				file2.setType(File.Type.PDF);
 				file2.setModel(map);
 				file2.setConverter(lib);

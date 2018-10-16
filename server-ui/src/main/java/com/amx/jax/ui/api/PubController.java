@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.MinMaxExRateDTO;
 import com.amx.jax.AppConfig;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.postman.GeoLocationService;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
@@ -26,7 +27,6 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.GeoLocation;
 import com.amx.jax.postman.model.SupportEmail;
 import com.amx.jax.sample.CalcLibs;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.tunnel.TunnelService;
 import com.amx.jax.ui.model.ServerStatus;
 import com.amx.jax.ui.response.ResponseMeta;
@@ -37,7 +37,6 @@ import com.amx.jax.ui.service.JaxService;
 import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.GuestSession;
 import com.amx.jax.ui.session.UserDeviceBean;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -73,7 +72,7 @@ public class PubController {
 
 	/** The http service. */
 	@Autowired
-	private HttpService httpService;
+	private CommonHttpRequest httpService;
 
 	/** The user device. */
 	@Autowired
@@ -133,7 +132,6 @@ public class PubController {
 	 * @throws Exception
 	 *             the exception
 	 */
-	@Timed
 	@ApiOperation(value = "Ping")
 	@RequestMapping(value = "/pub/ping", method = { RequestMethod.POST, RequestMethod.GET })
 	public ResponseWrapper<ServerStatus> status(@RequestParam(required = false) String tnt, HttpSession httpSession,
@@ -153,7 +151,7 @@ public class PubController {
 		wrapper.getData().setRemoteAddr(request.getRemoteAddr());
 		wrapper.getData().setLocalAddress(request.getLocalAddr());
 		wrapper.getData().setScheme(request.getScheme());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		wrapper.getData().message = calcLibs.get().getRSName();
 
 		log.info("==========appConfig======== {} == {} = {} {}", appConfig.isSwaggerEnabled(), appConfig.getAppName());

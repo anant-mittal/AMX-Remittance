@@ -10,6 +10,7 @@ import org.apache.log4j.MDC;
 import org.springframework.http.HttpHeaders;
 
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.filter.RequestType;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.ContextUtil;
@@ -48,6 +49,15 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 	}
 
+	public static String getTranxId(boolean generate) {
+		String key = getTranxId();
+		if (generate && ArgUtil.isEmptyString(key)) {
+			key = getTraceId();
+			setTranxId(key);
+		}
+		return key;
+	}
+
 	public static Long getTraceTime() {
 		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
 	}
@@ -58,6 +68,11 @@ public class AppContextUtil {
 
 	public static String getSessionId() {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.SESSION_ID_XKEY));
+	}
+
+	public static RequestType getRequestType() {
+		return (RequestType) ArgUtil.parseAsEnum(ContextUtil.map().get(AppConstants.REQUEST_TYPE_XKEY),
+				RequestType.DEFAULT);
 	}
 
 	public static final Pattern pattern = Pattern.compile("^([A-Z]{3})-([\\w]+)-(\\w+)$");
@@ -99,6 +114,10 @@ public class AppContextUtil {
 
 	public static void setSessionId(Object sessionId) {
 		ContextUtil.map().put(AppConstants.SESSION_ID_XKEY, sessionId);
+	}
+
+	public static void setRequestType(RequestType reqType) {
+		ContextUtil.map().put(AppConstants.REQUEST_TYPE_XKEY, reqType);
 	}
 
 	public static void init() {

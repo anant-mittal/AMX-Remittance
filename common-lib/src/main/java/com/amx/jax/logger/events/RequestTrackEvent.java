@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ import org.springframework.util.MultiValueMap;
 import com.amx.jax.AppContext;
 import com.amx.jax.logger.AuditEvent;
 import com.amx.jax.tunnel.TunnelMessage;
+import com.amx.utils.HttpUtils;
 
 public class RequestTrackEvent extends AuditEvent {
 
@@ -37,6 +39,7 @@ public class RequestTrackEvent extends AuditEvent {
 	private MultiValueMap<String, String> header;
 	private AppContext context;
 	private long responseTime;
+	private String ip;
 
 	public MultiValueMap<String, String> getHeader() {
 		return header;
@@ -52,6 +55,7 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public <T> RequestTrackEvent(Type type, TunnelMessage<T> message) {
 		super(type);
+		this.description = String.format("%s %s", this.type, message.getTopic());
 		this.context = message.getContext();
 	}
 
@@ -104,12 +108,19 @@ public class RequestTrackEvent extends AuditEvent {
 				header.add(headerName, headerValue);
 			}
 		}
+		this.ip = HttpUtils.getIPAddress(request);
 		return this;
 	}
 
 	public RequestTrackEvent track(HttpRequest request) {
 		this.description = String.format("%s %s=%s", this.type, request.getMethod(), request.getURI());
-		this.header = request.getHeaders();
+		// this.header = request.getHeaders();
+
+		this.header = new LinkedMultiValueMap<String, String>();
+		Collection<Entry<String, List<String>>> headers = request.getHeaders().entrySet();
+		for (Entry<String, List<String>> header : headers) {
+			this.header.put(header.getKey(), header.getValue());
+		}
 		return this;
 	}
 
@@ -120,7 +131,12 @@ public class RequestTrackEvent extends AuditEvent {
 			LOGGER.error("RequestTrackEvent.track while logging response in", e);
 			this.description = String.format("%s %s=%s", this.type, "EXCEPTION", uri);
 		}
-		this.header = response.getHeaders();
+		// this.header = response.getHeaders();
+		this.header = new LinkedMultiValueMap<String, String>();
+		Collection<Entry<String, List<String>>> headers = response.getHeaders().entrySet();
+		for (Entry<String, List<String>> header : headers) {
+			this.header.put(header.getKey(), header.getValue());
+		}
 		return this;
 	}
 
@@ -138,6 +154,30 @@ public class RequestTrackEvent extends AuditEvent {
 
 	public void setContext(AppContext context) {
 		this.context = context;
+	}
+
+	public String getIp() {
+		return ip;
+	}
+
+	public void setIp(String ip) {
+		this.ip = ip;
+	}
+
+	public void clean() {
+		if (this.header != null) {
+			this.header.remove("connection");
+			this.header.remove("accept");
+			this.header.remove("Accept");
+			this.header.remove("accept-encoding");
+			this.header.remove("accept-language");
+			this.header.remove("Content-Length");
+			this.header.remove("X-Application-Context");
+			this.header.remove("Content-Type");
+			this.header.remove("Transfer-Encoding");
+			this.header.remove("Date");
+			this.header.remove("Connection");
+		}
 	}
 
 }

@@ -20,7 +20,8 @@ public class FlatMap {
 	/**
 	 * Instantiates a new flat map.
 	 *
-	 * @param tempmap the tempmap
+	 * @param tempmap
+	 *            the tempmap
 	 */
 	public FlatMap(Map<String, Object> tempmap) {
 		this.map = tempmap;
@@ -29,7 +30,8 @@ public class FlatMap {
 	/**
 	 * Gets the json path.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return the json path
 	 */
 	public JsonPath getJsonPath(String key) {
@@ -44,7 +46,8 @@ public class FlatMap {
 	/**
 	 * Gets the.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return the string
 	 */
 	public String get(String key) {
@@ -52,10 +55,16 @@ public class FlatMap {
 		return jsonPath.load(this.map, Constants.BLANK);
 	}
 
+	public String get(String key, String defaultValue) {
+		JsonPath jsonPath = getJsonPath(key);
+		return jsonPath.load(this.map, defaultValue);
+	}
+
 	/**
 	 * Gets the integer.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return the integer
 	 */
 	public Integer getInteger(String key) {
@@ -77,7 +86,8 @@ public class FlatMap {
 	/**
 	 * Gets the list.
 	 *
-	 * @param key the key
+	 * @param key
+	 *            the key
 	 * @return the list
 	 */
 	public List<FlatMap> getList(String key) {

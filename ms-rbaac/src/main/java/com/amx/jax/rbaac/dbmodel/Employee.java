@@ -31,6 +31,7 @@ public class Employee implements java.io.Serializable {
 	private BigDecimal fsRoleMaster;
 	private BigDecimal fsCountryBranch;
 	private BigDecimal fsCompanyMaster;
+	private String status;
 	private String sesionStatus;
 	private String email;
 	@JsonIgnore
@@ -48,8 +49,11 @@ public class Employee implements java.io.Serializable {
 
 	private BigDecimal lockCount;
 	private Date lockDate;
-	
+
+	// TODO: Add Unlock Info
+
 	private String deviceId;
+	private Date lastLogin;
 
 	@Id
 	@GeneratedValue(generator = "fs_employee_seq", strategy = GenerationType.SEQUENCE)
@@ -142,6 +146,15 @@ public class Employee implements java.io.Serializable {
 
 	public void setEmployeeNumber(String employeeNumber) {
 		this.employeeNumber = employeeNumber;
+	}
+
+	@Column(name = "STATUS")
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Column(name = "SESSION_STATUS")
@@ -295,6 +308,15 @@ public class Employee implements java.io.Serializable {
 
 	public void setDeviceId(String deviceId) {
 		this.deviceId = deviceId;
+	}
+
+	@Column(name = "LAST_LOGIN")
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
 	}
 
 }

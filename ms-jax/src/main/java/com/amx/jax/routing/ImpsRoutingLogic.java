@@ -207,7 +207,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 				+ "  AND    A.APPLICATION_COUNTRY_ID = B.APPLICATION_COUNTRY_ID"
 				+ "  AND    A.ROUTING_COUNTRY_ID = B.COUNTRY_ID" + "  AND    A.CURRENCY_ID = B.CURRENCY_ID"
 				+ "  AND    A.ROUTING_BANK_ID = B.BANK_ID" + "  AND    A.REMITTANCE_MODE_ID = B.REMITTANCE_MODE_ID"
-				+ "  AND    A.DELIVERY_MODE_ID = B.DELIVERY_MODE_ID" + "  AND    A.REMITTANCE_MODE_ID       =  33     "
+				+ "  AND    A.DELIVERY_MODE_ID = B.DELIVERY_MODE_ID" + "  AND    A.REMITTANCE_MODE_ID       =  (select REMITTANCE_MODE_ID from ex_remittance_mode where REMITTANCE_CODE=13)     "
 				+ "  AND    B.APPROVED_BY IS NOT NULL" + "  AND    B.BANK_SERVICE_RULE_ID = C.BANK_SERVICE_RULE_ID"
 				+ "  AND    C.CHARGES_TYPE = 'C'" + "  AND    C.CHARGES_FOR   =   ? "
 				+ "  AND    ? BETWEEN C.FROM_AMOUNT AND C.TO_AMOUNT";
@@ -234,7 +234,7 @@ public class ImpsRoutingLogic implements IRoutingLogic {
 				" SELECT  B.TO_AMOUNT   " + " FROM    EX_BANK_SERVICE_RULE A," + "         EX_BANK_CHARGES B"
 						+ " WHERE   A.BANK_SERVICE_RULE_ID  =   B.BANK_SERVICE_RULE_ID"
 						+ " AND     A.COUNTRY_ID            =   ?" + " AND     A.CURRENCY_ID           =   ?"
-						+ " AND     A.BANK_ID=   ?      " + " AND     A.REMITTANCE_MODE_ID    =   33"
+						+ " AND     A.BANK_ID=   ?      " + " AND     A.REMITTANCE_MODE_ID    =   (select REMITTANCE_MODE_ID from ex_remittance_mode where REMITTANCE_CODE=13)"
 						+ " AND    A.ISACTIVE           =   'Y'" + "AND    B.ISACTIVE           =   'Y' "
 						+ " AND    B.CHARGES_TYPE          =   'C'",
 				BigDecimal.class, routingCountryId, fcurrencyId, routingBankId);

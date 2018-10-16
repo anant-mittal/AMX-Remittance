@@ -70,7 +70,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	public List<AddAdditionalBankDataDto> getPutrposeOfTransaction(BigDecimal applicationCountryId,
 			BigDecimal countryId, BigDecimal currencyId, BigDecimal remittanceModeId, BigDecimal deliveryModeId,
 			BigDecimal bankId) throws GlobalException {
-		logger.info(
+		logger.debug(
 				"in getPutrposeOfTransaction applicationCountryId:{}, countryId:{},currencyId:{}, remittanceModeId:{},deliveryModeId:{},bankId:{}",
 				applicationCountryId, countryId, currencyId, remittanceModeId, deliveryModeId, bankId);
 		List<AddAdditionalBankDataDto> listAdditionalBankDataTable = null;
@@ -129,13 +129,13 @@ public class PurposeOfTransactionService extends AbstractService {
 			for (AddDynamicLabel dyamicLabel : listDynamicLabel) {
 				AddAdditionalBankDataDto adddata = new AddAdditionalBankDataDto();
 				if (dyamicLabel.getValidation() != null && dyamicLabel.getValidation().equalsIgnoreCase("Y")) {
-					logger.info("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
+					logger.debug("check 1:{} {}", routingCountry, dyamicLabel.getFlexiField());
 				
 					List<AdditionalBankRuleMap> listAdditinalBankfield = additionalBankRuleMapDao
 							.getDynamicLevelMatch(routingCountry, dyamicLabel.getFlexiField());
 					if (!listAdditinalBankfield.isEmpty()) {
 						for (AdditionalBankRuleMap listAdd : listAdditinalBankfield) {
-							logger.info("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
+							logger.debug("check 2:{} {} {} {} {} {}", currencyId, bankId, remittanceModeId, deleveryModeId,
 									routingCountry, dyamicLabel.getFlexiField());
 							List<AdditionalBankDetailsViewx> listAdditionaView = additionalBankDetailsDao
 									.getAdditionalBankDetails(currencyId, bankId, remittanceModeId, deleveryModeId,
@@ -166,14 +166,6 @@ public class PurposeOfTransactionService extends AbstractService {
 								adddata.setRenderInputText(false);
 								adddata.setRenderSelect(true);
 								adddata.setRenderOneSelect(false);
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-
-								System.out.println("listAdditionaView:" + listAdditionaView.size());
-								for (AdditionalBankDetailsViewx lst : listAdditionaView) {
-									System.out.println("listAdditionaView:" + lst.getAmiecCode() + "\t Desc :"
-											+ lst.getAmieceDescription());
-
-								}
 								adddata.setListadditionAmiecData(convertViewModel(listAdditionaView));
 							}
 						}
@@ -270,7 +262,7 @@ public class PurposeOfTransactionService extends AbstractService {
 	@SuppressWarnings("rawtypes")
 	public ApiResponse getPurposeOfTransaction(IRemitTransReqPurpose request) {
 		RemittanceTransactionRequestModel model = (RemittanceTransactionRequestModel) request;
-		logger.info("in getPurposeOfTransaction with params: " + model.toString());
+		logger.debug("in getPurposeOfTransaction with params: " + model.toString());
 		ApiResponse response = getBlackApiResponse();
 		if (model.getLocalAmount() == null && model.getForeignAmount() == null) {
 			model.setLocalAmount(BigDecimal.ONE);

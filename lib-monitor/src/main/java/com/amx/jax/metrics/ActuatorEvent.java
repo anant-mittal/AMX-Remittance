@@ -13,6 +13,7 @@ import com.codahale.metrics.Timer;
 
 public class ActuatorEvent extends AbstractEvent {
 
+	private static final long serialVersionUID = -6503726300332663101L;
 	private SortedMap<String, Gauge> gauges;
 	private SortedMap<String, Counter> counters;
 	private SortedMap<String, Histogram> histograms;
@@ -74,5 +75,10 @@ public class ActuatorEvent extends AbstractEvent {
 			newtimers.put(timerEntry.getKey(), new AuditTimer(timerEntry.getValue()));
 		}
 		return newtimers;
+	}
+
+	@Override
+	public void clean() {
+		// TODO Auto-generated method stub
 	}
 }

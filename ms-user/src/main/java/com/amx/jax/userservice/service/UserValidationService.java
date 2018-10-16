@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.exception.jax.InvalidCivilIdException;
 import com.amx.amxlib.exception.jax.InvalidOtpException;
@@ -41,6 +40,7 @@ import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerVerification;
 import com.amx.jax.dbmodel.DmsDocumentModel;
 import com.amx.jax.dbmodel.ViewOnlineCustomerCheck;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.userservice.dao.CusmosDao;
@@ -104,6 +104,9 @@ public class UserValidationService {
 
 	@Autowired
 	TenantContext<CustomerValidation> tenantContext;
+	
+	@Autowired
+	private UserValidationService userValidationService;
 
 	private DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -314,13 +317,13 @@ public class UserValidationService {
 		List<BlackListModel> blist = blistDao.getBlackByName(engNamesbuf.toString());
 		if (blist != null && !blist.isEmpty()) {
 			throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
-					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
+					JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey());
 		}		
 		if (StringUtils.isNotBlank(localNamesbuf.toString())) {
 			blist = blistDao.getBlackByName(localNamesbuf.toString());
 			if (blist != null && !blist.isEmpty()) {
 				throw new GlobalException("Your account is locked as we have found that your name has been black-listed by CBK.",
-						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getCode());
+						JaxError.BLACK_LISTED_EXISTING_CIVIL_ID.getStatusKey());
 			}
 		}
 	}
@@ -417,7 +420,7 @@ public class UserValidationService {
 	protected CustomerOnlineRegistration validateOnlineCustomerByIdentityId(String identityId) {
 		CustomerOnlineRegistration onlineCustomer = custDao.getOnlineCustomerByLoginIdOrUserName(identityId);
 		if (onlineCustomer == null) {
-			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getCode());
+			throw new GlobalException("Online Customer id not found", JaxError.CUSTOMER_NOT_FOUND.getStatusKey());
 		}
 		return onlineCustomer;
 	}
@@ -433,11 +436,11 @@ public class UserValidationService {
 		boolean isEOtpFlowRequired = isEOtpFlowRequired(model, customer);
 
 		if (isMOtpFlowRequired && model.getMotp() == null) {
-			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getCode());
+			throw new GlobalException("mOtp field is mandatory", JaxError.MISSING_OTP.getStatusKey());
 		}
 
 		if (isEOtpFlowRequired && model.getEotp() == null) {
-			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getCode());
+			throw new GlobalException("eOtp field is mandatory", JaxError.MISSING_OTP.getStatusKey());
 		}
 
 		// mobile otp validation
@@ -502,7 +505,7 @@ public class UserValidationService {
 
 		Integer limit = otpSettings.getMaxSendOtpAttempts();
 		if (onlineCust.getTokenSentCount() != null && onlineCust.getTokenSentCount().intValue() >= limit) {
-			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getCode());
+			throw new GlobalException("Limit to send otp exceeded", JaxError.SEND_OTP_LIMIT_EXCEEDED.getStatusKey());
 		}
 	}
 
@@ -514,7 +517,7 @@ public class UserValidationService {
 			long diff = Calendar.getInstance().getTime().getTime() - tokenDate.getTime();
 			long tokenTimeinMins = TimeUnit.MILLISECONDS.toMinutes(diff);
 			if (tokenTimeinMins > otpValidTimeInMins) {
-				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getCode());
+				throw new GlobalException("Otp has been expired", JaxError.OTP_EXPIRED.getStatusKey());
 			}
 		}
 	}
@@ -573,7 +576,7 @@ public class UserValidationService {
 	 */
 	@SuppressWarnings("unused")
 	public void validateNonActiveOrNonRegisteredCustomerStatus(String identityInt, JaxApiFlow apiFlow) {
-		Customer customer = custDao.getCustomerByIdentityInt(identityInt);
+		Customer customer = custDao.getCustomerByIdentityInt(identityInt);		
 		if(customer == null && apiFlow == JaxApiFlow.SIGNUP_DEFAULT) {
 			return;
 		}
@@ -590,6 +593,9 @@ public class UserValidationService {
 		if (onlineCustomer == null) {
 			throw new GlobalException("Customer not registered in online", JaxError.CUSTOMER_NOT_REGISTERED_ONLINE);
 		}
+		
+		userValidationService.validateCustomerVerification(onlineCustomer.getCustomerId());
+		
 		if (!ConstantDocument.Yes.equals(onlineCustomer.getStatus())) {
 			throw new GlobalException("Customer not active in online", JaxError.CUSTOMER_NOT_ACTIVE_ONLINE);
 		}

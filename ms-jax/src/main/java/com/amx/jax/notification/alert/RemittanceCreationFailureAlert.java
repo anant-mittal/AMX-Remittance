@@ -12,13 +12,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.CommunicationChannel;
 import com.amx.amxlib.exception.AbstractJaxException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.notification.RemittanceTransactionFailureAlertModel;
-import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.ExEmailNotification;
 import com.amx.jax.dbmodel.remittance.RemittanceApplication;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IExEmailNotificationDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;

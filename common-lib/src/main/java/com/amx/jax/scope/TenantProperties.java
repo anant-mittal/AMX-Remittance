@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.dict.Language;
@@ -76,7 +77,9 @@ public class TenantProperties {
 	public static Object assignValues(String tenant, Object object) {
 		Properties tenantProperties = getProperties(tenant, object);
 		try {
-			for (Field field : object.getClass().getDeclaredFields()) {
+			Class<?> clazz = AopProxyUtils.ultimateTargetClass(object);
+
+			for (Field field : clazz.getDeclaredFields()) {
 				if (field.isAnnotationPresent(TenantValue.class)) {
 					TenantValue annotation = field.getAnnotation(TenantValue.class);
 					String propertyName = annotation.value().replace("${", "").replace("}", "");
@@ -113,6 +116,7 @@ public class TenantProperties {
 							field.set(object, o);
 						} else {
 							LOGGER.warn("********** Property Type Undefined *****  " + typeName);
+							field.set(object, ArgUtil.parseAsObject((Class<?>) type, propertyValue));
 						}
 					}
 				}

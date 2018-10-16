@@ -3,7 +3,7 @@ package com.amx.jax.ui.response;
 import java.util.Arrays;
 import java.util.List;
 
-import com.amx.amxlib.error.JaxError;
+import com.amx.jax.error.JaxError;
 
 /**
  * The Class ResponseMeta.

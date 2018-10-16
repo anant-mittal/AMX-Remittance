@@ -53,7 +53,6 @@ public class DateUtil {
 		try {
 			utilDate = sdf.parse(strdate);
 			sqlDate = new java.sql.Date(utilDate.getTime());
-			System.out.println("String converted to java.sql.Date :" + sqlDate);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,7 +82,6 @@ public class DateUtil {
 		calendar.setTime(date);
 		String year = String.valueOf(calendar.get(Calendar.YEAR));
 
-		System.out.println(Calendar.getInstance().get(Calendar.MONTH));
 		return "01/" + data.get(Calendar.getInstance().get(Calendar.MONTH)) + "/" + year;
 	}
 	

@@ -20,19 +20,37 @@
 	</properties>
 	<dependencies>
 
-		<!-- Security infos -->
 		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-mcq</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.session</groupId>
 			<artifactId>spring-session</artifactId>
 		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-mcq</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-postman</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-rbaac</artifactId>
 		</dependency>
 
 	</dependencies>

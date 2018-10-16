@@ -1,5 +1,7 @@
 package com.amx.jax.exception;
 
 public interface IExceptionEnum {
-	String getCode();
+	String getStatusKey();
+
+	int getStatusCode();
 }

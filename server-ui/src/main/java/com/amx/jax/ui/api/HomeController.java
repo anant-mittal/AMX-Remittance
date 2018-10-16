@@ -1,25 +1,31 @@
 
 package com.amx.jax.ui.api;
 
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
 
 import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
+import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
+import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.ServerStatus;
@@ -31,7 +37,6 @@ import com.amx.jax.ui.service.SessionService;
 import com.amx.jax.ui.session.UserDeviceBean;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
-import com.codahale.metrics.annotation.Timed;
 
 import io.swagger.annotations.Api;
 
@@ -43,7 +48,7 @@ import io.swagger.annotations.Api;
 public class HomeController {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerFactory.getLogger(HomeController.class);
+	private static final Logger LOGGER = LoggerService.getLogger(HomeController.class);
 
 	/** The web app config. */
 	@Autowired
@@ -63,7 +68,7 @@ public class HomeController {
 
 	/** The http service. */
 	@Autowired
-	HttpService httpService;
+	CommonHttpRequest httpService;
 
 	/** The check time. */
 	private long checkTime = 0L;
@@ -75,14 +80,6 @@ public class HomeController {
 	@Autowired
 	private RestService restService;
 
-	/** The clean CDN url. */
-	@Value("${jax.cdn.url}")
-	private String cleanCDNUrl;
-
-	/** The fcm sender id. */
-	@Value("${fcm.senderid}")
-	private String fcmSenderId;
-
 	/**
 	 * Gets the version.
 	 *
@@ -92,8 +89,8 @@ public class HomeController {
 		long checkTimeNew = System.currentTimeMillis() / (1000 * 60 * 5);
 		if (checkTimeNew != checkTime) {
 			try {
-				Map<String, Object> map = restService.ajax(cleanCDNUrl + "/dist/build.json?_=" + checkTimeNew).get()
-						.asMap();
+				Map<String, Object> map = restService
+						.ajax(webAppConfig.getCleanCDNUrl() + "/dist/build.json?_=" + checkTimeNew).get().asMap();
 				if (map.containsKey("version")) {
 					versionNew = ArgUtil.parseAsString(map.get("version"));
 				}
@@ -112,7 +109,7 @@ public class HomeController {
 	 *            the request
 	 * @return the string
 	 */
-	@Timed
+	@ApiJaxStatus({ JaxError.ACCOUNT_LENGTH, JaxError.ACCOUNT_TYPE_UPDATE })
 	@RequestMapping(value = "/pub/meta/**", method = { RequestMethod.GET })
 	@ResponseBody
 	public String loginPing(HttpServletRequest request) {
@@ -123,7 +120,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 
@@ -134,15 +131,16 @@ public class HomeController {
 	 *            the model
 	 * @return the string
 	 */
-	@Timed
 	@RequestMapping(value = "/login/**", method = { RequestMethod.GET })
 	public String loginJPage(Model model) {
+		LOGGER.debug("This is debug Statment");
+		LOGGER.info("This is info Statment");
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
-		model.addAttribute("cdnUrl", cleanCDNUrl);
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
-		model.addAttribute("fcmSenderId", fcmSenderId);
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
 
@@ -155,6 +153,8 @@ public class HomeController {
 			"Accept=application/json", "Accept=application/v0+json" })
 	@ResponseBody
 	public String loginPJson() {
+		LOGGER.debug("This is debug Statment");
+		LOGGER.info("This is debug Statment");
 		ResponseWrapper<Object> wrapper = new ResponseWrapper<Object>(null);
 		wrapper.setMessage(WebResponseStatus.UNAUTHORIZED, ResponseMessage.UNAUTHORIZED);
 		return JsonUtil.toJson(wrapper);
@@ -171,10 +171,10 @@ public class HomeController {
 	public String defaultPage(Model model) {
 		model.addAttribute("lang", httpService.getLanguage());
 		model.addAttribute("applicationTitle", webAppConfig.getAppTitle());
-		model.addAttribute("cdnUrl", cleanCDNUrl);
+		model.addAttribute("cdnUrl", webAppConfig.getCleanCDNUrl());
 		model.addAttribute(UIConstants.CDN_VERSION, getVersion());
 		model.addAttribute(AppConstants.DEVICE_ID_KEY, userDevice.getFingerprint());
-		model.addAttribute("fcmSenderId", fcmSenderId);
+		model.addAttribute("fcmSenderId", webAppConfig.getFcmSenderId());
 		return "app";
 	}
 
@@ -193,5 +193,18 @@ public class HomeController {
 		sessionService.getGuestSession().setLanguage(lang);
 		model.addAttribute("terms", jaxService.setDefaults().getMetaClient().getTermsAndCondition().getResults());
 		return "terms";
+	}
+
+	@Autowired
+	private SpringTemplateEngine templateEngine;
+
+	@RequestMapping(value = { "/apple-app-site-association" }, method = {
+			RequestMethod.GET }, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public String applejson(Model model, HttpServletResponse response, Locale locale) {
+		model.addAttribute("appid", webAppConfig.getIosAppId());
+		Context context = new Context(locale);
+		context.setVariables(model.asMap());
+		return templateEngine.process("json/apple-app-site-association", context);
 	}
 }

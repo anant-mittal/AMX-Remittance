@@ -36,9 +36,13 @@ public class AuditServiceClient implements AuditService {
 	private static final Marker trackmarker = MarkerFactory.getMarker(EventMarker.TRACK.toString());
 	private static final Marker gaugemarker = MarkerFactory.getMarker(EventMarker.GAUGE.toString());
 	private static final Marker excepmarker = MarkerFactory.getMarker(EventMarker.EXCEP.toString());
+	private static final Marker noticemarker = MarkerFactory.getMarker(EventMarker.NOTICE.toString());
+	private static final Marker alertmarker = MarkerFactory.getMarker(EventMarker.ALERT.toString());
+	private static final Map<String, Boolean> allowedMarkersMap = new HashMap<String, Boolean>();
 	private final Map<String, AuditFilter<AuditEvent>> filtersMap = new HashMap<>();
 	private static boolean FILTER_MAP_DONE = false;
-	private static String appName = null;
+	private static String APP_NAME = null;
+	private static boolean AUDIT_LOGGER_ENABLED = false;
 
 	private static ITunnelService ITUNNEL_SERVICE;
 
@@ -46,8 +50,21 @@ public class AuditServiceClient implements AuditService {
 	@Autowired
 	public AuditServiceClient(AppConfig appConfig, List<AuditFilter> filters,
 			@Autowired(required = false) ITunnelService iTunnelService) {
+
+		String[] allowedMarkersList = appConfig.getPrintableAuditMarkers();
+		String[] skippedMarkersList = appConfig.getSkipAuditMarkers();
+
+		for (String markerString : allowedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.TRUE);
+		}
+
+		for (String markerString : skippedMarkersList) {
+			allowedMarkersMap.put(markerString, Boolean.FALSE);
+		}
+
 		if (!FILTER_MAP_DONE) {
-			appName = appConfig.getAppName();
+			APP_NAME = appConfig.getAppName();
+			AUDIT_LOGGER_ENABLED = appConfig.isLogger();
 			for (AuditFilter filter : filters) {
 				Matcher matcher = pattern.matcher(filter.getClass().getGenericInterfaces()[0].getTypeName());
 				if (matcher.find()) {
@@ -80,7 +97,7 @@ public class AuditServiceClient implements AuditService {
 	}
 
 	private static AuditEvent captureDetails(AuditEvent event) {
-		event.setComponent(appName);
+		event.setComponent(APP_NAME);
 		Long traceTime = AppContextUtil.getTraceTime();
 		if (traceTime != null) {
 			event.setTraceTime(TimeUtils.timeSince(AppContextUtil.getTraceTime()));
@@ -96,17 +113,22 @@ public class AuditServiceClient implements AuditService {
 			map.put("traceId", appContext.getTraceId());
 			map.put("tranxId", appContext.getTranxId());
 			map.put("tenant", appContext.getTenant());
-			ITUNNEL_SERVICE.send(AUDIT_EVENT_TOPIC, map);
+			ITUNNEL_SERVICE.audit(AUDIT_EVENT_TOPIC, map);
 		} catch (Exception e) {
 			LOGGER2.error("Exception while Publishing Event", e);
 		}
 	}
 
 	public static AuditLoggerResponse logAbstractEvent(Marker marker, AbstractEvent event, boolean capture) {
-		event.setComponent(appName);
+		event.setComponent(APP_NAME);
+		event.clean();
 		String json = JsonUtil.toJson(event);
-		LOGGER.info(marker, json);
-		if (capture && ITUNNEL_SERVICE != null) {
+
+		String marketName = marker.getName();
+		if (allowedMarkersMap.getOrDefault(marketName, Boolean.FALSE).booleanValue()) {
+			LOGGER.info(marker, json);
+		}
+		if (capture && ITUNNEL_SERVICE != null && AUDIT_LOGGER_ENABLED) {
 			@SuppressWarnings("unchecked")
 			Map<String, Object> map = JsonUtil.fromJson(json, Map.class);
 			publishAbstractEvent(map);
@@ -142,27 +164,43 @@ public class AuditServiceClient implements AuditService {
 		return logAuditEvent(marker, event, false);
 	}
 
+	public static AuditLoggerResponse logAuditEvent(EventMarker emarker, AuditEvent event) {
+		Marker marker = auditmarker;
+		boolean capture = false;
+		if (emarker == EventMarker.AUDIT) {
+			capture = true;
+		} else if (emarker == EventMarker.TRACK) {
+			marker = trackmarker;
+		} else if (emarker == EventMarker.GAUGE) {
+			marker = gaugemarker;
+		} else if (emarker == EventMarker.EXCEP) {
+			marker = excepmarker;
+		} else if (emarker == EventMarker.ALERT) {
+			marker = alertmarker;
+		} else if (emarker == EventMarker.NOTICE) {
+			marker = noticemarker;
+		} else {
+			capture = true;
+		}
+		return logAuditEvent(marker, event, capture);
+	}
+
 	/**
 	 * 
 	 * @param event
 	 * @return
 	 */
 	public static AuditLoggerResponse logStatic(AuditEvent event) {
-		Marker marker = auditmarker;
-		boolean capture = false;
 		EventType eventType = event.getType();
-		if (eventType == null || eventType.marker() == EventMarker.AUDIT) {
-			capture = true;
-		} else if (eventType.marker() == EventMarker.TRACK) {
-			marker = trackmarker;
-		} else if (eventType.marker() == EventMarker.GAUGE) {
-			marker = gaugemarker;
-		} else if (eventType.marker() == EventMarker.EXCEP) {
-			marker = excepmarker;
-		} else {
-			capture = true;
+		if (eventType == null) {
+			LOGGER2.error("Exception while logAuditEvent {}", JsonUtil.toJson(event));
+			return null;
 		}
-		return logAuditEvent(marker, event, capture);
+		EventMarker eventMarker = eventType.marker();
+		if (eventMarker == null) {
+			eventMarker = EventMarker.AUDIT;
+		}
+		return logAuditEvent(eventMarker, event);
 	}
 
 	@Override

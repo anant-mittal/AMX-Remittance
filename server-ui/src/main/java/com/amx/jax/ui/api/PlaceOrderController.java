@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.model.PlaceOrderDTO;
+import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
+import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.JaxService;
 
@@ -88,4 +90,22 @@ public class PlaceOrderController {
 		return wrapper;
 	}
 
+	/**
+	 * 
+	 * @param remitTranxnReqModel
+	 * @return
+	 */
+	@RequestMapping(value = "/api/po/calc", method = { RequestMethod.POST })
+	public ResponseWrapper<RemittanceTransactionResponsetModel> calculate(
+			@RequestBody RemittanceTransactionRequestModel remitTranxnReqModel) {
+
+		ResponseWrapper<RemittanceTransactionResponsetModel> wrapper = new ResponseWrapper<RemittanceTransactionResponsetModel>();
+		RemittanceTransactionResponsetModel respTxMdl = jaxService.setDefaults().getRemitClient()
+				.calcEquivalentAmount(remitTranxnReqModel).getResult();
+		wrapper.setData(respTxMdl);
+		wrapper.setMeta(
+				jaxService.setDefaults().getRemitClient().getPurposeOfTransactions(remitTranxnReqModel).getResults());
+		return wrapper;
+
+	}
 }

@@ -122,6 +122,7 @@ public class RemittanceApplication implements Serializable {
 	private String pgReceiptDate;
 	private String errorMessage;
 	private String wuIpAddress;
+	private String errorCategory;
 	
 	
 
@@ -818,6 +819,15 @@ public class RemittanceApplication implements Serializable {
 
 	public void setErrorMessage(String errorMessage) {
 		this.errorMessage = errorMessage;
+	}
+
+	@Column(name="ERROR_CATEGORY")
+	public String getErrorCategory() {
+		return errorCategory;
+	}
+
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
 	}
 
 	

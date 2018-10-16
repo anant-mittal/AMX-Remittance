@@ -12,21 +12,26 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
-import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
-import com.amx.jax.rbaac.dao.LoginDao;
+import com.amx.jax.rbaac.RbaacConstants;
+import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.Role;
+import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
-import com.amx.jax.rbaac.error.AuthServiceError;
+import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
-import com.amx.utils.ContextUtil;
+import com.amx.jax.util.ObjectConverter;
 
 /**
  * The Class UserAuthService.
@@ -37,11 +42,11 @@ import com.amx.utils.ContextUtil;
 public class UserAuthService {
 
 	/** The Constant LOGGER. */
-	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceImpl.class);
+	private static final Logger LOGGER = LoggerService.getLogger(UserAuthService.class);
 
 	/** The login dao. */
 	@Autowired
-	LoginDao loginDao;
+	RbaacDao rbaacDao;
 
 	/** The user otp data. */
 	@Autowired
@@ -50,9 +55,6 @@ public class UserAuthService {
 	/** The user otp manager. */
 	@Autowired
 	UserOtpManager userOtpManager;
-
-	/** The Constant MAX_LOCK_COUNT. */
-	private static final int MAX_LOCK_COUNT = 3;
 
 	/**
 	 * Verify user details.
@@ -77,7 +79,7 @@ public class UserAuthService {
 		String identity = userAuthInitReqDTO.getIdentity();
 		String ipAddress = userAuthInitReqDTO.getIpAddress();
 		String deviceId = userAuthInitReqDTO.getDeviceId();
-		DEVICE_TYPE deviceType = userAuthInitReqDTO.getDeviceType();
+		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
 
 		/**
 		 * Input -> Invalid
@@ -85,27 +87,27 @@ public class UserAuthService {
 		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(identity) || StringUtils.isBlank(ipAddress)
 				|| deviceType == null || StringUtils.isBlank(deviceType.toString())) {
 			throw new AuthServiceException("Employee Number, Civil Id, IP Address, & Device Type are Manadatory",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
+		if (DeviceType.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
 			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		List<Employee> employees;
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
-			employees = loginDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
+		if (DeviceType.MOBILE.equals(deviceType)) {
+			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
-			employees = loginDao.getEmployees(employeeNo, identity, ipAddress);
+			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
 		}
 
 		/**
 		 * Invalid Employee Details
 		 */
 		if (null == employees || employees.isEmpty()) {
-			throw new AuthServiceException("Employee Details not available", AuthServiceError.INVALID_USER_DETAILS);
+			throw new AuthServiceException("Employee Details not available", RbaacServiceError.INVALID_USER_DETAILS);
 		}
 
 		/**
@@ -113,7 +115,7 @@ public class UserAuthService {
 		 */
 		if (employees.size() > 1) {
 			throw new AuthServiceException("Multiple Users Corresponding to the same Info: Pls contact Support",
-					AuthServiceError.MULTIPLE_USERS);
+					RbaacServiceError.MULTIPLE_USERS);
 		}
 
 		Employee emp = employees.get(0);
@@ -124,16 +126,16 @@ public class UserAuthService {
 		if (StringUtils.isBlank(emp.getIsActive()) || !"Y".equalsIgnoreCase(emp.getIsActive())
 				|| "D".equalsIgnoreCase(emp.getDeletedUser()) || "Y".equalsIgnoreCase(emp.getDeletedUser())) {
 			throw new AuthServiceException("User Not Active Or Deleted: User Account is Suspended.",
-					AuthServiceError.USER_NOT_ACTIVE_OR_DELETED);
+					RbaacServiceError.USER_NOT_ACTIVE_OR_DELETED);
 		}
 
 		/**
 		 * Check if user A/C is Locked. lockcnt >= 3
 		 */
-		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= MAX_LOCK_COUNT) {
+		if (null != emp.getLockCount() && emp.getLockCount().intValue() >= RbaacConstants.EMPLOYEE_MAX_LOCK_COUNT) {
 			throw new AuthServiceException(
 					"User Account Locked : User Account Login is Suspended, from: " + emp.getLockDate(),
-					AuthServiceError.USER_ACCOUNT_LOCKED);
+					RbaacServiceError.USER_ACCOUNT_LOCKED);
 		}
 
 		/**
@@ -143,7 +145,7 @@ public class UserAuthService {
 
 		userOtpManager.sendOtpSms(emp, otpData);
 
-		String transactionId = ContextUtil.getTraceId();
+		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
 
@@ -184,18 +186,18 @@ public class UserAuthService {
 	public EmployeeDetailsDTO authoriseUser(UserAuthorisationReqDTO reqDto) {
 
 		String employeeNo = reqDto.getEmployeeNo();
-		String mOtpHash = reqDto.getmOtpHash();
-		//String eOtpHash = reqDto.geteOtpHash();
+		String mOtp = reqDto.getmOtp();
+		// String eOtpHash = reqDto.geteOtpHash();
 		String ipAddress = reqDto.getIpAddress();
-		//String transactionId = reqDto.getTransactionId();
+		// String transactionId = reqDto.getTransactionId();
 		String deviceId = reqDto.getDeviceId();
 
 		/**
 		 * Input -> Invalid
 		 */
-		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtpHash) || StringUtils.isBlank(ipAddress)) {
-			throw new AuthServiceException("Employee Number, Otp Hash & IP Address are Manadatory",
-					AuthServiceError.INVALID_OR_MISSING_DATA);
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtp) || StringUtils.isBlank(ipAddress)) {
+			throw new AuthServiceException("Employee Number, Otp & IP Address are Manadatory",
+					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		// Get Cached OTP data for the user.
@@ -206,10 +208,12 @@ public class UserAuthService {
 		// eOtp is not checked
 		if (userOtpData == null || StringUtils.isBlank(userOtpData.getOtpData().getHashedmOtp())) {
 			throw new AuthServiceException("Invalid OTP: OTP is not generated for the user or timedOut",
-					AuthServiceError.INVALID_OTP);
+					RbaacServiceError.INVALID_OTP);
 		}
 
 		Employee employee = userOtpData.getEmployee();
+
+		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 
 		// Validate User OTP hash
 		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {
@@ -226,7 +230,7 @@ public class UserAuthService {
 				userOtpCache.remove(employeeNo);
 
 				throw new AuthServiceException("Invalid OTP : Max OTP Attempts are Exeeded : User Account is LOCKED ",
-						AuthServiceError.USER_ACCOUNT_LOCKED);
+						RbaacServiceError.USER_ACCOUNT_LOCKED);
 			}
 
 			// Normal Incorrect Attempt: Increment Count
@@ -234,25 +238,20 @@ public class UserAuthService {
 
 			userOtpCache.fastPut(employeeNo, userOtpData);
 
-			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", AuthServiceError.INVALID_OTP);
+			throw new AuthServiceException("Invalid OTP: OTP entered is Incorrect", RbaacServiceError.INVALID_OTP);
 		}
 
 		// OTP is validated
 		userOtpCache.remove(employeeNo);
 
-		EmployeeDetailsDTO empDetail = new EmployeeDetailsDTO();
+		EmployeeDetailsDTO empDetail = ObjectConverter.convertEmployeeToEmpDetailsDTO(employee);
 
-		empDetail.setCivilId(employee.getCivilId());
-		empDetail.setCountryId(employee.getCountryId());
-		empDetail.setDesignation(employee.getDesignation());
-		empDetail.setEmail(employee.getEmail());
-		empDetail.setEmployeeId(employee.getEmployeeId());
-		empDetail.setEmployeeName(employee.getEmployeeName());
-		empDetail.setEmployeeNumber(employee.getEmployeeNumber());
-		empDetail.setLocation(employee.getLocation());
-		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
-		empDetail.setUserName(employee.getUserName());
-		empDetail.setRoleId(new BigDecimal("1"));
+		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
+
+		empDetail.setUserRole(roleResponseDTO);
+
+		// Set Last Successful Login Date as Current Date
+		updateLastLogin(employee);
 
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
@@ -260,16 +259,44 @@ public class UserAuthService {
 		return empDetail;
 	}
 
+	private RoleResponseDTO getRoleForUser(BigDecimal userId) {
+
+		UserRoleMapping urm = rbaacDao.getUserRoleMappingByEmployeeId(userId);
+
+		if (urm == null) {
+			return new RoleResponseDTO();
+		}
+
+		Role role = rbaacDao.getRoleById(urm.getRoleId());
+
+		if (urm.getSuspended() != null
+				&& (urm.getSuspended().equalsIgnoreCase("Y") || urm.getSuspended().equalsIgnoreCase("YES"))) {
+			role.setSuspended("Y");
+		}
+
+		return ObjectConverter.convertRoleToRoleResponseDTO(role);
+	}
+
 	/**
 	 * Lock user Account
 	 */
 	private boolean lockUserAccount(Employee srcEmp) {
 
-		Employee destEmp = loginDao.fetchEmpByEmpId(srcEmp.getEmployeeId());
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
 
-		loginDao.saveEmployee(destEmp);
+		rbaacDao.saveEmployee(destEmp);
+
+		return true;
+	}
+
+	private boolean updateLastLogin(Employee srcEmp) {
+
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		destEmp.setLastLogin(new Date());
+
+		rbaacDao.saveEmployee(destEmp);
 
 		return true;
 	}

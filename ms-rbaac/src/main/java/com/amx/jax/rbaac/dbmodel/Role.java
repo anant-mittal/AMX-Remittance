@@ -31,7 +31,6 @@ public class Role implements Serializable {
 	@Column(name = "ID", unique = true, nullable = false, precision = 22, scale = 0)
 	private BigDecimal id;
 	
-	
 	/** The role. */
 	@Column(name = "ROLE", unique = true, nullable = false)
 	private String role;

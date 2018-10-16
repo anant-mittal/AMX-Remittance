@@ -5,6 +5,7 @@ package com.amx.jax.services;
  */
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,11 +28,11 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.BeneficiaryConstant.BeneStatus;
 import com.amx.amxlib.constant.CommunicationChannel;
-import com.amx.amxlib.error.JaxError;
 import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.meta.model.BeneCountryDTO;
 import com.amx.amxlib.meta.model.BeneficiaryListDTO;
 import com.amx.amxlib.meta.model.CountryMasterDTO;
+import com.amx.amxlib.meta.model.CurrencyMasterDTO;
 import com.amx.amxlib.meta.model.QuestModelDTO;
 import com.amx.amxlib.meta.model.RemittancePageDto;
 import com.amx.amxlib.meta.model.RoutingBankMasterDTO;
@@ -45,14 +46,18 @@ import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.amxlib.model.RoutingBankMasterParam;
+import com.amx.jax.auditlog.BeneficiaryAuditEvent;
+import com.amx.jax.auditlog.JaxAuditEvent.Type;
 import com.amx.jax.config.JaxProperties;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.dal.RoutingDao;
 import com.amx.jax.dao.BeneficiaryDao;
 import com.amx.jax.dbmodel.AgentBranchModel;
 import com.amx.jax.dbmodel.AgentMasterModel;
 import com.amx.jax.dbmodel.BeneficiaryCountryView;
 import com.amx.jax.dbmodel.BenificiaryListView;
 import com.amx.jax.dbmodel.CountryMasterView;
+import com.amx.jax.dbmodel.CurrencyMasterModel;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.CustomerRemittanceTransactionView;
@@ -62,6 +67,9 @@ import com.amx.jax.dbmodel.bene.BeneficaryAccount;
 import com.amx.jax.dbmodel.bene.BeneficaryContact;
 import com.amx.jax.dbmodel.bene.BeneficaryRelationship;
 import com.amx.jax.dbmodel.bene.RelationsDescription;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.logger.AuditEvent;
+import com.amx.jax.logger.AuditService;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.BeneficaryAccountRepository;
 import com.amx.jax.repository.CountryRepository;
@@ -69,6 +77,7 @@ import com.amx.jax.repository.IBeneficaryContactDao;
 import com.amx.jax.repository.IBeneficiaryCountryDao;
 import com.amx.jax.repository.IBeneficiaryOnlineDao;
 import com.amx.jax.repository.IBeneficiaryRelationshipDao;
+import com.amx.jax.repository.ICurrencyDao;
 import com.amx.jax.repository.ITransactionHistroyDAO;
 import com.amx.jax.repository.RoutingAgentLocationRepository;
 import com.amx.jax.repository.RoutingBankMasterRepository;
@@ -146,6 +155,13 @@ public class BeneficiaryService extends AbstractService {
 	BeneficaryAccountRepository beneficaryAccountRepository;
 	@Autowired
 	JaxProperties jaxProperties ; 
+	
+    	@Autowired
+   	AuditService auditService;
+	@Autowired
+	ICurrencyDao currencyDao;
+	@Autowired
+	RoutingDao routingDao;
 
 	public ApiResponse getBeneficiaryListForOnline(BigDecimal customerId, BigDecimal applicationCountryId,
 			BigDecimal beneCountryId) {
@@ -267,11 +283,14 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
 		} catch (Exception e) {
+			auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_EXEC));
 			throw new GlobalException("Error while update");
 		}
 	}
@@ -295,12 +314,15 @@ public class BeneficiaryService extends AbstractService {
 				}
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_FAV_UPDATE_SUCCESS));
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_FAV_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 
 			return response;
 		} catch (Exception e) {
+			auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_FAV_UPDATE_EXEC));
 			throw new GlobalException("Error while update");
 		}
 
@@ -347,7 +369,6 @@ public class BeneficiaryService extends AbstractService {
 				throw new GlobalException("Not found");
 			} else {
 				beneDto = beneCheck.beneCheck(convertBeneModelToDto((beneList)));
-				System.out.println("beneDto :" + beneDto.getBeneficiaryRelationShipSeqId());
 				if (beneDto != null && !JaxUtil.isNullZeroBigDecimalCheck(transactionId)
 						&& (JaxUtil.isNullZeroBigDecimalCheck(beneRealtionId)
 								|| JaxUtil.isNullZeroBigDecimalCheck(beneDto.getBeneficiaryRelationShipSeqId()))) {
@@ -386,10 +407,12 @@ public class BeneficiaryService extends AbstractService {
 			beneList = beneficiaryOnlineDao.getOnlineBeneListFromView(customerId, applicationCountryId);
 		}
 		if (beneList.isEmpty()) {
+			auditService.log (createBeneficiaryEvent(customerId,Type.BENE_FAV_LIST_NOT_EXIST));
 			throw new GlobalException("My favourite eneficiary list is not found",JaxError.BENEFICIARY_LIST_NOT_FOUND);
 		} else {
 			response.getData().getValues().addAll(convertBeneList(beneList));
 			response.setResponseStatus(ResponseStatus.OK);
+			auditService.log (createBeneficiaryEvent(customerId,Type.BENE_FAV_LIST_SUCCESS));
 		}
 		response.getData().setType("beneList");
 		return response;
@@ -655,9 +678,11 @@ public class BeneficiaryService extends AbstractService {
 				beneRelationModel.setRemarks(beneDetails.getRemarks());
 				beneRelationShipDao.save(beneRelationModel);
 				response.setResponseStatus(ResponseStatus.OK);
+				auditService.log (createBeneficiaryEvent(beneRelationModel,Type.BENE_STATUS_UPDATE_SUCCESS));
 				response.getData().getValues().add(new BooleanResponse(Boolean.TRUE));
 				response.getData().setType("boolean_response");
 			} else {
+				auditService.log (createBeneficiaryEvent(beneDetails,Type.BENE_STATUS_UPDATE_NO_BENE_RECORD));
 				throw new GlobalException("No record found",JaxError.NO_RECORD_FOUND);
 			}
 			return response;
@@ -861,10 +886,33 @@ public class BeneficiaryService extends AbstractService {
             
             if (poResponse.getData() != null && (poResponse.getData().getValues().size()!=0)) {
                 poDto = (PlaceOrderDTO)poResponse.getData().getValues().get(0);
+				poDto.setReceiveAmount(null);
+                Boolean isExpired = false;
+                
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                String sysdate = sdf.format(new Date());
+                String fromDate = sdf.format(poDto.getValidFromDate());
+                String toDate = sdf.format(poDto.getValidToDate());
+                                
+                if(sysdate.compareTo(fromDate) >=0 && sysdate.compareTo(toDate) <= 0) {
+                	isExpired = false;
+                }else {
+                	isExpired = true;
+                }
+                
+                if (isExpired) {
+            		throw new GlobalException("PO got expired for id : "+placeOrderId,JaxError.PLACE_ORDER_EXPIRED);
+            	}
+                
                 logger.info("PlaceOrderDTO --> "+poDto.toString());
                 remitPageDto.setPlaceOrderDTO(poDto);
+                remitPageDto.setForCur(getCurrencyDTO(poDto.getForeignCurrencyId()));
+                remitPageDto.setDomCur(getCurrencyDTO(poDto.getBaseCurrencyId()));
+                
             }else {
-                throw new GlobalException("PO not found for id : "+placeOrderId,JaxError.PLACE_ORDER_ID_NOT_FOUND);
+		auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_BENE_RECORD));
+				throw new GlobalException("Place Order not found for place_order_id:",
+						JaxError.PLACE_ORDER_NOT_ACTIVE_OR_EXPIRED);
             }
             
             BigDecimal beneRealtionId = poDto.getBeneficiaryRelationshipSeqId();
@@ -874,7 +922,7 @@ public class BeneficiaryService extends AbstractService {
             } 
 
             if (poBene == null) {
-            	logger.info("Beneficiary is not available for benen relationship id "+beneRealtionId);
+                auditService.log (createBeneficiaryEvent(customerId,placeOrderId,Type.BENE_PO_NO_PO_ID));
                 throw new GlobalException("PO bene not found : ",JaxError.BENEFICIARY_LIST_NOT_FOUND);
             } else {
                 beneDto = beneCheck.beneCheck(convertBeneModelToDto((poBene)));
@@ -903,7 +951,53 @@ public class BeneficiaryService extends AbstractService {
             response.getData().getValues().add(remitPageDto);
             response.getData().setType(remitPageDto.getModelType());
             response.setResponseStatus(ResponseStatus.OK);
-        
+            auditService.log (createBeneficiaryEvent(remitPageDto,Type.BENE_PO_SUCCESS));
         return response;
+    }
+    
+    private CurrencyMasterDTO getCurrencyDTO(BigDecimal currencyId) {
+    	CurrencyMasterDTO dto = new CurrencyMasterDTO();
+    	List<CurrencyMasterModel> currencyList = currencyDao.getCurrencyList(currencyId);
+		if (currencyList.isEmpty()) {
+			throw new GlobalException("Currency details not avaliable");
+		} else {
+			CurrencyMasterModel curModel = currencyList.get(0);
+			dto.setCountryId(curModel.getCountryId());
+			dto.setCurrencyCode(curModel.getCurrencyCode());
+			dto.setQuoteName(curModel.getQuoteName());
+			dto.setCurrencyId(curModel.getCurrencyId());
+			dto.setCurrencyName(curModel.getCurrencyName());
+		}
+    	return dto;
+    }
+    
+	public List<BenificiaryListView> listBeneficiaryForPOloadTest(int num, BigDecimal currencyId) {
+		return beneficiaryOnlineDao.findByIsActiveAndCurrencyIdAndBankIdNotIn("Y", currencyId,
+				routingDao.listAllRoutingBankIds(), new PageRequest(0, num));
+	}
+    
+ private AuditEvent createBeneficiaryEvent(BeneficaryRelationship beneficaryRelationship, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficaryRelationship);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BeneficiaryListDTO beneficiaryListDTO, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,beneficiaryListDTO);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(RemittancePageDto remitPageDto, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,remitPageDto);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BigDecimal customerId, BigDecimal placeOrderId, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId,placeOrderId);
+        return beneAuditEvent;
+    }
+    
+    private AuditEvent createBeneficiaryEvent(BigDecimal customerId, Type type) {
+        AuditEvent beneAuditEvent = new BeneficiaryAuditEvent(type,customerId);
+        return beneAuditEvent;
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import com.amx.jax.dict.Project;
 import com.amx.jax.filter.AppClientErrorHanlder;
 import com.amx.jax.filter.AppClientInterceptor;
 import com.amx.utils.ArgUtil;
@@ -20,6 +21,8 @@ import com.amx.utils.ArgUtil;
 @Configuration
 @PropertySource("classpath:application-lib.properties")
 public class AppConfig {
+
+	public static Project PROJECT = null;
 
 	public static final Pattern pattern = Pattern.compile("^\\$\\{(.*)\\}$");
 	public static final String APP_ENV = "${app.env}";
@@ -31,6 +34,7 @@ public class AppConfig {
 	public static final String APP_SWAGGER = "${app.swagger}";
 	public static final String APP_DEBUG = "${app.debug}";
 	public static final String APP_CACHE = "${app.cache}";
+	public static final String APP_LOGGER = "${app.logger}";
 
 	@Deprecated
 	public static final String APP_CLASS = "${app.class}";
@@ -80,6 +84,10 @@ public class AppConfig {
 	@AppParamKey(AppParam.APP_DEBUG)
 	private Boolean debug;
 
+	@Value(APP_LOGGER)
+	@AppParamKey(AppParam.APP_LOGGER)
+	private boolean logger;
+
 	@Value(APP_AUTH_KEY)
 	private String appAuthKey;
 
@@ -128,6 +136,12 @@ public class AppConfig {
 
 	@Value("${server.session.cookie.secure}")
 	private boolean cookieSecure;
+
+	@Value("${app.audit.file.print}")
+	String[] printableAuditMarkers;
+
+	@Value("${app.audit.file.skip}")
+	String[] skipAuditMarkers;
 
 	public boolean isCookieHttpOnly() {
 		return cookieHttpOnly;
@@ -225,6 +239,12 @@ public class AppConfig {
 		return restTemplate;
 	}
 
+	@Bean
+	public Project project(@Value("${app.project}") Project project) {
+		PROJECT = project;
+		return project;
+	}
+
 	public String getSsoURL() {
 		return ssoURL;
 	}
@@ -260,6 +280,18 @@ public class AppConfig {
 
 	public String getAppId() {
 		return appId;
+	}
+
+	public String[] getPrintableAuditMarkers() {
+		return printableAuditMarkers;
+	}
+
+	public String[] getSkipAuditMarkers() {
+		return skipAuditMarkers;
+	}
+
+	public boolean isLogger() {
+		return logger;
 	}
 
 }

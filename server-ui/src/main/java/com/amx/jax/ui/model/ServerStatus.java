@@ -1,6 +1,6 @@
 package com.amx.jax.ui.model;
 
-import java.util.Map;
+import com.amx.jax.model.UserDevice;
 
 /**
  * The Class ServerStatus.
@@ -41,7 +41,7 @@ public class ServerStatus {
 	private String remoteAddr = null;
 
 	/** The device. */
-	private Map<String, Object> device = null;
+	private UserDevice device = null;
 
 	/** The message. */
 	public String message = null;
@@ -260,7 +260,7 @@ public class ServerStatus {
 	 *
 	 * @return the device
 	 */
-	public Map<String, Object> getDevice() {
+	public UserDevice getDevice() {
 		return device;
 	}
 
@@ -270,7 +270,7 @@ public class ServerStatus {
 	 * @param device
 	 *            the device
 	 */
-	public void setDevice(Map<String, Object> device) {
+	public void setDevice(UserDevice device) {
 		this.device = device;
 	}
 

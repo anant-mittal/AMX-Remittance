@@ -5,6 +5,8 @@ package com.amx.jax.rbaac.dto.request;
 
 import java.io.Serializable;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  * The Class UserAuthorisationReqDTO.
  *
@@ -16,15 +18,18 @@ public class UserAuthorisationReqDTO implements Serializable {
 	private static final long serialVersionUID = 4920057845794220028L;
 
 	/** The employee no. */
+	@NotBlank(message = "Employee Number Can not be Null or Empty")
 	private String employeeNo;
 	
 	/** The m otp hash. */
-	private String mOtpHash;
+	@NotBlank(message = "M-Otp Can not be Null or Empty")
+	private String mOtp;
 	
-	/** The e otp hash. */
-	private String eOtpHash;
+	/** The e otp. */
+	private String eOtp;
 	
 	/** The ip address. */
+	@NotBlank(message = "Ip Address Can not be Null or Empty")
 	private String ipAddress;
 	
 	/** The device id. */
@@ -52,12 +57,12 @@ public class UserAuthorisationReqDTO implements Serializable {
 	}
 
 	/**
-	 * Gets the m otp hash.
+	 * Gets the m otp.
 	 *
-	 * @return the m otp hash
+	 * @return the m otp.
 	 */
-	public String getmOtpHash() {
-		return mOtpHash;
+	public String getmOtp() {
+		return mOtp;
 	}
 
 	/**
@@ -65,26 +70,26 @@ public class UserAuthorisationReqDTO implements Serializable {
 	 *
 	 * @param mOtpHash the new m otp hash
 	 */
-	public void setmOtpHash(String mOtpHash) {
-		this.mOtpHash = mOtpHash;
+	public void setmOtp(String mOtp) {
+		this.mOtp = mOtp;
 	}
 
 	/**
-	 * Gets the e otp hash.
+	 * Gets the e otp.
 	 *
-	 * @return the e otp hash
+	 * @return the e otp
 	 */
-	public String geteOtpHash() {
-		return eOtpHash;
+	public String geteOtp() {
+		return eOtp;
 	}
 
 	/**
-	 * Sets the e otp hash.
+	 * Sets the e otp.
 	 *
-	 * @param eOtpHash the new e otp hash
+	 * @param eOtp the new e otp
 	 */
-	public void seteOtpHash(String eOtpHash) {
-		this.eOtpHash = eOtpHash;
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
 	}
 
 	/**
