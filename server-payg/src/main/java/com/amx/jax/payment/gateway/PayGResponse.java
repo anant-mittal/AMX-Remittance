@@ -25,6 +25,8 @@ public class PayGResponse {
 	
 	String collectionFinYear;
 	String collectionDocNumber;
+	String errorCategory;
+	
 	String collectionDocCode;
 
 	PayGStatus status = PayGStatus.INIT;
@@ -194,18 +196,25 @@ public class PayGResponse {
 	public void setError(String error) {
 		this.error = error;
 	}
+	
+	
+    public String getErrorCategory() {
+		return errorCategory;
+	}
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        return "PayGResponse [paymentId=" + paymentId + ", result=" + result + ", auth=" + auth + ", ref=" + ref
-                + ", postDate=" + postDate + ", trackId=" + trackId + ", tranxId=" + tranxId + ", responseCode="
-                + responseCode + ", udf1=" + udf1 + ", udf2=" + udf2 + ", udf3=" + udf3 + ", udf4=" + udf4 + ", udf5="
-                + udf5 + ", countryId=" + countryId + ", errorText=" + errorText + ", error=" + error
-                + ", collectionFinYear=" + collectionFinYear + ", collectionDocNumber=" + collectionDocNumber
-                + ", collectionDocCode=" + collectionDocCode + ", status=" + status + "]";
-    }
+	public void setErrorCategory(String errorCategory) {
+		this.errorCategory = errorCategory;
+	}
+
+	@Override
+	public String toString() {
+		return "PayGResponse [paymentId=" + paymentId + ", result=" + result + ", auth=" + auth + ", ref=" + ref
+				+ ", postDate=" + postDate + ", trackId=" + trackId + ", tranxId=" + tranxId + ", responseCode="
+				+ responseCode + ", udf1=" + udf1 + ", udf2=" + udf2 + ", udf3=" + udf3 + ", udf4=" + udf4 + ", udf5="
+				+ udf5 + ", countryId=" + countryId + ", errorText=" + errorText + ", error=" + error
+				+ ", collectionFinYear=" + collectionFinYear + ", collectionDocNumber=" + collectionDocNumber
+				+ ", errorCategory=" + errorCategory + ", collectionDocCode=" + collectionDocCode + ", status=" + status
+				+ "]";
+	}
 
 }

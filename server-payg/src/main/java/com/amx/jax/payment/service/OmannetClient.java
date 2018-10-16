@@ -178,15 +178,17 @@ public class OmannetClient implements PayGClient {
 			}else {
 				gatewayResponse.setError(pipe.getResult());
 				gatewayResponse.setErrorText(pipe.getResult());
+				gatewayResponse.setResult("NOT CAPTURED");
 			}
 	
-	    	for(ResponseCode res : ResponseCode.values()) {
+	    	/*for(ResponseCode res : ResponseCode.values()) {
 				if(resultReponse.contains(res.getResponseCode()))
 				{
-					gatewayResponse.setResult(res.toString());
+					//gatewayResponse.setResult(res.toString());
+					gatewayResponse.setResult("NOT CAPTURED");
 					break;
 				}
-			}
+			}*/
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
