@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;

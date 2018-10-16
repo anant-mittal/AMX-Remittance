@@ -38,7 +38,6 @@ import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
-import com.amx.jax.payg.PaygErrorMasterDTO;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -64,11 +63,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY)
 					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
-					}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getApplicationCountry : ", ae);
 			return JaxSystemError.evaluate(ae);
-		}// end of try-catch
+		} // end of try-catch
 	}
 
 	public AmxApiResponse<ApplicationSetupDTO, Object> getApplicationCountryByCountryAndCompany() {
@@ -76,7 +75,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.APPL_COUNTRY_COMP)
 					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ApplicationSetupDTO, Object>>() {
-					}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getApplicationCountryByCountryAndCompany : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -87,7 +86,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_COUNTRY).filter(metaFilter)
 					.get().as(new ParameterizedTypeReference<AmxApiResponse<CountryMasterDTO, Object>>() {
-					}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getAllCountry : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -136,7 +135,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_LIST)
 					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
-					}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestion : ", ae);
 			throw new JaxSystemError();
@@ -148,7 +147,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.SEQ_QUEST_BY_ID)
 					.pathParam(MetaApi.PARAM_QUEST_ID, questionId).filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<QuestModelDTO, Object>>() {
-					}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getSequrityQuestionById : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -232,7 +231,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.MULTI_COUNTRY)
 					.filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<MultiCountryDTO, Object>>() {
-						}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getMultiCountryList : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -367,7 +366,7 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_DISTRICTLIST)
 					.pathParam(MetaApi.PARAM_STATE_ID, stateId).filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewDistrictDto, Object>>() {
-						}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getDistrictList : ", ae);
 			return JaxSystemError.evaluate(ae);
@@ -410,11 +409,11 @@ public class MetaClient extends AbstractJaxServiceClient {
 			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + MetaApi.API_CITY_LIST)
 					.pathParam(MetaApi.PARAM_DISTRICT_ID, districtId).filter(metaFilter).get()
 					.as(new ParameterizedTypeReference<AmxApiResponse<ViewCityDto, Object>>() {
-						}); 
+					});
 		} catch (Exception ae) {
 			LOGGER.error("exception in getCitytList : ", ae);
 			return JaxSystemError.evaluate(ae);
-		}// end of try-catch
+		} // end of try-catch
 	}
 
 	public AmxApiResponse<ViewCityDto, Object> getCitytDesc(BigDecimal districtId, BigDecimal cityId) {
@@ -537,14 +536,4 @@ public class MetaClient extends AbstractJaxServiceClient {
 		} // end of try-catch
 	}
 
-	public AmxApiResponse<PaygErrorMasterDTO, Object> getPaygErrorList() {
-		try {
-			return restService.ajax(appConfig.getJaxURL()).path(MetaApi.PREFIX + "/payg-error/").filter(metaFilter)
-					.get().as(new ParameterizedTypeReference<AmxApiResponse<PaygErrorMasterDTO, Object>>() {
-					});
-		} catch (Exception e) {
-			LOGGER.error("exception in getPaygErrorList : ", e);
-			return JaxSystemError.evaluate(e);
-		} // end of try-catch
-	}
 }
