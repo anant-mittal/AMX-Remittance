@@ -39,7 +39,8 @@ import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.payment.PayGService;
+import com.amx.jax.payg.PayGService;
+import com.amx.jax.payg.Payment;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
@@ -417,7 +418,14 @@ public class RemittController {
 				wrapper.getMeta().setmOtpPrefix(respTxMdl.getCivilIdOtpModel().getmOtpPrefix());
 				wrapper.setStatus(WebResponseStatus.MOTP_REQUIRED);
 			} else {
-				wrapper.setRedirectUrl(payGService.getPaymentUrl(respTxMdl,
+				Payment payment = new Payment();
+				payment.setDocFinYear(respTxMdl.getDocumentFinancialYear());
+				payment.setDocNo(respTxMdl.getDocumentIdForPayment());
+				payment.setMerchantTrackId(respTxMdl.getMerchantTrackId());
+				payment.setNetPayableAmount(respTxMdl.getNetPayableAmount());
+				payment.setPgCode(respTxMdl.getPgCode());
+
+				wrapper.setRedirectUrl(payGService.getPaymentUrl(payment,
 						"https://" + request.getServerName() + "/app/landing/remittance"));
 			}
 

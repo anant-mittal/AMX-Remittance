@@ -195,6 +195,15 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	/**
+	 * @deprecated - where are we using this method?
+	 * 
+	 * @param paymentResponseDto
+	 * @return
+	 * @throws RemittanceTransactionValidationException
+	 * @throws LimitExeededException
+	 */
+	@Deprecated
 	public ApiResponse<PaymentResponseDto> saveRemittanceTransaction(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
@@ -241,6 +250,15 @@ public class RemitClient extends AbstractJaxServiceClient {
 
 	}
 
+	/**
+	 * @deprecated - where are we using this method?
+	 * 
+	 * @param paymentResponseDto
+	 * @return
+	 * @throws RemittanceTransactionValidationException
+	 * @throws LimitExeededException
+	 */
+	@Deprecated
 	public ApiResponse<PaymentResponseDto> savePaymentId(PaymentResponseDto paymentResponseDto)
 			throws RemittanceTransactionValidationException, LimitExeededException {
 
