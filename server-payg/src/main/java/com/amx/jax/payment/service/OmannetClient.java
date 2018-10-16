@@ -175,6 +175,7 @@ public class OmannetClient implements PayGClient {
 			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
 				gatewayResponse.setError(pipe.getError());
 				gatewayResponse.setErrorText(pipe.getError_text());
+				gatewayResponse.setResult(resultReponse);
 			}else {
 				gatewayResponse.setError(pipe.getResult());
 				gatewayResponse.setErrorText(pipe.getResult());
