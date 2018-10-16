@@ -23,9 +23,9 @@ import com.amx.jax.AppConstants;
 import com.amx.jax.dict.Language;
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rest.RestService;
-import com.amx.jax.service.HttpService;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.WebAppConfig;
 import com.amx.jax.ui.model.ServerStatus;
@@ -68,7 +68,7 @@ public class HomeController {
 
 	/** The http service. */
 	@Autowired
-	HttpService httpService;
+	CommonHttpRequest httpService;
 
 	/** The check time. */
 	private long checkTime = 0L;
@@ -120,7 +120,7 @@ public class HomeController {
 		wrapper.getData().setDomain(request.getRequestURL().toString());
 		wrapper.getData().setRequestUri(request.getRequestURI());
 		wrapper.getData().setRemoteAddr(httpService.getIPAddress());
-		wrapper.getData().setDevice(userDevice.toMap());
+		wrapper.getData().setDevice(userDevice.toUserDevice());
 		return JsonUtil.toJson(wrapper);
 	}
 

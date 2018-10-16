@@ -20,7 +20,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.ui.config.WebTenantFilter;
 
 /**
@@ -101,7 +101,7 @@ public class WebApplication extends SpringBootServletInitializer {
 	@Bean
 	@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 	public JaxMetaInfo jaxMetaInfo() {
-		return new com.amx.jax.amxlib.model.JaxMetaInfo();
+		return new JaxMetaInfo();
 	}
 
 }

@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
+import com.amx.amxlib.meta.model.ApplicationSetupDTO;
 import com.amx.amxlib.meta.model.BankBranchDto;
 import com.amx.amxlib.meta.model.BankMasterDTO;
 import com.amx.amxlib.meta.model.BranchDetailDTO;
@@ -22,13 +23,13 @@ import com.amx.amxlib.meta.model.JaxMetaParameter;
 import com.amx.amxlib.meta.model.PrefixDTO;
 import com.amx.amxlib.meta.model.ServiceGroupMasterDescDto;
 import com.amx.amxlib.meta.model.TermsAndConditionDTO;
+import com.amx.amxlib.meta.model.ViewCityDto;
 import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.amxlib.model.OnlineConfigurationDto;
 import com.amx.amxlib.model.request.GetBankBranchRequest;
-import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.configs.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes=JaxServiceClientApplication.class)
@@ -71,11 +72,21 @@ public class MetaClientTest extends AbstractTestClient {
 		assertNotNull(response.getResult().getBankId());
 	}
 
-	@Test
+	// @Test
 	public void testGetAllOnlineCurrency() {
 		setDefaults();
 		AmxApiResponse<CurrencyMasterDTO, Object> response = null;
 		response = metaclient.getAllOnlineCurrency();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		// assertNotNull(response.getResult().getCurrencyName());
+	}
+
+	// @Test
+	public void testgetCitytList() {
+		setDefaults();
+		AmxApiResponse<ViewCityDto, Object> response = null;
+		response = metaclient.getCitytList(new BigDecimal(14186));
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		// assertNotNull(response.getResult().getCurrencyName());
@@ -196,5 +207,15 @@ public class MetaClientTest extends AbstractTestClient {
 		response = metaclient.getAllBranchDetail();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResults());
+	}
+
+	@Test
+	public void testGetCountryListResponse() {
+		setDefaults();
+		AmxApiResponse<ApplicationSetupDTO, Object> response = null;
+		response = metaclient.getApplicationCountry();
+		assertNotNull("Response is null", response);
+		assertNotNull(response.getResult());
+		// assertNotNull(response.getResult().getCurrencyName());
 	}
 }

@@ -12,4 +12,5 @@ public class PayGConfig {
 	public String getServiceCallbackUrl() {
 		return serviceCallbackUrl;
 	}
+
 }

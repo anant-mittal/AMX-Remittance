@@ -9,149 +9,149 @@ public class CivilIdOtpModel extends AbstractModel {
 
 	private static final long serialVersionUID = -7991527354328804802L;
 
-    private String mOtp;
+	private String mOtp;
 
-    private String eOtp;
+	private String eOtp;
 
-    @JsonIgnore
-    private String mHashedOtp;
+	@JsonIgnore
+	private String mHashedOtp;
 
-    @JsonIgnore
-    private String eHashedOtp;
+	@JsonIgnore
+	private String eHashedOtp;
 
-    private String mOtpPrefix = null;
+	private String mOtpPrefix = null;
 
-    private String eOtpPrefix = null;
+	private String eOtpPrefix = null;
 
-    private String email;
+	private String email;
 
-    private String mobile;
+	private String mobile;
 
-    private Boolean isActiveCustomer;
+	private Boolean isActiveCustomer;
 
-    private String firstName;
-    
-    private String middleName;
-    
-    private BigDecimal customerId;
+	private String firstName;
 
-    public String getFirstName() {
-        return firstName;
-    }
+	private String middleName;
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+	private BigDecimal customerId;
 
-    public String getLastName() {
-        return lastName;
-    }
+	public String getFirstName() {
+		return firstName;
+	}
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
 
-    private String lastName;
+	public String getLastName() {
+		return lastName;
+	}
 
-    public String getmOtp() {
-        return mOtp;
-    }
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
 
-    public void setmOtp(String otp) {
-        this.mOtp = otp;
-    }
+	private String lastName;
 
-    public String getEmail() {
-        return email;
-    }
+	public String getmOtp() {
+		return mOtp;
+	}
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+	public void setmOtp(String otp) {
+		this.mOtp = otp;
+	}
 
-    public String getMobile() {
-        return mobile;
-    }
+	public String getEmail() {
+		return email;
+	}
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
-    public String getHashedmOtp() {
-        return mHashedOtp;
-    }
+	public String getMobile() {
+		return mobile;
+	}
 
-    public void setHashedmOtp(String hashedOtp) {
-        this.mHashedOtp = hashedOtp;
-    }
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
+	}
 
-    public Boolean getIsActiveCustomer() {
-        return isActiveCustomer;
-    }
+	public String getHashedmOtp() {
+		return mHashedOtp;
+	}
 
-    public void setIsActiveCustomer(Boolean isActiveCustomer) {
-        this.isActiveCustomer = isActiveCustomer;
-    }
+	public void setHashedmOtp(String hashedOtp) {
+		this.mHashedOtp = hashedOtp;
+	}
 
-    @Override
-    public String getModelType() {
-        return "otp";
-    }
+	public Boolean getIsActiveCustomer() {
+		return isActiveCustomer;
+	}
 
-    public String geteOtp() {
-        return eOtp;
-    }
+	public void setIsActiveCustomer(Boolean isActiveCustomer) {
+		this.isActiveCustomer = isActiveCustomer;
+	}
 
-    public void seteOtp(String eOtp) {
-        this.eOtp = eOtp;
-    }
+	@Override
+	public String getModelType() {
+		return "otp";
+	}
 
-    public String getHashedeOtp() {
-        return eHashedOtp;
-    }
+	public String geteOtp() {
+		return eOtp;
+	}
 
-    public void setHashedeOtp(String eHashedOtp) {
-        this.eHashedOtp = eHashedOtp;
-    }
+	public void seteOtp(String eOtp) {
+		this.eOtp = eOtp;
+	}
 
-    public String getmOtpPrefix() {
-        return mOtpPrefix;
-    }
+	public String getHashedeOtp() {
+		return eHashedOtp;
+	}
 
-    public void setmOtpPrefix(String mOtpPrefix) {
-        this.mOtpPrefix = mOtpPrefix;
-    }
+	public void setHashedeOtp(String eHashedOtp) {
+		this.eHashedOtp = eHashedOtp;
+	}
 
-    public String geteOtpPrefix() {
-        return eOtpPrefix;
-    }
+	public String getmOtpPrefix() {
+		return mOtpPrefix;
+	}
 
-    public void seteOtpPrefix(String eOtpPrefix) {
-        this.eOtpPrefix = eOtpPrefix;
-    }
+	public void setmOtpPrefix(String mOtpPrefix) {
+		this.mOtpPrefix = mOtpPrefix;
+	}
 
-    public BigDecimal getCustomerId() {
-        return customerId;
-    }
+	public String geteOtpPrefix() {
+		return eOtpPrefix;
+	}
 
-    public void setCustomerId(BigDecimal customerId) {
-        this.customerId = customerId;
-    }
+	public void seteOtpPrefix(String eOtpPrefix) {
+		this.eOtpPrefix = eOtpPrefix;
+	}
 
-    /**
-     * @return the middleName
-     */
-    public String getMiddleName() {
-        return middleName;
-    }
+	public BigDecimal getCustomerId() {
+		return customerId;
+	}
 
-    /**
+	public void setCustomerId(BigDecimal customerId) {
+		this.customerId = customerId;
+	}
+
+	/**
+	 * @return the middleName
+	 */
+	public String getMiddleName() {
+		return middleName;
+	}
+	
+	/**
      * @param middleName the middleName to set
-     */
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
+	 */
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+	
     @Override
     public String toString() {
         return "CivilIdOtpModel [mOtp=" + mOtp + ", eOtp=" + eOtp + ", mHashedOtp=" + mHashedOtp + ", eHashedOtp="

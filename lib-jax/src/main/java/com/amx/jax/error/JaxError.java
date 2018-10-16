@@ -126,6 +126,7 @@ public enum JaxError implements IExceptionEnum {
 	BLACK_LISTED_EXISTING_CIVIL_ID,
 	EXCHANGE_RATE_CHANGED,
 	ADDTIONAL_FLEX_FIELD_REQUIRED,
+	//Offsite customer
 	BLANK_CIVIL_ID,
 	BLANK_EMPLOYEE_ID,
 	INVALID_EMPLOYEE,
@@ -138,7 +139,16 @@ public enum JaxError implements IExceptionEnum {
 	EMPTY_DESIGNATION_LIST,
 	EMPTY_INCOME_RANGE,
 	EMPTY_EMPLOYMENT_TYPE,
-	EMPTY_PROFESSION_LIST;
+	EMPTY_PROFESSION_LIST,
+	EXISTING_CIVIL_ID,
+	IMAGE_NOT_AVAILABLE,
+	CITY_NOT_AVAILABLE,
+	SIGNATURE_NOT_AVAILABLE,
+	INVALID_CUSTOMER,
+	EXISTING_PASSPORT,
+	EXISTING_GCC_ID,
+	EXISTING_BEDOUIN_ID,
+	INVALID_LANGUAGE_ID;
 
 
 	@Deprecated
@@ -153,7 +163,7 @@ public enum JaxError implements IExceptionEnum {
 
 	@Override
 	public int getStatusCode() {
-		return 6000 + this.ordinal();
+		return 1000 + this.ordinal();
 	}
 
 }

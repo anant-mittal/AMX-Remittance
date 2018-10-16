@@ -66,7 +66,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());
 	}
-	
+
 	//@Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -112,10 +112,15 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
+
+	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
+		
+		Map<String, Object> flexFields = new HashMap<>();
+
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
 			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 
-		Map<String, Object> flexFields = new HashMap<>();
+		Map<String, Object> flexFields = new HashMap<String, Object>();
 		list.forEach(i -> {
 			if (i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),

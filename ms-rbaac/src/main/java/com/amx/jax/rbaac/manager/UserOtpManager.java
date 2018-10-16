@@ -17,7 +17,7 @@ import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.rbaac.dbmodel.Employee;
 import com.amx.jax.rbaac.exception.AuthServiceException;
 import com.amx.utils.CryptoUtil;
@@ -45,6 +45,14 @@ public class UserOtpManager {
 	/** The otp TTL. */
 	private long otpTTL = 10 * 60 * 1000;
 
+	public static String getOtpHash(String otp) {
+		try {
+			return CryptoUtil.getSHA1Hash(otp);
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Generate otp tokens.
 	 *
@@ -57,12 +65,7 @@ public class UserOtpManager {
 		otpData.setmOtp(Random.randomNumeric(6));
 		otpData.setmOtpPrefix(Random.randomAlpha(3));
 
-		try {
-			otpData.setHashedmOtp(CryptoUtil.getSHA1Hash(otpData.getmOtp()));
-		} catch (NoSuchAlgorithmException e) {
-			// Hash Can Not be generated
-			otpData.setHashedmOtp(null);
-		}
+		otpData.setHashedmOtp(getOtpHash(otpData.getmOtp()));
 
 		long initTime = System.currentTimeMillis();
 
@@ -113,7 +116,7 @@ public class UserOtpManager {
 		SMS sms = new SMS();
 		sms.addTo(einfo.getTelephoneNumber());
 		sms.setModelData(model);
-		sms.setTemplate(Templates.RESET_OTP_SMS);
+		sms.setITemplate(TemplatesMX.RESET_OTP_SMS);
 
 		try {
 
@@ -121,7 +124,7 @@ public class UserOtpManager {
 
 			if (!appConfig.isProdMode()) {
 				sendToSlack("mobile", sms.getTo().get(0), model.getmOtpPrefix(), model.getmOtp());
-				sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
+				// sendToSlack("mobile", sms.getTo().get(0), "Otp-Hash", model.getHashedmOtp());
 			}
 
 		} catch (PostManException e) {
@@ -129,6 +132,5 @@ public class UserOtpManager {
 			throw new AuthServiceException(e);
 		}
 	}
-
 
 }

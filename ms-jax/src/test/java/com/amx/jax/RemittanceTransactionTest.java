@@ -1,6 +1,5 @@
 package com.amx.jax;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.math.BigDecimal;

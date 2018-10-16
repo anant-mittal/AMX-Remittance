@@ -14,7 +14,7 @@ import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -78,11 +78,11 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<ITunnelEvent> {
 			email.setHtml(true);
 
 			if (ArgUtil.areEqual(expired, "0")) {
-				email.setTemplate(Templates.CIVILID_EXPIRY);
+				email.setITemplate(TemplatesMX.CIVILID_EXPIRY);
 				email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
 			} else {
 				email.setSubject("Civil ID has been expired"); // Given by Umesh
-				email.setTemplate(Templates.CIVILID_EXPIRED);
+				email.setITemplate(TemplatesMX.CIVILID_EXPIRED);
 			}
 			postManClient.sendEmailAsync(email);
 		}
@@ -90,9 +90,9 @@ public class CivilIDExpiryListner implements ITunnelSubscriber<ITunnelEvent> {
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
 			if (ArgUtil.areEqual(expired, "0")) {
-				pushMessage.setTemplate(Templates.CIVILID_EXPIRY);
+				pushMessage.setITemplate(TemplatesMX.CIVILID_EXPIRY);
 			} else {
-				pushMessage.setTemplate(Templates.CIVILID_EXPIRED);
+				pushMessage.setITemplate(TemplatesMX.CIVILID_EXPIRED);
 			}
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);

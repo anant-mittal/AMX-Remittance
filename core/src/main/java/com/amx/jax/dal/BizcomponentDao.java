@@ -84,7 +84,7 @@ public class BizcomponentDao {
 	
 	public List<Map<String,Object>> getAllComponentComboDataForCustomer(BigDecimal languageId) {
 		
-			String s= "select B.COMPONENT_DATA_ID,A.DATA_DESC,C.COMPONENT_ID from "
+			String s= "select B.COMPONENT_DATA_ID,A.DATA_DESC,C.COMPONENT_ID,A.SHORT_CODE from "
 					+ "FS_BIZ_COMPONENT_DATA_DESC A,FS_BIZ_COMPONENT_DATA B,FS_BUSINESS_COMPONENT C,FS_LANGUAGE_TYPE D "
 					+ "where A.COMPONENT_DATA_ID = B.COMPONENT_DATA_ID and B.COMPONENT_ID = C.COMPONENT_ID "
 					+ "and A.LANGUAGE_ID = D.LANGUAGE_ID and B.ACTIVE='Y' and C.COMPONENT_NAME= ? "

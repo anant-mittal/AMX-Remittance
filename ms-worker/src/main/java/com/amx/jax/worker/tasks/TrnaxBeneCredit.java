@@ -15,7 +15,7 @@ import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.jax.tunnel.TunnelEventMapping;
@@ -91,7 +91,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<ITunnelEvent> {
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			email.setTemplate(Templates.BRANCH_FEEDBACK);
+			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			postManClient.sendEmailAsync(email);
 		}
 
@@ -101,7 +101,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<ITunnelEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.BRANCH_FEEDBACK);
+			pushMessage.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.def.ICacheBox;
 
+
 public class CacheBox<T> implements ICacheBox<T> {
 
 	LocalCachedMapOptions<String, T> localCacheOptions = LocalCachedMapOptions.<String, T>defaults()
@@ -28,10 +29,11 @@ public class CacheBox<T> implements ICacheBox<T> {
 
 	public RLocalCachedMap<String, T> map() {
 		if (redisson != null) {
-			if (cache == null) {
-				cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
-			}
-			return cache;
+
+		if (cache == null) {
+			cache = redisson.getLocalCachedMap(getCahceName(), localCacheOptions);
+		}
+		return cache;
 		}
 		return null;
 	}

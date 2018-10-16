@@ -419,10 +419,8 @@ public class UserService extends AbstractUserService {
 
 		jaxNotificationService.sendOtpSms(personinfo, model);
 
-		if (channels != null && (channels.contains(CommunicationChannel.EMAIL) ||  
-		        channels.contains(CommunicationChannel.EMAIL_AS_MOBILE))) {
-			
-		    jaxNotificationService.sendOtpEmail(personinfo, model);
+		if (channels != null && channels.contains(CommunicationChannel.EMAIL)) {
+			jaxNotificationService.sendOtpEmail(personinfo, model);
 		}
 		return response;
 	}
@@ -442,15 +440,6 @@ public class UserService extends AbstractUserService {
 			model.seteOtpPrefix(Random.randomAlpha(3));
 			logger.info("Generated otp for civilid email- " + userId + " is " + randeOtp);
 		}
-		
-		//set e-otp same as m-otp
-        if (channels != null && channels.contains(CommunicationChannel.EMAIL_AS_MOBILE)) {
-            model.setHashedeOtp(hashedmOtp);
-            model.seteOtp(randmOtp);
-            model.seteOtpPrefix(model.getmOtpPrefix());
-            logger.info("Generated otp for civilid email- " + userId + " is " + randmOtp);
-        }
-	      
 		logger.info("Generated otp for civilid mobile- " + userId + " is " + randmOtp);
 	}
 

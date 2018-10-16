@@ -19,7 +19,7 @@ import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManUrls;
 import com.amx.jax.postman.model.Email;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.service.PostManServiceImpl;
 import com.amx.utils.ArgUtil;
 
@@ -59,7 +59,7 @@ public class PostManControllerDb {
 	public Map<String, Object> sendEmailGet(@RequestParam Tenant tnt, @RequestParam(required = false) Language language,
 			@RequestParam String to, @RequestParam String customer, @RequestParam String amount,
 			@RequestParam String loyaltypoints, @RequestParam String refno, @RequestParam String date,
-			@RequestParam(required = false) String languageid, @RequestParam Templates template)
+			@RequestParam(required = false) String languageid, @RequestParam TemplatesMX template)
 			throws PostManException {
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
@@ -86,7 +86,7 @@ public class PostManControllerDb {
 		email.setHtml(true);
 		email.setSubject("Feedback Email"); // Given by Umesh
 
-		email.setTemplate(template);
+		email.setITemplate(template);
 		postManService.sendEmailAsync(email);
 		
 		
@@ -115,7 +115,7 @@ public class PostManControllerDb {
 	public Map<String, Object> sendCivilExpiryEmailGet(@RequestParam Tenant tnt,
 			@RequestParam(required = false) Language language, @RequestParam String to, @RequestParam String customer,
 			@RequestParam String date, @RequestParam(required = false) String languageid,
-			@RequestParam Templates template) throws PostManException {
+			@RequestParam TemplatesMX template) throws PostManException {
 
 		Map<String, Object> wrapper = new HashMap<String, Object>();
 		Map<String, Object> modeldata = new HashMap<String, Object>();
@@ -137,13 +137,13 @@ public class PostManControllerDb {
 		email.addTo(to);
 		email.setHtml(true);
 
-		if (template == Templates.CIVILID_EXPIRY) {
+		if (template == TemplatesMX.CIVILID_EXPIRY) {
 			email.setSubject("Civil ID Expiry Reminder"); // Given by Umesh
 		} else {
 			email.setSubject("Civil ID has been expired"); // Given by Umesh
 		}
 
-		email.setTemplate(template);
+		email.setITemplate(template);
 		postManService.sendEmailAsync(email);
 		Map<String, Object> map = new HashMap<String, Object>();
 		Map<String, String> data = new HashMap<String, String>();

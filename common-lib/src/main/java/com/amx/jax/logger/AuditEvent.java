@@ -1,8 +1,11 @@
 package com.amx.jax.logger;
 
 import com.amx.jax.exception.IExceptionEnum;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonInclude(Include.NON_NULL)
 @JsonPropertyOrder({ "description", "component", "category", "type", "timestamp", "message" })
 public abstract class AuditEvent extends AbstractEvent {
 
@@ -126,6 +129,11 @@ public abstract class AuditEvent extends AbstractEvent {
 
 	public void setErrorCode(IExceptionEnum errorCode) {
 		this.errorCode = errorCode;
+	}
+
+	@Override
+	public void clean() {
+
 	}
 
 }

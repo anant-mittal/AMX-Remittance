@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.amxlib.model.CustomerNotificationDTO;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.JaxPushNotificationClient;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Language;
 import com.amx.jax.dict.Nations;
 import com.amx.jax.dict.Tenant;
