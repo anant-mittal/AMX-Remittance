@@ -5,13 +5,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.amxlib.constant.JaxChannel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.amxlib.model.response.ResponseData;
 import com.amx.amxlib.model.response.ResponseStatus;
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.constant.ConstantDocument;
+import com.amx.jax.constants.JaxChannel;
 import com.amx.jax.meta.MetaData;
 
 public abstract class JaxTransactionManager<T> extends TransactionModel<T> {

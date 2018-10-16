@@ -16,7 +16,7 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
 import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
@@ -55,14 +55,14 @@ public class PingCommonListner implements ITunnelSubscriber<ITunnelEvent> {
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			email.setTemplate(Templates.SERVER_PING);
+			email.setITemplate(TemplatesMX.SERVER_PING);
 			email.setSubject("Subject:Server Ping");
 			postManClient.sendEmailAsync(email);
 		}
 
 		if (customerId != null) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.SERVER_PING);
+			pushMessage.setITemplate(TemplatesMX.SERVER_PING);
 			pushMessage.addToUser(customerId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
@@ -70,7 +70,7 @@ public class PingCommonListner implements ITunnelSubscriber<ITunnelEvent> {
 
 		if (smsNo != null) {
 			SMS sms = new SMS();
-			sms.setTemplate(Templates.SERVER_PING);
+			sms.setITemplate(TemplatesMX.SERVER_PING);
 			sms.addTo(smsNo);
 			sms.setModel(wrapper);
 			postManClient.sendSMSAsync(sms);

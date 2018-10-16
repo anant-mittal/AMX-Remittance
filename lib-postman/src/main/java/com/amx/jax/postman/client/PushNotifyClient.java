@@ -6,6 +6,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
@@ -32,7 +33,8 @@ public class PushNotifyClient implements IPushNotifyService {
 		LOGGER.info("Sending Push Notifications");
 		try {
 			return restService.ajax(appConfig.getPostmapURL()).path(PostManUrls.NOTIFY_PUSH).post(msg)
-					.asApiResponse(PushMessage.class);
+					.as(new ParameterizedTypeReference<AmxApiResponse<PushMessage, Object>>() {
+					});
 		} catch (Exception e) {
 			throw new PostManException(e);
 		}

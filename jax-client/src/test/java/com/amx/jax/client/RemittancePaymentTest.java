@@ -14,8 +14,8 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.payg.PaymentResponseDto;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

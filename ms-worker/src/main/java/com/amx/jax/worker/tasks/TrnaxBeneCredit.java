@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.event.AmxTunnelEvents;
+import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
@@ -91,7 +92,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<ITunnelEvent> {
 			email.addTo(emailId);
 			email.setHtml(true);
 			email.setSubject("Transaction Credit Notification"); // changed as per BA
-			email.setTemplate(Templates.BRANCH_FEEDBACK);
+			email.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			postManClient.sendEmailAsync(email);
 		}
 
@@ -101,7 +102,7 @@ public class TrnaxBeneCredit implements ITunnelSubscriber<ITunnelEvent> {
 
 		if (!ArgUtil.isEmpty(custId)) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.BRANCH_FEEDBACK);
+			pushMessage.setITemplate(TemplatesMX.BRANCH_FEEDBACK);
 			pushMessage.addToUser(custId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);

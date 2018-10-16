@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 
+import com.amx.jax.exception.IExceptionEnum;
 import com.amx.utils.ArgUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -66,6 +67,14 @@ public abstract class AResponse<T> {
 	 */
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@JsonIgnore
+	public void setStatusEnum(IExceptionEnum status) {
+		if (!ArgUtil.isEmpty(status)) {
+			this.statusKey = status.getStatusKey();
+			this.status = ArgUtil.parseAsString(status.getStatusCode());
+		}
 	}
 
 	/**
@@ -208,6 +217,5 @@ public abstract class AResponse<T> {
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	}
-	
-	
+
 }

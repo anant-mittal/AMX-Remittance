@@ -1,10 +1,16 @@
 package com.amx.jax.swagger;
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.slf4j.Logger;
+import org.springframework.core.annotation.AnnotationUtils;
 
 import com.amx.jax.exception.IExceptionEnum;
 import com.amx.jax.logger.LoggerService;
@@ -21,29 +27,69 @@ public abstract class IStatusCodeListPlugin<S extends IExceptionEnum, A extends 
 
 	Logger logger = LoggerService.getLogger(getClass());
 
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	public @interface ApiStatusService {
+		Class<?>[] value() default IService.class;
+	}
+
 	@Override
 	public boolean supports(DocumentationType documentationType) {
 		return true;
 	}
 
-	public abstract Class<? extends Annotation> getAnnotionClass();
+	public abstract Class<A> getAnnotionClass();
 
-	public abstract S[] getValues(Optional<A> annotation);
+	public abstract S[] getValues(A annotation);
+
+	private Method getMothod(Class<?> clazz, String methodName, int methodParamCount) {
+		Method methodThis = null;
+		for (Method method : clazz.getMethods()) {
+			if (methodName.equals(method.getName())
+					&& (methodThis == null || methodParamCount == method.getParameterCount())) {
+				methodThis = method;
+			}
+		}
+		return methodThis;
+	}
 
 	@Override
 	public void apply(OperationContext context) {
+		Set<ResponseMessage> respSt = new HashSet<ResponseMessage>();
 
-		@SuppressWarnings("unchecked")
+		Optional<ApiStatusService> classAnnotation = (Optional<ApiStatusService>) context
+				.findControllerAnnotation(ApiStatusService.class);
+
+		if (classAnnotation.isPresent()) {
+			String methodName = context.getName();
+			int methodParamCount = context.getParameters().size();
+			Class<?>[] clazzes = classAnnotation.get().value();
+			for (Class<?> clazz : clazzes) {
+				Method methodThis = getMothod(clazz, methodName, methodParamCount);
+				if (methodThis != null) {
+					A ann = AnnotationUtils.findAnnotation(methodThis, getAnnotionClass());
+					if (ann != null) {
+						S[] value = getValues(ann);
+						for (S amxError : value) {
+							respSt.add(new ResponseMessageBuilder().code(amxError.getStatusCode())
+									.message(amxError.getStatusKey()).build());
+						}
+					}
+				}
+
+			}
+		}
+
 		Optional<A> annotation = (Optional<A>) context.findAnnotation(getAnnotionClass());
-		if (annotation.isPresent() && getValues(annotation) != null) {
-			S[] value = getValues(annotation);
-			Set<ResponseMessage> respSt = new HashSet<ResponseMessage>();
+		if (annotation.isPresent() && getValues(annotation.get()) != null) {
+			S[] value = getValues(annotation.get());
 			for (S amxError : value) {
 				respSt.add(new ResponseMessageBuilder().code(amxError.getStatusCode()).message(amxError.getStatusKey())
 						.build());
 			}
-			context.operationBuilder().responseMessages(respSt);
 		}
+
+		context.operationBuilder().responseMessages(respSt);
 	}
 
 }

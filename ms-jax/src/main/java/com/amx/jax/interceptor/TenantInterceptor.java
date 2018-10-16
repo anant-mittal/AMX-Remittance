@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.amx.jax.AppConstants;
 import com.amx.jax.multitenant.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
 import com.amx.jax.util.JaxContextUtil;
@@ -32,7 +33,7 @@ public class TenantInterceptor extends HandlerInterceptorAdapter {
 			logger.info("current tenant: " + tnt);
 			TenantContext.setCurrentTenant(tnt);
 		}
-		String metaInfo = request.getHeader("meta-info");
+		String metaInfo = request.getHeader(AppConstants.META_XKEY);
 		if (!StringUtils.isEmpty(metaInfo)) {
 			TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
 			};

@@ -82,7 +82,6 @@ public class RemittanceApplicationResponseModel extends AbstractModel {
 		this.civilIdOtpModel = civilIdOtpModel;
 	}
 
-	@Override
 	public String toString() {
 		String str = null;
 		if (civilIdOtpModel != null)

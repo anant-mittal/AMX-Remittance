@@ -63,7 +63,7 @@ public class WebLoginUrlEntry extends LoginUrlAuthenticationEntryPoint {
 			returnPath = builder.setPath(request.getRequestURI()).addParameter(request.getQueryString()).getRelativeURL();
 			if (!ArgUtil.isEmpty(returnPath) && returnPath.startsWith("/app")) {
 				guestSession.setReturnUrl(returnPath);
-			}
+		}
 		} catch (URISyntaxException e) {
 			LOGGER.error("REDIRECT URL CPATURE ERROR", e);
 		}

@@ -593,7 +593,6 @@ public class AuthServiceImpl implements AuthService {
 		empDetail.setLocation(emp.getLocation());
 		empDetail.setTelephoneNumber(emp.getTelephoneNumber());
 		empDetail.setUserName(emp.getUserName());
-		empDetail.setRoleId(new BigDecimal("1"));
 
 		/*
 		 * List<RoleDefinitionDataTable> lstRoleDF = new

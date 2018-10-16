@@ -12,6 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
+import com.amx.jax.sso.client.SSOAuthProvider;
+import com.amx.jax.sso.client.SSOLoginUrlEntry;
+
 @Configuration
 @EnableWebSecurity
 public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -35,8 +38,8 @@ public class SSOSecurityConfig extends WebSecurityConfigurerAdapter {
 				.and().authorizeRequests().antMatchers("/app/**").authenticated().and().authorizeRequests()
 				.antMatchers("/.**").authenticated()
 				// Login Forms
-				.and().formLogin().loginPage(SSOUtils.LOGIN_URL)
-				.successHandler(successHandler()).permitAll().failureUrl("/sso/login?error").permitAll()
+				.and().formLogin().loginPage(SSOConstants.APP_LOGIN_URL_CHECK).successHandler(successHandler())
+				.permitAll().failureUrl("/sso/login?error").permitAll()
 				// Logout Pages
 				.and().logout().permitAll().logoutSuccessUrl("/sso/login?logout").deleteCookies("JSESSIONID")
 				.invalidateHttpSession(true).permitAll().and().exceptionHandling().accessDeniedPage("/403").and().csrf()

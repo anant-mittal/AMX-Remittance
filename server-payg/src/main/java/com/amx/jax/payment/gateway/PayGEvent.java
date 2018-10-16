@@ -3,9 +3,6 @@ package com.amx.jax.payment.gateway;
 import com.amx.jax.logger.AuditEvent;
 
 public class PayGEvent extends AuditEvent {
-    
-    PayGParams params = null;
-    PayGResponse response = null;
 
 	public enum Type implements EventType {
 		PAYMENT_INIT, PAYMENT_CAPTURED;
@@ -26,6 +23,9 @@ public class PayGEvent extends AuditEvent {
 		super(type);
 		this.response = response;
 	}
+
+	PayGParams params = null;
+	PayGResponse response = null;
 
 	public PayGResponse getResponse() {
 		return response;

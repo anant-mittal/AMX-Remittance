@@ -30,7 +30,7 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.scope.TenantContextHolder;
@@ -138,7 +138,7 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(184466));
-		TenantContextHolder.setCurrent(Tenant.KWT2);
+		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<RemittanceTransactionResponsetModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(68213));

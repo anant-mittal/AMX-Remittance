@@ -49,6 +49,15 @@ public class AppContextUtil {
 		return ArgUtil.parseAsString(ContextUtil.map().get(AppConstants.TRANX_ID_XKEY));
 	}
 
+	public static String getTranxId(boolean generate) {
+		String key = getTranxId();
+		if (generate && ArgUtil.isEmptyString(key)) {
+			key = getTraceId();
+			setTranxId(key);
+		}
+		return key;
+	}
+
 	public static Long getTraceTime() {
 		return ArgUtil.parseAsLong(ContextUtil.map().get(AppConstants.TRACE_TIME_XKEY), 0L);
 	}

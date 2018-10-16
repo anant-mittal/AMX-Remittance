@@ -44,7 +44,7 @@ import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.PostManService;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.ui.UIConstants;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.AuthDataInterface.AuthResponseOTPprefix;
@@ -136,13 +136,13 @@ public class RemittController {
 				.getTransactionHistroy(docfyr, null, fromDate, toDate).getResults();
 		File file = new File();
 		file.setLang(Language.EN);
-		file.setTemplate(Templates.REMIT_STATMENT_EMAIL_FILE);
+		file.setITemplate(TemplatesMX.REMIT_STATMENT_EMAIL_FILE);
 		file.setType(File.Type.PDF);
 		file.getModel().put(UIConstants.RESP_DATA_KEY, data);
 		Email email = new Email();
 		email.setSubject(String.format("Transaction Statement %s - %s", fromDate, toDate));
 		email.addTo(sessionService.getUserSession().getCustomerModel().getEmail());
-		email.setTemplate(Templates.REMIT_STATMENT_EMAIL);
+		email.setITemplate(TemplatesMX.REMIT_STATMENT_EMAIL);
 		email.getModel().put(UIConstants.RESP_DATA_KEY,
 				sessionService.getUserSession().getCustomerModel().getPersoninfo());
 		email.addFile(file);
@@ -166,7 +166,7 @@ public class RemittController {
 	@RequestMapping(value = "/api/user/tranx/print_history", method = { RequestMethod.POST })
 	public ResponseWrapper<List<Map<String, Object>>> printHistory(
 			@RequestBody ResponseWrapper<List<Map<String, Object>>> wrapper) throws IOException, PostManException {
-		File file = postManService.processTemplate(new File(Templates.REMIT_STATMENT, wrapper, File.Type.PDF))
+		File file = postManService.processTemplate(new File(TemplatesMX.REMIT_STATMENT, wrapper, File.Type.PDF))
 				.getResult();
 		file.create(response, true);
 		return wrapper;
@@ -204,8 +204,8 @@ public class RemittController {
 		File file = null;
 		if (skipd == null || skipd.booleanValue() == false) {
 			file = postManService.processTemplate(
-					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF))
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+							wrapper, File.Type.PDF))
 					.getResult();
 			file.create(response, true);
 		}
@@ -260,14 +260,15 @@ public class RemittController {
 		ResponseWrapper<RemittanceReceiptSubreport> wrapper = new ResponseWrapper<RemittanceReceiptSubreport>(rspt);
 		if ("pdf".equals(ext)) {
 			File file = postManService.processTemplate(
-					new File(duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper,
-							File.Type.PDF))
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+							wrapper, File.Type.PDF))
 					.getResult();
 			file.create(response, false);
 			return null;
 		} else if ("html".equals(ext)) {
-			File file = postManService.processTemplate(new File(
-					duplicate ? Templates.REMIT_RECEIPT_COPY_JASPER : Templates.REMIT_RECEIPT_JASPER, wrapper, null))
+			File file = postManService.processTemplate(
+					new File(duplicate ? TemplatesMX.REMIT_RECEIPT_COPY_JASPER : TemplatesMX.REMIT_RECEIPT_JASPER,
+							wrapper, null))
 					.getResult();
 			return file.getContent();
 		} else {

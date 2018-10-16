@@ -15,4 +15,6 @@ public interface EmployeeRepository extends CrudRepository<Employee, BigDecimal>
 	@Query("select e from Employee e where civilId=?1 and  employeeId =?2 and isActive !=?3")
 	Employee getEmployeeDetails(String civilId, BigDecimal ecNumber, String deleted);
 
+	Employee getEmployeeByCivilId(String civilId);
+
 }

@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.amx.amxlib.constant.RuleEnum;
 import com.amx.amxlib.model.RateAlertDTO;
 import com.amx.amxlib.model.response.ApiResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest

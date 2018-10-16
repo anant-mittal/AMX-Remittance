@@ -76,11 +76,11 @@ public class FileService {
 
 			if (file.getName() == null) {
 				if (file.getType() == Type.PDF) {
-					file.setName(file.getTemplate().getFileName() + ".pdf");
+					file.setName(file.getITemplate().getFileName() + ".pdf");
 				} else if (file.getType() == Type.JSON) {
-					file.setName(file.getTemplate().getFileName() + ".json");
+					file.setName(file.getITemplate().getFileName() + ".json");
 				} else {
-					file.setName(file.getTemplate().getFileName() + ".html");
+					file.setName(file.getITemplate().getFileName() + ".html");
 				}
 			}
 		}
