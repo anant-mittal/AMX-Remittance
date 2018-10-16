@@ -42,7 +42,8 @@ public class GeoLocationServiceImpl implements GeoLocationService {
 			try {
 				dbReader = new DatabaseReader.Builder(database).build();
 			} catch (IOException e) {
-				LOGGER.error("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar ", e);
+				LOGGER.warn("File : ext-resources/GeoLite2-City.mmdb is missing put it relative to jar {}",
+						e.getMessage());
 			}
 		}
 		return dbReader;
