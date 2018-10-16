@@ -11,4 +11,6 @@ import com.amx.jax.dbmodel.BranchSystemDetail;
 public interface BranchSystemDetailRepository extends CrudRepository<BranchSystemDetail, Serializable> {
 
 	public List<BranchSystemDetail> findByIsActiveAndCountryBranchId(String isActive, BigDecimal countryBranchId);
+
+	public BranchSystemDetail findByIpAddress(String ip);
 }
