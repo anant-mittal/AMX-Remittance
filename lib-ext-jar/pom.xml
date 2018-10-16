@@ -10,21 +10,14 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>amxeco</artifactId>
+		<artifactId>amxeco-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+		<relativePath>../amxeco-parent/pom.xml</relativePath>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-		</dependency>
-	</dependencies>
 
 	<!-- <modules> <module>masking</module> </modules> -->
 
@@ -324,21 +317,6 @@
 						</configuration>
 					</execution>
 
-<!-- 					<execution>
-						<id>kw-card-platform</id>
-						<phase>package</phase>
-						<goals>
-							<goal>install-file</goal>
-						</goals>
-						<configuration>
-							<groupId>kw-card</groupId>
-							<artifactId>platform</artifactId>
-							<version>1.0</version>
-							<packaging>jar</packaging>
-							<file>${basedir}/lib/kw-card/platform.jar</file>
-							<generatePom>true</generatePom>
-						</configuration>
-					</execution> -->
 				</executions>
 			</plugin>
 		</plugins>
