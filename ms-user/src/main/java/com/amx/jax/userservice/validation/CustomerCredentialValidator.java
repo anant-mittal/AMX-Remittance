@@ -10,7 +10,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.CustomerCredential;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.service.UserValidationService;

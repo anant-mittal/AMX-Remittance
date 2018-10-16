@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;

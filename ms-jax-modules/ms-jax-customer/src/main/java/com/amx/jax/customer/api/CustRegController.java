@@ -10,8 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.customer.service.OffsitCustRegService;
@@ -131,6 +134,11 @@ public class CustRegController implements ICustRegService {
 	@RequestMapping(value = CustRegApiEndPoints.SCAN_CARD, method = RequestMethod.POST)
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return offsiteCustRegService.cardScan(cardDetail);
+	}	
+	
+	@RequestMapping(value = CustRegApiEndPoints.SAVE_OFFSITE_LOGIN, method = RequestMethod.POST)
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(@RequestBody CustomerCredential customerCredential) {
+		return offsiteCustRegService.saveLoginDetailOffsite(customerCredential);
 	}
-
+	
 }

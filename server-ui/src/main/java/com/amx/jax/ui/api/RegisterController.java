@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
@@ -20,6 +19,7 @@ import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.PartialRegService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.session.Transactions;
+import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

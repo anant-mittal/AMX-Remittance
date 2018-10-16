@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.AuthState;
 import com.amx.jax.model.AuthState.AuthStep;
 import com.amx.jax.model.dto.SendOtpModel;

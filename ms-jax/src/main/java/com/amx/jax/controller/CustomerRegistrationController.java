@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.userservice.service.CustomerRegistrationService;
 import com.amx.jax.userservice.validation.CustomerCredentialValidator;

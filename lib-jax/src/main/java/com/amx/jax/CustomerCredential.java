@@ -1,4 +1,4 @@
-package com.amx.amxlib.model;
+package com.amx.jax;
 
 import java.io.Serializable;
 
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
-import com.amx.amxlib.model.CustomerModelInterface.ICustomerCredential;
+import com.amx.libjax.model.CustomerModelInterface.ICustomerCredential;
 
 public class CustomerCredential implements Serializable, ICustomerCredential {
 

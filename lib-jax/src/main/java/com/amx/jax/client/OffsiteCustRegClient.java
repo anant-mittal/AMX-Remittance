@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.configs.JaxMetaInfo;
@@ -200,6 +201,18 @@ public class OffsiteCustRegClient implements ICustRegService {
 		try {
 			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.SCAN_CARD)
 					.post(cardDetail).as(new ParameterizedTypeReference<AmxApiResponse<CardDetail, Object>>() {
+					});
+		} catch (Exception e) {
+			LOGGER.error("exception in cardScan : ", e);
+			return JaxSystemError.evaluate(e);
+		} // end of try-catch}
+	}
+	
+	@Override
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
+		try {
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter).path(CustRegApiEndPoints.SAVE_OFFSITE_LOGIN)
+					.post(customerCredential).as(new ParameterizedTypeReference<AmxApiResponse<CustomerCredential, Object>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in cardScan : ", e);

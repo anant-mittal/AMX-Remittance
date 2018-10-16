@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.PersonInfo;
+import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.api.AmxApiResponse;
@@ -37,6 +42,7 @@ import com.amx.jax.dal.BizcomponentDao;
 import com.amx.jax.dal.FieldListDao;
 import com.amx.jax.dal.ImageCheckDao;
 import com.amx.jax.dao.BlackListDao;
+import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.BizComponentData;
 import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.dbmodel.CityMaster;
@@ -44,6 +50,7 @@ import com.amx.jax.dbmodel.ContactDetail;
 import com.amx.jax.dbmodel.CountryMaster;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.CustomerIdProof;
+import com.amx.jax.dbmodel.CustomerOnlineRegistration;
 import com.amx.jax.dbmodel.DistrictMaster;
 import com.amx.jax.dbmodel.DmsApplMapping;
 import com.amx.jax.dbmodel.DocBlobUpload;
@@ -79,12 +86,16 @@ import com.amx.jax.repository.CountryMasterRepository;
 import com.amx.jax.repository.CustomerEmployeeDetailsRepository;
 import com.amx.jax.repository.DOCBLOBRepository;
 import com.amx.jax.repository.EmploymentTypeRepository;
+import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.repository.IDMSAppMappingRepository;
 import com.amx.jax.repository.IUserFinancialYearRepo;
 import com.amx.jax.repository.JaxConditionalFieldRuleRepository;
 import com.amx.jax.repository.ProfessionRepository;
 import com.amx.jax.scope.TenantContext;
+import com.amx.jax.service.CustomerService;
 import com.amx.jax.service.PrefixService;
+import com.amx.jax.services.AbstractService;
+import com.amx.jax.services.JaxNotificationService;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;
 import com.amx.jax.userservice.dao.CustomerDao;
 import com.amx.jax.userservice.manager.CustomerRegistrationManager;
@@ -93,8 +104,11 @@ import com.amx.jax.userservice.repository.ContactDetailsRepository;
 import com.amx.jax.userservice.repository.CustomerIdProofRepository;
 import com.amx.jax.userservice.repository.CustomerRepository;
 import com.amx.jax.userservice.service.CustomerValidationContext.CustomerValidation;
+import com.amx.jax.userservice.service.UserService;
 import com.amx.jax.userservice.service.UserValidationService;
+import com.amx.jax.userservice.validation.CustomerCredentialValidator;
 import com.amx.jax.userservice.validation.CustomerPersonalDetailValidator;
+import com.amx.jax.util.CryptoUtil;
 import com.amx.jax.util.DateUtil;
 import com.amx.jax.util.JaxUtil;
 import com.amx.jax.validation.CountryMetaValidation;
@@ -102,7 +116,7 @@ import com.amx.utils.Constants;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class OffsitCustRegService implements ICustRegService {
+public class OffsitCustRegService extends AbstractService implements ICustRegService {
 
 	private static final Logger LOGGER = LoggerService.getLogger(OffsitCustRegService.class);
 
@@ -192,6 +206,24 @@ public class OffsitCustRegService implements ICustRegService {
 
 	@Autowired
 	CustomerRegistrationOtpManager customerRegistrationOtpManager;
+	
+	@Autowired
+	CustomerCredentialValidator customerCredentialValidator;
+	
+	@Autowired
+	CustomerService customerService;
+	
+	@Autowired
+	IApplicationCountryRepository applicationSetup;
+	
+	@Autowired
+	JaxNotificationService jaxNotificationService;
+	
+	@Autowired
+	UserService userService;
+	
+	@Autowired
+	private CryptoUtil cryptoUtil;
 
 	public AmxApiResponse<ComponentDataDto, Object> getIdTypes() {
 		List<Map<String, Object>> tempList = bizcomponentDao
@@ -797,5 +829,39 @@ public class OffsitCustRegService implements ICustRegService {
 	@Override
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return AmxApiResponse.build(cardDetail);
+	}
+
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
+		customerRegistrationManager.saveLoginDetail(customerCredential);
+		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
+		
+		CustomerRegistrationTrnxModel model = customerRegistrationManager.get();
+		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt());
+		commitOnlineCustomer(model, customer);		
+		
+		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
+		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();
+		PersonInfo personinfo = new PersonInfo();
+		try {
+			BeanUtils.copyProperties(personinfo, customerDetails);
+		} catch (Exception e) {
+		}
+		jaxNotificationService.sendPartialRegistraionMail(personinfo, applicationSetupData);
+		return AmxApiResponse.build(customerCredential);
+	}
+	
+	private void commitOnlineCustomer(CustomerRegistrationTrnxModel model, Customer customer) {
+		CustomerOnlineRegistration customerOnlineRegistration = new CustomerOnlineRegistration(customer);
+		String userName = customerOnlineRegistration.getUserName();
+		List<SecurityQuestionModel> secQuestions = model.getSecurityquestions();
+		userService.simplifyAnswers(secQuestions);
+		customerDao.setSecurityQuestions(secQuestions, customerOnlineRegistration);
+		customerOnlineRegistration.setCaption(cryptoUtil.encrypt(userName, model.getCaption()));
+		customerOnlineRegistration.setImageUrl(model.getImageUrl());
+		customerOnlineRegistration.setLoginId(model.getCustomerCredential().getLoginId());
+		customerOnlineRegistration
+				.setPassword(cryptoUtil.getHash(userName, model.getCustomerCredential().getPassword()));
+		customerOnlineRegistration.setStatus(ConstantDocument.Yes);
+		customerDao.saveOnlineCustomer(customerOnlineRegistration);
 	}
 }

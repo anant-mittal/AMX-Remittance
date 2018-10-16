@@ -40,6 +40,7 @@ public interface ICustRegService {
 		public static final String SAVE_KYC_DOC = PREFIX + "/saveCustomerKYCDoc";
 		public static final String SAVE_SIGNATURE = PREFIX + "/saveCustomerSignature";
 		public static final String SCAN_CARD = PREFIX + "/scan_card";
+		public static final String SAVE_OFFSITE_LOGIN = PREFIX + "/offsite-save-login-detail";
 	}
 
 	@JsonDeserialize(as = CustRegRequestModel.class)
@@ -87,5 +88,7 @@ public interface ICustRegService {
 
 	@ApiJaxStatus({ JaxError.ALREADY_EXIST_EMAIL, JaxError.INVALID_MOBILE_NUMBER })
 	AmxApiResponse<SendOtpModel, Object> sendOtp(CustomerPersonalDetail customerPersonalDetail);
+	
+	AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential);
 
 }
