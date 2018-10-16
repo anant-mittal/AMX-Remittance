@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.amx.amxlib.model.CustomerModel;
+import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.placeorder.PlaceOrderCustomer;
 import com.amx.jax.constant.ConstantDocument;
@@ -67,8 +68,13 @@ public class CustomerDao {
 		return cust;
 	}
 	
-	public Customer getCustomerByIdentityInt(String identityInt) {
-		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt);
+	public List<Customer> getCustomersForLogin(String identityInt) {
+		return repo.findByIdentityIntAndIsActiveIsNotIn(identityInt, ConstantDocument.Deleted);
+	}
+	
+	@Transactional
+	public List<Customer> getCustomerByIdentityInt(String identityInt) {
+		return repo.getCustomerByIdentityInt(identityInt);
 	}
 
 	@Transactional
