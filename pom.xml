@@ -181,6 +181,7 @@
 		<module>amx-lib</module>
 		<module>core</module>
 		<module>jax-client</module>
+		<module>lib-adapter</module>
 
 		<!-- Exchange Services -->
 		<module>ms-meta</module>

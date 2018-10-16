@@ -11,9 +11,8 @@ public class KWTCardController {
 	public static final String PARAM_URL = PUB_AMX_PREFIX + "/params";
 
 	@RequestMapping(value = "/pub/card/kwt/read", method = RequestMethod.GET)
-	public KWTCardDetails readCard() throws InterruptedException {
-		KWTCardReader.start();
-		return KWTCardReader.poll();
+	public KWTCardReader readCard() throws InterruptedException {
+		return KWTCardReader.read();
 	}
 
 }

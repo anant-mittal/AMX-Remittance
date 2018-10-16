@@ -6,31 +6,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.device.CardData;
+import com.amx.jax.device.CardReader;
+
 import pacicardlibrary.PACICardAPI;
 import pacicardlibrary.PaciException;
 
-public class KWTCardReader {
+public class KWTCardReader extends CardReader {
 
 	public static Logger LOGGER = LoggerFactory.getLogger(KWTCardReader.class);
-
+	private static KWTCardReader READER = new KWTCardReader(false);
 	public static PACICardAPI API = null;
-	private static KWTCardDetails DETAILS = null;
+	private static BlockingHashMap<String, CardData> MAP = new BlockingHashMap<String, CardData>();
+	public static KWTCardReaderListner LISTNER = new KWTCardReaderListner();
+	public static String CARD_READER_KEY = CardData.class.getName();
 
-	private static BlockingHashMap<String, KWTCardDetails> MAP = new BlockingHashMap<String, KWTCardDetails>();
-
-	public static KWTCardReaderListner listner = new KWTCardReaderListner();
-
-	KWTCardReader() {
+	KWTCardReader(boolean start) {
+		if (start) {
+			KWTCardReader.start();
+		}
 	}
 
 	public static void start() {
 		try {
-			if (API != null && listner != null) {
-				API.RemoveEventListener(listner);
+			if (API != null && LISTNER != null) {
+				API.RemoveEventListener(LISTNER);
 			}
 			API = new PACICardAPI(false, 0);
-			listner = new KWTCardReaderListner();
-			API.AddEventListener(listner);
+			LISTNER = new KWTCardReaderListner();
+			API.AddEventListener(LISTNER);
 		} catch (PaciException pe) {
 			LOGGER.error("PaciException", pe);
 		} catch (Exception e) {
@@ -38,24 +42,40 @@ public class KWTCardReader {
 		}
 	}
 
-	public static KWTCardDetails getDetails() {
-		if (DETAILS == null) {
-			DETAILS = new KWTCardDetails();
+	public static CardData readerData() {
+		if (READER.getData() == null) {
+			READER.setData(new CardData());
 		}
-		return DETAILS;
+		return READER.getData();
 	}
 
-	public static void clearDetails() {
-		MAP.remove(KWTCardReader.class.getName());
-		DETAILS = null;
+	public static void info(String[] readers) {
+		READER.setReaders(readers);
+		READER.setReaderCount(readers.length);
+		READER.setTimestamp(System.currentTimeMillis());
+	}
+
+	public static void clear() {
+		LOGGER.info("Clearing Data....");
+		MAP.remove(CARD_READER_KEY);
+		READER.setData(null);
 	}
 
 	public static void push() {
-		MAP.put(KWTCardReader.class.getName(), KWTCardReader.DETAILS);
+		if (READER.getData() != null) {
+			MAP.put(CARD_READER_KEY, READER.getData());
+		}
 	}
 
-	public static KWTCardDetails poll() throws InterruptedException {
-		return MAP.take(KWTCardDetails.class.getName(), 15, TimeUnit.SECONDS);
+	public static CardData poll() throws InterruptedException {
+		return MAP.take(CARD_READER_KEY, 15, TimeUnit.SECONDS);
+	}
+
+	public static KWTCardReader read() throws InterruptedException {
+		LOGGER.info("Reading Data....");
+		poll();
+		push();
+		return READER;
 	}
 
 }

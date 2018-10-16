@@ -1,12 +1,9 @@
 package com.amx.jax.adapter.kwt;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.cert.X509Certificate;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.amx.jax.device.CardData;
 
 import pacicardlibrary.PACICardAPI;
 import pacicardlibrary.PaciEventHandler;
@@ -14,76 +11,109 @@ import pacicardlibrary.PaciException;
 
 public class KWTCardReaderListner implements PaciEventHandler {
 
-	public static boolean connected = false;
-
 	public static Logger LOGGER = LoggerFactory.getLogger(KWTCardReaderListner.class);
 
 	@SuppressWarnings("deprecation")
 	@Override
 	public void CardConnectionEvent(int readerIndex) {
-		connected = true;
-		System.out.println("\n**** KwCardReaderListner:PaciException" + readerIndex);
 		LOGGER.info("KwCardReaderListner:CardConnectionEvent {}", readerIndex);
-
 		try {
-			LOGGER.info("Latin Nationality {}", KWTCardReader.API.getNationalty_Latin_Text(readerIndex, true));
-			LOGGER.info("English Name {}", KWTCardReader.API.getEnglish_Name(readerIndex, true));
-			LOGGER.info("Arabic Name {}", KWTCardReader.API.getArabic_Name(readerIndex, true));
-			LOGGER.info("DOB {}", KWTCardReader.API.getBirth_Date(readerIndex, true));
-			LOGGER.info("Blood {}", KWTCardReader.API.getBlood_Type(readerIndex, true));
-			LOGGER.info("Nationality Arabic {}", KWTCardReader.API.getNationalty_Arabic_Text(readerIndex, true));
-			LOGGER.info("Latin Arabic {}", KWTCardReader.API.getSex_Latin_Text(readerIndex, true));
-			LOGGER.info("Exp Date {}",
-					KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.CardExpiryDate, true));
+			CardData data = KWTCardReader.readerData();
 
-			LOGGER.info("Full Arabic Name {}",
+			data.setTitle(KWTCardReader.API.getA_TITLE(readerIndex, true));
+			data.setIdentity(KWTCardReader.API.getCivil_ID(readerIndex, false));
+
+			// Arabic Details
+			data.setLocalFullName(
 					KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullArabicName, true));
+			data.setLocalName1(KWTCardReader.API.getArabicName_1(readerIndex, true));
+			data.setLocalName2(KWTCardReader.API.getArabicName_2(readerIndex, true));
+			data.setLocalName3(KWTCardReader.API.getArabicName_3(readerIndex, false));
+			data.setLocalName4(KWTCardReader.API.getArabicName_4(readerIndex, false));
+			data.setLocalNationality(KWTCardReader.API.getNationalty_Arabic_Text(readerIndex, false));
+			data.setLocalGender(KWTCardReader.API.getSex_Arabic_Text(readerIndex, false));
 
-			LOGGER.info("Full Eng Name {}",
-					KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullEnglishName, true));
+			// English Details
+			data.setFullName(KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullEnglishName, true));
+			data.setName1(KWTCardReader.API.getEnglishName_1(readerIndex, false));
+			data.setName2(KWTCardReader.API.getEnglishName_2(readerIndex, false));
+			data.setName3(KWTCardReader.API.getEnglishName_3(readerIndex, false));
+			data.setName4(KWTCardReader.API.getEnglishName_4(readerIndex, false));
+			data.setGender(KWTCardReader.API.getSex_Latin_Text(readerIndex, false));
+			data.setNationality(KWTCardReader.API.getNationalty_Latin_Text(readerIndex, false));
 
-			X509Certificate cert = KWTCardReader.API.GetCertificate(readerIndex);
+			data.setDocumentNo(KWTCardReader.API.getDocument_No(readerIndex, false));
+			data.setSerialNo(KWTCardReader.API.getCard_Serial_No(readerIndex, false));
 
-			LOGGER.info("Cert Sunj Name {}", cert.getSubjectDN());
+			data.setMoiReferenceIndicator(KWTCardReader.API.getMOI_Refernce_Indic(readerIndex, false));
+			data.setMoiReference(KWTCardReader.API.getMOI_Reference(readerIndex, false));
 
-			LOGGER.info("is Car Valid {}", KWTCardReader.API.ValidateCardIsGenuine(readerIndex));
+			// Address
+			data.setDistrict(KWTCardReader.API.getDestrict(readerIndex, false));
+			data.setBlock(KWTCardReader.API.getBlock_No(readerIndex, false));
+			data.setStreet(KWTCardReader.API.getStreet_Name(readerIndex, false));
+			data.setBuildNo(KWTCardReader.API.getBuilding_Plot_No(readerIndex, false));
+			data.setUnitType(KWTCardReader.API.getUnit_type(readerIndex, false));
+			data.setUnitNo(KWTCardReader.API.getUnit_No(readerIndex, false));
+			data.setFloor(KWTCardReader.API.getFloor_No(readerIndex, false));
 
-			LOGGER.info("is Car  Cert Valid {}",
-					KWTCardReader.API.ValidateCardCertificate(readerIndex, false, true, true));
+			// Personal Details
+			data.setBloodType(KWTCardReader.API.getBlood_Type(readerIndex, false));
+			data.setGuardianId(KWTCardReader.API.getGuardian_Civil_ID_No(readerIndex, false));
+			data.setTeleNo1(KWTCardReader.API.getTel_1(readerIndex, false));
+			data.setTeleNo2(KWTCardReader.API.getTel_2(readerIndex, false));
 
-			// Reading Photo
-			byte[] image = KWTCardReader.API.ReadPhoto(readerIndex);
-			String civilid = KWTCardReader.API.getCivil_ID(0, true);
+			data.setEmail(KWTCardReader.API.getEmail_Address(readerIndex, false));
+			data.setField1(KWTCardReader.API.getAdditional_F1(readerIndex, false));
+			data.setField2(KWTCardReader.API.getAdditional_F2(readerIndex, false));
+			data.setAddressUKey(KWTCardReader.API.getAddress_Unique_Key(readerIndex, false));
 
-			try {
-				Files.write(Paths.get("civil_photos/" + civilid + ".jp2"), image);
-			} catch (IOException e) {
-				LOGGER.error("is Car  Cert Valid {}", e);
+			String dob = KWTCardReader.API.getBirth_Date(readerIndex, false);
+			if (dob != null && dob.length() > 0 && dob.length() > 4) {
+				dob = dob.subSequence(0, 4) + "/" + dob.subSequence(4, 6) + "/" + dob.substring(6);
 			}
 
-			KWTCardReader.getDetails().setCivilid(civilid);
+			data.setDob(dob);
+
+			String issueDate = KWTCardReader.API.getCard_Issue_Date(readerIndex, false);
+			if (issueDate != null && issueDate.length() > 0 && issueDate.length() > 4) {
+				issueDate = issueDate.substring(0, 4) + "/" + issueDate.substring(4, 6) + "/" + issueDate.substring(6);
+			}
+			data.setIssueDate(issueDate);
+
+			// String expiryDate = KWTCardReader.API.ReadCardInfo(readerIndex,
+			// pacicardlibrary.PACICardAPI.DataType.CardExpiryDate, true);
+			String expiryDate = KWTCardReader.API.getCard_Expiry_Date(readerIndex, false);
+			if (expiryDate != null && expiryDate.length() > 0 && expiryDate.length() > 4) {
+				expiryDate = expiryDate.substring(0, 4) + "/" + expiryDate.substring(4, 6) + "/"
+						+ expiryDate.substring(6);
+			}
+
+			data.setExpiryDate(expiryDate);
+			data.setGenuine(KWTCardReader.API.ValidateCardIsGenuine(readerIndex));
+			data.setValid(KWTCardReader.API.ValidateCardCertificate(readerIndex, false, true, true));
+
+			KWTCardReader.readerData().setValid(true);
 			KWTCardReader.push();
 
 		} catch (PaciException e) {
 			// e.printStackTrace();
-			System.out.println("KwCardReaderListner:PaciException" + e.getMessage());
+			LOGGER.error("KwCardReaderListner:PaciException {}", e);
 		} catch (Exception e2) {
-			System.out.println("KwCardReaderListner:Exception " + e2.getMessage());
+			LOGGER.error("KwCardReaderListner:Exception {}", e2);
 		}
 	}
 
 	@Override
 	public void CardDisconnectionEvent(int arg0) {
-		System.out.println("\n**** KwCardReaderListner:CardDisconnectionEvent " + arg0);
-		connected = false;
-		KWTCardReader.clearDetails();
+		LOGGER.error("KwCardReaderListner:CardDisconnectionEvent  {}", arg0);
+		KWTCardReader.clear();
 	}
 
 	@Override
 	public void ReaderChangeEvent() {
-		System.out.println("\n**** KwCardReaderListner:ReaderChangeEvent");
-		KWTCardReader.getDetails().setTotalReaders(KWTCardReader.API.GetNumberOfReaders());
-		KWTCardReader.getDetails().setReaders(KWTCardReader.API.GetReaders());
+		LOGGER.error("KwCardReaderListner:ReaderChangeEvent");
+		KWTCardReader.info(KWTCardReader.API.GetReaders());
 	}
 
 }

@@ -16,7 +16,6 @@ import com.amx.amxlib.meta.model.ViewDistrictDto;
 import com.amx.amxlib.meta.model.ViewStateDto;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.MetaClient;
-import com.amx.jax.client.OffsiteCustRegClient;
 import com.amx.jax.logger.LoggerService;
 
 import io.swagger.annotations.Api;
@@ -32,9 +31,6 @@ public class MetaController {
 
 	@Autowired
 	MetaClient metaClient;
-
-	@Autowired
-	private OffsiteCustRegClient offsiteCustRegClient;
 
 	/**
 	 *

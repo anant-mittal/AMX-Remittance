@@ -1,20 +1,19 @@
-package com.amx.jax.adapter.kwt;
+package com.amx.jax.device;
 
-public class KWTCardDetails {
+public class CardReader {
 
+	private CardData data = null;
 	int totalReaders = 0;
 	String[] readers;
 	int readerCount = 0;
-	String readerName = null;
+	long timestamp;
 
-	String civilid;
-
-	public String getCivilid() {
-		return civilid;
+	public CardData getData() {
+		return data;
 	}
 
-	public void setCivilid(String civilid) {
-		this.civilid = civilid;
+	public void setData(CardData data) {
+		this.data = data;
 	}
 
 	public int getReaderCount() {
@@ -23,14 +22,6 @@ public class KWTCardDetails {
 
 	public void setReaderCount(int readerCount) {
 		this.readerCount = readerCount;
-	}
-
-	public String getReaderName() {
-		return readerName;
-	}
-
-	public void setReaderName(String readerName) {
-		this.readerName = readerName;
 	}
 
 	public int getTotalReaders() {
@@ -47,5 +38,13 @@ public class KWTCardDetails {
 
 	public String[] getReaders() {
 		return readers;
+	}
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
 	}
 }
