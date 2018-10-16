@@ -86,11 +86,6 @@
 	<modules>
 		<module>amxeco-parent</module>
 
-		<!-- Common Servers -->
-		<module>ms-postman</module>
-		<module>server-payg</module>
-		<module>server-monitor</module>
-
 		<!-- Exchange Libs -->
 		<module>common-amx</module>
 		<module>lib-db</module>

@@ -104,5 +104,10 @@
 		<module>../lib-mcq</module>
 		<module>../lib-monitor</module>
 		<module>../lib-postman</module>
+
+		<!-- Common Servers -->
+		<module>../ms-postman</module>
+		<module>../server-payg</module>
+		<module>../server-monitor</module>
 	</modules>
 </project>
