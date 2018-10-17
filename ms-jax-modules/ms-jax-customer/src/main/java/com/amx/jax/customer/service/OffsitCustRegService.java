@@ -830,7 +830,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 	public AmxApiResponse<CardDetail, Object> cardScan(CardDetail cardDetail) {
 		return AmxApiResponse.build(cardDetail);
 	}
-
+ 
 	public AmxApiResponse<CustomerCredential, Object> saveLoginDetailOffsite(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);

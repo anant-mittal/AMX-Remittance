@@ -13,6 +13,7 @@ import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.logger.LoggerService;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
@@ -30,7 +31,11 @@ public class DeviceController {
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid) {
 		LOGGER.info(JsonUtil.toJson(reader.getData()));
-		cardBox.put(systemid, reader.getData());
+		if (ArgUtil.isEmpty(reader.getData())) {
+			cardBox.fastRemove(systemid);
+		} else {
+			cardBox.put(systemid, reader.getData());
+		}
 		return AmxApiResponse.build(reader.getData());
 	}
 

@@ -52,28 +52,36 @@ public class KWTCardReader extends CardReader {
 	public static void info(String[] readers) {
 		READER.setReaders(readers);
 		READER.setReaderCount(readers.length);
-		READER.setTimestamp(System.currentTimeMillis());
+		READER.setReaderTime(System.currentTimeMillis());
 	}
 
 	public static void clear() {
 		LOGGER.info("Clearing Data....");
 		MAP.remove(CARD_READER_KEY);
 		READER.setData(null);
+		READER.setDataTime(System.currentTimeMillis());
 	}
 
 	public static void push() {
 		if (READER.getData() != null) {
+			READER.setDataTime(READER.getData().getTimestamp());
 			MAP.put(CARD_READER_KEY, READER.getData());
+		} else {
+			READER.setDataTime(System.currentTimeMillis());
 		}
 	}
 
 	public static CardData poll() throws InterruptedException {
-		return MAP.take(CARD_READER_KEY, 15, TimeUnit.SECONDS);
+		return MAP.take(CARD_READER_KEY, 10, TimeUnit.SECONDS);
 	}
 
 	public static KWTCardReader read() throws InterruptedException {
 		LOGGER.info("Reading Data....");
-		poll();
+		// start();
+		CardData data = poll();
+		if (data != null && data.getTimestamp() >= READER.getDataTime()) {
+			LOGGER.info("CARD DATA FOUND");
+		}
 		push();
 		return READER;
 	}

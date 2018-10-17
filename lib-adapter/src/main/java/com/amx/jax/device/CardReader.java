@@ -6,7 +6,8 @@ public class CardReader {
 	int totalReaders = 0;
 	String[] readers;
 	int readerCount = 0;
-	long timestamp;
+	long readerTime;
+	long dataTime;
 
 	public CardData getData() {
 		return data;
@@ -40,11 +41,20 @@ public class CardReader {
 		return readers;
 	}
 
-	public long getTimestamp() {
-		return timestamp;
+	public long getReaderTime() {
+		return readerTime;
 	}
 
-	public void setTimestamp(long timestamp) {
-		this.timestamp = timestamp;
+	public void setReaderTime(long readerTime) {
+		this.readerTime = readerTime;
 	}
+
+	public long getDataTime() {
+		return dataTime;
+	}
+
+	public void setDataTime(long dataTime) {
+		this.dataTime = dataTime;
+	}
+
 }

@@ -29,8 +29,9 @@ public abstract class ACardReaderService {
 	public void readTask() {
 		try {
 			CardReader reader = read();
-			if (reader.getTimestamp() > lastreadtime && reader.getData() != null) {
-				lastreadtime = reader.getTimestamp();
+			if (reader.getDataTime() > lastreadtime && reader.getData() != null) {
+				lastreadtime = reader.getDataTime();
+				LOGGER.info("Data Found");
 				restService.ajax(serverUrl).path(DeviceConstants.DEVICE_INFO_URL)
 						.pathParam(DeviceConstants.PARAM_SYSTEM_ID, systemId).post(reader).asObject();
 			}
