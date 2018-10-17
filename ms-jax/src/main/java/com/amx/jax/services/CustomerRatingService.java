@@ -1,5 +1,6 @@
 package com.amx.jax.services;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.dbmodel.CustomerRating;
+import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.ICustomerRatingDao;
 
 @Component
@@ -21,6 +23,9 @@ public class CustomerRatingService {
 
 	@Autowired
 	ICustomerRatingDao customerRatingdao;
+	
+	@Autowired
+	MetaData metaData;
 
 	/**
 	 * Saved customer rating
@@ -30,6 +35,11 @@ public class CustomerRatingService {
 	 */
 	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(CustomerRating dto) {
 		try {
+			BigDecimal customerId = metaData.getCustomerId();
+			BigDecimal applicationCountryId = metaData.getCountryId();
+			
+			dto.setCustomerId(customerId);
+			dto.setApplicationCountryId(applicationCountryId);
 			dto.setCreatedDate(new Date());
 			customerRatingdao.save(dto);
 		} catch (Exception e) {

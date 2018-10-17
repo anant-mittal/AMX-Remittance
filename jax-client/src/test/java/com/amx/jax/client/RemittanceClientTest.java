@@ -73,7 +73,7 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		TenantContextHolder.setCurrent(Tenant.KWT2);
+		jaxMetaInfo.setTenant(Tenant.KWT2);
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		response = client.getPurposeOfTransactions(new BigDecimal(1424));
 		assertNotNull("Response is null", response);
@@ -205,18 +205,19 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	// @Test
+    @Test
 	public void testfetchTransactionDetails() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
-		jaxMetaInfo.setCompanyId(new BigDecimal(1));
+		jaxMetaInfo.setCompanyId(new BigDecimal(2));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		jaxMetaInfo.setCustomerId(new BigDecimal(43904));
+		TenantContextHolder.setCurrent(Tenant.OMN);
 		ApiResponse<RemittanceTransactionStatusResponseModel> response = null;
 		RemittanceTransactionStatusRequestModel request = new RemittanceTransactionStatusRequestModel();
-		request.setApplicationDocumentNumber(new BigDecimal(27000545));
-		request.setDocumentFinancialYear(new BigDecimal(2017));
-		response = client.fetchTransactionDetails(request, true);
+		request.setApplicationDocumentNumber(new BigDecimal(8600417));
+		request.setDocumentFinancialYear(new BigDecimal(2018));
+		response = client.fetchTransactionDetails(request, false);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 		assertNotNull(response.getResult().getModelType());

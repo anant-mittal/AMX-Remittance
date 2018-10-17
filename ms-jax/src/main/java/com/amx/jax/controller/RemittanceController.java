@@ -237,7 +237,7 @@ public class RemittanceController {
 	}
 
 	@RequestMapping(value = "/save-customer-rating/", method = RequestMethod.POST)
-	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody CustomerRating customerRating) {
+	public AmxApiResponse<CustomerRating, ?> saveCustomerRating(@RequestBody @Valid CustomerRating customerRating) {
 		return customerRatingService.saveCustomerRating(customerRating);
 	}
 }
