@@ -29,7 +29,6 @@ public class DeviceDao {
 	@Autowired
 	DeviceStateRepository deviceStateRepository;
 
-	@Transactional
 	public DeviceDto saveDevice(DeviceRegistrationRequest request) {
 
 		Device device = new Device();
@@ -40,13 +39,6 @@ public class DeviceDao {
 		device.setDeviceId(request.getDeviceId());
 		device.setDeviceType(request.getDeviceType());
 		device.setStatus(ConstantDocument.Yes);
-		DeviceStateInfo deviceState = new DeviceStateInfo();
-		deviceState.setCreatedBy(device.getCreatedBy());
-		deviceState.setCreatedDate(device.getCreatedDate());
-		deviceState.setDeviceRegId(device.getRegistrationId());
-		deviceState.setState(DeviceState.REGISTERED);
-		
-		deviceStateRepository.save(deviceState);
 		deviceRepository.save(device);
 		DeviceDto dto = new DeviceDto();
 		try {
@@ -54,5 +46,15 @@ public class DeviceDao {
 		} catch (Exception e) {
 		}
 		return dto;
+	}
+
+	public void saveDeviceState(DeviceDto newDevice, DeviceState state) {
+		DeviceStateInfo deviceState = new DeviceStateInfo();
+		deviceState.setCreatedBy("JOMAX_ONLINE");
+		deviceState.setCreatedDate(new Date());
+		deviceState.setDeviceRegId(newDevice.getRegistrationId());
+		deviceState.setState(state);
+
+		deviceStateRepository.save(deviceState);
 	}
 }

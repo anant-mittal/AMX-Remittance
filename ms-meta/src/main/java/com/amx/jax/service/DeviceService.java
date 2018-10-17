@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.services.AbstractService;
 
@@ -24,10 +26,16 @@ public class DeviceService extends AbstractService {
 	@Autowired
 	DeviceDao deviceDao;
 
-	public AmxApiResponse<DeviceDto, Object> registerDevice(DeviceRegistrationRequest request) {
+	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
 		DeviceDto newDevice = deviceDao.saveDevice(request);
+		deviceDao.saveDeviceState(newDevice, DeviceState.REGISTERED);
 		logger.info("device registered with id: {}", newDevice.getRegistrationId());
 		return AmxApiResponse.build(newDevice);
+	}
+
+	public AmxApiResponse<DeviceDto, Object> updateDeviceState(DeviceStateInfoChangeRequest request) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

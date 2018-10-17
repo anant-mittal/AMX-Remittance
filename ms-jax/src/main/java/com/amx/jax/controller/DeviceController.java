@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
+import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.service.DeviceService;
 
@@ -23,8 +24,13 @@ public class DeviceController {
 	DeviceService deviceService;
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public AmxApiResponse<DeviceDto, Object> registerDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
+	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
 
-		return deviceService.registerDevice(request);
+		return deviceService.registerNewDevice(request);
+	}
+
+	@RequestMapping(value = "/state", method = RequestMethod.POST)
+	public AmxApiResponse<DeviceDto, Object> updateDeviceState(@Valid DeviceStateInfoChangeRequest request) {
+		return deviceService.updateDeviceState(request);
 	}
 }
