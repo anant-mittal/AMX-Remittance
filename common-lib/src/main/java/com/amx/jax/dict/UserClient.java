@@ -65,11 +65,11 @@ public class UserClient {
 	 *
 	 */
 	public enum AppType {
-		WEB, ANDROID, IOS, KIOSK, UNKNOWN;
+		WEB, ANDROID, IOS, UNKNOWN;
 	}
 
-	public enum CleintType {
-		ONLINE;
+	public enum ClientType {
+		BROWSER, SIGNATURE_PAD, BRANCH_ADAPTER, OFFSITE_PAD, KIOSK;
 	}
 
 }

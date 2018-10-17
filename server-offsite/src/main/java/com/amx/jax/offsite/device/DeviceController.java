@@ -40,4 +40,10 @@ public class DeviceController {
 		return AmxApiResponse.build(cardBox.get(systemid));
 	}
 
+	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
+	public AmxApiResponse<CardData, Object> pairDevice(
+			@PathVariable(value = DeviceConstants.PARAM_CLIENT_TYPE) String clientType) {
+		return AmxApiResponse.build(cardBox.get(clientType));
+	}
+
 }
