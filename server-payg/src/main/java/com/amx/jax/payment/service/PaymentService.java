@@ -68,10 +68,10 @@ public class PaymentService {
 		try {
 			RestMetaInfo metaInfo = new RestMetaInfo();
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo));
 			metaInfo.setTenant(TenantContextHolder.currentSite());
 			metaInfo.setCountryId(paymentResponseDto.getApplicationCountryId());
 			metaInfo.setCustomerId(paymentResponseDto.getCustomerId());
+			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo));
 			return restService.ajax(appConfig.getJaxURL() + "/remit/save-remittance/")
 					.post(new HttpEntity<PaymentResponseDto>(paymentResponseDto, headers))
 					.as(new ParameterizedTypeReference<AmxApiResponse<PaymentResponseDto, Object>>() {
