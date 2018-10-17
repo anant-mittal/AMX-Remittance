@@ -40,7 +40,7 @@ public class DeviceDao {
 		device.setCreatedDate(new Date());
 		device.setDeviceId(request.getDeviceId());
 		device.setDeviceType(request.getDeviceType());
-		device.setStatus(ConstantDocument.Yes);
+		device.setStatus(ConstantDocument.No);
 		deviceRepository.save(device);
 		DeviceDto dto = new DeviceDto();
 		try {
@@ -58,5 +58,13 @@ public class DeviceDao {
 		deviceState.setState(state);
 
 		deviceStateRepository.save(deviceState);
+	}
+
+	public Device findDevice(BigDecimal branchSystemInvId, String deviceType) {
+		return deviceRepository.findByBranchSystemInventoryIdAndDeviceType(branchSystemInvId, deviceType);
+	}
+
+	public void saveDevice(Device device) {
+		deviceRepository.save(device);
 	}
 }

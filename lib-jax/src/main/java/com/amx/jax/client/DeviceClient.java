@@ -33,7 +33,7 @@ public class DeviceClient implements IDeviceService {
 		try {
 			LOGGER.info("in registerNewDevice");
 
-			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + REG_DEVICE;
+			String url = appConfig.getJaxURL() + END_POINT_JAX_DEVICE + DEVICE_REG;
 			HttpEntity<Object> requestEntity = new HttpEntity<Object>(request, getHeader());
 			return restService.ajax(url).post(requestEntity)
 					.as(new ParameterizedTypeReference<AmxApiResponse<DeviceDto, Object>>() {

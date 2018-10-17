@@ -1,5 +1,6 @@
 package com.amx.jax.service;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,13 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.amx.amxlib.exception.jax.GlobalException;
+import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constants.DeviceState;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
+import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
@@ -25,6 +29,8 @@ public class DeviceService extends AbstractService {
 
 	@Autowired
 	DeviceDao deviceDao;
+	@Autowired
+	DeviceManager deviceManager;
 
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request) {
 		logger.info("In register device with request: {}", request);
@@ -37,5 +43,12 @@ public class DeviceService extends AbstractService {
 	public AmxApiResponse<DeviceDto, Object> updateDeviceState(DeviceStateInfoChangeRequest request) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public AmxApiResponse<BooleanResponse, Object> activateDevice(Integer countryBranchSystemInventoryId,
+			String deviceType) {
+		logger.info("In activateDevice with countryBranchSystemInventoryId: {}", countryBranchSystemInventoryId);
+		deviceManager.activateDevice(countryBranchSystemInventoryId, deviceType);
+		return AmxApiResponse.build(new BooleanResponse(Boolean.TRUE));
 	}
 }

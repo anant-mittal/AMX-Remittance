@@ -7,7 +7,9 @@ import com.amx.jax.model.response.DeviceDto;
 
 public interface IDeviceService extends IJaxService {
 
-	public static String REG_DEVICE = "/register";
+	public static String DEVICE_REG = "/register";
+	public static String DEVICE_STATE = "/state";
+	public static final String DEVICE_ACTIVATE = "/activate";
 
 	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 
