@@ -25,8 +25,8 @@ import com.amx.amxlib.model.CustomerModel;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
 import com.amx.jax.client.config.JaxConfig;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.client.util.ConverterUtility;
 
 @RunWith(SpringRunner.class)

@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
-import com.amx.jax.dict.ResponseCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.payg.codes.BenefitCodes;
+import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -73,8 +75,8 @@ public class OmannetClient implements PayGClient {
 		configMap.put("action", OmemnetAction);
 		configMap.put("currency", OmemnetCurrency);
 		configMap.put("languageCode", OmemnetLanguageCode);
-        configMap.put("responseUrl",
-	                  OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+		configMap.put("responseUrl", OmemnetCallbackUrl + "/app/capture/OMANNET/" + payGParams.getTenant() + "/"
+				+ payGParams.getChannel() + "/");
 //		configMap.put("responseUrl",
 //				OmemnetCallbackUrl+"/app/capture/OMANNET/" + payGParams.getTenant() + "/");
 		configMap.put("resourcePath", OmemnetCertpath);
@@ -182,14 +184,12 @@ public class OmannetClient implements PayGClient {
 				gatewayResponse.setResult("NOT CAPTURED");
 			}
 	
-	    	/*for(ResponseCode res : ResponseCode.values()) {
-				if(resultReponse.contains(res.getResponseCode()))
-				{
-					//gatewayResponse.setResult(res.toString());
-					gatewayResponse.setResult("NOT CAPTURED");
-					break;
-				}
-			}*/
+			LOGGER.info("resultResponse ---> " + resultResponse);
+			OmanNetCodes statusCode = (OmanNetCodes) PayGCodes.getPayGCode(resultResponse, OmanNetCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
+
+			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			gatewayResponse.setError(resultResponse);
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));

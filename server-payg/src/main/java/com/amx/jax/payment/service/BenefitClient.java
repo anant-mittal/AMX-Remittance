@@ -12,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.AppConstants;
 import com.amx.jax.cache.TransactionModel;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -82,8 +84,8 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 		configMap.put("action", benefitAction);
 		configMap.put("currency", benefitCurrency);
 		configMap.put("languageCode", benefitLanguageCode);
-		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + "/app/capture/BENEFIT/"
+				+ payGParams.getTenant() + "/" + payGParams.getChannel() + "/");
 		configMap.put("resourcePath", benefitCertpath);
 		configMap.put("aliasName", benefitAliasName);
 
@@ -147,6 +149,9 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
+		String resultResponse = request.getParameter("Error");
+		String responseCode = request.getParameter("responsecode");
+		String resultCode = request.getParameter("result");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
 		gatewayResponse.setResult(request.getParameter("result"));
 		gatewayResponse.setAuth(request.getParameter("auth"));
@@ -176,6 +181,25 @@ public class BenefitClient extends TransactionModel<PaymentResponseDto> implemen
 			gatewayResponse.setResult("NOT CAPTURED");
 			gatewayResponse.setTrackId(paymentCacheModel.getTrackId());
 		}
+
+		BenefitCodes statusCode;
+
+		if ("CAPTURED".equalsIgnoreCase(resultCode)) {
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
+		} else if (resultResponse == null) {
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(responseCode, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			gatewayResponse.setError(responseCode);
+		} else {
+			LOGGER.info("resultResponse ---> " + resultResponse);
+			statusCode = (BenefitCodes) PayGCodes.getPayGCode(resultResponse, BenefitCodes.UNKNOWN);
+			gatewayResponse.setErrorCategory(statusCode.getCategory());
+			LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+			gatewayResponse.setError(resultResponse);
+		}
+
+		LOGGER.info("Params captured from BENEFIT : " + JsonUtil.toJson(gatewayResponse));
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 

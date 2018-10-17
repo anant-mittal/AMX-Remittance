@@ -7,7 +7,6 @@ import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
 
 /**
  * The Class PMGaugeEvent.
@@ -56,7 +55,7 @@ public class PMGaugeEvent extends AuditEvent {
 	}
 
 	/** The template. */
-	Templates template = null;
+	String template = null;
 
 	/** The to. */
 	private List<String> to = null;
@@ -125,7 +124,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 *
 	 * @return the template
 	 */
-	public Templates getTemplate() {
+	public String getTemplate() {
 		return template;
 	}
 
@@ -135,7 +134,7 @@ public class PMGaugeEvent extends AuditEvent {
 	 * @param template
 	 *            the new template
 	 */
-	public void setTemplate(Templates template) {
+	public void setTemplate(String template) {
 		this.template = template;
 	}
 

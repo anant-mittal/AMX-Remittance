@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
-import com.amx.jax.rbaac.RbaacService;
+import com.amx.jax.rbaac.IRbaacService;
 import com.amx.jax.rbaac.RbaacServiceClient;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
 import com.amx.jax.rbaac.dto.request.RoleRequestDTO;
@@ -29,7 +29,7 @@ import io.swagger.annotations.ApiOperation;
  */
 @RestController
 @RequestMapping("test/")
-public class RbaacServiceControllerTest implements RbaacService {
+public class RbaacServiceControllerTest implements IRbaacService {
 
 	// private static final Logger LOGGER =
 	// LoggerFactory.getLogger(RbaacServiceControllerTest.class);
@@ -42,7 +42,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthInitReqDTO)
 	 */
 	@Override
@@ -56,12 +56,12 @@ public class RbaacServiceControllerTest implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthorisationReqDTO)
 	 */
 	@Override
 	@ApiOperation("User Authorisation")
-	@RequestMapping(value = ApiEndPoints.AUTHORISE, method = RequestMethod.POST)
+	@RequestMapping(value = ApiEndPoints.AUTHORIZE, method = RequestMethod.POST)
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDto) {
 		return rbaacServiceClient.authoriseUser(reqDto);
 	}
@@ -69,7 +69,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllPermissions(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -82,7 +82,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllRoles(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
@@ -95,7 +95,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#saveRole(com.amx.jax.rbaac.dto.request.
+	 * @see com.amx.jax.rbaac.IRbaacService#saveRole(com.amx.jax.rbaac.dto.request.
 	 * RoleRequestDTO)
 	 */
 	@Override
@@ -108,7 +108,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getUserRoleMappingsForBranch(java.math.
+	 * @see com.amx.jax.rbaac.IRbaacService#getUserRoleMappingsForBranch(java.math.
 	 * BigDecimal, java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -124,7 +124,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
+	 * com.amx.jax.rbaac.IRbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
 	 * request.UserRoleMappingsRequestDTO)
 	 */
 	@Override
@@ -139,7 +139,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
 	 * .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
@@ -153,7 +153,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testGet()
+	 * @see com.amx.jax.rbaac.IRbaacService#testGet()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
@@ -163,7 +163,7 @@ public class RbaacServiceControllerTest implements RbaacService {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testPost()
+	 * @see com.amx.jax.rbaac.IRbaacService#testPost()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testPost() {

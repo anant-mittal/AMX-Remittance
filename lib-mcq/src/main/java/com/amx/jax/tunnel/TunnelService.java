@@ -91,9 +91,13 @@ public class TunnelService implements ITunnelService {
 		return topicQueue.publish(message.getId());
 	}
 
+	public <E extends ITunnelEvent> long task(E event) {
+		return this.task(event.getClass().getName(), event);
+	}
+
 	/**
 	 * For audit purpose only, this will make sure, your log gets delivered to only
-	 * one client qualified with {@link TunnelEvent#scheme()} as
+	 * one client qualified with {@link TunnelEventMapping#scheme()} as
 	 * {@link TunnelEventXchange#AUDIT}
 	 */
 	public <T> long audit(String topic, T messagePayload) {

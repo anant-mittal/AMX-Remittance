@@ -38,7 +38,7 @@ public class BranchDetailService extends AbstractService {
 		
 		if (branchDetailList.isEmpty()) {
 			throw new GlobalException("Branch Details are not available");
-		} 
+		}
 		return AmxApiResponse.buildList(branchDetailList);
 	}
 	

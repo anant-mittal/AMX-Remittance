@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
-import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +14,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.model.dto.SendOtpModel;
-import com.amx.jax.model.request.CommonRequest;
 import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.model.request.EmploymentDetailsRequest;
 import com.amx.jax.model.response.ArticleDetailsDescDto;
@@ -43,7 +41,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 	public void testIdTypeList() {
 		setDefaults();
 		AmxApiResponse<ComponentDataDto, Object> response = null;
-		response = offsiteClient.sendIdTypes();
+		response = offsiteClient.getIdTypes();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
@@ -60,10 +58,8 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 	// @Test
 	public void testArticleList() {
 		setDefaults();
-		CommonRequest model = new CommonRequest();
-		model.setCountryId(new BigDecimal(91));
 		AmxApiResponse<ArticleMasterDescDto, Object> response = null;
-		response = offsiteClient.getArticleListResponse(model);
+		response = offsiteClient.getArticleListResponse();
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}
@@ -110,7 +106,7 @@ public class OffsiteCustRegClientTest extends AbstractClientTest {
 		model.setTelPrefix("965");
 		model.setTitle("181");
 		AmxApiResponse<SendOtpModel, Object> response = null;
-		response = offsiteClient.sendOtpForEmailAndMobile(model);
+		response = offsiteClient.sendOtp(model);
 		assertNotNull("Response is null", response);
 		assertNotNull(response.getResult());
 	}

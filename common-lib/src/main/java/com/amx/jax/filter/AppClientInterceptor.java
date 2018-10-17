@@ -34,6 +34,8 @@ public class AppClientInterceptor implements ClientHttpRequestInterceptor {
 			throws IOException {
 
 		AppContextUtil.exportAppContextTo(request.getHeaders());
+		// restMetaService.exportMetaTo(request.getHeaders());
+
 		request.getHeaders().add(AppConstants.AUTH_KEY_XKEY,
 				CryptoUtil.generateHMAC(appConfig.getAppAuthKey(), AppContextUtil.getTraceId()));
 		AuditServiceClient.trackStatic(new RequestTrackEvent(request));

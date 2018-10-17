@@ -7,9 +7,11 @@ import java.math.BigDecimal;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 
 import com.amx.jax.AppConfig;
+import com.amx.jax.AppContextUtil;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.rbaac.dto.request.EmployeeDetailsRequestDTO;
@@ -31,7 +33,7 @@ import com.amx.jax.rest.RestService;
  * @author abhijeet
  */
 @Component
-public class RbaacServiceClient implements RbaacService {
+public class RbaacServiceClient implements IRbaacService {
 
 	/** The Constant LOGGER. */
 	private static final Logger LOGGER = LoggerService.getLogger(AuthServiceClient.class);
@@ -48,18 +50,19 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#initAuthForUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthInitReqDTO)
 	 */
 	@Override
 	public AmxApiResponse<UserAuthInitResponseDTO, Object> initAuthForUser(UserAuthInitReqDTO userAuthInitReqDTO) {
 
-		LOGGER.info("Init Auth Request called for Employee No: {}, Identity: {}, from IP address: {}",
-				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(),
-				userAuthInitReqDTO.getIpAddress());
+		LOGGER.info("Init Auth Request called for Employee No: {}, Identity: {}, from IP address: {}, with TraceId: {}",
+				userAuthInitReqDTO.getEmployeeNo(), userAuthInitReqDTO.getIdentity(), userAuthInitReqDTO.getIpAddress(),
+				AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.INIT_AUTH).post(userAuthInitReqDTO)
-				.asApiResponse(UserAuthInitResponseDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserAuthInitResponseDTO, Object>>() {
+				});
 
 	}
 
@@ -67,72 +70,80 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
+	 * com.amx.jax.rbaac.IRbaacService#authoriseUser(com.amx.jax.rbaac.dto.request.
 	 * UserAuthorisationReqDTO)
 	 */
 	@Override
 	public AmxApiResponse<EmployeeDetailsDTO, Object> authoriseUser(UserAuthorisationReqDTO reqDTO) {
 
-		LOGGER.info("Authorisation Request called for Employee No: {}, from IP address: {}", reqDTO.getEmployeeNo(),
-				reqDTO.getIpAddress());
+		LOGGER.info("Authorisation Request called for Employee No: {}, from IP address: {}, with TraceId: {}",
+				reqDTO.getEmployeeNo(), reqDTO.getIpAddress(), AppContextUtil.getTraceId());
 
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORISE).post(reqDTO)
-				.asApiResponse(EmployeeDetailsDTO.class);
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.AUTHORIZE).post(reqDTO)
+				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
+				});
 
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllPermissions(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllPermissions(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
 	public AmxApiResponse<PermissionResposeDTO, Object> getAllPermissions(String ipAddress, String deviceId) {
 
-		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}", ipAddress, deviceId);
+		LOGGER.info("Received request for User Permissions, from IP address: {}, device Id: {}, with TraceId: {}",
+				ipAddress, deviceId, AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.PERMS_GET).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(PermissionResposeDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<PermissionResposeDTO, Object>>() {
+				});
 
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getAllRoles(java.lang.String,
+	 * @see com.amx.jax.rbaac.IRbaacService#getAllRoles(java.lang.String,
 	 * java.lang.String)
 	 */
 	@Override
 	public AmxApiResponse<RoleResponseDTO, Object> getAllRoles(String ipAddress, String deviceId) {
 
-		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}", ipAddress, deviceId);
+		LOGGER.info("Received request for User Roles, from IP address: {}, device Id: {}, with TraceId: {}", ipAddress,
+				deviceId, AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_GET).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(RoleResponseDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoleResponseDTO, Object>>() {
+				});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#saveRole(com.amx.jax.rbaac.dto.request.
+	 * @see com.amx.jax.rbaac.IRbaacService#saveRole(com.amx.jax.rbaac.dto.request.
 	 * RoleRequestDTO)
 	 * 
 	 */
 	@Override
 	public AmxApiResponse<RoleResponseDTO, Object> saveRole(RoleRequestDTO roleRequestDTO) {
 
-		LOGGER.info("Received request for Save Role, from IP address: {}, device Id: {}", roleRequestDTO.getIpAddr(),
-				roleRequestDTO.getDeviceId());
+		LOGGER.info("Received request for Save Role, from IP address: {}, device Id: {}, with TraceId: {}",
+				roleRequestDTO.getIpAddr(), roleRequestDTO.getDeviceId(), AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.ROLES_SAVE).post(roleRequestDTO)
-				.asApiResponse(RoleResponseDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<RoleResponseDTO, Object>>() {
+				});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#getUserRoleMappingsForBranch(java.math.
+	 * @see com.amx.jax.rbaac.IRbaacService#getUserRoleMappingsForBranch(java.math.
 	 * BigDecimal, java.lang.String, java.lang.String)
 	 */
 	@Override
@@ -140,29 +151,33 @@ public class RbaacServiceClient implements RbaacService {
 			String ipAddress, String deviceId) {
 
 		LOGGER.info(
-				"Received request for Get User Role Allocations For Branch Id: {} , from IP address: {}, device Id: {}",
-				countryBranchId, ipAddress, deviceId);
+				"Received request for Get User Role Allocations For Branch Id: {} , from IP address: {}, device Id: {}, with TraceId: {}",
+				countryBranchId, ipAddress, deviceId, AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_GET_FOR_BRANCH)
 				.queryParam("countryBranchId", countryBranchId).queryParam("ipAddress", ipAddress)
-				.queryParam("deviceId", deviceId).post().asApiResponse(UserRoleMappingsResponseDTO.class);
+				.queryParam("deviceId", deviceId).post()
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserRoleMappingsResponseDTO, Object>>() {
+				});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
+	 * com.amx.jax.rbaac.IRbaacService#updateUserRoleMappings(com.amx.jax.rbaac.dto.
 	 * request.UserRoleMappingsRequestDTO)
 	 */
 	@Override
 	public AmxApiResponse<UserRoleMappingDTO, Object> updateUserRoleMappings(UserRoleMappingsRequestDTO urmRequestDTO) {
 
 		LOGGER.info("Received request for Update User Role Allocations " + " from Ip Address: "
-				+ urmRequestDTO.getIpAddr() + " from device Id: " + urmRequestDTO.getDeviceId());
+				+ urmRequestDTO.getIpAddr() + " from device Id: " + urmRequestDTO.getDeviceId() + ", with TraceId: "
+				+ AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.RA_UPDATE).post(urmRequestDTO)
-				.asApiResponse(UserRoleMappingDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<UserRoleMappingDTO, Object>>() {
+				});
 
 	}
 
@@ -170,7 +185,7 @@ public class RbaacServiceClient implements RbaacService {
 	 * (non-Javadoc)
 	 * 
 	 * @see
-	 * com.amx.jax.rbaac.RbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
+	 * com.amx.jax.rbaac.IRbaacService#updateEmployeeAccountDetails(com.amx.jax.rbaac
 	 * .dto.request.EmployeeDetailsRequestDTO)
 	 */
 	@Override
@@ -178,26 +193,30 @@ public class RbaacServiceClient implements RbaacService {
 			EmployeeDetailsRequestDTO edRequestDTO) {
 
 		LOGGER.info("Received request for Update User Account Details " + " from Ip Address: "
-				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId());
+				+ edRequestDTO.getIpAddr() + " from device Id: " + edRequestDTO.getDeviceId() + " with TraceId: "
+				+ AppContextUtil.getTraceId());
 
 		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.UAC_UPDATE).post(edRequestDTO)
-				.asApiResponse(EmployeeDetailsDTO.class);
+				.as(new ParameterizedTypeReference<AmxApiResponse<EmployeeDetailsDTO, Object>>() {
+				});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testGet()
+	 * @see com.amx.jax.rbaac.IRbaacService#testGet()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testGet() {
-		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get().asApiResponse(String.class);
+		return restService.ajax(appConfig.getAuthURL()).path(ApiEndPoints.TEST_GET).get()
+				.as(new ParameterizedTypeReference<AmxApiResponse<String, Object>>() {
+				});
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.amx.jax.rbaac.RbaacService#testPost()
+	 * @see com.amx.jax.rbaac.IRbaacService#testPost()
 	 */
 	@Override
 	public AmxApiResponse<String, Object> testPost() {

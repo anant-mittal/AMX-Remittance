@@ -10,7 +10,6 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.jax.amxlib.config.OtpSettings;
 import com.amx.jax.constant.JaxApiFlow;
 import com.amx.jax.dao.BlackListDao;
@@ -18,6 +17,7 @@ import com.amx.jax.dbmodel.BlackListModel;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.model.OtpData;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IServiceApplicabilityRuleDao;
 import com.amx.jax.scope.TenantContext;
 import com.amx.jax.trnx.CustomerRegistrationTrnxModel;

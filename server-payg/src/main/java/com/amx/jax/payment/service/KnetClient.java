@@ -14,10 +14,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.aciworldwide.commerce.gateway.plugins.e24PaymentPipe;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.jax.dict.Channel;
 import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PayGCodes;
+import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.payg.codes.KnetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;
 import com.amx.jax.payment.gateway.PayGParams;
@@ -75,8 +77,8 @@ public class KnetClient implements PayGClient {
 		configMap.put("action", knetAction);
 		configMap.put("currency", knetCurrency);
 		configMap.put("languageCode", knetLanguageCode);
-		configMap.put("responseUrl",
-				payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant() + "/"+ payGParams.getChannel() +"/");
+		configMap.put("responseUrl", payGConfig.getServiceCallbackUrl() + "/app/capture/KNET/" + payGParams.getTenant()
+				+ "/" + payGParams.getChannel() + "/");
 		configMap.put("resourcePath", knetCertpath);
 		configMap.put("aliasName", knetAliasName);
 
@@ -151,8 +153,9 @@ public class KnetClient implements PayGClient {
 	public PayGResponse capture(PayGResponse gatewayResponse, Channel channel) {
 
 		// Capturing GateWay Response
+		String resultResponse = request.getParameter("result");
 		gatewayResponse.setPaymentId(request.getParameter("paymentid"));
-		gatewayResponse.setResult(request.getParameter("result"));
+		gatewayResponse.setResult(resultResponse);
 		gatewayResponse.setAuth(request.getParameter("auth"));
 		gatewayResponse.setRef(request.getParameter("ref"));
 		gatewayResponse.setPostDate(request.getParameter("postdate"));
@@ -165,8 +168,16 @@ public class KnetClient implements PayGClient {
 		gatewayResponse.setUdf4(request.getParameter("udf4"));
 		gatewayResponse.setUdf5(request.getParameter("udf5"));
 		gatewayResponse.setCountryId(Tenant.KWT.getCode());
-		
+
 		LOGGER.info("Params captured from KNET : " + JsonUtil.toJson(gatewayResponse));
+
+		KnetCodes knetCodes = (KnetCodes) PayGCodes.getPayGCode(resultResponse, KnetCodes.UNKNOWN);
+
+		LOGGER.info("resultResponse ---> " + resultResponse);
+		gatewayResponse.setErrorCategory(knetCodes.getCategory());
+
+		LOGGER.info("Result from response Values ---> " + gatewayResponse.getErrorCategory());
+		gatewayResponse.setError(resultResponse);
 
 		PaymentResponseDto resdto = paymentService.capturePayment(gatewayResponse);
 		// Capturing JAX Response

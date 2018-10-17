@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
 
 import com.amx.jax.AppConfig;
-import com.amx.jax.AppContext;
 import com.amx.jax.AppContextUtil;
-import com.amx.jax.AppParam;
 import com.amx.jax.logger.AuditEvent.Result;
 import com.amx.jax.logger.AuditService;
 import com.amx.jax.logger.LoggerService;
@@ -136,7 +134,7 @@ public class SMService {
 			if (sms.getTemplate() != null) {
 				Context context = new Context(new Locale(sms.getLang().toString()));
 				context.setVariables(sms.getModel());
-				sms.setMessage(templateService.processHtml(sms.getTemplate(), context));
+				sms.setMessage(templateService.processHtml(sms.getITemplate(), context));
 			}
 
 			if (ArgUtil.isEmpty(to)) {

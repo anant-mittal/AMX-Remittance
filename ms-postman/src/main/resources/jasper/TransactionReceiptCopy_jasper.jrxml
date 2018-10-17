@@ -1814,7 +1814,7 @@
                         <!--##################Payment Mode END####################-->
 
                         <!--##################Payment Mode START####################-->
-                    <frame>
+                        <frame>
                         <reportElement x="5" y="700" width="585" height="30"/>
                         <staticText>
                             <reportElement mode = "Opaque" x = "0" y = "2" width = "585" height = "18" backcolor = "#FFFFFF" />
@@ -1835,29 +1835,31 @@
                             </textFieldExpression>
                         </textField>
 
-                    </frame>
+                        </frame>
                     <!--##################Payment Mode END####################-->
 
-                    <!--##################FOOTER START####################-->
-                    <frame>
-                        <reportElement x="0" y="730" width="595" height="70"
-                                       forecolor="blue"/>
+                        <!--##################FOOTER START####################-->
 
-                        <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
-                            <reportElement
-                                    x="0"
-                                    y="0"
+
+                        <frame>
+                        <reportElement x="0" y="730" width="595" height="70"
+                                           forecolor="blue"/>
+
+                            <image evaluationTime="Now" hyperlinkType="None" hyperlinkTarget="Self">
+                                <reportElement
+                                        x="0"
+                                        y="0"
                                     width="595"
                                     height="90"
-                                    key="image-1"
-                                    stretchType="NoStretch"/>
-                            <graphicElement/>
-                            <imageExpression class="java.lang.String">
+                                        key="image-1"
+                                        stretchType="NoStretch"/>
+                                <graphicElement/>
+                                <imageExpression class="java.lang.String">
                                 <![CDATA[$P{TU}.prop("company.promotion.img")]]>
-                            </imageExpression>
-                        </image>
-                    </frame>
-                    <!--##################FOOTER END####################-->
+                                </imageExpression>
+                            </image>
+                        </frame>
+                        <!--##################FOOTER END####################-->
                     </c:listContents>
                 </c:list>
             </componentElement>

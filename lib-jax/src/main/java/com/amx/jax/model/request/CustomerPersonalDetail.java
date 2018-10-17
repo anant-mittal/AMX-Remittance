@@ -11,6 +11,8 @@ import org.springframework.format.annotation.NumberFormat;
 
 import com.amx.jax.AbstractModel;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Customer personal detail model
  *
@@ -27,12 +29,14 @@ public class CustomerPersonalDetail extends AbstractModel {
 	/**
 	 * Residence country
 	 */
+	@ApiModelProperty(example="91")
 	@NotNull
 	private BigDecimal countryId;
 
 	/**
 	 * nationality
 	 */
+	@ApiModelProperty(example="91")
 	@NotNull
 	private BigDecimal nationalityId;
 
@@ -41,49 +45,71 @@ public class CustomerPersonalDetail extends AbstractModel {
 	 */
 	@NotNull
 	@NumberFormat
+	@ApiModelProperty(example="268020406638")
 	private String identityInt;
 
 	/**
 	 * Prefix/title
 	 */
 	@NotNull
+	@ApiModelProperty(example="180")
 	private String title;
 
 	@NotNull
 	@Size(min = 1)
+	@ApiModelProperty(example="Rakesh")
 	private String firstName;
 
 	@NotNull
 	@Size(min = 1)
+	@ApiModelProperty(example="Parmar")
 	private String lastName;
 
 	/** email id */
 	@NotNull
 	@Email
+	@ApiModelProperty(example="rakesh@gmail.com")
 	private String email;
 
 	/** mobile without country tel prefix code */
 	@NotNull
 	@Size(min = 1)
 	@NumberFormat
+	@ApiModelProperty(example="98714345")
 	private String mobile;
 
 	/** country telephone prefix */
 	@NotNull
 	@NumberFormat
+	@ApiModelProperty(example="965")
 	private String telPrefix;
 
+	@ApiModelProperty(example="يبلءيا")
 	private String firstNameLocal;
 
+	@ApiModelProperty(example="ءسيقبا")
 	private String lastNameLocal;
 
+	@ApiModelProperty(example="2018-09-12")
 	private Date issueDate;
 
+	@ApiModelProperty(example="2018-09-12")
 	private Date expiryDate;
 
+	@ApiModelProperty(example="2018-09-12")
 	private Date dateOfBirth;
 
+	@ApiModelProperty(example="198")
 	private BigDecimal identityTypeId;
+	
+	@ApiModelProperty(example="Y")
+	private String insurance;
+	
+	@ApiModelProperty(example="91")
+	private String watsAppTelePrefix;
+	
+	@ApiModelProperty(example="9321484252")
+	private String watsAppMobileNo;
 
 	public BigDecimal getCountryId() {
 		return countryId;
@@ -205,12 +231,39 @@ public class CustomerPersonalDetail extends AbstractModel {
 		this.identityTypeId = identityTypeId;
 	}
 
+	public String getInsurance() {
+		return insurance;
+	}
+
+	public void setInsurance(String insurance) {
+		this.insurance = insurance;
+	}
+
+	public String getWatsAppTelePrefix() {
+		return watsAppTelePrefix;
+	}
+
+	public void setWatsAppTelePrefix(String watsAppTelePrefix) {
+		this.watsAppTelePrefix = watsAppTelePrefix;
+	}
+
+	public String getWatsAppMobileNo() {
+		return watsAppMobileNo;
+	}
+
+	public void setWatsAppMobileNo(String watsAppMobileNo) {
+		this.watsAppMobileNo = watsAppMobileNo;
+	}
+
 	@Override
 	public String toString() {
 		return "CustomerPersonalDetail [countryId=" + countryId + ", nationalityId=" + nationalityId + ", identityInt="
 				+ identityInt + ", title=" + title + ", firstName=" + firstName + ", lastName=" + lastName + ", email="
 				+ email + ", mobile=" + mobile + ", telPrefix=" + telPrefix + ", firstNameLocal=" + firstNameLocal
 				+ ", lastNameLocal=" + lastNameLocal + ", issueDate=" + issueDate + ", expiryDate=" + expiryDate
-				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + "]";
+				+ ", dateOfBirth=" + dateOfBirth + ", identityTypeId=" + identityTypeId + ", insurance=" + insurance
+				+ ", watsAppTelePrefix=" + watsAppTelePrefix + ", watsAppMobileNo=" + watsAppMobileNo + "]";
 	}
+
+	
 }

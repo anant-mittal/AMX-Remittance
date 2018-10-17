@@ -12,15 +12,19 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.amx.jax.AppContextUtil;
+import com.amx.jax.dict.UserClient.DeviceType;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.model.OtpData;
 import com.amx.jax.rbaac.RbaacConstants;
-import com.amx.jax.rbaac.constants.RbaacServiceConstants.DEVICE_TYPE;
 import com.amx.jax.rbaac.dao.RbaacDao;
 import com.amx.jax.rbaac.dbmodel.Employee;
+import com.amx.jax.rbaac.dbmodel.Role;
+import com.amx.jax.rbaac.dbmodel.UserRoleMapping;
 import com.amx.jax.rbaac.dto.request.UserAuthInitReqDTO;
 import com.amx.jax.rbaac.dto.request.UserAuthorisationReqDTO;
 import com.amx.jax.rbaac.dto.response.EmployeeDetailsDTO;
+import com.amx.jax.rbaac.dto.response.RoleResponseDTO;
 import com.amx.jax.rbaac.dto.response.UserAuthInitResponseDTO;
 import com.amx.jax.rbaac.error.RbaacServiceError;
 import com.amx.jax.rbaac.exception.AuthServiceException;
@@ -28,7 +32,6 @@ import com.amx.jax.rbaac.manager.UserOtpManager;
 import com.amx.jax.rbaac.trnx.UserOtpCache;
 import com.amx.jax.rbaac.trnx.UserOtpData;
 import com.amx.jax.util.ObjectConverter;
-import com.amx.utils.ContextUtil;
 
 /**
  * The Class UserAuthService.
@@ -76,7 +79,7 @@ public class UserAuthService {
 		String identity = userAuthInitReqDTO.getIdentity();
 		String ipAddress = userAuthInitReqDTO.getIpAddress();
 		String deviceId = userAuthInitReqDTO.getDeviceId();
-		DEVICE_TYPE deviceType = userAuthInitReqDTO.getDeviceType();
+		DeviceType deviceType = userAuthInitReqDTO.getDeviceType();
 
 		/**
 		 * Input -> Invalid
@@ -87,14 +90,14 @@ public class UserAuthService {
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
+		if (DeviceType.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
 			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		List<Employee> employees;
 
-		if (DEVICE_TYPE.MOBILE.equals(deviceType)) {
+		if (DeviceType.MOBILE.equals(deviceType)) {
 			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
 			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
@@ -142,7 +145,7 @@ public class UserAuthService {
 
 		userOtpManager.sendOtpSms(emp, otpData);
 
-		String transactionId = ContextUtil.getTraceId();
+		String transactionId = AppContextUtil.getTranxId();
 
 		UserOtpData userOtpData = new UserOtpData();
 
@@ -183,17 +186,17 @@ public class UserAuthService {
 	public EmployeeDetailsDTO authoriseUser(UserAuthorisationReqDTO reqDto) {
 
 		String employeeNo = reqDto.getEmployeeNo();
-		String mOtpHash = reqDto.getmOtpHash();
-		//String eOtpHash = reqDto.geteOtpHash();
+		String mOtp = reqDto.getmOtp();
+		// String eOtpHash = reqDto.geteOtpHash();
 		String ipAddress = reqDto.getIpAddress();
-		//String transactionId = reqDto.getTransactionId();
+		// String transactionId = reqDto.getTransactionId();
 		String deviceId = reqDto.getDeviceId();
 
 		/**
 		 * Input -> Invalid
 		 */
-		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtpHash) || StringUtils.isBlank(ipAddress)) {
-			throw new AuthServiceException("Employee Number, Otp Hash & IP Address are Manadatory",
+		if (StringUtils.isBlank(employeeNo) || StringUtils.isBlank(mOtp) || StringUtils.isBlank(ipAddress)) {
+			throw new AuthServiceException("Employee Number, Otp & IP Address are Manadatory",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
@@ -209,6 +212,8 @@ public class UserAuthService {
 		}
 
 		Employee employee = userOtpData.getEmployee();
+
+		String mOtpHash = UserOtpManager.getOtpHash(mOtp);
 
 		// Validate User OTP hash
 		if (!userOtpData.getOtpData().getHashedmOtp().equals(mOtpHash)) {
@@ -241,24 +246,35 @@ public class UserAuthService {
 
 		EmployeeDetailsDTO empDetail = ObjectConverter.convertEmployeeToEmpDetailsDTO(employee);
 
-		/*
-		empDetail.setCivilId(employee.getCivilId());
-		empDetail.setCountryId(employee.getCountryId());
-		empDetail.setDesignation(employee.getDesignation());
-		empDetail.setEmail(employee.getEmail());
-		empDetail.setEmployeeId(employee.getEmployeeId());
-		empDetail.setEmployeeName(employee.getEmployeeName());
-		empDetail.setEmployeeNumber(employee.getEmployeeNumber());
-		empDetail.setLocation(employee.getLocation());
-		empDetail.setTelephoneNumber(employee.getTelephoneNumber());
-		empDetail.setUserName(employee.getUserName());
-		empDetail.setRoleId(new BigDecimal("1"));
-		 */
-		
+		RoleResponseDTO roleResponseDTO = getRoleForUser(employee.getEmployeeId());
+
+		empDetail.setUserRole(roleResponseDTO);
+
+		// Set Last Successful Login Date as Current Date
+		updateLastLogin(employee);
+
 		LOGGER.info("Login Access granted for Employee No: " + employee.getEmployeeNumber() + " from IP : " + ipAddress
 				+ " from Device id : " + deviceId);
 
 		return empDetail;
+	}
+
+	private RoleResponseDTO getRoleForUser(BigDecimal userId) {
+
+		UserRoleMapping urm = rbaacDao.getUserRoleMappingByEmployeeId(userId);
+
+		if (urm == null) {
+			return new RoleResponseDTO();
+		}
+
+		Role role = rbaacDao.getRoleById(urm.getRoleId());
+
+		if (urm.getSuspended() != null
+				&& (urm.getSuspended().equalsIgnoreCase("Y") || urm.getSuspended().equalsIgnoreCase("YES"))) {
+			role.setSuspended("Y");
+		}
+
+		return ObjectConverter.convertRoleToRoleResponseDTO(role);
 	}
 
 	/**
@@ -269,6 +285,16 @@ public class UserAuthService {
 		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
 		destEmp.setLockCount(new BigDecimal(3));
 		destEmp.setLockDate(new Date());
+
+		rbaacDao.saveEmployee(destEmp);
+
+		return true;
+	}
+
+	private boolean updateLastLogin(Employee srcEmp) {
+
+		Employee destEmp = rbaacDao.getEmployeeByEmployeeId(srcEmp.getEmployeeId());
+		destEmp.setLastLogin(new Date());
 
 		rbaacDao.saveEmployee(destEmp);
 

@@ -35,7 +35,7 @@ public class CustomerCredentialValidator implements Validator {
 			throw new GlobalException("Login id should be same as identity number entered", JaxError.INVALID_INPUT);
 		}*/
 		userValidation.validateAllLoginId(loginId);
-		userValidation.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.SIGNUP_DEFAULT);
+		//userValidation.validateNonActiveOrNonRegisteredCustomerStatus(identityInt, JaxApiFlow.SIGNUP_DEFAULT);
 	}
 
 }

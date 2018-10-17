@@ -1,6 +1,6 @@
 package com.amx.jax.tunnel;
 
-public enum SampleTunnelEvents implements ITunnelEvents {
+public enum SampleTunnelEvents implements ITunnelEventsDict {
 
 	TEST_TOPIC(Names.TEST_TOPIC);
 

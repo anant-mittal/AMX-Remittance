@@ -18,11 +18,11 @@ public class AppController {
 
 	private Logger log = Logger.getLogger(AppController.class);
 
-	@ApiOperation(value = "Index page")
-	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String index(Model model) {
-		return "index";
-	}
+//	@ApiOperation(value = "Index page")
+//	@RequestMapping(value = "/", method = RequestMethod.GET)
+//	public String index(Model model) {
+//		return "index";
+//	}
 
 	@ApiOperation(value = "Admin page")
 	@RequestMapping(value = "/app/admin", method = RequestMethod.GET)

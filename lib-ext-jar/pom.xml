@@ -20,11 +20,13 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>common-lib</artifactId>
+		</dependency>
 	</dependencies>
 
-<!-- 	<modules>
-		<module>masking</module>
-	</modules> -->
+	<!-- <modules> <module>masking</module> </modules> -->
 
 	<build>
 		<plugins>

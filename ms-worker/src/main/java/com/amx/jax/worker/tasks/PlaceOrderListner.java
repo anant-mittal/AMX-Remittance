@@ -13,28 +13,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.amx.amxlib.model.PlaceOrderNotificationDTO;
 import com.amx.jax.client.PlaceOrderClient;
 import com.amx.jax.event.AmxTunnelEvents;
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.PostManException;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
+import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
-import com.amx.jax.tunnel.TunnelEvent;
+import com.amx.jax.tunnel.TunnelEventMapping;
 import com.amx.jax.tunnel.TunnelEventXchange;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-@TunnelEvent(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
-public class PlaceOrderListner implements ITunnelSubscriber<Event> {
+@TunnelEventMapping(topic = AmxTunnelEvents.Names.XRATE_BEST_RATE_CHANGE, scheme = TunnelEventXchange.TASK_WORKER)
+public class PlaceOrderListner implements ITunnelSubscriber<ITunnelEvent> {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	public static final String PIPSMASTERID = "PIPS_MASTER_ID";
 
 	@Override
-	public void onMessage(String channel, Event event) {
+	public void onMessage(String channel, ITunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		BigDecimal pipsMasterId = ArgUtil.parseAsBigDecimal(event.getData().get(PIPSMASTERID));
 		this.rateAlertPlaceOrder(pipsMasterId);
@@ -71,12 +71,12 @@ public class PlaceOrderListner implements ITunnelSubscriber<Event> {
 			Email email = new Email();
 			email.setSubject("AMX Rate Alert");
 			email.addTo(placeorderNot.getEmail());
-			email.setTemplate(Templates.RATE_ALERT);
+			email.setITemplate(TemplatesMX.RATE_ALERT);
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, placeorderNot);
 			emailList.add(email);
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.RATE_ALERT);
+			pushMessage.setITemplate(TemplatesMX.RATE_ALERT);
 			pushMessage.addToUser(placeorderNot.getCustomerId());
 			pushMessage.getModel().put(RESP_DATA_KEY, placeorderNot);
 			notificationsList.add(pushMessage);
