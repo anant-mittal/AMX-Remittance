@@ -68,4 +68,8 @@ public class UserClient {
 		WEB, ANDROID, IOS, KIOSK, UNKNOWN;
 	}
 
+	public enum CleintType {
+		ONLINE;
+	}
+
 }

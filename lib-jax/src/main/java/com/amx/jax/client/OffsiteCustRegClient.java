@@ -215,7 +215,7 @@ public class OffsiteCustRegClient implements ICustRegService {
 					.post(customerCredential).as(new ParameterizedTypeReference<AmxApiResponse<CustomerCredential, Object>>() {
 					});
 		} catch (Exception e) {
-			LOGGER.error("exception in cardScan : ", e);
+			LOGGER.error("exception in saveLoginDetailOffsite : ", e);
 			return JaxSystemError.evaluate(e);
 		} // end of try-catch}
 	}

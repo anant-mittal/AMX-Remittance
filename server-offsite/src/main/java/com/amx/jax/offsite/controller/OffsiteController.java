@@ -149,8 +149,8 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/creds/set", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> saveLoginDetail(@RequestBody CustomerCredential req) {
-		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetail(@RequestBody CustomerCredential req) {
+		return AmxApiResponse.build(offsiteCustRegClient.saveLoginDetailOffsite(req).getResult());
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DOTP_REQUIRED })
