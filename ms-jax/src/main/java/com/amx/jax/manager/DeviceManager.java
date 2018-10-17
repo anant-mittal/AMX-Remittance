@@ -2,6 +2,8 @@ package com.amx.jax.manager;
 
 import java.math.BigDecimal;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -12,15 +14,33 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
+import com.amx.jax.dbmodel.DeviceStateInfo;
+import com.amx.jax.util.CryptoUtil;
+import com.amx.utils.Random;
 
+/**
+ * @author Prashant
+ *
+ */
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 @Component
 
 public class DeviceManager {
 
+	Logger logger = LoggerFactory.getLogger(getClass());
+
 	@Autowired
 	DeviceDao deviceDao;
+	@Autowired
+	CryptoUtil cryptoUtil;
 
+	/**
+	 * activates device
+	 * 
+	 * @param countryBranchSystemInventoryId
+	 * @param deviceType
+	 * 
+	 */
 	public void activateDevice(Integer countryBranchSystemInventoryId, String deviceType) {
 		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId), deviceType);
 		if (device == null) {
@@ -28,6 +48,23 @@ public class DeviceManager {
 		}
 		device.setStatus(ConstantDocument.Yes);
 		deviceDao.saveDevice(device);
+	}
+
+	/**
+	 * generates pairing opt and save in db
+	 * 
+	 * @param device
+	 * @return otp
+	 * 
+	 */
+	public String generateOtp(Device device) {
+		String otp = Random.randomNumeric(6);
+		logger.debug("generated otp for device {} otp {}", device.getRegistrationId(), otp);
+		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
+		String otpHash = cryptoUtil.getHash(device.getRegistrationId().toString(), otp);
+		deviceInfo.setPairToken(otpHash);
+		deviceDao.saveDeviceInfo(deviceInfo);
+		return otp;
 	}
 
 }

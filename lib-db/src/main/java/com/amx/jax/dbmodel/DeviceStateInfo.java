@@ -33,6 +33,12 @@ public class DeviceStateInfo {
 	@Column(name = "STATE_INFO")
 	String stateInfo;
 
+	@Column(name = "SESSION_TOKEN")
+	String sessionToken;
+
+	@Column(name = "PAIR_TOKEN")
+	String pairToken;
+
 	public BigDecimal getDeviceRegId() {
 		return deviceRegId;
 	}
@@ -79,6 +85,22 @@ public class DeviceStateInfo {
 
 	public void setStateInfo(String stateInfo) {
 		this.stateInfo = stateInfo;
+	}
+
+	public String getSessionToken() {
+		return sessionToken;
+	}
+
+	public void setSessionToken(String sessionToken) {
+		this.sessionToken = sessionToken;
+	}
+
+	public String getPairToken() {
+		return pairToken;
+	}
+
+	public void setPairToken(String pairToken) {
+		this.pairToken = pairToken;
 	}
 
 }

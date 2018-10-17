@@ -4,6 +4,7 @@ import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,7 +19,8 @@ import com.amx.jax.client.IDeviceService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
-import com.amx.jax.service.DeviceService;
+import com.amx.jax.model.response.DevicePairOtpResponse;
+import com.amx.jax.services.DeviceService;
 
 @RestController
 @RequestMapping(META_API_ENDPOINT + "/device")
@@ -31,7 +33,8 @@ public class DeviceController implements IDeviceService {
 	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
 
-		return deviceService.registerNewDevice(request);
+		DeviceDto newDevice = deviceService.registerNewDevice(request);
+		return AmxApiResponse.build(newDevice);
 	}
 
 	@RequestMapping(value = DEVICE_STATE, method = RequestMethod.POST)
@@ -40,9 +43,23 @@ public class DeviceController implements IDeviceService {
 	}
 
 	@RequestMapping(value = DEVICE_ACTIVATE)
-	public AmxApiResponse<BooleanResponse, Object> activateDevice(
-			@RequestParam("countryBranchSystemInventoryId") Integer countryBranchSystemInventoryId,
-			@RequestParam("deviceType") String deviceType) {
-		return deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
+	public AmxApiResponse<BooleanResponse, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestParam String deviceType) {
+		BooleanResponse response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
+		return AmxApiResponse.build(response);
+	}
+
+	@RequestMapping(value = DEVICE_SEND_PAIR_OTP)
+	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestParam Integer deviceRegId) {
+		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId);
+		return AmxApiResponse.build(otpResponse);
+	}
+
+	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP)
+	public AmxApiResponse<BooleanResponse, Object> validateOtpForPairing(
+			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam @Size(min = 6, max = 6) Integer otp) {
+		BooleanResponse otpResponse = deviceService.validateOtpForPairing(countryBranchSystemInventoryId,
+				otp.toString());
+		return AmxApiResponse.build(otpResponse);
 	}
 }

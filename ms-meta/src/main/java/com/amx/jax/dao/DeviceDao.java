@@ -67,4 +67,17 @@ public class DeviceDao {
 	public void saveDevice(Device device) {
 		deviceRepository.save(device);
 	}
+
+	public DeviceStateInfo getDeviceStateInfo(Device device) {
+		return deviceStateRepository.findOne(device.getRegistrationId());
+	}
+
+	public Device findDevice(Integer deviceRegId) {
+		return deviceRepository.findOne(deviceRegId);
+	}
+
+	public void saveDeviceInfo(DeviceStateInfo deviceInfo) {
+		deviceStateRepository.save(deviceInfo);
+		
+	}
 }
