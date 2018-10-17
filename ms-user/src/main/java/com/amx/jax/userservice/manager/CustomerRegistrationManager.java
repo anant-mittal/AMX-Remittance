@@ -16,10 +16,10 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.constant.PrefixEnum;
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.jax.AppConstants;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.cache.CustomerTransactionModel;
 import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.constant.JaxTransactionModel;

@@ -58,7 +58,6 @@ public class SampleSwaggerConfig {
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
 		operationParameters.add(new ParameterBuilder().name(AppConstants.TRACE_ID_XKEY).description("Trace Id")
 				.modelRef(new ModelRef(PARAM_STRING)).parameterType(PARAM_HEADER).required(false).build());
-
 		docket.globalOperationParameters(operationParameters);
 		docket.apiInfo(metaData());
 		return docket;

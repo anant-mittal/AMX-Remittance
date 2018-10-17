@@ -16,7 +16,6 @@ import com.amx.jax.dict.PayGServiceCode;
 import com.amx.jax.dict.Tenant;
 import com.amx.jax.payg.PayGCodes;
 import com.amx.jax.payg.PaymentResponseDto;
-import com.amx.jax.payg.codes.BenefitCodes;
 import com.amx.jax.payg.codes.OmanNetCodes;
 import com.amx.jax.payment.gateway.PayGClient;
 import com.amx.jax.payment.gateway.PayGConfig;

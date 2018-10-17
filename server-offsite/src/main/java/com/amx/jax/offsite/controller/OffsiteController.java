@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.amxlib.meta.model.QuestModelDTO;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.SecurityQuestionModel;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.ICustRegService;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.api.BoolRespModel;
@@ -43,7 +43,6 @@ import com.amx.jax.offsite.OffsiteStatus.OffsiteServerCodes;
 import com.amx.jax.offsite.service.CustomerSession;
 import com.amx.jax.swagger.IStatusCodeListPlugin.ApiStatusService;
 import com.amx.utils.ArgUtil;
-
 
 /**
  * 
@@ -150,8 +149,8 @@ public class OffsiteController {
 	}
 
 	@RequestMapping(value = "/creds/set", method = { RequestMethod.POST })
-	public AmxApiResponse<BoolRespModel, Object> saveLoginDetail(@RequestBody CustomerCredential req) {
-		return AmxApiResponse.build(customerRegistrationClient.saveLoginDetail(req).getResult());
+	public AmxApiResponse<CustomerCredential, Object> saveLoginDetail(@RequestBody CustomerCredential req) {
+		return AmxApiResponse.build(offsiteCustRegClient.saveLoginDetailOffsite(req).getResult());
 	}
 
 	@ApiOffisteStatus({ OffsiteServerCodes.DOTP_REQUIRED })

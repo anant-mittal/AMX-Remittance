@@ -1,3 +1,4 @@
+
 #!/bin/bash
 
 #80
@@ -31,16 +32,6 @@ PM_PASS=amx@123
 PG_HOST=10.28.42.36
 PG_USER=amxdev
 PG_PASS=amx@123
-
-# 8084
-ADMIN_HOST=10.28.42.36
-ADMIN_USER=amxdev
-ADMIN_PASS=amx@123
-
-# 8085
-LOGGER_HOST=10.28.42.36
-LOGGER_USER=amxdev
-LOGGER_PASS=amx@123
 
 #WOrker
 SD_HOST=10.28.42.36

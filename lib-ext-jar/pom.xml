@@ -10,21 +10,14 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>amxeco</artifactId>
+		<artifactId>amxeco-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+		<relativePath>../amxeco-parent/pom.xml</relativePath>
 	</parent>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>com.amx.jax</groupId>
-			<artifactId>common-lib</artifactId>
-		</dependency>
-	</dependencies>
 
 	<!-- <modules> <module>masking</module> </modules> -->
 
@@ -287,6 +280,39 @@
 							<version>1.0</version>
 							<packaging>jar</packaging>
 							<file>${basedir}/lib/cryptix32.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<!-- Kuwait Card Library -->
+					<execution>
+						<id>kw-card-jna</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card</groupId>
+							<artifactId>jna</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card/jna.jar</file>
+							<generatePom>true</generatePom>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>kw-card-paci-card-library</id>
+						<phase>package</phase>
+						<goals>
+							<goal>install-file</goal>
+						</goals>
+						<configuration>
+							<groupId>kw-card</groupId>
+							<artifactId>paci-card-library</artifactId>
+							<version>1.0</version>
+							<packaging>jar</packaging>
+							<file>${basedir}/lib/kw-card/paci-card-library.jar</file>
 							<generatePom>true</generatePom>
 						</configuration>
 					</execution>

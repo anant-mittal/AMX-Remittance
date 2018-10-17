@@ -26,6 +26,7 @@ public class AppConstants extends Constants {
 	public static final String ACTOR_ID_XKEY = "x-actor-id";
 	public static final String DEVICE_ID_KEY = "did";
 	public static final String DEVICE_ID_XKEY = "x-did";
+	public static final String DEVICE_IP_XKEY = "x-ip";
 	public static final String APP_DETAILS = "app";
 	public static final String BROWSER_ID_KEY = "bid";
 	public static final String SESSIONID = "JSESSIONID";

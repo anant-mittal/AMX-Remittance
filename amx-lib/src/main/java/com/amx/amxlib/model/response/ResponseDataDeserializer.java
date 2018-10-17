@@ -56,6 +56,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
+@Deprecated
 public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 
 	/**
@@ -101,55 +102,55 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "country":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CountryMasterDTO>>() {
 			});
-			break;
-
+			break;	
+			
 		case "quest":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<QuestModelDTO>>() {
 			});
-			break;
-
+			break;	
+			
 		case "terms":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<TermsAndConditionDTO>>() {
 			});
-			break;
-
+			break;		
+			
 		case "why":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<WhyDoAskInformationDTO>>() {
 			});
-			break;
-
+			break;		
+			
 		case "fyear":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserFinancialYearDTO>>() {
 			});
-			break;
-
+			break;	
+			
 		case "parameter":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<AuthenticationLimitCheckDTO>>() {
 			});
-			break;
-
+			break;		
+				
 		case "checklist":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserVerificationCheckListDTO>>() {
 			});
-			break;
+			break;	
 		case "boolean_response":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BooleanResponse>>() {
 			});
 			break;
-
+			
 		case "trnxHist":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<TransactionHistroyDTO>>() {
 			});
-			break;
+			break;	
 		case "remitReport":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittanceReceiptSubreport>>() {
 			});
-			break;
+			break;	
 
 		case "ex_rate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ExchangeRateResponseModel>>() {
 			});
-			break;
+			break;	
 		case "currencyMaster":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CurrencyMasterDTO>>() {
 			});
@@ -161,12 +162,12 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "beneList":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneficiaryListDTO>>() {
 			});
-			break;
-
+			break;		
+			
 		case "benecountry":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BeneCountryDTO>>() {
 			});
-			break;
+			break;	
 		case "district":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewDistrictDto>>() {
 			});
@@ -175,30 +176,30 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewStateDto>>() {
 			});
 			break;
-
+			
 		case "accountType":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<AccountTypeDto>>() {
 			});
-			break;
-
+			break;	
+			
 		case "city":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<ViewCityDto>>() {
 			});
-			break;
+			break;	
 		case "remittance_transaction":
 			models = new ObjectMapper().readValue(values,
 					new TypeReference<List<RemittanceTransactionResponsetModel>>() {
 					});
-			break;
+			break;		
 		case "sourceofincome":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<SourceOfIncomeDto>>() {
 			});
 			break;
-
+			
 		case "additionaldata":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<AddAdditionalBankDataDto>>() {
 			});
-			break;
+			break;	
 
 		case "remittance-application":
 			models = new ObjectMapper().readValue(values,
@@ -210,16 +211,16 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PurposeOfTransactionModel>>() {
 			});
 			break;
-
+			
 		case "remittance-page-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RemittancePageDto>>() {
 			});
 			break;
-
+			
 		case "rate-alert-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RateAlertDTO>>() {
 			});
-			break;
+			break;	
 		case "remittance-transaction-status-model":
 			models = new ObjectMapper().readValue(values,
 					new TypeReference<List<RemittanceTransactionStatusResponseModel>>() {
@@ -268,19 +269,19 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "routingBankMaster":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<RoutingBankMasterDTO>>() {
 			});
-			break;
+			break;	
 		case "jaxmetaparameter":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<JaxMetaParameter>>() {
 			});
-			break;
+			break;	
 		case "send-otp-model":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<SendOtpModel>>() {
 			});
-			break;
+			break;	
 		case "prefix":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PrefixDTO>>() {
 			});
-			break;
+			break;	
 		case "branch-detail":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<BranchDetailDTO>>() {
 			});
@@ -288,7 +289,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "place-order-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderDTO>>() {
 			});
-			break;
+			break;	
 		case "min-max-exrate":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<MinMaxExRateDTO>>() {
 			});
@@ -296,11 +297,11 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 		case "place-order-not-dto":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<PlaceOrderNotificationDTO>>() {
 			});
-			break;
+			break;	
 		case "jax-push-notification":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<CustomerNotificationDTO>>() {
 			});
-			break;
+			break;	
 		case "employee-detail":
 			models = new ObjectMapper().readValue(values, new TypeReference<List<EmployeeDetailsDTO>>() {
 			});
@@ -309,7 +310,7 @@ public class ResponseDataDeserializer extends StdDeserializer<ResponseData> {
 			models = new ObjectMapper().readValue(values, new TypeReference<List<UserDetailsDTO>>() {
 			});
 			break;
-		}
+	}
 		responseData.setValues(models);
 		return responseData;
 	}

@@ -134,6 +134,14 @@ public class File {
 		return content;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public void setContent(String content) {
 		this.content = content;
 	}
@@ -163,11 +171,14 @@ public class File {
 		}
 	}
 
-	public String getTitle() {
-		return title;
+	/**
+	 * If file type is json, this should return valid map
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> toMap() {
+		return JsonUtil.fromJson(this.content, Map.class);
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
 }

@@ -79,6 +79,13 @@ public class CommonHttpRequest {
 	private AppConfig appConfig;
 
 	public String getIPAddress() {
+		String deviceIp = null;
+		if (appConfig.isSwaggerEnabled()) {
+			deviceIp = request.getHeader(AppConstants.DEVICE_IP_XKEY);
+			if (!ArgUtil.isEmpty(deviceIp)) {
+				return deviceIp;
+			}
+		}
 		return HttpUtils.getIPAddress(request);
 	}
 
@@ -93,11 +100,12 @@ public class CommonHttpRequest {
 	public String getDeviceId() {
 		String deviceId = null;
 		if (request != null) {
-			Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
-			if (cookie != null) {
-				deviceId = cookie.getValue();
-			} else {
-				deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
+			deviceId = request.getHeader(AppConstants.DEVICE_ID_XKEY);
+			if (ArgUtil.isEmpty(deviceId)) {
+				Cookie cookie = WebUtils.getCookie(request, AppConstants.DEVICE_ID_KEY);
+				if (cookie != null) {
+					deviceId = cookie.getValue();
+				}
 			}
 		}
 		return deviceId;

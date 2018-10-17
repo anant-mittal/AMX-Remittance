@@ -13,13 +13,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -147,10 +147,21 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
+		return saveLoginDetail(customerCredential, Boolean.FALSE);
+	}
+
+	/**
+	 * @param loginId
+	 *            - login id
+	 * @param password
+	 *            - password
+	 * @return BooleanResponse - return success or failure
+	 */
+	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential, Boolean isPartialReg) {
 		try {
-			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/")
-					.filter(metaFilter).post(customerCredential)
-					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+					.path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/").queryParam("isPartialReg", isPartialReg)
+					.post(customerCredential).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetail : ", e);

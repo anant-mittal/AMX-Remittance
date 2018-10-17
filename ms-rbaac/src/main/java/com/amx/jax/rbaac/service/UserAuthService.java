@@ -90,14 +90,14 @@ public class UserAuthService {
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
-		if (DeviceType.MOBILE.equals(deviceType) && StringUtils.isBlank(deviceId)) {
+		if (DeviceType.MOBILE.isParentOf(deviceType) && StringUtils.isBlank(deviceId)) {
 			throw new AuthServiceException("Device Id is Mandatory for Mobile Devices",
 					RbaacServiceError.INVALID_OR_MISSING_DATA);
 		}
 
 		List<Employee> employees;
 
-		if (DeviceType.MOBILE.equals(deviceType)) {
+		if (DeviceType.MOBILE.isParentOf(deviceType.getParent())) {
 			employees = rbaacDao.getEmployeesByDeviceId(employeeNo, identity, deviceId);
 		} else {
 			employees = rbaacDao.getEmployees(employeeNo, identity, ipAddress);
