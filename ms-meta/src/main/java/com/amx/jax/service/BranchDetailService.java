@@ -34,9 +34,9 @@ public class BranchDetailService extends AbstractService {
 
 	@Autowired
 	BranchDetailDao branchDetailDao;
-	
+
 	@Autowired
-	BranchDetailValidation branchDetailValidation ; 
+	BranchDetailValidation branchDetailValidation;
 
 	/**
 	 * @return branch details
@@ -64,14 +64,12 @@ public class BranchDetailService extends AbstractService {
 		return AmxApiResponse.buildList(branchDetailList);
 	}
 
-	
-	public BranchSystemDetail findBranchSystemByIp(String branchSystemIp) {
-		branchDetailValidation.validateSystemBranchIp(branchSystemIp);
-		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(branchSystemIp);
-		if(branchSystemDetail == null) {
+	public BranchSystemDetail findBranchSystemByIp(BigDecimal countryBranchId, String branchSystemIp) {
+		BranchSystemDetail branchSystemDetail = branchDetailDao.getBranchSystemDetail(countryBranchId, branchSystemIp);
+		if (branchSystemDetail == null) {
 			throw new GlobalException("No  branch system found for given IP ", JaxError.BRANCH_SYSTEM_NOT_FOUND);
 		}
-		if(!ConstantDocument.Yes.equals(branchSystemDetail.getIsActive())) {
+		if (!ConstantDocument.Yes.equals(branchSystemDetail.getIsActive())) {
 			throw new GlobalException("Given branch system is inactive ", JaxError.BRANCH_SYSTEM_NOT_ACTIVE);
 		}
 		return branchSystemDetail;

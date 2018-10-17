@@ -1,5 +1,6 @@
 package com.amx.jax.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.transaction.Transactional;
@@ -32,7 +33,8 @@ public class DeviceDao {
 	public DeviceDto saveDevice(DeviceRegistrationRequest request) {
 
 		Device device = new Device();
-		BranchSystemDetail branchSystem = branchDetailService.findBranchSystemByIp(request.getBranchSystemIp());
+		BranchSystemDetail branchSystem = branchDetailService
+				.findBranchSystemByIp(new BigDecimal(request.getCountryBranchId()), request.getBranchSystemIp());
 		device.setBranchSystemInventoryId(branchSystem.getCountryBranchSystemInventoryId());
 		device.setCreatedBy("JOMAX_ONLINE");
 		device.setCreatedDate(new Date());

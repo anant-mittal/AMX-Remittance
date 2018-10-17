@@ -15,7 +15,7 @@ import com.amx.jax.model.response.FieldListDto;
 import com.amx.jax.model.response.IncomeRangeDto;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-public interface ICustRegService {
+public interface ICustRegService extends IJaxService {
 
 	public static class CustRegApiEndPoints {
 		public static final String GET_MODES = "/api/reg/modes";

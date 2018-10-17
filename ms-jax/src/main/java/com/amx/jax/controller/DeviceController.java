@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.amx.jax.api.AmxApiResponse;
+import com.amx.jax.client.IDeviceService;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
@@ -18,12 +19,13 @@ import com.amx.jax.service.DeviceService;
 
 @RestController
 @RequestMapping(META_API_ENDPOINT + "/device")
-public class DeviceController {
+public class DeviceController implements IDeviceService {
 
 	@Autowired
 	DeviceService deviceService;
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	@RequestMapping(value = REG_DEVICE, method = RequestMethod.POST)
+	@Override
 	public AmxApiResponse<DeviceDto, Object> registerNewDevice(@Valid @RequestBody DeviceRegistrationRequest request) {
 
 		return deviceService.registerNewDevice(request);

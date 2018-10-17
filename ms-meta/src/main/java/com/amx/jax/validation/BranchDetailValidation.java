@@ -20,8 +20,4 @@ public class BranchDetailValidation {
 		}
 	}
 
-	public void validateSystemBranchIp(String branchSystemIp) {
-		// TODO Auto-generated method stub
-		
-	}
 }

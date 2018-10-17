@@ -1,6 +1,5 @@
 package com.amx.jax.client;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -41,21 +40,6 @@ public class OffsiteCustRegClient implements ICustRegService {
 
 	@Autowired
 	AppConfig appConfig;
-
-	protected HttpHeaders getHeader() {
-
-		HttpHeaders headers = new HttpHeaders();
-		try {
-
-			JaxMetaInfo metaInfo = new JaxMetaInfo();
-			metaInfo.setCountryId(TenantContextHolder.currentSite().getBDCode());
-			metaInfo.setTenant(TenantContextHolder.currentSite());
-			headers.add("meta-info", new ObjectMapper().writeValueAsString(metaInfo.copy()));
-		} catch (JsonProcessingException e) {
-			LOGGER.error("error in getheader of jaxclient", e);
-		}
-		return headers;
-	}
 
 	public static final String OFFSITE_CUSTOMER_REG = "/offsite-cust-reg";
 
