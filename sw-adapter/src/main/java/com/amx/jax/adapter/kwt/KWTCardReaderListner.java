@@ -20,21 +20,21 @@ public class KWTCardReaderListner implements PaciEventHandler {
 		try {
 			CardData data = KWTCardReader.readerData();
 
-			data.setTitle(KWTCardReader.API.getA_TITLE(readerIndex, true));
+			data.setTitle(KWTCardReader.API.getA_TITLE(readerIndex, false));
 			data.setIdentity(KWTCardReader.API.getCivil_ID(readerIndex, false));
 
 			// Arabic Details
 			data.setLocalFullName(
-					KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullArabicName, true));
-			data.setLocalName1(KWTCardReader.API.getArabicName_1(readerIndex, true));
-			data.setLocalName2(KWTCardReader.API.getArabicName_2(readerIndex, true));
+					KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullArabicName, false));
+			data.setLocalName1(KWTCardReader.API.getArabicName_1(readerIndex, false));
+			data.setLocalName2(KWTCardReader.API.getArabicName_2(readerIndex, false));
 			data.setLocalName3(KWTCardReader.API.getArabicName_3(readerIndex, false));
 			data.setLocalName4(KWTCardReader.API.getArabicName_4(readerIndex, false));
 			data.setLocalNationality(KWTCardReader.API.getNationalty_Arabic_Text(readerIndex, false));
 			data.setLocalGender(KWTCardReader.API.getSex_Arabic_Text(readerIndex, false));
 
 			// English Details
-			data.setFullName(KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullEnglishName, true));
+			data.setFullName(KWTCardReader.API.ReadCardInfo(readerIndex, PACICardAPI.DataType.FullEnglishName, false));
 			data.setName1(KWTCardReader.API.getEnglishName_1(readerIndex, false));
 			data.setName2(KWTCardReader.API.getEnglishName_2(readerIndex, false));
 			data.setName3(KWTCardReader.API.getEnglishName_3(readerIndex, false));

@@ -31,7 +31,7 @@ public abstract class ACardReaderService {
 			CardReader reader = read();
 			if (reader.getDataTime() > lastreadtime) {
 				lastreadtime = reader.getDataTime();
-				LOGGER.info("Data Found");
+				LOGGER.info("Data Updated...  Sending....");
 				restService.ajax(serverUrl).path(DeviceConstants.DEVICE_INFO_URL)
 						.pathParam(DeviceConstants.PARAM_SYSTEM_ID, systemId).post(reader).asObject();
 			}

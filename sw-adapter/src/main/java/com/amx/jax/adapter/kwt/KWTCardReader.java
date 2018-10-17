@@ -66,8 +66,6 @@ public class KWTCardReader extends CardReader {
 		if (READER.getData() != null) {
 			READER.setDataTime(READER.getData().getTimestamp());
 			MAP.put(CARD_READER_KEY, READER.getData());
-		} else {
-			READER.setDataTime(System.currentTimeMillis());
 		}
 	}
 
