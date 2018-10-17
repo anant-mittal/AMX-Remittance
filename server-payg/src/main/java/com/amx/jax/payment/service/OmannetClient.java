@@ -164,7 +164,7 @@ public class OmannetClient implements PayGClient {
 			// Null response from PG. Merchant to handle the error scenario
 		} else {
 			
-			String resultReponse = pipe.getResult();
+			String resultResponse = pipe.getResult();
 			gatewayResponse.setResult(pipe.getResult());
 			gatewayResponse.setPostDate(pipe.getDate());
 			gatewayResponse.setRef(pipe.getRef());
@@ -172,21 +172,23 @@ public class OmannetClient implements PayGClient {
 			gatewayResponse.setTranxId(pipe.getTransId());
 			gatewayResponse.setUdf3(pipe.getUdf3());
 			gatewayResponse.setPaymentId(pipe.getPaymentId());
-			if(resultReponse.equals("CAPTURED") || resultReponse.equals("NOT CAPTURED")|| resultReponse.equals("CANCELLED")) {
+			if(resultResponse.equals("CAPTURED") || resultResponse.equals("NOT CAPTURED")|| resultResponse.equals("CANCELLED")) {
 				gatewayResponse.setError(pipe.getError());
 				gatewayResponse.setErrorText(pipe.getError_text());
+				gatewayResponse.setResult(resultResponse);
 			}else {
 				gatewayResponse.setError(pipe.getResult());
 				gatewayResponse.setErrorText(pipe.getResult());
+				gatewayResponse.setResult("NOT CAPTURED");
 			}
 	
-	    	for(ResponseCode res : ResponseCode.values()) {
-				if(resultReponse.contains(res.getResponseCode()))
+	    	/*for(ResponseCode res : ResponseCode.values()) {
+				if(resultResponse.contains(res.getResponseCode()))
 				{
 					gatewayResponse.setResult(res.toString());
 					break;
 				}
-			}
+			}*/
 		}
 		 
 		LOGGER.info("Params captured from OMANNET : " + JsonUtil.toJson(gatewayResponse));
