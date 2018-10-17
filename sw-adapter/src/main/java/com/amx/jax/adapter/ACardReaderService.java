@@ -29,7 +29,7 @@ public abstract class ACardReaderService {
 	public void readTask() {
 		try {
 			CardReader reader = read();
-			if (reader.getDataTime() > lastreadtime && reader.getData() != null) {
+			if (reader.getDataTime() > lastreadtime) {
 				lastreadtime = reader.getDataTime();
 				LOGGER.info("Data Found");
 				restService.ajax(serverUrl).path(DeviceConstants.DEVICE_INFO_URL)

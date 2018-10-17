@@ -30,7 +30,6 @@ public class DeviceController {
 	@RequestMapping(value = { DeviceConstants.DEVICE_INFO_URL }, method = { RequestMethod.POST })
 	public AmxApiResponse<CardData, Object> saveCardDetails(@RequestBody CardReader reader,
 			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid) {
-		LOGGER.info(JsonUtil.toJson(reader.getData()));
 		if (ArgUtil.isEmpty(reader.getData())) {
 			cardBox.fastRemove(systemid);
 		} else {
