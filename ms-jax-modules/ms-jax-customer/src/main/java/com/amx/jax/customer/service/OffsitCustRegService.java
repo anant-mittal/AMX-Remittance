@@ -836,7 +836,7 @@ public class OffsitCustRegService extends AbstractService implements ICustRegSer
 		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		
 		CustomerRegistrationTrnxModel model = customerRegistrationManager.get();
-		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt());
+		Customer customer = customerDao.getCustomerByIdentityInt(model.getCustomerPersonalDetail().getIdentityInt()).get(0);
 		commitOnlineCustomer(model, customer);		
 		
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
