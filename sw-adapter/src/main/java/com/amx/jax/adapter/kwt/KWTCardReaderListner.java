@@ -92,8 +92,6 @@ public class KWTCardReaderListner implements PaciEventHandler {
 			data.setExpiryDate(expiryDate);
 			data.setGenuine(KWTCardReader.API.ValidateCardIsGenuine(readerIndex));
 			data.setValid(KWTCardReader.API.ValidateCardCertificate(readerIndex, false, true, true));
-
-			KWTCardReader.readerData().setValid(true);
 			KWTCardReader.push();
 
 		} catch (PaciException e) {
