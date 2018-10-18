@@ -38,6 +38,7 @@ import com.amx.jax.sso.SSOStatus.ApiSSOStatus;
 import com.amx.jax.sso.SSOStatus.SSOServerCodes;
 import com.amx.jax.sso.SSOTranx;
 import com.amx.jax.sso.SSOUser;
+import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 import com.amx.utils.Urly;
 
@@ -110,7 +111,11 @@ public class SSOServerController {
 	@ResponseBody
 	public String loginJson(@RequestBody SSOLoginFormData formdata,
 			@PathVariable(required = false, value = "jsonstep") @ApiParam(defaultValue = "CREDS") SSOAuthStep json,
-			HttpServletResponse resp) throws URISyntaxException, IOException {
+			HttpServletResponse resp,
+
+			@RequestParam(required = false) Boolean redirect) throws URISyntaxException, IOException {
+
+		redirect = ArgUtil.parseAsBoolean(redirect, true);
 
 		if (json == SSOAuthStep.DO) {
 			json = formdata.getStep();
@@ -155,10 +160,12 @@ public class SSOServerController {
 						.addParameter(SSOConstants.PARAM_STEP, SSOAuthStep.DONE)
 						.addParameter(SSOConstants.PARAM_SOTP, sSOTranx.get().getAppToken()).getURL();
 				model.put(SSOConstants.PARAM_REDIRECT, redirectUrl);
-				// resp.sendRedirect(redirectUrl);
-				result.setStatusEnum(SSOServerCodes.AUTH_DONE);
-				resp.setHeader("Location", redirectUrl);
-				resp.setStatus(302);
+				result.setRedirectUrl(redirectUrl);
+				if (redirect) {
+					result.setStatusEnum(SSOServerCodes.AUTH_DONE);
+					resp.setHeader("Location", redirectUrl);
+					resp.setStatus(302);
+				}
 			}
 		}
 		return JsonUtil.toJson(result);
