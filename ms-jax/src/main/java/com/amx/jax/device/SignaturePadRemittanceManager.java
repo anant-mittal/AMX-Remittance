@@ -3,6 +3,8 @@
  */
 package com.amx.jax.device;
 
+import com.amx.jax.model.response.IDeviceStateData;
+
 /**
  * @author Prashant
  *
@@ -13,7 +15,7 @@ public class SignaturePadRemittanceManager extends ASignaturePadManager {
 	 * @see com.amx.jax.device.ASignaturePadManager#updateStatus(com.amx.jax.device.IDeviceStateInfo)
 	 */
 	@Override
-	public void updateStatus(IDeviceStateInfo info) {
+	public void updateStatus(IDeviceStateData info) {
 
 		
 	}

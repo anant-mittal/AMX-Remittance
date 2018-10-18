@@ -21,10 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.client.IDeviceService;
+import com.amx.jax.constants.DeviceStateDataType;
+import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 
 @RestController
@@ -67,10 +70,20 @@ public class DeviceController implements IDeviceService {
 				otp.toString());
 		return AmxApiResponse.build(otpResponse);
 	}
-	
+
+	@Override
 	@RequestMapping(value = DEVICE_STATUS_GET, method = RequestMethod.GET)
-	public AmxApiResponse<BooleanResponse, Object> getStatus(@RequestHeader Integer registrationId) {
-		BooleanResponse otpResponse = deviceService.getStatus(registrationId);
+	public AmxApiResponse<DeviceStatusInfoDto, Object> getStatus(@RequestHeader Integer registrationId) {
+		DeviceStatusInfoDto otpResponse = deviceService.getStatus(registrationId);
+		return AmxApiResponse.build(otpResponse);
+	}
+
+	@RequestMapping(value = DEVICE_STATE_REMITTANCE_UPDATE, method = RequestMethod.GET)
+	public AmxApiResponse<BooleanResponse, Object> updateRemittanceState(
+			@RequestParam Integer countryBranchSystemInventoryId,
+			@RequestBody SignaturePadRemittanceInfo signaturePadRemittanceInfo) {
+		BooleanResponse otpResponse = deviceService.updateDeviceState(countryBranchSystemInventoryId,
+				signaturePadRemittanceInfo, DeviceStateDataType.REMITTANCE);
 		return AmxApiResponse.build(otpResponse);
 	}
 }

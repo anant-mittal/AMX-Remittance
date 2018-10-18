@@ -16,6 +16,8 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.error.JaxError;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
 import com.amx.jax.services.DeviceService;
 import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.util.CryptoUtil;
@@ -72,11 +74,6 @@ public class DeviceManager {
 		return otp;
 	}
 
-	public void getDeviceStatusDto(Device device, DeviceStateInfo deviceStateInfo) {
-
-		
-	}
-
 	public boolean isLoggedIn(Device device) {
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
 		String sessionToken = deviceStateInfo.getSessionToken();
@@ -97,6 +94,12 @@ public class DeviceManager {
 			return Long.parseLong(jaxConf.getValue());
 		} else {
 			return DeviceService.DEVICE_SESSION_TIMEOUT;
+		}
+	}
+
+	public void validateLogIn(Device device) {
+		if (!isLoggedIn(device)) {
+			throw new GlobalException("Device not logged in", JaxError.DEVICE_NOT_LOGGGED_IN);
 		}
 	}
 }

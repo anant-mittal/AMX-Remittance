@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.amx.jax.constants.DeviceState;
+import com.amx.jax.constants.DeviceStateDataType;
 
 @Entity
 @Table(name = "JAX_DEVICE_STATE")
@@ -30,8 +31,11 @@ public class DeviceStateInfo {
 	@Column(name = "CREATED_BY")
 	String createdBy;
 
-	@Column(name = "STATE_INFO")
-	String stateInfo;
+	@Column(name = "STATE_DATA")
+	String stateData;
+
+	@Column(name = "STATE_DATA_TYPE")
+	DeviceStateDataType stateDataType;
 
 	@Column(name = "SESSION_TOKEN")
 	String sessionToken;
@@ -79,14 +83,6 @@ public class DeviceStateInfo {
 		this.createdBy = createdBy;
 	}
 
-	public String getStateInfo() {
-		return stateInfo;
-	}
-
-	public void setStateInfo(String stateInfo) {
-		this.stateInfo = stateInfo;
-	}
-
 	public String getSessionToken() {
 		return sessionToken;
 	}
@@ -101,6 +97,22 @@ public class DeviceStateInfo {
 
 	public void setPairToken(String pairToken) {
 		this.pairToken = pairToken;
+	}
+
+	public String getStateData() {
+		return stateData;
+	}
+
+	public void setStateData(String stateData) {
+		this.stateData = stateData;
+	}
+
+	public DeviceStateDataType getStateDataType() {
+		return stateDataType;
+	}
+
+	public void setStateDataType(DeviceStateDataType stateDataType) {
+		this.stateDataType = stateDataType;
 	}
 
 }

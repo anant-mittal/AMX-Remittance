@@ -14,19 +14,24 @@ import com.amx.amxlib.exception.jax.GlobalException;
 import com.amx.amxlib.model.response.BooleanResponse;
 import com.amx.jax.api.AmxApiResponse;
 import com.amx.jax.constants.DeviceState;
+import com.amx.jax.constants.DeviceStateDataType;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.device.SignaturePadRemittanceInfo;
 import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
 import com.amx.jax.model.response.DeviceDto;
 import com.amx.jax.model.response.DevicePairOtpResponse;
+import com.amx.jax.model.response.DeviceStatusInfoDto;
+import com.amx.jax.model.response.IDeviceStateData;
 import com.amx.jax.services.AbstractService;
 import com.amx.jax.validation.DeviceValidation;
 import com.amx.utils.CryptoUtil;
+import com.amx.utils.JsonUtil;
 
 @Service
 @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -97,7 +102,7 @@ public class DeviceService extends AbstractService {
 	 * @return device's status like loggedIn, signing etc
 	 * 
 	 */
-	public BooleanResponse getStatus(Integer registrationId) {
+	public DeviceStatusInfoDto getStatus(Integer registrationId) {
 
 		if (registrationId == null) {
 			throw new GlobalException("Device registration id can not be blank");
@@ -105,7 +110,30 @@ public class DeviceService extends AbstractService {
 		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
 		deviceValidation.validateDevice(device);
 		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
-		deviceManager.getDeviceStatusDto(device, deviceStateInfo);
-		return null;
+		DeviceStatusInfoDto dto = new DeviceStatusInfoDto();
+		dto.setStateDataType(deviceStateInfo.getStateDataType());
+		dto.setDeviceState(deviceStateInfo.getState());
+		switch (deviceStateInfo.getStateDataType()) {
+		case REMITTANCE:
+			dto.setStateData(JsonUtil.fromJson(deviceStateInfo.getStateData(), SignaturePadRemittanceInfo.class));
+			break;
+		default:
+			break;
+		}
+		return dto;
+	}
+
+	public BooleanResponse updateDeviceState(Integer countryBranchSystemInventoryId, IDeviceStateData deviceStateData,
+			DeviceStateDataType type) {
+		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId));
+		deviceValidation.validateDevice(device);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceManager.validateLogIn(device);
+		logger.debug("updating device state D id {} ", device.getRegistrationId());
+		String deviceStateDataStr = JsonUtil.toJson(deviceStateData);
+		deviceStateInfo.setStateData(deviceStateDataStr);
+		deviceStateInfo.setStateDataType(type);
+		return new BooleanResponse(Boolean.TRUE);
+
 	}
 }

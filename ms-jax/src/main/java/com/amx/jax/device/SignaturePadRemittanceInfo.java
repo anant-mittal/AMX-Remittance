@@ -2,7 +2,9 @@ package com.amx.jax.device;
 
 import java.math.BigDecimal;
 
-public class SignaturePadRemittanceInfo implements IDeviceStateInfo {
+import com.amx.jax.model.response.IDeviceStateData;
+
+public class SignaturePadRemittanceInfo implements IDeviceStateData {
 
 	private BigDecimal employeeId;
 
