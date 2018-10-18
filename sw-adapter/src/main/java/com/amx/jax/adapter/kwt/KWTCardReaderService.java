@@ -15,12 +15,23 @@ public class KWTCardReaderService extends ACardReaderService {
 
 	@Bean
 	public KWTCardReader kwtCardReader() {
-		return new KWTCardReader(true);
+		return new KWTCardReader();
 	}
 
 	@Override
 	public CardReader read() throws InterruptedException {
 		return KWTCardReader.read();
+	}
+
+	@Override
+	public boolean ping() {
+		return KWTCardReader.ping();
+	}
+
+	@Override
+	public boolean start() {
+		KWTCardReader.start();
+		return true;
 	}
 
 }

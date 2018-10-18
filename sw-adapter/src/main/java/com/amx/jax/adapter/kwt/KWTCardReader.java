@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.thavam.util.concurrent.blockingMap.BlockingHashMap;
 
+import com.amx.jax.adapter.SWAdapterLauncher;
 import com.amx.jax.device.CardData;
 import com.amx.jax.device.CardReader;
 
@@ -15,16 +16,13 @@ import pacicardlibrary.PaciException;
 public class KWTCardReader extends CardReader {
 
 	public static Logger LOGGER = LoggerFactory.getLogger(KWTCardReader.class);
-	private static KWTCardReader READER = new KWTCardReader(false);
+	private static KWTCardReader READER = new KWTCardReader();
 	public static PACICardAPI API = null;
 	private static BlockingHashMap<String, CardData> MAP = new BlockingHashMap<String, CardData>();
 	public static KWTCardReaderListner LISTNER = new KWTCardReaderListner();
 	public static String CARD_READER_KEY = CardData.class.getName();
 
-	KWTCardReader(boolean start) {
-		if (start) {
-			KWTCardReader.start();
-		}
+	KWTCardReader() {
 	}
 
 	public static void start() {
@@ -36,9 +34,9 @@ public class KWTCardReader extends CardReader {
 			LISTNER = new KWTCardReaderListner();
 			API.AddEventListener(LISTNER);
 		} catch (PaciException pe) {
-			LOGGER.error("PaciException", pe);
+			LOGGER.error("AMX --- PaciException", pe);
 		} catch (Exception e) {
-			LOGGER.error("Exception", e);
+			LOGGER.error("AMX --- Exception", e);
 		}
 	}
 
@@ -56,7 +54,7 @@ public class KWTCardReader extends CardReader {
 	}
 
 	public static void clear() {
-		LOGGER.info("Clearing Data....");
+		SWAdapterLauncher.GUI.log("Clearing...");
 		MAP.remove(CARD_READER_KEY);
 		READER.setData(null);
 		READER.setDataTime(System.currentTimeMillis());
@@ -74,14 +72,21 @@ public class KWTCardReader extends CardReader {
 	}
 
 	public static KWTCardReader read() throws InterruptedException {
-		LOGGER.info("Reading Data....");
+		SWAdapterLauncher.GUI.log("Reading...");
 		// start();
 		CardData data = poll();
 		if (data != null && data.getTimestamp() >= READER.getDataTime()) {
-			LOGGER.info("CARD DATA FOUND");
+			SWAdapterLauncher.GUI.log("No Data Found");
 		}
 		push();
 		return READER;
+	}
+
+	public static boolean ping() {
+		if (API == null) {
+			return false;
+		}
+		return API.GetReaders().length > 0;
 	}
 
 }

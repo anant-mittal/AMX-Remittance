@@ -3,6 +3,7 @@ package com.amx.jax.adapter.kwt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amx.jax.adapter.SWAdapterLauncher;
 import com.amx.jax.device.CardData;
 
 import pacicardlibrary.PACICardAPI;
@@ -16,7 +17,7 @@ public class KWTCardReaderListner implements PaciEventHandler {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void CardConnectionEvent(int readerIndex) {
-		LOGGER.info("KwCardReaderListner:CardConnectionEvent {}", readerIndex);
+		SWAdapterLauncher.GUI.foundCard(true);
 		try {
 			CardData data = KWTCardReader.readerData();
 
@@ -92,25 +93,29 @@ public class KWTCardReaderListner implements PaciEventHandler {
 			data.setExpiryDate(expiryDate);
 			data.setGenuine(KWTCardReader.API.ValidateCardIsGenuine(readerIndex));
 			data.setValid(KWTCardReader.API.ValidateCardCertificate(readerIndex, false, true, true));
+			SWAdapterLauncher.GUI.foundData(true);
 			KWTCardReader.push();
 
 		} catch (PaciException e) {
 			// e.printStackTrace();
 			LOGGER.error("KwCardReaderListner:PaciException {}", e);
+			SWAdapterLauncher.GUI.foundData(false);
 		} catch (Exception e2) {
 			LOGGER.error("KwCardReaderListner:Exception {}", e2);
+			SWAdapterLauncher.GUI.foundData(false);
 		}
 	}
 
 	@Override
 	public void CardDisconnectionEvent(int arg0) {
-		LOGGER.error("KwCardReaderListner:CardDisconnectionEvent  {}", arg0);
+		SWAdapterLauncher.GUI.foundCard(false);
+		SWAdapterLauncher.GUI.foundData(false);
 		KWTCardReader.clear();
 	}
 
 	@Override
 	public void ReaderChangeEvent() {
-		LOGGER.error("KwCardReaderListner:ReaderChangeEvent");
+		SWAdapterLauncher.GUI.foundReader(true);
 		KWTCardReader.info(KWTCardReader.API.GetReaders());
 	}
 
