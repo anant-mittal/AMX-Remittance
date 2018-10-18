@@ -28,15 +28,17 @@
 	<!-- Path to the executable, which should be started -->
 	<executable>java</executable>
 
-<!-- 	<startargument>-Dspring.application.admin.enabled=true</startargument> 
+	<!-- <startargument>-Dspring.application.admin.enabled=true</startargument> 
 		<startargument>-Dcom.sun.management.jmxremote.port=54321 </startargument> 
 		<startargument>-Dcom.sun.management.jmxremote.authenticate=false </startargument> 
 		<startargument>-Dcom.sun.management.jmxremote.ssl=false</startargument> -->
-		
+
 
 	<startargument>-jar</startargument>
 
 	<startargument>sw-adapter.jar</startargument>
+
+	<startargument>-cli</startargument>
 
 	<!-- <stopexecutable>java</stopexecutable> <stopargument>-jar</stopargument> 
 		<stopargument>SpringBootStopper.jar</stopargument> <stopargument>54321</stopargument> -->
