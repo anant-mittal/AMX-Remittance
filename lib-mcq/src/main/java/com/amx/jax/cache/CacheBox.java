@@ -128,7 +128,8 @@ public class CacheBox<T> implements ICacheBox<T> {
 		T item = this.map().get(key);
 		long waiting = unit.toSeconds(timeout);
 		while (item == null && waiting > 0) {
-			item = locker.take(key, waiting, unit);
+			item = locker.take(key, 1, unit);
+			item = this.map().get(key);
 			waiting--;
 		}
 		return item;

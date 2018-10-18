@@ -37,21 +37,29 @@ public class DeviceController {
 		if (ArgUtil.isEmpty(reader.getData())) {
 			cardBox.fastRemove(systemid);
 		} else {
-		cardBox.put(systemid, reader.getData());
+			cardBox.put(systemid, reader.getData());
 		}
 		return AmxApiResponse.build(reader.getData());
 	}
 
 	@RequestMapping(value = { DeviceConstants.DEVICE_INFO_URL }, method = { RequestMethod.GET })
 	public AmxApiResponse<CardData, Object> getCardDetails(
-			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid, @RequestParam boolean wait)
+			@PathVariable(value = DeviceConstants.PARAM_SYSTEM_ID) String systemid,
+			@RequestParam(required = false) Boolean wait, @RequestParam(required = false) Boolean flush)
 			throws InterruptedException {
+		wait = ArgUtil.parseAsBoolean(wait, Boolean.FALSE);
+		flush = ArgUtil.parseAsBoolean(flush, Boolean.FALSE);
+		CardData data = null;
 		if (wait) {
-			return AmxApiResponse.build(cardBox.take(systemid, 15, TimeUnit.SECONDS));
+			data = cardBox.take(systemid, 15, TimeUnit.SECONDS);
 		} else {
-		return AmxApiResponse.build(cardBox.get(systemid));
+			data = cardBox.get(systemid);
 		}
 
+		if (flush) {
+			cardBox.fastRemove(systemid);
+		}
+		return AmxApiResponse.build(data);
 	}
 
 	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
