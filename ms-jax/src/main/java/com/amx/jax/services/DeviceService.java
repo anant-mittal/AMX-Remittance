@@ -1,5 +1,7 @@
 package com.amx.jax.services;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
 import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.manager.DeviceManager;
 import com.amx.jax.model.request.DeviceRegistrationRequest;
 import com.amx.jax.model.request.DeviceStateInfoChangeRequest;
@@ -62,7 +65,7 @@ public class DeviceService extends AbstractService {
 	}
 
 	public DevicePairOtpResponse sendOtpForPairing(Integer deviceRegId) {
-		Device device = deviceDao.findDevice(deviceRegId);
+		Device device = deviceDao.findDevice(new BigDecimal(deviceRegId));
 		deviceValidation.validateDevice(device);
 		DevicePairOtpResponse response = new DevicePairOtpResponse();
 		String otp = deviceManager.generateOtp(device);
@@ -71,7 +74,8 @@ public class DeviceService extends AbstractService {
 	}
 
 	public BooleanResponse validateOtpForPairing(Integer countryBranchSystemInventoryId, String otp) {
-		Device device = deviceDao.findDevice(countryBranchSystemInventoryId);
+		deviceValidation.validateOtp(otp);
+		Device device = deviceDao.findDevice(new BigDecimal(countryBranchSystemInventoryId));
 		deviceValidation.validateDevice(device);
 		deviceValidation.validateDeviceToken(device, otp);
 		// device login success
@@ -82,18 +86,26 @@ public class DeviceService extends AbstractService {
 	private void createSession(Device device) {
 
 		DeviceStateInfo deviceInfo = deviceDao.getDeviceStateInfo(device);
-		String hmacToken = CryptoUtil.generateHMAC(getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
+		String hmacToken = CryptoUtil.generateHMAC(deviceManager.getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
 				device.getRegistrationId().toString());
 		deviceInfo.setSessionToken(hmacToken);
 		deviceDao.saveDeviceInfo(deviceInfo);
 	}
 
-	public long getDeviceSessionTimeout() {
-		JaxConfig jaxConf = jaxConfigService.getConfig("DEVICE_SESISON_TIMEOUT");
-		if (jaxConf != null) {
-			return Long.parseLong(jaxConf.getValue());
-		} else {
-			return DEVICE_SESSION_TIMEOUT;
+	/**
+	 * @param registrationId
+	 * @return device's status like loggedIn, signing etc
+	 * 
+	 */
+	public BooleanResponse getStatus(Integer registrationId) {
+
+		if (registrationId == null) {
+			throw new GlobalException("Device registration id can not be blank");
 		}
+		Device device = deviceDao.findDevice(new BigDecimal(registrationId));
+		deviceValidation.validateDevice(device);
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		deviceManager.getDeviceStatusDto(device, deviceStateInfo);
+		return null;
 	}
 }

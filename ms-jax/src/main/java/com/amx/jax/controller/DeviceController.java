@@ -2,12 +2,17 @@ package com.amx.jax.controller;
 
 import static com.amx.amxlib.constant.ApiEndpoint.META_API_ENDPOINT;
 
+import java.math.BigDecimal;
+
 import javax.validation.Valid;
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -42,24 +47,30 @@ public class DeviceController implements IDeviceService {
 		return deviceService.updateDeviceState(request);
 	}
 
-	@RequestMapping(value = DEVICE_ACTIVATE)
+	@RequestMapping(value = DEVICE_ACTIVATE, method = RequestMethod.GET)
 	public AmxApiResponse<BooleanResponse, Object> activateDevice(@RequestParam Integer countryBranchSystemInventoryId,
 			@RequestParam String deviceType) {
 		BooleanResponse response = deviceService.activateDevice(countryBranchSystemInventoryId, deviceType);
 		return AmxApiResponse.build(response);
 	}
 
-	@RequestMapping(value = DEVICE_SEND_PAIR_OTP)
+	@RequestMapping(value = DEVICE_SEND_PAIR_OTP, method = RequestMethod.GET)
 	public AmxApiResponse<DevicePairOtpResponse, Object> sendOtpForPairing(@RequestParam Integer deviceRegId) {
 		DevicePairOtpResponse otpResponse = deviceService.sendOtpForPairing(deviceRegId);
 		return AmxApiResponse.build(otpResponse);
 	}
 
-	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP)
+	@RequestMapping(value = DEVICE_VALIDATE_PAIR_OTP, method = RequestMethod.GET)
 	public AmxApiResponse<BooleanResponse, Object> validateOtpForPairing(
-			@RequestParam Integer countryBranchSystemInventoryId, @RequestParam @Size(min = 6, max = 6) Integer otp) {
+			@RequestParam Integer countryBranchSystemInventoryId, String otp) {
 		BooleanResponse otpResponse = deviceService.validateOtpForPairing(countryBranchSystemInventoryId,
 				otp.toString());
+		return AmxApiResponse.build(otpResponse);
+	}
+	
+	@RequestMapping(value = DEVICE_STATUS_GET, method = RequestMethod.GET)
+	public AmxApiResponse<BooleanResponse, Object> getStatus(@RequestHeader Integer registrationId) {
+		BooleanResponse otpResponse = deviceService.getStatus(registrationId);
 		return AmxApiResponse.build(otpResponse);
 	}
 }

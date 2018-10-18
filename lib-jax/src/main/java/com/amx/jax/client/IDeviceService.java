@@ -12,6 +12,8 @@ public interface IDeviceService extends IJaxService {
 	public static final String DEVICE_ACTIVATE = "/activate";
 	public static final String DEVICE_SEND_PAIR_OTP = "/sendpairotp";
 	public static final String DEVICE_VALIDATE_PAIR_OTP = "/validatepairotp";
+	public static final String DEVICE_STATUS_UPDATE = "/updatedevicestatus";
+	public static final String DEVICE_STATUS_GET = "/getdevicestatus";
 
 	AmxApiResponse<DeviceDto, Object> registerNewDevice(DeviceRegistrationRequest request);
 

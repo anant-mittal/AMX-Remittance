@@ -72,7 +72,7 @@ public class DeviceDao {
 		return deviceStateRepository.findOne(device.getRegistrationId());
 	}
 
-	public Device findDevice(Integer deviceRegId) {
+	public Device findDevice(BigDecimal deviceRegId) {
 		return deviceRepository.findOne(deviceRegId);
 	}
 

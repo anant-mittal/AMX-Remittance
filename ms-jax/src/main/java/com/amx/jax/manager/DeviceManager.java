@@ -15,6 +15,9 @@ import com.amx.jax.constant.ConstantDocument;
 import com.amx.jax.dao.DeviceDao;
 import com.amx.jax.dbmodel.Device;
 import com.amx.jax.dbmodel.DeviceStateInfo;
+import com.amx.jax.dbmodel.JaxConfig;
+import com.amx.jax.services.DeviceService;
+import com.amx.jax.services.JaxConfigService;
 import com.amx.jax.util.CryptoUtil;
 import com.amx.utils.Random;
 
@@ -33,6 +36,8 @@ public class DeviceManager {
 	DeviceDao deviceDao;
 	@Autowired
 	CryptoUtil cryptoUtil;
+	@Autowired
+	JaxConfigService jaxConfigService;
 
 	/**
 	 * activates device
@@ -67,4 +72,31 @@ public class DeviceManager {
 		return otp;
 	}
 
+	public void getDeviceStatusDto(Device device, DeviceStateInfo deviceStateInfo) {
+
+		
+	}
+
+	public boolean isLoggedIn(Device device) {
+		DeviceStateInfo deviceStateInfo = deviceDao.getDeviceStateInfo(device);
+		String sessionToken = deviceStateInfo.getSessionToken();
+		if (sessionToken == null) {
+			return false;
+		}
+		String hmacToken = com.amx.utils.CryptoUtil.generateHMAC(getDeviceSessionTimeout(), "DEVICE_SESSION_SALT",
+				device.getRegistrationId().toString());
+		if (sessionToken.equals(hmacToken)) {
+			return true;
+		}
+		return false;
+	}
+
+	public long getDeviceSessionTimeout() {
+		JaxConfig jaxConf = jaxConfigService.getConfig("DEVICE_SESISON_TIMEOUT");
+		if (jaxConf != null) {
+			return Long.parseLong(jaxConf.getValue());
+		} else {
+			return DeviceService.DEVICE_SESSION_TIMEOUT;
+		}
+	}
 }
