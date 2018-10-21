@@ -261,8 +261,10 @@
                                 <tr>
                                     <td>
                                   		<h5>Dear <span th:text="${data.customer}" th:remove="tag"></span>,</h5>
+                                  		<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p> 
+                                  		<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience.</p>
                                   		
-                                      	<p>Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully transferred and is now available for pickup by the beneficiary. You now have <strong th:text="${data.loyaltypoints}"></strong> loyalty points. Thank you for your continued patronage.</p>
+                                      	<p class="lead">Your transaction with us dated <strong th:text="${data.date}"></strong> having Trans Ref No: <strong th:text="${data.refno}"></strong> for <strong th:text="${data.currency}"></strong> <strong th:text="${data.amount}"></strong>   has been successfully transferred and is now available for pickup by the beneficiary. You now have <strong th:text="${data.loyaltypoints}"></strong> loyalty points. Thank you for your continued patronage.</p>
                                     
                                    		<p><img src="cid:images/product-1.png"/></p><!-- /hero -->
                                         <h4>There are a lot of reasons to continue transacting with <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> and few of these are:</h4>

@@ -261,8 +261,9 @@
                                 <tr>
                                     <td>
                                         <h5>Dear <span  th:text="${data.customer}"></span>,</h5>
-
-                                        <p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span>! This is to inform you that your Civil ID has expired as on <span  th:text="${data.date}"></span>. Due to this, you will not be able to do any online/mobile transactions.</p>
+										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span> !</p>
+										<p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a> for your remittance and hope you had a pleasant experience.</p>
+                                        <p class="lead">This is to inform you that your Civil ID has expired as on <span  th:text="${data.date}"></span>. Due to this, you will not be able to do any online/mobile transactions.</p>
 									   <p class="lead">Kindly get your Civil ID is updated at the branch to be able to do online/mobile transactions.</p>
                                         <!-- A Real Hero (and a real human being) -->
                                         <p><img src="cid:images/product-1.png"/></p><!-- /hero -->

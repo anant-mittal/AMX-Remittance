@@ -262,8 +262,7 @@
                                     <td>
                                         <h5>Dear <span  th:text="${data.firstName}"></span>   <span  th:text="${data.middleName}"></span>   <span  th:text="${data.lastName}"></span>,</h5>
 										<p class="lead">Greetings from <span th:text="${_tu.prop('company.name')}" th:remove="tag"></span>!</p>
-                                        <p class="lead">
-                                        Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>. Your transaction statement is attached as per your request.
+                                        <p class="lead">Thank you for using <a th:href="@{'https://' +${_tu.prop('company.website.url')}}"><span th:text="${_tu.prop('company.website.url')}"></span></a>. Your transaction statement is attached as per your request.</p>
                                         
                                         <!-- A Real Hero (and a real human being) -->
                                         <p><img src="cid:images/product-1.png"/></p><!-- /hero -->
