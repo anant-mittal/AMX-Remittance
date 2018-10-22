@@ -21,7 +21,6 @@ import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
 import com.amx.jax.postman.model.ITemplates.ITemplate;
-import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.utils.IoUtils;
 
 /**
@@ -61,8 +60,7 @@ public class TemplateService {
 	/**
 	 * Instantiates a new template service.
 	 *
-	 * @param templateEngine
-	 *            the template engine
+	 * @param templateEngine the template engine
 	 */
 	@Autowired
 	TemplateService(TemplateEngine templateEngine) {
@@ -72,10 +70,8 @@ public class TemplateService {
 	/**
 	 * Process html.
 	 *
-	 * @param template
-	 *            the template
-	 * @param context
-	 *            the context
+	 * @param template the template
+	 * @param context  the context
 	 * @return the string
 	 */
 	public String processHtml(ITemplate template, Context context) {
@@ -103,8 +99,7 @@ public class TemplateService {
 	/**
 	 * Gets the local.
 	 *
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the local
 	 */
 	private Locale getLocal(File file) {
@@ -117,8 +112,7 @@ public class TemplateService {
 	/**
 	 * Parses file.template and creates content;
 	 * 
-	 * @param file
-	 *            the file
+	 * @param file the file
 	 * @return the file
 	 */
 	public File process(File file) {
@@ -151,24 +145,20 @@ public class TemplateService {
 	/**
 	 * Process text.
 	 *
-	 * @param template
-	 *            the template
-	 * @param context
-	 *            the context
+	 * @param template the template
+	 * @param context  the context
 	 * @return the string
 	 */
-	public String processText(TemplatesMX template, Context context) {
+	public String processText(ITemplate template, Context context) {
 		return textTemplateEngine.process(template.getFileName(), context);
 	}
 
 	/**
 	 * Read image as input stream source.
 	 *
-	 * @param contentId
-	 *            the content id
+	 * @param contentId the content id
 	 * @return the input stream source
-	 * @throws IOException
-	 *             Signals that an I/O exception has occurred.
+	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
 	public InputStreamSource readImageAsInputStreamSource(String contentId) throws IOException {
 		InputStreamSource imageSource = new ByteArrayResource(

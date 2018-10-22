@@ -56,6 +56,15 @@ public class AppRequestFilter implements Filter {
 		return true;
 	}
 
+	private boolean isRequestValid(RequestType reqType, HttpServletRequest req, HttpServletResponse resp,
+			String traceId) {
+		if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
@@ -133,10 +142,10 @@ public class AppRequestFilter implements Filter {
 				AuditServiceClient.trackStatic(new RequestTrackEvent(req));
 			}
 			try {
-				if (reqType.isAuth() && appConfig.isAppAuthEnabled() && !doesTokenMatch(req, resp, traceId)) {
-					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
-				} else {
+				if (isRequestValid(reqType, req, resp, traceId)) {
 					chain.doFilter(request, new AppResponseWrapper(resp));
+				} else {
+					resp.setStatus(HttpServletResponse.SC_FORBIDDEN);
 				}
 			} finally {
 				if (reqType.isTrack()) {

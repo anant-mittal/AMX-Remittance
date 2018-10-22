@@ -17,8 +17,10 @@ import com.amx.jax.device.CardReader;
 import com.amx.jax.device.DeviceConstants;
 import com.amx.jax.logger.LoggerService;
 import com.amx.jax.offsite.OffsiteMvcConfig.CardBox;
+import com.amx.jax.offsite.device.DevicePairingModels.DeviceReqResp;
+import com.amx.jax.offsite.device.DevicePairingModels.PairingRequest;
+import com.amx.jax.offsite.device.DevicePairingModels.PairingResponse;
 import com.amx.utils.ArgUtil;
-import com.amx.utils.JsonUtil;
 
 import io.swagger.annotations.Api;
 
@@ -63,9 +65,8 @@ public class DeviceController {
 	}
 
 	@RequestMapping(value = { DeviceConstants.DEVICE_PAIR }, method = { RequestMethod.POST })
-	public AmxApiResponse<CardData, Object> pairDevice(
-			@PathVariable(value = DeviceConstants.PARAM_CLIENT_TYPE) String clientType) {
-		return AmxApiResponse.build(cardBox.get(clientType));
+	public AmxApiResponse<PairingResponse, Object> pairDevice(@RequestBody PairingRequest req) {
+		return AmxApiResponse.build(new DeviceReqResp());
 	}
 
 }
