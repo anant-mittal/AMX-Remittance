@@ -42,7 +42,6 @@ import com.amx.jax.dbmodel.PrefixModel;
 import com.amx.jax.dbmodel.PurposeOfRemittanceViewModel;
 import com.amx.jax.dbmodel.UserFinancialYear;
 import com.amx.jax.dbmodel.ViewOnlineEmailMobileCheck;
-import com.amx.jax.dbmodel.meta.PaygErrorMaster;
 import com.amx.jax.manager.JaxNotificationManager;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.service.ApplicationCountryService;
@@ -398,9 +397,9 @@ public class MetaController {
 		return branchDetailService.getBracnchDetailResponse();
 	}
 
-	@Deprecated
+/*	@Deprecated
 	@RequestMapping(value = "/payg-error/", method = RequestMethod.GET)
 	public AmxApiResponse<PaygErrorMaster, Object> getPaygErrorList() {
 		return payGErrorService.getPaygErrorResponse();
-	}
+	}*/
 }
