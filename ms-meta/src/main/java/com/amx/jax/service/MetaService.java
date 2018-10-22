@@ -33,6 +33,7 @@ import com.amx.jax.dbmodel.ViewState;
 import com.amx.jax.dbmodel.meta.ServiceGroupMaster;
 import com.amx.jax.dbmodel.meta.ServiceGroupMasterDesc;
 import com.amx.jax.dbmodel.meta.ServiceMaster;
+import com.amx.jax.error.JaxError;
 import com.amx.jax.meta.MetaData;
 import com.amx.jax.repository.CountryRepository;
 import com.amx.jax.repository.IContactDetailDao;
@@ -91,7 +92,7 @@ public class MetaService extends AbstractService {
 	public AmxApiResponse<ViewCityDto, Object> getDistrictCity(BigDecimal districtId, BigDecimal languageId) {
 		List<ViewCity> cityList = cityDao.getCityByDistrictId(districtId, languageId);
 		if (cityList.isEmpty()) {
-			throw new GlobalException("city not avaliable");
+			throw new GlobalException("city not avaliable", JaxError.CITY_NOT_AVAILABLE);
 		} 
 		return AmxApiResponse.buildList(convertCityDto(cityList));
 	}

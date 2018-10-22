@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.WebApplicationContext;
 
 import com.amx.amxlib.exception.jax.GlobalException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.RemittanceReceiptSubreport;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.PersonInfo;
@@ -34,6 +33,7 @@ import com.amx.jax.dbmodel.remittance.RemittanceApplication;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.dbmodel.remittance.ShoppingCartDetails;
 import com.amx.jax.error.JaxError;
+import com.amx.jax.payg.PaymentResponseDto;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.repository.IShoppingCartDetailsDao;
 import com.amx.jax.repository.RemittanceApplicationRepository;
@@ -148,13 +148,13 @@ public class RemittancePaymentManager extends AbstractService{
 					
 				/** Calling stored procedure  to move remittance to old emos **/
 				if(JaxUtil.isNullZeroBigDecimalCheck(collectionDocumentNumber)) {
-					paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
-					paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
-					paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
-					remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
-					errorMsg = (String)remitanceMap.get("P_ERROR_MESG");
-					paymentResponse.setErrorText(errorMsg);
-					logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :"+errorMsg);
+						paymentResponse.setCollectionDocumentCode(collectionDocumentCode);
+						paymentResponse.setCollectionDocumentNumber(collectionDocumentNumber);
+						paymentResponse.setCollectionFinanceYear(collectionFinanceYear);
+						remitanceMap = remittanceApplicationService.saveRemittancetoOldEmos(paymentResponse);
+						errorMsg = (String) remitanceMap.get("P_ERROR_MESSAGE");
+						paymentResponse.setErrorText(errorMsg);
+						logger.info("EX_INSERT_EMOS_TRANSFER_LIVE :" + errorMsg);
 					
 					/** For Receipt Print **/
 					

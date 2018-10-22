@@ -23,11 +23,10 @@ import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.dbmodel.PlaceOrder;
 import com.amx.jax.dbmodel.remittance.RemittanceTransaction;
 import com.amx.jax.postman.PostManService;
-import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.model.Email;
 import com.amx.jax.postman.model.PushMessage;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.repository.IPlaceOrderDao;
 import com.amx.jax.service.CurrencyMasterService;
 import com.amx.jax.services.JaxNotificationService;
@@ -71,7 +70,7 @@ public class RemittanceManager {
 
 			SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMM yyyy");
 			String date = simpleDateFormat.format(new Date());
-			
+
 			Customer cusotmer = customerDao.getCustById(placeorder.getCustomerId());
 			PlaceOrderNotificationDTO placeorderNotDTO = new PlaceOrderNotificationDTO();
 			placeorderNotDTO.setFirstName(cusotmer.getFirstName());
@@ -97,16 +96,16 @@ public class RemittanceManager {
 	public void sendPaceorderNotification(PlaceOrderNotificationDTO model) {
 		try {
 			String emailid = model.getEmail();
-			logger.info("Email send to--"+model.getEmail());
+			logger.info("Email send to--" + model.getEmail());
 			Email email = new Email();
 			email.setSubject(BRANCH_SEARCH);
 			email.addTo(emailid);
-			email.setTemplate(Templates.RATE_ALERT);
+			email.setITemplate(TemplatesMX.RATE_ALERT);
 			email.setHtml(true);
 			email.getModel().put(RESP_DATA_KEY, model);
 			postManService.sendEmailAsync(email);
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.RATE_ALERT);
+			pushMessage.setITemplate(TemplatesMX.RATE_ALERT);
 			pushMessage.addToUser(model.getCustomerId());
 			pushMessage.getModel().put(RESP_DATA_KEY, model);
 			pushNotifyClient.send(pushMessage);

@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.amx.jax.event.Event;
 import com.amx.jax.postman.client.PostManClient;
 import com.amx.jax.postman.client.PushNotifyClient;
 import com.amx.jax.postman.client.WhatsAppClient;
@@ -17,13 +16,14 @@ import com.amx.jax.postman.model.Notipy;
 import com.amx.jax.postman.model.Notipy.Channel;
 import com.amx.jax.postman.model.PushMessage;
 import com.amx.jax.postman.model.SMS;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.jax.postman.model.WAMessage;
+import com.amx.jax.tunnel.ITunnelEvent;
 import com.amx.jax.tunnel.ITunnelSubscriber;
 import com.amx.utils.ArgUtil;
 import com.amx.utils.JsonUtil;
 
-public class PingCommonListner implements ITunnelSubscriber<Event> {
+public class PingCommonListner implements ITunnelSubscriber<ITunnelEvent> {
 
 	@Autowired
 	PostManClient postManClient;
@@ -37,7 +37,7 @@ public class PingCommonListner implements ITunnelSubscriber<Event> {
 	private final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public void onMessage(String channel, Event event) {
+	public void onMessage(String channel, ITunnelEvent event) {
 		LOGGER.info("======onMessage1==={} ====  {}", channel, JsonUtil.toJson(event));
 		String message = ArgUtil.parseAsString(event.getData().get("message"));
 		String smsNo = ArgUtil.parseAsString(event.getData().get("sms"));
@@ -55,14 +55,14 @@ public class PingCommonListner implements ITunnelSubscriber<Event> {
 			email.setModel(wrapper);
 			email.addTo(emailId);
 			email.setHtml(true);
-			email.setTemplate(Templates.SERVER_PING);
+			email.setITemplate(TemplatesMX.SERVER_PING);
 			email.setSubject("Subject:Server Ping");
 			postManClient.sendEmailAsync(email);
 		}
 
 		if (customerId != null) {
 			PushMessage pushMessage = new PushMessage();
-			pushMessage.setTemplate(Templates.SERVER_PING);
+			pushMessage.setITemplate(TemplatesMX.SERVER_PING);
 			pushMessage.addToUser(customerId);
 			pushMessage.setModel(wrapper);
 			pushNotifyClient.send(pushMessage);
@@ -70,7 +70,7 @@ public class PingCommonListner implements ITunnelSubscriber<Event> {
 
 		if (smsNo != null) {
 			SMS sms = new SMS();
-			sms.setTemplate(Templates.SERVER_PING);
+			sms.setITemplate(TemplatesMX.SERVER_PING);
 			sms.addTo(smsNo);
 			sms.setModel(wrapper);
 			postManClient.sendSMSAsync(sms);

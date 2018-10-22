@@ -37,6 +37,7 @@ public enum JaxError implements IExceptionEnum {
     CUSTOMER_NOT_REGISTERED_ONLINE,
     CUSTOMER_NOT_REGISTERED_BRANCH,
     CUSTOMER_NOT_ACTIVE_BRANCH,
+    DUPLICATE_CUSTOMER_NOT_ACTIVE_BRANCH,
     CUSTOMER_ACTIVE_BRANCH,
     CUSTOMER_NOT_ACTIVE_ONLINE,
     CUSTOMER_ACTIVE_ONLINE,
@@ -125,6 +126,7 @@ public enum JaxError implements IExceptionEnum {
 	BLACK_LISTED_EXISTING_CIVIL_ID,
 	EXCHANGE_RATE_CHANGED,
 	ADDTIONAL_FLEX_FIELD_REQUIRED,
+	//Offsite customer
 	BLANK_CIVIL_ID,
 	BLANK_EMPLOYEE_ID,
 	INVALID_EMPLOYEE,
@@ -156,7 +158,7 @@ public enum JaxError implements IExceptionEnum {
 
 	@Override
 	public int getStatusCode() {
-		return 6000 + this.ordinal();
+		return 1000 + this.ordinal();
 	}
 
 }

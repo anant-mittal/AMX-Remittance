@@ -20,7 +20,8 @@ import org.thymeleaf.spring4.SpringTemplateEngine;
 import com.amx.jax.postman.PostManConfig;
 import com.amx.jax.postman.custom.HelloDialect;
 import com.amx.jax.postman.model.File;
-import com.amx.jax.postman.model.Templates;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
+import com.amx.jax.postman.model.TemplatesMX;
 import com.amx.utils.IoUtils;
 
 /**
@@ -77,8 +78,8 @@ public class TemplateService {
 	 *            the context
 	 * @return the string
 	 */
-	public String processHtml(Templates template, Context context) {
-		String rawStr = templateEngine.process(template.getFileName(), context);
+	public String processHtml(ITemplate template, Context context) {
+		String rawStr = templateEngine.process(template.getHtmlFile(), context);
 
 		Pattern p = Pattern.compile("src=\"inline:(.*?)\"");
 		Matcher m = p.matcher(rawStr);
@@ -95,8 +96,8 @@ public class TemplateService {
 		return rawStr;
 	}
 
-	public String processJson(Templates template, Context context) {
-		return templateEngine.process(template.getJsonFileName(), context);
+	public String processJson(ITemplate template, Context context) {
+		return templateEngine.process(template.getJsonFile(), context);
 	}
 
 	/**
@@ -135,12 +136,12 @@ public class TemplateService {
 		context.setVariable("_tu", templateUtils);
 
 		context.setVariables(file.getModel());
-		if (file.getTemplate().isThymleaf()) {
+		if (file.getITemplate().isThymleaf()) {
 			String content;
 			if (file.getType() == File.Type.JSON) {
-				content = this.processJson(file.getTemplate(), context);
+				content = this.processJson(file.getITemplate(), context);
 			} else {
-				content = this.processHtml(file.getTemplate(), context);
+				content = this.processHtml(file.getITemplate(), context);
 			}
 			file.setContent(content);
 		}
@@ -156,7 +157,7 @@ public class TemplateService {
 	 *            the context
 	 * @return the string
 	 */
-	public String processText(Templates template, Context context) {
+	public String processText(TemplatesMX template, Context context) {
 		return textTemplateEngine.process(template.getFileName(), context);
 	}
 

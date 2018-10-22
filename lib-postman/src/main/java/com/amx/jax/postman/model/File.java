@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 
 import com.amx.jax.dict.Language;
 import com.amx.jax.logger.LoggerService;
+import com.amx.jax.postman.model.ITemplates.ITemplate;
 import com.amx.utils.JsonUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSetter;
 
 public class File {
 
@@ -57,15 +59,15 @@ public class File {
 		this.converter = converter;
 	}
 
-	private Templates template = null;
+	private String template = null;
 	private Map<String, Object> model = new HashMap<String, Object>();
 
 	public File() {
 	}
 
 	@SuppressWarnings("unchecked")
-	public File(Templates template, Object data, Type fileType) {
-		this.setTemplate(template);
+	public File(ITemplate template, Object data, Type fileType) {
+		this.setITemplate(template);
 		this.setType(fileType);
 		this.setModel(JsonUtil.fromJson(JsonUtil.toJson(data), Map.class));
 	}
@@ -83,12 +85,23 @@ public class File {
 		this.model = JsonUtil.toMap(object);
 	}
 
-	public Templates getTemplate() {
+	public String getTemplate() {
 		return template;
 	}
 
-	public void setTemplate(Templates template) {
+	@JsonSetter
+	public void setTemplate(String template) {
 		this.template = template;
+	}
+
+	@JsonIgnore
+	public void setITemplate(ITemplate template) {
+		this.template = template.toString();
+	}
+
+	@JsonIgnore
+	public ITemplate getITemplate() {
+		return ITemplates.getTemplate(this.template);
 	}
 
 	private byte[] body;
@@ -121,6 +134,14 @@ public class File {
 		return content;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public void setContent(String content) {
 		this.content = content;
 	}
@@ -150,11 +171,14 @@ public class File {
 		}
 	}
 
-	public String getTitle() {
-		return title;
+	/**
+	 * If file type is json, this should return valid map
+	 * 
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public Map<String, Object> toMap() {
+		return JsonUtil.fromJson(this.content, Map.class);
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
 }

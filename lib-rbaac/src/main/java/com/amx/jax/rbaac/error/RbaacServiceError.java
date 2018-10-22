@@ -53,6 +53,9 @@ public enum RbaacServiceError implements IExceptionEnum {
 	/** The duplicate role. */
 	DUPLICATE_ROLE,
 
+	/** The invalid role. */
+	INVALID_ROLE,
+
 	/** The incompatible data type. */
 	INCOMPATIBLE_DATA_TYPE,
 

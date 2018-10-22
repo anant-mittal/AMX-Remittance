@@ -39,7 +39,7 @@ public class ExchangeRateProcedureDao {
 				+ "  AND A.ROUTING_BANK_ID = B.BANK_ID" + "  AND A.REMITTANCE_MODE_ID = B.REMITTANCE_MODE_ID"
 				+ "  AND A.DELIVERY_MODE_ID = B.DELIVERY_MODE_ID" + "  AND B.APPROVED_BY IS NOT NULL"
 				+ "  AND B.BANK_SERVICE_RULE_ID = C.BANK_SERVICE_RULE_ID" + "  AND C.CHARGES_TYPE = 'C'"
-				+ "  AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
+				+ "  AND A.REMITTANCE_MODE_ID  <> (select REMITTANCE_MODE_ID from ex_remittance_mode where REMITTANCE_CODE=13)    " /** Added by Rabil for IMPS **/
 				+ "  AND C.CHARGES_FOR = ?" + "" + "  AND ? BETWEEN C.FROM_AMOUNT AND C.TO_AMOUNT";
 		
 		
@@ -79,7 +79,7 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
 				+ "        AND    ? BETWEEN B.FROM_AMOUNT AND B.TO_AMOUNT"
 				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE              =   'Y'"
-				+ " 	   AND A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
+				+ " 	   AND A.REMITTANCE_MODE_ID  <> (select REMITTANCE_MODE_ID from ex_remittance_mode where REMITTANCE_CODE=13)    " /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));
@@ -138,7 +138,7 @@ public class ExchangeRateProcedureDao {
 				+ "        AND    A.BANK_ID               =   ?" + "        AND    A.REMITTANCE_MODE_ID    =   ?"
 				+ "        AND    A.DELIVERY_MODE_ID      =   ?" + "        AND    B.CHARGES_FOR           =   ?"
 				+ "        AND    A.ISACTIVE              =   'Y'" + "        AND    B.ISACTIVE            =  'Y'"
-				+ " 	   AND    A.REMITTANCE_MODE_ID  <> 33    " /** Added by Rabil for IMPS **/
+				+ " 	   AND    A.REMITTANCE_MODE_ID  <> (select REMITTANCE_MODE_ID from ex_remittance_mode where REMITTANCE_CODE=13)    " /** Added by Rabil for IMPS **/
 				+ "        AND    B.CHARGES_TYPE          =   'C'";
 		List<BigDecimal> inputList = new ArrayList<>();
 		inputList.add((BigDecimal) inputMap.get("P_ROUTING_COUNTRY_ID"));

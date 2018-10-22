@@ -2,9 +2,7 @@ package com.amx.jax.rbaac.dto.response;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.List;
-
-import com.amx.jax.rbaac.dto.RoleDefinitionDataTable;
+import java.util.Date;
 
 public class EmployeeDetailsDTO implements Serializable {
 
@@ -24,10 +22,9 @@ public class EmployeeDetailsDTO implements Serializable {
 	private String status;
 	private Boolean isActive;
 	private Boolean isLocked;
+	private Date lastLoginDate;
 
-	// TODO: To Be removed
-	private BigDecimal roleId;
-	private List<RoleDefinitionDataTable> roleDef;
+	private RoleResponseDTO userRole;
 
 	public BigDecimal getEmployeeId() {
 		return employeeId;
@@ -141,20 +138,20 @@ public class EmployeeDetailsDTO implements Serializable {
 		this.isLocked = isLocked;
 	}
 
-	public BigDecimal getRoleId() {
-		return roleId;
+	public RoleResponseDTO getUserRole() {
+		return userRole;
 	}
 
-	public void setRoleId(BigDecimal roleId) {
-		this.roleId = roleId;
+	public void setUserRole(RoleResponseDTO userRole) {
+		this.userRole = userRole;
 	}
 
-	public List<RoleDefinitionDataTable> getRoleDef() {
-		return roleDef;
+	public Date getLastLoginDate() {
+		return lastLoginDate;
 	}
 
-	public void setRoleDef(List<RoleDefinitionDataTable> roleDef) {
-		this.roleDef = roleDef;
+	public void setLastLoginDate(Date lastLoginDate) {
+		this.lastLoginDate = lastLoginDate;
 	}
 
 }

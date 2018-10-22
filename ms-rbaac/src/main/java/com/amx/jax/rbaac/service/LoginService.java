@@ -740,7 +740,6 @@ public class LoginService extends AbstractService {
 		empDetail.setLocation(authLoginTrnxModel.getEmpDetails().getLocation());
 		empDetail.setTelephoneNumber(authLoginTrnxModel.getEmpDetails().getTelephoneNumber());
 		empDetail.setUserName(authLoginTrnxModel.getEmpDetails().getUserName());
-		empDetail.setRoleId(authLoginTrnxModel.getUserMaster().getRoleId());
 
 		List<RoleDefinitionDataTable> lstRoleDF = new ArrayList<RoleDefinitionDataTable>();
 		for (RoleDefinition roleDef : authLoginTrnxModel.getRoleDefinition()) {
@@ -752,7 +751,6 @@ public class LoginService extends AbstractService {
 			roleDefDT.setAdmin(roleDef.getAdmin());
 			lstRoleDF.add(roleDefDT);
 		}
-		empDetail.setRoleDef(lstRoleDF);
 
 		apiResponse.getData().getValues().add(empDetail);
 		apiResponse.getData().setType("employee-detail");

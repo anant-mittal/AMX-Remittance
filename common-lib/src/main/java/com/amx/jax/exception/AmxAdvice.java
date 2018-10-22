@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.amx.jax.api.AmxFieldError;
+import com.amx.jax.http.CommonHttpRequest;
 import com.amx.jax.logger.LoggerService;
-import com.amx.jax.service.HttpService;
 
 public abstract class AmxAdvice {
 
@@ -33,11 +33,14 @@ public abstract class AmxAdvice {
 			HttpServletResponse response) {
 		AmxApiError error = ex.createAmxApiError();
 		error.setException(ex.getClass().getName());
+		error.setStatusEnum(ex.getError());
 		error.setMeta(ex.getMeta());
-		logger.info("Exception occured in controller " + ex.getClass().getName() + " error message: "
-				+ ex.getErrorMessage() + " error code: " + ex.getErrorKey(), ex);
 		alert(ex);
-		return new ResponseEntity<AmxApiError>(error, ex.getHttpStatus());
+		return new ResponseEntity<AmxApiError>(error, getHttpStatus(ex));
+	}
+
+	private HttpStatus getHttpStatus(AmxApiException exp) {
+		return exp.getHttpStatus();
 	}
 
 	private void alert(AmxApiException ex) {
@@ -69,13 +72,13 @@ public abstract class AmxAdvice {
 		for (FieldError error : ex.getBindingResult().getFieldErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(error.getField());
-			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setObzect(error.getObjectName());
-			newError.setDescription(HttpService.sanitze(error.getDefaultMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(error.getDefaultMessage()));
 			errors.add(newError);
 		}
 		return badRequest(ex, errors, request, response);
@@ -100,7 +103,7 @@ public abstract class AmxAdvice {
 		List<AmxFieldError> errors = new ArrayList<AmxFieldError>();
 		AmxFieldError newError = new AmxFieldError();
 		newError.setField(ex.getName());
-		newError.setDescription(HttpService.sanitze(ex.getMessage()));
+		newError.setDescription(CommonHttpRequest.sanitze(ex.getMessage()));
 		errors.add(newError);
 		return badRequest(ex, errors, request, response);
 	}
@@ -121,7 +124,7 @@ public abstract class AmxAdvice {
 		for (ConstraintViolation<?> responseError : exception.getConstraintViolations()) {
 			AmxFieldError newError = new AmxFieldError();
 			newError.setField(responseError.getPropertyPath().toString());
-			newError.setDescription(HttpService.sanitze(responseError.getMessage()));
+			newError.setDescription(CommonHttpRequest.sanitze(responseError.getMessage()));
 			errors.add(newError);
 		}
 		return badRequest(exception, errors, request, response);

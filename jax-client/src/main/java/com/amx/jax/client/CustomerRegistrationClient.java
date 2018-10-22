@@ -13,13 +13,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.amx.amxlib.exception.AbstractJaxException;
 import com.amx.amxlib.exception.JaxSystemError;
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.BooleanResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.rest.RestService;
 
 /**
@@ -110,18 +110,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> saveSecurityQuestions(List<SecurityQuestionModel> securityquestions) {
 		try {
-			LOGGER.info("calling saveSecurityQuestions api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(securityquestions, getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-security-questions/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+					.path(CUSTOMER_REG_ENDPOINT + "/save-security-questions/").post(securityquestions)
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveSecurityQuestions : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -134,19 +129,13 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 */
 	public ApiResponse<BooleanResponse> savePhishiingImage(String caption, String imageUrl) {
 		try {
-			LOGGER.info("calling savePhishiingImage api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-phishing-image/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url).queryParam("caption", caption)
-					.queryParam("imageUrl", imageUrl);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
+			return restService.ajax(appConfig.getJaxURL()).path(CUSTOMER_REG_ENDPOINT + "/save-phishing-image/")
+					.queryParam("caption", caption).queryParam("imageUrl", imageUrl).filter(metaFilter).post()
 					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in savePhishiingImage : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 
@@ -158,19 +147,25 @@ public class CustomerRegistrationClient extends AbstractJaxServiceClient {
 	 * @return BooleanResponse - return success or failure
 	 */
 	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential) {
+		return saveLoginDetail(customerCredential, Boolean.FALSE);
+	}
+
+	/**
+	 * @param loginId
+	 *            - login id
+	 * @param password
+	 *            - password
+	 * @return BooleanResponse - return success or failure
+	 */
+	public ApiResponse<BooleanResponse> saveLoginDetail(CustomerCredential customerCredential, Boolean isPartialReg) {
 		try {
-			LOGGER.info("calling saveLoginDetail api: ");
-			HttpEntity<Object> requestEntity = new HttpEntity<Object>(customerCredential, getHeader());
-			String url = this.getBaseUrl() + CUSTOMER_REG_ENDPOINT + "/save-login-detail/";
-			UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-			return restService.ajax(builder.build().encode().toUri()).post(requestEntity)
-					.as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
+			return restService.ajax(appConfig.getJaxURL()).filter(metaFilter)
+					.path(CUSTOMER_REG_ENDPOINT + "/save-login-detail/").queryParam("isPartialReg", isPartialReg)
+					.post(customerCredential).as(new ParameterizedTypeReference<ApiResponse<BooleanResponse>>() {
 					});
-		} catch (AbstractJaxException ae) {
-			throw ae;
 		} catch (Exception e) {
 			LOGGER.error("exception in saveLoginDetail : ", e);
-			throw new JaxSystemError();
+			return JaxSystemError.evaluate(e);
 		}
 	}
 }

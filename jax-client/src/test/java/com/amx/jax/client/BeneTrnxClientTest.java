@@ -19,7 +19,7 @@ import com.amx.amxlib.model.CivilIdOtpModel;
 import com.amx.amxlib.model.response.ApiResponse;
 import com.amx.amxlib.model.response.JaxTransactionResponse;
 import com.amx.jax.AppConstants;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.utils.ContextUtil;
 import com.amx.utils.JsonUtil;
 

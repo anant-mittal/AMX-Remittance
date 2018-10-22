@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * The Class RoleRequestDTO.
@@ -22,7 +23,7 @@ public class RoleRequestDTO implements Serializable {
 	private String role;
 
 	/** The permission map. */
-	@NotBlank(message = "Permission Map Can not be Blank.")
+	@NotEmpty(message = "Permission Map Can not be Blank.")
 	private Map<String, Map<String, String>> permissionMap;
 
 	/** The suspended. */

@@ -10,16 +10,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
-import com.amx.amxlib.model.CustomerPersonalDetail;
+import com.amx.jax.CustomerCredential;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.ui.model.AuthData;
 import com.amx.jax.ui.model.UserUpdateData;
 import com.amx.jax.ui.response.ResponseWrapper;
 import com.amx.jax.ui.service.PartialRegService;
 import com.amx.jax.ui.service.RegistrationService;
 import com.amx.jax.ui.session.Transactions;
+import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -120,7 +120,7 @@ public class RegisterController {
 	 *            the e otp
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/phising", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regPhising(@RequestParam String imageUrl, @RequestParam String caption,
 			@RequestParam String mOtp, @RequestParam(required = false) String eOtp) {
 		return registrationService.updatePhising(imageUrl, caption, mOtp, eOtp);
@@ -229,7 +229,7 @@ public class RegisterController {
 	 *            the caption
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/new/phising", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regNewPhising(@RequestParam String imageUrl, @RequestParam String caption) {
 		transactions.track();
 		return partialRegService.updatePhising(imageUrl, caption);
@@ -242,7 +242,7 @@ public class RegisterController {
 	 *            the customer credential
 	 * @return the response wrapper
 	 */
-	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST, })
+	@RequestMapping(value = "/pub/register/new/creds", method = { RequestMethod.POST })
 	public ResponseWrapper<UserUpdateData> regNewLoginIdAndPassword(
 			@RequestBody CustomerCredential customerCredential) {
 		transactions.track();

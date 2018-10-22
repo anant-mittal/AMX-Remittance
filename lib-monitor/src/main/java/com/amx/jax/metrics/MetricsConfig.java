@@ -2,6 +2,7 @@ package com.amx.jax.metrics;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
@@ -12,6 +13,7 @@ import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
 @Configuration
 @EnableMetrics(proxyTargetClass = true)
 @PropertySource("classpath:monitor.properties")
+@ConditionalOnProperty("app.monitor")
 public class MetricsConfig extends MetricsConfigurerAdapter {
 
 	@Override

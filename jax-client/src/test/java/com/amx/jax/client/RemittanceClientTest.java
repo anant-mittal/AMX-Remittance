@@ -19,7 +19,6 @@ import com.amx.amxlib.exception.InvalidInputException;
 import com.amx.amxlib.exception.LimitExeededException;
 import com.amx.amxlib.exception.RemittanceTransactionValidationException;
 import com.amx.amxlib.exception.ResourceNotFoundException;
-import com.amx.amxlib.meta.model.PaymentResponseDto;
 import com.amx.amxlib.meta.model.TransactionHistroyDTO;
 import com.amx.amxlib.model.JaxConditionalFieldDto;
 import com.amx.amxlib.model.request.RemittanceTransactionRequestModel;
@@ -30,12 +29,14 @@ import com.amx.amxlib.model.response.PurposeOfTransactionModel;
 import com.amx.amxlib.model.response.RemittanceApplicationResponseModel;
 import com.amx.amxlib.model.response.RemittanceTransactionResponsetModel;
 import com.amx.amxlib.model.response.RemittanceTransactionStatusResponseModel;
-import com.amx.jax.amxlib.model.JaxMetaInfo;
+import com.amx.jax.client.configs.JaxMetaInfo;
 import com.amx.jax.dict.Tenant;
+import com.amx.jax.payg.PaymentResponseDto;
+import com.amx.jax.scope.TenantContextHolder;
 import com.amx.utils.JsonUtil;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes=JaxServiceClientApplication.class)
+@SpringBootTest(classes = JaxServiceClientApplication.class)
 public class RemittanceClientTest {
 
 	@Autowired
@@ -53,7 +54,7 @@ public class RemittanceClientTest {
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		jaxMetaInfo.setTenant(Tenant.KWT2);
+		TenantContextHolder.setCurrent(Tenant.KWT2);
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		RemittanceTransactionRequestModel request = new RemittanceTransactionRequestModel();
 		request.setBeneId(new BigDecimal(1424));
@@ -64,13 +65,13 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void getOldPurposeOfTransactions() throws IOException, ResourceNotFoundException, InvalidInputException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
 		jaxMetaInfo.setCustomerId(new BigDecimal(5218));
-		jaxMetaInfo.setTenant(Tenant.KWT2);
+		TenantContextHolder.setCurrent(Tenant.KWT2);
 		ApiResponse<PurposeOfTransactionModel> response = null;
 		response = client.getPurposeOfTransactions(new BigDecimal(1424));
 		assertNotNull("Response is null", response);
@@ -78,7 +79,7 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-	//@Test
+	// @Test
 	public void testsaveTxn() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
@@ -112,7 +113,7 @@ public class RemittanceClientTest {
 	private ApiResponse<RemittanceApplicationResponseModel> resendRequestWithAddtionalFlexField(
 			RemittanceTransactionRequestModel request, List<JaxConditionalFieldDto> list) {
 
-		Map<String, String> flexFields = new HashMap<>();
+		Map<String, Object> flexFields = new HashMap<String, Object>();
 		list.forEach(i -> {
 			if (i.getField().getType().equals("select")) {
 				flexFields.put(i.getField().getDtoPath().replaceAll("flexFields\\.", ""),
@@ -168,25 +169,27 @@ public class RemittanceClientTest {
 		assertNotNull(response.getResult().getModelType());
 	}
 
-
-	// @Test
+	@Test
 	public void testsaveRemittance() throws IOException, ResourceNotFoundException, InvalidInputException,
 			RemittanceTransactionValidationException, LimitExeededException {
 		jaxMetaInfo.setCountryId(new BigDecimal(91));
 		jaxMetaInfo.setCompanyId(new BigDecimal(1));
 		jaxMetaInfo.setCountryBranchId(new BigDecimal(78));
-		jaxMetaInfo.setCustomerId(new BigDecimal(309945));
+		jaxMetaInfo.setCustomerId(new BigDecimal(595));
+		TenantContextHolder.setCurrent(Tenant.KWT2);
 		ApiResponse<PaymentResponseDto> response = null;
 		PaymentResponseDto request = new PaymentResponseDto();
-		request.setAuth_appNo("471504");
-		request.setPaymentId("3082792411163290");
-		request.setUdf3("3082792411163290");
+		request.setAuth_appNo("471599");
+		request.setPaymentId("3082792411163298");
+		// app docno
+		request.setUdf3("27002498");
 		request.setResultCode("CAPTURED");
-		request.setTrackId("309945");
+		// cusref
+		request.setTrackId("90277");
 		request.setReferenceId("801813658796");
-		request.setTransactionId("9272568121380180");
-		request.setPostDate("0118");
-		request.setCustomerId(new BigDecimal(309945));
+		request.setTransactionId("9272568121380181");
+		request.setPostDate("0199");
+		request.setCustomerId(new BigDecimal(595));
 		request.setApplicationCountryId(new BigDecimal(91));
 		response = client.saveRemittanceTransaction(request);
 		assertNotNull("Response is null", response);

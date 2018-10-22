@@ -35,7 +35,7 @@ public class PrefixService extends AbstractService {
 		prefixList.add(new PrefixModel(PrefixEnum.MS));
 		if (prefixList.isEmpty()) {
 			throw new GlobalException("Prefix list is not abaliable");
-		} 
+		}
 		return AmxApiResponse.buildList(prefixList);
 	}
 

@@ -1,0 +1,27 @@
+<jasperReport name="yes">
+	<field name="title" class="java.lang.String" />
+	<field name="condition" class="java.lang.String" />
+	<field name="minSalary" class="java.lang.Double" />
+	<detail>
+		<band height="51">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" />
+				<textElement />
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$F{title}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" />
+				<textElement />
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$F{minSalary}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" />
+				<textElement />
+				<textFieldExpression class="java.lang.String">
+                  <![CDATA[$F{condition}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

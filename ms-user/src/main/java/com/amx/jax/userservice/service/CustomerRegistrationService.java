@@ -12,15 +12,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.amx.amxlib.model.CustomerCredential;
 import com.amx.amxlib.model.CustomerHomeAddress;
-import com.amx.amxlib.model.CustomerPersonalDetail;
 import com.amx.amxlib.model.PersonInfo;
 import com.amx.amxlib.model.SecurityQuestionModel;
 import com.amx.amxlib.model.response.ApiResponse;
+import com.amx.jax.CustomerCredential;
 import com.amx.jax.dbmodel.ApplicationSetup;
 import com.amx.jax.dbmodel.Customer;
 import com.amx.jax.model.dto.SendOtpModel;
+import com.amx.jax.model.request.CustomerPersonalDetail;
 import com.amx.jax.repository.IApplicationCountryRepository;
 import com.amx.jax.service.CustomerService;
 import com.amx.jax.services.AbstractService;
@@ -69,7 +69,7 @@ public class CustomerRegistrationService extends AbstractService {
 	JaxNotificationService jaxNotificationService;
 	@Autowired
 	IApplicationCountryRepository applicationSetup;
-
+	
 	/**
 	 * Sends otp initiating trnx
 	 */
@@ -135,7 +135,7 @@ public class CustomerRegistrationService extends AbstractService {
 	 */
 	public ApiResponse saveLoginDetail(CustomerCredential customerCredential) {
 		customerRegistrationManager.saveLoginDetail(customerCredential);
-		customerCredentialValidator.validate(customerRegistrationManager.get(), null);
+		customerCredentialValidator.validate(customerRegistrationManager.get(),  null);
 		customerRegistrationManager.commit();
 		Customer customerDetails = customerService.getCustomerDetails(customerCredential.getLoginId());
 		ApplicationSetup applicationSetupData = applicationSetup.getApplicationSetupDetails();

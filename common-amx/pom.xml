@@ -13,7 +13,6 @@
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -24,18 +23,18 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
-			<artifactId>lib-ext-jar</artifactId>
-			<type>pom</type>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amx.jax</groupId>
 			<artifactId>common-utils</artifactId>
 		</dependency>
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>common-lib</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-ext-jar</artifactId>
+			<type>pom</type>
 		</dependency>
 
 		<dependency>

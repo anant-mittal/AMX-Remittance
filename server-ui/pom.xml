@@ -13,7 +13,6 @@
 		<groupId>com.amx.jax</groupId>
 		<artifactId>amxeco</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
 	</parent>
 
 	<properties>
@@ -85,8 +84,17 @@
 
 		<dependency>
 			<groupId>com.amx.jax</groupId>
+			<artifactId>common-amx</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
 			<artifactId>jax-client</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.amx.jax</groupId>
+			<artifactId>lib-jax</artifactId>
 		</dependency>
 
 		<dependency>
@@ -98,7 +106,7 @@
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-mcq</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.amx.jax</groupId>
 			<artifactId>lib-monitor</artifactId>

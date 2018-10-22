@@ -1,6 +1,5 @@
 package com.amx.jax.error;
 
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import com.amx.jax.error.ApiJaxStatusBuilder.ApiJaxStatus;
 import com.amx.jax.swagger.IStatusCodeListPlugin;
-import com.google.common.base.Optional;
 
 import springfox.documentation.swagger.common.SwaggerPluginSupport;
 
@@ -26,13 +24,13 @@ public class ApiJaxStatusBuilder extends IStatusCodeListPlugin<JaxError, ApiJaxS
 	}
 
 	@Override
-	public Class<? extends Annotation> getAnnotionClass() {
+	public Class<ApiJaxStatus> getAnnotionClass() {
 		return ApiJaxStatus.class;
 	}
 
 	@Override
-	public JaxError[] getValues(Optional<ApiJaxStatus> annotation) {
-		return annotation.get().value();
+	public JaxError[] getValues(ApiJaxStatus annotation) {
+		return annotation.value();
 	}
 
 }

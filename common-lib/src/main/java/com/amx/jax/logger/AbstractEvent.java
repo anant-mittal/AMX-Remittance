@@ -103,4 +103,5 @@ public abstract class AbstractEvent implements Serializable {
 		this.timestamp = timestamp;
 	}
 
+	abstract public void clean();
 }

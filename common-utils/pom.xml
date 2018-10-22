@@ -10,9 +10,9 @@
 
 	<parent>
 		<groupId>com.amx.jax</groupId>
-		<artifactId>amxeco</artifactId>
+		<artifactId>amxeco-parent</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-		<relativePath>../pom.xml</relativePath> <!-- lookup parent from repository -->
+		<relativePath>../amxeco-parent/pom.xml</relativePath>
 	</parent>
 
 	<properties>
@@ -57,22 +57,5 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<!-- Enable deploy for this submodule. -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>default-deploy</id>
-						<phase>deploy</phase>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
-
 
 </project>

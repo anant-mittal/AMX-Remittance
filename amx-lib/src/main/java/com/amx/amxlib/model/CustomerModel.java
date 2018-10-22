@@ -3,8 +3,8 @@ package com.amx.amxlib.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-import com.amx.amxlib.model.CustomerModelInterface.ICustomerModel;
 import com.amx.jax.model.AbstractModel;
+import com.amx.libjax.model.CustomerModelInterface.ICustomerModel;
 
 public class CustomerModel extends AbstractModel implements ICustomerModel {
 
