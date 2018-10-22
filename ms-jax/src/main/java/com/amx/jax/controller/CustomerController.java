@@ -71,10 +71,9 @@ public class CustomerController {
 
 	@RequestMapping(value = "/{civil-id}/send-reset-otp/", method = RequestMethod.GET)
 	public ApiResponse sendResetCredentialsOtp(@PathVariable("civil-id") String civilId) {
-		logger.info("send Request:civilId" + civilId);
+		logger.info("Send OTP Request : civilId - " + civilId);
 		List<CommunicationChannel> channel = new ArrayList<>();
-		channel.add(CommunicationChannel.EMAIL);
-		channel.add(CommunicationChannel.MOBILE);
+		channel.add(CommunicationChannel.EMAIL_AS_MOBILE);
 		ApiResponse response = userService.sendOtpForCivilId(civilId, channel, null, null);
 		return response;
 	}
@@ -89,7 +88,7 @@ public class CustomerController {
 	@RequestMapping(value = "/{civil-id}/validate-otp/", method = RequestMethod.GET)
 	public ApiResponse validateOtp(@PathVariable("civil-id") String civilId, @RequestParam("mOtp") String mOtp,
 			@RequestParam(name = "eOtp", required = false) String eOtp) {
-		logger.info("validateOtp Request:civilId" + civilId + " mOtp:" + mOtp + " eOtp:" + eOtp);
+		logger.info("validateOtp Request : civilId - " + civilId + " mOtp: " + mOtp + " eOtp: " + eOtp);
 		ApiResponse response = userService.validateOtp(civilId, mOtp, eOtp);
 		return response;
 	}
